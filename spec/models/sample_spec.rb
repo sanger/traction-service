@@ -11,6 +11,10 @@ RSpec.describe Sample, type: :model do
       sample = create(:sample)
       expect(build(:sample, name: sample.name)).not_to be_valid
     end
+
+    it 'should be active' do
+      expect(create(:sample)).to be_active
+    end
   end
 
   context 'on update' do
