@@ -1,11 +1,12 @@
 module V1
   class SamplesController < ApplicationController
     def create
-      factory = SampleFactory.new(params_names)
-      if factory.save
-        head :created
+      @sample_factory = SampleFactory.new(params_names)
+      if @sample_factory.save
+        @sample_resources = @sample_factory.samples.map { |sample| SampleResource.new(sample, nil) }
+        render json: JSONAPI::ResourceSerializer.new(SampleResource).serialize_to_hash(@sample_resources), status: :created
       else
-        render json: {:errors => factory.errors.messages}.to_json, status: :unprocessable_entity
+        render json: { errors: @sample_factory.errors.messages}, status: :unprocessable_entity
       end
     end
 

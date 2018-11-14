@@ -15,9 +15,7 @@ RSpec.describe 'SamplesController', type: :request do
         data: {
           attributes: {
             samples: [
-              {
-                name: 'Sample1'
-              }
+              attributes_for(:sample)
             ]
           }
         }
@@ -42,27 +40,28 @@ RSpec.describe 'SamplesController', type: :request do
   end
 
   context 'when creating multiple samples' do
+
+    let(:attributes) { [attributes_for(:sample), attributes_for(:sample)]}
     let(:body) do
       {
         data: {
           attributes: {
-            samples: [
-              {
-                name: 'Sample1'
-              },
-              {
-                name: 'Sample2'
-              },
-            ]
+            samples: attributes
           }
         }
       }.to_json
     end
 
     context 'when the sample names do not exist' do
-      it 'creates the samples' do
+      it 'creates the samples and returns an appropriate response' do
         expect { post v1_samples_path, params: body, headers: headers }.to change(Sample, :count).by(2)
         expect(response).to have_http_status(:created)
+
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data'].length).to eq(2)
+        sample = json['data'].first['attributes']
+        puts attributes[0]
+        expect(sample['name']).to eq(attributes[0][:name])
       end
     end
   end

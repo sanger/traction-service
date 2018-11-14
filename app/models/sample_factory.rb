@@ -12,8 +12,9 @@ class SampleFactory
   end
 
   def save
-    return unless valid?
+    return false unless valid?
     samples.collect(&:save)
+    true
   end
 
   private
