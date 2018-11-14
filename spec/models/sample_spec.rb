@@ -12,6 +12,10 @@ RSpec.describe Sample, type: :model do
       expect(build(:sample, name: sample.name)).not_to be_valid
     end
 
+    it 'is not valid without a name' do
+      expect(build(:sample, name: nil)).not_to be_valid
+    end
+
     it 'should be active' do
       expect(create(:sample)).to be_active
     end

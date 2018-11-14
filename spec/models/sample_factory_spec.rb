@@ -3,19 +3,19 @@ require 'rails_helper'
 RSpec.describe SampleFactory, type: :model do
 
   let(:attributes) { [attributes_for(:sample), attributes_for(:sample), attributes_for(:sample)]}
-  # attributes = { name: 'Sample1', name: 'Sample2', name: 'Sample3'}
 
   context '#initialise' do
-      it 'creates an object for each given sample name' do
-        factory = SampleFactory.new(attributes)
-        expect(factory.samples.count).to eq(3)
-      end
+    it 'creates an object for each given sample name' do
+      factory = SampleFactory.new(attributes)
+      expect(factory.samples.count).to eq(3)
+    end
 
-      it 'produces sensible error messages if any of the resources are not valid' do
-        attributes << {}
-        factory = SampleFactory.new(attributes)
-        expect(factory).to_not be_valid
-      end
+    it 'produces error messages if any of the resources are not valid' do
+      attributes << {}
+      factory = SampleFactory.new(attributes)
+      expect(factory).to_not be_valid
+      expect(factory.errors.full_messages.length).to eq(1)
+    end
   end
 
   context '#save' do
