@@ -60,9 +60,19 @@ RSpec.describe 'SamplesController', type: :request do
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data'].length).to eq(2)
         sample = json['data'].first['attributes']
-        puts attributes[0]
         expect(sample['name']).to eq(attributes[0][:name])
       end
+    end
+  end
+
+  context '#get' do
+    let!(:samples) { create_list(:sample, 5)}
+
+    it 'returns a list of samples' do
+      get v1_samples_path, headers: headers
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data'].length).to eq(5)
     end
   end
 end
