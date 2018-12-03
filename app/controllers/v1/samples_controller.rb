@@ -10,8 +10,13 @@ module V1
       end
     end
 
+    # def index
+    #   render json:  JSONAPI::ResourceSerializer.new(SampleResource).serialize_to_hash(Sample.all)
+    # end
+
     def params_names
       params.require(:data).require(:attributes)[:samples].map{|param| param.permit(:name).to_h}
     end
   end
+
 end
