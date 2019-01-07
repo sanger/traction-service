@@ -23,9 +23,10 @@ RSpec.describe Sample, type: :model do
         expect(create(:sample, state: 'started').state).to eq('started')
       end
 
-      it 'is not valid without a state' do
-        expect(build(:sample, state: nil)).not_to be_valid
+      it 'should be set on creation' do
+        expect(create(:sample_with_no_state).state).to eq('started')
       end
+
     end
 
     it 'should be active' do
