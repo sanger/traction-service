@@ -1,24 +1,38 @@
 require 'rails_helper'
 
 RSpec.describe Sample, type: :model do
-  
+
   context 'on creation' do
-    it 'should have a name' do
-      expect(create(:sample, name: 'mysample').name).to eq('mysample')
+    describe 'name' do
+      it 'should have a name' do
+        expect(create(:sample, name: 'mysample').name).to eq('mysample')
+      end
+
+      it 'must have a unique name' do
+        sample = create(:sample)
+        expect(build(:sample, name: sample.name)).not_to be_valid
+      end
+
+      it 'is not valid without a name' do
+        expect(build(:sample, name: nil)).not_to be_valid
+      end
     end
 
-    it 'must have a unique name' do
-      sample = create(:sample)
-      expect(build(:sample, name: sample.name)).not_to be_valid
-    end
+    describe 'state' do
+      it 'should have a state' do
+        expect(create(:sample, state: 'started').state).to eq('started')
+      end
 
-    it 'is not valid without a name' do
-      expect(build(:sample, name: nil)).not_to be_valid
+      it 'is not valid without a state' do
+        expect(build(:sample, state: nil)).not_to be_valid
+      end
     end
 
     it 'should be active' do
       expect(create(:sample)).to be_active
     end
+
+
   end
 
   context 'on update' do

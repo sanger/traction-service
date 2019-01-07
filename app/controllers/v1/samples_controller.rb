@@ -15,7 +15,7 @@ module V1
     # end
 
     def params_names
-      params.require(:data).require(:attributes)[:samples].map{|param| param.permit(:name).to_h}
+      params.require(:data).require(:attributes)[:samples].map{|param| param.permit(:name, :state).to_h}
     end
   end
 

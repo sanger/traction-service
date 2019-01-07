@@ -73,6 +73,8 @@ RSpec.describe 'SamplesController', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'].length).to eq(5)
+      expect(json['data'][0]["attributes"]["name"]).to eq(samples[0].name)
+      expect(json['data'][0]["attributes"]["state"]).to eq(samples[0].state)
     end
   end
 end
