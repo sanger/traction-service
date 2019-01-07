@@ -1,6 +1,6 @@
 class Sample < ApplicationRecord
   attr_readonly :name
-  validates_presence_of :name
+  validates_presence_of :name, :state
   validates_uniqueness_of :name
 
   def active?
