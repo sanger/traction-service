@@ -1,7 +1,7 @@
 class Sample < ApplicationRecord
   attr_readonly :name
   before_create :set_state
-  validates_presence_of :name, :sequencescape_request_id
+  validates_presence_of :name, :sequencescape_request_id, :species
   validates_uniqueness_of :name
 
   def active?

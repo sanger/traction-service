@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_09_132552) do
+ActiveRecord::Schema.define(version: 2019_01_09_165727) do
 
   create_table "samples", force: :cascade do |t|
     t.string "name"
@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(version: 2019_01_09_132552) do
     t.datetime "updated_at", null: false
     t.string "state"
     t.integer "sequencescape_request_id"
+    t.string "species"
   end
 
 end

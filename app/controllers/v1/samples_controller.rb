@@ -15,7 +15,7 @@ module V1
     # end
 
     def params_names
-      params.require(:data).require(:attributes)[:samples].map{|param| param.permit(:sequencescape_request_id, :name, :state).to_h}
+      params.require(:data).require(:attributes)[:samples].map{|param| param.permit(:sequencescape_request_id, :name, :state, :species).to_h}
     end
   end
 
