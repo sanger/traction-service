@@ -26,6 +26,16 @@ RSpec.describe Sample, type: :model do
       it 'should be set on creation' do
         expect(create(:sample_with_no_state).state).to eq('started')
       end
+    end
+
+    describe 'sequencescape_request_id' do
+      it 'should have a sequencescape_request_id' do
+        expect(create(:sample, sequencescape_request_id: 123).sequencescape_request_id).to eq(123)
+      end
+
+      it 'is not valid without a sequencescape_request_id' do
+        expect(build(:sample, sequencescape_request_id: nil)).not_to be_valid
+      end
 
     end
 
