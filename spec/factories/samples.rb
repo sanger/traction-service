@@ -3,7 +3,7 @@ FactoryBot.define do
     sequence(:name) { |n| "Sample#{n}" }
     state { "started" }
     sequence(:sequencescape_request_id) { |n| "#{n}" }
-
+    species { "human" }
     factory :sample_with_no_state do
       state { nil }
     end

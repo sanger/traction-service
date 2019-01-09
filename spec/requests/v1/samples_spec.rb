@@ -63,6 +63,8 @@ RSpec.describe 'SamplesController', type: :request do
         expect(sample['name']).to eq(attributes[0][:name])
         expect(sample['state']).to eq(attributes[0][:state])
         expect(sample['sequencescape-request-id']).to eq(attributes[0][:sequencescape_request_id].to_i)
+        expect(sample['species']).to eq(attributes[0][:species])
+
       end
     end
   end
@@ -78,6 +80,8 @@ RSpec.describe 'SamplesController', type: :request do
       expect(json['data'][0]["attributes"]["name"]).to eq(samples[0].name)
       expect(json['data'][0]["attributes"]["state"]).to eq(samples[0].state)
       expect(json['data'][0]["attributes"]["sequencescape-request-id"]).to eq(samples[0].sequencescape_request_id)
+      expect(json['data'][0]["attributes"]["species"]).to eq(samples[0].species)
+
     end
   end
 end

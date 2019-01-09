@@ -36,7 +36,16 @@ RSpec.describe Sample, type: :model do
       it 'is not valid without a sequencescape_request_id' do
         expect(build(:sample, sequencescape_request_id: nil)).not_to be_valid
       end
+    end
 
+    describe 'species' do
+      it 'should have a species' do
+        expect(create(:sample, species: 'human').species).to eq('human')
+      end
+
+      it 'is not valid without a species' do
+        expect(build(:sample, species: nil)).not_to be_valid
+      end
     end
 
     it 'should be active' do
