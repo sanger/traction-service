@@ -15,7 +15,8 @@ RSpec.describe SampleFactory, type: :model do
       factory = SampleFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages[0]).to eq("Name can\'t be blank")
-      expect(factory.errors.full_messages.length).to eq(1)
+      expect(factory.errors.full_messages[1]).to eq("Sequencescape request can\'t be blank")
+      expect(factory.errors.full_messages.length).to eq(2)
     end
   end
 
