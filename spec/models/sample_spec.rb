@@ -3,6 +3,10 @@ require 'rails_helper'
 RSpec.describe Sample, type: :model do
 
   context 'on creation' do
+    it 'should be active' do
+      expect(create(:sample)).to be_active
+    end
+
     describe 'name' do
       it 'should have a name' do
         expect(create(:sample, name: 'mysample').name).to eq('mysample')
@@ -47,12 +51,6 @@ RSpec.describe Sample, type: :model do
         expect(build(:sample, species: nil)).not_to be_valid
       end
     end
-
-    it 'should be active' do
-      expect(create(:sample)).to be_active
-    end
-
-
   end
 
   context 'on update' do
@@ -61,6 +59,15 @@ RSpec.describe Sample, type: :model do
       name = sample.name
       sample.update_attributes(name: 'sample3')
       expect(sample.reload.name).to eq(name)
+    end
+  end
+
+  context 'libraries' do
+    it 'can have libraries' do
+      sample = create(:sample)
+      lib1 = create(:library, sample: sample)
+      lib2 = create(:library, sample: sample)
+      expect(sample.libraries.length).to eq 2
     end
   end
 

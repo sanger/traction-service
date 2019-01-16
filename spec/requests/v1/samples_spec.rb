@@ -8,6 +8,25 @@ RSpec.describe 'SamplesController', type: :request do
       'Accept' => 'application/vnd.api+json'
     }
   end
+  
+  context '#get' do
+    let!(:samples) { create_list(:sample, 5)}
+    let!(:library1) { create(:library, sample: samples[0])}
+    let!(:library2) { create(:library, sample: samples[0])}
+
+    it 'returns a list of samples' do
+      get v1_samples_path, headers: headers
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data'].length).to eq(5)
+      expect(json['data'][0]["attributes"]["name"]).to eq(samples[0].name)
+      expect(json['data'][0]["attributes"]["state"]).to eq(samples[0].state)
+      expect(json['data'][0]["attributes"]["sequencescape-request-id"]).to eq(samples[0].sequencescape_request_id)
+      expect(json['data'][0]["attributes"]["species"]).to eq(samples[0].species)
+      expect(json['data'][0]['relationships']['libraries']['data'].length).to eq(samples[0].libraries.length)
+
+    end
+  end
 
   context 'when creating a single sample' do
     let(:body) do
@@ -69,19 +88,4 @@ RSpec.describe 'SamplesController', type: :request do
     end
   end
 
-  context '#get' do
-    let!(:samples) { create_list(:sample, 5)}
-
-    it 'returns a list of samples' do
-      get v1_samples_path, headers: headers
-      expect(response).to have_http_status(:success)
-      json = ActiveSupport::JSON.decode(response.body)
-      expect(json['data'].length).to eq(5)
-      expect(json['data'][0]["attributes"]["name"]).to eq(samples[0].name)
-      expect(json['data'][0]["attributes"]["state"]).to eq(samples[0].state)
-      expect(json['data'][0]["attributes"]["sequencescape-request-id"]).to eq(samples[0].sequencescape_request_id)
-      expect(json['data'][0]["attributes"]["species"]).to eq(samples[0].species)
-
-    end
-  end
 end
