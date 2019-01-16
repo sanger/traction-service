@@ -3,5 +3,6 @@ Rails.application.routes.draw do
 
   namespace :v1 do
     jsonapi_resources :samples, only: [:create, :index]
+    jsonapi_resources :libraries, only: [:create, :index]
   end
 end
