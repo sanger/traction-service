@@ -29,3 +29,5 @@
 .DS_Store
 
 config/database.yml
+
+release.tar.gz
