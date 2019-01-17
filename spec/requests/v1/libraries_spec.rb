@@ -26,7 +26,9 @@ RSpec.describe 'LibrariesController', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'][0]['attributes']['state']).to eq('pending')
+      expect(json['data'][0]['relationships']['sample']['data']['type']).to eq("samples")
       expect(json['data'][0]['relationships']['sample']['data']['id']).to eq(libraries[0].sample_id.to_s)
+      expect(json['data'][0]['relationships']['tube']['data']['type']).to eq("tubes")
       expect(json['data'][0]['relationships']['tube']['data']['id']).to eq(libraries[0].tube_id.to_s)
     end
   end

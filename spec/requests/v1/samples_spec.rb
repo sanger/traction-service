@@ -8,7 +8,7 @@ RSpec.describe 'SamplesController', type: :request do
       'Accept' => 'application/vnd.api+json'
     }
   end
-  
+
   context '#get' do
     let!(:samples) { create_list(:sample, 5)}
     let!(:library1) { create(:library, sample: samples[0])}
@@ -23,6 +23,7 @@ RSpec.describe 'SamplesController', type: :request do
       expect(json['data'][0]["attributes"]["state"]).to eq(samples[0].state)
       expect(json['data'][0]["attributes"]["sequencescape-request-id"]).to eq(samples[0].sequencescape_request_id)
       expect(json['data'][0]["attributes"]["species"]).to eq(samples[0].species)
+      expect(json['data'][0]['relationships']['libraries']['data'][0]['type']).to eq("libraries")
       expect(json['data'][0]['relationships']['libraries']['data'].length).to eq(samples[0].libraries.length)
 
     end

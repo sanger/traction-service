@@ -9,7 +9,7 @@ RSpec.describe 'TubesController', type: :request do
   end
 
   context '#get' do
-    let!(:tubes) { create_list(:tube, 5)}
+    let!(:tubes) { create_list(:tube_with_library, 5)}
 
     it 'returns a list of tubes' do
       get v1_tubes_path, headers: headers
@@ -25,6 +25,8 @@ RSpec.describe 'TubesController', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'][0]['attributes']['barcode']).to eq(tubes[0].barcode)
+      expect(json['data'][0]['relationships']['library']['data']['type']).to eq("libraries")
+      expect(json['data'][0]['relationships']['library']['data']['id']).to eq(tubes[0].library.id.to_s)
     end
   end
 
