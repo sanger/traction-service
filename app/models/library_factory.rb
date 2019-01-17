@@ -4,7 +4,7 @@ class LibraryFactory
   validate :check_libraries
 
   def initialize(attributes = [])
-    attributes.each { |library| libraries << Library.new(library) }
+    attributes.each { |library| libraries << Library.new(library.merge!({ tube: Tube.new })) }
   end
 
   def libraries
