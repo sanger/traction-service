@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
+# Sample
 class Sample < ApplicationRecord
   attr_readonly :name
   before_create :set_state
-  validates_presence_of :name, :sequencescape_request_id, :species
-  validates_uniqueness_of :name
+  validates :name, :sequencescape_request_id, :species, presence: true
+  validates :name, uniqueness: true
 
   def active?
     deactivated_at.nil?

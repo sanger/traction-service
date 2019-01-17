@@ -1,0 +1,72 @@
+
+AllCops:
+  TargetRubyVersion: 2.4
+  Exclude:
+    - db/schema.rb
+    - db/seeds.rb
+    - db/migrate/*
+    # Travis installs gems in the vendor directory, which causes rubocop to try
+    # and cop our gems. We don't want it to.
+    - vendor/**/*
+    - 'test/**/*'
+    - 'spec/**/*'
+    - 'config/routes.rb'
+    - 'config/initializers/secret_token.rb'
+    - 'config/initializers/backtrace_silencers.rb'
+    - 'config/environments/*'
+    - 'bin/*'
+    - 'config/application.rb'
+    - 'config/initializers/content_security_policy.rb'
+
+# The cop is meant to enforce conventions regarding variables containing numbers
+# However in 0.43.0 it is bugged. Both changed on master and disabled by default
+# The exclusions don't even get added to the rubocop_todo properly!
+Naming/VariableNumber:
+  Enabled: false
+Rails:
+  Enabled: true
+
+# Enforces 1234565789 as 123_456_789: While nice when dealing with actual big
+# numbers, we're more likely to see it shout at us about barcodes.
+Style/NumericLiterals:
+  Enabled: false
+
+Style/AsciiComments:
+  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - 'config/routes.rb'
+    - 'lib/tasks/*'
+
+Metrics/LineLength:
+  Max: 100
+  Exclude:
+    - 'lib/tasks/*'
+
+Metrics/MethodLength:
+  Max: 12
+  Exclude:
+    - 'db/migrate/*'
+
+Layout/IndentArray:
+  EnforcedStyle: consistent
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+# Rubocop has a few issues with this when generating the ignore files.
+# Also, I'm far from convinced that its correct. It argues in favour of
+# +'' over Sting.new when creating a mutable string due to marginal
+# performance improvements.
+# See: http://www.rubydoc.info/gems/rubocop/RuboCop/Cop/Performance/UnfreezeString
+# That said, I can see potential advantages wrt. encoding
+# Anyway, leaving this off for now.
+Performance/UnfreezeString:
+  Enabled: false
+# This should be the rubocop defaults, not sure why its kicking up a fuss.
+Layout/SpaceBeforeBlockBraces:
+  EnforcedStyle: space
+
+Naming/FileName:
+  Enabled: false
