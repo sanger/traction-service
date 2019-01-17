@@ -1,4 +1,6 @@
 language: ruby
+dist: xenial
+sudo: required
 before_script:
 - cp config/database.yml.example config/database.yml
 - bundle exec rake db:reset
