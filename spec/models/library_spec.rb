@@ -2,8 +2,8 @@ require "rails_helper"
 
 RSpec.describe Library, type: :model do
   context 'on creation' do
-    it 'should have a state' do
-      expect(create(:library, state: 'pending').state).to eq('pending')
+    it 'should set state to pending' do
+      expect(create(:library_no_state).state).to eq('pending')
     end
 
     it 'should have a sample' do
@@ -11,11 +11,16 @@ RSpec.describe Library, type: :model do
       expect(create(:library, sample: sample).sample).to eq(sample)
       expect(create(:library, sample: sample).sample_id).to eq(sample.id)
     end
-  end
 
-  context 'state' do
-    it 'should be set to pending on creation' do
-      expect(create(:library_no_state).state).to eq('pending')
+    context 'tube' do
+      it 'can be initialised without a tube' do
+        expect(create(:library)).to be_valid
+      end
+
+      it 'can be initialised with a tube' do
+        expect(create(:library_with_tube).tube).to be_valid
+        expect(create(:library_with_tube).tube).to be_present
+      end
     end
   end
 

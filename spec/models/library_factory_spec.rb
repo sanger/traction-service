@@ -8,6 +8,7 @@ RSpec.describe LibraryFactory, type: :model do
     it 'creates an object for each given library' do
       factory = LibraryFactory.new(attributes)
       expect(factory.libraries.count).to eq(1)
+      expect(factory.libraries[0].tube).to be_present
     end
 
     it 'produces error messages if any of the libraries are not valid' do
@@ -25,6 +26,15 @@ RSpec.describe LibraryFactory, type: :model do
       expect(factory).to be_valid
       expect(factory.save).to be_truthy
       expect(Library.all.count).to eq(attributes.length)
+      expect(Library.first.tube).to eq(attributes.first[:tube])
+    end
+
+    it 'does not create any libraries if attributes are not valid' do
+      attributes << {}
+      factory = LibraryFactory.new(attributes)
+      expect(factory).not_to be_valid
+      expect(factory.save).to be_falsey
+      expect(Library.all.count).to eq(0)
     end
   end
 

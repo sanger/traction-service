@@ -10,14 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_15_144439) do
+ActiveRecord::Schema.define(version: 2019_01_16_160512) do
 
   create_table "libraries", force: :cascade do |t|
     t.string "state"
-    t.integer "sample_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "sample_id"
+    t.integer "tube_id"
     t.index ["sample_id"], name: "index_libraries_on_sample_id"
+    t.index ["tube_id"], name: "index_libraries_on_tube_id"
   end
 
   create_table "samples", force: :cascade do |t|
@@ -28,6 +30,10 @@ ActiveRecord::Schema.define(version: 2019_01_15_144439) do
     t.string "state"
     t.integer "sequencescape_request_id"
     t.string "species"
+  end
+
+  create_table "tubes", force: :cascade do |t|
+    t.string "barcode"
   end
 
 end

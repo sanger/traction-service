@@ -10,7 +10,7 @@ RSpec.describe 'LibrariesController', type: :request do
   end
 
   context '#get' do
-    let!(:libraries) { create_list(:library, 5)}
+    let!(:libraries) { create_list(:library_with_tube, 5)}
 
     it 'returns a list of libraries' do
       get v1_libraries_path, headers: headers
@@ -27,6 +27,7 @@ RSpec.describe 'LibrariesController', type: :request do
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'][0]['attributes']['state']).to eq('pending')
       expect(json['data'][0]['relationships']['sample']['data']['id']).to eq(libraries[0].sample_id.to_s)
+      expect(json['data'][0]['relationships']['tube']['data']['id']).to eq(libraries[0].tube_id.to_s)
     end
   end
 
@@ -45,9 +46,13 @@ RSpec.describe 'LibrariesController', type: :request do
         }.to_json
       end
 
-      it 'can create a library' do
+      it 'can returns created status' do
         post v1_libraries_path, params: body, headers: headers
         expect(response).to have_http_status(:created)
+      end
+
+      it 'can creates a library' do
+        expect { post v1_libraries_path, params: body, headers: headers }.to change { Library.count }.by(1)
       end
     end
 
@@ -64,9 +69,13 @@ RSpec.describe 'LibrariesController', type: :request do
         }.to_json
       end
 
-      it 'cannot create a library' do
+      it 'can returns unprocessable entity status' do
         post v1_libraries_path, params: body, headers: headers
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'cannot create a library' do
+        expect { post v1_libraries_path, params: body, headers: headers }.to change { Library.count }.by(0)
       end
     end
 
