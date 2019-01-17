@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe SampleFactory, type: :model do
-
-  let(:attributes) { [attributes_for(:sample), attributes_for(:sample), attributes_for(:sample)]}
+  let(:attributes) { [attributes_for(:sample), attributes_for(:sample), attributes_for(:sample)] }
 
   context '#initialise' do
     it 'creates an object for each given sample name' do
@@ -29,5 +30,4 @@ RSpec.describe SampleFactory, type: :model do
       expect(Sample.all.count).to eq(attributes.length)
     end
   end
-
 end

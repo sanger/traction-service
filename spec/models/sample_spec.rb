@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Sample, type: :model do
-
   context 'on creation' do
     describe 'name' do
       it 'should have a name' do
@@ -51,8 +52,6 @@ RSpec.describe Sample, type: :model do
     it 'should be active' do
       expect(create(:sample)).to be_active
     end
-
-
   end
 
   context 'on update' do
@@ -63,5 +62,4 @@ RSpec.describe Sample, type: :model do
       expect(sample.reload.name).to eq(name)
     end
   end
-
 end
