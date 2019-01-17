@@ -1,6 +1,12 @@
 require "rails_helper"
+require 'models/concerns/material_spec'
 
 RSpec.describe Library, type: :model do
+
+  context 'polymorphic behavior' do
+    it_behaves_like "material"
+  end
+
   context 'on creation' do
     it 'should set state to pending' do
       expect(create(:library_no_state).state).to eq('pending')

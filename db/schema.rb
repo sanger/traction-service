@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_16_160512) do
+ActiveRecord::Schema.define(version: 2019_01_17_160814) do
 
   create_table "libraries", force: :cascade do |t|
     t.string "state"
@@ -34,6 +34,9 @@ ActiveRecord::Schema.define(version: 2019_01_16_160512) do
 
   create_table "tubes", force: :cascade do |t|
     t.string "barcode"
+    t.string "material_type"
+    t.integer "material_id"
+    t.index ["material_type", "material_id"], name: "index_tubes_on_material_type_and_material_id"
   end
 
 end

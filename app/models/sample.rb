@@ -1,4 +1,6 @@
 class Sample < ApplicationRecord
+  include Material
+
   attr_readonly :name
   before_create :set_state
   validates_presence_of :name, :sequencescape_request_id, :species
