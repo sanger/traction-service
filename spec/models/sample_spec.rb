@@ -1,6 +1,11 @@
 require 'rails_helper'
+require 'models/concerns/material_spec'
 
 RSpec.describe Sample, type: :model do
+
+  context 'polymorphic behavior' do
+    it_behaves_like "material"
+  end
 
   context 'on creation' do
     it 'should be active' do
