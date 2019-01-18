@@ -70,3 +70,8 @@ Layout/SpaceBeforeBlockBraces:
 
 Naming/FileName:
   Enabled: false
+
+Style/NumericPredicate:
+  AutoCorrect: false
+  Enabled: true
+  EnforcedStyle: comparison
