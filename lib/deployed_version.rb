@@ -45,7 +45,7 @@ module Deployed
     end
 
     def version_label
-      if major.zero? && minor.zero? && extra.zero?
+      if major == 0 && minor == 0 && extra == 0
         'WIP'
       else
         "#{major}.#{minor}.#{extra}"
