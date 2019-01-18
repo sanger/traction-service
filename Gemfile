@@ -32,6 +32,8 @@ gem 'rack-cors'
 
 gem 'jsonapi-resources'
 
+gem 'exception_notification'
+
 group :test do
   gem 'factory_bot_rails'
 end
