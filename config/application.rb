@@ -41,5 +41,7 @@ module TractionService
                        request_specs: true
       g.fixture_replacement :factory_bot, dir: 'spec/factories'
     end
+
+    config.mailer = config_for(:mailer)
   end
 end
