@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Library
 class Library < ApplicationRecord
   include Material
 
