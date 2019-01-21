@@ -3,6 +3,7 @@ dist: xenial
 sudo: required
 before_script:
 - cp config/database.yml.example config/database.yml
+- cp config/mailer.yml.example config/mailer.yml
 - bundle exec rake db:reset
 - bundle exec rake db:setup
 script:
