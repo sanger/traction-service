@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe SampleFactory, type: :model do
-
-  let(:attributes) { [attributes_for(:sample), attributes_for(:sample), attributes_for(:sample)]}
+  let(:attributes) { [attributes_for(:sample), attributes_for(:sample), attributes_for(:sample)] }
 
   context '#initialise' do
     it 'creates an object for each given sample' do
@@ -39,5 +40,4 @@ RSpec.describe SampleFactory, type: :model do
       expect(Tube.all.count).to eq(0)
     end
   end
-
 end

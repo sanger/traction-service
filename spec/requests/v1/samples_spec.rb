@@ -1,7 +1,8 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 RSpec.describe 'SamplesController', type: :request do
-
   let(:headers) do
     {
       'Content-Type' => 'application/vnd.api+json',
@@ -77,8 +78,7 @@ RSpec.describe 'SamplesController', type: :request do
   end
 
   context 'when creating multiple samples' do
-
-    let(:attributes) { [attributes_for(:sample), attributes_for(:sample)]}
+    let(:attributes) { [attributes_for(:sample), attributes_for(:sample)] }
     let(:body) do
       {
         data: {

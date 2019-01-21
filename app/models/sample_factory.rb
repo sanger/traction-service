@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# SampleFactory
 class SampleFactory
   include ActiveModel::Model
 
@@ -13,6 +16,7 @@ class SampleFactory
 
   def save
     return false unless valid?
+
     samples.collect(&:save)
     true
   end
@@ -22,10 +26,10 @@ class SampleFactory
   def check_samples
     samples.each do |sample|
       next if sample.valid?
+
       sample.errors.each do |k, v|
         errors.add(k, v)
       end
     end
   end
-
 end
