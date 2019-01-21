@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 require 'models/concerns/material_spec'
 
@@ -55,6 +57,10 @@ RSpec.describe Sample, type: :model do
       it 'is not valid without a species' do
         expect(build(:sample, species: nil)).not_to be_valid
       end
+    end
+
+    it 'should be active' do
+      expect(create(:sample)).to be_active
     end
   end
 
