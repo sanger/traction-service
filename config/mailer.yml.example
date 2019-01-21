@@ -1,0 +1,13 @@
+default: &default
+  smtp:
+    address: smtp.tools.example.com
+    port: 587
+    domain: traction
+    sender: notifier@example.com
+    recipient: exceptions@example.com
+
+development:
+  <<: *default
+
+test:
+  <<: *default
