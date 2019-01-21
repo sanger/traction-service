@@ -29,5 +29,6 @@
 .DS_Store
 
 config/database.yml
+config/mailer.yml
 
 release.tar.gz
