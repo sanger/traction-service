@@ -17,9 +17,7 @@ ActiveRecord::Schema.define(version: 2019_01_17_160814) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "sample_id"
-    t.integer "tube_id"
     t.index ["sample_id"], name: "index_libraries_on_sample_id"
-    t.index ["tube_id"], name: "index_libraries_on_tube_id"
   end
 
   create_table "samples", force: :cascade do |t|

@@ -21,7 +21,7 @@ RSpec.describe LibraryFactory, type: :model do
   end
 
   context '#save' do
-    it 'creates a library for each set of attributes if they are valid' do
+    it 'creates a library in a tube for each set of attributes if they are valid' do
       factory = LibraryFactory.new(attributes)
       expect(factory).to be_valid
       expect(factory.save).to be_truthy
@@ -35,6 +35,7 @@ RSpec.describe LibraryFactory, type: :model do
       expect(factory).not_to be_valid
       expect(factory.save).to be_falsey
       expect(Library.all.count).to eq(0)
+      expect(Tube.all.count).to eq(0)
     end
   end
 
