@@ -7,7 +7,7 @@ class SampleFactory
   validate :check_samples
 
   def initialize(attributes = [])
-    attributes.each { |sample| samples << Sample.new(sample.merge!({ tube: Tube.new })) }
+    attributes.each { |sample| samples << Sample.new(sample.merge!(tube: Tube.new)) }
   end
 
   def samples

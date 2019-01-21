@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Material
 module Material
   extend ActiveSupport::Concern
 

@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Tube
 class Tube < ApplicationRecord
   belongs_to :material, polymorphic: true
 
