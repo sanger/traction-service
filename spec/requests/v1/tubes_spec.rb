@@ -9,24 +9,42 @@ RSpec.describe 'TubesController', type: :request do
   end
 
   context '#get' do
-    let!(:tubes) { create_list(:tube_with_library, 5)}
 
     it 'returns a list of tubes' do
+      sample = create(:sample)
+      create(:tube, material: sample)
       get v1_tubes_path, headers: headers
-
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
-      expect(json['data'].length).to eq(5)
+      expect(json['data'].length).to eq(1)
     end
 
-    it 'returns the correct attributes' do
-      get v1_tubes_path, headers: headers
+    context 'when material is a sample' do
+      let!(:tubes) { create_list(:tube, 5, :with_sample_material)}
 
-      expect(response).to have_http_status(:success)
-      json = ActiveSupport::JSON.decode(response.body)
-      expect(json['data'][0]['attributes']['barcode']).to eq(tubes[0].barcode)
-      expect(json['data'][0]['relationships']['library']['data']['type']).to eq("libraries")
-      expect(json['data'][0]['relationships']['library']['data']['id']).to eq(tubes[0].library.id.to_s)
+      it 'returns the correct attributes' do
+        get v1_tubes_path, headers: headers
+        expect(response).to have_http_status(:success)
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data'][0]['attributes']['barcode']).to eq(tubes[0].barcode)
+        expect(json['data'][0]['relationships']['material']).to be_present
+        expect(json['data'][0]['relationships']['material']['data']['type']).to eq("samples")
+        expect(json['data'][0]['relationships']['material']['data']['id']).to eq(tubes[0].material.id.to_s)
+      end
+    end
+
+    context 'when material is a library' do
+      let!(:tubes) { create_list(:tube, 5, :with_library_material)}
+
+      it 'returns the correct attributes' do
+        get v1_tubes_path, headers: headers
+        expect(response).to have_http_status(:success)
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data'][0]['attributes']['barcode']).to eq(tubes[0].barcode)
+        expect(json['data'][0]['relationships']['material']).to be_present
+        expect(json['data'][0]['relationships']['material']['data']['type']).to eq("libraries")
+        expect(json['data'][0]['relationships']['material']['data']['id']).to eq(tubes[0].material.id.to_s)
+      end
     end
   end
 

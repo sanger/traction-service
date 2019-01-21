@@ -8,7 +8,7 @@ FactoryBot.define do
     end
 
     factory :library_with_tube do
-      tube
+      association :tube, :with_library_material
     end
   end
 end

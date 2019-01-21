@@ -3,19 +3,37 @@ require "rails_helper"
 RSpec.describe Tube, type: :model do
   context 'on creation' do
     it 'should have a barcode' do
-      tube = create(:tube)
+      tube = create(:tube, :with_sample_material)
       expect(tube.barcode).to eq "TRAC-#{tube.id}"
-    end
-
-    it 'can have a library' do
-      library = create(:library)
-      expect(create(:tube, library: library).library).to be_present
     end
   end
 
   context 'polymorphic behavior' do
-    it { is_expected.to have_db_column(:material_id).of_type(:integer) }
-    it { is_expected.to have_db_column(:material_type).of_type(:string) }
-    it { is_expected.to belong_to(:material) }
+    context 'schema' do
+      it { is_expected.to have_db_column(:material_id).of_type(:integer) }
+      it { is_expected.to have_db_column(:material_type).of_type(:string) }
+    end
+
+    context 'material' do
+      it { is_expected.to belong_to(:material) }
+
+      it 'must have material of either type sample or library' do
+        expect(build(:tube)).not_to be_valid
+        expect(create(:tube, :with_sample_material)).to be_valid
+        expect(create(:tube, :with_library_material)).to be_valid
+      end
+
+      it 'can have a sample as its material' do
+        sample = create(:sample)
+        tube_with_sample = create(:tube, material: sample)
+        expect(tube_with_sample.material).to eq sample
+      end
+
+      it 'can have a library as its material' do
+        library = create(:library)
+        tube_with_library = create(:tube, material: library)
+        expect(tube_with_library.material).to eq library
+      end
+    end
   end
 end

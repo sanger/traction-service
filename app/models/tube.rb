@@ -1,6 +1,5 @@
 class Tube < ApplicationRecord
-  has_one :library
-  belongs_to :material, :polymorphic => true
+  belongs_to :material, polymorphic: true
 
   after_create :generate_barcode
 
