@@ -24,8 +24,9 @@ RSpec.describe Library, type: :model do
       end
 
       it 'can be initialised with a tube' do
-        expect(create(:library_with_tube).tube).to be_valid
-        expect(create(:library_with_tube).tube).to be_present
+        library = create(:library)
+        tube = create(:tube, material: library)
+        expect(library.tube).to eq tube
       end
     end
   end
