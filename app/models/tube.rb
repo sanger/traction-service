@@ -9,6 +9,6 @@ class Tube < ApplicationRecord
   private
 
   def generate_barcode
-    update_column(:barcode, "TRAC-#{id}")
+    update(barcode: "TRAC-#{id}")
   end
 end

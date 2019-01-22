@@ -5,6 +5,6 @@ module Material
   extend ActiveSupport::Concern
 
   included do
-    has_one :tube, as: :material
+    has_one :tube, as: :material, dependent: :nullify
   end
 end
