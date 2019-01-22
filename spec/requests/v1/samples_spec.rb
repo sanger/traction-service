@@ -11,26 +11,27 @@ RSpec.describe 'SamplesController', type: :request do
   end
 
   context '#get' do
-    let!(:samples) { create_list(:sample, 5)}
-    let!(:library1) { create(:library, sample: samples[0])}
-    let!(:library2) { create(:library, sample: samples[0])}
+    let!(:sample1) { create(:sample)}
+    let!(:sample2) { create(:sample)}
+    let!(:library1) { create(:library, sample: sample1)}
+    let!(:library2) { create(:library, sample: sample2)}
+    let!(:tube1) { create(:tube, material: sample1)}
+    let!(:tube2) { create(:tube, material: sample2)}
 
     it 'returns a list of samples' do
       get v1_samples_path, headers: headers
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
-      expect(json['data'].length).to eq(5)
-      expect(json['data'][0]["attributes"]["name"]).to eq(samples[0].name)
-      expect(json['data'][0]["attributes"]["state"]).to eq(samples[0].state)
-      expect(json['data'][0]["attributes"]["sequencescape-request-id"]).to eq(samples[0].sequencescape_request_id)
-      expect(json['data'][0]["attributes"]["species"]).to eq(samples[0].species)
+      expect(json['data'].length).to eq(2)
+      expect(json['data'][0]["attributes"]["name"]).to eq(sample1.name)
+      expect(json['data'][0]["attributes"]["state"]).to eq(sample1.state)
+      expect(json['data'][0]["attributes"]["sequencescape-request-id"]).to eq(sample1.sequencescape_request_id)
+      expect(json['data'][0]["attributes"]["species"]).to eq(sample1.species)
 
-      expect(json['data'][0]['relationships']['libraries']['data'][0]['type']).to eq("libraries")
-      expect(json['data'][0]['relationships']['libraries']['data'].length).to eq(samples[0].libraries.length)
-
-      expect(json['data'][0]['relationships']['tube']).to be_present
-      # expect(json['data'][0]['relationships']['tube']['data']['type']).to eq("tubes")
-      # expect(json['data'][0]['relationships']['tube']['data']['id']).to eq(libraries[0].tube_id.to_s)
+      expect(json['data'][1]["attributes"]["name"]).to eq(sample2.name)
+      expect(json['data'][1]["attributes"]["state"]).to eq(sample2.state)
+      expect(json['data'][1]["attributes"]["sequencescape-request-id"]).to eq(sample2.sequencescape_request_id)
+      expect(json['data'][1]["attributes"]["species"]).to eq(sample2.species)
     end
   end
 
