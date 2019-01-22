@@ -14,6 +14,5 @@ module V1
     def sample_name
       @model.sample&.name
     end
-
   end
 end
