@@ -70,7 +70,7 @@ module Deployed
 
   VERSION_ID = REPO_DATA.version_label
 
-  APP_NAME = 'Limber'
+  APP_NAME = 'Traction Service'
   RELEASE_NAME = REPO_DATA.release.presence || 'unknown_release'
 
   MAJOR = REPO_DATA.major
