@@ -13,6 +13,6 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
 
     resource '*',
              headers: :any,
-             methods: %i[get post put patch options]
+             methods: %i[get post put patch options delete]
   end
 end
