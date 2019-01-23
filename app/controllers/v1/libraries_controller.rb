@@ -3,6 +3,15 @@
 module V1
   # LibrariesController
   class LibrariesController < ApplicationController
+    before_action :current_library, only: [:destroy]
+
+    def index
+      @libraries = Library.active
+      @resources = @libraries.map { |library| LibraryResource.new(library, nil) }
+      body = JSONAPI::ResourceSerializer.new(LibraryResource).serialize_to_hash(@resources)
+      render json: body
+    end
+
     def create
       @library_factory = LibraryFactory.new(params_names)
       if @library_factory.save
@@ -12,6 +21,20 @@ module V1
       else
         render json: { errors: @library_factory.errors.messages }, status: :unprocessable_entity
       end
+    end
+
+    def destroy
+      if @library.deactivate
+        head :no_content
+      else
+        render json: { errors: @library.errors.messages }, status: :unprocessable_entity
+      end
+    end
+
+    private
+
+    def current_library
+      @library = (params[:id] && Library.find_by(id: params[:id]))
     end
 
     def params_names
