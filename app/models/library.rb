@@ -7,7 +7,19 @@ class Library < ApplicationRecord
   before_create :set_state
   belongs_to :sample
 
+  scope :active, -> { where(deactivated_at: nil) }
+
+  def active?
+    deactivated_at.nil?
+  end
+
   def set_state
     self.state = 'pending'
+  end
+
+  def deactivate
+    return true unless active?
+
+    update(deactivated_at: DateTime.current)
   end
 end

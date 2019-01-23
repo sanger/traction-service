@@ -8,6 +8,11 @@ RSpec.describe Library, type: :model do
   end
 
   context 'on creation' do
+    it 'should be active' do
+      sample = create(:sample)
+      expect(create(:library, sample: sample)).to be_active
+    end
+
     it 'should set state to pending' do
       expect(create(:library_no_state).state).to eq('pending')
     end
@@ -31,4 +36,33 @@ RSpec.describe Library, type: :model do
     end
   end
 
+  context 'deactivate' do
+    it 'can be deactivated' do
+      sample = create(:sample)
+      library = create(:library, sample: sample)
+      library.deactivate
+      expect(library.deactivated_at).to be_present
+      expect(library).not_to be_active
+    end
+
+    it 'returns true if already deactivated' do
+      sample = create(:sample)
+      library = create(:library, sample: sample)
+      library.deactivate
+      expect(library.deactivate).to eq true
+    end
+
+  end
+
+  context 'scope' do
+    context 'active' do
+      it 'should return only active libraries' do
+        library = create(:library)
+        library = create(:library)
+        library = create(:library, deactivated_at: DateTime.now)
+        expect(Library.active.length).to eq 2
+      end
+    end
+
+  end
 end

@@ -36,87 +36,33 @@ RSpec.describe 'LibrariesController', type: :request do
       expect(json['data'][1]['attributes']['barcode']).to eq(library2.tube.barcode)
       expect(json['data'][1]['attributes']['sample-name']).to eq(library2.sample.name)
     end
-  end
 
-  context 'when creating a single library' do
+    context 'when some libraries are deactivated' do
+      let!(:library3) { create(:library) }
+      let!(:library4) { create(:library, deactivated_at: DateTime.now) }
+      let!(:tube3) { create(:tube, material: library3)}
+      let!(:tube4) { create(:tube, material: library4)}
 
-    context 'on success' do
-      let(:sample) { create(:sample) }
-      let(:body) do
-        {
-          data: {
-            attributes: {
-              libraries: [
-                { state: 'pending', sample_id: sample.id}
-              ]
-            }
-          }
-        }.to_json
-      end
+      it 'only returns active libraries' do
+        get v1_libraries_path, headers: headers
 
-      it 'has a created status' do
-        post v1_libraries_path, params: body, headers: headers
-        expect(response).to have_http_status(:created)
-      end
-
-      it 'creates a library' do
-        expect { post v1_libraries_path, params: body, headers: headers }.to change { Library.count }.by(1)
-      end
-
-      it 'creates a library with a tube' do
-        post v1_libraries_path, params: body, headers: headers
-        expect(Library.last.tube).to be_present
-        tube_id = Library.last.tube.id
-        expect(Tube.find(tube_id).material).to eq Library.last
-      end
-
-      it 'creates a library with a sample' do
-        post v1_libraries_path, params: body, headers: headers
-        expect(Library.last.sample).to be_present
-        sample_id = Library.last.sample.id
-        expect(sample_id).to eq sample.id
+        expect(response).to have_http_status(:success)
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data'].length).to eq(3)
       end
     end
-
-    context 'on failure' do
-      context 'when the sample does not exist' do
-        let(:body) do
-          {
-            data: {
-              attributes: {
-                libraries: [
-                  { state: 'pending', sample_id: 1}
-                ]
-              }
-            }
-          }.to_json
-        end
-
-        it 'can returns unprocessable entity status' do
-          post v1_libraries_path, params: body, headers: headers
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
-
-        it 'cannot create a library' do
-          expect { post v1_libraries_path, params: body, headers: headers }.to change { Library.count }.by(0)
-        end
-      end
-    end
-
-
   end
 
-  context 'when creating multiple libraries' do
-    context 'on success' do
-      context 'when the sample does exist' do
+  context '#create' do
+    context 'when creating a single library' do
+
+      context 'on success' do
         let(:sample) { create(:sample) }
         let(:body) do
           {
             data: {
               attributes: {
                 libraries: [
-                  { state: 'pending', sample_id: sample.id},
-                  { state: 'pending', sample_id: sample.id},
                   { state: 'pending', sample_id: sample.id}
                 ]
               }
@@ -124,35 +70,119 @@ RSpec.describe 'LibrariesController', type: :request do
           }.to_json
         end
 
-        it 'can create libraries' do
+        it 'has a created status' do
           post v1_libraries_path, params: body, headers: headers
           expect(response).to have_http_status(:created)
         end
-      end
-    end
 
-    context 'on failure' do
-      context 'when the sample does not exist' do
-        let(:body) do
-          {
-            data: {
-              attributes: {
-                libraries: [
-                  { state: 'pending', sample_id: 1},
-                  { state: 'pending', sample_id: 1}
-                ]
-              }
-            }
-          }.to_json
+        it 'creates a library' do
+          expect { post v1_libraries_path, params: body, headers: headers }.to change { Library.count }.by(1)
         end
 
-        it 'cannot create libraries' do
+        it 'creates a library with a tube' do
           post v1_libraries_path, params: body, headers: headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(Library.last.tube).to be_present
+          tube_id = Library.last.tube.id
+          expect(Tube.find(tube_id).material).to eq Library.last
+        end
+
+        it 'creates a library with a sample' do
+          post v1_libraries_path, params: body, headers: headers
+          expect(Library.last.sample).to be_present
+          sample_id = Library.last.sample.id
+          expect(sample_id).to eq sample.id
         end
       end
+
+      context 'on failure' do
+        context 'when the sample does not exist' do
+          let(:body) do
+            {
+              data: {
+                attributes: {
+                  libraries: [
+                    { state: 'pending', sample_id: 1}
+                  ]
+                }
+              }
+            }.to_json
+          end
+
+          it 'can returns unprocessable entity status' do
+            post v1_libraries_path, params: body, headers: headers
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it 'cannot create a library' do
+            expect { post v1_libraries_path, params: body, headers: headers }.to change { Library.count }.by(0)
+          end
+        end
+      end
+
+
     end
 
+    context 'when creating multiple libraries' do
+      context 'on success' do
+        context 'when the sample does exist' do
+          let(:sample) { create(:sample) }
+          let(:body) do
+            {
+              data: {
+                attributes: {
+                  libraries: [
+                    { state: 'pending', sample_id: sample.id},
+                    { state: 'pending', sample_id: sample.id},
+                    { state: 'pending', sample_id: sample.id}
+                  ]
+                }
+              }
+            }.to_json
+          end
+
+          it 'can create libraries' do
+            post v1_libraries_path, params: body, headers: headers
+            expect(response).to have_http_status(:created)
+          end
+        end
+      end
+
+      context 'on failure' do
+        context 'when the sample does not exist' do
+          let(:body) do
+            {
+              data: {
+                attributes: {
+                  libraries: [
+                    { state: 'pending', sample_id: 1},
+                    { state: 'pending', sample_id: 1}
+                  ]
+                }
+              }
+            }.to_json
+          end
+
+          it 'cannot create libraries' do
+            post v1_libraries_path, params: body, headers: headers
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+        end
+      end
+
+    end
+  end
+
+  context '#destroy' do
+    let!(:library) { create(:library) }
+    let!(:tube) { create(:tube, material: library)}
+
+    it 'deactivates the library' do
+      delete "/v1/libraries/#{library.id}", headers: headers
+
+      expect(response).to have_http_status(:no_content)
+      library.reload
+      expect(library.deactivated_at).to be_present
+    end
   end
 
 end
