@@ -29,16 +29,6 @@ RSpec.describe Sample, type: :model do
       end
     end
 
-    describe 'state' do
-      it 'should have a state' do
-        expect(create(:sample, state: 'started').state).to eq('started')
-      end
-
-      it 'should be set on creation' do
-        expect(create(:sample_with_no_state).state).to eq('started')
-      end
-    end
-
     describe 'sequencescape_request_id' do
       it 'should have a sequencescape_request_id' do
         expect(create(:sample, sequencescape_request_id: 123).sequencescape_request_id).to eq(123)
