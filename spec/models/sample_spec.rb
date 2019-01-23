@@ -1,9 +1,19 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'models/concerns/material_spec'
 
 RSpec.describe Sample, type: :model do
+
+  context 'polymorphic behavior' do
+    it_behaves_like "material"
+  end
+
   context 'on creation' do
+    it 'should be active' do
+      expect(create(:sample)).to be_active
+    end
+
     describe 'name' do
       it 'should have a name' do
         expect(create(:sample, name: 'mysample').name).to eq('mysample')
@@ -16,16 +26,6 @@ RSpec.describe Sample, type: :model do
 
       it 'is not valid without a name' do
         expect(build(:sample, name: nil)).not_to be_valid
-      end
-    end
-
-    describe 'state' do
-      it 'should have a state' do
-        expect(create(:sample, state: 'started').state).to eq('started')
-      end
-
-      it 'should be set on creation' do
-        expect(create(:sample_with_no_state).state).to eq('started')
       end
     end
 
@@ -62,4 +62,14 @@ RSpec.describe Sample, type: :model do
       expect(sample.reload.name).to eq(name)
     end
   end
+
+  context 'libraries' do
+    it 'can have libraries' do
+      sample = create(:sample)
+      lib1 = create(:library, sample: sample)
+      lib2 = create(:library, sample: sample)
+      expect(sample.libraries.length).to eq 2
+    end
+  end
+
 end
