@@ -3,13 +3,13 @@ require "rails_helper"
 RSpec.describe Enzyme, type: :model do
   context 'on creation' do
     it 'should have a name' do
-      expect(create(:enzyme, name: 'Nb.BbvCI').name).to eq('Nb.BbvCI')
+      expect(create(:enzyme).name).to be_present
     end
   end
 
   describe 'name' do
     it 'must have a unique name' do
-      enzyme = create(:enzyme, name: 'Nb.BbvCI')
+      enzyme = create(:enzyme)
       expect(build(:enzyme, name: enzyme.name)).not_to be_valid
     end
 
