@@ -7,5 +7,6 @@ Rails.application.routes.draw do
     jsonapi_resources :samples, only: %i[create index]
     jsonapi_resources :libraries, only: %i[create index destroy]
     jsonapi_resources :tubes, only: %i[index]
+    jsonapi_resources :enzymes, only: %i[index]
   end
 end
