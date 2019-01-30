@@ -23,6 +23,12 @@ RSpec.describe Library, type: :model do
       expect(create(:library, sample: sample).sample_id).to eq(sample.id)
     end
 
+    it 'should have a enzyme' do
+      enzyme = create(:enzyme)
+      expect(create(:library, enzyme: enzyme).enzyme).to eq(enzyme)
+      expect(create(:library, enzyme: enzyme).enzyme_id).to eq(enzyme.id)
+    end
+
     context 'tube' do
       it 'can be initialised without a tube' do
         expect(create(:library)).to be_valid
@@ -33,6 +39,16 @@ RSpec.describe Library, type: :model do
         tube = create(:tube, material: library)
         expect(library.tube).to eq tube
       end
+    end
+  end
+
+  context 'validation' do
+    it 'is not valid withoutan sample' do
+      expect(build(:library, sample: nil)).not_to be_valid
+    end
+
+    it 'is not valid withoutan enzyme' do
+      expect(build(:library, enzyme: nil)).not_to be_valid
     end
   end
 
