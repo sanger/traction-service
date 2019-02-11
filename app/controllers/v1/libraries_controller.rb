@@ -39,7 +39,7 @@ module V1
 
     def params_names
       params.require(:data).require(:attributes)[:libraries].map do |param|
-        param.permit(:state, :sample_id).to_h
+        param.permit(:state, :sample_id, :enzyme_id).to_h
       end
     end
   end
