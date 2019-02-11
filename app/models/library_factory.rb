@@ -24,6 +24,12 @@ class LibraryFactory
   private
 
   def check_libraries
+
+    if libraries.empty?
+      errors.add('libraries', 'the were no libraries')
+      return
+    end
+
     libraries.each do |library|
       next if library.valid?
 
