@@ -32,8 +32,7 @@ RSpec.describe LibraryFactory, type: :model do
     end
 
     it 'does not create any libraries if attributes are not valid' do
-      attributes << {}
-      factory = LibraryFactory.new(attributes)
+      factory = LibraryFactory.new({})
       expect(factory).not_to be_valid
       expect(factory.save).to be_falsey
       expect(Library.all.count).to eq(0)
