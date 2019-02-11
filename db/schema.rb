@@ -10,7 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_23_101528) do
+ActiveRecord::Schema.define(version: 2019_01_30_113208) do
+
+  create_table "enzymes", force: :cascade do |t|
+    t.string "name"
+  end
 
   create_table "libraries", force: :cascade do |t|
     t.string "state"
@@ -18,6 +22,8 @@ ActiveRecord::Schema.define(version: 2019_01_23_101528) do
     t.datetime "updated_at", null: false
     t.integer "sample_id"
     t.datetime "deactivated_at"
+    t.integer "enzyme_id"
+    t.index ["enzyme_id"], name: "index_libraries_on_enzyme_id"
     t.index ["sample_id"], name: "index_libraries_on_sample_id"
   end
 

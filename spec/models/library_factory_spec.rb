@@ -2,7 +2,8 @@ require 'rails_helper'
 
 RSpec.describe LibraryFactory, type: :model do
   let(:sample) { create(:sample)}
-  let(:attributes) { [{ state: 'pending', sample_id: sample.id }]}
+  let(:enzyme) { create(:enzyme)}
+  let(:attributes) { [{ state: 'pending', sample_id: sample.id, enzyme_id: enzyme.id }]}
 
   context '#initialise' do
     it 'creates an object for each given library' do
@@ -16,7 +17,8 @@ RSpec.describe LibraryFactory, type: :model do
       factory = LibraryFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages[0]).to eq("Sample must exist")
-      expect(factory.errors.full_messages.length).to eq(1)
+      expect(factory.errors.full_messages[1]).to eq("Enzyme must exist")
+      expect(factory.errors.full_messages.length).to eq(2)
     end
   end
 

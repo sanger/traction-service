@@ -32,9 +32,10 @@ RSpec.describe 'LibrariesController', type: :request do
       expect(json['data'][0]['attributes']['state']).to eq(library1.state)
       expect(json['data'][0]['attributes']['barcode']).to eq(library1.tube.barcode)
       expect(json['data'][0]['attributes']['sample-name']).to eq(library1.sample.name)
+      expect(json['data'][0]['attributes']['enzyme-name']).to eq(library1.enzyme.name)
       expect(json['data'][1]['attributes']['state']).to eq(library2.state)
       expect(json['data'][1]['attributes']['barcode']).to eq(library2.tube.barcode)
-      expect(json['data'][1]['attributes']['sample-name']).to eq(library2.sample.name)
+      expect(json['data'][1]['attributes']['enzyme-name']).to eq(library2.enzyme.name)
     end
 
     context 'when some libraries are deactivated' do
@@ -58,12 +59,13 @@ RSpec.describe 'LibrariesController', type: :request do
 
       context 'on success' do
         let(:sample) { create(:sample) }
+        let(:enzyme) { create(:enzyme) }
         let(:body) do
           {
             data: {
               attributes: {
                 libraries: [
-                  { state: 'pending', sample_id: sample.id}
+                  { state: 'pending', sample_id: sample.id, enzyme_id: enzyme.id}
                 ]
               }
             }
@@ -92,16 +94,25 @@ RSpec.describe 'LibrariesController', type: :request do
           sample_id = Library.last.sample.id
           expect(sample_id).to eq sample.id
         end
+
+        it 'creates a library with a enzyme' do
+          post v1_libraries_path, params: body, headers: headers
+          expect(Library.last.enzyme).to be_present
+          enzyme_id = Library.last.enzyme.id
+          expect(enzyme_id).to eq enzyme.id
+        end
       end
 
       context 'on failure' do
         context 'when the sample does not exist' do
+          let(:enzyme) { create(:enzyme) }
+
           let(:body) do
             {
               data: {
                 attributes: {
                   libraries: [
-                    { state: 'pending', sample_id: 1}
+                    { state: 'pending', sample_id: 1, enzyme_id: enzyme.id}
                   ]
                 }
               }
@@ -117,6 +128,32 @@ RSpec.describe 'LibrariesController', type: :request do
             expect { post v1_libraries_path, params: body, headers: headers }.to change { Library.count }.by(0)
           end
         end
+
+        context 'when the enzyme does not exist' do
+          let(:sample) { create(:sample) }
+
+          let(:body) do
+            {
+              data: {
+                attributes: {
+                  libraries: [
+                    { state: 'pending', sample_id: sample, enzyme_id: 1}
+                  ]
+                }
+              }
+            }.to_json
+          end
+
+          it 'can returns unprocessable entity status' do
+            post v1_libraries_path, params: body, headers: headers
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it 'cannot create a library' do
+            expect { post v1_libraries_path, params: body, headers: headers }.to change { Library.count }.by(0)
+          end
+        end
+
       end
 
 
@@ -126,14 +163,16 @@ RSpec.describe 'LibrariesController', type: :request do
       context 'on success' do
         context 'when the sample does exist' do
           let(:sample) { create(:sample) }
+          let(:enzyme) { create(:enzyme) }
+
           let(:body) do
             {
               data: {
                 attributes: {
                   libraries: [
-                    { state: 'pending', sample_id: sample.id},
-                    { state: 'pending', sample_id: sample.id},
-                    { state: 'pending', sample_id: sample.id}
+                    { state: 'pending', sample_id: sample.id, enzyme_id: enzyme.id},
+                    { state: 'pending', sample_id: sample.id, enzyme_id: enzyme.id},
+                    { state: 'pending', sample_id: sample.id, enzyme_id: enzyme.id}
                   ]
                 }
               }
@@ -154,8 +193,8 @@ RSpec.describe 'LibrariesController', type: :request do
               data: {
                 attributes: {
                   libraries: [
-                    { state: 'pending', sample_id: 1},
-                    { state: 'pending', sample_id: 1}
+                    { state: 'pending', sample_id: 1, enzyme_id: 1},
+                    { state: 'pending', sample_id: 1, enzyme_id: 1}
                   ]
                 }
               }
