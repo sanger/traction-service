@@ -10,10 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_30_113208) do
+ActiveRecord::Schema.define(version: 2019_02_12_112030) do
+
+  create_table "chips", force: :cascade do |t|
+    t.string "barcode"
+    t.integer "run_id"
+    t.index ["run_id"], name: "index_chips_on_run_id"
+  end
 
   create_table "enzymes", force: :cascade do |t|
     t.string "name"
+  end
+
+  create_table "flowcells", force: :cascade do |t|
+    t.integer "position"
+    t.integer "chip_id"
+    t.index ["chip_id"], name: "index_flowcells_on_chip_id"
   end
 
   create_table "libraries", force: :cascade do |t|
@@ -23,8 +35,13 @@ ActiveRecord::Schema.define(version: 2019_01_30_113208) do
     t.integer "sample_id"
     t.datetime "deactivated_at"
     t.integer "enzyme_id"
+    t.integer "flowcell_id"
     t.index ["enzyme_id"], name: "index_libraries_on_enzyme_id"
+    t.index ["flowcell_id"], name: "index_libraries_on_flowcell_id"
     t.index ["sample_id"], name: "index_libraries_on_sample_id"
+  end
+
+  create_table "runs", force: :cascade do |t|
   end
 
   create_table "samples", force: :cascade do |t|
