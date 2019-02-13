@@ -2,10 +2,10 @@ require "rails_helper"
 
 RSpec.describe Chip, type: :model do
 
-  context 'on creation' do
-    it 'must have a barcode' do
-      expect(create(:chip, barcode: "TRAC-123")).to be_valid
-      expect(build(:chip, barcode: nil)).not_to be_valid
+  context 'on create' do
+    it 'has two flowcells' do
+      chip = create(:chip)
+      expect(chip.flowcells.length).to eq 2
     end
   end
 
@@ -25,13 +25,16 @@ RSpec.describe Chip, type: :model do
     end
   end
 
-  context 'flowcells' do
-    it 'can have many flowcells' do
-      chip = create(:chip)
-      flowcell1 = create(:flowcell, chip: chip, position: 1)
-      flowcell2 = create(:flowcell, chip: chip, position: 2)
-      expect(chip.flowcells).to eq([flowcell1, flowcell2])
+  context 'barcode' do
+    it 'can have a barcode' do
+      expect(create(:chip, barcode: "TRAC-123")).to be_valid
+      expect(create(:chip, barcode: nil)).to be_valid
     end
 
+    it 'can be updated with a barcode' do
+      chip = create(:chip)
+      chip.update(barcode: "TRAC-123")
+      expect(chip.barcode).to eq "TRAC-123"
+    end
   end
 end

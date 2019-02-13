@@ -29,6 +29,8 @@ RSpec.describe LibraryFactory, type: :model do
       expect(factory.save).to be_truthy
       expect(Library.all.count).to eq(attributes.length)
       expect(Library.first.tube).to eq(attributes.first[:tube])
+      expect(Library.first.tube.material_id).to be_present
+
     end
 
     it 'does not create any libraries if attributes are not valid' do
