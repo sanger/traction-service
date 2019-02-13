@@ -14,16 +14,22 @@ ActiveRecord::Schema.define(version: 2019_02_12_112030) do
 
   create_table "chips", force: :cascade do |t|
     t.string "barcode"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.integer "run_id"
     t.index ["run_id"], name: "index_chips_on_run_id"
   end
 
   create_table "enzymes", force: :cascade do |t|
     t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "flowcells", force: :cascade do |t|
     t.integer "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.integer "chip_id"
     t.index ["chip_id"], name: "index_flowcells_on_chip_id"
   end
@@ -42,6 +48,10 @@ ActiveRecord::Schema.define(version: 2019_02_12_112030) do
   end
 
   create_table "runs", force: :cascade do |t|
+    t.integer "state"
+    t.datetime "deactivated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "samples", force: :cascade do |t|
@@ -55,6 +65,8 @@ ActiveRecord::Schema.define(version: 2019_02_12_112030) do
 
   create_table "tubes", force: :cascade do |t|
     t.string "barcode"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "material_type"
     t.integer "material_id"
     t.index ["material_type", "material_id"], name: "index_tubes_on_material_type_and_material_id"
