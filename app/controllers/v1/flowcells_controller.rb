@@ -5,7 +5,7 @@ module V1
   class FlowcellsController < ApplicationController
     def update
       attributes = params.require(:data)['attributes'].permit(:library_id)
-      library = Library.find(attributes["library_id"])
+      library = Library.find(attributes['library_id'])
       flowcell.update(library: library)
       head :ok
     rescue StandardError => exception
