@@ -151,4 +151,40 @@ RSpec.describe 'RunsController', type: :request do
     end
   end
 
+  context '#show' do
+    let!(:run) { create(:run, state: 'pending') }
+    let!(:chip) { create(:chip, run: run) }
+    let(:flowcell) { create(:flowcell, chip: chip) }
+    let(:library) { create(:library, flowcell: flowcell) }
+
+    it 'returns the runs' do
+      get v1_run_path(run), headers: headers
+
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data']['id']).to eq(run.id.to_s)
+    end
+
+    it 'returns the correct attributes' do
+      get v1_run_path(run), headers: headers
+
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data']['id']).to eq(run.id.to_s)
+      expect(json['data']['attributes']['state']).to eq(run.state)
+      expect(json['data']['attributes']['chip-barcode']).to eq(run.chip.barcode)
+    end
+
+    it 'returns the correct relationships' do
+      get v1_run_path(run), headers: headers
+
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data']['relationships']['chip']).to be_present
+
+      debugger
+    end
+
+  end
+
 end
