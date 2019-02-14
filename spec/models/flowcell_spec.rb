@@ -29,5 +29,13 @@ RSpec.describe Flowcell, type: :model do
       library = create(:library, flowcell: flowcell)
       expect(flowcell.library).to eq library
     end
+
+    it 'can be updated with a library' do
+      flowcell = create(:flowcell)
+      library = create(:library)
+      flowcell.update(library: library)
+      expect(flowcell.library).to eq library
+    end
+
   end
 end
