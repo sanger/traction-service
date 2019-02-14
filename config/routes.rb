@@ -9,5 +9,6 @@ Rails.application.routes.draw do
     jsonapi_resources :tubes, only: %i[index]
     jsonapi_resources :enzymes, only: %i[index]
     jsonapi_resources :runs, only: %i[index create update]
+    jsonapi_resources :chips, only: %i[update]
   end
 end
