@@ -2,10 +2,14 @@ require "rails_helper"
 
 RSpec.describe Chip, type: :model do
 
-  context 'on create' do
-    it 'has two flowcells' do
+  context 'after create' do
+    it '#create_flowcells' do
       chip = create(:chip)
       expect(chip.flowcells.length).to eq 2
+      expect(chip.flowcells[0].position).to eq(1)
+      expect(chip.flowcells[0].chip).to eq(chip)
+      expect(chip.flowcells[1].position).to eq(2)
+      expect(chip.flowcells[1].chip).to eq(chip)
     end
   end
 

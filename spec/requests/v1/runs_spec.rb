@@ -81,8 +81,10 @@ RSpec.describe 'RunsController', type: :request do
         chip = Run.last.chip
         flowcells = chip.flowcells
 
-        expect(Flowcell.find(flowcells[0].id).chip).to eq chip
-        expect(Flowcell.find(flowcells[1].id).chip).to eq chip
+        expect(Flowcell.find(flowcells[0].id).position).to eq(1)
+        expect(Flowcell.find(flowcells[0].id).chip).to eq(chip)
+        expect(Flowcell.find(flowcells[1].id).position).to eq(2)
+        expect(Flowcell.find(flowcells[1].id).chip).to eq(chip)
       end
 
     end
