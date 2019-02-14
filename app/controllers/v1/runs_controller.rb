@@ -3,7 +3,6 @@
 module V1
   # RunsController
   class RunsController < ApplicationController
-
     def index
       @runs = Run.active
       @resources = @runs.map { |run| RunResource.new(run, nil) }
@@ -42,7 +41,5 @@ module V1
         param.permit(:state).to_h
       end
     end
-
   end
-
 end

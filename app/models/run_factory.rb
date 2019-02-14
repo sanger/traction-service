@@ -18,5 +18,4 @@ class RunFactory
     runs.collect(&:save)
     true
   end
-
 end
