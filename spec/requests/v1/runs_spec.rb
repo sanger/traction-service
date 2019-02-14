@@ -49,6 +49,7 @@ RSpec.describe 'RunsController', type: :request do
     let(:body) do
       {
         data: {
+          type: "runs",
           attributes: {
             runs: [
               attributes_for(:run)
@@ -89,6 +90,65 @@ RSpec.describe 'RunsController', type: :request do
 
     end
 
+  end
+
+  context '#update' do
+    let(:run) { create(:run) }
+
+    context 'on success' do
+      let(:body) do
+        {
+          data: {
+            type: "runs",
+            id: run.id,
+            attributes: {
+              "state":"started"
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a ok status' do
+        patch v1_run_path(run), params: body, headers: headers
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'updates a run' do
+        patch v1_run_path(run), params: body, headers: headers
+        run.reload
+        expect(run.state).to eq "started"
+      end
+    end
+
+    context 'on failure' do
+      let(:body) do
+        {
+          data: {
+            type: "runs",
+            id: 123,
+            attributes: {
+              "state":"started"
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a ok unprocessable_entity' do
+        patch v1_run_path(123), params: body, headers: headers
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'does not update a run' do
+        patch v1_run_path(123), params: body, headers: headers
+        run.reload
+        expect(run.state).to eq nil
+      end
+
+      it 'has an error message' do
+        patch v1_run_path(123), params: body, headers: headers
+        expect(JSON.parse(response.body)).to include("errors" => "Couldn't find Run with 'id'=123")
+      end
+    end
   end
 
 end

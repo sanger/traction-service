@@ -23,6 +23,20 @@ module V1
       end
     end
 
+    def update
+      attributes = params.require(:data)['attributes'].permit(:state)
+      run.update(attributes)
+      head :ok
+    rescue StandardError => exception
+      render json: { errors: exception.message }, status: :unprocessable_entity
+    end
+
+    private
+
+    def run
+      @run ||= Run.find(params[:id])
+    end
+
     def params_names
       params.require(:data).require(:attributes)[:runs].map do |param|
         param.permit(:state).to_h
