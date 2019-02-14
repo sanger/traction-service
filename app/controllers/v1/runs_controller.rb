@@ -30,6 +30,10 @@ module V1
       render json: { errors: exception.message }, status: :unprocessable_entity
     end
 
+    def show
+      render json: run, include: ['chip', 'chip.flowcells', 'chip.flowcells.library']
+    end
+
     private
 
     def run
