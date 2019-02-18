@@ -31,13 +31,9 @@ module V1
     end
 
     def show
-<<<<<<< HEAD
       @resource = RunResource.new(run, nil)
       body = JSONAPI::ResourceSerializer.new(RunResource).serialize_to_hash(@resource)
       render json: body
-=======
-      render json: run, include: ['chip', 'chip.flowcells', 'chip.flowcells.library']
->>>>>>> f14247486e99897fd62233cb47922af1855a18cb
     end
 
     private
