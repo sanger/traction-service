@@ -151,7 +151,10 @@ RSpec.describe 'RunsController', type: :request do
     end
   end
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> f14247486e99897fd62233cb47922af1855a18cb
   context '#show' do
     let!(:run) { create(:run, state: 'pending') }
     let!(:chip) { create(:chip, run: run) }
@@ -182,6 +185,11 @@ RSpec.describe 'RunsController', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data']['relationships']['chip']).to be_present
+<<<<<<< HEAD
+=======
+
+      debugger
+>>>>>>> f14247486e99897fd62233cb47922af1855a18cb
     end
 
   end
