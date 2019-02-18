@@ -9,5 +9,6 @@ module V1
     def chip_barcode
       @model&.chip&.barcode
     end
+
   end
 end
