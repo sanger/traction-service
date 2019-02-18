@@ -30,6 +30,12 @@ module V1
       render json: { errors: exception.message }, status: :unprocessable_entity
     end
 
+    def show
+      @resource = RunResource.new(run, nil)
+      body = JSONAPI::ResourceSerializer.new(RunResource).serialize_to_hash(@resource)
+      render json: body
+    end
+
     private
 
     def run
