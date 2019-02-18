@@ -43,6 +43,23 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][1]['attributes']['chip-barcode']).to eq(run2.chip.barcode)
     end
 
+    it 'returns the correct relationships' do
+      get v1_runs_path, headers: headers
+
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+
+      expect(json['data'][0]['relationships']['chip']).to be_present
+      expect(json['data'][0]['relationships']['chip']['data']['type']).to eq "chips"
+      expect(json['data'][0]['relationships']['chip']['data']['id']).to eq chip1.id.to_s
+
+      expect(json['data'][1]['relationships']['chip']).to be_present
+      expect(json['data'][1]['relationships']['chip']['data']['type']).to eq "chips"
+      expect(json['data'][1]['relationships']['chip']['data']['id']).to eq chip2.id.to_s
+    end
+
+
+
   end
 
   context '#create' do
@@ -153,9 +170,9 @@ RSpec.describe 'RunsController', type: :request do
 
   context '#show' do
     let!(:run) { create(:run, state: 'pending') }
-    let!(:chip) { create(:chip, run: run) }
-    let(:flowcell) { create(:flowcell, chip: chip) }
-    let(:library) { create(:library, flowcell: flowcell) }
+    let!(:chip) { create(:chip, run: run) } #automatically creates two flowcells
+    let(:library1) { create(:library, flowcell: chip.flowcells[0]) }
+    let(:library2) { create(:library, flowcell: chip.flowcells[1]) }
 
     it 'returns the runs' do
       get v1_run_path(run), headers: headers
@@ -170,6 +187,7 @@ RSpec.describe 'RunsController', type: :request do
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
+
       expect(json['data']['id']).to eq(run.id.to_s)
       expect(json['data']['attributes']['state']).to eq(run.state)
       expect(json['data']['attributes']['chip-barcode']).to eq(run.chip.barcode)
@@ -181,6 +199,31 @@ RSpec.describe 'RunsController', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data']['relationships']['chip']).to be_present
+      expect(json['data']['relationships']['chip']['data']['type']).to eq "chips"
+      expect(json['data']['relationships']['chip']['data']['id']).to eq chip.id.to_s
+    end
+
+    it 'returns the correct includes' do
+      chip.reload
+      get v1_run_path(run), headers: headers
+
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['included'][0]['id']).to eq chip.id.to_s
+      expect(json['included'][0]['type']).to eq "chips"
+      expect(json['included'][0]['attributes']['barcode']).to eq chip.barcode
+      expect(json['included'][0]['relationships']['flowcells']['data'][0]['id']).to eq chip.flowcells[0].id.to_s
+      expect(json['included'][0]['relationships']['flowcells']['data'][1]['id']).to eq chip.flowcells[1].id.to_s
+
+      expect(json['included'][1]['id']).to eq chip.flowcells[0].id.to_s
+      expect(json['included'][1]['type']).to eq "flowcells"
+      expect(json['included'][1]['attributes']['position']).to eq chip.flowcells[0].position
+      expect(json['included'][1]['relationships']['library']).to be_present
+
+      expect(json['included'][2]['id']).to eq chip.flowcells[1].id.to_s
+      expect(json['included'][2]['type']).to eq "flowcells"
+      expect(json['included'][2]['attributes']['position']).to eq chip.flowcells[1].position
+      expect(json['included'][2]['relationships']['library']).to be_present
     end
 
   end
