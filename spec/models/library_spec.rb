@@ -1,5 +1,4 @@
 require "rails_helper"
-require 'models/concerns/material_spec'
 
 RSpec.describe Library, type: :model do
 
