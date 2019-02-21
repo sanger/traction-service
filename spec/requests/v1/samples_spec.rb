@@ -24,12 +24,12 @@ RSpec.describe 'SamplesController', type: :request do
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'].length).to eq(2)
       expect(json['data'][0]["attributes"]["name"]).to eq(sample1.name)
-      expect(json['data'][0]["attributes"]["sequencescape-request-id"]).to eq(sample1.sequencescape_request_id)
+      expect(json['data'][0]["attributes"]["sequencescape_request_id"]).to eq(sample1.sequencescape_request_id)
       expect(json['data'][0]["attributes"]["species"]).to eq(sample1.species)
       expect(json['data'][0]["attributes"]["barcode"]).to eq(sample1.tube.barcode)
 
       expect(json['data'][1]["attributes"]["name"]).to eq(sample2.name)
-      expect(json['data'][1]["attributes"]["sequencescape-request-id"]).to eq(sample2.sequencescape_request_id)
+      expect(json['data'][1]["attributes"]["sequencescape_request_id"]).to eq(sample2.sequencescape_request_id)
       expect(json['data'][1]["attributes"]["species"]).to eq(sample2.species)
       expect(json['data'][0]["attributes"]["barcode"]).to eq(sample1.tube.barcode)
     end
@@ -100,7 +100,7 @@ RSpec.describe 'SamplesController', type: :request do
           expect(json['data'].length).to eq(2)
           sample = json['data'].first['attributes']
           expect(sample['name']).to eq(attributes[0][:name])
-          expect(sample['sequencescape-request-id']).to eq(attributes[0][:sequencescape_request_id].to_i)
+          expect(sample['sequencescape_request_id']).to eq(attributes[0][:sequencescape_request_id].to_i)
           expect(sample['species']).to eq(attributes[0][:species])
         end
       end
