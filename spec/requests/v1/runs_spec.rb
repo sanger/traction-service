@@ -20,6 +20,7 @@ RSpec.describe 'RunsController', type: :request do
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
+      puts json
       expect(json['data'].length).to eq(2)
     end
 
@@ -38,16 +39,18 @@ RSpec.describe 'RunsController', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'][0]['attributes']['state']).to eq(run1.state)
-      expect(json['data'][0]['attributes']['chip-barcode']).to eq(run1.chip.barcode)
+      expect(json['data'][0]['attributes']['chip_barcode']).to eq(run1.chip.barcode)
       expect(json['data'][1]['attributes']['state']).to eq(run2.state)
-      expect(json['data'][1]['attributes']['chip-barcode']).to eq(run2.chip.barcode)
+      expect(json['data'][1]['attributes']['chip_barcode']).to eq(run2.chip.barcode)
     end
 
     it 'returns the correct relationships' do
-      get v1_runs_path, headers: headers
+      get "#{v1_runs_path}?include=chip.flowcells.libraries", headers: headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
+
+      puts json
 
       expect(json['data'][0]['relationships']['chip']).to be_present
       expect(json['data'][0]['relationships']['chip']['data']['type']).to eq "chips"
@@ -190,7 +193,7 @@ RSpec.describe 'RunsController', type: :request do
 
       expect(json['data']['id']).to eq(run.id.to_s)
       expect(json['data']['attributes']['state']).to eq(run.state)
-      expect(json['data']['attributes']['chip-barcode']).to eq(run.chip.barcode)
+      expect(json['data']['attributes']['chip_barcode']).to eq(run.chip.barcode)
     end
 
     it 'returns the correct relationships' do
