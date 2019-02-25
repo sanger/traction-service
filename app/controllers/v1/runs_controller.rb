@@ -6,6 +6,7 @@ module V1
     def index
       @runs = Run.active
       @resources = @runs.map { |run| RunResource.new(run, nil) }
+      body = JSONAPI::ResourceSerializer.new(RunResource, include: ['chip']).serialize_to_hash(@resources)
       body = JSONAPI::ResourceSerializer.new(RunResource).serialize_to_hash(@resources)
       render json: body
     end

@@ -10,5 +10,6 @@ module V1
       @model&.chip&.barcode
     end
 
+    # filter :deactivated_at, default: ''
   end
 end

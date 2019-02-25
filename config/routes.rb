@@ -5,11 +5,11 @@ Rails.application.routes.draw do
 
   namespace :v1 do
     jsonapi_resources :samples, only: %i[index create]
-    jsonapi_resources :libraries, only: %i[index create destroy, show]
+    jsonapi_resources :libraries, only: %i[index create destroy show]
     jsonapi_resources :tubes, only: %i[index]
     jsonapi_resources :enzymes, only: %i[index]
     jsonapi_resources :runs, only: %i[index create update show]
-    jsonapi_resources :chips, only: %i[index, update, show]
-    jsonapi_resources :flowcells, only: %i[index, update, show]
+    jsonapi_resources :chips, only: %i[index update show]
+    jsonapi_resources :flowcells, only: %i[index update show]
   end
 end
