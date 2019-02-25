@@ -2,7 +2,7 @@
 
 # Flowcell
 class Flowcell < ApplicationRecord
-  has_one :library
+  belongs_to :library, optional: true
   validates :position, presence: true
   belongs_to :chip
 end

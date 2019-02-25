@@ -7,7 +7,7 @@ class Library < ApplicationRecord
   before_create :set_state
   belongs_to :sample
   belongs_to :enzyme
-  belongs_to :flowcell, optional: true
+  has_many :flowcells
 
   scope :active, -> { where(deactivated_at: nil) }
 

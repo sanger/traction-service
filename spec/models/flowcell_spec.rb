@@ -26,7 +26,7 @@ RSpec.describe Flowcell, type: :model do
   context 'library' do
     it 'can have a library' do
       flowcell = create(:flowcell)
-      library = create(:library, flowcell: flowcell)
+      library = create(:library, flowcells: [flowcell])
       expect(flowcell.library).to eq library
     end
 
