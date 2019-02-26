@@ -2,7 +2,7 @@
 
 # Run
 class Run < ApplicationRecord
-  has_one :chip
+  has_one :chip, dependent: :nullify
   enum state: %i[pending started completed cancelled]
 
   scope :active, -> { where(deactivated_at: nil) }

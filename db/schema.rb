@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_25_135234) do
+ActiveRecord::Schema.define(version: 2019_02_26_083300) do
 
   create_table "chips", force: :cascade do |t|
     t.string "barcode"
@@ -48,7 +48,7 @@ ActiveRecord::Schema.define(version: 2019_02_25_135234) do
   end
 
   create_table "runs", force: :cascade do |t|
-    t.integer "state"
+    t.integer "state", default: 0
     t.datetime "deactivated_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

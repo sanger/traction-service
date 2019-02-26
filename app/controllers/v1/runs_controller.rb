@@ -6,9 +6,7 @@ module V1
     def index
       @runs = Run.active
       @resources = @runs.map { |run| RunResource.new(run, nil) }
-      body = JSONAPI::ResourceSerializer.new(RunResource, include: ['chip']).serialize_to_hash(@resources)
-      body = JSONAPI::ResourceSerializer.new(RunResource).serialize_to_hash(@resources)
-      render json: body
+      render json: serialize_resources(@resources)
     end
 
     def create
@@ -33,9 +31,7 @@ module V1
 
     def show
       @resource = RunResource.new(run, nil)
-      include_resources = ['chip', 'chip.flowcells', 'chip.flowcells.library']
-      body = JSONAPI::ResourceSerializer.new(RunResource, include: include_resources).serialize_to_hash(@resource)
-      render json: body
+      render json: serialize_resources(@resource)
     end
 
     private
@@ -48,6 +44,17 @@ module V1
       params.require(:data).require(:attributes)[:runs].map do |param|
         param.permit(:state).to_h
       end
+    end
+
+    def serialize_resources(resources)
+      if params[:include].present?
+        return JSONAPI::ResourceSerializer.new(RunResource,
+                                               include: [params[:include]]).serialize_to_hash(
+                                                 resources
+                                               )
+      end
+
+      JSONAPI::ResourceSerializer.new(RunResource).serialize_to_hash(resources)
     end
   end
 end

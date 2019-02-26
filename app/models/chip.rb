@@ -3,9 +3,9 @@
 # Chip
 class Chip < ApplicationRecord
   belongs_to :run, optional: true
-  has_many :flowcells
+  has_many :flowcells, dependent: :nullify
 
-  after_save :create_flowcells
+  after_create :create_flowcells
 
   def create_flowcells
     Flowcell.create(position: 1, chip: self)
