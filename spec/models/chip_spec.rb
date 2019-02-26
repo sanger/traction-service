@@ -41,4 +41,5 @@ RSpec.describe Chip, type: :model do
       expect(chip.barcode).to eq "TRAC-123"
     end
   end
+
 end

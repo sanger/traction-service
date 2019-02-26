@@ -44,8 +44,8 @@ RSpec.describe 'RunsController', type: :request do
     end
 
     it 'returns the correct relationships' do
-      skip
-      get v1_runs_path, headers: headers
+      # skip
+      get "#{v1_runs_path}?include=chip", headers: headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -159,7 +159,7 @@ RSpec.describe 'RunsController', type: :request do
       it 'does not update a run' do
         patch v1_run_path(123), params: body, headers: headers
         run.reload
-        expect(run.state).to eq nil
+        expect(run).to be_pending
       end
 
       it 'has an error message' do
@@ -195,7 +195,7 @@ RSpec.describe 'RunsController', type: :request do
     end
 
     it 'returns the correct relationships' do
-      get v1_run_path(run), headers: headers
+      get "#{v1_run_path(run)}?include=chip.flowcells.library", headers: headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -206,7 +206,7 @@ RSpec.describe 'RunsController', type: :request do
 
     it 'returns the correct includes' do
       chip.reload
-      get v1_run_path(run), headers: headers
+      get "#{v1_run_path(run)}?include=chip.flowcells.library", headers: headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)

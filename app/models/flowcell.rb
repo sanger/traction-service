@@ -4,5 +4,5 @@
 class Flowcell < ApplicationRecord
   belongs_to :library, optional: true
   validates :position, presence: true
-  belongs_to :chip
+  belongs_to :chip, dependent: :destroy
 end
