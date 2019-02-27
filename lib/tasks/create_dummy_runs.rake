@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 namespace :dummy_runs do
-  task :create => :environment do |t|
+  task create: :environment do |_t|
     (1..5).each do |i|
       sample = Sample.create(name: "Sample#{i}", sequencescape_request_id: i, species: "Species#{i}")
       library = Library.create(sample: sample, enzyme_id: i)
@@ -11,11 +13,11 @@ namespace :dummy_runs do
     end
   end
 
-  task :destroy  => :environment do |t|
+  task destroy: :environment do |_t|
     Library.delete_all
     Flowcell.delete_all
     Chip.delete_all
     Sample.delete_all
     Run.delete_all
-  end 
+  end
 end

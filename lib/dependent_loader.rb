@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ###
 # Useful in initializers.
 #
@@ -5,7 +7,8 @@
 #
 # Normally these will be in a database table but not when the app is first started.
 #
-# This class has one method which will check whether the table exists and if there are any records in it:
+# This class has one method which will check whether the table exists and
+# if there are any records in it:
 # * If there are it will execute the failure block
 # * If there are no records the success block will be executed.
 #
@@ -23,14 +26,10 @@ class DependentLoader
   #   end
   #  end
   def self.start(table, &block)
-    if ActiveRecord::Base.connection.tables.include?(table.to_s) and !defined?(::Rake)
-      unless Rails.env.test?
-        if table.to_s.classify.constantize.all.empty?
-          block.callback :success
-        else
-          block.callback :failure
-        end
-      end
-    end
+    return unless ActiveRecord::Base.connection.tables.include?(table.to_s) && !defined?(::Rake)
+    return if Rails.env.test?
+
+    block.callback :success if table.to_s.classify.constantize.all.empty?
+    block.callback :failure
   end
 end
