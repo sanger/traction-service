@@ -39,6 +39,17 @@ RSpec.describe Library, type: :model do
         expect(library.tube).to eq tube
       end
     end
+
+    context 'flowcell' do
+      it 'can have a flowcell' do
+        flowcell = create(:flowcell)
+        expect(create(:library, flowcells: [flowcell])).to be_valid
+      end
+
+      it 'doesnt have to have a flowcell' do
+        expect(create(:library)).to be_valid
+      end
+    end
   end
 
   context 'validation' do
