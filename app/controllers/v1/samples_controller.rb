@@ -3,6 +3,7 @@
 module V1
   # SamplesController
   class SamplesController < ApplicationController
+    #  TODO: add index
     def create
       @sample_factory = SampleFactory.new(params_names)
       if @sample_factory.save

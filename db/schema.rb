@@ -10,10 +10,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_30_113208) do
+ActiveRecord::Schema.define(version: 2019_02_26_083300) do
+
+  create_table "chips", force: :cascade do |t|
+    t.string "barcode"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "run_id"
+    t.index ["run_id"], name: "index_chips_on_run_id"
+  end
 
   create_table "enzymes", force: :cascade do |t|
     t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "flowcells", force: :cascade do |t|
+    t.integer "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "chip_id"
+    t.integer "library_id"
+    t.index ["chip_id"], name: "index_flowcells_on_chip_id"
+    t.index ["library_id"], name: "index_flowcells_on_library_id"
   end
 
   create_table "libraries", force: :cascade do |t|
@@ -27,6 +47,13 @@ ActiveRecord::Schema.define(version: 2019_01_30_113208) do
     t.index ["sample_id"], name: "index_libraries_on_sample_id"
   end
 
+  create_table "runs", force: :cascade do |t|
+    t.integer "state", default: 0
+    t.datetime "deactivated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "samples", force: :cascade do |t|
     t.string "name"
     t.datetime "deactivated_at"
@@ -38,6 +65,8 @@ ActiveRecord::Schema.define(version: 2019_01_30_113208) do
 
   create_table "tubes", force: :cascade do |t|
     t.string "barcode"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "material_type"
     t.integer "material_id"
     t.index ["material_type", "material_id"], name: "index_tubes_on_material_type_and_material_id"
