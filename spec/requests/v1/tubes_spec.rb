@@ -1,19 +1,13 @@
 require "rails_helper"
 
 RSpec.describe 'TubesController', type: :request do
-  let(:headers) do
-    {
-      'Content-Type' => 'application/vnd.api+json',
-      'Accept' => 'application/vnd.api+json'
-    }
-  end
 
   context '#get' do
     it 'returns a list of tubes' do
       sample = create(:sample)
       create(:tube, material: sample)
       create(:tube, material: sample)
-      get v1_tubes_path, headers: headers
+      get v1_tubes_path, headers: json_api_headers
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'].length).to eq(2)
@@ -26,7 +20,7 @@ RSpec.describe 'TubesController', type: :request do
       let!(:tube2) { create(:tube, material: sample2)}
 
       it 'returns the correct attributes' do
-        get v1_tubes_path, headers: headers
+        get v1_tubes_path, headers: json_api_headers
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data'][0]['attributes']['barcode']).to eq(tube1.barcode)
@@ -48,7 +42,7 @@ RSpec.describe 'TubesController', type: :request do
       let!(:tube2) { create(:tube, material: library2)}
 
       it 'returns the correct attributes' do
-        get v1_tubes_path, headers: headers
+        get v1_tubes_path, headers: json_api_headers
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data'][0]['attributes']['barcode']).to eq(tube1.barcode)
@@ -62,6 +56,23 @@ RSpec.describe 'TubesController', type: :request do
         expect(json['data'][1]['relationships']['material']['data']['id']).to eq(tube2.material.id.to_s)
       end
     end
+
+    describe 'filter by barcode' do
+
+
+      let(:sample_tubes) { create_list(:tube, 2)}
+      let(:library_tubes) { create_list(:tube_with_library, 2)}
+      let(:other_tubes) {create_list(:tube, 5)}
+      let(:barcodes) { sample_tubes.pluck(:barcode).concat(library_tubes.pluck(:barcode))}
+
+      it 'returns the correct tubes' do
+        get "#{v1_tubes_path}?filter[barcode]=#{barcodes.join(',')}", headers: json_api_headers
+        expect(response).to have_http_status(:success)
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data'].length).to eq(barcodes.length)
+      end
+    end
+
   end
 
 end

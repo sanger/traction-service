@@ -6,6 +6,8 @@ class Tube < ApplicationRecord
 
   after_create :generate_barcode
 
+  scope :by_barcode, ->(*barcodes) { where(barcode: barcodes) }
+
   private
 
   def generate_barcode
