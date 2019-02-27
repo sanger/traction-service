@@ -1,19 +1,13 @@
 require "rails_helper"
 
 RSpec.describe 'EnzymesController', type: :request do
-  let(:headers) do
-    {
-      'Content-Type' => 'application/vnd.api+json',
-      'Accept' => 'application/vnd.api+json'
-    }
-  end
-
+ 
   context '#get' do
     let!(:enzyme1) { create(:enzyme) }
     let!(:enzyme2) { create(:enzyme) }
 
     it 'returns a list of enzymes' do
-      get v1_enzymes_path, headers: headers
+      get v1_enzymes_path, headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -21,7 +15,7 @@ RSpec.describe 'EnzymesController', type: :request do
     end
 
     it 'returns the correct attributes' do
-      get v1_enzymes_path, headers: headers
+      get v1_enzymes_path, headers: json_api_headers
 
       json = ActiveSupport::JSON.decode(response.body)
 

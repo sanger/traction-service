@@ -2,13 +2,6 @@ require "rails_helper"
 
 RSpec.describe 'RunsController', type: :request do
 
-  let(:headers) do
-    {
-      'Content-Type' => 'application/vnd.api+json',
-      'Accept' => 'application/vnd.api+json'
-    }
-  end
-
   context '#get' do
     let!(:run1) { create(:run, state: 'pending') }
     let!(:run2) { create(:run, state: 'started') }
@@ -16,7 +9,7 @@ RSpec.describe 'RunsController', type: :request do
     let!(:chip2) { create(:chip, run: run2) }
 
     it 'returns a list of runs' do
-      get v1_runs_path, headers: headers
+      get v1_runs_path, headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -25,7 +18,7 @@ RSpec.describe 'RunsController', type: :request do
 
     it 'only returns active runs' do
       run3 = create(:run, deactivated_at: DateTime.now)
-      get v1_runs_path, headers: headers
+      get v1_runs_path, headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -33,7 +26,7 @@ RSpec.describe 'RunsController', type: :request do
     end
 
     it 'returns the correct attributes' do
-      get v1_runs_path, headers: headers
+      get v1_runs_path, headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -44,8 +37,7 @@ RSpec.describe 'RunsController', type: :request do
     end
 
     it 'returns the correct relationships' do
-      # skip
-      get "#{v1_runs_path}?include=chip", headers: headers
+      get "#{v1_runs_path}?include=chip", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -79,23 +71,23 @@ RSpec.describe 'RunsController', type: :request do
 
     context 'on success' do
       it 'has a created status' do
-        post v1_runs_path, params: body, headers: headers
+        post v1_runs_path, params: body, headers: json_api_headers
         expect(response).to have_http_status(:created)
       end
 
       it 'creates a run' do
-        expect { post v1_runs_path, params: body, headers: headers }.to change { Run.count }.by(1)
+        expect { post v1_runs_path, params: body, headers: json_api_headers }.to change { Run.count }.by(1)
       end
 
       it 'creates a run with a chip' do
-        post v1_runs_path, params: body, headers: headers
+        post v1_runs_path, params: body, headers: json_api_headers
         expect(Run.last.chip).to be_present
         chip_id = Run.last.chip.id
         expect(Chip.find(chip_id).run).to eq Run.last
       end
 
       it 'creates a run with a chip with two flowcells' do
-        post v1_runs_path, params: body, headers: headers
+        post v1_runs_path, params: body, headers: json_api_headers
         expect(Run.last.chip.flowcells.length).to eq 2
         chip = Run.last.chip
         flowcells = chip.flowcells
@@ -127,12 +119,12 @@ RSpec.describe 'RunsController', type: :request do
       end
 
       it 'has a ok status' do
-        patch v1_run_path(run), params: body, headers: headers
+        patch v1_run_path(run), params: body, headers: json_api_headers
         expect(response).to have_http_status(:ok)
       end
 
       it 'updates a run' do
-        patch v1_run_path(run), params: body, headers: headers
+        patch v1_run_path(run), params: body, headers: json_api_headers
         run.reload
         expect(run.state).to eq "started"
       end
@@ -152,18 +144,18 @@ RSpec.describe 'RunsController', type: :request do
       end
 
       it 'has a ok unprocessable_entity' do
-        patch v1_run_path(123), params: body, headers: headers
+        patch v1_run_path(123), params: body, headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'does not update a run' do
-        patch v1_run_path(123), params: body, headers: headers
+        patch v1_run_path(123), params: body, headers: json_api_headers
         run.reload
         expect(run).to be_pending
       end
 
       it 'has an error message' do
-        patch v1_run_path(123), params: body, headers: headers
+        patch v1_run_path(123), params: body, headers: json_api_headers
         expect(JSON.parse(response.body)).to include("errors" => "Couldn't find Run with 'id'=123")
       end
     end
@@ -176,7 +168,7 @@ RSpec.describe 'RunsController', type: :request do
     let(:library2) { create(:library, flowcell: chip.flowcells[1]) }
 
     it 'returns the runs' do
-      get v1_run_path(run), headers: headers
+      get v1_run_path(run), headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -184,7 +176,7 @@ RSpec.describe 'RunsController', type: :request do
     end
 
     it 'returns the correct attributes' do
-      get v1_run_path(run), headers: headers
+      get v1_run_path(run), headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -195,7 +187,7 @@ RSpec.describe 'RunsController', type: :request do
     end
 
     it 'returns the correct relationships' do
-      get "#{v1_run_path(run)}?include=chip.flowcells.library", headers: headers
+      get "#{v1_run_path(run)}?include=chip.flowcells.library", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -206,7 +198,7 @@ RSpec.describe 'RunsController', type: :request do
 
     it 'returns the correct includes' do
       chip.reload
-      get "#{v1_run_path(run)}?include=chip.flowcells.library", headers: headers
+      get "#{v1_run_path(run)}?include=chip.flowcells.library", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)

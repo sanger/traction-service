@@ -2,13 +2,6 @@ require "rails_helper"
 
 RSpec.describe 'ChipsController', type: :request do
 
-  let(:headers) do
-    {
-      'Content-Type' => 'application/vnd.api+json',
-      'Accept' => 'application/vnd.api+json'
-    }
-  end
-
   context '#update' do
     let(:chip) { create(:chip) }
 
@@ -26,12 +19,12 @@ RSpec.describe 'ChipsController', type: :request do
       end
 
       it 'has a ok status' do
-        patch v1_chip_path(chip), params: body, headers: headers
+        patch v1_chip_path(chip), params: body, headers: json_api_headers
         expect(response).to have_http_status(:ok)
       end
 
       it 'updates a chip' do
-        patch v1_chip_path(chip), params: body, headers: headers
+        patch v1_chip_path(chip), params: body, headers: json_api_headers
         chip.reload
         expect(chip.barcode).to eq "TRAC123"
       end
@@ -51,18 +44,18 @@ RSpec.describe 'ChipsController', type: :request do
       end
 
       it 'has a ok unprocessable_entity' do
-        patch v1_chip_path(123), params: body, headers: headers
+        patch v1_chip_path(123), params: body, headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'does not update a run' do
-        patch v1_chip_path(123), params: body, headers: headers
+        patch v1_chip_path(123), params: body, headers: json_api_headers
         chip.reload
         expect(chip.barcode).to eq chip.barcode
       end
 
       it 'has an error message' do
-        patch v1_chip_path(123), params: body, headers: headers
+        patch v1_chip_path(123), params: body, headers: json_api_headers
         expect(JSON.parse(response.body)).to include("errors" => "Couldn't find Chip with 'id'=123")
       end
     end
