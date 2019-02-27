@@ -19,7 +19,7 @@ RSpec.describe Tube, type: :model do
       it { is_expected.to belong_to(:material) }
 
       it 'must have material of either type sample or library' do
-        expect(build(:tube)).not_to be_valid
+        expect(build(:tube, material: nil)).not_to be_valid
       end
 
       it 'can have a sample as its material' do
@@ -35,6 +35,22 @@ RSpec.describe Tube, type: :model do
         expect(tube_with_library).to be_valid
         expect(tube_with_library.material).to eq library
       end
+    end
+  end
+
+  describe 'scope - by barcode' do
+
+    let(:sample_tubes) { create_list(:tube, 5)}
+    let(:library_tubes) { create_list(:tube_with_library, 5)}
+
+    it 'will return the correct tubes' do
+      expect(Tube.by_barcode(sample_tubes.first.barcode).length).to eq(1)
+      expect(Tube.by_barcode(sample_tubes.pluck(:barcode)).length).to eq(5)
+      expect(Tube.by_barcode(sample_tubes.pluck(:barcode).concat(library_tubes.pluck(:barcode))).length).to eq(10)
+    end
+
+    it ('will return nothing if barcode is dodgy') do
+      expect(Tube.by_barcode('DODGY-BARCODE')).to be_empty
     end
   end
 end
