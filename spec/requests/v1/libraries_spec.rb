@@ -26,9 +26,11 @@ RSpec.describe 'LibrariesController', type: :request do
       expect(json['data'][0]['attributes']['barcode']).to eq(library1.tube.barcode)
       expect(json['data'][0]['attributes']['sample_name']).to eq(library1.sample.name)
       expect(json['data'][0]['attributes']['enzyme_name']).to eq(library1.enzyme.name)
+      expect(json['data'][0]["attributes"]["created_at"]).to eq(library1.created_at.strftime("%m/%d/%Y %I:%M"))
       expect(json['data'][1]['attributes']['state']).to eq(library2.state)
       expect(json['data'][1]['attributes']['barcode']).to eq(library2.tube.barcode)
       expect(json['data'][1]['attributes']['enzyme_name']).to eq(library2.enzyme.name)
+      expect(json['data'][1]["attributes"]["created_at"]).to eq(library2.created_at.strftime("%m/%d/%Y %I:%M"))
     end
 
     context 'when some libraries are deactivated' do
