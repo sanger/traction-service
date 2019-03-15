@@ -10,13 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_26_083300) do
+ActiveRecord::Schema.define(version: 2019_02_12_111752) do
 
   create_table "chips", force: :cascade do |t|
     t.string "barcode"
+    t.integer "run_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "run_id"
     t.index ["run_id"], name: "index_chips_on_run_id"
   end
 
@@ -28,47 +28,50 @@ ActiveRecord::Schema.define(version: 2019_02_26_083300) do
 
   create_table "flowcells", force: :cascade do |t|
     t.integer "position"
+    t.integer "library_id"
+    t.integer "chip_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "chip_id"
-    t.integer "library_id"
     t.index ["chip_id"], name: "index_flowcells_on_chip_id"
     t.index ["library_id"], name: "index_flowcells_on_library_id"
   end
 
   create_table "libraries", force: :cascade do |t|
     t.string "state"
+    t.integer "sample_id"
+    t.integer "enzyme_id"
+    t.datetime "deactivated_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "sample_id"
-    t.datetime "deactivated_at"
-    t.integer "enzyme_id"
     t.index ["enzyme_id"], name: "index_libraries_on_enzyme_id"
     t.index ["sample_id"], name: "index_libraries_on_sample_id"
   end
 
   create_table "runs", force: :cascade do |t|
     t.integer "state", default: 0
+    t.string "name"
     t.datetime "deactivated_at"
+    t.integer "chip_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["chip_id"], name: "index_runs_on_chip_id"
   end
 
   create_table "samples", force: :cascade do |t|
     t.string "name"
     t.datetime "deactivated_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.integer "sequencescape_request_id"
     t.string "species"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "tubes", force: :cascade do |t|
     t.string "barcode"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string "material_type"
     t.integer "material_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["material_type", "material_id"], name: "index_tubes_on_material_type_and_material_id"
   end
 

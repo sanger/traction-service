@@ -11,6 +11,10 @@ class Run < ApplicationRecord
     deactivated_at.nil?
   end
 
+  def name
+    super || id
+  end
+
   def cancel
     return true unless active?
 
