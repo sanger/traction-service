@@ -3,7 +3,7 @@
 module V1
   # LibraryResource
   class LibraryResource < JSONAPI::Resource
-    attributes :state, :barcode, :sample_name, :enzyme_name, :created_at
+    attributes :state, :barcode, :sample_name, :enzyme_name, :created_at, :deactivated_at
     has_one :sample
     has_one :tube
 
@@ -21,6 +21,10 @@ module V1
 
     def created_at
       @model.created_at.strftime('%m/%d/%Y %I:%M')
+    end
+
+    def deactivated_at
+      @model&.deactivated_at&.strftime('%m/%d/%Y %I:%M')
     end
   end
 end
