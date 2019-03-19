@@ -18,14 +18,14 @@ RSpec.describe 'SamplesController', type: :request do
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'].length).to eq(2)
       expect(json['data'][0]["attributes"]["name"]).to eq(sample1.name)
-      expect(json['data'][0]["attributes"]["sequencescape_request_id"]).to eq(sample1.sequencescape_request_id)
+      expect(json['data'][0]["attributes"]["external_id"]).to eq(sample1.external_id)
       expect(json['data'][0]["attributes"]["species"]).to eq(sample1.species)
       expect(json['data'][0]["attributes"]["barcode"]).to eq(sample1.tube.barcode)
       expect(json['data'][0]["attributes"]["created_at"]).to eq(sample1.created_at.strftime("%m/%d/%Y %I:%M"))
       expect(json['data'][0]["attributes"]["deactivated_at"]).to eq(nil)
 
       expect(json['data'][1]["attributes"]["name"]).to eq(sample2.name)
-      expect(json['data'][1]["attributes"]["sequencescape_request_id"]).to eq(sample2.sequencescape_request_id)
+      expect(json['data'][1]["attributes"]["external_id"]).to eq(sample2.external_id)
       expect(json['data'][1]["attributes"]["species"]).to eq(sample2.species)
       expect(json['data'][1]["attributes"]["barcode"]).to eq(sample2.tube.barcode)
       expect(json['data'][1]["attributes"]["created_at"]).to eq(sample2.created_at.strftime("%m/%d/%Y %I:%M"))
@@ -99,7 +99,7 @@ RSpec.describe 'SamplesController', type: :request do
           expect(json['data'].length).to eq(2)
           sample = json['data'].first['attributes']
           expect(sample['name']).to eq(attributes[0][:name])
-          expect(sample['sequencescape_request_id']).to eq(attributes[0][:sequencescape_request_id].to_i)
+          expect(sample['external_id']).to eq(attributes[0][:external_id].to_i)
           expect(sample['species']).to eq(attributes[0][:species])
         end
       end
