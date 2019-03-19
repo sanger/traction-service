@@ -99,4 +99,16 @@ RSpec.describe Run, type: :model do
     end
   end
 
+  context 'name' do
+    it 'defaults to id' do
+      run = create(:run)
+      expect(run.name).to eq(run.id)
+    end
+
+    it 'can be changed' do
+      run = create(:run, name: 'run1')
+      expect(run.name).to eq('run1')
+    end
+  end
+
 end

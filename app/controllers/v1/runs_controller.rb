@@ -42,7 +42,7 @@ module V1
 
     def params_names
       params.require(:data).require(:attributes)[:runs].map do |param|
-        param.permit(:state).to_h
+        param.permit(:state, :name).to_h
       end
     end
 
