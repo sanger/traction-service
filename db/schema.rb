@@ -60,7 +60,7 @@ ActiveRecord::Schema.define(version: 2019_02_12_111752) do
   create_table "samples", force: :cascade do |t|
     t.string "name"
     t.datetime "deactivated_at"
-    t.integer "sequencescape_request_id"
+    t.integer "external_id"
     t.string "species"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
