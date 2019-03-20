@@ -28,13 +28,13 @@ RSpec.describe Sample, type: :model do
       end
     end
 
-    describe 'sequencescape_request_id' do
-      it 'should have a sequencescape_request_id' do
-        expect(create(:sample, sequencescape_request_id: 123).sequencescape_request_id).to eq(123)
+    describe 'external_id' do
+      it 'should have a external_id' do
+        expect(create(:sample, external_id: 123).external_id).to eq(123)
       end
 
-      it 'is not valid without a sequencescape_request_id' do
-        expect(build(:sample, sequencescape_request_id: nil)).not_to be_valid
+      it 'is not valid without a external_id' do
+        expect(build(:sample, external_id: nil)).not_to be_valid
       end
     end
 

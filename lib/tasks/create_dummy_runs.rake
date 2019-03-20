@@ -3,7 +3,7 @@
 namespace :dummy_runs do
   task create: :environment do |_t|
     (1..5).each do |i|
-      sample = Sample.create(name: "Sample#{i}", sequencescape_request_id: i, species: "Species#{i}", tube: Tube.create)
+      sample = Sample.create(name: "Sample#{i}", external_id: i, species: "Species#{i}", tube: Tube.create)
       library = Library.create(sample: sample, enzyme_id: i, tube: Tube.create)
       chip = Chip.create
       chip.flowcells.first.library = library

@@ -3,7 +3,7 @@
 module V1
   # SampleResource
   class SampleResource < JSONAPI::Resource
-    attributes :name, :sequencescape_request_id, :species, :barcode, :created_at, :deactivated_at
+    attributes :name, :external_id, :species, :barcode, :created_at, :deactivated_at
     has_many :libraries, always_include_linkage_data: true
     has_one :tube
 
