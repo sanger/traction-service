@@ -26,14 +26,12 @@ class DependentLoader
   #   end
   #  end
   def self.start(table, &block)
-    begin
-      return unless ActiveRecord::Base.connection.tables.include?(table.to_s) && !defined?(::Rake)
-      return if Rails.env.test?
+    return unless ActiveRecord::Base.connection.tables.include?(table.to_s) && !defined?(::Rake)
+    return if Rails.env.test?
 
-      block.callback :success if table.to_s.classify.constantize.all.empty?
-      block.callback :failure
-    rescue ActiveRecord::NoDatabaseError
-      puts 'no database'
-    end
+    block.callback :success if table.to_s.classify.constantize.all.empty?
+    block.callback :failure
+  rescue ActiveRecord::NoDatabaseError
+    false
   end
 end
