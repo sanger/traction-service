@@ -31,5 +31,7 @@ class DependentLoader
 
     block.callback :success if table.to_s.classify.constantize.all.empty?
     block.callback :failure
+  rescue ActiveRecord::NoDatabaseError
+    false
   end
 end
