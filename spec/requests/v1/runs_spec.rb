@@ -143,7 +143,7 @@ RSpec.describe 'RunsController', type: :request do
             type: "runs",
             id: 123,
             attributes: {
-              "state":"started",
+              state: "started",
               name: "aname"
             }
           }
