@@ -116,7 +116,8 @@ RSpec.describe 'RunsController', type: :request do
             type: "runs",
             id: run.id,
             attributes: {
-              "state":"started"
+              state: "started",
+              name: "aname"
             }
           }
         }.to_json
@@ -131,6 +132,7 @@ RSpec.describe 'RunsController', type: :request do
         patch v1_run_path(run), params: body, headers: json_api_headers
         run.reload
         expect(run.state).to eq "started"
+        expect(run.name).to eq "aname"
       end
     end
 
@@ -141,7 +143,8 @@ RSpec.describe 'RunsController', type: :request do
             type: "runs",
             id: 123,
             attributes: {
-              "state":"started"
+              state: "started",
+              name: "aname"
             }
           }
         }.to_json
