@@ -22,7 +22,7 @@ module V1
     end
 
     def update
-      attributes = params.require(:data)['attributes'].permit(:state)
+      attributes = params.require(:data)['attributes'].permit(:state, :name)
       run.update(attributes)
       head :ok
     rescue StandardError => exception
