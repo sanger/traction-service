@@ -85,7 +85,7 @@ RSpec.describe 'Broker' do
     end
   end
 
-  describe '#connect!' do
+  describe '#connect' do
     it 'creates a connection' do
       mock_connection
 
@@ -106,7 +106,7 @@ RSpec.describe 'Broker' do
     it 'should publish the message' do
       mock_connection
       allow(exchange).to receive(:publish)
-      broker.publish
+      broker.publish('message')
     end
   end
 
