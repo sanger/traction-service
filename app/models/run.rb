@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'event_message'
+
 # Run
 class Run < ApplicationRecord
   has_one :chip, dependent: :nullify
@@ -19,5 +21,15 @@ class Run < ApplicationRecord
     return true unless active?
 
     update(deactivated_at: DateTime.current)
+  end
+
+  def generate_event
+    begin
+      message = EventMessage.new(self)
+      BrokerHandle.publish(message)
+    rescue => e
+      Rails.logger.error e
+      Rails.logger.error e.backtrace
+    end
   end
 end

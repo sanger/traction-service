@@ -36,8 +36,6 @@ class Broker
     instantiate_exchange
     declare_queue
     bind_queue
-    # consume_queue
-    # add_close
   end
 
   def start_connection
@@ -65,18 +63,7 @@ class Broker
     @queue.bind(@exchange, routing_key: @events_config.routing_key)
   end
 
-  def consume_queue
-    @queue.subscribe do |delivery_info, metadata, payload|
-      puts "Received #{payload}"
-    end
-  end
-
-  def publish
-    @exchange&.publish('Hello there!', routing_key: @events_config.routing_key)
-  end
-
-  def add_close
-    sleep 1.0
-    @connection.close
+  def publish(message)
+    @exchange&.publish(message.generate_json, routing_key: @events_config.routing_key)
   end
 end
