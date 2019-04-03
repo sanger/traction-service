@@ -6,7 +6,7 @@ class Chip < ApplicationRecord
   has_many :flowcells, dependent: :nullify
 
   validates :barcode, presence: true
-  validates_length_of :barcode, minimum: 16
+  validates :barcode, length: { minimum: 16 }
 
   after_create :create_flowcells
   before_save :update_serial_number
@@ -18,6 +18,6 @@ class Chip < ApplicationRecord
   end
 
   def update_serial_number
-    self.serial_number = self.barcode[0..15]
+    self.serial_number = barcode[0..15]
   end
 end
