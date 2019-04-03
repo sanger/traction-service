@@ -4,8 +4,9 @@
 class RunFactory
   include ActiveModel::Model
 
+  #TODO: the barcode will need to be removed once the ui is refactored to build a new run with validation
   def initialize(attributes = [])
-    attributes.each { |run| runs << Run.new(run.merge!(chip: Chip.new)) }
+    attributes.each { |run| runs << Run.new(run.merge!(chip: Chip.new(barcode: 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX'))) }
   end
 
   def runs
