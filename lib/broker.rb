@@ -21,13 +21,14 @@ class Broker
   end
 
   def connect
-    begin
-      return connect!
-    rescue => e
-      # Rails.logger.error "Failed to connect to RabbitMQ"
-      Rails.logger.error e
-      return false
-    end
+    connect!
+    # begin
+    #   return connect!
+    # rescue => e
+    #   Rails.logger.error "Failed to connect to RabbitMQ"
+    #   Rails.logger.error e
+    #   return false
+    # end
   end
 
   def connect!
