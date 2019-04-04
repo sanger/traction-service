@@ -84,4 +84,16 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  config.events = {
+    enabled: true,
+    broker_host: 'trac0.psd.sanger.ac.uk',
+    broker_port: '5672',
+    broker_username: 'test',
+    broker_password: 'test',
+    vhost: 'test',
+    exchange: 'psd.traction',
+    queue_name: 'psd.traction.to-warehouse',
+    routing_key: '#'
+  }
 end
