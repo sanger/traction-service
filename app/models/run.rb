@@ -26,13 +26,5 @@ class Run < ApplicationRecord
   def generate_event
     message = EventMessage.new(self)
     BrokerHandle.publish(message)
-
-    # begin
-    #   message = EventMessage.new(self)
-    #   BrokerHandle.publish(message)
-    # rescue => e
-    #   Rails.logger.error e
-    #   Rails.logger.error e.backtrace
-    # end
   end
 end

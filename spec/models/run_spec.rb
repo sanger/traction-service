@@ -135,12 +135,7 @@ RSpec.describe Run, type: :model do
          expect(EventMessage).to receive(:new).with(run).and_return(message)
          error = RuntimeError.new("This will not be published.")
          expect(broker).to receive(:publish).with(message).and_raise error
-         allow(Rails.logger).to receive(:error)
-
-         run.generate_event
-
-         expect(Rails.logger).to have_received(:error).with error
-         expect(Rails.logger).to have_received(:error).with error.backtrace
+         expect { run.generate_event }.to raise_error
        end
      end
 
