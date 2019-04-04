@@ -60,4 +60,16 @@ Rails.application.configure do
     end
   end
 
+  config.events = {
+    enabled: true,
+    broker_host: 'localhost',
+    broker_port: '5672',
+    broker_username: 'guest',
+    broker_password: 'guest',
+    vhost: '/',
+    exchange: 'bunny.examples.exchange',
+    queue_name: 'bunny.examples.hello_world',
+    routing_key: 'bunny.examples.routing_key'
+  }
+
 end

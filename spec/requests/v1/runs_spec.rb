@@ -134,6 +134,7 @@ RSpec.describe 'RunsController', type: :request do
         expect(run.state).to eq "started"
         expect(run.name).to eq "aname"
       end
+
     end
 
     context 'on failure' do
@@ -165,6 +166,29 @@ RSpec.describe 'RunsController', type: :request do
         patch v1_run_path(123), params: body, headers: json_api_headers
         expect(JSON.parse(response.body)).to include("errors" => "Couldn't find Run with 'id'=123")
       end
+    end
+
+    context 'event message' do
+      let(:body) do
+        {
+          data: {
+            type: "runs",
+            id: run.id,
+            attributes: {
+              state: "completed",
+              name: "aname"
+            }
+          }
+        }.to_json
+      end
+
+      let(:message) { class_double('EventMessage') }
+
+      it 'sends an event if the run is completed or cancelled' do
+        expect(EventMessage).to receive(:new).with(run).and_return(message)
+        patch v1_run_path(run), params: body, headers: json_api_headers
+      end
+
     end
   end
 

@@ -1,4 +1,5 @@
-require "rails_helper"
+require 'rails_helper'
+require 'event_message'
 
 RSpec.describe Run, type: :model do
 
@@ -109,6 +110,37 @@ RSpec.describe Run, type: :model do
       run = create(:run, name: 'run1')
       expect(run.name).to eq('run1')
     end
+  end
+
+  describe '#generate_event' do
+    let(:run) { create(:run) }
+
+    let(:broker) do
+      brok = class_double('BrokerHandle')
+      stub_const('BrokerHandle', brok)
+      brok
+    end
+
+    let(:message) { class_double('EventMessage') }
+
+    context 'when the broker works' do
+     it 'should construct and send the message correctly' do
+       expect(EventMessage).to receive(:new).with(run).and_return(message)
+       expect(broker).to receive(:publish).with(message)
+       run.generate_event
+     end
+
+     context 'when the broker does not work' do
+       it 'should construct and attempt to send the message and log the exception' do
+         expect(EventMessage).to receive(:new).with(run).and_return(message)
+         error = RuntimeError.new("This will not be published.")
+         expect(broker).to receive(:publish).with(message).and_raise error
+         expect { run.generate_event }.to raise_error
+       end
+     end
+
+   end
+
   end
 
 end
