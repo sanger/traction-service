@@ -68,8 +68,8 @@ Rails.application.configure do
     broker_password: 'guest',
     vhost: '/',
     exchange: 'bunny.examples.exchange',
-    queue_name: 'bunny.examples.hello_world',
-    routing_key: 'bunny.examples.routing_key'
+    queue_name: 'psd.traction.to-warehouse',
+    routing_key: '#'
   }
 
 end
