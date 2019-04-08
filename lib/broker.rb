@@ -50,7 +50,7 @@ class Broker
   end
 
   def declare_queue
-    @queue = @channel.queue(@events_config.queue_name)
+    @queue = @channel.queue(@events_config.queue_name, durable: true)
   end
 
   def bind_queue
