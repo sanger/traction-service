@@ -18,8 +18,9 @@ RSpec.describe SampleFactory, type: :model do
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages[0]).to eq("Name can\'t be blank")
       expect(factory.errors.full_messages[1]).to eq("External can\'t be blank")
-      expect(factory.errors.full_messages[2]).to eq("Species can\'t be blank")
-      expect(factory.errors.full_messages.length).to eq(3)
+      expect(factory.errors.full_messages[2]).to eq("External study can\'t be blank")
+      expect(factory.errors.full_messages[3]).to eq("Species can\'t be blank")
+      expect(factory.errors.full_messages.length).to eq(4)
     end
   end
 
