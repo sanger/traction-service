@@ -8,6 +8,7 @@ class Broker
   attr_accessor :connection
   attr_reader :channel, :queue, :exchange
 
+  # initialize events_config with host, port, user, exchange, queue etc
   def initialize
     @events_config = OpenStruct.new(Rails.configuration.events)
   end
