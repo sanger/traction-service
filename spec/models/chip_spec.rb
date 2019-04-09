@@ -2,6 +2,9 @@ require "rails_helper"
 
 RSpec.describe Chip, type: :model do
 
+  let(:barcode) { 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX' }
+  let(:serial_number) { 'FLEVEAOLPTOWPNWU' }
+
   context 'after create' do
     it '#create_flowcells' do
       chip = create(:chip)
@@ -30,15 +33,23 @@ RSpec.describe Chip, type: :model do
   end
 
   context 'barcode' do
-    it 'can have a barcode' do
-      expect(create(:chip, barcode: "TRAC-123")).to be_valid
-      expect(create(:chip, barcode: nil)).to be_valid
+    it 'must have a barcode' do
+      expect(build(:chip, barcode: barcode)).to be_valid
+      expect(build(:chip, barcode: nil)).to_not be_valid
     end
 
-    it 'can be updated with a barcode' do
-      chip = create(:chip)
-      chip.update(barcode: "TRAC-123")
-      expect(chip.barcode).to eq "TRAC-123"
+    it 'must have a barcode of 16 characters or more' do
+      expect(build(:chip, barcode: serial_number)).to be_valid
+      expect(build(:chip, barcode: 'smashit')).to_not be_valid
+    end
+
+    context 'serial number' do
+
+      it 'will be updated when the barcode is updated' do
+        chip = create(:chip, barcode: 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX')
+        expect(chip.serial_number).to eq 'FLEVEAOLPTOWPNWU'
+      end
+
     end
   end
 
