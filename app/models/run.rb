@@ -23,6 +23,9 @@ class Run < ApplicationRecord
     update(deactivated_at: DateTime.current)
   end
 
+  # Creates an EventMessage for the current run
+  # BrokerHandle initialized in broker_initializer publishes the message
+  # TODO: move generate_event on flowcell
   def generate_event
     message = EventMessage.new(self)
     BrokerHandle.publish(message)
