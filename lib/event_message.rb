@@ -8,7 +8,7 @@ class EventMessage
     @run = run
   end
 
-  # TODO update with actual message
+  # TODO: update with actual message
   def generate_json
     {
       'id' => @run.id,
