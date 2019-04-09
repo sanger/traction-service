@@ -8,8 +8,8 @@ module V1
       library = Library.find(attributes['library_id'])
       flowcell.update(library: library)
       head :ok
-    rescue StandardError => exception
-      render json: { errors: exception.message }, status: :unprocessable_entity
+    rescue StandardError => e
+      render json: { errors: e.message }, status: :unprocessable_entity
     end
 
     private
