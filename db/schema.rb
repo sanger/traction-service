@@ -14,6 +14,7 @@ ActiveRecord::Schema.define(version: 2019_02_12_111752) do
 
   create_table "chips", force: :cascade do |t|
     t.string "barcode"
+    t.string "serial_number"
     t.integer "run_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -61,6 +62,7 @@ ActiveRecord::Schema.define(version: 2019_02_12_111752) do
     t.string "name"
     t.datetime "deactivated_at"
     t.integer "external_id"
+    t.integer "external_study_id"
     t.string "species"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

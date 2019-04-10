@@ -27,8 +27,8 @@ module V1
       generate_event
 
       head :ok
-    rescue StandardError => exception
-      render json: { errors: exception.message }, status: :unprocessable_entity
+    rescue StandardError => e
+      render json: { errors: e.message }, status: :unprocessable_entity
     end
 
     def show
