@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require "rails_helper"
 
-RSpec.describe 'Broker' do
+RSpec.describe Messages::Broker do
   let(:bunny) { double('Bunny') }
 
   let(:params) do
