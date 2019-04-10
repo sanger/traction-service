@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'event_message'
 
-RSpec.describe 'EventMessage' do
+RSpec.describe Messages::Message do
   let(:run) { create(:run_with_chip) }
-  let(:msg) {  EventMessage.new(run) }
+  let(:msg) {  Messages::Message.new(run) }
 
   describe 'init' do
     it 'can be initialized with a run' do

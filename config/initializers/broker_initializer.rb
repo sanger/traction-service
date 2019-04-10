@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
-require 'broker'
-
 if Rails.configuration.events[:enabled]
-  BrokerHandle = Broker.new
+  BrokerHandle = Messages::Broker.new
   BrokerHandle.create_connection
 else
   # Create an "empty" class definition with fake methods to use when events are disabled
-  BrokerHandle = Broker.new.tap do |obj|
+  BrokerHandle = Messages::Broker.new.tap do |obj|
     obj.instance_eval do
       # def publish(obj)
       #   puts "***\nPUBLISHING\n#{obj.generate_json}\n***"

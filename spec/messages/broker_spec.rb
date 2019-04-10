@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require "rails_helper"
 
-RSpec.describe 'Broker' do
+RSpec.describe Messages::Broker do
   let(:bunny) { double('Bunny') }
 
   let(:params) do
@@ -23,7 +23,7 @@ RSpec.describe 'Broker' do
   let(:exchange) { double('exchange') }
   let(:queue) { double('queue') }
 
-  let(:broker) { Broker.new }
+  let(:broker) { Messages::Broker.new }
 
   setup do
     stub_const('Bunny', bunny)

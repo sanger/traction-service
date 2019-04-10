@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'event_message'
-
 # Run
 class Run < ApplicationRecord
   has_one :chip, dependent: :nullify
@@ -24,7 +22,7 @@ class Run < ApplicationRecord
   end
 
   def generate_event
-    message = EventMessage.new(self)
+    message = Messages::Message.new(self)
     BrokerHandle.publish(message)
   end
 end
