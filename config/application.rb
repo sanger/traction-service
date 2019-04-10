@@ -53,5 +53,9 @@ module TractionService
         resource '*', headers: :any, methods: [:get, :post, :put, :patch, :options]
       end
     end
+
+    # RabbitMQ config
+    config.bunny = config_for(:bunny)
+
   end
 end

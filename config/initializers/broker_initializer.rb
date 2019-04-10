@@ -2,19 +2,13 @@
 
 require 'broker'
 
-if Rails.configuration.events[:enabled]
-  BrokerHandle = Broker.new
+if Rails.configuration.bunny['enabled']
+  BrokerHandle = Broker.new(Rails.configuration.bunny)
   BrokerHandle.create_connection
 else
-  # Create an "empty" class definition with fake methods to use when events are disabled
-  BrokerHandle = Broker.new.tap do |obj|
+  # Create an "empty" class definition when bunny are disabled
+  BrokerHandle = Broker.new(Rails.configuration.bunny).tap do |obj|
     obj.instance_eval do
-      # def publish(obj)
-      #   puts "***\nPUBLISHING\n#{obj.generate_json}\n***"
-      # end
-      # def consume; end
-      # def working?; end
-      # def connected?; end
     end
   end
 end
