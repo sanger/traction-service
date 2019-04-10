@@ -33,11 +33,11 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][0]['attributes']['state']).to eq(run1.state)
       expect(json['data'][0]['attributes']['name']).to eq(run1.name)
       expect(json['data'][0]['attributes']['chip_barcode']).to eq(run1.chip.barcode)
-      expect(json['data'][0]["attributes"]["created_at"]).to eq(run1.created_at.strftime("%m/%d/%Y %I:%M"))
+      expect(json['data'][0]["attributes"]["created_at"]).to eq(run1.created_at.strftime("%m/%d/%Y %H:%M"))
       expect(json['data'][1]['attributes']['state']).to eq(run2.state)
       expect(json['data'][1]['attributes']['name']).to eq(run2.name)
       expect(json['data'][1]['attributes']['chip_barcode']).to eq(run2.chip.barcode)
-      expect(json['data'][1]["attributes"]["created_at"]).to eq(run2.created_at.strftime("%m/%d/%Y %I:%M"))
+      expect(json['data'][1]["attributes"]["created_at"]).to eq(run2.created_at.strftime("%m/%d/%Y %H:%M"))
     end
 
     it 'returns the correct relationships' do
@@ -134,6 +134,7 @@ RSpec.describe 'RunsController', type: :request do
         expect(run.state).to eq "started"
         expect(run.name).to eq "aname"
       end
+
     end
 
     context 'on failure' do
@@ -165,6 +166,29 @@ RSpec.describe 'RunsController', type: :request do
         patch v1_run_path(123), params: body, headers: json_api_headers
         expect(JSON.parse(response.body)).to include("errors" => "Couldn't find Run with 'id'=123")
       end
+    end
+
+    context 'event message' do
+      let(:body) do
+        {
+          data: {
+            type: "runs",
+            id: run.id,
+            attributes: {
+              state: "completed",
+              name: "aname"
+            }
+          }
+        }.to_json
+      end
+
+      let(:message) { class_double('Messages::Message') }
+
+      it 'sends an event if the run is completed or cancelled' do
+        expect(Messages::Message).to receive(:new).with(run).and_return(message)
+        patch v1_run_path(run), params: body, headers: json_api_headers
+      end
+
     end
   end
 
