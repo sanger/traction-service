@@ -19,12 +19,12 @@ class ObjectA
 end
 
 class Configuration
-  def table
+  def key
     'a_table'
   end
 
-  def id_lims
-    'an_id'
+  def lims
+    'a_lims'
   end
 
   def fields
@@ -65,7 +65,5 @@ RSpec.describe Pipelines::Message, type: :model do
       id_lims: configuration.id_lims
     )
   end
-
-
 
 end
