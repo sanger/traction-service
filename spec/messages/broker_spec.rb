@@ -23,11 +23,11 @@ RSpec.describe Messages::Broker do
   let(:exchange) { double('exchange') }
   let(:queue) { double('queue') }
 
-  let(:broker) { Messages::Broker.new }
+  let(:config) { Rails.configuration.bunny }
+  let(:broker) { Broker.new(config) }
 
   setup do
     stub_const('Bunny', bunny)
-    allow(Rails.application.config).to receive(:events).and_return(params)
   end
 
   def mock_connection
