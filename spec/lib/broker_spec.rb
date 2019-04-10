@@ -65,8 +65,8 @@ RSpec.describe 'Broker' do
       expect(broker).not_to receive(:connect)
     end
 
-    xit 'should connect when not already connected' do
-      expect(bunny).to receive(:new)
+    it 'should connect when not already connected' do
+      expect(broker).to receive(:connect)
       broker.create_connection
     end
   end
