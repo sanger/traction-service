@@ -182,10 +182,10 @@ RSpec.describe 'RunsController', type: :request do
         }.to_json
       end
 
-      let(:message) { class_double('EventMessage') }
+      let(:message) { class_double('Messages::Message') }
 
       it 'sends an event if the run is completed or cancelled' do
-        expect(EventMessage).to receive(:new).with(run).and_return(message)
+        expect(Messages::Message).to receive(:new).with(run).and_return(message)
         patch v1_run_path(run), params: body, headers: json_api_headers
       end
 
