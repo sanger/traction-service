@@ -59,7 +59,7 @@ module Messages
     end
 
     def publish(message)
-      @exchange&.publish(message.payload, routing_key: bunny_config.routing_key)
+      @exchange&.publish(message.payload, routing_key: bunny_config['routing_key'])
     end
   end
 end
