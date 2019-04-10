@@ -4,6 +4,8 @@ RSpec.describe 'ChipsController', type: :request do
 
   context '#update' do
     let(:chip) { create(:chip) }
+    let(:barcode) { 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX-2' }
+
 
     context 'on success' do
       let(:body) do
@@ -12,7 +14,7 @@ RSpec.describe 'ChipsController', type: :request do
             type: "chips",
             id: chip.id,
             attributes: {
-              "barcode":"TRAC123"
+              barcode: barcode
             }
           }
         }.to_json
@@ -26,7 +28,7 @@ RSpec.describe 'ChipsController', type: :request do
       it 'updates a chip' do
         patch v1_chip_path(chip), params: body, headers: json_api_headers
         chip.reload
-        expect(chip.barcode).to eq "TRAC123"
+        expect(chip.barcode).to eq barcode
       end
     end
 
@@ -37,7 +39,7 @@ RSpec.describe 'ChipsController', type: :request do
             type: "chips",
             id: chip.id,
             attributes: {
-              "barcode":"TRAC123"
+              barcode: barcode
             }
           }
         }.to_json
