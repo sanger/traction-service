@@ -7,8 +7,8 @@ module V1
       attributes = params.require(:data)['attributes'].permit(:barcode)
       chip.update(attributes)
       head :ok
-    rescue StandardError => exception
-      render json: { errors: exception.message }, status: :unprocessable_entity
+    rescue StandardError => e
+      render json: { errors: e.message }, status: :unprocessable_entity
     end
 
     private
