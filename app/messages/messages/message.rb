@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 module Messages
+  # Message
   class Message
-    include ActiveModel::Model 
+    include ActiveModel::Model
 
     attr_accessor :object, :configuration
 
@@ -10,12 +13,12 @@ module Messages
 
     def content
       {}.tap do |result|
-        result[configuration.key] = configuration.fields.each_with_object({}) do |(k,v), result|
-          result[k] = instance_value(v)
+        result[configuration.key] = configuration.fields.each_with_object({}) do |(k, v), r|
+          r[k] = instance_value(v)
         end
         result[configuration.key][:updated_at] = timestamp
         result[:lims] = configuration.lims
-      end 
+      end
     end
 
     def payload
