@@ -24,7 +24,7 @@ RSpec.describe Messages::Message, type: :model do
   let(:object_b) { ObjectB.new('attr_d')}
   let(:object_a) { ObjectA.new('attr_a', 'attr_b', object_b)}
 
-  let(:config) { { key: 'a_table', lims: 'a_lims', fields: { field_a: 'attr_a', field_b: 'attr_b', field_c: 'attr_c.attr_d' } }.with_indifferent_access }
+  let(:config) { { key: 'a_table', lims: 'a_lims', instrument_name: 'saphyr', fields: { field_a: 'attr_a', field_b: 'attr_b', field_c: 'attr_c.attr_d' } }.with_indifferent_access }
 
   let(:message) { Messages::Message.new(object: object_a, configuration: config ) }
   let(:timestamp) { Time.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
@@ -49,7 +49,8 @@ RSpec.describe Messages::Message, type: :model do
         field_c: 'attr_d',
         updated_at: timestamp
       },
-      lims: config[:lims] }.with_indifferent_access
+      lims: config[:lims],
+      instrument_name: config[:instrument_name] }.with_indifferent_access
     )
   end
 
