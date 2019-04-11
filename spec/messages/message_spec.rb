@@ -41,7 +41,10 @@ RSpec.describe Messages::Message, type: :model do
   let(:object_b) { ObjectB.new('attr_d')}
   let(:object_a) { ObjectA.new('attr_a', 'attr_b', object_b)}
   let(:configuration) { Configuration.new }
-  let(:message) { Messages::Message.new(object: object_a, configuration: configuration ) }
+
+  let(:config) { { key: 'a_table', lims: 'a_lims', fields: { field_a: 'attr_a', field_b: 'attr_b', field_c: 'attr_c.attr_d' } } }
+
+  let(:message) { Messages::Message.new(object: object_a, configuration: config ) }
   let(:timestamp) { Time.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
 
   before(:each) do
@@ -59,8 +62,8 @@ RSpec.describe Messages::Message, type: :model do
   it 'has some content' do
     expect(message.content).to eq(
       configuration.key => {
-        field_a: 'attr_a', 
-        field_b: 'attr_b', 
+        field_a: 'attr_a',
+        field_b: 'attr_b',
         field_c: 'attr_d',
         updated_at: timestamp
       },
