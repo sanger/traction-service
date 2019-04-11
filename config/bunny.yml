@@ -7,11 +7,11 @@ default: &default
   vhost: /
   exchange: bunny.examples.exchange
   queue_name: psd.traction.to-warehouse
-  routing_key: #
+  routing_key: "#"
 
 development:
   <<: *default
-  enabled: false
+  enabled: true
 
 test:
   enabled: false
