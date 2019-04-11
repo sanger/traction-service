@@ -43,6 +43,7 @@ module TractionService
     end
 
     config.mailer = config_for(:mailer)
+    config.pipelines = config_for(:pipelines)
 
      # Rails 5
     config.middleware.insert_before 0, Rack::Cors do

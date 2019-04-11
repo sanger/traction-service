@@ -1,16 +1,26 @@
 default: &default
+  # enabled: true
+  # broker_host: localhost
+  # broker_port: 5672
+  # broker_username: guest
+  # broker_password: guest
+  # vhost: /
+  # exchange: bunny.examples.exchange
+  # queue_name: psd.traction.to-warehouse
+  # routing_key: "#"
   enabled: true
-  broker_host: localhost
+  broker_host: trac0.psd.sanger.ac.uk
   broker_port: 5672
-  broker_username: guest
-  broker_password: guest
-  vhost: /
-  exchange: bunny.examples.exchange
+  broker_username: test
+  broker_password: test
+  vhost: test
+  exchange: psd.traction
   queue_name: psd.traction.to-warehouse
-  routing_key: #
+  routing_key: staging.traction.message.#
 
 development:
   <<: *default
+  enabled: true
 
 test:
   enabled: false
