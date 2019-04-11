@@ -7,10 +7,10 @@ module Messages
   # This class should control connection, exchange, queues and publishing to the broker
   class Broker
     attr_accessor :connection
-    attr_reader :channel, :queue, :exchange
+    attr_reader :channel, :queue, :exchange, :bunny_config
 
-    def initialize
-      @events_config = OpenStruct.new(Rails.configuration.events)
+    def initialize(bunny_config)
+      @bunny_config = OpenStruct.new(bunny_config)
     end
 
     def create_connection
@@ -34,11 +34,11 @@ module Messages
     end
 
     def start_connection
-      @connection = Bunny.new host: @events_config.broker_host,
-                              port: @events_config.broker_port,
-                              username: @events_config.broker_username,
-                              password: @events_config.broker_password,
-                              vhost: @events_config.vhost
+      @connection = Bunny.new host: bunny_config.broker_host,
+                              port: bunny_config.broker_port,
+                              username: bunny_config.broker_username,
+                              password: bunny_config.broker_password,
+                              vhost: bunny_config.vhost
       @connection.start
     end
 
@@ -47,19 +47,19 @@ module Messages
     end
 
     def instantiate_exchange
-      @exchange = @channel.topic(@events_config.exchange, passive: true)
+      @exchange = @channel.topic(bunny_config.exchange, passive: true)
     end
 
     def declare_queue
-      @queue = @channel.queue(@events_config.queue_name, durable: true)
+      @queue = @channel.queue(bunny_config.queue_name, durable: true)
     end
 
     def bind_queue
-      @queue.bind(@exchange, routing_key: @events_config.routing_key)
+      @queue.bind(@exchange, routing_key: bunny_config.routing_key)
     end
 
     def publish(message)
-      @exchange&.publish(message.generate_json, routing_key: @events_config.routing_key)
+      @exchange&.publish(message.payload, routing_key: bunny_config['routing_key'])
     end
   end
 end
