@@ -11,6 +11,7 @@ module Messages
       Time.current
     end
 
+    # rubocop:disable Metrics/AbcSize
     def content
       {}.tap do |result|
         result[configuration['key']] = configuration['fields'].each_with_object({}) do |(k, v), r|
@@ -21,6 +22,7 @@ module Messages
         result['instrument_name'] = configuration['instrument_name']
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     def payload
       content.to_json
