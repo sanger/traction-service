@@ -1,0 +1,21 @@
+default: &default
+  saphyr:
+    instrument_name: saphyr
+    messages:
+      lims: Traction
+      key: bmap_flowcell
+      fields:
+        sample_uuid: library.sample.id
+        study_uuid: library.sample.id
+        experiment_name: chip.run.name
+        enzyme_name: library.enzyme.name
+        chip_barcode: chip.barcode
+        chip_serialnumber: chip.serial_number
+        position: position
+        id_library_lims: library.id
+
+development:
+  <<: *default
+
+test:
+  <<: *default
