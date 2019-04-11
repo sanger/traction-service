@@ -18,6 +18,7 @@ module Messages
         end
         result[configuration['key']]['updated_at'] = timestamp
         result['lims'] = configuration['lims']
+        result['instrument_name'] = configuration['instrument_name']
       end
     end
 
