@@ -5,8 +5,8 @@ default: &default
       lims: Traction
       key: bmap_flowcell
       fields:
-        sample_uuid: library.sample.id
-        study_uuid: library.sample.id
+        sample_uuid: library.sample.external_id
+        study_uuid: library.sample.external_study_id
         experiment_name: chip.run.name
         enzyme_name: library.enzyme.name
         chip_barcode: chip.barcode
