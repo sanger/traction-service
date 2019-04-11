@@ -13,11 +13,11 @@ module Messages
 
     def content
       {}.tap do |result|
-        result[configuration.key] = configuration.fields.each_with_object({}) do |(k, v), r|
+        result[configuration['key']] = configuration['fields'].each_with_object({}) do |(k, v), r|
           r[k] = instance_value(v)
         end
-        result[configuration.key][:updated_at] = timestamp
-        result[:lims] = configuration.lims
+        result[configuration['key']][:updated_at] = timestamp
+        result[:lims] = configuration['lims']
       end
     end
 
