@@ -4,7 +4,7 @@ require "rails_helper"
 RSpec.describe Messages::Broker do
   let(:bunny) { double('Bunny') }
 
-  let(:params) do
+  let(:bunny_config) do
     {
       enabled: true,
       broker_host: 'broker_host',
@@ -23,8 +23,7 @@ RSpec.describe Messages::Broker do
   let(:exchange) { double('exchange') }
   let(:queue) { double('queue') }
 
-  let(:config) { Rails.configuration.bunny }
-  let(:broker) { Broker.new(config) }
+  let(:broker) { Messages::Broker.new(bunny_config) }
 
   setup do
     stub_const('Bunny', bunny)
@@ -54,6 +53,12 @@ RSpec.describe Messages::Broker do
   # Mock queue subscription
   def mock_subscribing_setup
     allow(queue).to receive(:subscribe)
+  end
+
+  describe '#configuration' do
+    it 'will be present' do
+      expect(broker.bunny_config.enabled).to eq(bunny_config[:enabled])
+    end
   end
 
   describe '#create_connection' do
