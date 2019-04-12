@@ -47,10 +47,11 @@ RSpec.describe Messages::Message, type: :model do
         field_a: 'attr_a',
         field_b: 'attr_b',
         field_c: 'attr_d',
-        updated_at: timestamp
+        updated_at: timestamp,
+        instrument_name: config[:instrument_name]
       },
       lims: config[:lims],
-      instrument_name: config[:instrument_name] }.with_indifferent_access
+      }.with_indifferent_access
     )
   end
 

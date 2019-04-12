@@ -13,7 +13,7 @@ default: &default
         chip_serialnumber: chip.serial_number
         position: position
         id_library_lims: library.id
-
+        id_flowcell_lims: id
 
 development:
   <<: *default
