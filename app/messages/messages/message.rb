@@ -11,6 +11,8 @@ module Messages
       Time.current
     end
 
+    # rubocop:disable Metrics/AbcSize
+    # TODO: needs refactoring to remove cops and make it a bit tidier
     def content
       {}.tap do |result|
         result[configuration['key']] = configuration['fields'].each_with_object({}) do |(k, v), r|
@@ -18,8 +20,10 @@ module Messages
         end
         result[configuration['key']]['updated_at'] = timestamp
         result['lims'] = configuration['lims']
+        result[configuration['key']]['instrument_name'] = configuration['instrument_name']
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     def payload
       content.to_json
