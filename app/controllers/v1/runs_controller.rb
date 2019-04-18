@@ -24,9 +24,11 @@ module V1
     def update
       attributes = params.require(:data)['attributes'].permit(:state, :name)
       run.update(attributes)
+      generate_event
+
       head :ok
-    rescue StandardError => exception
-      render json: { errors: exception.message }, status: :unprocessable_entity
+    rescue StandardError => e
+      render json: { errors: e.message }, status: :unprocessable_entity
     end
 
     def show
@@ -55,6 +57,10 @@ module V1
       end
 
       JSONAPI::ResourceSerializer.new(RunResource).serialize_to_hash(resources)
+    end
+
+    def generate_event
+      run.generate_event if run.state == 'completed' || run.state == 'cancelled'
     end
   end
 end
