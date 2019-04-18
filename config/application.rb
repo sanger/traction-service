@@ -45,8 +45,6 @@ module TractionService
     config.mailer = config_for(:mailer)
     config.pipelines = config_for(:pipelines)
 
-    config.autoload_paths += %W(#{config.root}/lib/utils)
-
      # Rails 5
     config.middleware.insert_before 0, Rack::Cors do
       allow do
@@ -54,5 +52,9 @@ module TractionService
         resource '*', headers: :any, methods: [:get, :post, :put, :patch, :options]
       end
     end
+
+    # RabbitMQ config
+    config.bunny = config_for(:bunny)
+
   end
 end

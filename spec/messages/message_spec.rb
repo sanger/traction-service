@@ -18,30 +18,15 @@ class ObjectA
   end
 end
 
-class Configuration
-  def key
-    'a_table'
-  end
 
-  def lims
-    'a_lims'
-  end
-
-  def fields
-    {
-      field_a: 'attr_a',
-      field_b: 'attr_b',
-      field_c: 'attr_c.attr_d'
-    }
-  end
-end
-
-RSpec.describe Pipelines::Message, type: :model do
+RSpec.describe Messages::Message, type: :model do
 
   let(:object_b) { ObjectB.new('attr_d')}
   let(:object_a) { ObjectA.new('attr_a', 'attr_b', object_b)}
-  let(:configuration) { Configuration.new }
-  let(:message) { Pipelines::Message.new(object: object_a, configuration: configuration ) }
+
+  let(:config) { { key: 'a_table', lims: 'a_lims', instrument_name: 'saphyr', fields: { field_a: 'attr_a', field_b: 'attr_b', field_c: 'attr_c.attr_d' } }.with_indifferent_access }
+
+  let(:message) { Messages::Message.new(object: object_a, configuration: config ) }
   let(:timestamp) { Time.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
 
   before(:each) do
@@ -58,12 +43,20 @@ RSpec.describe Pipelines::Message, type: :model do
 
   it 'has some content' do
     expect(message.content).to eq(
-      field_a: 'attr_a', 
-      field_b: 'attr_b', 
-      field_c: 'attr_d',
-      updated_at: timestamp,
-      id_lims: configuration.id_lims
+      { config[:key] => {
+        field_a: 'attr_a',
+        field_b: 'attr_b',
+        field_c: 'attr_d',
+        updated_at: timestamp,
+        instrument_name: config[:instrument_name]
+      },
+      lims: config[:lims],
+      }.with_indifferent_access
     )
+  end
+
+  it 'has a payload' do
+    expect(message.payload).to_not be_nil
   end
 
 end

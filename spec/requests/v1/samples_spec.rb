@@ -99,7 +99,7 @@ RSpec.describe 'SamplesController', type: :request do
           expect(json['data'].length).to eq(2)
           sample = json['data'].first['attributes']
           expect(sample['name']).to eq(attributes[0][:name])
-          expect(sample['external_id']).to eq(attributes[0][:external_id].to_i)
+          expect(sample['external_id']).to eq(attributes[0][:external_id])
           expect(sample['species']).to eq(attributes[0][:species])
         end
       end

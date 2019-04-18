@@ -30,7 +30,7 @@ RSpec.describe Sample, type: :model do
 
     describe 'external_id' do
       it 'should have a external_id' do
-        expect(create(:sample, external_id: 123).external_id).to eq(123)
+        expect(create(:sample, external_id: 123).external_id).to eq("123")
       end
 
       it 'is not valid without a external_id' do
