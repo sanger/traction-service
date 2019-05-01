@@ -8,7 +8,8 @@ module V1
       chip.update(attributes)
       head :ok
     rescue StandardError => e
-      render json: { errors: e.message }, status: :unprocessable_entity
+      data = { data: { errors: e.message } }
+      render json: data, status: :unprocessable_entity
     end
 
     private

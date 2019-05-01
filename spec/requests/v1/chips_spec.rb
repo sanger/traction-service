@@ -58,7 +58,7 @@ RSpec.describe 'ChipsController', type: :request do
 
       it 'has an error message' do
         patch v1_chip_path(123), params: body, headers: json_api_headers
-        expect(JSON.parse(response.body)).to include("errors" => "Couldn't find Chip with 'id'=123")
+        expect(JSON.parse(response.body)["data"]).to include("errors" => "Couldn't find Chip with 'id'=123")
       end
     end
   end
