@@ -20,7 +20,7 @@ class Library < ApplicationRecord
   end
 
   def deactivate
-    return true unless active?
+    return false unless active?
 
     update(deactivated_at: DateTime.current)
   end
