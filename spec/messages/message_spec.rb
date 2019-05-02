@@ -1,4 +1,5 @@
 require "rails_helper"
+require 'ostruct'
 
 class ObjectB
   attr_reader :attr_d
@@ -21,20 +22,28 @@ end
 
 RSpec.describe Messages::Message, type: :model do
 
-  let(:object_b) { ObjectB.new('attr_d')}
-  let(:object_a) { ObjectA.new('attr_a', 'attr_b', object_b)}
+  let(:object_b)  { ObjectB.new('attr_d')}
+  let(:object_a)  { ObjectA.new('attr_a', 'attr_b', object_b)}
+  let(:params)    { {
+                      key: 'a_table',
+                      lims: 'a_lims',
+                      fields: { 
+                        instrument_name: { type: :string, value: 'saphyr' },
+                        field_a: { type: :model, value: 'attr_a' }, 
+                        field_b: { type: :model, value: 'attr_b' }, 
+                        field_c: { type: :model, value: 'attr_c.attr_d' },
+                        updated_at: { type: :constant, value: 'Time.current' }
+                      }
+                    }.with_indifferent_access
+                  }
 
-  let(:config) { { key: 'a_table', lims: 'a_lims', instrument_name: 'saphyr', fields: { field_a: 'attr_a', field_b: 'attr_b', field_c: 'attr_c.attr_d' } }.with_indifferent_access }
+  let(:config) { OpenStruct.new(params) }
 
   let(:message) { Messages::Message.new(object: object_a, configuration: config ) }
   let(:timestamp) { Time.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
 
   before(:each) do
     allow(Time).to receive(:current).and_return timestamp
-  end
-
-  it 'works' do
-    expect(true).to be_truthy
   end
 
   it 'has a timestamp' do
@@ -48,7 +57,7 @@ RSpec.describe Messages::Message, type: :model do
         field_b: 'attr_b',
         field_c: 'attr_d',
         updated_at: timestamp,
-        instrument_name: config[:instrument_name]
+        instrument_name: 'saphyr'
       },
       lims: config[:lims],
       }.with_indifferent_access
