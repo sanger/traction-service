@@ -9,7 +9,7 @@ module V1
       flowcell.update(library: library)
       head :ok
     rescue StandardError => e
-      render json: { errors: e.message }, status: :unprocessable_entity
+      render json: { data: { errors: e.message } }, status: :unprocessable_entity
     end
 
     private
