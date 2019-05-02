@@ -28,8 +28,7 @@ module V1
       if @library.deactivate
         head :no_content
       else
-        data = { data: { errors: @library.errors.messages } }
-        render json: data, status: :unprocessable_entity
+        render json: { data: { errors: @library.errors.messages } }, status: :unprocessable_entity
       end
     end
 
