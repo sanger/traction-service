@@ -71,7 +71,12 @@ RSpec.describe 'SamplesController', type: :request do
           post v1_samples_path, params: body, headers: json_api_headers
           post v1_samples_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
-          expect(JSON.parse(response.body)["errors"].length).to eq 1
+        end
+
+        it 'has an error message' do
+          post v1_samples_path, params: body, headers: json_api_headers
+          post v1_samples_path, params: body, headers: json_api_headers
+          expect(JSON.parse(response.body)["data"]["errors"]).to include("name" => ["has already been taken"])
         end
       end
     end
