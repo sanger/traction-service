@@ -11,19 +11,13 @@ module Messages
       Time.current
     end
 
-    # rubocop:disable Metrics/AbcSize
-    # TODO: needs refactoring to remove cops and make it a bit tidier
     def content
-      {}.tap do |result|
-        result[configuration['key']] = configuration['fields'].each_with_object({}) do |(k, v), r|
+      { lims: configuration.lims }.with_indifferent_access.tap do |result|
+        result[configuration.key] = configuration.fields.each_with_object({}) do |(k, v), r|
           r[k] = instance_value(v)
         end
-        result[configuration['key']]['updated_at'] = timestamp
-        result['lims'] = configuration['lims']
-        result[configuration['key']]['instrument_name'] = configuration['instrument_name']
       end
     end
-    # rubocop:enable Metrics/AbcSize
 
     def payload
       content.to_json
@@ -31,8 +25,20 @@ module Messages
 
     private
 
-    def instance_value(chain)
-      chain.split('.').inject(object, :send)
+    def instance_value(field)
+      case field[:type]
+      when :string
+        field[:value]
+      when :model
+        evaluate_method_chain(object, field[:value].split('.'))
+      when :constant
+        evaluate_method_chain(field[:value].split('.').first.constantize,
+                              field[:value].split('.')[1..-1])
+      end
+    end
+
+    def evaluate_method_chain(object, chain)
+      chain.inject(object, :send)
     end
   end
 end

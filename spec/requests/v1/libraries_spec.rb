@@ -125,6 +125,11 @@ RSpec.describe 'LibrariesController', type: :request do
           it 'cannot create a library' do
             expect { post v1_libraries_path, params: body, headers: json_api_headers }.to change { Library.count }.by(0)
           end
+
+          it 'has an error message' do
+            post v1_libraries_path, params: body, headers: json_api_headers
+            expect(JSON.parse(response.body)["data"]).to include("errors" => {"sample"=>['must exist']})
+          end
         end
 
         context 'when the enzyme does not exist' do
@@ -135,7 +140,7 @@ RSpec.describe 'LibrariesController', type: :request do
               data: {
                 attributes: {
                   libraries: [
-                    { state: 'pending', sample_id: sample, enzyme_id: 1}
+                    { state: 'pending', sample_id: sample.id, enzyme_id: 1}
                   ]
                 }
               }
@@ -149,6 +154,11 @@ RSpec.describe 'LibrariesController', type: :request do
 
           it 'cannot create a library' do
             expect { post v1_libraries_path, params: body, headers: json_api_headers }.to change { Library.count }.by(0)
+          end
+
+          it 'has an error message' do
+            post v1_libraries_path, params: body, headers: json_api_headers
+            expect(JSON.parse(response.body)["data"]).to include("errors" => {"enzyme"=>['must exist']})
           end
         end
 
@@ -186,13 +196,15 @@ RSpec.describe 'LibrariesController', type: :request do
 
       context 'on failure' do
         context 'when the sample does not exist' do
+          let(:enzyme) { create(:enzyme) }
+
           let(:body) do
             {
               data: {
                 attributes: {
                   libraries: [
-                    { state: 'pending', sample_id: 1, enzyme_id: 1},
-                    { state: 'pending', sample_id: 1, enzyme_id: 1}
+                    { state: 'pending', sample_id: 1, enzyme_id: enzyme.id},
+                    { state: 'pending', sample_id: 1, enzyme_id: enzyme.id}
                   ]
                 }
               }
@@ -203,6 +215,11 @@ RSpec.describe 'LibrariesController', type: :request do
             post v1_libraries_path, params: body, headers: json_api_headers
             expect(response).to have_http_status(:unprocessable_entity)
           end
+
+          it 'has an error message' do
+            post v1_libraries_path, params: body, headers: json_api_headers
+            expect(JSON.parse(response.body)["data"]).to include("errors" => {"sample"=>['must exist', 'must exist']})
+          end
         end
       end
 
@@ -210,15 +227,35 @@ RSpec.describe 'LibrariesController', type: :request do
   end
 
   context '#destroy' do
-    let!(:library) { create(:library) }
-    let!(:tube) { create(:tube, material: library)}
+    context 'on success' do
+      let!(:library) { create(:library) }
+      let!(:tube) { create(:tube, material: library)}
 
-    it 'deactivates the library' do
-      delete "/v1/libraries/#{library.id}", headers: json_api_headers
+      it 'deactivates the library' do
+        delete "/v1/libraries/#{library.id}", headers: json_api_headers
 
-      expect(response).to have_http_status(:no_content)
-      library.reload
-      expect(library.deactivated_at).to be_present
+        expect(response).to have_http_status(:no_content)
+        library.reload
+        expect(library.deactivated_at).to be_present
+      end
+    end
+
+    context 'on failure' do
+      let!(:library) { create(:library) }
+
+      before do
+        library.deactivate
+      end
+
+      it 'does not deactivate the library' do
+        delete "/v1/libraries/#{library.id}", headers: json_api_headers
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'has an error message' do
+        delete "/v1/libraries/#{library.id}", headers: json_api_headers
+        expect(JSON.parse(response.body)["data"]).to include("errors" => {})
+      end
     end
   end
 

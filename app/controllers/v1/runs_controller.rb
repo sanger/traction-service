@@ -17,18 +17,19 @@ module V1
           JSONAPI::ResourceSerializer.new(RunResource).serialize_to_hash(@resources),
                status: :created
       else
-        render json: { errors: @run_factory.errors.messages }, status: :unprocessable_entity
+        data = { data: { errors: @run_factory.errors.messages } }
+        render json: data, status: :unprocessable_entity
       end
     end
 
     def update
       attributes = params.require(:data)['attributes'].permit(:state, :name)
       run.update(attributes)
-      generate_event
+      # generate_event
 
       head :ok
     rescue StandardError => e
-      render json: { errors: e.message }, status: :unprocessable_entity
+      render json: { data: { errors: e.message } }, status: :unprocessable_entity
     end
 
     def show
