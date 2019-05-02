@@ -29,8 +29,7 @@ module V1
 
       head :ok
     rescue StandardError => e
-      data = { data: { errors: e.message } }
-      render json: data, status: :unprocessable_entity
+      render json: { data: { errors: e.message } }, status: :unprocessable_entity
     end
 
     def show
