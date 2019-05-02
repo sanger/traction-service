@@ -66,16 +66,16 @@ RSpec.describe Library, type: :model do
     it 'can be deactivated' do
       sample = create(:sample)
       library = create(:library, sample: sample)
-      library.deactivate
+      expect(library.deactivate).to eq true
       expect(library.deactivated_at).to be_present
       expect(library).not_to be_active
     end
 
-    it 'returns true if already deactivated' do
+    it 'returns false if already deactivated' do
       sample = create(:sample)
       library = create(:library, sample: sample)
       library.deactivate
-      expect(library.deactivate).to eq true
+      expect(library.deactivate).to eq false
     end
 
   end

@@ -19,7 +19,8 @@ module V1
         body = JSONAPI::ResourceSerializer.new(LibraryResource).serialize_to_hash(@resources)
         render json: body, status: :created
       else
-        render json: { errors: @library_factory.errors.messages }, status: :unprocessable_entity
+        data = { data: { errors: @library_factory.errors.messages } }
+        render json: data, status: :unprocessable_entity
       end
     end
 
@@ -27,7 +28,7 @@ module V1
       if @library.deactivate
         head :no_content
       else
-        render json: { errors: @library.errors.messages }, status: :unprocessable_entity
+        render json: { data: { errors: @library.errors.messages } }, status: :unprocessable_entity
       end
     end
 
