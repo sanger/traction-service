@@ -25,7 +25,7 @@ module V1
     def update
       attributes = params.require(:data)['attributes'].permit(:state, :name)
       run.update(attributes)
-      generate_event
+      # generate_event
 
       head :ok
     rescue StandardError => e
