@@ -3,6 +3,8 @@
 module V1
   # RunsController
   class RunsController < ApplicationController
+
+    #TODO: I think the scope can be added into the resoure
     def index
       @runs = Run.active
       @resources = @runs.map { |run| RunResource.new(run, nil) }
@@ -30,11 +32,6 @@ module V1
       head :ok
     rescue StandardError => e
       render json: { data: { errors: e.message } }, status: :unprocessable_entity
-    end
-
-    def show
-      @resource = RunResource.new(run, nil)
-      render json: serialize_resources(@resource)
     end
 
     private
