@@ -14,17 +14,19 @@ RSpec.describe Pipelines, type: :model do
     }
   }
 
-  before(:each) do
-    Pipelines.configure(params)
+  describe '#configure' do
+
+    before(:each) do
+      Pipelines.configure(params)
+    end
+
+    it 'will create a method for each pipeline' do
+      expect(Pipelines.pipeline_a).to be_present
+      expect(Pipelines.pipeline_a.lims).to eq('lims_a')
+
+      expect(Pipelines.pipeline_b).to be_present
+      expect(Pipelines.pipeline_b.lims).to eq('lims_b')
+    end
   end
-
-  it 'will create a method for each pipeline' do
-    expect(Pipelines.pipeline_a).to be_present
-    expect(Pipelines.pipeline_a.lims).to eq('lims_a')
-
-    expect(Pipelines.pipeline_b).to be_present
-    expect(Pipelines.pipeline_b.lims).to eq('lims_b')
-  end
-
 
 end
