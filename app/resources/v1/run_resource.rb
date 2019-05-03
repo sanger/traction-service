@@ -14,7 +14,7 @@ module V1
       @model.created_at.strftime('%m/%d/%Y %H:%M')
     end
 
-    def self.records(options = {})
+    def self.records(_options = {})
       Run.active
     end
   end
