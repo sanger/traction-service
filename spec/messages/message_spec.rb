@@ -46,10 +46,6 @@ RSpec.describe Messages::Message, type: :model do
     allow(Time).to receive(:current).and_return timestamp
   end
 
-  it 'has a timestamp' do
-    expect(message.timestamp).to eq(timestamp)
-  end
-
   it 'has some content' do
     expect(message.content).to eq(
       { config[:key] => {
