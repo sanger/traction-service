@@ -17,8 +17,8 @@ module V1
           JSONAPI::ResourceSerializer.new(RunResource).serialize_to_hash(@resources),
                status: :created
       else
-        data = { data: { errors: @run_factory.errors.messages } }
-        render json: data, status: :unprocessable_entity
+        render json: { data: { errors: @run_factory.errors.messages } },
+               status: :unprocessable_entity
       end
     end
 

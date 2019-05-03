@@ -19,8 +19,8 @@ module V1
         body = JSONAPI::ResourceSerializer.new(LibraryResource).serialize_to_hash(@resources)
         render json: body, status: :created
       else
-        data = { data: { errors: @library_factory.errors.messages } }
-        render json: data, status: :unprocessable_entity
+        render json: { data: { errors: @library_factory.errors.messages } },
+               status: :unprocessable_entity
       end
     end
 
