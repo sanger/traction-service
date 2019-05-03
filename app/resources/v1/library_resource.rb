@@ -26,5 +26,9 @@ module V1
     def deactivated_at
       @model&.deactivated_at&.strftime('%m/%d/%Y %I:%M')
     end
+
+    def self.records(_options = {})
+      Library.active
+    end
   end
 end
