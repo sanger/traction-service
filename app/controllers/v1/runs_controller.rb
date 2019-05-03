@@ -3,7 +3,6 @@
 module V1
   # RunsController
   class RunsController < ApplicationController
-
     def create
       @run_factory = RunFactory.new(params_names)
       if @run_factory.save
