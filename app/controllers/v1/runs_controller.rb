@@ -3,12 +3,6 @@
 module V1
   # RunsController
   class RunsController < ApplicationController
-    def index
-      @runs = Run.active
-      @resources = @runs.map { |run| RunResource.new(run, nil) }
-      render json: serialize_resources(@resources)
-    end
-
     def create
       @run_factory = RunFactory.new(params_names)
       if @run_factory.save
@@ -30,11 +24,6 @@ module V1
       head :ok
     rescue StandardError => e
       render json: { data: { errors: e.message } }, status: :unprocessable_entity
-    end
-
-    def show
-      @resource = RunResource.new(run, nil)
-      render json: serialize_resources(@resource)
     end
 
     private

@@ -5,13 +5,6 @@ module V1
   class LibrariesController < ApplicationController
     before_action :current_library, only: [:destroy]
 
-    def index
-      @libraries = Library.active
-      @resources = @libraries.map { |library| LibraryResource.new(library, nil) }
-      body = JSONAPI::ResourceSerializer.new(LibraryResource).serialize_to_hash(@resources)
-      render json: body
-    end
-
     def create
       @library_factory = LibraryFactory.new(params_names)
       if @library_factory.save
