@@ -2,6 +2,11 @@ require "rails_helper"
 
 RSpec.describe 'ChipsController', type: :request do
 
+  context '#create' do
+
+    
+  end
+
   context '#update' do
     let(:chip) { create(:chip) }
     let(:barcode) { 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX-2' }

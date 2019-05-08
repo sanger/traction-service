@@ -91,11 +91,6 @@ RSpec.describe Run, type: :model do
       chip = create(:chip, run: run)
 
       expect(run.chip).to eq chip
-      expect(run.chip.flowcells.length).to eq 2
-      expect(run.chip.flowcells[0].position).to eq(1)
-      expect(run.chip.flowcells[0].chip).to eq(chip)
-      expect(run.chip.flowcells[1].position).to eq(2)
-      expect(run.chip.flowcells[1].chip).to eq(chip)
     end
   end
 
@@ -109,37 +104,6 @@ RSpec.describe Run, type: :model do
       run = create(:run, name: 'run1')
       expect(run.name).to eq('run1')
     end
-  end
-
-  describe '#generate_event' do
-    let(:run) { create(:run) }
-
-    let(:broker) do
-      brok = class_double('BrokerHandle')
-      stub_const('BrokerHandle', brok)
-      brok
-    end
-
-    let(:message) { class_double('Messages::Message') }
-
-    context 'when the broker works' do
-     it 'should construct and send the message correctly' do
-       expect(Messages::Message).to receive(:new).with(run).and_return(message)
-       expect(broker).to receive(:publish).with(message)
-       run.generate_event
-     end
-
-     context 'when the broker does not work' do
-       it 'should construct and attempt to send the message and log the exception' do
-         expect(Messages::Message).to receive(:new).with(run).and_return(message)
-         error = RuntimeError.new("This will not be published.")
-         expect(broker).to receive(:publish).with(message).and_raise error
-         expect { run.generate_event }.to raise_error(RuntimeError, "This will not be published.")
-       end
-     end
-
-   end
-
   end
 
 end

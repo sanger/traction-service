@@ -5,14 +5,15 @@ RSpec.describe 'RunsController', type: :request do
   context '#get' do
     let!(:run1) { create(:run, state: 'pending', name: 'run1') }
     let!(:run2) { create(:run, state: 'started') }
-    let!(:chip1) { create(:chip, run: run1) }
-    let!(:chip2) { create(:chip, run: run2) }
+    let!(:chip1) { create(:chip, run: run1, flowcells: create_list(:flowcell, 2)) }
+    let!(:chip2) { create(:chip, run: run2, flowcells: create_list(:flowcell, 2)) }
 
     it 'returns a list of runs' do
       get v1_runs_path, headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
+      puts json['data']
       expect(json['data'].length).to eq(2)
     end
 
@@ -83,23 +84,12 @@ RSpec.describe 'RunsController', type: :request do
         expect { post v1_runs_path, params: body, headers: json_api_headers }.to change { Run.count }.by(1)
       end
 
-      it 'creates a run with a chip' do
+      it 'creates a run with the correct attributes' do
         post v1_runs_path, params: body, headers: json_api_headers
-        expect(Run.last.chip).to be_present
-        chip_id = Run.last.chip.id
-        expect(Chip.find(chip_id).run).to eq Run.last
-      end
-
-      it 'creates a run with a chip with two flowcells' do
-        post v1_runs_path, params: body, headers: json_api_headers
-        expect(Run.last.chip.flowcells.length).to eq 2
-        chip = Run.last.chip
-        flowcells = chip.flowcells
-
-        expect(Flowcell.find(flowcells[0].id).position).to eq(1)
-        expect(Flowcell.find(flowcells[0].id).chip).to eq(chip)
-        expect(Flowcell.find(flowcells[1].id).position).to eq(2)
-        expect(Flowcell.find(flowcells[1].id).chip).to eq(chip)
+        run = Run.first
+        expect(run.name).to be_present
+        expect(run.state).to be_present
+        expect(run.chip).to be_nil
       end
 
     end
@@ -168,28 +158,6 @@ RSpec.describe 'RunsController', type: :request do
       end
     end
 
-    context 'event message' do
-      let(:body) do
-        {
-          data: {
-            type: "runs",
-            id: run.id,
-            attributes: {
-              state: "completed",
-              name: "aname"
-            }
-          }
-        }.to_json
-      end
-
-      let(:message) { class_double('Messages::Message') }
-
-      xit 'sends an event if the run is completed or cancelled' do
-        expect(Messages::Message).to receive(:new).with(run).and_return(message)
-        patch v1_run_path(run), params: body, headers: json_api_headers
-      end
-
-    end
   end
 
   context '#show' do
