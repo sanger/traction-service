@@ -87,4 +87,8 @@ RSpec.describe Pipelines::Configuration, type: :model do
     expect(message.fields.field_c.value).to eq('Time.current')
   end
 
+  it 'will have a list of pipelines' do
+    expect(configuration.pipelines).to eq(['pipeline_a', 'pipeline_b'])
+  end
+
 end

@@ -1,15 +1,6 @@
 # frozen_string_literal: true
 
-require 'ostruct'
-
 module Pipelines
-  # InstanceMethodCreator
-  module InstanceMethodCreator
-    def create_instance_method(key, &block)
-      self.class.send(:define_method, key, block)
-    end
-  end
-
   # Configuration
   class Configuration
     include InstanceMethodCreator
@@ -17,7 +8,12 @@ module Pipelines
     def initialize(pipelines)
       pipelines.with_indifferent_access.each do |key, pipeline|
         create_instance_method(key) { Item.new(pipeline) }
+        self.pipelines << key
       end
+    end
+
+    def pipelines
+      @pipelines ||= []
     end
 
     # Configuration::Item
