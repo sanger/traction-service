@@ -5,15 +5,16 @@ RSpec.describe 'RunsController', type: :request do
   context '#get' do
     let!(:run1) { create(:run, state: 'pending', name: 'run1') }
     let!(:run2) { create(:run, state: 'started') }
-    let!(:chip1) { create(:chip, run: run1, flowcells: create_list(:flowcell, 2)) }
-    let!(:chip2) { create(:chip, run: run2, flowcells: create_list(:flowcell, 2)) }
+    let!(:chip1) { create(:chip, run: run1) }
+    let!(:chip2) { create(:chip, run: run2) }
+    let!(:flowcells1) {create_list(:flowcell, 2, chip: chip1)}
+    let!(:flowcells2) {create_list(:flowcell, 2, chip: chip2)}
 
     it 'returns a list of runs' do
       get v1_runs_path, headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
-      puts json['data']
       expect(json['data'].length).to eq(2)
     end
 
@@ -162,7 +163,7 @@ RSpec.describe 'RunsController', type: :request do
 
   context '#show' do
     let!(:run) { create(:run, state: 'pending') }
-    let!(:chip) { create(:chip, run: run) } #automatically creates two flowcells
+    let!(:chip) { create(:chip_with_flowcells, run: run) }
     let(:library1) { create(:library, flowcell: chip.flowcells[0]) }
     let(:library2) { create(:library, flowcell: chip.flowcells[1]) }
 
@@ -216,6 +217,17 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['included'][2]['type']).to eq "flowcells"
       expect(json['included'][2]['attributes']['position']).to eq chip.flowcells[1].position
       expect(json['included'][2]['relationships']['library']).to be_present
+    end
+
+  end
+
+  context '#destroy' do
+
+    let(:run) { create(:run) }
+
+    it 'has a status of ok' do
+      delete v1_run_path(run), headers: json_api_headers
+      expect(response).to have_http_status(:no_content)
     end
 
   end

@@ -23,6 +23,14 @@ module V1
       render json: { data: { errors: e.message } }, status: :unprocessable_entity
     end
 
+    def destroy
+      if run.destroy
+        head :no_content
+      else
+        render json: { data: { errors: run.errors.messages } }, status: :unprocessable_entity
+      end
+    end
+
     private
 
     def run
@@ -32,6 +40,5 @@ module V1
     def params_names
       params.require(:data)['attributes'].permit(:state, :name)
     end
-
   end
 end
