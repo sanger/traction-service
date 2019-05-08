@@ -20,5 +20,4 @@ class Run < ApplicationRecord
 
     update(deactivated_at: DateTime.current)
   end
-
 end

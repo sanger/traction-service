@@ -3,15 +3,39 @@
 module V1
   # ChipsController
   class ChipsController < ApplicationController
+    def create
+      @chip = Chip.new(params_names)
+      if @chip.save
+        render json:
+          JSONAPI::ResourceSerializer.new(ChipResource)
+                                     .serialize_to_hash(ChipResource.new(chip, nil)),
+               status: :created
+      else
+        render json: { data: { errors: @chip.errors.messages } },
+               status: :unprocessable_entity
+      end
+    end
+
     def update
-      attributes = params.require(:data)['attributes'].permit(:barcode)
-      chip.update(attributes)
+      chip.update(params_names)
       head :ok
     rescue StandardError => e
       render json: { data: { errors: e.message } }, status: :unprocessable_entity
     end
 
+    def destroy
+      if chip.destroy
+        head :no_content
+      else
+        render json: { data: { errors: chip.errors.messages } }, status: :unprocessable_entity
+      end
+    end
+
     private
+
+    def params_names
+      params.require(:data)['attributes'].permit(:barcode, :run_id)
+    end
 
     def chip
       @chip ||= Chip.find(params[:id])
