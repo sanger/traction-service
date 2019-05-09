@@ -98,7 +98,7 @@ RSpec.describe 'RunsController', type: :request do
   end
 
   context '#update' do
-    let(:run) { create(:run) }
+    let(:run) { create(:run, chip: create(:chip_with_flowcells)) }
 
     context 'on success' do
       let(:body) do
@@ -124,6 +124,11 @@ RSpec.describe 'RunsController', type: :request do
         run.reload
         expect(run.state).to eq "started"
         expect(run.name).to eq "aname"
+      end
+
+      it 'sends a message to the warehouse' do
+        expect(Messages).to receive(:publish)
+        patch v1_run_path(run), params: body, headers: json_api_headers
       end
 
     end

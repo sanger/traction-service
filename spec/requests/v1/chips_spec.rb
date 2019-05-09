@@ -32,6 +32,8 @@ RSpec.describe 'ChipsController', type: :request do
         expect(chip.barcode).to eq barcode
         expect(chip.run).to eq run
       end
+
+
     end
 
     context 'on failure' do
@@ -91,6 +93,11 @@ RSpec.describe 'ChipsController', type: :request do
         patch v1_chip_path(chip), params: body, headers: json_api_headers
         chip.reload
         expect(chip.barcode).to eq barcode
+      end
+
+      it 'sends a message to the warehouse' do
+        expect(Messages).to receive(:publish)
+        patch v1_chip_path(chip), params: body, headers: json_api_headers
       end
     end
 

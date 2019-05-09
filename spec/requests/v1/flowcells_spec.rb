@@ -30,6 +30,11 @@ RSpec.describe 'FlowcellsController', type: :request do
       it 'creates a flowcell' do
         expect { post v1_flowcells_path, params: body, headers: json_api_headers }.to change(Flowcell, :count).by(1)
       end
+
+      it 'sends a message to the warehouse' do
+        expect(Messages).to receive(:publish)
+        post v1_flowcells_path, params: body, headers: json_api_headers
+      end
     end
 
     context 'on failure' do
@@ -86,6 +91,12 @@ RSpec.describe 'FlowcellsController', type: :request do
         patch v1_flowcell_path(flowcell), params: body, headers: json_api_headers
         flowcell.reload
         expect(flowcell.library).to eq library
+      end
+
+      it 'sends a message to the warehouse' do
+        expect(Messages).to receive(:publish)
+        patch v1_flowcell_path(flowcell), params: body, headers: json_api_headers
+
       end
     end
 
