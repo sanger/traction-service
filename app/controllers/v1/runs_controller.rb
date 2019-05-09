@@ -17,7 +17,7 @@ module V1
 
     def update
       run.update(params_names)
-
+      Messages.publish(run.chip.flowcells, Pipelines.saphyr.message)
       head :ok
     rescue StandardError => e
       render json: { data: { errors: e.message } }, status: :unprocessable_entity
