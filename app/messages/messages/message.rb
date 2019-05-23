@@ -7,10 +7,6 @@ module Messages
 
     attr_accessor :object, :configuration
 
-    def timestamp
-      Time.current
-    end
-
     def content
       { lims: configuration.lims }.with_indifferent_access.tap do |result|
         result[configuration.key] = configuration.fields.each_with_object({}) do |(k, v), r|
