@@ -4,7 +4,7 @@ class CreateRuns < ActiveRecord::Migration[5.2]
       t.integer :state, default: 0
       t.string :name
       t.datetime :deactivated_at
-      t.belongs_to :chip, foreign_key: true
+      t.belongs_to :chip, index: true
       t.timestamps
     end
   end
