@@ -98,7 +98,7 @@ module Deployed
 
   VERSION_ID = REPO_DATA.version_label
 
-  APP_NAME = 'Traction Service'
+  APP_NAME = 'TractionService'
   RELEASE_NAME = REPO_DATA.release.presence || 'LOCAL'
 
   MAJOR = REPO_DATA.major
