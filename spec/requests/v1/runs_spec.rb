@@ -131,6 +131,12 @@ RSpec.describe 'RunsController', type: :request do
         patch v1_run_path(run), params: body, headers: json_api_headers
       end
 
+      it 'returns the correct attributes' do
+        patch v1_run_path(run), params: body, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data']['id']).to eq run.id.to_s
+      end
+
     end
 
     context 'on failure' do

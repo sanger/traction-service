@@ -99,6 +99,12 @@ RSpec.describe 'ChipsController', type: :request do
         expect(Messages).to receive(:publish)
         patch v1_chip_path(chip), params: body, headers: json_api_headers
       end
+
+      it 'returns the correct attributes' do
+        patch v1_chip_path(chip), params: body, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data']['id']).to eq chip.id.to_s
+      end
     end
 
     context 'on failure' do

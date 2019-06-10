@@ -6,9 +6,7 @@ module V1
     def create
       @run = Run.new(params_names)
       if @run.save
-        render json:
-          JSONAPI::ResourceSerializer.new(RunResource).serialize_to_hash(RunResource.new(run, nil)),
-               status: :created
+        render_json(:created)
       else
         render json: { data: { errors: @run.errors.messages } },
                status: :unprocessable_entity
@@ -18,7 +16,7 @@ module V1
     def update
       run.update(params_names)
       Messages.publish(run.chip.flowcells, Pipelines.saphyr.message)
-      head :ok
+      render_json(:ok)
     rescue StandardError => e
       render json: { data: { errors: e.message } }, status: :unprocessable_entity
     end
@@ -39,6 +37,13 @@ module V1
 
     def params_names
       params.require(:data)['attributes'].permit(:state, :name)
+    end
+
+    def render_json(status)
+      render json:
+       JSONAPI::ResourceSerializer.new(RunResource)
+                                  .serialize_to_hash(RunResource.new(run, nil)),
+             status: status
     end
   end
 end
