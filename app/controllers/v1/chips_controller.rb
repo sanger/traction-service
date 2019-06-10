@@ -6,10 +6,7 @@ module V1
     def create
       @chip = Chip.new(params_names)
       if @chip.save
-        render json:
-          JSONAPI::ResourceSerializer.new(ChipResource)
-                                     .serialize_to_hash(ChipResource.new(chip, nil)),
-               status: :created
+        render_json(:created)
       else
         render json: { data: { errors: @chip.errors.messages } },
                status: :unprocessable_entity
@@ -19,7 +16,7 @@ module V1
     def update
       chip.update(params_names)
       Messages.publish(chip.flowcells, Pipelines.saphyr.message)
-      head :ok
+      render_json(:ok)
     rescue StandardError => e
       render json: { data: { errors: e.message } }, status: :unprocessable_entity
     end
@@ -40,6 +37,13 @@ module V1
 
     def chip
       @chip ||= Chip.find(params[:id])
+    end
+
+    def render_json(status)
+      render json:
+         JSONAPI::ResourceSerializer.new(ChipResource)
+                                    .serialize_to_hash(ChipResource.new(chip, nil)),
+             status: status
     end
   end
 end

@@ -35,6 +35,7 @@ RSpec.describe 'FlowcellsController', type: :request do
         expect(Messages).to receive(:publish)
         post v1_flowcells_path, params: body, headers: json_api_headers
       end
+
     end
 
     context 'on failure' do
@@ -96,7 +97,12 @@ RSpec.describe 'FlowcellsController', type: :request do
       it 'sends a message to the warehouse' do
         expect(Messages).to receive(:publish)
         patch v1_flowcell_path(flowcell), params: body, headers: json_api_headers
+      end
 
+      it 'returns the correct attributes' do
+        patch v1_flowcell_path(flowcell), params: body, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data']['id']).to eq flowcell.id.to_s
       end
     end
 
