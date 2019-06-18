@@ -2,7 +2,9 @@
 
 # rabbitmq messages
 module Messages
-  def self.publish(object, configuration)
-    BrokerHandle.publish(Message.new(object: object, configuration: configuration))
+  def self.publish(objects, configuration)
+    Array(objects).each do |object|
+      BrokerHandle.publish(Message.new(object: object, configuration: configuration))
+    end
   end
 end

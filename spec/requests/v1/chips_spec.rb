@@ -2,9 +2,73 @@ require "rails_helper"
 
 RSpec.describe 'ChipsController', type: :request do
 
+  let(:barcode) { 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX-2' }
+
+  context '#create' do
+    let(:run) { create(:run) }
+    let(:attributes) { attributes_for(:chip) }
+
+    context 'on success' do
+      let(:body) do
+        {
+          data: {
+            type: "chips",
+            attributes: {
+              barcode: barcode,
+              run_id: run.id
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a ok status' do
+        post v1_chips_path, params: body, headers: json_api_headers
+        expect(response).to have_http_status(:created)
+      end
+
+      it 'has the correct attributes' do
+        post v1_chips_path, params: body, headers: json_api_headers
+        chip = Chip.first
+        expect(chip.barcode).to eq barcode
+        expect(chip.run).to eq run
+      end
+
+
+    end
+
+    context 'on failure' do
+      let(:body) do
+        {
+          data: {
+            type: "chips",
+            attributes: {
+              run_id: run.id
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a ok unprocessable_entity' do
+        post v1_chips_path, params: body, headers: json_api_headers
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'does not create a chip' do
+        expect { post v1_chips_path, params: body, headers: json_api_headers }.to_not change(Chip, :count)
+      end
+
+      it 'has an error message' do
+        post v1_chips_path, params: body, headers: json_api_headers
+        expect(JSON.parse(response.body)["data"]["errors"].length).to eq(1)
+      end
+
+    end
+    
+  end
+
   context '#update' do
     let(:chip) { create(:chip) }
-    let(:barcode) { 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX-2' }
+    
 
 
     context 'on success' do
@@ -30,6 +94,17 @@ RSpec.describe 'ChipsController', type: :request do
         chip.reload
         expect(chip.barcode).to eq barcode
       end
+
+      it 'sends a message to the warehouse' do
+        expect(Messages).to receive(:publish)
+        patch v1_chip_path(chip), params: body, headers: json_api_headers
+      end
+
+      it 'returns the correct attributes' do
+        patch v1_chip_path(chip), params: body, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data']['id']).to eq chip.id.to_s
+      end
     end
 
     context 'on failure' do
@@ -50,7 +125,7 @@ RSpec.describe 'ChipsController', type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
-      it 'does not update a run' do
+      it 'does not update a chip' do
         patch v1_chip_path(123), params: body, headers: json_api_headers
         chip.reload
         expect(chip.barcode).to eq chip.barcode
@@ -61,6 +136,17 @@ RSpec.describe 'ChipsController', type: :request do
         expect(JSON.parse(response.body)["data"]).to include("errors" => "Couldn't find Chip with 'id'=123")
       end
     end
+  end
+
+  context '#destroy' do
+
+    let(:chip) { create(:chip) }
+
+    it 'has a status of ok' do
+      delete v1_chip_path(chip), headers: json_api_headers
+      expect(response).to have_http_status(:no_content)
+    end
+
   end
 
 end
