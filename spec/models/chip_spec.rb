@@ -5,15 +5,8 @@ RSpec.describe Chip, type: :model do
   let(:barcode) { 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX' }
   let(:serial_number) { 'FLEVEAOLPTOWPNWU' }
 
-  context 'after create' do
-    it '#create_flowcells' do
-      chip = create(:chip)
-      expect(chip.flowcells.length).to eq 2
-      expect(chip.flowcells[0].position).to eq(1)
-      expect(chip.flowcells[0].chip).to eq(chip)
-      expect(chip.flowcells[1].position).to eq(2)
-      expect(chip.flowcells[1].chip).to eq(chip)
-    end
+  it 'must have a barcode' do
+    expect(build(:chip, barcode: nil)).to_not be_valid
   end
 
   context 'run' do
