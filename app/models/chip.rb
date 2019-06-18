@@ -8,14 +8,9 @@ class Chip < ApplicationRecord
   validates :barcode, presence: true
   validates :barcode, length: { minimum: 16 }
 
-  after_create :create_flowcells
   before_save :update_serial_number
 
   private
-
-  def create_flowcells
-    Flowcell.create([{ position: 1, chip: self }, { position: 2, chip: self }])
-  end
 
   def update_serial_number
     self.serial_number = barcode[0..15]
