@@ -1,0 +1,56 @@
+# frozen_string_literal: true
+
+module V1
+  # RunsController
+  class RunsController < ApplicationController
+    def create
+      @run_factory = RunFactory.new(params_names)
+      if @run_factory.save
+        @resources = @run_factory.runs.map { |run| RunResource.new(run, nil) }
+        render json:
+          JSONAPI::ResourceSerializer.new(RunResource).serialize_to_hash(@resources),
+               status: :created
+      else
+        render json: { data: { errors: @run_factory.errors.messages } },
+               status: :unprocessable_entity
+      end
+    end
+
+    def update
+      attributes = params.require(:data)['attributes'].permit(:state, :name)
+      run.update(attributes)
+      # generate_event
+
+      head :ok
+    rescue StandardError => e
+      render json: { data: { errors: e.message } }, status: :unprocessable_entity
+    end
+
+    private
+
+    def run
+      @run ||= Run.find(params[:id])
+    end
+
+    def params_names
+      params.require(:data).require(:attributes)[:runs].map do |param|
+        param.permit(:state, :name).to_h
+      end
+    end
+
+    def serialize_resources(resources)
+      if params[:include].present?
+        return JSONAPI::ResourceSerializer.new(RunResource,
+                                               include: [params[:include]]).serialize_to_hash(
+                                                 resources
+                                               )
+      end
+
+      JSONAPI::ResourceSerializer.new(RunResource).serialize_to_hash(resources)
+    end
+
+    def generate_event
+      run.generate_event if run.state == 'completed' || run.state == 'cancelled'
+    end
+  end
+end
