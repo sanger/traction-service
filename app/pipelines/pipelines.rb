@@ -15,5 +15,6 @@ module Pipelines
       # TODO: how do I use the create_instance_method method
       self.class.send(:define_method, pipeline, proc { configuration.send(pipeline) })
     end
+    configuration
   end
 end
