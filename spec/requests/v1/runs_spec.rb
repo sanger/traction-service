@@ -7,6 +7,8 @@ RSpec.describe 'RunsController', type: :request do
     let!(:run2) { create(:run, state: 'started') }
     let!(:chip1) { create(:chip, run: run1) }
     let!(:chip2) { create(:chip, run: run2) }
+    let!(:flowcells1) {create_list(:flowcell, 2, chip: chip1)}
+    let!(:flowcells2) {create_list(:flowcell, 2, chip: chip2)}
 
     it 'returns a list of runs' do
       get v1_runs_path, headers: json_api_headers
@@ -83,23 +85,12 @@ RSpec.describe 'RunsController', type: :request do
         expect { post v1_runs_path, params: body, headers: json_api_headers }.to change { Run.count }.by(1)
       end
 
-      it 'creates a run with a chip' do
+      it 'creates a run with the correct attributes' do
         post v1_runs_path, params: body, headers: json_api_headers
-        expect(Run.last.chip).to be_present
-        chip_id = Run.last.chip.id
-        expect(Chip.find(chip_id).run).to eq Run.last
-      end
-
-      it 'creates a run with a chip with two flowcells' do
-        post v1_runs_path, params: body, headers: json_api_headers
-        expect(Run.last.chip.flowcells.length).to eq 2
-        chip = Run.last.chip
-        flowcells = chip.flowcells
-
-        expect(Flowcell.find(flowcells[0].id).position).to eq(1)
-        expect(Flowcell.find(flowcells[0].id).chip).to eq(chip)
-        expect(Flowcell.find(flowcells[1].id).position).to eq(2)
-        expect(Flowcell.find(flowcells[1].id).chip).to eq(chip)
+        run = Run.first
+        expect(run.name).to be_present
+        expect(run.state).to be_present
+        expect(run.chip).to be_nil
       end
 
     end
@@ -107,7 +98,7 @@ RSpec.describe 'RunsController', type: :request do
   end
 
   context '#update' do
-    let(:run) { create(:run) }
+    let(:run) { create(:run, chip: create(:chip_with_flowcells)) }
 
     context 'on success' do
       let(:body) do
@@ -133,6 +124,17 @@ RSpec.describe 'RunsController', type: :request do
         run.reload
         expect(run.state).to eq "started"
         expect(run.name).to eq "aname"
+      end
+
+      it 'sends a message to the warehouse' do
+        expect(Messages).to receive(:publish)
+        patch v1_run_path(run), params: body, headers: json_api_headers
+      end
+
+      it 'returns the correct attributes' do
+        patch v1_run_path(run), params: body, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data']['id']).to eq run.id.to_s
       end
 
     end
@@ -168,33 +170,11 @@ RSpec.describe 'RunsController', type: :request do
       end
     end
 
-    context 'event message' do
-      let(:body) do
-        {
-          data: {
-            type: "runs",
-            id: run.id,
-            attributes: {
-              state: "completed",
-              name: "aname"
-            }
-          }
-        }.to_json
-      end
-
-      let(:message) { class_double('Messages::Message') }
-
-      xit 'sends an event if the run is completed or cancelled' do
-        expect(Messages::Message).to receive(:new).with(run).and_return(message)
-        patch v1_run_path(run), params: body, headers: json_api_headers
-      end
-
-    end
   end
 
   context '#show' do
     let!(:run) { create(:run, state: 'pending') }
-    let!(:chip) { create(:chip, run: run) } #automatically creates two flowcells
+    let!(:chip) { create(:chip_with_flowcells, run: run) }
     let(:library1) { create(:library, flowcell: chip.flowcells[0]) }
     let(:library2) { create(:library, flowcell: chip.flowcells[1]) }
 
@@ -248,6 +228,17 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['included'][2]['type']).to eq "flowcells"
       expect(json['included'][2]['attributes']['position']).to eq chip.flowcells[1].position
       expect(json['included'][2]['relationships']['library']).to be_present
+    end
+
+  end
+
+  context '#destroy' do
+
+    let(:run) { create(:run) }
+
+    it 'has a status of ok' do
+      delete v1_run_path(run), headers: json_api_headers
+      expect(response).to have_http_status(:no_content)
     end
 
   end
