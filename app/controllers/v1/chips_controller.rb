@@ -32,7 +32,7 @@ module V1
     private
 
     def params_names
-      params.require(:data)['attributes'].permit(:barcode, :run_id)
+      params.require(:data)['attributes'].permit(:barcode, :saphyr_run_id)
     end
 
     def chip

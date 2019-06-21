@@ -3,24 +3,23 @@ require "rails_helper"
 RSpec.describe 'RunsController', type: :request do
 
   context '#get' do
-    let!(:run1) { create(:run, state: 'pending', name: 'run1') }
-    let!(:run2) { create(:run, state: 'started') }
+    let!(:run1) { create(:saphyr_run, state: 'pending', name: 'run1') }
+    let!(:run2) { create(:saphyr_run, state: 'started') }
     let!(:chip1) { create(:chip, run: run1) }
     let!(:chip2) { create(:chip, run: run2) }
     let!(:flowcells1) {create_list(:flowcell, 2, chip: chip1)}
     let!(:flowcells2) {create_list(:flowcell, 2, chip: chip2)}
 
     it 'returns a list of runs' do
-      get v1_runs_path, headers: json_api_headers
-
+      get v1_saphyr_runs_path, headers: json_api_headers
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'].length).to eq(2)
     end
 
     it 'only returns active runs' do
-      run3 = create(:run, deactivated_at: DateTime.now)
-      get v1_runs_path, headers: json_api_headers
+      run3 = create(:saphyr_run, deactivated_at: DateTime.now)
+      get v1_saphyr_runs_path, headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -28,7 +27,7 @@ RSpec.describe 'RunsController', type: :request do
     end
 
     it 'returns the correct attributes' do
-      get v1_runs_path, headers: json_api_headers
+      get v1_saphyr_runs_path, headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -43,8 +42,8 @@ RSpec.describe 'RunsController', type: :request do
     end
 
     it 'returns the correct relationships' do
-      get "#{v1_runs_path}?include=chip", headers: json_api_headers
-
+      get "#{v1_saphyr_runs_path}?include=chip", headers: json_api_headers
+      puts response.body
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
@@ -68,7 +67,7 @@ RSpec.describe 'RunsController', type: :request do
           type: "runs",
           attributes: {
             runs: [
-              attributes_for(:run)
+              attributes_for(:saphyr_run)
             ]
           }
         }
@@ -77,17 +76,17 @@ RSpec.describe 'RunsController', type: :request do
 
     context 'on success' do
       it 'has a created status' do
-        post v1_runs_path, params: body, headers: json_api_headers
+        post v1_saphyr_runs_path, params: body, headers: json_api_headers
         expect(response).to have_http_status(:created)
       end
 
       it 'creates a run' do
-        expect { post v1_runs_path, params: body, headers: json_api_headers }.to change { Run.count }.by(1)
+        expect { post v1_saphyr_runs_path, params: body, headers: json_api_headers }.to change { Saphyr::Run.count }.by(1)
       end
 
       it 'creates a run with the correct attributes' do
-        post v1_runs_path, params: body, headers: json_api_headers
-        run = Run.first
+        post v1_saphyr_runs_path, params: body, headers: json_api_headers
+        run = Saphyr::Run.first
         expect(run.name).to be_present
         expect(run.state).to be_present
         expect(run.chip).to be_nil
@@ -98,7 +97,7 @@ RSpec.describe 'RunsController', type: :request do
   end
 
   context '#update' do
-    let(:run) { create(:run, chip: create(:chip_with_flowcells)) }
+    let(:run) { create(:saphyr_run, chip: create(:chip_with_flowcells)) }
 
     context 'on success' do
       let(:body) do
@@ -115,12 +114,12 @@ RSpec.describe 'RunsController', type: :request do
       end
 
       it 'has a ok status' do
-        patch v1_run_path(run), params: body, headers: json_api_headers
+        patch v1_saphyr_run_path(run), params: body, headers: json_api_headers
         expect(response).to have_http_status(:ok)
       end
 
       it 'updates a run' do
-        patch v1_run_path(run), params: body, headers: json_api_headers
+        patch v1_saphyr_run_path(run), params: body, headers: json_api_headers
         run.reload
         expect(run.state).to eq "started"
         expect(run.name).to eq "aname"
@@ -128,11 +127,11 @@ RSpec.describe 'RunsController', type: :request do
 
       it 'sends a message to the warehouse' do
         expect(Messages).to receive(:publish)
-        patch v1_run_path(run), params: body, headers: json_api_headers
+        patch v1_saphyr_run_path(run), params: body, headers: json_api_headers
       end
 
       it 'returns the correct attributes' do
-        patch v1_run_path(run), params: body, headers: json_api_headers
+        patch v1_saphyr_run_path(run), params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data']['id']).to eq run.id.to_s
       end
@@ -154,32 +153,32 @@ RSpec.describe 'RunsController', type: :request do
       end
 
       it 'has a ok unprocessable_entity' do
-        patch v1_run_path(123), params: body, headers: json_api_headers
+        patch v1_saphyr_run_path(123), params: body, headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'does not update a run' do
-        patch v1_run_path(123), params: body, headers: json_api_headers
+        patch v1_saphyr_run_path(123), params: body, headers: json_api_headers
         run.reload
         expect(run).to be_pending
       end
 
       it 'has an error message' do
-        patch v1_run_path(123), params: body, headers: json_api_headers
-        expect(JSON.parse(response.body)["data"]).to include("errors" => "Couldn't find Run with 'id'=123")
+        patch v1_saphyr_run_path(123), params: body, headers: json_api_headers
+        expect(JSON.parse(response.body)["data"]).to include("errors" => "Couldn't find saphyr Run with 'id'=123")
       end
     end
 
   end
 
   context '#show' do
-    let!(:run) { create(:run, state: 'pending') }
+    let!(:run) { create(:saphyr_run, state: 'pending') }
     let!(:chip) { create(:chip_with_flowcells, run: run) }
     let(:library1) { create(:library, flowcell: chip.flowcells[0]) }
     let(:library2) { create(:library, flowcell: chip.flowcells[1]) }
 
     it 'returns the runs' do
-      get v1_run_path(run), headers: json_api_headers
+      get v1_saphyr_run_path(run), headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -187,7 +186,7 @@ RSpec.describe 'RunsController', type: :request do
     end
 
     it 'returns the correct attributes' do
-      get v1_run_path(run), headers: json_api_headers
+      get v1_saphyr_run_path(run), headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -198,7 +197,7 @@ RSpec.describe 'RunsController', type: :request do
     end
 
     it 'returns the correct relationships' do
-      get "#{v1_run_path(run)}?include=chip.flowcells.library", headers: json_api_headers
+      get "#{v1_saphyr_run_path(run)}?include=chip.flowcells.library", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -209,7 +208,7 @@ RSpec.describe 'RunsController', type: :request do
 
     it 'returns the correct includes' do
       chip.reload
-      get "#{v1_run_path(run)}?include=chip.flowcells.library", headers: json_api_headers
+      get "#{v1_saphyr_run_path(run)}?include=chip.flowcells.library", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -234,10 +233,10 @@ RSpec.describe 'RunsController', type: :request do
 
   context '#destroy' do
 
-    let(:run) { create(:run) }
+    let(:run) { create(:saphyr_run) }
 
     it 'has a status of ok' do
-      delete v1_run_path(run), headers: json_api_headers
+      delete v1_saphyr_run_path(run), headers: json_api_headers
       expect(response).to have_http_status(:no_content)
     end
 

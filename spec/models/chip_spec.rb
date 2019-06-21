@@ -11,7 +11,7 @@ RSpec.describe Chip, type: :model do
 
   context 'run' do
     it 'can belong to a run' do
-      run = create(:run)
+      run = create(:saphyr_run)
       expect(create(:chip, run: run)).to be_valid
     end
 
@@ -20,7 +20,7 @@ RSpec.describe Chip, type: :model do
     end
 
     it 'can have a run' do
-      run = create(:run)
+      run = create(:saphyr_run)
       expect(create(:chip, run: run).run).to eq run
     end
   end

@@ -4,9 +4,8 @@ RSpec.describe Messages, type: :model do
 
   describe '#publish' do
 
-    let(:run)         { create(:run_with_chip) }
-    let(:flowcell1)   { create(:flowcell_with_library, chip: run.chip)}
-    let(:flowcell2)   { create(:flowcell_with_library, chip: run.chip)}
+    let(:flowcell1)   { create(:flowcell_with_library) }
+    let(:flowcell2)   { create(:flowcell_with_library) }
 
     before(:all) do
       Pipelines.configure(Rails.configuration.pipelines)

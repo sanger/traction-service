@@ -1,12 +1,14 @@
 require "rails_helper"
 
 RSpec.describe 'ChipsController', type: :request do
+  before(:all) do
+    Pipelines.configure(Rails.configuration.pipelines)
+  end
 
   let(:barcode) { 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX-2' }
 
   context '#create' do
-    let(:run) { create(:run) }
-    let(:attributes) { attributes_for(:chip) }
+    let(:run) { create(:saphyr_run) }
 
     context 'on success' do
       let(:body) do
@@ -15,7 +17,7 @@ RSpec.describe 'ChipsController', type: :request do
             type: "chips",
             attributes: {
               barcode: barcode,
-              run_id: run.id
+              saphyr_run_id: run.id
             }
           }
         }.to_json
@@ -63,13 +65,10 @@ RSpec.describe 'ChipsController', type: :request do
       end
 
     end
-    
   end
 
   context '#update' do
     let(:chip) { create(:chip) }
-    
-
 
     context 'on success' do
       let(:body) do
