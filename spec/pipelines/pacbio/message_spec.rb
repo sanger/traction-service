@@ -165,10 +165,7 @@ RSpec.describe 'PacBio', type: :model do
 
     it 'must have a library tube name' do
       expect(key[:pac_bio_library_tube_name]).to eq(well.library.name)
-
     end
-
-
 
   end
 
