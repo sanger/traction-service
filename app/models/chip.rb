@@ -2,7 +2,8 @@
 
 # Chip
 class Chip < ApplicationRecord
-  belongs_to :run, optional: true
+  belongs_to :run, class_name: 'Saphyr::Run', foreign_key: 'saphyr_run_id', optional: true
+
   has_many :flowcells, dependent: :nullify
 
   validates :barcode, presence: true
