@@ -5,6 +5,7 @@ class CreatePacbioLibraries < ActiveRecord::Migration[5.2]
       t.decimal :concentration
       t.string :library_kit_barcode
       t.integer :fragment_size
+      t.belongs_to :pacbio_tag, index: true
       t.timestamps
     end
   end

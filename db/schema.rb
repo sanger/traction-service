@@ -53,16 +53,16 @@ ActiveRecord::Schema.define(version: 2019_06_24_073715) do
     t.decimal "concentration"
     t.string "library_kit_barcode"
     t.integer "fragment_size"
+    t.integer "pacbio_tag_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["pacbio_tag_id"], name: "index_pacbio_libraries_on_pacbio_tag_id"
   end
 
   create_table "pacbio_tags", force: :cascade do |t|
     t.string "oligo"
-    t.integer "pacbio_library_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["pacbio_library_id"], name: "index_pacbio_tags_on_pacbio_library_id"
   end
 
   create_table "runs", force: :cascade do |t|
