@@ -2,6 +2,10 @@ require "rails_helper"
 
 RSpec.describe 'RunsController', type: :request do
 
+  before(:all) do
+    Pipelines.configure(Rails.configuration.pipelines)
+  end
+
   context '#get' do
     let!(:run1) { create(:saphyr_run, state: 'pending', name: 'run1') }
     let!(:run2) { create(:saphyr_run, state: 'started') }
@@ -43,7 +47,6 @@ RSpec.describe 'RunsController', type: :request do
 
     it 'returns the correct relationships' do
       get "#{v1_saphyr_runs_path}?include=chip", headers: json_api_headers
-      puts response.body
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
@@ -165,7 +168,7 @@ RSpec.describe 'RunsController', type: :request do
 
       it 'has an error message' do
         patch v1_saphyr_run_path(123), params: body, headers: json_api_headers
-        expect(JSON.parse(response.body)["data"]).to include("errors" => "Couldn't find saphyr Run with 'id'=123")
+        expect(JSON.parse(response.body)["data"]).to include("errors" => "Couldn't find Saphyr::Run with 'id'=123")
       end
     end
 

@@ -1,6 +1,7 @@
 require "rails_helper"
 
 RSpec.describe 'ChipsController', type: :request do
+
   before(:all) do
     Pipelines.configure(Rails.configuration.pipelines)
   end

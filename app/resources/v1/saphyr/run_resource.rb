@@ -7,7 +7,8 @@ module V1
       model_name 'Saphyr::Run'
 
       attributes :state, :chip_barcode, :created_at, :name
-      has_one :chip, foreign_key_on: :related
+
+      has_one :chip, foreign_key_on: :related, foreign_key: 'saphyr_run_id'
 
       def chip_barcode
         @model&.chip&.barcode
@@ -18,7 +19,7 @@ module V1
       end
 
       def self.records(_options = {})
-        Saphyr::Run.active
+        ::Saphyr::Run.active
       end
     end
   end
