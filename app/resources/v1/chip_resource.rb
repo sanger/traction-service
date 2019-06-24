@@ -6,6 +6,6 @@ module V1
     attributes :barcode
     has_many :flowcells, foreign_key_on: :related
 
-    has_one :saphyr_run, class_name: 'Saphyr::Run', foreign_key: 'saphyr_run_id'
+    has_one :run, foreign_key: 'saphyr_run_id'
   end
 end
