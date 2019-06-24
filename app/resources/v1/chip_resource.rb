@@ -5,7 +5,5 @@ module V1
   class ChipResource < JSONAPI::Resource
     attributes :barcode
     has_many :flowcells, foreign_key_on: :related
-
-    has_one :run, foreign_key: 'saphyr_run_id'
   end
 end
