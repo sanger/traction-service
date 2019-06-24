@@ -10,11 +10,11 @@ module Pipelines
   end
 
   def self.configure(pipelines)
-    configuration = Configuration.new(pipelines)
-    configuration.pipelines.each do |pipeline|
-      # TODO: how do I use the create_instance_method method
-      self.class.send(:define_method, pipeline, proc { configuration.send(pipeline) })
+    Configuration.new(pipelines).tap do |configuration|
+      configuration.pipelines.each do |pipeline|
+        # TODO: how do I use the create_instance_method method
+        self.class.send(:define_method, pipeline, proc { configuration.send(pipeline) })
+      end
     end
-    configuration
   end
 end
