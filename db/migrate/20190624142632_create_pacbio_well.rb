@@ -1,8 +1,9 @@
 class CreatePacbioWell < ActiveRecord::Migration[5.2]
   def change
     create_table :pacbio_wells do |t|
-      t.belongs_to :pacbio_library, index: true
       t.belongs_to :pacbio_plate, index: true
+      t.string :row
+      t.string :column
       t.decimal :movie_time
       t.integer :insert_size
       t.integer :sequencing_mode
