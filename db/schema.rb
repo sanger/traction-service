@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_24_142632) do
+ActiveRecord::Schema.define(version: 2019_06_25_090714) do
 
   create_table "chips", force: :cascade do |t|
     t.string "barcode"
@@ -49,6 +49,7 @@ ActiveRecord::Schema.define(version: 2019_06_24_142632) do
   end
 
   create_table "pacbio_libraries", force: :cascade do |t|
+    t.integer "pacbio_well_id"
     t.float "volume"
     t.float "concentration"
     t.string "library_kit_barcode"
@@ -57,6 +58,7 @@ ActiveRecord::Schema.define(version: 2019_06_24_142632) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["pacbio_tag_id"], name: "index_pacbio_libraries_on_pacbio_tag_id"
+    t.index ["pacbio_well_id"], name: "index_pacbio_libraries_on_pacbio_well_id"
   end
 
   create_table "pacbio_plates", force: :cascade do |t|
@@ -83,15 +85,15 @@ ActiveRecord::Schema.define(version: 2019_06_24_142632) do
   end
 
   create_table "pacbio_wells", force: :cascade do |t|
-    t.integer "pacbio_library_id"
     t.integer "pacbio_plate_id"
+    t.string "row"
+    t.string "column"
     t.decimal "movie_time"
     t.integer "insert_size"
     t.integer "sequencing_mode"
     t.float "on_plate_loading_concentration"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["pacbio_library_id"], name: "index_pacbio_wells_on_pacbio_library_id"
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
 
