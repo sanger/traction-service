@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_24_073715) do
+ActiveRecord::Schema.define(version: 2019_06_25_104131) do
 
   create_table "chips", force: :cascade do |t|
     t.string "barcode"
@@ -57,6 +57,14 @@ ActiveRecord::Schema.define(version: 2019_06_24_073715) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["pacbio_tag_id"], name: "index_pacbio_libraries_on_pacbio_tag_id"
+  end
+
+  create_table "pacbio_requests", force: :cascade do |t|
+    t.string "library_type"
+    t.integer "estimate_of_gb_required"
+    t.integer "number_of_smrt_cells"
+    t.string "cost_code"
+    t.integer "external_study_id"
   end
 
   create_table "pacbio_tags", force: :cascade do |t|
