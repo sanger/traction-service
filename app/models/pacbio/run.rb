@@ -12,9 +12,7 @@ module Pacbio
     has_one :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_run_id,
                     dependent: :destroy, inverse_of: :run
 
-    def wells
-      plate.wells
-    end
+    delegate :wells, to: :plate
 
     def comments
       super || wells.collect(&:summary).join(';')
