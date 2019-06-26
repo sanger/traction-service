@@ -7,5 +7,9 @@ FactoryBot.define do
     column { '01' }
     plate { create(:pacbio_plate) }
     sequence(:comment) { |n| "comment#{n}" }
+
+    factory :pacbio_well_with_library do
+      library { create(:pacbio_library) }
+    end
   end
 end
