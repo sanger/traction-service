@@ -6,8 +6,8 @@ class CreatePacbioWell < ActiveRecord::Migration[5.2]
       t.string :column
       t.decimal :movie_time
       t.integer :insert_size
-      t.integer :sequencing_mode
       t.float :on_plate_loading_concentration
+      t.string :comment
       t.timestamps
     end
   end

@@ -2,16 +2,6 @@ require 'rails_helper'
 
 RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
-  context 'sequencing mode' do
-    it 'must be present' do
-      expect(build(:pacbio_well, sequencing_mode: nil)).to_not be_valid
-    end
-
-    it 'must include the correct options' do
-      expect(Pacbio::Well.sequencing_modes.keys).to eq(['CLR', 'CCS'])
-    end
-  end
-
   context 'movie time' do
     it 'must be present' do
       expect(build(:pacbio_well, movie_time: nil)).to_not be_valid
@@ -58,6 +48,10 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
   it 'must have to a plate' do
     expect(build(:pacbio_well, plate: nil)).to_not be_valid
+  end
+
+  it 'can have a comment' do
+    expect(build(:pacbio_well).comment).to be_present
   end
 
 end
