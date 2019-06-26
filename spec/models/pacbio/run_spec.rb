@@ -27,5 +27,15 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     run = create(:pacbio_run, plate: plate)
     expect(run.plate).to eq(plate)
   end
+
+  context 'sequencing mode' do
+    it 'must be present' do
+      expect(build(:pacbio_run, sequencing_mode: nil)).to_not be_valid
+    end
+
+    it 'must include the correct options' do
+      expect(Pacbio::Run.sequencing_modes.keys).to eq(['CLR', 'CCS'])
+    end
+  end
   
 end

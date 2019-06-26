@@ -74,6 +74,8 @@ ActiveRecord::Schema.define(version: 2019_06_25_090714) do
     t.string "binding_kit_box_barcode"
     t.string "sequencing_kit_box_barcode"
     t.string "dna_control_complex_box_barcode"
+    t.string "comments"
+    t.integer "sequencing_mode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -90,8 +92,8 @@ ActiveRecord::Schema.define(version: 2019_06_25_090714) do
     t.string "column"
     t.decimal "movie_time"
     t.integer "insert_size"
-    t.integer "sequencing_mode"
     t.float "on_plate_loading_concentration"
+    t.string "comment"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"

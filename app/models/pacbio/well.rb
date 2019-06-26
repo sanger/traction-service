@@ -8,9 +8,7 @@ module Pacbio
     has_one :library, class_name: 'Pacbio::Library', foreign_key: :pacbio_library_id,
                       inverse_of: :well, dependent: :nullify
 
-    enum sequencing_mode: %w[CLR CCS]
-
-    validates :sequencing_mode, :movie_time, :insert_size, :on_plate_loading_concentration,
+    validates :movie_time, :insert_size, :on_plate_loading_concentration,
               :row, :column, presence: true
     validates :movie_time,
               numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 }
