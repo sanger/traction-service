@@ -54,4 +54,9 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     expect(build(:pacbio_well).comment).to be_present
   end
 
+  it 'can have a summary' do
+    well = create(:pacbio_well_with_library)
+    expect(well.summary).to eq("#{well.library.sample.name},#{well.comment}")
+  end
+
 end

@@ -37,5 +37,12 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
       expect(Pacbio::Run.sequencing_modes.keys).to eq(['CLR', 'CCS'])
     end
   end
+
+  it 'can have comments' do
+    wells = create_list(:pacbio_well_with_library, 2)
+    plate = create(:pacbio_plate, wells: wells)
+    run = create(:pacbio_run, plate: plate)
+    expect(run.comments).to eq("#{wells.first.summary};#{wells[1].summary}")
+  end
   
 end

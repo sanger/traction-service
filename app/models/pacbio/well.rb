@@ -5,7 +5,7 @@ module Pacbio
   class Well < ApplicationRecord
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
                        inverse_of: :wells
-    has_one :library, class_name: 'Pacbio::Library', foreign_key: :pacbio_library_id,
+    has_one :library, class_name: 'Pacbio::Library', foreign_key: :pacbio_well_id,
                       inverse_of: :well, dependent: :nullify
 
     validates :movie_time, :insert_size, :on_plate_loading_concentration,
@@ -16,6 +16,10 @@ module Pacbio
 
     def position
       "#{row}#{column}"
+    end
+
+    def summary
+      "#{library.sample.name},#{comment}"
     end
   end
 end
