@@ -22,4 +22,8 @@ RSpec.describe Pacbio::Request, type: :model, pacbio: true do
     expect(build(:pacbio_request, external_study_id: nil)).to_not be_valid
   end
 
+  it 'must have a sample' do
+    expect(build(:pacbio_request, sample: nil)).to_not be_valid
+  end
+
 end
