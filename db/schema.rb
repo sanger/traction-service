@@ -65,6 +65,8 @@ ActiveRecord::Schema.define(version: 2019_06_25_104131) do
     t.integer "number_of_smrt_cells"
     t.string "cost_code"
     t.integer "external_study_id"
+    t.integer "sample_id"
+    t.index ["sample_id"], name: "index_pacbio_requests_on_sample_id"
   end
 
   create_table "pacbio_tags", force: :cascade do |t|

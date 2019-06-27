@@ -5,5 +5,6 @@ FactoryBot.define do
     number_of_smrt_cells { 3 }
     cost_code { 'PSD1234' }
     external_study_id { 1 }
+    sample
   end
 end
