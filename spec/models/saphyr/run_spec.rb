@@ -22,7 +22,7 @@ RSpec.describe Saphyr::Run, type: :model do
   context 'chip' do
     it 'can have a chip' do
       run = create(:saphyr_run)
-      chip = create(:chip, run: run)
+      chip = create(:saphyr_chip, run: run)
       expect(run.chip).to eq chip
     end
   end
@@ -88,7 +88,7 @@ RSpec.describe Saphyr::Run, type: :model do
   context 'run relationships' do
     it 'can have a chip with two flowcells' do
       run = create(:saphyr_run)
-      chip = create(:chip, run: run)
+      chip = create(:saphyr_chip, run: run)
 
       expect(run.chip).to eq chip
     end

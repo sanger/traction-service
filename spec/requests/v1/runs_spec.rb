@@ -9,8 +9,8 @@ RSpec.describe 'RunsController', type: :request do
   context '#get' do
     let!(:run1) { create(:saphyr_run, state: 'pending', name: 'run1') }
     let!(:run2) { create(:saphyr_run, state: 'started') }
-    let!(:chip1) { create(:chip, run: run1) }
-    let!(:chip2) { create(:chip, run: run2) }
+    let!(:chip1) { create(:saphyr_chip, run: run1) }
+    let!(:chip2) { create(:saphyr_chip, run: run2) }
     let!(:flowcells1) {create_list(:flowcell, 2, chip: chip1)}
     let!(:flowcells2) {create_list(:flowcell, 2, chip: chip2)}
 
@@ -100,7 +100,9 @@ RSpec.describe 'RunsController', type: :request do
   end
 
   context '#update' do
-    let(:run) { create(:saphyr_run, chip: create(:chip_with_flowcells)) }
+    let(:chip) { create(:saphyr_chip_with_flowcells) }
+
+    let(:run) { create(:saphyr_run, chip: chip) }
 
     context 'on success' do
       let(:body) do
@@ -176,7 +178,7 @@ RSpec.describe 'RunsController', type: :request do
 
   context '#show' do
     let!(:run) { create(:saphyr_run, state: 'pending') }
-    let!(:chip) { create(:chip_with_flowcells, run: run) }
+    let!(:chip) { create(:saphyr_chip_with_flowcells, run: run) }
     let(:library1) { create(:library, flowcell: chip.flowcells[0]) }
     let(:library2) { create(:library, flowcell: chip.flowcells[1]) }
 
@@ -201,7 +203,6 @@ RSpec.describe 'RunsController', type: :request do
 
     it 'returns the correct relationships' do
       get "#{v1_saphyr_run_path(run)}?include=chip.flowcells.library", headers: json_api_headers
-
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data']['relationships']['chip']).to be_present

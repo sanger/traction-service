@@ -41,7 +41,7 @@ module V1
     private
 
     def params_names
-      params.require(:data)['attributes'].permit(:position, :library_id, :chip_id)
+      params.require(:data)['attributes'].permit(:position, :library_id, :saphyr_chip_id)
     end
 
     def library

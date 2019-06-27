@@ -8,11 +8,11 @@ Rails.application.routes.draw do
     jsonapi_resources :libraries, only: %i[index create destroy show]
     jsonapi_resources :tubes, only: %i[index]
     jsonapi_resources :enzymes, only: %i[index]
-    jsonapi_resources :chips, only: %i[index update show create destroy]
     jsonapi_resources :flowcells, only: %i[index update show create destroy]
 
     namespace :saphyr do
       resources :runs, only: %i[index create update show destroy]
+      resources :chips, only: %i[index update show create destroy]
     end
   end
 end

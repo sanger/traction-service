@@ -10,16 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_21_110556) do
-
-  create_table "chips", force: :cascade do |t|
-    t.string "barcode"
-    t.string "serial_number"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "saphyr_run_id"
-    t.index ["saphyr_run_id"], name: "index_chips_on_saphyr_run_id"
-  end
+ActiveRecord::Schema.define(version: 2019_06_27_145840) do
 
   create_table "enzymes", force: :cascade do |t|
     t.string "name"
@@ -33,8 +24,10 @@ ActiveRecord::Schema.define(version: 2019_06_21_110556) do
     t.integer "chip_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "saphyr_chip_id"
     t.index ["chip_id"], name: "index_flowcells_on_chip_id"
     t.index ["library_id"], name: "index_flowcells_on_library_id"
+    t.index ["saphyr_chip_id"], name: "index_flowcells_on_saphyr_chip_id"
   end
 
   create_table "libraries", force: :cascade do |t|
@@ -58,12 +51,23 @@ ActiveRecord::Schema.define(version: 2019_06_21_110556) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "saphyr_chips", force: :cascade do |t|
+    t.string "barcode"
+    t.string "serial_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "saphyr_run_id"
+    t.index ["saphyr_run_id"], name: "index_saphyr_chips_on_saphyr_run_id"
+  end
+
   create_table "saphyr_runs", force: :cascade do |t|
     t.integer "state", default: 0
     t.string "name"
     t.datetime "deactivated_at"
+    t.integer "chip_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["chip_id"], name: "index_saphyr_runs_on_chip_id"
   end
 
   create_table "tubes", force: :cascade do |t|
