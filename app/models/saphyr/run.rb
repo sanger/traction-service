@@ -4,7 +4,6 @@
 module Saphyr
   # Run
   class Run < ApplicationRecord
-    self.table_name = 'saphyr_runs'
 
     has_one :chip, class_name: 'Chip', foreign_key: :saphyr_run_id, dependent: :nullify
     enum state: %i[pending started completed cancelled]
