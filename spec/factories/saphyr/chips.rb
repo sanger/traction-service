@@ -1,10 +1,10 @@
 FactoryBot.define do
-  factory :chip do
+  factory :saphyr_chip, class: Saphyr::Chip do
     association :run, factory: :saphyr_run
 
     sequence(:barcode) { |n| "FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX-#{n}" }
 
-    factory :chip_with_flowcells do
+    factory :saphyr_chip_with_flowcells do
       flowcells { create_list(:flowcell, 2) }
     end
   end

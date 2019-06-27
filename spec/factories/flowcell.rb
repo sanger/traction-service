@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory :flowcell do
-    chip
+    association :chip, factory: :saphyr_chip
+
     position { 1 }
 
     factory :flowcell_with_library do

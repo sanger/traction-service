@@ -2,11 +2,15 @@ require "rails_helper"
 
 RSpec.describe 'FlowcellsController', type: :request do
 
+  before(:all) do
+    Pipelines.configure(Rails.configuration.pipelines)
+  end
+
   let(:library) { create(:library) }
 
   context '#create' do
 
-    let(:chip) { create(:chip) }
+    let(:chip) { create(:saphyr_chip) }
 
     context 'on success' do
       let(:body) do
@@ -16,7 +20,7 @@ RSpec.describe 'FlowcellsController', type: :request do
             attributes: {
               "position": 1,
               "library_id": library.id,
-              "chip_id": chip.id
+              "saphyr_chip_id": chip.id
             }
           }
         }.to_json
@@ -45,7 +49,7 @@ RSpec.describe 'FlowcellsController', type: :request do
             type: "flowcells",
             attributes: {
               "library_id": library.id,
-              "chip_id": chip.id
+              "saphyr_chip_id": chip.id
             }
           }
         }.to_json

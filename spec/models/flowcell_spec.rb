@@ -4,7 +4,7 @@ RSpec.describe Flowcell, type: :model do
 
   context 'on creation' do
     it 'must have a chip' do
-      chip = create(:chip)
+      chip = create(:saphyr_chip)
       expect(create(:flowcell, chip: chip)).to be_valid
       expect(build(:flowcell, chip: nil)).not_to be_valid
     end
@@ -18,7 +18,7 @@ RSpec.describe Flowcell, type: :model do
 
   context 'chip' do
     it 'can have a chip' do
-      chip = create(:chip)
+      chip = create(:saphyr_chip)
       expect(create(:flowcell, chip: chip).chip).to eq chip
     end
   end
