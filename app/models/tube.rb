@@ -2,7 +2,8 @@
 
 # Tube
 class Tube < ApplicationRecord
-  belongs_to :material, polymorphic: true
+
+  belongs_to :material, inverse_of: :tube, polymorphic: true
 
   after_create :generate_barcode
 

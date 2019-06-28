@@ -6,7 +6,7 @@ RSpec.describe 'FlowcellsController', type: :request do
     Pipelines.configure(Rails.configuration.pipelines)
   end
 
-  let(:library) { create(:library) }
+  let(:library) { create(:saphyr_library) }
 
   context '#create' do
 
@@ -19,7 +19,7 @@ RSpec.describe 'FlowcellsController', type: :request do
             type: "flowcells",
             attributes: {
               "position": 1,
-              "library_id": library.id,
+              "saphyr_library_id": library.id,
               "saphyr_chip_id": chip.id
             }
           }
@@ -81,7 +81,7 @@ RSpec.describe 'FlowcellsController', type: :request do
             type: "flowcells",
             id: flowcell.id,
             attributes: {
-              "library_id":library.id
+              "saphyr_library_id": library.id
             }
           }
         }.to_json
@@ -117,7 +117,7 @@ RSpec.describe 'FlowcellsController', type: :request do
             type: "flowcells",
             id: flowcell.id,
             attributes: {
-              "library_id":library.id
+              "saphyr_library_id":library.id
             }
           }
         }.to_json

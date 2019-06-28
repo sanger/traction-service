@@ -25,14 +25,14 @@ RSpec.describe Saphyr::Flowcell, type: :model do
 
   context 'library' do
     it 'can have a library' do
-      flowcell = create(:saphyr_flowcell)
-      library = create(:library, flowcells: [flowcell])
+      library = create(:saphyr_library)
+      flowcell = create(:saphyr_flowcell, library: library)
       expect(flowcell.library).to eq library
     end
 
     it 'can be updated with a library' do
       flowcell = create(:saphyr_flowcell)
-      library = create(:library)
+      library = create(:saphyr_library)
       flowcell.update(library: library)
       expect(flowcell.library).to eq library
     end

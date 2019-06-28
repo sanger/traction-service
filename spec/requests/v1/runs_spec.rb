@@ -100,16 +100,19 @@ RSpec.describe 'RunsController', type: :request do
   end
 
   context '#update' do
-    let(:chip) { create(:saphyr_chip_with_flowcells) }
 
-    let(:run) { create(:saphyr_run, chip: chip) }
+    before do
+      @run = create(:saphyr_run)
+      @chip = create(:saphyr_chip, run: @run)
+      @flowcell = create(:saphyr_flowcell, chip: @chip)
+    end
 
     context 'on success' do
       let(:body) do
         {
           data: {
             type: "runs",
-            id: run.id,
+            id: @run.id,
             attributes: {
               state: "started",
               name: "aname"
@@ -119,26 +122,26 @@ RSpec.describe 'RunsController', type: :request do
       end
 
       it 'has a ok status' do
-        patch v1_saphyr_run_path(run), params: body, headers: json_api_headers
+        patch v1_saphyr_run_path(@run), params: body, headers: json_api_headers
         expect(response).to have_http_status(:ok)
       end
 
       it 'updates a run' do
-        patch v1_saphyr_run_path(run), params: body, headers: json_api_headers
-        run.reload
-        expect(run.state).to eq "started"
-        expect(run.name).to eq "aname"
+        patch v1_saphyr_run_path(@run), params: body, headers: json_api_headers
+        @run.reload
+        expect(@run.state).to eq "started"
+        expect(@run.name).to eq "aname"
       end
 
       it 'sends a message to the warehouse' do
         expect(Messages).to receive(:publish)
-        patch v1_saphyr_run_path(run), params: body, headers: json_api_headers
+        patch v1_saphyr_run_path(@run), params: body, headers: json_api_headers
       end
 
       it 'returns the correct attributes' do
-        patch v1_saphyr_run_path(run), params: body, headers: json_api_headers
+        patch v1_saphyr_run_path(@run), params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['id']).to eq run.id.to_s
+        expect(json['data']['id']).to eq @run.id.to_s
       end
 
     end
@@ -164,8 +167,8 @@ RSpec.describe 'RunsController', type: :request do
 
       it 'does not update a run' do
         patch v1_saphyr_run_path(123), params: body, headers: json_api_headers
-        run.reload
-        expect(run).to be_pending
+        @run.reload
+        expect(@run).to be_pending
       end
 
       it 'has an error message' do

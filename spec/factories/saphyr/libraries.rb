@@ -1,5 +1,6 @@
 FactoryBot.define do
-  factory :library do
+  factory :saphyr_library, class: Saphyr::Library do
+
     state { 'pending' }
     sample
     enzyme
