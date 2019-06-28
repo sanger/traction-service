@@ -36,8 +36,8 @@ RSpec.describe 'TubesController', type: :request do
     end
 
     context 'when material is a library' do
-      let!(:library1) { create(:library) }
-      let!(:library2) { create(:library) }
+      let!(:library1) { create(:saphyr_library) }
+      let!(:library2) { create(:saphyr_library) }
       let!(:tube1) { create(:tube, material: library1)}
       let!(:tube2) { create(:tube, material: library2)}
 
@@ -59,9 +59,8 @@ RSpec.describe 'TubesController', type: :request do
 
     describe 'filter by barcode' do
 
-
       let(:sample_tubes) { create_list(:tube, 2)}
-      let(:library_tubes) { create_list(:tube_with_library, 2)}
+      let(:library_tubes) { create_list(:tube_with_saphyr_library, 2)}
       let(:other_tubes) {create_list(:tube, 5)}
       let(:barcodes) { sample_tubes.pluck(:barcode).concat(library_tubes.pluck(:barcode))}
 

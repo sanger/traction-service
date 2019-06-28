@@ -1,7 +1,12 @@
 class AddSaphyrChipNamespace < ActiveRecord::Migration[5.2]
   def change
     change_table :flowcells do |t|
-      t.remove_references :run
+      t.remove_references :chip
+      t.belongs_to :saphyr_chip
+    end
+
+    change_table :saphyr_runs do |t|
+      t.remove_references :chip
       t.belongs_to :saphyr_chip
     end
 

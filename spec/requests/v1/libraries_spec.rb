@@ -3,21 +3,20 @@ require "rails_helper"
 RSpec.describe 'LibrariesController', type: :request do
 
   context '#get' do
-    let!(:library1) { create(:library) }
-    let!(:library2) { create(:library) }
+    let!(:library1) { create(:saphyr_library) }
+    let!(:library2) { create(:saphyr_library) }
     let!(:tube1) { create(:tube, material: library1)}
     let!(:tube2) { create(:tube, material: library2)}
 
     it 'returns a list of libraries' do
-      get v1_libraries_path, headers: json_api_headers
-
+      get v1_saphyr_libraries_path, headers: json_api_headers
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'].length).to eq(2)
     end
 
     it 'returns the correct attributes' do
-      get v1_libraries_path, headers: json_api_headers
+      get v1_saphyr_libraries_path, headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -37,13 +36,13 @@ RSpec.describe 'LibrariesController', type: :request do
     end
 
     context 'when some libraries are deactivated' do
-      let!(:library3) { create(:library) }
-      let!(:library4) { create(:library, deactivated_at: DateTime.now) }
+      let!(:library3) { create(:saphyr_library) }
+      let!(:library4) { create(:saphyr_library, deactivated_at: DateTime.now) }
       let!(:tube3) { create(:tube, material: library3)}
       let!(:tube4) { create(:tube, material: library4)}
 
       it 'only returns active libraries' do
-        get v1_libraries_path, headers: json_api_headers
+        get v1_saphyr_libraries_path, headers: json_api_headers
 
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
@@ -71,32 +70,32 @@ RSpec.describe 'LibrariesController', type: :request do
         end
 
         it 'has a created status' do
-          post v1_libraries_path, params: body, headers: json_api_headers
+          post v1_saphyr_libraries_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:created)
         end
 
         it 'creates a library' do
-          expect { post v1_libraries_path, params: body, headers: json_api_headers }.to change { Library.count }.by(1)
+          expect { post v1_saphyr_libraries_path, params: body, headers: json_api_headers }.to change { Saphyr::Library.count }.by(1)
         end
 
         it 'creates a library with a tube' do
-          post v1_libraries_path, params: body, headers: json_api_headers
-          expect(Library.last.tube).to be_present
-          tube_id = Library.last.tube.id
-          expect(Tube.find(tube_id).material).to eq Library.last
+          post v1_saphyr_libraries_path, params: body, headers: json_api_headers
+          expect(Saphyr::Library.last.tube).to be_present
+          tube_id = Saphyr::Library.last.tube.id
+          expect(Tube.find(tube_id).material).to eq Saphyr::Library.last
         end
 
         it 'creates a library with a sample' do
-          post v1_libraries_path, params: body, headers: json_api_headers
-          expect(Library.last.sample).to be_present
-          sample_id = Library.last.sample.id
+          post v1_saphyr_libraries_path, params: body, headers: json_api_headers
+          expect(Saphyr::Library.last.sample).to be_present
+          sample_id = Saphyr::Library.last.sample.id
           expect(sample_id).to eq sample.id
         end
 
         it 'creates a library with a enzyme' do
-          post v1_libraries_path, params: body, headers: json_api_headers
-          expect(Library.last.enzyme).to be_present
-          enzyme_id = Library.last.enzyme.id
+          post v1_saphyr_libraries_path, params: body, headers: json_api_headers
+          expect(Saphyr::Library.last.enzyme).to be_present
+          enzyme_id = Saphyr::Library.last.enzyme.id
           expect(enzyme_id).to eq enzyme.id
         end
       end
@@ -118,16 +117,16 @@ RSpec.describe 'LibrariesController', type: :request do
           end
 
           it 'can returns unprocessable entity status' do
-            post v1_libraries_path, params: body, headers: json_api_headers
+            post v1_saphyr_libraries_path, params: body, headers: json_api_headers
             expect(response).to have_http_status(:unprocessable_entity)
           end
 
           it 'cannot create a library' do
-            expect { post v1_libraries_path, params: body, headers: json_api_headers }.to change { Library.count }.by(0)
+            expect { post v1_saphyr_libraries_path, params: body, headers: json_api_headers }.to change { Saphyr::Library.count }.by(0)
           end
 
           it 'has an error message' do
-            post v1_libraries_path, params: body, headers: json_api_headers
+            post v1_saphyr_libraries_path, params: body, headers: json_api_headers
             expect(JSON.parse(response.body)["data"]).to include("errors" => {"sample"=>['must exist']})
           end
         end
@@ -148,16 +147,16 @@ RSpec.describe 'LibrariesController', type: :request do
           end
 
           it 'can returns unprocessable entity status' do
-            post v1_libraries_path, params: body, headers: json_api_headers
+            post v1_saphyr_libraries_path, params: body, headers: json_api_headers
             expect(response).to have_http_status(:unprocessable_entity)
           end
 
           it 'cannot create a library' do
-            expect { post v1_libraries_path, params: body, headers: json_api_headers }.to change { Library.count }.by(0)
+            expect { post v1_saphyr_libraries_path, params: body, headers: json_api_headers }.to change { Saphyr::Library.count }.by(0)
           end
 
           it 'has an error message' do
-            post v1_libraries_path, params: body, headers: json_api_headers
+            post v1_saphyr_libraries_path, params: body, headers: json_api_headers
             expect(JSON.parse(response.body)["data"]).to include("errors" => {"enzyme"=>['must exist']})
           end
         end
@@ -188,7 +187,7 @@ RSpec.describe 'LibrariesController', type: :request do
           end
 
           it 'can create libraries' do
-            post v1_libraries_path, params: body, headers: json_api_headers
+            post v1_saphyr_libraries_path, params: body, headers: json_api_headers
             expect(response).to have_http_status(:created)
           end
         end
@@ -212,12 +211,12 @@ RSpec.describe 'LibrariesController', type: :request do
           end
 
           it 'cannot create libraries' do
-            post v1_libraries_path, params: body, headers: json_api_headers
+            post v1_saphyr_libraries_path, params: body, headers: json_api_headers
             expect(response).to have_http_status(:unprocessable_entity)
           end
 
           it 'has an error message' do
-            post v1_libraries_path, params: body, headers: json_api_headers
+            post v1_saphyr_libraries_path, params: body, headers: json_api_headers
             expect(JSON.parse(response.body)["data"]).to include("errors" => {"sample"=>['must exist', 'must exist']})
           end
         end
@@ -228,11 +227,11 @@ RSpec.describe 'LibrariesController', type: :request do
 
   context '#destroy' do
     context 'on success' do
-      let!(:library) { create(:library) }
+      let!(:library) { create(:saphyr_library) }
       let!(:tube) { create(:tube, material: library)}
 
       it 'deactivates the library' do
-        delete "/v1/libraries/#{library.id}", headers: json_api_headers
+        delete "/v1/saphyr/libraries/#{library.id}", headers: json_api_headers
 
         expect(response).to have_http_status(:no_content)
         library.reload
@@ -241,19 +240,19 @@ RSpec.describe 'LibrariesController', type: :request do
     end
 
     context 'on failure' do
-      let!(:library) { create(:library) }
+      let!(:library) { create(:saphyr_library) }
 
       before do
         library.deactivate
       end
 
       it 'does not deactivate the library' do
-        delete "/v1/libraries/#{library.id}", headers: json_api_headers
+        delete "/v1/saphyr/libraries/#{library.id}", headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'has an error message' do
-        delete "/v1/libraries/#{library.id}", headers: json_api_headers
+        delete "/v1/saphyr/libraries/#{library.id}", headers: json_api_headers
         expect(JSON.parse(response.body)["data"]).to include("errors" => {})
       end
     end

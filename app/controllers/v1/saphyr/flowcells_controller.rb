@@ -42,11 +42,11 @@ module V1
       private
 
       def params_names
-        params.require(:data)['attributes'].permit(:position, :library_id, :saphyr_chip_id)
+        params.require(:data)['attributes'].permit(:position, :saphyr_library_id, :saphyr_chip_id)
       end
 
       def library
-        @library ||= Library.find(params_names['library_id'])
+        @library ||= ::Saphyr::Library.find(params_names['saphyr_library_id'])
       end
 
       def flowcell
