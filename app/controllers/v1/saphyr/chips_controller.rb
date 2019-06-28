@@ -4,7 +4,6 @@ module V1
   module Saphyr
     # ChipsController
     class ChipsController < ApplicationController
-
       def create
         @chip = ::Saphyr::Chip.new(params_names)
         if @chip.save

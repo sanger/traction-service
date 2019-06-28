@@ -4,7 +4,6 @@ module V1
   module Saphyr
     # RunsController
     class RunsController < ApplicationController
-
       def create
         @run = ::Saphyr::Run.new(params_names)
         if @run.save
