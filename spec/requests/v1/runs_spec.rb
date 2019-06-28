@@ -11,8 +11,8 @@ RSpec.describe 'RunsController', type: :request do
     let!(:run2) { create(:saphyr_run, state: 'started') }
     let!(:chip1) { create(:saphyr_chip, run: run1) }
     let!(:chip2) { create(:saphyr_chip, run: run2) }
-    let!(:flowcells1) {create_list(:flowcell, 2, chip: chip1)}
-    let!(:flowcells2) {create_list(:flowcell, 2, chip: chip2)}
+    let!(:flowcells1) {create_list(:saphyr_flowcell, 2, chip: chip1)}
+    let!(:flowcells2) {create_list(:saphyr_flowcell, 2, chip: chip2)}
 
     it 'returns a list of runs' do
       get v1_saphyr_runs_path, headers: json_api_headers

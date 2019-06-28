@@ -5,7 +5,7 @@ FactoryBot.define do
     sequence(:barcode) { |n| "FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX-#{n}" }
 
     factory :saphyr_chip_with_flowcells do
-      flowcells { create_list(:flowcell, 2) }
+      flowcells { create_list(:saphyr_flowcell, 2) }
     end
   end
 end
