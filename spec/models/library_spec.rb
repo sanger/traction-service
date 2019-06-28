@@ -42,7 +42,7 @@ RSpec.describe Library, type: :model do
 
     context 'flowcell' do
       it 'can have a flowcell' do
-        flowcell = create(:flowcell)
+        flowcell = create(:saphyr_flowcell)
         expect(create(:library, flowcells: [flowcell])).to be_valid
       end
 

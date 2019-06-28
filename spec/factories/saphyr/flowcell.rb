@@ -1,5 +1,6 @@
 FactoryBot.define do
-  factory :flowcell do
+  factory :saphyr_flowcell, class: Saphyr::Flowcell do
+
     association :chip, factory: :saphyr_chip
 
     position { 1 }

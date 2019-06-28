@@ -7,7 +7,7 @@ class Library < ApplicationRecord
   before_create :set_state
   belongs_to :sample
   belongs_to :enzyme
-  has_many :flowcells, dependent: :nullify
+  has_many :flowcells, class_name: 'Saphyr::Flowcell', dependent: :nullify
 
   scope :active, -> { where(deactivated_at: nil) }
 
