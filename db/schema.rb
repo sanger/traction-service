@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_25_104131) do
+ActiveRecord::Schema.define(version: 2019_07_01_125432) do
 
   create_table "chips", force: :cascade do |t|
     t.string "barcode"
@@ -70,6 +70,16 @@ ActiveRecord::Schema.define(version: 2019_06_25_104131) do
     t.index ["pacbio_run_id"], name: "index_pacbio_plates_on_pacbio_run_id"
   end
 
+  create_table "pacbio_requests", force: :cascade do |t|
+    t.string "library_type"
+    t.integer "estimate_of_gb_required"
+    t.integer "number_of_smrt_cells"
+    t.string "cost_code"
+    t.integer "external_study_id"
+    t.integer "sample_id"
+    t.index ["sample_id"], name: "index_pacbio_requests_on_sample_id"
+  end
+
   create_table "pacbio_runs", force: :cascade do |t|
     t.string "name"
     t.string "template_prep_kit_box_barcode"
@@ -80,16 +90,6 @@ ActiveRecord::Schema.define(version: 2019_06_25_104131) do
     t.integer "sequencing_mode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "pacbio_requests", force: :cascade do |t|
-    t.string "library_type"
-    t.integer "estimate_of_gb_required"
-    t.integer "number_of_smrt_cells"
-    t.string "cost_code"
-    t.integer "external_study_id"
-    t.integer "sample_id"
-    t.index ["sample_id"], name: "index_pacbio_requests_on_sample_id"
   end
 
   create_table "pacbio_tags", force: :cascade do |t|
@@ -129,6 +129,12 @@ ActiveRecord::Schema.define(version: 2019_06_25_104131) do
     t.string "species"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "saphyr_requests", force: :cascade do |t|
+    t.integer "external_study_id"
+    t.integer "sample_id"
+    t.index ["sample_id"], name: "index_saphyr_requests_on_sample_id"
   end
 
   create_table "tubes", force: :cascade do |t|
