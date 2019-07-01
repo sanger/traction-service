@@ -73,8 +73,8 @@ RSpec.describe Sample, type: :model do
   context 'libraries' do
     it 'can have libraries' do
       sample = create(:sample)
-      lib1 = create(:library, sample: sample)
-      lib2 = create(:library, sample: sample)
+      lib1 = create(:saphyr_library, sample: sample)
+      lib2 = create(:saphyr_library, sample: sample)
       expect(sample.libraries.length).to eq 2
     end
   end

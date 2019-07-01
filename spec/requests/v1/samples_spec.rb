@@ -7,8 +7,8 @@ RSpec.describe 'SamplesController', type: :request do
   context '#get' do
     let!(:sample1) { create(:sample)}
     let!(:sample2) { create(:sample)}
-    let!(:library1) { create(:library, sample: sample1)}
-    let!(:library2) { create(:library, sample: sample2)}
+    let!(:library1) { create(:saphyr_library, sample: sample1)}
+    let!(:library2) { create(:saphyr_library, sample: sample2)}
     let!(:tube1) { create(:tube, material: sample1)}
     let!(:tube2) { create(:tube, material: sample2)}
 
