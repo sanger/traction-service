@@ -23,9 +23,9 @@ RSpec.describe Saphyr::Library, type: :model do
     end
 
     it 'should have a enzyme' do
-      enzyme = create(:enzyme)
+      enzyme = create(:saphyr_enzyme)
       expect(create(:saphyr_library, enzyme: enzyme).enzyme).to eq(enzyme)
-      expect(create(:saphyr_library, enzyme: enzyme).enzyme_id).to eq(enzyme.id)
+      expect(create(:saphyr_library, enzyme: enzyme).saphyr_enzyme_id).to eq(enzyme.id)
     end
 
     context 'tube' do

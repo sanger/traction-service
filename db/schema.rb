@@ -10,13 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_28_100715) do
-
-  create_table "enzymes", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
+ActiveRecord::Schema.define(version: 2019_07_01_135520) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.integer "pacbio_well_id"
@@ -90,6 +84,12 @@ ActiveRecord::Schema.define(version: 2019_06_28_100715) do
     t.index ["saphyr_run_id"], name: "index_saphyr_chips_on_saphyr_run_id"
   end
 
+  create_table "saphyr_enzymes", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "saphyr_flowcells", force: :cascade do |t|
     t.integer "position"
     t.datetime "created_at", null: false
@@ -103,12 +103,12 @@ ActiveRecord::Schema.define(version: 2019_06_28_100715) do
   create_table "saphyr_libraries", force: :cascade do |t|
     t.string "state"
     t.integer "sample_id"
-    t.integer "enzyme_id"
     t.datetime "deactivated_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["enzyme_id"], name: "index_saphyr_libraries_on_enzyme_id"
+    t.integer "saphyr_enzyme_id"
     t.index ["sample_id"], name: "index_saphyr_libraries_on_sample_id"
+    t.index ["saphyr_enzyme_id"], name: "index_saphyr_libraries_on_saphyr_enzyme_id"
   end
 
   create_table "saphyr_runs", force: :cascade do |t|
