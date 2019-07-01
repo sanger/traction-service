@@ -4,8 +4,10 @@
 module Saphyr
   # Run
   class Run < ApplicationRecord
-    has_one :chip, foreign_key: :saphyr_run_id, inverse_of: :run, dependent: :nullify # inverse_of: :run
     enum state: %i[pending started completed cancelled]
+
+    has_one :chip, foreign_key: :saphyr_run_id,
+                   inverse_of: :run, dependent: :nullify
 
     scope :active, -> { where(deactivated_at: nil) }
 

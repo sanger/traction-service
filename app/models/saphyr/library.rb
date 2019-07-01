@@ -9,7 +9,9 @@ module Saphyr
     before_create :set_state
     belongs_to :sample
     belongs_to :enzyme
-    has_many :flowcells, class_name: 'Saphyr::Flowcell', foreign_key: 'saphyr_library_id', inverse_of: :library, dependent: :nullify
+    has_many :flowcells, class_name: 'Saphyr::Flowcell',
+                         foreign_key: 'saphyr_library_id', inverse_of: :library,
+                         dependent: :nullify
 
     scope :active, -> { where(deactivated_at: nil) }
 
