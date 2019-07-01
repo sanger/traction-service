@@ -18,46 +18,6 @@ ActiveRecord::Schema.define(version: 2019_06_28_100715) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "samples", force: :cascade do |t|
-    t.string "name"
-    t.datetime "deactivated_at"
-    t.string "external_id"
-    t.string "external_study_id"
-    t.string "species"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "saphyr_chips", force: :cascade do |t|
-    t.string "barcode"
-    t.string "serial_number"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "saphyr_run_id"
-    t.index ["saphyr_run_id"], name: "index_saphyr_chips_on_saphyr_run_id"
-  end
-
-  create_table "saphyr_flowcells", force: :cascade do |t|
-    t.integer "position"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "saphyr_chip_id"
-    t.integer "saphyr_library_id"
-    t.index ["saphyr_chip_id"], name: "index_saphyr_flowcells_on_saphyr_chip_id"
-    t.index ["saphyr_library_id"], name: "index_saphyr_flowcells_on_saphyr_library_id"
-  end
-
-  create_table "saphyr_libraries", force: :cascade do |t|
-    t.string "state"
-    t.integer "sample_id"
-    t.integer "enzyme_id"
-    t.datetime "deactivated_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["enzyme_id"], name: "index_saphyr_libraries_on_enzyme_id"
-    t.index ["sample_id"], name: "index_saphyr_libraries_on_sample_id"
-  end
-
   create_table "pacbio_libraries", force: :cascade do |t|
     t.integer "pacbio_well_id"
     t.float "volume"
@@ -109,6 +69,46 @@ ActiveRecord::Schema.define(version: 2019_06_28_100715) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
+  end
+
+  create_table "samples", force: :cascade do |t|
+    t.string "name"
+    t.datetime "deactivated_at"
+    t.string "external_id"
+    t.string "external_study_id"
+    t.string "species"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "saphyr_chips", force: :cascade do |t|
+    t.string "barcode"
+    t.string "serial_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "saphyr_run_id"
+    t.index ["saphyr_run_id"], name: "index_saphyr_chips_on_saphyr_run_id"
+  end
+
+  create_table "saphyr_flowcells", force: :cascade do |t|
+    t.integer "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "saphyr_chip_id"
+    t.integer "saphyr_library_id"
+    t.index ["saphyr_chip_id"], name: "index_saphyr_flowcells_on_saphyr_chip_id"
+    t.index ["saphyr_library_id"], name: "index_saphyr_flowcells_on_saphyr_library_id"
+  end
+
+  create_table "saphyr_libraries", force: :cascade do |t|
+    t.string "state"
+    t.integer "sample_id"
+    t.integer "enzyme_id"
+    t.datetime "deactivated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enzyme_id"], name: "index_saphyr_libraries_on_enzyme_id"
+    t.index ["sample_id"], name: "index_saphyr_libraries_on_sample_id"
   end
 
   create_table "saphyr_runs", force: :cascade do |t|
