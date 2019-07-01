@@ -30,7 +30,7 @@ RSpec.describe Tube, type: :model do
       end
 
       it 'can have a library as its material' do
-        library = create(:library)
+        library = create(:saphyr_library)
         tube_with_library = create(:tube, material: library)
         expect(tube_with_library).to be_valid
         expect(tube_with_library.material).to eq library
@@ -41,7 +41,7 @@ RSpec.describe Tube, type: :model do
   describe 'scope - by barcode' do
 
     let(:sample_tubes) { create_list(:tube, 5)}
-    let(:library_tubes) { create_list(:tube_with_library, 5)}
+    let(:library_tubes) { create_list(:tube_with_saphyr_library, 5)}
 
     it 'will return the correct tubes' do
       expect(Tube.by_barcode(sample_tubes.first.barcode).length).to eq(1)
