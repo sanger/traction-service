@@ -1,13 +1,13 @@
 default: &default
   saphyr:
     message:
-      lims: Traction
+      lims: &lims Traction
       key: bmap_flowcell
       fields:
-        sample_uuid:
+        sample_uuid: &sample_uuid
           type: :model
           value: library.sample.external_id
-        study_uuid: 
+        study_uuid: &study_uuid
           type: :model
           value: library.sample.external_study_id
         experiment_name:
@@ -34,9 +34,51 @@ default: &default
         instrument_name:
           type: :string
           value: saphyr
-        last_updated:
+        last_updated: &timestamp
           type: :constant
-          value: &timestamp Time.current
+          value: Time.current
+  pacbio:
+    message:
+      lims: *lims
+      key: pac_bio_run
+      fields:
+        last_updated: *timestamp
+        sample_uuid: *sample_uuid
+        study_uuid: *study_uuid
+        id_pac_bio_run_lims:
+          type: :model
+          value: plate.run.id
+        pac_bio_run_uuid:
+          type: :model
+          value: plate.run.uuid
+        cost_code:
+          type: :model
+          value: library.sample.cost_code
+        tag_sequence:
+          type: :model
+          value: library.tag_sequence
+        plate_barcode:
+          type: :model
+          value: plate.barcode
+        plate_uuid:
+          type: :model
+          value: plate.uuid
+        well_label:
+          type: :model
+          value: position
+        well_uuid_lims:
+          type: :model
+          value: uuid
+        pac_bio_library_tube_id_lims:
+          type: :model
+          value: library.id
+        pac_bio_library_tube_uuid:
+          type: :model
+          value: library.uuid 
+        pac_bio_library_tube_name:
+          type: :model
+          value: library.name
+
 
 development:
   <<: *default
