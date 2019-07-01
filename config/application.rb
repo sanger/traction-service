@@ -45,6 +45,8 @@ module TractionService
     config.mailer = config_for(:mailer)
     config.pipelines = config_for(:pipelines)
 
+    config.autoload_paths += %W{#{Rails.root}/app}
+
      # Rails 5
     config.middleware.insert_before 0, Rack::Cors do
       allow do
