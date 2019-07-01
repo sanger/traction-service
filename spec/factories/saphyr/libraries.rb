@@ -3,7 +3,7 @@ FactoryBot.define do
 
     state { 'pending' }
     sample
-    enzyme
+    association :enzyme, factory: :saphyr_enzyme
 
     factory :library_no_state do
       state { nil }

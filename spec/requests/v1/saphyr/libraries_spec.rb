@@ -56,13 +56,13 @@ RSpec.describe 'LibrariesController', type: :request do
 
       context 'on success' do
         let(:sample) { create(:sample) }
-        let(:enzyme) { create(:enzyme) }
+        let(:saphyr_enzyme) { create(:saphyr_enzyme) }
         let(:body) do
           {
             data: {
               attributes: {
                 libraries: [
-                  { state: 'pending', sample_id: sample.id, enzyme_id: enzyme.id}
+                  { state: 'pending', sample_id: sample.id, saphyr_enzyme_id: saphyr_enzyme.id}
                 ]
               }
             }
@@ -96,20 +96,20 @@ RSpec.describe 'LibrariesController', type: :request do
           post v1_saphyr_libraries_path, params: body, headers: json_api_headers
           expect(Saphyr::Library.last.enzyme).to be_present
           enzyme_id = Saphyr::Library.last.enzyme.id
-          expect(enzyme_id).to eq enzyme.id
+          expect(enzyme_id).to eq saphyr_enzyme.id
         end
       end
 
       context 'on failure' do
         context 'when the sample does not exist' do
-          let(:enzyme) { create(:enzyme) }
+          let(:saphyr_enzyme) { create(:saphyr_enzyme) }
 
           let(:body) do
             {
               data: {
                 attributes: {
                   libraries: [
-                    { state: 'pending', sample_id: 1, enzyme_id: enzyme.id}
+                    { state: 'pending', sample_id: 1, saphyr_enzyme_id: saphyr_enzyme.id}
                   ]
                 }
               }
@@ -170,16 +170,16 @@ RSpec.describe 'LibrariesController', type: :request do
       context 'on success' do
         context 'when the sample does exist' do
           let(:sample) { create(:sample) }
-          let(:enzyme) { create(:enzyme) }
+          let(:saphyr_enzyme) { create(:saphyr_enzyme) }
 
           let(:body) do
             {
               data: {
                 attributes: {
                   libraries: [
-                    { state: 'pending', sample_id: sample.id, enzyme_id: enzyme.id},
-                    { state: 'pending', sample_id: sample.id, enzyme_id: enzyme.id},
-                    { state: 'pending', sample_id: sample.id, enzyme_id: enzyme.id}
+                    { state: 'pending', sample_id: sample.id, saphyr_enzyme_id: saphyr_enzyme.id},
+                    { state: 'pending', sample_id: sample.id, saphyr_enzyme_id: saphyr_enzyme.id},
+                    { state: 'pending', sample_id: sample.id, saphyr_enzyme_id: saphyr_enzyme.id}
                   ]
                 }
               }
@@ -195,15 +195,15 @@ RSpec.describe 'LibrariesController', type: :request do
 
       context 'on failure' do
         context 'when the sample does not exist' do
-          let(:enzyme) { create(:enzyme) }
+          let(:saphyr_enzyme) { create(:saphyr_enzyme) }
 
           let(:body) do
             {
               data: {
                 attributes: {
                   libraries: [
-                    { state: 'pending', sample_id: 1, enzyme_id: enzyme.id},
-                    { state: 'pending', sample_id: 1, enzyme_id: enzyme.id}
+                    { state: 'pending', sample_id: 1, saphyr_enzyme_id: saphyr_enzyme.id},
+                    { state: 'pending', sample_id: 1, saphyr_enzyme_id: saphyr_enzyme.id}
                   ]
                 }
               }
