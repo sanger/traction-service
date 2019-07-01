@@ -52,13 +52,13 @@ RSpec.describe Sample, type: :model do
       expect(create(:sample)).to be_active
     end
 
-    describe 'external_study_id' do
+    # describe 'external_study_id' do
 
-      it 'must have an external study id' do
-        expect(build(:sample, external_study_id: nil)).not_to be_valid
-      end
+    #   it 'must have an external study id' do
+    #     expect(build(:sample, external_study_id: nil)).not_to be_valid
+    #   end
 
-    end
+    # end
   end
 
   context 'on update' do

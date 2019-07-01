@@ -15,38 +15,36 @@ RSpec.describe Pacbio::RequestFactory, type: :model, pacbio: true do
     end
 
     it 'produces error messages if any of the resources are not valid' do
-      # attributes << {}
-      # factory = SampleFactory.new(attributes)
-      # expect(factory).to_not be_valid
-      # expect(factory.errors.full_messages[0]).to eq("Name can\'t be blank")
-      # expect(factory.errors.full_messages[1]).to eq("External can\'t be blank")
-      # expect(factory.errors.full_messages[2]).to eq("External study can\'t be blank")
-      # expect(factory.errors.full_messages[3]).to eq("Species can\'t be blank")
-      # expect(factory.errors.full_messages.length).to eq(4)
+      attributes << {}
+      factory = Pacbio::RequestFactory.new(attributes)
+      expect(factory).to_not be_valid
+      expect(factory.errors.full_messages).to_not be_empty
     end
   end
  
   context '#save' do
     it 'creates a request in a tube for each set of attributes if they are valid' do
-      # factory = SampleFactory.new(attributes)
-      # expect(factory).to be_valid
-      # expect(factory.save).to be_truthy
-      # expect(Sample.all.count).to eq(attributes.length)
-      # expect(Sample.first.tube).to eq(attributes.first[:tube])
+      factory = Pacbio::RequestFactory.new(attributes)
+      expect(factory).to be_valid
+      expect(factory.save).to be_truthy
+      expect(Pacbio::Request.all.count).to eq(attributes.length)
+      expect(Pacbio::Request.first.tube).to eq(attributes.first[:tube])
     end
 
-    it 'creates a sample if it does not already exist' do
-    end
-
-    it 'finds the sample if it already exists' do
+    it 'doesnt create a sample if it already exists' do
+      sample = create(:sample)
+      attributes << sample.attributes.extract!('name', 'species', 'external_id').with_indifferent_access.merge(attributes_for(:pacbio_request))
+      factory = Pacbio::RequestFactory.new(attributes)
+      factory.save
+      expect(Sample.count).to eq(4)
     end
 
     it 'does not create any samples if attributes are not valid' do
-      # attributes << {}
-      # factory = SampleFactory.new(attributes)
-      # expect(factory).not_to be_valid
-      # expect(factory.save).to be_falsey
-      # expect(Tube.all.count).to eq(0)
+      attributes << attributes_for(:sample).except(:name).merge(attributes_for(:pacbio_request))
+      factory = Pacbio::RequestFactory.new(attributes)
+      expect(factory).not_to be_valid
+      expect(factory.save).to be_falsey
+      expect(Tube.all.count).to eq(0)
     end
   end
 end
