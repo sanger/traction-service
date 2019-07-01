@@ -49,14 +49,37 @@ ActiveRecord::Schema.define(version: 2019_06_25_104131) do
   end
 
   create_table "pacbio_libraries", force: :cascade do |t|
-    t.decimal "volume"
-    t.decimal "concentration"
+    t.integer "pacbio_well_id"
+    t.float "volume"
+    t.float "concentration"
     t.string "library_kit_barcode"
     t.integer "fragment_size"
     t.integer "pacbio_tag_id"
+    t.integer "sample_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["pacbio_tag_id"], name: "index_pacbio_libraries_on_pacbio_tag_id"
+    t.index ["pacbio_well_id"], name: "index_pacbio_libraries_on_pacbio_well_id"
+    t.index ["sample_id"], name: "index_pacbio_libraries_on_sample_id"
+  end
+
+  create_table "pacbio_plates", force: :cascade do |t|
+    t.integer "pacbio_run_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pacbio_run_id"], name: "index_pacbio_plates_on_pacbio_run_id"
+  end
+
+  create_table "pacbio_runs", force: :cascade do |t|
+    t.string "name"
+    t.string "template_prep_kit_box_barcode"
+    t.string "binding_kit_box_barcode"
+    t.string "sequencing_kit_box_barcode"
+    t.string "dna_control_complex_box_barcode"
+    t.string "comments"
+    t.integer "sequencing_mode"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "pacbio_requests", force: :cascade do |t|
@@ -73,6 +96,19 @@ ActiveRecord::Schema.define(version: 2019_06_25_104131) do
     t.string "oligo"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "pacbio_wells", force: :cascade do |t|
+    t.integer "pacbio_plate_id"
+    t.string "row"
+    t.string "column"
+    t.decimal "movie_time"
+    t.integer "insert_size"
+    t.float "on_plate_loading_concentration"
+    t.string "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
 
   create_table "runs", force: :cascade do |t|
