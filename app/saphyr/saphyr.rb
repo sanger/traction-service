@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
+# Saphyr namespace
 module Saphyr
   def self.table_name_prefix
-    'pacbio_'
+    'saphyr_'
   end
 end

@@ -4,7 +4,7 @@ namespace :dummy_runs do
   task create: :environment do |_t|
     (1..5).each do |i|
       sample = Sample.create(name: "Sample#{i}", external_id: i, external_study_id: i, species: "Species#{i}", tube: Tube.create)
-      library = Library.create(sample: sample, enzyme_id: i, tube: Tube.create)
+      library = Library.create(sample: sample, saphyr_enzyme_id: i, tube: Tube.create)
       chip = Chip.create(barcode: 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX')
       chip.flowcells.each do |flowcell|
         flowcell.update(library_id: library.id)

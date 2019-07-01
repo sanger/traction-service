@@ -58,5 +58,6 @@ module TractionService
     # RabbitMQ config
     config.bunny = config_for(:bunny)
 
+    config.autoload_paths += %W{#{Rails.root}/app}
   end
 end
