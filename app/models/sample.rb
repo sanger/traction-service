@@ -5,7 +5,7 @@ class Sample < ApplicationRecord
   include Material
 
   attr_readonly :name
-  validates :name, :external_id, :external_study_id, :species, presence: true
+  validates :name, :external_id, :species, presence: true
   validates :name, uniqueness: true
   has_many :libraries, dependent: :nullify
 
