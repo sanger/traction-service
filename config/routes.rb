@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       resources :runs, only: %i[index create update show destroy]
       resources :plates, only: %i[index create update destroy]
       resources :wells, only: %i[index create update destroy]
+      resources :libraries, only: %i[index create update destroy]
     end
   end
 end

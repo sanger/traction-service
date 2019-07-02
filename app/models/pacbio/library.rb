@@ -3,6 +3,7 @@
 module Pacbio
   # Pacbio::Library
   class Library < ApplicationRecord
+    include Material
     validates :volume, :concentration, :library_kit_barcode, :fragment_size, presence: true
 
     belongs_to :tag, class_name: 'Pacbio::Tag', foreign_key: :pacbio_tag_id,
