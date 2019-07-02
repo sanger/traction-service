@@ -9,7 +9,7 @@ module Pacbio
               :sequencing_kit_box_barcode, :dna_control_complex_box_barcode,
               :sequencing_mode, presence: true
 
-    has_one :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_run_id,
+    has_one :plate, foreign_key: :pacbio_run_id,
                     dependent: :destroy, inverse_of: :run
 
     delegate :wells, to: :plate
