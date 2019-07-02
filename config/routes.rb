@@ -14,5 +14,9 @@ Rails.application.routes.draw do
       resources :libraries, only: %i[index create destroy show]
       resources :enzymes, only: %i[index]
     end
+
+    namespace :pacbio do
+      resources :runs, only: %i[index create update show destroy]
+    end
   end
 end
