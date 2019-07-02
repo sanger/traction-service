@@ -86,7 +86,7 @@ RSpec.describe 'RunsController', type: :request do
     end
 
     context 'on failure' do
-      let(:failed_body) do
+      let(:body) do
         {
           data: {
             type: "runs",
@@ -96,16 +96,16 @@ RSpec.describe 'RunsController', type: :request do
       end
 
       it 'has a unprocessable_entity status' do
-        post v1_pacbio_runs_path, params: failed_body, headers: json_api_headers
+        post v1_pacbio_runs_path, params: body, headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'does not create a run' do
-        expect { post v1_pacbio_runs_path, params: failed_body, headers: json_api_headers }.to_not change(Pacbio::Run, :count)
+        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Run, :count)
       end
 
       it 'has the correct error messages' do
-        post v1_pacbio_runs_path, params: failed_body, headers: json_api_headers
+        post v1_pacbio_runs_path, params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         errors = json['data']['errors']
         expect(errors['name']).to be_present
