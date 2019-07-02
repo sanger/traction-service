@@ -101,7 +101,7 @@ RSpec.describe 'RunsController', type: :request do
       end
 
       it 'does not create a run' do
-        expect { post v1_pacbio_runs_path, params: failed_body, headers: json_api_headers }.to change { Pacbio::Run.count }.by(0)
+        expect { post v1_pacbio_runs_path, params: failed_body, headers: json_api_headers }.to_not change(Pacbio::Run, :count)
       end
 
       it 'has the correct error messages' do
