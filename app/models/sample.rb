@@ -10,7 +10,7 @@ class Sample < ApplicationRecord
   validates :name, :external_id, :species, presence: true
   validates :name, uniqueness: true
 
-  has_many :requests
+  has_many :requests, dependent: :nullify
 
   attr_readonly :name
 
