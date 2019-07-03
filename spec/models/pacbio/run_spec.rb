@@ -44,5 +44,15 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     run = create(:pacbio_run, plate: plate)
     expect(run.comments).to eq("#{wells.first.summary};#{wells[1].summary}")
   end
-  
+
+  context '#test_csv' do
+    it 'must create a csv file' do
+      wells = create_list(:pacbio_well_with_library, 2)
+      plate = create(:pacbio_plate, wells: wells)
+      run = create(:pacbio_run, plate: plate)
+
+      run.test_csv
+    end
+  end
+
 end
