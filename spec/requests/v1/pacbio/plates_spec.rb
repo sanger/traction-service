@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe 'ChipsController', type: :request do
+RSpec.describe 'PLatesController', type: :request do
 
   context '#create' do
     let(:run) { create(:pacbio_run) }
@@ -22,7 +22,7 @@ RSpec.describe 'ChipsController', type: :request do
         expect(response).to have_http_status(:created)
       end
 
-      it 'creates a run' do
+      it 'creates a plate' do
         expect { post v1_pacbio_plates_path, params: body, headers: json_api_headers }.to change { Pacbio::Plate.count }.by(1)
       end
 

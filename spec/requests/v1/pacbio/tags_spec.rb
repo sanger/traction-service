@@ -1,12 +1,12 @@
 require "rails_helper"
 
-RSpec.describe 'EnzymesController', type: :request do
+RSpec.describe 'TagsController', type: :request do
 
   context '#get' do
     let!(:tag1) { create(:pacbio_tag) }
     let!(:tag2) { create(:pacbio_tag) }
 
-    it 'returns a list of libraries' do
+    it 'returns a list of tags' do
       get v1_pacbio_tags_path, headers: json_api_headers
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -69,7 +69,7 @@ RSpec.describe 'EnzymesController', type: :request do
           expect(response).to have_http_status(:unprocessable_entity)
         end
 
-        it 'cannot create a library' do
+        it 'cannot create a tag' do
           expect { post v1_pacbio_tags_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Tag, :count)
         end
 
