@@ -68,11 +68,7 @@ RSpec.describe 'RunsController', type: :request do
       {
         data: {
           type: "runs",
-          attributes: {
-            runs: [
-              attributes_for(:saphyr_run)
-            ]
-          }
+          attributes: attributes_for(:saphyr_run)
         }
       }.to_json
     end

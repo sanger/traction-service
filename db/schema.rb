@@ -10,10 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_02_064928) do
+ActiveRecord::Schema.define(version: 2019_07_02_144911) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
-    t.integer "pacbio_well_id"
     t.float "volume"
     t.float "concentration"
     t.string "library_kit_barcode"
@@ -23,7 +22,6 @@ ActiveRecord::Schema.define(version: 2019_07_02_064928) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["pacbio_tag_id"], name: "index_pacbio_libraries_on_pacbio_tag_id"
-    t.index ["pacbio_well_id"], name: "index_pacbio_libraries_on_pacbio_well_id"
     t.index ["sample_id"], name: "index_pacbio_libraries_on_sample_id"
   end
 
@@ -72,6 +70,8 @@ ActiveRecord::Schema.define(version: 2019_07_02_064928) do
     t.string "comment"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "pacbio_library_id"
+    t.index ["pacbio_library_id"], name: "index_pacbio_wells_on_pacbio_library_id"
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
 
