@@ -4,7 +4,7 @@ module V1
   module Pacbio
     # LibrariesController
     class LibrariesController < ApplicationController
-      # before_action :current_library, only: [:destroy]
+      before_action :current_library, only: [:destroy]
 
       def create
         @library_factory = ::Pacbio::LibraryFactory.new(params_names)
@@ -18,7 +18,18 @@ module V1
         end
       end
 
+      def destroy
+        @library.destroy
+        head :no_content
+      rescue StandardError => e
+        render json: { data: { errors: e.message } }, status: :unprocessable_entity
+      end
+
       private
+
+      def current_library
+        @library = (params[:id] && ::Pacbio::Library.find_by(id: params[:id]))
+      end
 
       def params_names
         params.require(:data).require(:attributes)[:libraries].map do |param|

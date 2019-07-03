@@ -250,38 +250,35 @@ RSpec.describe 'LibrariesController', type: :request do
 
     end
   end
-  #
-  # context '#destroy' do
-  #   context 'on success' do
-  #     let!(:library) { create(:saphyr_library) }
-  #     let!(:tube) { create(:tube, material: library)}
-  #
-  #     it 'deactivates the library' do
-  #       delete "/v1/saphyr/libraries/#{library.id}", headers: json_api_headers
-  #
-  #       expect(response).to have_http_status(:no_content)
-  #       library.reload
-  #       expect(library.deactivated_at).to be_present
-  #     end
-  #   end
-  #
-  #   context 'on failure' do
-  #     let!(:library) { create(:saphyr_library) }
-  #
-  #     before do
-  #       library.deactivate
-  #     end
-  #
-  #     it 'does not deactivate the library' do
-  #       delete "/v1/saphyr/libraries/#{library.id}", headers: json_api_headers
-  #       expect(response).to have_http_status(:unprocessable_entity)
-  #     end
-  #
-  #     it 'has an error message' do
-  #       delete "/v1/saphyr/libraries/#{library.id}", headers: json_api_headers
-  #       expect(JSON.parse(response.body)["data"]).to include("errors" => {})
-  #     end
-  #   end
-  # end
+
+  context '#destroy' do
+    context 'on success' do
+      let!(:library) { create(:pacbio_library) }
+
+      it 'returns the correct status' do
+        delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
+        expect(response).to have_http_status(:no_content)
+      end
+
+      it 'destroys the library' do
+        expect { delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers }.to change { Pacbio::Library.count }.by(-1)
+      end
+
+    end
+
+    context 'on failure' do
+
+      it 'does not deactivate the library' do
+        delete "/v1/pacbio/libraries/123", headers: json_api_headers
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'has an error message' do
+        delete "/v1/pacbio/libraries/123", headers: json_api_headers
+        data = JSON.parse(response.body)['data']
+        expect(data['errors']).to be_present
+      end
+    end
+  end
 
 end
