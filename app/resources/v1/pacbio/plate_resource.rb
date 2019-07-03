@@ -5,6 +5,8 @@ module V1
     # PlateResource
     class PlateResource < JSONAPI::Resource
       model_name 'Pacbio::Plate'
+
+      attributes :pacbio_run_id
     end
   end
 end

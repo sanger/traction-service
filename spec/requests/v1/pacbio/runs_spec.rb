@@ -238,19 +238,35 @@ RSpec.describe 'RunsController', type: :request do
     let!(:run) { create(:pacbio_run) }
     let!(:plate1) { create(:pacbio_plate, run: run) }
 
-    it 'has a status of ok' do
-      delete v1_pacbio_run_path(run), headers: json_api_headers
-      expect(response).to have_http_status(:no_content)
+    context 'on success' do
+      it 'returns the correct status' do
+        delete v1_pacbio_run_path(run), headers: json_api_headers
+        expect(response).to have_http_status(:no_content)
+      end
+
+      it 'deletes the run' do
+        expect { delete v1_pacbio_run_path(run), headers: json_api_headers }.to change { Pacbio::Run.count }.by(-1)
+      end
+
+      it 'deletes the plate' do
+        expect { delete v1_pacbio_run_path(run), headers: json_api_headers }.to change { Pacbio::Plate.count }.by(-1)
+      end
+
     end
 
-    it 'deletes the run' do
-      expect { delete v1_pacbio_run_path(run), headers: json_api_headers }.to change { Pacbio::Run.count }.by(-1)
-    end
+    context 'on failure' do
 
-    it 'deletes the plate' do
-      expect { delete v1_pacbio_run_path(run), headers: json_api_headers }.to change { Pacbio::Plate.count }.by(-1)
-    end
+      it 'does not delete the run' do
+        delete "/v1/pacbio/runs/123", headers: json_api_headers
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
 
+      it 'has an error message' do
+        delete "/v1/pacbio/runs/123", headers: json_api_headers
+        data = JSON.parse(response.body)['data']
+        expect(data['errors']).to be_present
+      end
+    end
   end
 
 end

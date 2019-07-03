@@ -1,6 +1,31 @@
 require "rails_helper"
 
-RSpec.describe 'PLatesController', type: :request do
+RSpec.describe 'PlatesController', type: :request do
+
+  context '#get' do
+    let!(:run1) { create(:pacbio_run) }
+    let!(:run2) { create(:pacbio_run) }
+    let!(:plate1) { create(:pacbio_plate, run: run1) }
+    let!(:plate2) { create(:pacbio_plate, run: run2) }
+
+    it 'returns a list of plates' do
+      get v1_pacbio_plates_path, headers: json_api_headers
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data'].length).to eq(2)
+    end
+
+    it 'returns the correct attributes' do
+      get v1_pacbio_plates_path, headers: json_api_headers
+
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+
+      expect(json['data'][0]['attributes']['pacbio_run_id']).to eq(plate1.pacbio_run_id)
+      expect(json['data'][1]['attributes']['pacbio_run_id']).to eq(plate2.pacbio_run_id)
+    end
+
+  end
 
   context '#create' do
     let(:run) { create(:pacbio_run) }
@@ -62,7 +87,7 @@ RSpec.describe 'PLatesController', type: :request do
 
     end
   end
-#
+
   context '#update' do
     let(:plate) { create(:pacbio_plate) }
     let(:new_run) { create(:pacbio_run) }
@@ -124,23 +149,37 @@ RSpec.describe 'PLatesController', type: :request do
   end
 
   context '#destroy' do
-
     let!(:plate) { create(:pacbio_plate) }
     let!(:well) { create(:pacbio_well, pacbio_plate_id: plate.id) }
 
-    it 'has a status of ok' do
-      delete v1_pacbio_plate_path(plate), headers: json_api_headers
-      expect(response).to have_http_status(:no_content)
+    context 'on success' do
+      it 'has a status of ok' do
+        delete v1_pacbio_plate_path(plate), headers: json_api_headers
+        expect(response).to have_http_status(:no_content)
+      end
+
+      it 'deletes the plate' do
+        expect { delete v1_pacbio_plate_path(plate), headers: json_api_headers }.to change { Pacbio::Plate.count }.by(-1)
+      end
+
+      it 'deletes the wells' do
+        expect { delete v1_pacbio_plate_path(plate), headers: json_api_headers }.to change { Pacbio::Well.count }.by(-1)
+      end
     end
 
-    it 'deletes the plate' do
-      expect { delete v1_pacbio_plate_path(plate), headers: json_api_headers }.to change { Pacbio::Plate.count }.by(-1)
-    end
+    context 'on failure' do
 
-    it 'deletes the wells' do
-      expect { delete v1_pacbio_plate_path(plate), headers: json_api_headers }.to change { Pacbio::Well.count }.by(-1)
-    end
+      it 'does not delete the plate' do
+        delete "/v1/pacbio/plates/123", headers: json_api_headers
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
 
+      it 'has an error message' do
+        delete "/v1/pacbio/plates/123", headers: json_api_headers
+        data = JSON.parse(response.body)['data']
+        expect(data['errors']).to be_present
+      end
+    end
   end
 
 end

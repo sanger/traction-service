@@ -19,10 +19,14 @@ module V1
 
       def update
         well.update(params_names)
-        render json:
-          JSONAPI::ResourceSerializer.new(WellResource)
-                                     .serialize_to_hash(WellResource.new(well, nil)),
-               status: :ok
+        render_json(:ok)
+      rescue StandardError => e
+        render json: { data: { errors: e.message } }, status: :unprocessable_entity
+      end
+
+      def destroy
+        well.destroy
+        head :no_content
       rescue StandardError => e
         render json: { data: { errors: e.message } }, status: :unprocessable_entity
       end
@@ -37,6 +41,12 @@ module V1
 
       def well
         @well ||= ::Pacbio::Well.find(params[:id])
+      end
+
+      def render_json(status)
+        render json:
+         JSONAPI::ResourceSerializer.new(WellResource)
+                                    .serialize_to_hash(WellResource.new(@well, nil)), status: status
       end
     end
   end
