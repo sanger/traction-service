@@ -27,7 +27,7 @@ module Saphyr
     def build_requests(attributes)
       attributes.each do |request|
         sample_attributes = request.extract!(:name, :external_id, :species)
-        requests << Saphyr::Request.new(request.merge!(tube: Tube.new, sample: Sample.find_or_initialize_by(sample_attributes)))
+        requests << ::Request.new(requestable: Saphyr::Request.new(request.merge!(tube: Tube.new)), sample: Sample.find_or_initialize_by(sample_attributes))
       end
     end
 

@@ -6,7 +6,7 @@ class CreatePacbioRequest < ActiveRecord::Migration[5.2]
       t.integer :number_of_smrt_cells
       t.string :cost_code
       t.integer :external_study_id
-      t.belongs_to :sample
+      t.timestamps
     end
   end
 end
