@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       resources :plates, only: %i[index create update destroy]
       resources :wells, only: %i[index create update destroy]
       resources :libraries, only: %i[index create update destroy]
+      resources :tags, only: %i[index create update destroy]
     end
   end
 end
