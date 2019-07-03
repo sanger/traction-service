@@ -57,7 +57,7 @@ RSpec.describe 'WellsController', type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
-      it 'does not create a flowcell' do
+      it 'does not create a well' do
         expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Well, :count)
       end
 
