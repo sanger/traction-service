@@ -2,7 +2,44 @@ require "rails_helper"
 
 RSpec.describe 'WellsController', type: :request do
 
-  let(:library) { create(:pacbio_library) }
+  context '#get' do
+    let!(:well1) { create(:pacbio_well) }
+    let!(:well2) { create(:pacbio_well) }
+
+    it 'returns a list of wells' do
+      get v1_pacbio_wells_path, headers: json_api_headers
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data'].length).to eq(2)
+    end
+
+    it 'returns the correct attributes' do
+      get v1_pacbio_wells_path, headers: json_api_headers
+
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+
+      expect(json['data'][0]['attributes']['pacbio_plate_id']).to eq(well1.pacbio_plate_id)
+      expect(json['data'][0]['attributes']['row']).to eq(well1.row)
+      expect(json['data'][0]['attributes']['column']).to eq(well1.column)
+      expect(json['data'][0]['attributes']['movie_time']).to eq(well1.movie_time.to_s)
+      expect(json['data'][0]['attributes']['insert_size']).to eq(well1.insert_size)
+      expect(json['data'][0]['attributes']['on_plate_loading_concentration']).to eq(well1.on_plate_loading_concentration)
+      expect(json['data'][0]['attributes']['pacbio_plate_id']).to eq(well1.pacbio_plate_id)
+      expect(json['data'][0]['attributes']['comment']).to eq(well1.comment)
+      expect(json['data'][0]['attributes']['pacbio_library_id']).to eq(well1.pacbio_library_id)
+
+      expect(json['data'][1]['attributes']['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
+      expect(json['data'][1]['attributes']['row']).to eq(well2.row)
+      expect(json['data'][1]['attributes']['column']).to eq(well2.column)
+      expect(json['data'][1]['attributes']['movie_time']).to eq(well2.movie_time.to_s)
+      expect(json['data'][1]['attributes']['insert_size']).to eq(well2.insert_size)
+      expect(json['data'][1]['attributes']['on_plate_loading_concentration']).to eq(well2.on_plate_loading_concentration)
+      expect(json['data'][1]['attributes']['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
+      expect(json['data'][1]['attributes']['comment']).to eq(well2.comment)
+      expect(json['data'][1]['attributes']['pacbio_library_id']).to eq(well2.pacbio_library_id)
+    end
+  end
 
   context '#create' do
 
@@ -130,18 +167,32 @@ RSpec.describe 'WellsController', type: :request do
   end
 
   context '#destroy' do
-
     let!(:well) { create(:pacbio_well) }
 
-    it 'has a status of no content' do
-      delete v1_pacbio_well_path(well), headers: json_api_headers
-      expect(response).to have_http_status(:no_content)
+    context 'on success' do
+      it 'has a status of no content' do
+        delete v1_pacbio_well_path(well), headers: json_api_headers
+        expect(response).to have_http_status(:no_content)
+      end
+
+      it 'deletes the well' do
+        expect { delete v1_pacbio_well_path(well), headers: json_api_headers }.to change { Pacbio::Well.count }.by(-1)
+      end
     end
 
-    it 'deletes the well' do
-      expect { delete v1_pacbio_well_path(well), headers: json_api_headers }.to change { Pacbio::Well.count }.by(-1)
-    end
+    context 'on failure' do
 
+      it 'does not delete the well' do
+        delete "/v1/pacbio/wells/123", headers: json_api_headers
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'has an error message' do
+        delete "/v1/pacbio/wells/123", headers: json_api_headers
+        data = JSON.parse(response.body)['data']
+        expect(data['errors']).to be_present
+      end
+    end
   end
 
 end

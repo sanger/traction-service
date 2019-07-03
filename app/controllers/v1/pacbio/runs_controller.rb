@@ -21,6 +21,13 @@ module V1
         render json: { data: { errors: e.message } }, status: :unprocessable_entity
       end
 
+      def destroy
+        run.destroy
+        head :no_content
+      rescue StandardError => e
+        render json: { data: { errors: e.message } }, status: :unprocessable_entity
+      end
+
       private
 
       def run

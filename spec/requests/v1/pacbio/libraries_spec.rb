@@ -268,7 +268,7 @@ RSpec.describe 'LibrariesController', type: :request do
 
     context 'on failure' do
 
-      it 'does not deactivate the library' do
+      it 'does not delete the library' do
         delete "/v1/pacbio/libraries/123", headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)
       end

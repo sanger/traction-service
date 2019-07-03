@@ -16,6 +16,13 @@ module V1
         end
       end
 
+      def update
+        library.update(params_names)
+        render_json(:ok)
+      rescue StandardError => e
+        render json: { data: { errors: e.message } }, status: :unprocessable_entity
+      end
+
       def destroy
         library.destroy
         head :no_content
@@ -34,6 +41,13 @@ module V1
           param.permit(:volume, :concentration, :library_kit_barcode, :fragment_size,
                        :pacbio_tag_id, :sample_id).to_h
         end
+      end
+
+      def render_json(status)
+        render json:
+           JSONAPI::ResourceSerializer.new(LibraryResource)
+                                      .serialize_to_hash(LibraryResource.new(@library, nil)),
+               status: status
       end
     end
   end
