@@ -98,124 +98,157 @@ RSpec.describe 'LibrariesController', type: :request do
 
       context 'on failure' do
         context 'when the sample does not exist' do      #
-      #     let(:body) do
-      #       {
-      #         data: {
-      #           attributes: {
-      #             libraries: [
-      #               { state: 'pending', sample_id: 1, saphyr_enzyme_id: saphyr_enzyme.id}
-      #             ]
-      #           }
-      #         }
-      #       }.to_json
-      #     end
-      #
-      #     it 'can returns unprocessable entity status' do
-      #       post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-      #       expect(response).to have_http_status(:unprocessable_entity)
-      #     end
-      #
-      #     it 'cannot create a library' do
-      #       expect { post v1_saphyr_libraries_path, params: body, headers: json_api_headers }.to change { Saphyr::Library.count }.by(0)
-      #     end
-      #
-      #     it 'has an error message' do
-      #       post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-      #       expect(JSON.parse(response.body)["data"]).to include("errors" => {"sample"=>['must exist']})
-      #     end
+          let(:body) do
+            {
+              data: {
+                attributes: {
+                  libraries: [
+                    { volume: 1.11,
+                      concentration: 2.22,
+                      library_kit_barcode: 'LK1234567',
+                      fragment_size: 100,
+                      pacbio_tag_id: tag.id,
+                      sample_id: 123
+                    }
+                  ]
+                }
+              }
+            }.to_json
+          end
+
+          it 'can returns unprocessable entity status' do
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it 'cannot create a library' do
+            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
+          end
+
+          it 'has an error message' do
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(JSON.parse(response.body)["data"]).to include("errors" => {"sample"=>['must exist']})
+          end
         end
       #
-      #   context 'when the enzyme does not exist' do
-      #     let(:sample) { create(:sample) }
-      #
-      #     let(:body) do
-      #       {
-      #         data: {
-      #           attributes: {
-      #             libraries: [
-      #               { state: 'pending', sample_id: sample.id, enzyme_id: 1}
-      #             ]
-      #           }
-      #         }
-      #       }.to_json
-      #     end
-      #
-      #     it 'can returns unprocessable entity status' do
-      #       post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-      #       expect(response).to have_http_status(:unprocessable_entity)
-      #     end
-      #
-      #     it 'cannot create a library' do
-      #       expect { post v1_saphyr_libraries_path, params: body, headers: json_api_headers }.to change { Saphyr::Library.count }.by(0)
-      #     end
-      #
-      #     it 'has an error message' do
-      #       post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-      #       expect(JSON.parse(response.body)["data"]).to include("errors" => {"enzyme"=>['must exist']})
-      #     end
-      #   end
-      #
+        context 'when the tag does not exist' do
+          let(:body) do
+            {
+              data: {
+                attributes: {
+                  libraries: [
+                    { volume: 1.11,
+                      concentration: 2.22,
+                      library_kit_barcode: 'LK1234567',
+                      fragment_size: 100,
+                      pacbio_tag_id: 123,
+                      sample_id: sample.id
+                    }
+                  ]
+                }
+              }
+            }.to_json
+          end
+
+          it 'can returns unprocessable entity status' do
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it 'cannot create a library' do
+            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
+          end
+
+          it 'has an error message' do
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(JSON.parse(response.body)["data"]).to include("errors" => {"tag"=>['must exist']})
+          end
+        end
+
       end
 
     end
 
-    # context 'when creating multiple libraries' do
-    #   context 'on success' do
-    #     context 'when the sample does exist' do
-    #       let(:sample) { create(:sample) }
-    #       let(:saphyr_enzyme) { create(:saphyr_enzyme) }
-    #
-    #       let(:body) do
-    #         {
-    #           data: {
-    #             attributes: {
-    #               libraries: [
-    #                 { state: 'pending', sample_id: sample.id, saphyr_enzyme_id: saphyr_enzyme.id},
-    #                 { state: 'pending', sample_id: sample.id, saphyr_enzyme_id: saphyr_enzyme.id},
-    #                 { state: 'pending', sample_id: sample.id, saphyr_enzyme_id: saphyr_enzyme.id}
-    #               ]
-    #             }
-    #           }
-    #         }.to_json
-    #       end
-    #
-    #       it 'can create libraries' do
-    #         post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-    #         expect(response).to have_http_status(:created)
-    #       end
-    #     end
-    #   end
-    #
-    #   context 'on failure' do
-    #     context 'when the sample does not exist' do
-    #       let(:saphyr_enzyme) { create(:saphyr_enzyme) }
-    #
-    #       let(:body) do
-    #         {
-    #           data: {
-    #             attributes: {
-    #               libraries: [
-    #                 { state: 'pending', sample_id: 1, saphyr_enzyme_id: saphyr_enzyme.id},
-    #                 { state: 'pending', sample_id: 1, saphyr_enzyme_id: saphyr_enzyme.id}
-    #               ]
-    #             }
-    #           }
-    #         }.to_json
-    #       end
-    #
-    #       it 'cannot create libraries' do
-    #         post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-    #         expect(response).to have_http_status(:unprocessable_entity)
-    #       end
-    #
-    #       it 'has an error message' do
-    #         post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-    #         expect(JSON.parse(response.body)["data"]).to include("errors" => {"sample"=>['must exist', 'must exist']})
-    #       end
-    #     end
-    #   end
-    #
-    # end
+    context 'when creating multiple libraries' do
+      let(:sample) { create(:sample) }
+      let(:tag) { create(:pacbio_tag) }
+
+      context 'on success' do
+        context 'when the sample does exist' do
+
+          let(:body) do
+            {
+              data: {
+                attributes: {
+                  libraries: [
+                    { volume: 1.11,
+                      concentration: 2.22,
+                      library_kit_barcode: 'LK1234567',
+                      fragment_size: 100,
+                      pacbio_tag_id: tag.id,
+                      sample_id: sample.id
+                    },
+                    { volume: 3.22,
+                      concentration: 4.22,
+                      library_kit_barcode: 'LK1234569',
+                      fragment_size: 200,
+                      pacbio_tag_id: tag.id,
+                      sample_id: sample.id
+                    }
+                  ]
+                }
+              }
+            }.to_json
+          end
+
+          it 'can create libraries' do
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(response).to have_http_status(:created)
+          end
+        end
+      end
+
+      context 'on failure' do
+        context 'when the sample does not exist' do
+
+          let(:body) do
+            {
+              data: {
+                attributes: {
+                  libraries: [
+                    { volume: 1.11,
+                      concentration: 2.22,
+                      library_kit_barcode: 'LK1234567',
+                      fragment_size: 100,
+                      pacbio_tag_id: tag.id,
+                      sample_id: 123
+                    },
+                    { volume: 3.22,
+                      concentration: 4.22,
+                      library_kit_barcode: 'LK1234569',
+                      fragment_size: 200,
+                      pacbio_tag_id: tag.id,
+                      sample_id: 123
+                    }
+                  ]
+                }
+              }
+            }.to_json
+          end
+
+          it 'cannot create libraries' do
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it 'has an error message' do
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(JSON.parse(response.body)["data"]).to include("errors" => {"sample"=>['must exist', 'must exist']})
+          end
+        end
+      end
+
+    end
   end
   #
   # context '#destroy' do
