@@ -11,7 +11,7 @@ RSpec.describe Pacbio::RequestFactory, type: :model, pacbio: true do
     it 'creates an object for each given request' do
       factory = Pacbio::RequestFactory.new(attributes)
       expect(factory.requests.count).to eq(3)
-      expect(factory.requests[0].tube).to be_present
+      expect(factory.requests[0].requestable.tube).to be_present
     end
 
     it 'produces error messages if any of the resources are not valid' do

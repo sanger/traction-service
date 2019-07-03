@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_01_135520) do
+ActiveRecord::Schema.define(version: 2019_07_02_064928) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.integer "pacbio_well_id"
@@ -40,8 +40,8 @@ ActiveRecord::Schema.define(version: 2019_07_01_135520) do
     t.integer "number_of_smrt_cells"
     t.string "cost_code"
     t.integer "external_study_id"
-    t.integer "sample_id"
-    t.index ["sample_id"], name: "index_pacbio_requests_on_sample_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "pacbio_runs", force: :cascade do |t|
@@ -73,6 +73,16 @@ ActiveRecord::Schema.define(version: 2019_07_01_135520) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
+  end
+
+  create_table "requests", force: :cascade do |t|
+    t.integer "sample_id"
+    t.string "requestable_type"
+    t.integer "requestable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["requestable_type", "requestable_id"], name: "index_requests_on_requestable_type_and_requestable_id"
+    t.index ["sample_id"], name: "index_requests_on_sample_id"
   end
 
   create_table "samples", force: :cascade do |t|
@@ -121,18 +131,18 @@ ActiveRecord::Schema.define(version: 2019_07_01_135520) do
     t.index ["saphyr_enzyme_id"], name: "index_saphyr_libraries_on_saphyr_enzyme_id"
   end
 
+  create_table "saphyr_requests", force: :cascade do |t|
+    t.integer "external_study_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "saphyr_runs", force: :cascade do |t|
     t.integer "state", default: 0
     t.string "name"
     t.datetime "deactivated_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "saphyr_requests", force: :cascade do |t|
-    t.integer "external_study_id"
-    t.integer "sample_id"
-    t.index ["sample_id"], name: "index_saphyr_requests_on_sample_id"
   end
 
   create_table "tubes", force: :cascade do |t|

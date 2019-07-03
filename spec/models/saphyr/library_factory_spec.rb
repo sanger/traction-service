@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Saphyr::LibraryFactory, type: :model do
+RSpec.describe Saphyr::LibraryFactory, type: :model, saphyr: true do
   let(:sample) { create(:sample)}
   let(:saphyr_enzyme) { create(:saphyr_enzyme)}
   let(:attributes) { [{ state: 'pending', sample_id: sample.id, saphyr_enzyme_id: saphyr_enzyme.id }]}
