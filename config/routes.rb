@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       resources :wells,         only: %i[index create update destroy]
       resources :libraries,     only: %i[index create destroy]
       resources :tags,          only: %i[index create update destroy]
+      resources :requests,      only: %i[index create update destroy]
     end
   end
 end
