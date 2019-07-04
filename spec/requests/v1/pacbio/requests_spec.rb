@@ -18,7 +18,6 @@ RSpec.describe 'RequestsController', type: :request, pacbio: true do
       get v1_pacbio_requests_path, headers: json_api_headers
       json = ActiveSupport::JSON.decode(response.body)
 
-
       expect(json['data'][0]['attributes']['library_type']).to eq(request.library_type)
       expect(json['data'][0]['attributes']['estimate_of_gb_required']).to eq(request.estimate_of_gb_required)
       expect(json['data'][0]['attributes']['number_of_smrt_cells']).to eq(request.number_of_smrt_cells)
@@ -26,43 +25,8 @@ RSpec.describe 'RequestsController', type: :request, pacbio: true do
       expect(json['data'][0]["attributes"]['external_study_id']).to eq(request.external_study_id)
       expect(json['data'][0]["attributes"]['sample_name']).to eq(request.sample_name)
 
-
     end
   end
-
-  # context '#get' do
-  #   let!(:library1) { create(:pacbio_library) }
-  #   let!(:library2) { create(:pacbio_library) }
-
-  #   it 'returns a list of libraries' do
-  #     get v1_pacbio_libraries_path, headers: json_api_headers
-  #     expect(response).to have_http_status(:success)
-  #     json = ActiveSupport::JSON.decode(response.body)
-  #     expect(json['data'].length).to eq(2)
-  #   end
-
-  #   it 'returns the correct attributes' do
-  #     get v1_pacbio_libraries_path, headers: json_api_headers
-
-  #     expect(response).to have_http_status(:success)
-  #     json = ActiveSupport::JSON.decode(response.body)
-
-  #     expect(json['data'][0]['attributes']['volume']).to eq(library1.volume)
-  #     expect(json['data'][0]['attributes']['concentration']).to eq(library1.concentration)
-  #     expect(json['data'][0]['attributes']['library_kit_barcode']).to eq(library1.library_kit_barcode)
-  #     expect(json['data'][0]['attributes']['fragment_size']).to eq(library1.fragment_size)
-  #     expect(json['data'][0]["attributes"]["pacbio_tag_id"]).to eq(library1.pacbio_tag_id)
-  #     expect(json['data'][0]["attributes"]["sample_id"]).to eq(library1.sample_id)
-
-  #     expect(json['data'][1]['attributes']['volume']).to eq(library2.volume)
-  #     expect(json['data'][1]['attributes']['concentration']).to eq(library2.concentration)
-  #     expect(json['data'][1]['attributes']['library_kit_barcode']).to eq(library2.library_kit_barcode)
-  #     expect(json['data'][1]['attributes']['fragment_size']).to eq(library2.fragment_size)
-  #     expect(json['data'][1]["attributes"]["pacbio_tag_id"]).to eq(library2.pacbio_tag_id)
-  #     expect(json['data'][1]["attributes"]["sample_id"]).to eq(library2.sample_id)
-  #   end
-
-  # end
 
   # context '#create' do
   #   context 'when creating a single library' do
