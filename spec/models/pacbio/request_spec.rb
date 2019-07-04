@@ -22,4 +22,9 @@ RSpec.describe Pacbio::Request, type: :model, pacbio: true do
     expect(build(:pacbio_request, external_study_id: nil)).to_not be_valid
   end
 
+  it 'will have a sample name' do
+    request = create(:pacbio_request)
+    expect(request.sample_name).to be_present
+  end
+
 end
