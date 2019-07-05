@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 module V1
-  module Pacbio
+  module Saphyr
     # RequestsController
     class RequestsController < ApplicationController
       def create
-        @request_factory = ::Pacbio::RequestFactory.new(params_names)
+        @request_factory = ::Saphyr::RequestFactory.new(params_names)
 
         if @request_factory.save
 
@@ -30,13 +30,12 @@ module V1
       private
 
       def pacbio_request
-        @pacbio_request = (params[:id] && ::Pacbio::Request.find_by(id: params[:id]))
+        @pacbio_request = (params[:id] && ::Saphyr::Request.find_by(id: params[:id]))
       end
 
       def params_names
         params.require(:data).require(:attributes)[:requests].map do |param|
-          param.permit(:library_type, :estimate_of_gb_required, :number_of_smrt_cells, :cost_code,
-                       :external_study_id, :name, :external_id, :species).to_h
+          param.permit(:external_study_id, :name, :external_id, :species).to_h
         end
       end
     end
