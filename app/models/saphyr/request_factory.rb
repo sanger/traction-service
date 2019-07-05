@@ -15,6 +15,10 @@ module Saphyr
       @requests ||= []
     end
 
+    def requestables
+      requests.collect(&:requestable)
+    end
+
     def save
       return false unless valid?
 

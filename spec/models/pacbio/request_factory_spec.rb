@@ -31,6 +31,12 @@ RSpec.describe Pacbio::RequestFactory, type: :model, pacbio: true do
       expect(Pacbio::Request.first.tube).to eq(attributes.first[:tube])
     end
 
+    it 'has some requestables' do
+      factory = Pacbio::RequestFactory.new(attributes)
+      factory.save
+      expect(factory.requestables.count).to eq(3)
+    end
+
     it 'doesnt create a sample if it already exists' do
       sample = create(:sample)
       attributes << sample.attributes.extract!('name', 'species', 'external_id').with_indifferent_access.merge(attributes_for(:pacbio_request))

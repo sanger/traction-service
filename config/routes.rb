@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       resources :flowcells,     only: %i[index create show update destroy]
       resources :libraries,     only: %i[index create show destroy]
       resources :enzymes,       only: %i[index]
+      resources :requests,      only: %i[index create update destroy]
     end
 
     namespace :pacbio do
