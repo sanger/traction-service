@@ -30,7 +30,7 @@ module V1
 
       def test
         run = ::Pacbio::Run.find(params[:run_id])
-        run.generate_sample_sheet
+        run.test_csv
         # send_file "#{Rails.root}/files/runs/RunDesignExampleSequel_II_Temp-3.csv",
         #       filename: "test.csv",
         #       type: "text/csv; charset=utf-8; header=present"

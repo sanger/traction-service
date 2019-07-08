@@ -19,10 +19,10 @@ module Pacbio
     end
 
     def test_csv
-
+      # options: 'wb' is write and binary mode
       CSV.open("file.csv", "wb") do |csv|
 
-        columns = [
+        headers = [
           "System name",
           "Run Name",
           "Sample Well",
@@ -37,23 +37,29 @@ module Pacbio
           "DNA Control Complex (Box Barcode)",
           "Generate CCS Data"
         ]
-
-        csv << columns
-
-
+        csv << headers
 
         for well in self.wells
-          data = []
-
-          library = well.library
-          sample = library.sample
-
-          data << 'Sequel I' #make attribute on run
-          data << self.name
+          data = [
+            'Sequel I',
+            self.name,
+            well.position,
+            well.library.sample.name,
+            well.movie_time,
+            well.insert_size,
+            self.template_prep_kit_box_barcode,
+            self.binding_kit_box_barcode,
+            self.sequencing_kit_box_barcode,
+            self.sequencing_mode,
+            well.on_plate_loading_concentration,
+            self.dna_control_complex_box_barcode,
+            'ccs data'
+          ]
 
           csv << data
         end
 
+        csv
       end
 
     end
