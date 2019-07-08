@@ -26,12 +26,14 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][0]['attributes']['binding_kit_box_barcode']).to eq(run1.binding_kit_box_barcode)
       expect(json['data'][0]["attributes"]["sequencing_kit_box_barcode"]).to eq(run1.sequencing_kit_box_barcode)
       expect(json['data'][0]['attributes']['dna_control_complex_box_barcode']).to eq(run1.dna_control_complex_box_barcode)
+      expect(json['data'][0]['attributes']['system_name']).to eq(run1.system_name)
 
       expect(json['data'][1]['attributes']['name']).to eq(run2.name)
       expect(json['data'][1]['attributes']['template_prep_kit_box_barcode']).to eq(run2.template_prep_kit_box_barcode)
       expect(json['data'][1]['attributes']['binding_kit_box_barcode']).to eq(run2.binding_kit_box_barcode)
       expect(json['data'][1]["attributes"]["sequencing_kit_box_barcode"]).to eq(run2.sequencing_kit_box_barcode)
       expect(json['data'][1]['attributes']['dna_control_complex_box_barcode']).to eq(run2.dna_control_complex_box_barcode)
+      expect(json['data'][1]['attributes']['system_name']).to eq(run2.system_name)
     end
 
     it 'returns the correct relationships' do
@@ -78,6 +80,7 @@ RSpec.describe 'RunsController', type: :request do
         expect(run.binding_kit_box_barcode).to be_present
         expect(run.sequencing_kit_box_barcode).to be_present
         expect(run.dna_control_complex_box_barcode).to be_present
+        expect(run.system_name).to be_present
       end
 
     end
@@ -204,6 +207,7 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data']['attributes']['binding_kit_box_barcode']).to eq(run.binding_kit_box_barcode)
       expect(json['data']["attributes"]["sequencing_kit_box_barcode"]).to eq(run.sequencing_kit_box_barcode)
       expect(json['data']['attributes']['dna_control_complex_box_barcode']).to eq(run.dna_control_complex_box_barcode)
+      expect(json['data']['attributes']['system_name']).to eq(run.system_name)
     end
 
     it 'returns the correct relationships' do

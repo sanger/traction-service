@@ -3,9 +3,11 @@
 module Pacbio
   # Pacbio::Run
   class Run < ApplicationRecord
+    enum system_name: ['Sequel II', 'Sequel I']
+
     validates :name, :template_prep_kit_box_barcode, :binding_kit_box_barcode,
               :sequencing_kit_box_barcode, :dna_control_complex_box_barcode,
-              presence: true
+              :system_name, presence: true
 
     has_one :plate, foreign_key: :pacbio_run_id,
                     dependent: :destroy, inverse_of: :run
@@ -38,7 +40,7 @@ module Pacbio
 
         wells.each do |well|
           data = [
-            'Sequel I',
+            system_name,
             name,
             well.position,
             well.library.sample.name,
