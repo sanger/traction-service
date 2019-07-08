@@ -21,7 +21,7 @@ module V1
       end
 
       def destroy
-        pacbio_request.destroy
+        pipeline_request.destroy
         head :no_content
       rescue StandardError => e
         render json: { data: { errors: e.message } }, status: :unprocessable_entity
@@ -29,8 +29,8 @@ module V1
 
       private
 
-      def pacbio_request
-        @pacbio_request = (params[:id] && ::Pacbio::Request.find_by(id: params[:id]))
+      def pipeline_request
+        @pipeline_request = (params[:id] && ::Pacbio::Request.find_by(id: params[:id]))
       end
 
       def params_names
