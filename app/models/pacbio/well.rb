@@ -3,6 +3,8 @@
 module Pacbio
   # Pacbio::Well
   class Well < ApplicationRecord
+    enum sequencing_mode: %w[CLR CCS]
+
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
                        inverse_of: :wells
 
@@ -13,6 +15,7 @@ module Pacbio
     validates :movie_time,
               numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 }
     validates :insert_size, numericality: { greater_than_or_equal_to: 10 }
+    validates :sequencing_mode, presence: true
 
     def position
       "#{row}#{column}"

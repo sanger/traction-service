@@ -34,7 +34,6 @@ module V1
         # send_file "#{Rails.root}/files/runs/RunDesignExampleSequel_II_Temp-3.csv",
         #       filename: "test.csv",
         #       type: "text/csv; charset=utf-8; header=present"
-
       end
 
       private
@@ -47,8 +46,7 @@ module V1
         params.require(:data)['attributes'].permit(:name, :template_prep_kit_box_barcode,
                                                    :binding_kit_box_barcode,
                                                    :sequencing_kit_box_barcode,
-                                                   :dna_control_complex_box_barcode,
-                                                   :sequencing_mode)
+                                                   :dna_control_complex_box_barcode)
       end
 
       def render_json(status)

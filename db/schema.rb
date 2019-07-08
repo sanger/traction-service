@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_02_144911) do
+ActiveRecord::Schema.define(version: 2019_07_08_150837) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
@@ -39,7 +39,6 @@ ActiveRecord::Schema.define(version: 2019_07_02_144911) do
     t.string "sequencing_kit_box_barcode"
     t.string "dna_control_complex_box_barcode"
     t.string "comments"
-    t.integer "sequencing_mode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -61,6 +60,7 @@ ActiveRecord::Schema.define(version: 2019_07_02_144911) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "pacbio_library_id"
+    t.integer "sequencing_mode"
     t.index ["pacbio_library_id"], name: "index_pacbio_wells_on_pacbio_library_id"
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
