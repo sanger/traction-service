@@ -24,5 +24,9 @@ module Pacbio
     def summary
       "#{library.sample.name},#{comment}"
     end
+
+    def generate_ccs_data
+      sequencing_mode == 'CCS'
+    end
   end
 end
