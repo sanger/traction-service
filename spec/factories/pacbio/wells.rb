@@ -7,6 +7,7 @@ FactoryBot.define do
     sequence(:column) { |n| "0#{n}"}
     plate { create(:pacbio_plate) }
     sequence(:comment) { |n| "comment#{n}" }
+    sequencing_mode { 0 }
 
     factory :pacbio_well_with_library do
       library { create(:pacbio_library) }

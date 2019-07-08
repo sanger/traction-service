@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require Rails.root.join('lib', 'dependent_loader')
-# 
+
 # DependentLoader.start(:saphyr_enzymes) do |on|
 #   on.success do
 #     Saphyr::Enzyme.create(
