@@ -39,7 +39,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     expect(run.comments).to eq("#{wells.first.summary};#{wells[1].summary}")
   end
 
-  context '#test_csv' do
+  context '#generate_sample_sheet' do
     it 'must create a csv file' do
       well1 = create(:pacbio_well_with_library, sequencing_mode: 'CCS')
       well2 = create(:pacbio_well_with_library, sequencing_mode: 'CLR')
@@ -47,7 +47,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
       plate = create(:pacbio_plate, wells: [well1, well2])
       run = create(:pacbio_run, plate: plate)
 
-      csv_file = run.test_csv
+      csv_file = run.generate_sample_sheet
 
       array_of_rows = CSV.read(csv_file.path)
 

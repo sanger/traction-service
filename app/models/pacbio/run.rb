@@ -18,7 +18,7 @@ module Pacbio
       super || wells.collect(&:summary).join(';')
     end
 
-    def test_csv
+    def generate_sample_sheet
       # options: 'wb' is write and binary mode
       CSV.open('file.csv', 'wb') do |csv|
         headers = [
