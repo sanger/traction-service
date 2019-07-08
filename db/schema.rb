@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_08_150837) do
+ActiveRecord::Schema.define(version: 2019_07_08_153719) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 2019_07_08_150837) do
     t.string "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "system_name", default: 0
   end
 
   create_table "pacbio_tags", force: :cascade do |t|

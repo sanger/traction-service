@@ -22,6 +22,10 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     expect(build(:pacbio_run, dna_control_complex_box_barcode: nil)).to_not be_valid
   end
 
+  it 'must have a system_name default' do
+    expect(create(:pacbio_run).system_name).to eq 'Sequel II'
+  end
+
   it 'can have a plate' do
     plate = create(:pacbio_plate)
     run = create(:pacbio_run, plate: plate)
@@ -69,7 +73,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
       well2 = wells[1]
 
       expect(data1).to eq([
-        'Sequel I',
+        run.system_name,
         run.name,
         well1.position,
         well1.library.sample.name,
@@ -85,7 +89,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
       ])
 
       expect(data2).to eq([
-        'Sequel I',
+        run.system_name,
         run.name,
         well2.position,
         well2.library.sample.name,
