@@ -272,7 +272,7 @@ RSpec.describe 'RunsController', type: :request do
   context '#sample_sheet' do
     let!(:run) { create(:pacbio_run) }
 
-    it 'returns a csv file' do
+    skip 'returns a csv file' do
       get v1_pacbio_run_test_path(run), headers: json_api_headers
       expect(response).to have_http_status(:ok)
     end
