@@ -52,7 +52,7 @@ module Pacbio
             well.sequencing_mode,
             well.on_plate_loading_concentration,
             dna_control_complex_box_barcode,
-            'ccs data'
+            well.generate_ccs_data
           ]
 
           csv << data

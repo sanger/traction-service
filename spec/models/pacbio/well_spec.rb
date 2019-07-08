@@ -70,4 +70,14 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
+  context '#generate_ccs_data' do
+    it 'returns true if sequencing_mode is CCS' do
+      expect(create(:pacbio_well, sequencing_mode: 'CCS').generate_ccs_data).to eq true
+    end
+
+    it 'returns false if sequencing_mode is CLR' do
+      expect(create(:pacbio_well, sequencing_mode: 'CLR').generate_ccs_data).to eq false
+    end
+  end
+
 end

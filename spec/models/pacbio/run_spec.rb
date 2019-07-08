@@ -41,8 +41,10 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
 
   context '#test_csv' do
     it 'must create a csv file' do
-      wells = create_list(:pacbio_well_with_library, 2)
-      plate = create(:pacbio_plate, wells: wells)
+      well1 = create(:pacbio_well_with_library, sequencing_mode: 'CCS')
+      well2 = create(:pacbio_well_with_library, sequencing_mode: 'CLR')
+
+      plate = create(:pacbio_plate, wells: [well1, well2])
       run = create(:pacbio_run, plate: plate)
 
       csv_file = run.test_csv
@@ -69,9 +71,6 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
         "Generate CCS Data"
       ])
 
-      well1 = wells[0]
-      well2 = wells[1]
-
       expect(data1).to eq([
         run.system_name,
         run.name,
@@ -85,7 +84,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
         well1.sequencing_mode,
         well1.on_plate_loading_concentration.to_s,
         run.dna_control_complex_box_barcode,
-        'ccs data'
+        "true"
       ])
 
       expect(data2).to eq([
@@ -101,7 +100,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
         well2.sequencing_mode,
         well2.on_plate_loading_concentration.to_s,
         run.dna_control_complex_box_barcode,
-        'ccs data'
+        "false"
       ])
     end
   end
