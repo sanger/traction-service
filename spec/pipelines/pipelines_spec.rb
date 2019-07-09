@@ -27,6 +27,11 @@ RSpec.describe Pipelines, type: :model do
       expect(Pipelines.pipeline_b).to be_present
       expect(Pipelines.pipeline_b.lims).to eq('lims_b')
     end
+
+    it 'will allow pipeline to be found' do
+      expect(Pipelines.find('pipeline_a').lims).to eq('lims_a')
+      expect(Pipelines.find(:pipeline_a).lims).to eq('lims_a')
+    end
   end
 
 end
