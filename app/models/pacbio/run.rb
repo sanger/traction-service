@@ -19,33 +19,14 @@ module Pacbio
     end
 
     def generate_sample_sheet
-      # options: 'wb' is write and binary mode
-      CSV.open('file.csv', 'wb') do |csv|
-        headers = Pipelines.pacbio.sample_sheet.headers
-        csv << headers
+      csv = ::CSVGenerator.new(run: self, configuration: pacbio_run_sample_sheet_config)
+      csv.generate_sample_sheet
+    end
 
-        wells.each do |well|
-          data = [
-            system_name,
-            name,
-            well.position,
-            well.library.sample.name,
-            well.movie_time,
-            well.insert_size,
-            template_prep_kit_box_barcode,
-            binding_kit_box_barcode,
-            sequencing_kit_box_barcode,
-            well.sequencing_mode,
-            well.on_plate_loading_concentration,
-            dna_control_complex_box_barcode,
-            well.generate_ccs_data
-          ]
+    private
 
-          csv << data
-        end
-
-        csv
-      end
+    def pacbio_run_sample_sheet_config
+      Pipelines.pacbio.sample_sheet
     end
   end
 end

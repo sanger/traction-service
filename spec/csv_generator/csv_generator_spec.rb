@@ -1,0 +1,60 @@
+require "rails_helper"
+
+RSpec.describe CSVGenerator, type: :model do
+
+  context '#generate_sample_sheet' do
+    it 'must create a csv file' do
+      well1 = create(:pacbio_well_with_library, sequencing_mode: 'CCS')
+      well2 = create(:pacbio_well_with_library, sequencing_mode: 'CLR')
+
+      plate = create(:pacbio_plate, wells: [well1, well2])
+      run = create(:pacbio_run, plate: plate)
+
+      config = Pipelines.pacbio.sample_sheet
+
+      csv = ::CSVGenerator.new(run: run, configuration: config)
+      csv_file = csv.generate_sample_sheet
+
+      array_of_rows = CSV.read(csv_file.path)
+
+      header = array_of_rows[0]
+      data1 = array_of_rows[1]
+      data2 = array_of_rows[2]
+
+      expect(header).to eq(Pipelines.pacbio.sample_sheet.columns)
+
+      expect(data1).to eq([
+        run.system_name,
+        run.name,
+        well1.position,
+        well1.library.sample.name,
+        well1.movie_time.to_s,
+        well1.insert_size.to_s,
+        run.template_prep_kit_box_barcode,
+        run.binding_kit_box_barcode,
+        run.sequencing_kit_box_barcode,
+        well1.sequencing_mode,
+        well1.on_plate_loading_concentration.to_s,
+        run.dna_control_complex_box_barcode,
+        "true"
+      ])
+
+      expect(data2).to eq([
+        run.system_name,
+        run.name,
+        well2.position,
+        well2.library.sample.name,
+        well2.movie_time.to_s,
+        well2.insert_size.to_s,
+        run.template_prep_kit_box_barcode,
+        run.binding_kit_box_barcode,
+        run.sequencing_kit_box_barcode,
+        well2.sequencing_mode,
+        well2.on_plate_loading_concentration.to_s,
+        run.dna_control_complex_box_barcode,
+        "false"
+      ])
+    end
+  end
+
+end
