@@ -74,11 +74,25 @@ default: &default
           value: library.id
         pac_bio_library_tube_uuid:
           type: :model
-          value: library.uuid 
+          value: library.uuid
         pac_bio_library_tube_name:
           type: :model
           value: library.name
-
+    sample_sheet:
+      headers:
+        - System name
+        - Run Name
+        - Sample Well
+        - Sample Name
+        - Movie Time per SMRT Cell (hours)
+        - Insert Size (bp)
+        - Template Prep Kit (Box Barcode)
+        - Binding Kit (Box Barcode)
+        - Sequencing Kit (Box Barcode)
+        - Sequencing Mode (CLR/ CCS)
+        - On plate loading concentration (mP)
+        - DNA Control Complex (Box Barcode)
+        - Generate CCS Data
 
 development:
   <<: *default

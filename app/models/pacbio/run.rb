@@ -21,21 +21,7 @@ module Pacbio
     def generate_sample_sheet
       # options: 'wb' is write and binary mode
       CSV.open('file.csv', 'wb') do |csv|
-        headers = [
-          'System name',
-          'Run Name',
-          'Sample Well',
-          'Sample Name',
-          'Movie Time per SMRT Cell (hours)',
-          'Insert Size (bp)',
-          'Template Prep Kit (Box Barcode)',
-          'Binding Kit (Box Barcode)',
-          'Sequencing Kit (Box Barcode)',
-          'Sequencing Mode (CLR/ CCS ) ',
-          'On plate loading concentration (mP)',
-          'DNA Control Complex (Box Barcode)',
-          'Generate CCS Data'
-        ]
+        headers = Pipelines.pacbio.sample_sheet.headers
         csv << headers
 
         wells.each do |well|
