@@ -79,20 +79,46 @@ default: &default
           type: :model
           value: library.name
     sample_sheet:
-      headers:
-        - System name
-        - Run Name
-        - Sample Well
-        - Sample Name
-        - Movie Time per SMRT Cell (hours)
-        - Insert Size (bp)
-        - Template Prep Kit (Box Barcode)
-        - Binding Kit (Box Barcode)
-        - Sequencing Kit (Box Barcode)
-        - Sequencing Mode (CLR/ CCS)
-        - On plate loading concentration (mP)
-        - DNA Control Complex (Box Barcode)
-        - Generate CCS Data
+      columns:
+        system_name:
+          type: :model
+          value: system_name
+        Run Name:
+          type: :model
+          value: name
+        # Sample Well:
+        #   type: :model
+        #   value: well.position
+        # Sample Name:
+        #   type: :model
+        #   value: well.library.sample.name
+        # Movie Time per SMRT Cell (hours):
+        #   type: :model
+        #   value: well.movie_time
+        # Insert Size (bp):
+        #   type: :model
+        #   value: well.insert_size
+        # Template Prep Kit (Box Barcode):
+        #   type: :model
+        #   value: template_prep_kit_box_barcode
+        # Binding Kit (Box Barcode):
+        #   type: :model
+        #   value: binding_kit_box_barcode
+        # Sequencing Kit (Box Barcode):
+        #   type: :model
+        #   value: sequencing_kit_box_barcode
+        # Sequencing Mode (CLR/ CCS):
+        #   type: :model
+        #   value: well.sequencing_mode
+        # On plate loading concentration (mP):
+        #   type: :model
+        #   value: well.on_plate_loading_concentration
+        # DNA Control Complex (Box Barcode):
+        #   type: :model
+        #   value: dna_control_complex_box_barcode
+        # Generate CCS Data:
+        #   type: :model
+        #   value: well.generate_ccs_data
 
 development:
   <<: *default
