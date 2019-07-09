@@ -55,21 +55,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
       data1 = array_of_rows[1]
       data2 = array_of_rows[2]
 
-      expect(header).to eq([
-        "System name",
-        "Run Name",
-        "Sample Well",
-        "Sample Name",
-        "Movie Time per SMRT Cell (hours)",
-        "Insert Size (bp)",
-        "Template Prep Kit (Box Barcode)",
-        "Binding Kit (Box Barcode)",
-        "Sequencing Kit (Box Barcode)",
-        "Sequencing Mode (CLR/ CCS ) ",
-        "On plate loading concentration (mP)",
-        "DNA Control Complex (Box Barcode)",
-        "Generate CCS Data"
-      ])
+      expect(header).to eq(Pipelines.pacbio.sample_sheet.headers)
 
       expect(data1).to eq([
         run.system_name,
