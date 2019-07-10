@@ -13,7 +13,7 @@ module Pipelines
         end
 
         def pipeline
-          @pipeline ||= module_path.split('::').last
+          @pipeline ||= module_path.demodulize
         end
 
         def pipeline_const
