@@ -28,13 +28,13 @@ module V1
         render json: { data: { errors: e.message } }, status: :unprocessable_entity
       end
 
-      def test
-        run = ::Pacbio::Run.find(params[:run_id])
-        run.generate_sample_sheet
-        # send_file "#{Rails.root}/files/runs/RunDesignExampleSequel_II_Temp-3.csv",
-        #       filename: "test.csv",
-        #       type: "text/csv; charset=utf-8; header=present"
-      end
+      # def sample_sheet
+      #   run = ::Pacbio::Run.find(params[:run_id])
+      #
+      #   send_file "#{Rails.root}/files/runs/RunDesignExampleSequel_II_Temp-3.csv",
+      #         filename: "test.csv",
+      #         type: "text/csv; charset=utf-8; header=present"
+      # end
 
       private
 
