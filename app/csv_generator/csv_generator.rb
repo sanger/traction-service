@@ -4,6 +4,8 @@
 class CSVGenerator
   include ActiveModel::Model
 
+  # run           => Pacbio::Run
+  # configuration => Pipelines::Configuration::Item
   attr_accessor :run, :configuration
 
   # return a CSV file
@@ -11,10 +13,13 @@ class CSVGenerator
   # to generate headers and data
   def generate_sample_sheet
     file = nil
-    CSV.open('file.csv', 'wb') do |csv|
+    # wb => write binary
+    CSV.open('sample_sheet.csv', 'wb') do |csv|
       csv << csv_headers
 
+      # assuming each well has one library; this may change in the future
       run.plate.wells.map do |well|
+        # new row per well i.e sample
         csv << csv_data(well)
       end
 
@@ -25,7 +30,7 @@ class CSVGenerator
 
   private
 
-  # return a list of column names
+  # return a list of column names ie headers
   # eg ['System Name', 'Run Name']
   def csv_headers
     configuration.columns.map do |x|

@@ -28,6 +28,7 @@ module V1
         render json: { data: { errors: e.message } }, status: :unprocessable_entity
       end
 
+      # endpoint generating a sample sheet for a Pacbio::Run
       def sample_sheet
         run = ::Pacbio::Run.find(params[:run_id])
         csv = run.generate_sample_sheet

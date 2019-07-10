@@ -1,3 +1,0 @@
-System Name,Run Name,Sample Well,Sample Name,Movie Time per SMRT Cell (hours),Insert Size (bp),Template Prep Kit (Box Barcode),Binding Kit (Box Barcode),Sequencing Kit (Box Barcode),Sequencing Mode (CLR/ CCS),On plate loading concentration (mP),DNA Control Complex (Box Barcode),Generate CCS Data
-Sequel II,run105,A035,Sample99,10.0,10034,DM111710025910011171105,DM111710086220011171105,DM000110086180012312105,CCS,10.36,Lxxxxx10171760012319105,true
-Sequel II,run105,A036,Sample100,10.0,10035,DM111710025910011171105,DM111710086220011171105,DM000110086180012312105,CLR,10.37,Lxxxxx10171760012319105,false
