@@ -18,7 +18,7 @@ Rails.application.routes.draw do
     namespace :pacbio do
       resources :runs do
         %i[index create update destroy]
-        get 'test', to: 'runs#test'
+        get 'sample_sheet', to: 'runs#sample_sheet'
       end
       # resources :runs,          only: %i[index create show update destroy]
       resources :plates,        only: %i[index create update destroy]
