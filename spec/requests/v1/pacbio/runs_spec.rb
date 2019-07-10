@@ -268,4 +268,20 @@ RSpec.describe 'RunsController', type: :request do
     end
   end
 
+  context '#sample_sheet' do
+    let(:well1)   { create(:pacbio_well_with_library, sequencing_mode: 'CCS') }
+    let(:well2)   { create(:pacbio_well_with_library, sequencing_mode: 'CLR') }
+    let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
+    let(:run)     { create(:pacbio_run, plate: plate) }
+
+    it 'returns the correct status' do
+      get "#{v1_pacbio_run_sample_sheet_path(run)}", headers: json_api_headers
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'returns a CSV file' do
+      get "#{v1_pacbio_run_sample_sheet_path(run)}", headers: json_api_headers
+      expect(response.header['Content-Type']).to include 'text/csv'
+    end
+  end
 end

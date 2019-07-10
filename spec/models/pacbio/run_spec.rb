@@ -40,6 +40,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
   end
 
   context '#generate_sample_sheet' do
+    
     it 'must call CSVGenerator' do
       well1 = create(:pacbio_well_with_library, sequencing_mode: 'CCS')
       well2 = create(:pacbio_well_with_library, sequencing_mode: 'CLR')
@@ -49,6 +50,17 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
 
       expect_any_instance_of(::CSVGenerator).to receive(:generate_sample_sheet)
       run.generate_sample_sheet
+    end
+
+    it 'must return a CSV' do
+      well1 = create(:pacbio_well_with_library, sequencing_mode: 'CCS')
+      well2 = create(:pacbio_well_with_library, sequencing_mode: 'CLR')
+
+      plate = create(:pacbio_plate, wells: [well1, well2])
+      run = create(:pacbio_run, plate: plate)
+
+      sample_sheet = run.generate_sample_sheet
+      expect(sample_sheet.class).to eq CSV
     end
   end
 
