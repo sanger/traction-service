@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Pipelines
   module Requestor
     # Controller - behaviour for pipeline requests factory
@@ -69,7 +71,8 @@ module Pipelines
 
       def params_names
         params.require(:data).require(:attributes)[:requests].map do |param|
-          param.permit(*self.class.pipeline_const.attributes, :name, :external_id, :species).to_h
+          param.permit(*self.class.pipeline_const.request_attributes,
+                       :name, :external_id, :species).to_h
         end
       end
     end

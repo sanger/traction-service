@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Pipelines
   module Requestor
     # Model - behaviour for pipeline requests model
@@ -12,7 +14,7 @@ module Pipelines
 
         delegate :name, to: :sample, prefix: :sample
 
-        validates(*to_s.deconstantize.constantize.attributes, presence: true)
+        validates(*to_s.deconstantize.constantize.request_attributes, presence: true)
       end
     end
   end

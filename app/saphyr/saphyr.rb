@@ -6,7 +6,7 @@ module Saphyr
     'saphyr_'
   end
 
-  def self.attributes
+  def self.request_attributes
     [
       :external_study_id
     ]

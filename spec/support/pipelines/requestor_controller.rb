@@ -24,7 +24,7 @@ shared_examples_for 'requestor controller' do
       get send(requests_path), headers: json_api_headers
       json = ActiveSupport::JSON.decode(response.body)
 
-      pipeline_module.attributes.each do |attribute|
+      pipeline_module.request_attributes.each do |attribute|
         expect(json['data'][0]['attributes'][attribute.to_s]).to eq(request.send(attribute))
       end
 
