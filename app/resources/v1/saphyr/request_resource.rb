@@ -4,9 +4,7 @@ module V1
   module Saphyr
     # RequestResource
     class RequestResource < JSONAPI::Resource
-      model_name 'Saphyr::Request'
-
-      attributes :external_study_id, :sample_name
+      include Pipelines::Requestor::Resource
     end
   end
 end

@@ -1,3 +1,4 @@
+#TODO: abstact out behaviour for request factories for each pipeline
 FactoryBot.define do
   factory :saphyr_request, class: Saphyr::Request do
     external_study_id { 1 }

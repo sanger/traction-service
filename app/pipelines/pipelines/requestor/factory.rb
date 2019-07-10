@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Pipelines
   module Requestor
     # Factory - behaviour for pipeline requests factory
