@@ -33,9 +33,7 @@ class CSVGenerator
   # return a list of column names ie headers
   # eg ['System Name', 'Run Name']
   def csv_headers
-    configuration.columns.map do |x|
-      x[0]
-    end
+    configuration.columns.map(&:first)
   end
 
   # Use configuration :type and :value to retrieve well data
