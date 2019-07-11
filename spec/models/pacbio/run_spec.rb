@@ -22,6 +22,10 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     expect(build(:pacbio_run, dna_control_complex_box_barcode: nil)).to_not be_valid
   end
 
+  it 'will have a uuid after creation' do
+    expect(create(:pacbio_run).uuid).to be_present
+  end
+
   it 'can have a plate' do
     plate = create(:pacbio_plate)
     run = create(:pacbio_run, plate: plate)

@@ -43,8 +43,12 @@ default: &default
       key: pac_bio_run
       fields:
         last_updated: *timestamp
-        sample_uuid: *sample_uuid
-        study_uuid: *study_uuid
+        sample_uuid:
+          type: :model
+          value: library.request.sample.external_id
+        study_uuid:
+          type: :model
+          value: library.request.external_study_id
         id_pac_bio_run_lims:
           type: :model
           value: plate.run.id
@@ -53,10 +57,10 @@ default: &default
           value: plate.run.uuid
         cost_code:
           type: :model
-          value: library.sample.cost_code
+          value: library.request.cost_code
         tag_sequence:
           type: :model
-          value: library.tag_sequence
+          value: library.tag.oligo
         plate_barcode:
           type: :model
           value: plate.barcode
@@ -77,7 +81,7 @@ default: &default
           value: library.uuid 
         pac_bio_library_tube_name:
           type: :model
-          value: library.name
+          value: library.request.sample_name
 
 
 development:

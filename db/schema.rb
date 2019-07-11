@@ -10,23 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_02_144911) do
+ActiveRecord::Schema.define(version: 2019_07_10_111246) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
     t.string "library_kit_barcode"
     t.integer "fragment_size"
+    t.string "uuid"
     t.integer "pacbio_tag_id"
-    t.integer "sample_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "pacbio_request_id"
+    t.index ["pacbio_request_id"], name: "index_pacbio_libraries_on_pacbio_request_id"
     t.index ["pacbio_tag_id"], name: "index_pacbio_libraries_on_pacbio_tag_id"
-    t.index ["sample_id"], name: "index_pacbio_libraries_on_sample_id"
   end
 
   create_table "pacbio_plates", force: :cascade do |t|
     t.integer "pacbio_run_id"
+    t.string "uuid"
+    t.string "barcode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["pacbio_run_id"], name: "index_pacbio_plates_on_pacbio_run_id"
@@ -49,6 +52,7 @@ ActiveRecord::Schema.define(version: 2019_07_02_144911) do
     t.string "sequencing_kit_box_barcode"
     t.string "dna_control_complex_box_barcode"
     t.string "comments"
+    t.string "uuid"
     t.integer "sequencing_mode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -68,6 +72,7 @@ ActiveRecord::Schema.define(version: 2019_07_02_144911) do
     t.integer "insert_size"
     t.float "on_plate_loading_concentration"
     t.string "comment"
+    t.string "uuid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "pacbio_library_id"
