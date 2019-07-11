@@ -21,5 +21,9 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
   it 'must have a tag' do
     expect(build(:pacbio_library, tag: nil)).to_not be_valid
   end
+
+  it 'will have a uuid' do
+    expect(create(:pacbio_library).uuid).to be_present
+  end
   
 end

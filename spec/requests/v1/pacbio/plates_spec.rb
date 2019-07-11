@@ -36,7 +36,8 @@ RSpec.describe 'PlatesController', type: :request do
           data: {
             type: "plates",
             attributes: {
-              pacbio_run_id: run.id
+              pacbio_run_id: run.id,
+              barcode: 'PACBIO-1'
             }
           }
         }.to_json
@@ -64,7 +65,9 @@ RSpec.describe 'PlatesController', type: :request do
         {
           data: {
             type: "plates",
-            attributes: {}
+            attributes: {
+              pacbio_run_id: run.id
+            }
           }
         }.to_json
       end
@@ -82,7 +85,7 @@ RSpec.describe 'PlatesController', type: :request do
         post v1_pacbio_plates_path, params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         errors = json['data']['errors']
-        expect(errors['run']).to be_present
+        expect(errors['barcode']).to be_present
       end
 
     end
@@ -99,7 +102,8 @@ RSpec.describe 'PlatesController', type: :request do
             type: "plates",
             id: plate.id,
             attributes: {
-              pacbio_run_id: new_run.id
+              pacbio_run_id: new_run.id,
+              barcode: 'PACBIO-1'
             }
           }
         }.to_json
@@ -130,7 +134,8 @@ RSpec.describe 'PlatesController', type: :request do
             type: "plates",
             id: plate.id,
             attributes: {
-              pacbio_run_id: new_run.id
+              pacbio_run_id: new_run.id,
+              barcode: 'PACBIO-1'
             }
           }
         }.to_json

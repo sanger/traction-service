@@ -3,6 +3,8 @@
 module Pacbio
   # Pacbio::Run
   class Run < ApplicationRecord
+    include AddUuid
+
     enum sequencing_mode: %w[CLR CCS]
 
     validates :name, :template_prep_kit_box_barcode, :binding_kit_box_barcode,

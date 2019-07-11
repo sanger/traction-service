@@ -86,11 +86,11 @@ class MockWell
   end
 end
 
-RSpec.describe 'PacBio', type: :model do
+RSpec.describe 'PacBio', type: :model, pacbio: true do
 
   let(:config)        { Pipelines.configure(Rails.configuration.pipelines) }
   let(:pacbio_config) { config.pacbio }
-  let(:well)          { MockWell.new }
+  let(:well)          { create(:pacbio_well_with_library) }
   let(:message)       { Messages::Message.new(object: well, configuration: pacbio_config.message) }
 
   it 'should have a lims' do
@@ -116,11 +116,11 @@ RSpec.describe 'PacBio', type: :model do
     end
 
     it 'must have a sample_uuid' do
-      expect(key[:sample_uuid]).to eq(well.library.sample.external_id)
+      expect(key[:sample_uuid]).to eq(well.library.request.sample.external_id)
     end
 
     it 'must have a study_uuid' do
-      expect(key[:study_uuid]).to eq(well.library.sample.external_study_id)
+      expect(key[:study_uuid]).to eq(well.library.request.external_study_id)
     end
 
     it 'must have a id_pac_bio_run_lims' do
@@ -132,11 +132,11 @@ RSpec.describe 'PacBio', type: :model do
     end
 
     it 'must have a cost code' do
-      expect(key[:cost_code]).to eq(well.library.sample.cost_code)
+      expect(key[:cost_code]).to eq(well.library.request.cost_code)
     end
 
     it 'must have a tag sequence' do
-      expect(key[:tag_sequence]).to eq(well.library.tag_sequence)
+      expect(key[:tag_sequence]).to eq(well.library.tag.oligo)
     end
 
     it 'must have a plate barcode' do
@@ -164,7 +164,7 @@ RSpec.describe 'PacBio', type: :model do
     end
 
     it 'must have a library tube name' do
-      expect(key[:pac_bio_library_tube_name]).to eq(well.library.name)
+      expect(key[:pac_bio_library_tube_name]).to eq(well.library.request.sample_name)
     end
 
   end
