@@ -7,19 +7,20 @@ RSpec.describe Saphyr::Library, type: :model, saphyr: true do
   end
 
   context 'on creation' do
+
+    let(:request) { create(:saphyr_request)}
+
     it 'should be active' do
       sample = create(:sample)
-      expect(create(:saphyr_library, sample: sample)).to be_active
+      expect(create(:saphyr_library, request: request)).to be_active
     end
 
     it 'should set state to pending' do
       expect(create(:library_no_state).state).to eq('pending')
     end
 
-    it 'should have a sample' do
-      sample = create(:sample)
-      expect(create(:saphyr_library, sample: sample).sample).to eq(sample)
-      expect(create(:saphyr_library, sample: sample).sample_id).to eq(sample.id)
+    it 'should have a request' do
+      expect(create(:saphyr_library, request: request).request).to eq(request)
     end
 
     it 'should have a enzyme' do
@@ -55,27 +56,28 @@ RSpec.describe Saphyr::Library, type: :model, saphyr: true do
   end
 
   context 'validation' do
-    it 'is not valid withoutan sample' do
-      expect(build(:saphyr_library, sample: nil)).not_to be_valid
+    it 'is not valid without a request' do
+      expect(build(:saphyr_library, request: nil)).not_to be_valid
     end
 
-    it 'is not valid withoutan enzyme' do
+    it 'is not valid without an enzyme' do
       expect(build(:saphyr_library, enzyme: nil)).not_to be_valid
     end
   end
 
   context 'deactivate' do
+
+    let(:request) { create(:saphyr_request)}
+
     it 'can be deactivated' do
-      sample = create(:sample)
-      library = create(:saphyr_library, sample: sample)
+      library = create(:saphyr_library, request: request)
       expect(library.deactivate).to eq true
       expect(library.deactivated_at).to be_present
       expect(library).not_to be_active
     end
 
     it 'returns false if already deactivated' do
-      sample = create(:sample)
-      library = create(:saphyr_library, sample: sample)
+      library = create(:saphyr_library, request: request)
       library.deactivate
       expect(library.deactivate).to eq false
     end

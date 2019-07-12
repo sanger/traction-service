@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-module AddUuid
+# Adds a uuid to model
+module Uuidable
   extend ActiveSupport::Concern
 
   included do

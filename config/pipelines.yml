@@ -6,10 +6,10 @@ default: &default
       fields:
         sample_uuid: &sample_uuid
           type: :model
-          value: library.sample.external_id
+          value: library.request.sample.external_id
         study_uuid: &study_uuid
           type: :model
-          value: library.sample.external_study_id
+          value: library.request.external_study_id
         experiment_name:
           type: :model
           value: chip.run.name
@@ -43,12 +43,8 @@ default: &default
       key: pac_bio_run
       fields:
         last_updated: *timestamp
-        sample_uuid:
-          type: :model
-          value: library.request.sample.external_id
-        study_uuid:
-          type: :model
-          value: library.request.external_study_id
+        sample_uuid: *sample_uuid
+        study_uuid: *study_uuid
         id_pac_bio_run_lims:
           type: :model
           value: plate.run.id

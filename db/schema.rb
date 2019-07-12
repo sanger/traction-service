@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_10_111246) do
+ActiveRecord::Schema.define(version: 2019_07_12_072210) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
@@ -127,13 +127,13 @@ ActiveRecord::Schema.define(version: 2019_07_10_111246) do
 
   create_table "saphyr_libraries", force: :cascade do |t|
     t.string "state"
-    t.integer "sample_id"
     t.datetime "deactivated_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "saphyr_enzyme_id"
-    t.index ["sample_id"], name: "index_saphyr_libraries_on_sample_id"
+    t.integer "saphyr_request_id"
     t.index ["saphyr_enzyme_id"], name: "index_saphyr_libraries_on_saphyr_enzyme_id"
+    t.index ["saphyr_request_id"], name: "index_saphyr_libraries_on_saphyr_request_id"
   end
 
   create_table "saphyr_requests", force: :cascade do |t|
