@@ -4,7 +4,7 @@ module Pacbio
   # Pacbio::Library
   class Library < ApplicationRecord
     include Material
-    include AddUuid
+    include Uuidable
 
     validates :volume, :concentration, :library_kit_barcode, :fragment_size, presence: true
 
@@ -14,6 +14,7 @@ module Pacbio
     has_many :wells, class_name: 'Pacbio::Well', foreign_key: :pacbio_library_id,
                      inverse_of: :library, dependent: :nullify
 
-    belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id
+    belongs_to :request, class_name: 'Pacbio::Request', foreign_key:
+    :pacbio_request_id, inverse_of: false
   end
 end

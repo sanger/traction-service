@@ -3,7 +3,7 @@
 module Pacbio
   # Pacbio::Run
   class Run < ApplicationRecord
-    include AddUuid
+    include Uuidable
 
     enum sequencing_mode: %w[CLR CCS]
 

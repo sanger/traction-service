@@ -3,7 +3,7 @@
 module Pacbio
   # Plate
   class Plate < ApplicationRecord
-    include AddUuid
+    include Uuidable
 
     belongs_to :run, foreign_key: :pacbio_run_id,
                      inverse_of: :plate

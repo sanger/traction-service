@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Saphyr::LibraryFactory, type: :model, saphyr: true do
-  let(:sample) { create(:sample)}
+  let(:request) { create(:saphyr_request)}
   let(:saphyr_enzyme) { create(:saphyr_enzyme)}
-  let(:attributes) { [{ state: 'pending', sample_id: sample.id, saphyr_enzyme_id: saphyr_enzyme.id }]}
+  let(:attributes) { [{ state: 'pending', saphyr_request_id: request.id, saphyr_enzyme_id: saphyr_enzyme.id }]}
 
   context '#initialise' do
     it 'creates an object for each given library' do
@@ -16,7 +16,7 @@ RSpec.describe Saphyr::LibraryFactory, type: :model, saphyr: true do
       attributes << {}
       factory = Saphyr::LibraryFactory.new(attributes)
       expect(factory).to_not be_valid
-      expect(factory.errors.full_messages[0]).to eq("Sample must exist")
+      expect(factory.errors.full_messages[0]).to eq("Request must exist")
       expect(factory.errors.full_messages[1]).to eq("Enzyme must exist")
       expect(factory.errors.full_messages.length).to eq(2)
     end

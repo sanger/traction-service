@@ -7,7 +7,7 @@ module V1
       model_name 'Saphyr::Library'
 
       attributes :state, :barcode, :sample_name, :enzyme_name, :created_at, :deactivated_at
-      has_one :sample
+      has_one :request
       has_one :tube
 
       def barcode
@@ -15,7 +15,7 @@ module V1
       end
 
       def sample_name
-        @model.sample&.name
+        @model.request&.sample_name
       end
 
       def enzyme_name

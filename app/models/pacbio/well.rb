@@ -3,7 +3,7 @@
 module Pacbio
   # Pacbio::Well
   class Well < ApplicationRecord
-    include AddUuid
+    include Uuidable
 
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
                        inverse_of: :wells
