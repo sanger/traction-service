@@ -6,10 +6,10 @@ default: &default
       fields:
         sample_uuid: &sample_uuid
           type: :model
-          value: library.sample.external_id
+          value: library.request.sample.external_id
         study_uuid: &study_uuid
           type: :model
-          value: library.sample.external_study_id
+          value: library.request.external_study_id
         experiment_name:
           type: :model
           value: chip.run.name
@@ -53,10 +53,10 @@ default: &default
           value: plate.run.uuid
         cost_code:
           type: :model
-          value: library.sample.cost_code
+          value: library.request.cost_code
         tag_sequence:
           type: :model
-          value: library.tag_sequence
+          value: library.tag.oligo
         plate_barcode:
           type: :model
           value: plate.barcode
@@ -77,7 +77,7 @@ default: &default
           value: library.uuid
         pac_bio_library_tube_name:
           type: :model
-          value: library.name
+          value: library.request.sample_name
     sample_sheet:
       columns:
         System Name:
@@ -91,7 +91,7 @@ default: &default
           value: position
         Sample Name:
           type: :model
-          value: library.sample.name
+          value: library.request.sample_name
         Movie Time per SMRT Cell (hours):
           type: :model
           value: movie_time

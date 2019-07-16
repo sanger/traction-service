@@ -23,7 +23,7 @@ RSpec.describe 'LibrariesController', type: :request do
 
       expect(json['data'][0]['attributes']['state']).to eq(library1.state)
       expect(json['data'][0]['attributes']['barcode']).to eq(library1.tube.barcode)
-      expect(json['data'][0]['attributes']['sample_name']).to eq(library1.sample.name)
+      expect(json['data'][0]['attributes']['sample_name']).to eq(library1.request.sample_name)
       expect(json['data'][0]['attributes']['enzyme_name']).to eq(library1.enzyme.name)
       expect(json['data'][0]["attributes"]["created_at"]).to eq(library1.created_at.strftime("%m/%d/%Y %I:%M"))
       expect(json['data'][0]["attributes"]["deactivated_at"]).to eq(nil)
@@ -55,14 +55,14 @@ RSpec.describe 'LibrariesController', type: :request do
     context 'when creating a single library' do
 
       context 'on success' do
-        let(:sample) { create(:sample) }
+        let(:request) { create(:saphyr_request) }
         let(:saphyr_enzyme) { create(:saphyr_enzyme) }
         let(:body) do
           {
             data: {
               attributes: {
                 libraries: [
-                  { state: 'pending', sample_id: sample.id, saphyr_enzyme_id: saphyr_enzyme.id}
+                  { state: 'pending', saphyr_request_id: request.id, saphyr_enzyme_id: saphyr_enzyme.id}
                 ]
               }
             }
@@ -85,11 +85,11 @@ RSpec.describe 'LibrariesController', type: :request do
           expect(Tube.find(tube_id).material).to eq Saphyr::Library.last
         end
 
-        it 'creates a library with a sample' do
+        it 'creates a library with a request' do
           post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-          expect(Saphyr::Library.last.sample).to be_present
-          sample_id = Saphyr::Library.last.sample.id
-          expect(sample_id).to eq sample.id
+          expect(Saphyr::Library.last.request).to be_present
+          request_id = Saphyr::Library.last.request.id
+          expect(request_id).to eq request.id
         end
 
         it 'creates a library with a enzyme' do
@@ -101,7 +101,7 @@ RSpec.describe 'LibrariesController', type: :request do
       end
 
       context 'on failure' do
-        context 'when the sample does not exist' do
+        context 'when the request does not exist' do
           let(:saphyr_enzyme) { create(:saphyr_enzyme) }
 
           let(:body) do
@@ -109,7 +109,7 @@ RSpec.describe 'LibrariesController', type: :request do
               data: {
                 attributes: {
                   libraries: [
-                    { state: 'pending', sample_id: 1, saphyr_enzyme_id: saphyr_enzyme.id}
+                    { state: 'pending', saphyr_request_id: 1, saphyr_enzyme_id: saphyr_enzyme.id}
                   ]
                 }
               }
@@ -127,19 +127,19 @@ RSpec.describe 'LibrariesController', type: :request do
 
           it 'has an error message' do
             post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-            expect(JSON.parse(response.body)["data"]).to include("errors" => {"sample"=>['must exist']})
+            expect(JSON.parse(response.body)["data"]).to include("errors" => {"request"=>['must exist']})
           end
         end
 
         context 'when the enzyme does not exist' do
-          let(:sample) { create(:sample) }
+          let(:request) { create(:saphyr_request) }
 
           let(:body) do
             {
               data: {
                 attributes: {
                   libraries: [
-                    { state: 'pending', sample_id: sample.id, enzyme_id: 1}
+                    { state: 'pending', saphyr_request_id: request.id, enzyme_id: 1}
                   ]
                 }
               }
@@ -168,8 +168,8 @@ RSpec.describe 'LibrariesController', type: :request do
 
     context 'when creating multiple libraries' do
       context 'on success' do
-        context 'when the sample does exist' do
-          let(:sample) { create(:sample) }
+        context 'when the request does exist' do
+          let(:request) { create(:saphyr_request) }
           let(:saphyr_enzyme) { create(:saphyr_enzyme) }
 
           let(:body) do
@@ -177,9 +177,9 @@ RSpec.describe 'LibrariesController', type: :request do
               data: {
                 attributes: {
                   libraries: [
-                    { state: 'pending', sample_id: sample.id, saphyr_enzyme_id: saphyr_enzyme.id},
-                    { state: 'pending', sample_id: sample.id, saphyr_enzyme_id: saphyr_enzyme.id},
-                    { state: 'pending', sample_id: sample.id, saphyr_enzyme_id: saphyr_enzyme.id}
+                    { state: 'pending', saphyr_request_id: request.id, saphyr_enzyme_id: saphyr_enzyme.id},
+                    { state: 'pending', saphyr_request_id: request.id, saphyr_enzyme_id: saphyr_enzyme.id},
+                    { state: 'pending', saphyr_request_id: request.id, saphyr_enzyme_id: saphyr_enzyme.id}
                   ]
                 }
               }
@@ -194,7 +194,7 @@ RSpec.describe 'LibrariesController', type: :request do
       end
 
       context 'on failure' do
-        context 'when the sample does not exist' do
+        context 'when the request does not exist' do
           let(:saphyr_enzyme) { create(:saphyr_enzyme) }
 
           let(:body) do
@@ -202,8 +202,8 @@ RSpec.describe 'LibrariesController', type: :request do
               data: {
                 attributes: {
                   libraries: [
-                    { state: 'pending', sample_id: 1, saphyr_enzyme_id: saphyr_enzyme.id},
-                    { state: 'pending', sample_id: 1, saphyr_enzyme_id: saphyr_enzyme.id}
+                    { state: 'pending', saphyr_request_id: 1, saphyr_enzyme_id: saphyr_enzyme.id},
+                    { state: 'pending', saphyr_request_id: 1, saphyr_enzyme_id: saphyr_enzyme.id}
                   ]
                 }
               }
@@ -217,7 +217,7 @@ RSpec.describe 'LibrariesController', type: :request do
 
           it 'has an error message' do
             post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-            expect(JSON.parse(response.body)["data"]).to include("errors" => {"sample"=>['must exist', 'must exist']})
+            expect(JSON.parse(response.body)["data"]).to include("errors" => {"request"=>['must exist', 'must exist']})
           end
         end
       end

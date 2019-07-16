@@ -39,7 +39,7 @@ module V1
       def params_names
         params.require(:data).require(:attributes)[:libraries].map do |param|
           param.permit(:volume, :concentration, :library_kit_barcode, :fragment_size,
-                       :pacbio_tag_id, :sample_id).to_h
+                       :pacbio_tag_id, :pacbio_request_id).to_h
         end
       end
 

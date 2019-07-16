@@ -8,6 +8,7 @@ class CreatePacbioWell < ActiveRecord::Migration[5.2]
       t.integer :insert_size
       t.float :on_plate_loading_concentration
       t.string :comment
+      t.string :uuid
       t.timestamps
     end
   end

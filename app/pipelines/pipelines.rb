@@ -17,4 +17,8 @@ module Pipelines
       end
     end
   end
+
+  def self.find(pipeline)
+    send(pipeline.to_s.downcase)
+  end
 end
