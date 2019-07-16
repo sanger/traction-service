@@ -74,11 +74,51 @@ default: &default
           value: library.id
         pac_bio_library_tube_uuid:
           type: :model
-          value: library.uuid 
+          value: library.uuid
         pac_bio_library_tube_name:
           type: :model
           value: library.request.sample_name
-
+    sample_sheet:
+      columns:
+        System Name:
+          type: :model
+          value: plate.run.system_name
+        Run Name:
+          type: :model
+          value: plate.run.name
+        Sample Well:
+          type: :model
+          value: position
+        Sample Name:
+          type: :model
+          value: library.sample.name
+        Movie Time per SMRT Cell (hours):
+          type: :model
+          value: movie_time
+        Insert Size (bp):
+          type: :model
+          value: insert_size
+        Template Prep Kit (Box Barcode):
+          type: :model
+          value: plate.run.template_prep_kit_box_barcode
+        Binding Kit (Box Barcode):
+          type: :model
+          value: plate.run.binding_kit_box_barcode
+        Sequencing Kit (Box Barcode):
+          type: :model
+          value: plate.run.sequencing_kit_box_barcode
+        Sequencing Mode (CLR/ CCS):
+          type: :model
+          value: sequencing_mode
+        On plate loading concentration (mP):
+          type: :model
+          value: on_plate_loading_concentration
+        DNA Control Complex (Box Barcode):
+          type: :model
+          value: plate.run.dna_control_complex_box_barcode
+        Generate CCS Data:
+          type: :model
+          value: generate_ccs_data
 
 development:
   <<: *default

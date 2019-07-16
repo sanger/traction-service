@@ -53,9 +53,9 @@ ActiveRecord::Schema.define(version: 2019_07_12_072210) do
     t.string "dna_control_complex_box_barcode"
     t.string "comments"
     t.string "uuid"
-    t.integer "sequencing_mode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "system_name", default: 0
   end
 
   create_table "pacbio_tags", force: :cascade do |t|
@@ -76,6 +76,7 @@ ActiveRecord::Schema.define(version: 2019_07_12_072210) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "pacbio_library_id"
+    t.integer "sequencing_mode"
     t.index ["pacbio_library_id"], name: "index_pacbio_wells_on_pacbio_library_id"
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end

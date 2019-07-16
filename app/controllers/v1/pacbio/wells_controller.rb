@@ -36,7 +36,7 @@ module V1
       def params_names
         params.require(:data)['attributes'].permit(:movie_time, :insert_size, :row,
                                                    :on_plate_loading_concentration, :column,
-                                                   :pacbio_plate_id, :comment)
+                                                   :pacbio_plate_id, :comment, :sequencing_mode)
       end
 
       def well
