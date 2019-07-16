@@ -56,7 +56,11 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
   it 'can have a summary' do
     well = create(:pacbio_well_with_library)
-    expect(well.summary).to eq("#{well.library.sample.name},#{well.comment}")
+    expect(well.summary).to eq("#{well.library.request.sample_name},#{well.comment}")
+  end
+
+   it 'will have a uuid' do
+    expect(create(:pacbio_well).uuid).to be_present
   end
 
 

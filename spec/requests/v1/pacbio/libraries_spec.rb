@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe 'LibrariesController', type: :request do
+RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
   context '#get' do
     let!(:library1) { create(:pacbio_library) }
@@ -24,14 +24,14 @@ RSpec.describe 'LibrariesController', type: :request do
       expect(json['data'][0]['attributes']['library_kit_barcode']).to eq(library1.library_kit_barcode)
       expect(json['data'][0]['attributes']['fragment_size']).to eq(library1.fragment_size)
       expect(json['data'][0]["attributes"]["pacbio_tag_id"]).to eq(library1.pacbio_tag_id)
-      expect(json['data'][0]["attributes"]["sample_id"]).to eq(library1.sample_id)
+      expect(json['data'][0]["attributes"]["pacbio_request_id"]).to eq(library1.pacbio_request_id)
 
       expect(json['data'][1]['attributes']['volume']).to eq(library2.volume)
       expect(json['data'][1]['attributes']['concentration']).to eq(library2.concentration)
       expect(json['data'][1]['attributes']['library_kit_barcode']).to eq(library2.library_kit_barcode)
       expect(json['data'][1]['attributes']['fragment_size']).to eq(library2.fragment_size)
       expect(json['data'][1]["attributes"]["pacbio_tag_id"]).to eq(library2.pacbio_tag_id)
-      expect(json['data'][1]["attributes"]["sample_id"]).to eq(library2.sample_id)
+      expect(json['data'][1]["attributes"]["pacbio_request_id"]).to eq(library2.pacbio_request_id)
     end
 
   end
@@ -39,7 +39,7 @@ RSpec.describe 'LibrariesController', type: :request do
   context '#create' do
     context 'when creating a single library' do
       let!(:tag) { create(:pacbio_tag) }
-      let!(:sample) { create(:sample) }
+      let!(:request) { create(:pacbio_request) }
 
       context 'on success' do
 
@@ -54,7 +54,7 @@ RSpec.describe 'LibrariesController', type: :request do
                     library_kit_barcode: 'LK1234567',
                     fragment_size: 100,
                     pacbio_tag_id: tag.id,
-                    sample_id: sample.id
+                    pacbio_request_id: request.id
                   }
                 ]
               }
@@ -80,9 +80,9 @@ RSpec.describe 'LibrariesController', type: :request do
 
         it 'creates a library with a sample' do
           post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          expect(Pacbio::Library.last.sample).to be_present
-          sample_id = Pacbio::Library.last.sample.id
-          expect(sample_id).to eq sample.id
+          expect(Pacbio::Library.last.request).to be_present
+          pacbio_request_id = Pacbio::Library.last.request.id
+          expect(pacbio_request_id).to eq request.id
         end
         it 'creates a library with the correct attributes' do
           post v1_pacbio_libraries_path, params: body, headers: json_api_headers
@@ -92,12 +92,12 @@ RSpec.describe 'LibrariesController', type: :request do
           expect(library.library_kit_barcode).to be_present
           expect(library.fragment_size).to be_present
           expect(library.pacbio_tag_id).to be_present
-          expect(library.sample_id).to be_present
+          expect(library.pacbio_request_id).to be_present
         end
       end
 
       context 'on failure' do
-        context 'when the sample does not exist' do      #
+        context 'when the sample does not exist' do
           let(:body) do
             {
               data: {
@@ -108,7 +108,7 @@ RSpec.describe 'LibrariesController', type: :request do
                       library_kit_barcode: 'LK1234567',
                       fragment_size: 100,
                       pacbio_tag_id: tag.id,
-                      sample_id: 123
+                      pacbio_request_id: 123
                     }
                   ]
                 }
@@ -127,7 +127,7 @@ RSpec.describe 'LibrariesController', type: :request do
 
           it 'has an error message' do
             post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-            expect(JSON.parse(response.body)["data"]).to include("errors" => {"sample"=>['must exist']})
+            expect(JSON.parse(response.body)["data"]).to include("errors" => {"request"=>['must exist']})
           end
         end
       #
@@ -142,7 +142,7 @@ RSpec.describe 'LibrariesController', type: :request do
                       library_kit_barcode: 'LK1234567',
                       fragment_size: 100,
                       pacbio_tag_id: 123,
-                      sample_id: sample.id
+                      pacbio_request_id: request.id
                     }
                   ]
                 }
@@ -170,7 +170,7 @@ RSpec.describe 'LibrariesController', type: :request do
     end
 
     context 'when creating multiple libraries' do
-      let(:sample) { create(:sample) }
+      let(:request) { create(:pacbio_request) }
       let(:tag) { create(:pacbio_tag) }
 
       context 'on success' do
@@ -186,14 +186,14 @@ RSpec.describe 'LibrariesController', type: :request do
                       library_kit_barcode: 'LK1234567',
                       fragment_size: 100,
                       pacbio_tag_id: tag.id,
-                      sample_id: sample.id
+                      pacbio_request_id: request.id
                     },
                     { volume: 3.22,
                       concentration: 4.22,
                       library_kit_barcode: 'LK1234569',
                       fragment_size: 200,
                       pacbio_tag_id: tag.id,
-                      sample_id: sample.id
+                      pacbio_request_id: request.id
                     }
                   ]
                 }
@@ -221,14 +221,14 @@ RSpec.describe 'LibrariesController', type: :request do
                       library_kit_barcode: 'LK1234567',
                       fragment_size: 100,
                       pacbio_tag_id: tag.id,
-                      sample_id: 123
+                      pacbio_request_id: 123
                     },
                     { volume: 3.22,
                       concentration: 4.22,
                       library_kit_barcode: 'LK1234569',
                       fragment_size: 200,
                       pacbio_tag_id: tag.id,
-                      sample_id: 123
+                      pacbio_request_id: 123
                     }
                   ]
                 }
@@ -243,7 +243,7 @@ RSpec.describe 'LibrariesController', type: :request do
 
           it 'has an error message' do
             post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-            expect(JSON.parse(response.body)["data"]).to include("errors" => {"sample"=>['must exist', 'must exist']})
+            expect(JSON.parse(response.body)["data"]).to include("errors" => {"request"=>['must exist', 'must exist']})
           end
         end
       end

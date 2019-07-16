@@ -3,6 +3,9 @@
 module Pacbio
   # Pacbio::Run
   class Run < ApplicationRecord
+    include Uuidable
+
+    enum sequencing_mode: %w[CLR CCS]
     enum system_name: ['Sequel II', 'Sequel I']
 
     validates :name, :template_prep_kit_box_barcode, :binding_kit_box_barcode,

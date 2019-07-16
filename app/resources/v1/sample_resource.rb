@@ -3,10 +3,8 @@
 module V1
   # SampleResource
   class SampleResource < JSONAPI::Resource
-    # model_name 'Sample'
-
     attributes :name, :external_id, :species, :barcode, :created_at, :deactivated_at
-    has_many :libraries, always_include_linkage_data: true
+    # has_many :libraries, always_include_linkage_data: true
     has_one :tube
 
     def barcode

@@ -7,7 +7,8 @@ module Saphyr
     include Material
 
     before_create :set_state
-    belongs_to :sample
+    belongs_to :request, class_name: 'Saphyr::Request',
+                         foreign_key: 'saphyr_request_id', inverse_of: false
 
     belongs_to :enzyme, class_name: 'Saphyr::Enzyme', foreign_key: 'saphyr_enzyme_id',
                         inverse_of: :libraries

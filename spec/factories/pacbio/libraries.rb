@@ -5,6 +5,6 @@ FactoryBot.define do
     library_kit_barcode { 'LK1234567' }
     fragment_size { 100 }
     tag { create(:pacbio_tag) }
-    sample
+    request { create(:pacbio_request) }
   end
 end

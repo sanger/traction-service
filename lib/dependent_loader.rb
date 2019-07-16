@@ -26,12 +26,17 @@ class DependentLoader
   #   end
   #  end
   def self.start(table, &block)
-    return unless ActiveRecord::Base.connection.tables.include?(table.to_s) && !defined?(::Rake)
+    return unless ActiveRecord::Base.connection.tables.include?(table_name(table)) &&
+                  !defined?(::Rake)
     return if Rails.env.test?
 
     block.callback :success if table.to_s.classify.constantize.all.empty?
     block.callback :failure
   rescue ActiveRecord::NoDatabaseError
     false
+  end
+
+  def self.table_name(table)
+    table.to_s.gsub('/', '_')
   end
 end

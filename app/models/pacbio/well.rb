@@ -3,6 +3,8 @@
 module Pacbio
   # Pacbio::Well
   class Well < ApplicationRecord
+    include Uuidable
+
     enum sequencing_mode: %w[CLR CCS]
 
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
@@ -22,7 +24,7 @@ module Pacbio
     end
 
     def summary
-      "#{library.sample.name},#{comment}"
+      "#{library.request.sample_name},#{comment}"
     end
 
     def generate_ccs_data

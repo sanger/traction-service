@@ -10,26 +10,39 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_08_153719) do
+ActiveRecord::Schema.define(version: 2019_07_12_072210) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
     t.string "library_kit_barcode"
     t.integer "fragment_size"
+    t.string "uuid"
     t.integer "pacbio_tag_id"
-    t.integer "sample_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "pacbio_request_id"
+    t.index ["pacbio_request_id"], name: "index_pacbio_libraries_on_pacbio_request_id"
     t.index ["pacbio_tag_id"], name: "index_pacbio_libraries_on_pacbio_tag_id"
-    t.index ["sample_id"], name: "index_pacbio_libraries_on_sample_id"
   end
 
   create_table "pacbio_plates", force: :cascade do |t|
     t.integer "pacbio_run_id"
+    t.string "uuid"
+    t.string "barcode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["pacbio_run_id"], name: "index_pacbio_plates_on_pacbio_run_id"
+  end
+
+  create_table "pacbio_requests", force: :cascade do |t|
+    t.string "library_type"
+    t.integer "estimate_of_gb_required"
+    t.integer "number_of_smrt_cells"
+    t.string "cost_code"
+    t.integer "external_study_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "pacbio_runs", force: :cascade do |t|
@@ -39,6 +52,7 @@ ActiveRecord::Schema.define(version: 2019_07_08_153719) do
     t.string "sequencing_kit_box_barcode"
     t.string "dna_control_complex_box_barcode"
     t.string "comments"
+    t.string "uuid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "system_name", default: 0
@@ -58,12 +72,23 @@ ActiveRecord::Schema.define(version: 2019_07_08_153719) do
     t.integer "insert_size"
     t.float "on_plate_loading_concentration"
     t.string "comment"
+    t.string "uuid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "pacbio_library_id"
     t.integer "sequencing_mode"
     t.index ["pacbio_library_id"], name: "index_pacbio_wells_on_pacbio_library_id"
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
+  end
+
+  create_table "requests", force: :cascade do |t|
+    t.integer "sample_id"
+    t.string "requestable_type"
+    t.integer "requestable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["requestable_type", "requestable_id"], name: "index_requests_on_requestable_type_and_requestable_id"
+    t.index ["sample_id"], name: "index_requests_on_sample_id"
   end
 
   create_table "samples", force: :cascade do |t|
@@ -103,13 +128,19 @@ ActiveRecord::Schema.define(version: 2019_07_08_153719) do
 
   create_table "saphyr_libraries", force: :cascade do |t|
     t.string "state"
-    t.integer "sample_id"
     t.datetime "deactivated_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "saphyr_enzyme_id"
-    t.index ["sample_id"], name: "index_saphyr_libraries_on_sample_id"
+    t.integer "saphyr_request_id"
     t.index ["saphyr_enzyme_id"], name: "index_saphyr_libraries_on_saphyr_enzyme_id"
+    t.index ["saphyr_request_id"], name: "index_saphyr_libraries_on_saphyr_request_id"
+  end
+
+  create_table "saphyr_requests", force: :cascade do |t|
+    t.integer "external_study_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "saphyr_runs", force: :cascade do |t|
