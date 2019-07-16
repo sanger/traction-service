@@ -7,10 +7,6 @@ RSpec.describe Messages, type: :model do
     let(:flowcell1)   { create(:saphyr_flowcell_with_library) }
     let(:flowcell2)   { create(:saphyr_flowcell_with_library) }
 
-    before(:all) do
-      Pipelines.configure(Rails.configuration.pipelines)
-    end
-
     it 'will publish a single message' do
       expect(BrokerHandle).to receive(:publish).once
       Messages.publish(flowcell1, Pipelines.saphyr.message)

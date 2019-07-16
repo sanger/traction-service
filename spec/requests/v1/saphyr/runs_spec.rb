@@ -2,10 +2,6 @@ require "rails_helper"
 
 RSpec.describe 'RunsController', type: :request do
 
-  before(:all) do
-    Pipelines.configure(Rails.configuration.pipelines)
-  end
-
   context '#get' do
     let!(:run1) { create(:saphyr_run, state: 'pending', name: 'run1') }
     let!(:run2) { create(:saphyr_run, state: 'started') }

@@ -1,11 +1,7 @@
 require "rails_helper"
 
 RSpec.describe 'FlowcellsController', type: :request do
-
-  before(:all) do
-    Pipelines.configure(Rails.configuration.pipelines)
-  end
-
+  
   let(:library) { create(:saphyr_library) }
 
   context '#create' do

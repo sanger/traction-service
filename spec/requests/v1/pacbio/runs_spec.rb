@@ -26,14 +26,14 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][0]['attributes']['binding_kit_box_barcode']).to eq(run1.binding_kit_box_barcode)
       expect(json['data'][0]["attributes"]["sequencing_kit_box_barcode"]).to eq(run1.sequencing_kit_box_barcode)
       expect(json['data'][0]['attributes']['dna_control_complex_box_barcode']).to eq(run1.dna_control_complex_box_barcode)
-      expect(json['data'][0]['attributes']['sequencing_mode']).to eq(run1.sequencing_mode)
+      expect(json['data'][0]['attributes']['system_name']).to eq(run1.system_name)
 
       expect(json['data'][1]['attributes']['name']).to eq(run2.name)
       expect(json['data'][1]['attributes']['template_prep_kit_box_barcode']).to eq(run2.template_prep_kit_box_barcode)
       expect(json['data'][1]['attributes']['binding_kit_box_barcode']).to eq(run2.binding_kit_box_barcode)
       expect(json['data'][1]["attributes"]["sequencing_kit_box_barcode"]).to eq(run2.sequencing_kit_box_barcode)
       expect(json['data'][1]['attributes']['dna_control_complex_box_barcode']).to eq(run2.dna_control_complex_box_barcode)
-      expect(json['data'][1]['attributes']['sequencing_mode']).to eq(run2.sequencing_mode)
+      expect(json['data'][1]['attributes']['system_name']).to eq(run2.system_name)
     end
 
     it 'returns the correct relationships' do
@@ -80,7 +80,7 @@ RSpec.describe 'RunsController', type: :request do
         expect(run.binding_kit_box_barcode).to be_present
         expect(run.sequencing_kit_box_barcode).to be_present
         expect(run.dna_control_complex_box_barcode).to be_present
-        expect(run.sequencing_mode).to be_present
+        expect(run.system_name).to be_present
       end
 
     end
@@ -113,7 +113,6 @@ RSpec.describe 'RunsController', type: :request do
         expect(errors['binding_kit_box_barcode']).to be_present
         expect(errors['sequencing_kit_box_barcode']).to be_present
         expect(errors['dna_control_complex_box_barcode']).to be_present
-        expect(errors['sequencing_mode']).to be_present
       end
 
     end
@@ -208,7 +207,7 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data']['attributes']['binding_kit_box_barcode']).to eq(run.binding_kit_box_barcode)
       expect(json['data']["attributes"]["sequencing_kit_box_barcode"]).to eq(run.sequencing_kit_box_barcode)
       expect(json['data']['attributes']['dna_control_complex_box_barcode']).to eq(run.dna_control_complex_box_barcode)
-      expect(json['data']['attributes']['sequencing_mode']).to eq(run.sequencing_mode)
+      expect(json['data']['attributes']['system_name']).to eq(run.system_name)
     end
 
     it 'returns the correct relationships' do
@@ -269,4 +268,20 @@ RSpec.describe 'RunsController', type: :request do
     end
   end
 
+  context '#sample_sheet' do
+    let(:well1)   { create(:pacbio_well_with_library, sequencing_mode: 'CCS') }
+    let(:well2)   { create(:pacbio_well_with_library, sequencing_mode: 'CLR') }
+    let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
+    let(:run)     { create(:pacbio_run, plate: plate) }
+
+    it 'returns the correct status' do
+      get "#{v1_pacbio_run_sample_sheet_path(run)}", headers: json_api_headers
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'returns a CSV file' do
+      get "#{v1_pacbio_run_sample_sheet_path(run)}", headers: json_api_headers
+      expect(response.header['Content-Type']).to include 'text/csv'
+    end
+  end
 end
