@@ -26,20 +26,14 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     expect(create(:pacbio_run).uuid).to be_present
   end
 
+  it 'must have a system_name default' do
+    expect(create(:pacbio_run).system_name).to eq 'Sequel II'
+  end
+
   it 'can have a plate' do
     plate = create(:pacbio_plate)
     run = create(:pacbio_run, plate: plate)
     expect(run.plate).to eq(plate)
-  end
-
-  context 'sequencing mode' do
-    it 'must be present' do
-      expect(build(:pacbio_run, sequencing_mode: nil)).to_not be_valid
-    end
-
-    it 'must include the correct options' do
-      expect(Pacbio::Run.sequencing_modes.keys).to eq(['CLR', 'CCS'])
-    end
   end
 
   it 'can have comments' do
@@ -48,5 +42,30 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     run = create(:pacbio_run, plate: plate)
     expect(run.comments).to eq("#{wells.first.summary};#{wells[1].summary}")
   end
-  
+
+  context '#generate_sample_sheet' do
+    
+    it 'must call CSVGenerator' do
+      well1 = create(:pacbio_well_with_library, sequencing_mode: 'CCS')
+      well2 = create(:pacbio_well_with_library, sequencing_mode: 'CLR')
+
+      plate = create(:pacbio_plate, wells: [well1, well2])
+      run = create(:pacbio_run, plate: plate)
+
+      expect_any_instance_of(::CSVGenerator).to receive(:generate_sample_sheet)
+      run.generate_sample_sheet
+    end
+
+    it 'must return a CSV' do
+      well1 = create(:pacbio_well_with_library, sequencing_mode: 'CCS')
+      well2 = create(:pacbio_well_with_library, sequencing_mode: 'CLR')
+
+      plate = create(:pacbio_plate, wells: [well1, well2])
+      run = create(:pacbio_run, plate: plate)
+
+      sample_sheet = run.generate_sample_sheet
+      expect(sample_sheet.class).to eq CSV
+    end
+  end
+
 end

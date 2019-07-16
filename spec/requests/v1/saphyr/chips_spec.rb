@@ -2,10 +2,6 @@ require "rails_helper"
 
 RSpec.describe 'ChipsController', type: :request do
 
-  before(:all) do
-    Pipelines.configure(Rails.configuration.pipelines)
-  end
-
   let(:barcode) { 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX-2' }
 
   context '#create' do

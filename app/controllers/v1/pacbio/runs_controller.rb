@@ -28,6 +28,16 @@ module V1
         render json: { data: { errors: e.message } }, status: :unprocessable_entity
       end
 
+      # endpoint generating a sample sheet for a Pacbio::Run
+      def sample_sheet
+        run = ::Pacbio::Run.find(params[:run_id])
+        csv = run.generate_sample_sheet
+
+        send_data csv,
+                  type: 'text/csv; charset=utf-8; header=present',
+                  disposition: 'attachment; filename=sample_sheet.csv'
+      end
+
       private
 
       def run
@@ -39,7 +49,7 @@ module V1
                                                    :binding_kit_box_barcode,
                                                    :sequencing_kit_box_barcode,
                                                    :dna_control_complex_box_barcode,
-                                                   :sequencing_mode)
+                                                   :system_name)
       end
 
       def render_json(status)
