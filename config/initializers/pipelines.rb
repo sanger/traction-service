@@ -2,4 +2,4 @@
 
 require Rails.root.join('app', 'pipelines', 'pipelines')
 
-Pipelines.configure(Rails.configuration.pipelines) unless Rails.env.test?
+Pipelines.configure(Rails.configuration.pipelines)
