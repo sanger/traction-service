@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require 'saphyr/saphyr'
+
 module Saphyr
-  # Request
+  # Saphyr::Request
   class Request < ApplicationRecord
     include Pipelines::Requestor::Model
   end
