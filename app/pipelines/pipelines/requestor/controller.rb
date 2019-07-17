@@ -2,18 +2,23 @@
 
 module Pipelines
   module Requestor
-    # Controller - behaviour for pipeline requests factory
+    # Controller - behaviour for pipeline requests controller
     module Controller
       extend ActiveSupport::Concern
 
       # Model ClassMethods
       module ClassMethods
-        def module_path
-          @module_path ||= name.to_s.deconstantize
+
+        # @return [String] the name of the parent module
+        #  e.g. +parent(Pacbio::Controller) = 'Pacbio'+
+        def parent
+          @parent ||= name.to_s.deconstantize
         end
 
+        # @return [String] the name of the parent module
+        #  e.g. +parent(Pacbio::Controller) = 'Pacbio'+
         def pipeline
-          @pipeline ||= module_path.demodulize
+          @pipeline ||= parent.demodulize
         end
 
         def pipeline_const
@@ -29,7 +34,7 @@ module Pipelines
         end
 
         def resource_model
-          "#{module_path}::RequestResource".constantize
+          "#{parent}::RequestResource".constantize
         end
       end
 
