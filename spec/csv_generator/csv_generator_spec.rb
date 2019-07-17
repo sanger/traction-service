@@ -1,6 +1,7 @@
 require "rails_helper"
 
 RSpec.describe CSVGenerator, type: :model do
+  after(:each) { File.delete('sample_sheet.csv') }
 
   context '#generate_sample_sheet' do
     let(:well1)   { create(:pacbio_well_with_library, sequencing_mode: 'CCS') }
