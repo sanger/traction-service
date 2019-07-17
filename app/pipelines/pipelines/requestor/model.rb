@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'saphyr/saphyr'
-require 'pacbio/pacbio'
-
 module Pipelines
   module Requestor
     # Model - behaviour for pipeline requests model
