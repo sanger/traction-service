@@ -2,8 +2,6 @@
 
 # Sample
 class Sample < ApplicationRecord
-  include Material
-
   validates :name, :external_id, :species, presence: true
 
   validates :name, :external_id, :species, presence: true
