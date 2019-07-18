@@ -3,6 +3,12 @@
 module Pipelines
   module Requestor
     # Model - behaviour for pipeline requests model
+    # includes various bits of behaviour in the model:
+    # * the Material concern
+    # * request association
+    # * sample association
+    # * delegation of sample attributes readers
+    # * validation to check that each of the request attributes is present
     module Model
       extend ActiveSupport::Concern
 
