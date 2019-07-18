@@ -57,10 +57,10 @@ RSpec.describe 'TubesController', type: :request do
 
     describe 'filter by barcode' do
 
-      let(:sample_tubes) { create_list(:tube, 2)}
+      let(:tubes) { create_list(:tube, 2)}
       let(:library_tubes) { create_list(:tube_with_saphyr_library, 2)}
       let(:other_tubes) {create_list(:tube, 5)}
-      let(:barcodes) { sample_tubes.pluck(:barcode).concat(library_tubes.pluck(:barcode))}
+      let(:barcodes) { tubes.pluck(:barcode).concat(library_tubes.pluck(:barcode))}
 
       skip 'returns the correct tubes' do
         get "#{v1_tubes_path}?filter[barcode]=#{barcodes.join(',')}", headers: json_api_headers
