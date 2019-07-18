@@ -9,13 +9,13 @@ namespace :dummy_runs do
     factory.save
 
     Saphyr::Request.all.each_with_index do |request, i|
-      library = Saphyr::Library.create(request: request, saphyr_enzyme_id: i + 1, tube: Tube.create)
-      chip = Saphyr::Chip.create(barcode: 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX')
+      library = Saphyr::Library.create!(request: request, saphyr_enzyme_id: i + 1, tube: Tube.create)
+      chip = Saphyr::Chip.create!(barcode: 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX')
       (1..2).each do |n|
         chip.flowcells << Saphyr::Flowcell.create(position: n, library: library)
       end
       chip.save
-      Saphyr::Run.create(chip: chip)
+      Saphyr::Run.create!(chip: chip)
     end
 
     # Pacbio
@@ -27,14 +27,14 @@ namespace :dummy_runs do
     factory = Pacbio::RequestFactory.new(attributes)
     factory.save
 
-    tag = Pacbio::Tag.create(oligo: 'ATGC')
+    tag = Pacbio::Tag.create!(oligo: 'ATGC')
 
     Pacbio::Request.all.each_with_index do |request, i|
-      library = Pacbio::Library.create!(request: request, volume: 1, concentration: 1, library_kit_barcode: 'LK12345', fragment_size: 100, tag: tag)
-      run = Pacbio::Run.create(name: "Run#{i}", template_prep_kit_box_barcode: "TPK#{i}", binding_kit_box_barcode: "BKB#{i}",
+      library = Pacbio::Library.create!(request: request, volume: 1, concentration: 1, library_kit_barcode: 'LK12345', fragment_size: 100, tag: tag, tube: Tube.create)
+      run = Pacbio::Run.create!(name: "Run#{i}", template_prep_kit_box_barcode: "TPK#{i}", binding_kit_box_barcode: "BKB#{i}",
                                sequencing_kit_box_barcode: "SKB#{i}", dna_control_complex_box_barcode: "DCCB#{i}")
-      plate = Pacbio::Plate.create(run: run, barcode: "PLATE-#{i}")
-      Pacbio::Well.create(plate: plate, library: library, movie_time: 1, insert_size: 10, on_plate_loading_concentration: 1,
+      plate = Pacbio::Plate.create!(run: run, barcode: "PLATE-#{i}")
+      Pacbio::Well.create!(plate: plate, library: library, movie_time: 1, insert_size: 10, on_plate_loading_concentration: 1,
                           row: i, column: i, sequencing_mode: 'CLR')
     end
   end
