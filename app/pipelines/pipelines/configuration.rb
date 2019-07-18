@@ -27,7 +27,8 @@ module Pipelines
       attr_reader :children
 
       # builds a configuration item object
-      # This is a recursive function for each child that is a hash it will create a new Configuration::Item
+      # This is a recursive function for each child that is a hash it will
+      # create a new Configuration::Item
       # This creates a chain of instance methods for each item in the hash
       # It also creates an attribute reader of the original hash.
       # @param children [Hash] list of all the pipelines with their respective configuration
