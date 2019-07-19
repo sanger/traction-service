@@ -31,7 +31,7 @@ module V1
       private
 
       def params_names
-        params.require(:data)['attributes'].permit(:oligo)
+        params.require(:data)['attributes'].permit(:oligo, :group_id)
       end
 
       def tag

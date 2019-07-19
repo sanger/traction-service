@@ -53,6 +53,18 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
       expect(key[:tag_sequence]).to eq(well.library.tag.oligo)
     end
 
+    it 'must have a tag group id' do
+      expect(key[:tag_set_id_lims]).to eq(well.library.tag.group_id)
+    end
+
+    it 'must have a tag identifier' do
+      expect(key[:tag_identifier]).to eq(well.library.tag.id)
+    end
+
+    it 'must have a tag set name' do
+      expect(key[:tag_set_name]).to eq('pacbio')
+    end
+
     it 'must have a plate barcode' do
       expect(key[:plate_barcode]).to eq(well.plate.barcode)
     end

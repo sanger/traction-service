@@ -3,6 +3,6 @@
 module Pacbio
   # Pacbio::Tag
   class Tag < ApplicationRecord
-    validates :oligo, presence: true
+    validates :oligo, :group_id, presence: true
   end
 end
