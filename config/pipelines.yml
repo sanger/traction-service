@@ -57,6 +57,15 @@ default: &default
         tag_sequence:
           type: :model
           value: library.tag.oligo
+        tag_set_id_lims:
+          type: :model
+          value: library.tag.group_id
+        tag_identifier:
+          type: :model
+          value: library.tag.id
+        tag_set_name:
+          type: :string
+          value: pacbio
         plate_barcode:
           type: :model
           value: plate.barcode
