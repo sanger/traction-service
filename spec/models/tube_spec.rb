@@ -3,8 +3,7 @@ require "rails_helper"
 RSpec.describe Tube, type: :model do
   context 'on creation' do
     it 'should have a barcode' do
-      sample = create(:sample)
-      tube = create(:tube, material: sample)
+      tube = create(:tube)
       expect(tube.barcode).to eq "TRAC-#{tube.id}"
     end
   end
@@ -22,11 +21,11 @@ RSpec.describe Tube, type: :model do
         expect(build(:tube, material: nil)).not_to be_valid
       end
 
-      it 'can have a sample as its material' do
-        sample = create(:sample)
-        tube_with_sample = create(:tube, material: sample)
-        expect(tube_with_sample).to be_valid
-        expect(tube_with_sample.material).to eq sample
+      it 'can have a request as its material' do
+        request = create(:saphyr_request)
+        tube_with_request = create(:tube, material: request)
+        expect(tube_with_request).to be_valid
+        expect(tube_with_request.material).to eq request
       end
 
       it 'can have a library as its material' do

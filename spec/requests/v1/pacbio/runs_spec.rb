@@ -269,6 +269,8 @@ RSpec.describe 'RunsController', type: :request do
   end
 
   context '#sample_sheet' do
+    after(:each) { File.delete('sample_sheet.csv') }
+
     let(:well1)   { create(:pacbio_well_with_library, sequencing_mode: 'CCS') }
     let(:well2)   { create(:pacbio_well_with_library, sequencing_mode: 'CLR') }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }

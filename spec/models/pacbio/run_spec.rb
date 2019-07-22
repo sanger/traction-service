@@ -44,7 +44,8 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
   end
 
   context '#generate_sample_sheet' do
-    
+    after(:all) { File.delete('sample_sheet.csv') }
+
     it 'must call CSVGenerator' do
       well1 = create(:pacbio_well_with_library, sequencing_mode: 'CCS')
       well2 = create(:pacbio_well_with_library, sequencing_mode: 'CLR')
