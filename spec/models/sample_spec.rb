@@ -4,10 +4,6 @@ require 'rails_helper'
 
 RSpec.describe Sample, type: :model do
 
-  context 'polymorphic behavior' do
-    it_behaves_like "material"
-  end
-
   context 'on creation' do
     it 'should be active' do
       expect(create(:sample)).to be_active

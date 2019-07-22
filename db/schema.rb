@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_12_072210) do
+ActiveRecord::Schema.define(version: 2019_07_19_112213) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
@@ -40,7 +40,7 @@ ActiveRecord::Schema.define(version: 2019_07_12_072210) do
     t.integer "estimate_of_gb_required"
     t.integer "number_of_smrt_cells"
     t.string "cost_code"
-    t.integer "external_study_id"
+    t.string "external_study_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -62,6 +62,7 @@ ActiveRecord::Schema.define(version: 2019_07_12_072210) do
     t.string "oligo"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "group_id"
   end
 
   create_table "pacbio_wells", force: :cascade do |t|
@@ -138,7 +139,7 @@ ActiveRecord::Schema.define(version: 2019_07_12_072210) do
   end
 
   create_table "saphyr_requests", force: :cascade do |t|
-    t.integer "external_study_id"
+    t.string "external_study_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
