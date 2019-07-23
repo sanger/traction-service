@@ -39,8 +39,8 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
       expect(key[:plate_barcode]).to eq(plate.barcode)
     end
 
-    it 'must have a plate uuid' do
-      expect(key[:plate_uuid]).to eq(plate.uuid)
+    it 'must have a plate uuid lims' do
+      expect(key[:plate_uuid_lims]).to eq(plate.uuid)
     end
 
     it 'must have a last_updated field' do
