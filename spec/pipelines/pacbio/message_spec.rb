@@ -4,9 +4,7 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
 
   let(:config)        { Pipelines.configure(Rails.configuration.pipelines) }
   let(:pacbio_config) { config.pacbio }
-  # let(:well)          { create(:pacbio_well_with_library) }
   let(:plate)         { create(:pacbio_plate_with_wells)}
-  # let(:message)       { Messages::Message.new(object: well, configuration: pacbio_config.message) }
   let(:message)       { Messages::Message.new(object: plate, configuration: pacbio_config.message) }
 
   it 'should have a lims' do
