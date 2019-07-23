@@ -52,7 +52,7 @@ default: &default
         plate_barcode:
           type: :model
           value: barcode
-        plate_uuid:
+        plate_uuid_lims:
           type: :model
           value: uuid
         wells:
