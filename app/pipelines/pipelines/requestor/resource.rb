@@ -14,7 +14,7 @@ module Pipelines
         # Something to keey an eye on.
         # @return [String] the name of the pipeline e.g. 'Pacbio'
         def pipeline
-          @pipeline ||= parent_name.demodulize
+          @pipeline ||= parent_name.demodulize # 'Saphyr'
         end
 
         # @return [Constant] the constant of the pipeline e.g. Pacbio
@@ -31,7 +31,27 @@ module Pipelines
       included do
         model_name request_model
 
-        attributes(*pipeline_const.request_attributes, :sample_name)
+        attributes(*pipeline_const.request_attributes, :sample_name, :barcode)
+
+        def barcode
+          @model&.tube&.barcode
+        end
+
+        # def fetchable_fields
+        #   if (@model.tube.pipeline == Saphyr)
+        #     super + Saphyr.request_attributes
+        #   else
+        #     super
+        #   end
+        # end
+
+        # def request_attributes
+        #   @model.class.parent_name.constantize.request_attributes.reduce({}) do |memo, val|
+        #     memo[val] = @model.send(val)
+        #     memo
+        #   end
+        # end
+
       end
     end
   end
