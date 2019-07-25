@@ -25,5 +25,13 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
   it 'will have a uuid' do
     expect(create(:pacbio_library).uuid).to be_present
   end
+
+  context 'wells' do
+    it 'can have one or more' do
+      library = create(:pacbio_library)
+      library.wells << create_list(:pacbio_well, 5)
+      expect(library.wells.count).to eq(5)
+    end
+  end
   
 end
