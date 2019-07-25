@@ -12,6 +12,9 @@ module Pacbio
 
     belongs_to :library, foreign_key: :pacbio_library_id, optional: true, inverse_of: :wells
 
+    has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_well_id
+    has_many :libraries, class_name: 'Pacbio::Library', through: :well_libraries
+
     validates :movie_time, :insert_size, :on_plate_loading_concentration,
               :row, :column, presence: true
     validates :movie_time,

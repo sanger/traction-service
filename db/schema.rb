@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_19_112213) do
+ActiveRecord::Schema.define(version: 2019_07_24_105941) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
@@ -33,6 +33,15 @@ ActiveRecord::Schema.define(version: 2019_07_19_112213) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["pacbio_run_id"], name: "index_pacbio_plates_on_pacbio_run_id"
+  end
+
+  create_table "pacbio_request_libraries", force: :cascade do |t|
+    t.integer "pacbio_request_id"
+    t.integer "pacbio_library_id"
+    t.integer "tag_id"
+    t.index ["pacbio_library_id"], name: "index_pacbio_request_libraries_on_pacbio_library_id"
+    t.index ["pacbio_request_id"], name: "index_pacbio_request_libraries_on_pacbio_request_id"
+    t.index ["tag_id"], name: "index_pacbio_request_libraries_on_tag_id"
   end
 
   create_table "pacbio_requests", force: :cascade do |t|
@@ -63,6 +72,13 @@ ActiveRecord::Schema.define(version: 2019_07_19_112213) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "group_id"
+  end
+
+  create_table "pacbio_well_libraries", force: :cascade do |t|
+    t.integer "pacbio_well_id"
+    t.integer "pacbio_library_id"
+    t.index ["pacbio_library_id"], name: "index_pacbio_well_libraries_on_pacbio_library_id"
+    t.index ["pacbio_well_id"], name: "index_pacbio_well_libraries_on_pacbio_well_id"
   end
 
   create_table "pacbio_wells", force: :cascade do |t|
@@ -148,6 +164,14 @@ ActiveRecord::Schema.define(version: 2019_07_19_112213) do
     t.integer "state", default: 0
     t.string "name"
     t.datetime "deactivated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.string "oligo"
+    t.integer "group_id"
+    t.string "set_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
