@@ -12,5 +12,9 @@ FactoryBot.define do
     factory :pacbio_well_with_library do
       library { create(:pacbio_library) }
     end
+
+    factory :pacbio_well_with_libraries do
+      libraries { create_list(:pacbio_library, 5) }
+    end
   end
 end
