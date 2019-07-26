@@ -8,15 +8,13 @@ class Tube < ApplicationRecord
 
   scope :by_barcode, ->(*barcodes) { where(barcode: barcodes) }
 
-  def pipeline
-    material_type.deconstantize.constantize
-  end
+  scope :saphyr_tubes, -> { where('material_type LIKE ?', "Saphyr::%") }
+  scope :pacbio_tubes, -> { where('material_type LIKE ?', "Pacbio::%") }
 
   private
 
   def generate_barcode
     update(barcode: "TRAC-#{id}")
   end
-
 
 end

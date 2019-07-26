@@ -3,12 +3,17 @@ require "rails_helper"
 RSpec.describe 'TubesController', type: :request do
 
   context '#get' do
-    it 'returns a list of tubes' do
-      create_list(:tube, 2)
-      get v1_tubes_path, headers: json_api_headers
-      expect(response).to have_http_status(:success)
-      json = ActiveSupport::JSON.decode(response.body)
-      expect(json['data'].length).to eq(2)
+    context 'saphyr tubes' do
+      let!(:saphyr_library_tubes) { create_list(:tube_with_saphyr_library, 2)}
+      let!(:pacbio_library_tubes) { create_list(:tube_with_pacbio_library, 3)}
+
+      it 'returns a list of saphyr tubes' do
+        get v1_saphyr_tubes_path, headers: json_api_headers
+        debugger
+        expect(response).to have_http_status(:success)
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data'].length).to eq(2)
+      end
     end
 
     context 'when material is a request' do
@@ -18,18 +23,14 @@ RSpec.describe 'TubesController', type: :request do
       let!(:tube2) { create(:tube, material: request2)}
 
       it 'returns the correct attributes' do
-        get v1_tubes_path, headers: json_api_headers
+        get v1_saphyr_tubes_path, headers: json_api_headers
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data'][0]['attributes']['barcode']).to eq(tube1.barcode)
+        expect(json['data'].length).to eq 1
+        expect(json['data'][0]['attributes']['barcode']).to eq(tube2.barcode)
         expect(json['data'][0]['relationships']['material']).to be_present
         expect(json['data'][0]['relationships']['material']['data']['type']).to eq("requests")
-        expect(json['data'][0]['relationships']['material']['data']['id']).to eq(tube1.material.id.to_s)
-
-        expect(json['data'][1]['attributes']['barcode']).to eq(tube2.barcode)
-        expect(json['data'][1]['relationships']['material']).to be_present
-        expect(json['data'][1]['relationships']['material']['data']['type']).to eq("requests")
-        expect(json['data'][1]['relationships']['material']['data']['id']).to eq(tube2.material.id.to_s)
+        expect(json['data'][0]['relationships']['material']['data']['id']).to eq(tube2.material.id.to_s)
       end
     end
 
@@ -40,7 +41,7 @@ RSpec.describe 'TubesController', type: :request do
       let!(:tube2) { create(:tube, material: library2)}
 
       skip 'returns the correct attributes' do
-        get v1_tubes_path, headers: json_api_headers
+        get v1_saphyr_tubes_path, headers: json_api_headers
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data'][0]['attributes']['barcode']).to eq(tube1.barcode)
@@ -61,7 +62,7 @@ RSpec.describe 'TubesController', type: :request do
 
         it 'returns the correct tube' do
           barcode = tubes_with_request[0].barcode
-          get "#{v1_tubes_path}?filter[barcode]=#{barcode}", headers: json_api_headers
+          get "#{v1_saphyr_tubes_path}?filter[barcode]=#{barcode}", headers: json_api_headers
           expect(response).to have_http_status(:success)
           json = ActiveSupport::JSON.decode(response.body)
           expect(json['data'].length).to eq(1)
@@ -74,7 +75,7 @@ RSpec.describe 'TubesController', type: :request do
 
         it 'returns the correct tubes' do
           barcodes = tubes.map(&:barcode)[0..1]
-          get "#{v1_tubes_path}?filter[barcode]=#{barcodes.join(',')}", headers: json_api_headers
+          get "#{v1_saphyr_tubes_path}?filter[barcode]=#{barcodes.join(',')}", headers: json_api_headers
           expect(response).to have_http_status(:success)
           json = ActiveSupport::JSON.decode(response.body)
           expect(json['data'].length).to eq(barcodes.length)
@@ -90,7 +91,7 @@ RSpec.describe 'TubesController', type: :request do
 
         it 'returns the request data' do
           tube = tubes_with_request[0]
-          get "#{v1_tubes_path}?filter[barcode]=#{tube.barcode}&include=material", headers: json_api_headers
+          get "#{v1_saphyr_tubes_path}?filter[barcode]=#{tube.barcode}&include=material", headers: json_api_headers
 
           expect(response).to have_http_status(:success)
           json = ActiveSupport::JSON.decode(response.body)
