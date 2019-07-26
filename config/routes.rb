@@ -5,7 +5,6 @@ Rails.application.routes.draw do
 
   namespace :v1 do
     jsonapi_resources :samples, only: %i[index create]
-    jsonapi_resources :tubes,   only: %i[index]
 
     namespace :saphyr do
       resources :runs,          only: %i[index create show update destroy]
@@ -14,6 +13,7 @@ Rails.application.routes.draw do
       resources :libraries,     only: %i[index create show destroy]
       resources :enzymes,       only: %i[index]
       resources :requests,      only: %i[index create update destroy]
+      jsonapi_resources :tubes,   only: %i[index]
     end
 
     namespace :pacbio do
@@ -26,6 +26,7 @@ Rails.application.routes.draw do
       resources :libraries,     only: %i[index create destroy]
       resources :tags,          only: %i[index create update destroy]
       resources :requests,      only: %i[index create update destroy]
+      jsonapi_resources :tubes,   only: %i[index]
     end
   end
 end

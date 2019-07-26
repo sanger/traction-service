@@ -52,4 +52,25 @@ RSpec.describe Tube, type: :model do
       expect(Tube.by_barcode('DODGY-BARCODE')).to be_empty
     end
   end
+
+  context 'scope' do
+    context 'saphyr_tubes' do
+      let!(:saphyr_library_tubes) { create_list(:tube_with_saphyr_library, 2)}
+      let!(:pacbio_library_tubes) { create_list(:tube_with_pacbio_library, 3)}
+
+      it 'should return only tubes with saphyr materials' do
+        expect(Tube.saphyr_tubes.length).to eq 2
+      end
+    end
+
+    context 'pacbio_tubes' do
+      let!(:saphyr_library_tubes) { create_list(:tube_with_saphyr_library, 2)}
+      let!(:pacbio_library_tubes) { create_list(:tube_with_pacbio_library, 3)}
+
+      it 'should return only tubes with saphyr materials' do
+        expect(Tube.pacbio_tubes.length).to eq 3
+      end
+    end
+
+  end
 end
