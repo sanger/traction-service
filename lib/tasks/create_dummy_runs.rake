@@ -41,6 +41,7 @@ namespace :dummy_runs do
 
   task destroy: :environment do |_t|
     [Sample, Request, Pacbio::Request, Pacbio::Library, Pacbio::Run, Pacbio::Plate, Pacbio::Well,
-     Pacbio::Tag, Saphyr::Request, Saphyr::Library, Saphyr::Flowcell, Saphyr::Chip, Saphyr::Run].each(&:delete_all)
+     Pacbio::Tag, Saphyr::Request, Saphyr::Library, Saphyr::Flowcell, Saphyr::Chip, Saphyr::Run,
+      Pacbio::WellLibrary, Pacbio::RequestLibrary].each(&:delete_all)
   end
 end

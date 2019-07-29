@@ -33,5 +33,21 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
       expect(library.wells.count).to eq(5)
     end
   end
+
+  context 'wells' do
+    it 'can have one or more' do
+      library = create(:pacbio_library)
+      library.wells << create_list(:pacbio_well, 5)
+      expect(library.wells.count).to eq(5)
+    end
+  end
+
+  context 'requests' do
+    it 'can have one or more' do
+      library = create(:pacbio_library)
+      create_list(:pacbio_request_library, 5, request: create(:pacbio_request), library: library, tag: create(:tag))
+      expect(library.requests.count).to eq(5)
+    end
+  end
   
 end
