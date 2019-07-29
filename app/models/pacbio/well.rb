@@ -9,7 +9,6 @@ module Pacbio
 
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
                        inverse_of: :wells
-
     belongs_to :library, foreign_key: :pacbio_library_id, optional: true, inverse_of: :wells
 
     has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_well_id

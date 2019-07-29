@@ -6,16 +6,16 @@ module Saphyr
   class Library < ApplicationRecord
     include Material
 
-    before_create :set_state
     belongs_to :request, class_name: 'Saphyr::Request',
                          foreign_key: 'saphyr_request_id', inverse_of: false
-
     belongs_to :enzyme, class_name: 'Saphyr::Enzyme', foreign_key: 'saphyr_enzyme_id',
                         inverse_of: :libraries
 
     has_many :flowcells, class_name: 'Saphyr::Flowcell',
                          foreign_key: 'saphyr_library_id', inverse_of: :library,
                          dependent: :nullify
+
+    before_create :set_state
 
     scope :active, -> { where(deactivated_at: nil) }
 
