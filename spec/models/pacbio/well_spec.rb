@@ -92,4 +92,17 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
+  context 'request libraries' do
+    it 'can have one or more' do
+      well = create(:pacbio_well)
+      tag = create(:tag)
+
+      request_libraries = create_list(:pacbio_request_library, 2)
+      well.libraries << request_libraries.collect(&:library)
+
+      expect(well.request_libraries.length).to eq(2)
+
+    end
+  end
+
 end

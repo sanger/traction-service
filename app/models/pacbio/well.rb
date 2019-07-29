@@ -33,5 +33,9 @@ module Pacbio
     def generate_ccs_data
       sequencing_mode == 'CCS'
     end
+
+    def request_libraries
+      libraries.collect(&:request_libraries).flatten
+    end
   end
 end

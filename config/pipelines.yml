@@ -67,17 +67,17 @@ default: &default
               value: uuid
             samples:
               type: :array
-              value: library
+              value: request_libraries
               children:
                 cost_code:
                   type: :model
                   value: request.cost_code
                 pac_bio_library_tube_id_lims:
                   type: :model
-                  value: id
+                  value: library.id
                 pac_bio_library_tube_uuid:
                   type: :model
-                  value: uuid
+                  value: library.uuid
                 pac_bio_library_tube_name:
                   type: :model
                   value: request.sample_name
@@ -97,8 +97,8 @@ default: &default
                   type: :model
                   value: tag.id
                 tag_set_name:
-                  type: :string
-                  value: pacbio
+                  type: :model
+                  value: tag.set_name
     sample_sheet:
       columns:
         System Name:
