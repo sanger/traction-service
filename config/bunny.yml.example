@@ -10,8 +10,8 @@ default: &default
   routing_key: #
 
 development:
-  enabled: false
   <<: *default
+  enabled: false
 
 test:
   enabled: false
