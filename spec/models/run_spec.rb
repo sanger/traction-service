@@ -95,8 +95,13 @@ RSpec.describe Run, type: :model do
   end
 
   context 'name' do
-    it 'defaults to id' do
+    it 'defaults to id when name is null' do
       run = create(:run)
+      expect(run.name).to eq(run.id)
+    end
+
+    it 'defaults to id when name is an empty string' do
+      run = create(:run, name: '')
       expect(run.name).to eq(run.id)
     end
 
