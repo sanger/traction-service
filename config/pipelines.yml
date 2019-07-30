@@ -112,7 +112,7 @@ default: &default
           value: position
         Sample Name:
           type: :model
-          value: library.request.sample_name
+          value: sample_names
         Movie Time per SMRT Cell (hours):
           type: :model
           value: movie_time

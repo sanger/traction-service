@@ -4,7 +4,5 @@ FactoryBot.define do
     concentration { 2.222 }
     library_kit_barcode { 'LK1234567' }
     fragment_size { 100 }
-    tag { create(:pacbio_tag) }
-    request { create(:pacbio_request) }
   end
 end

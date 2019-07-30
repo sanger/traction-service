@@ -55,8 +55,8 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
   end
 
   it 'can have a summary' do
-    well = create(:pacbio_well_with_library)
-    expect(well.summary).to eq("#{well.library.request.sample_name},#{well.comment}")
+    well = create(:pacbio_well_with_libraries)
+    expect(well.summary).to eq("#{well.sample_names},#{well.comment}")
   end
 
    it 'will have a uuid' do
@@ -93,15 +93,22 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
   end
 
   context 'request libraries' do
-    it 'can have one or more' do
-      well = create(:pacbio_well)
-      tag = create(:tag)
 
-      request_libraries = create_list(:pacbio_request_library, 2)
+    let(:well)                { create(:pacbio_well) }
+    let(:request_libraries)   { create_list(:pacbio_request_library, 2) }
+
+    before(:each) do
       well.libraries << request_libraries.collect(&:library)
+    end
 
+    it 'can have one or more' do
       expect(well.request_libraries.length).to eq(2)
+    end
 
+    it 'can return a list of sample names' do
+      sample_names = well.sample_names.split(',')
+      expect(sample_names.length).to eq(2)
+      expect(sample_names.first).to eq(request_libraries.first.request.sample_name)
     end
   end
 

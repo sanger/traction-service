@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_24_105941) do
+ActiveRecord::Schema.define(version: 2019_07_30_070417) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"

@@ -9,7 +9,6 @@ module Pacbio
 
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
                        inverse_of: :wells
-    belongs_to :library, foreign_key: :pacbio_library_id, optional: true, inverse_of: :wells
 
     has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_well_id
     has_many :libraries, class_name: 'Pacbio::Library', through: :well_libraries
@@ -26,7 +25,7 @@ module Pacbio
     end
 
     def summary
-      "#{library.request.sample_name},#{comment}"
+      "#{sample_names},#{comment}"
     end
 
     def generate_ccs_data
@@ -34,7 +33,11 @@ module Pacbio
     end
 
     def request_libraries
-      libraries.collect(&:request_libraries).flatten
+      @request_libraries ||= libraries.collect(&:request_libraries).flatten
+    end
+
+    def sample_names
+      @sample_names ||= request_libraries.collect(&:request).collect(&:sample_name).join(',')
     end
   end
 end
