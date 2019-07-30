@@ -1,24 +1,38 @@
-# README
+# Traction service
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+[![Build Status](https://travis-ci.org/sanger/traction-service.svg?branch=devel)](https://travis-ci.org/sanger/traction-service)
 
-Things you may want to cover:
+Rails app which exposes a RESTful API.
 
-* Ruby version
+## Requirements
 
-* System dependencies
+1. Ruby (check `.ruby-version` for the version)
+1. Bundler
 
-* Configuration
+## Installation
 
-* Database creation
+1. Install using: `bundle install`
+1. Remove the `.example` from the config files in `config` folder
 
-* Database initialization
+## Database setup
 
-* How to run the test suite
+To create the database for a fresh install: `bundle exec rails db:setup`
 
-* Services (job queues, cache servers, search engines, etc.)
+To create a few dummy runs: `bundle exec rails dummy_runs:create`
 
-* Deployment instructions
+## Messages - RabbitMQ
 
-* ...
+Sending messages is disabled by default but if you would like to test messages, install a broker
+(RabbitMQ) and update the config in `config/bunny.yml`.
+
+## Miscellaneous
+
+### Rails
+
+To see all the commands available from rails: `bundle exec rails -T`
+
+### ERD
+
+An ERD was created using the `rails-erd` gem by executing: `bundle exec erd`
+
+![ERD](erd.jpg "ERD")

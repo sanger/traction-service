@@ -95,8 +95,13 @@ RSpec.describe Saphyr::Run, type: :model, saphyr: true do
   end
 
   context 'name' do
-    it 'defaults to id' do
+    it 'defaults to id when name is null' do
       run = create(:saphyr_run)
+      expect(run.name).to eq(run.id)
+    end
+
+    it 'defaults to id when name is an empty string' do
+      run = create(:saphyr_run, name: '')
       expect(run.name).to eq(run.id)
     end
 
