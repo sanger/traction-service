@@ -16,7 +16,7 @@ module Saphyr
     end
 
     def name
-      super || id
+      super.presence || id
     end
 
     def cancel
