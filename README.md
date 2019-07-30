@@ -1,5 +1,7 @@
 # Traction service
 
+[![Build Status](https://travis-ci.org/sanger/traction-service.svg?branch=devel)](https://travis-ci.org/sanger/traction-service)
+
 Rails app which exposes a RESTful API.
 
 ## Requirements
@@ -16,6 +18,8 @@ Rails app which exposes a RESTful API.
 
 To create the database for a fresh install: `bundle exec rails db:setup`
 
+To create a few dummy runs: `bundle exec rails dummy_runs:create`
+
 ## Messages - RabbitMQ
 
 Sending messages is disabled by default but if you would like to test messages, install a broker
@@ -25,7 +29,7 @@ Sending messages is disabled by default but if you would like to test messages, 
 
 ### Rails
 
-To see all the commands available from rails: `bundle exec rails -T`co
+To see all the commands available from rails: `bundle exec rails -T`
 
 ### ERD
 
