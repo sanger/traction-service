@@ -9,12 +9,10 @@ FactoryBot.define do
     sequence(:comment) { |n| "comment#{n}" }
     sequencing_mode { 0 }
 
-    factory :pacbio_well_with_library do
-      library { create(:pacbio_library) }
-    end
-
     factory :pacbio_well_with_libraries do
-      libraries { create_list(:pacbio_library, 5) }
+      after(:create) do |well|
+        well.libraries = create_list(:pacbio_library, 5)
+      end
     end
   end
 end

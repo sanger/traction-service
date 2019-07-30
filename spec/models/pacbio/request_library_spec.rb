@@ -13,5 +13,16 @@ RSpec.describe Pacbio::RequestLibrary, type: :model, pacbio: true do
   it 'must have a tag' do
     expect(build(:pacbio_request_library, tag: nil)).to_not be_valid
   end
+
+  it 'can have a sample name' do
+    expect(create(:pacbio_request_library).sample_name).to be_present
+  end
+
+  it 'can have some tag attributes' do
+    request_library = create(:pacbio_request_library)
+    expect(request_library.tag_oligo).to be_present
+    expect(request_library.tag_group_id).to be_present
+    expect(request_library.tag_set_name).to be_present
+  end
   
 end
