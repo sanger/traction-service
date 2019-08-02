@@ -13,17 +13,15 @@ RSpec.describe CSVGenerator, type: :model do
     it 'check validity' do
       well = create(:pacbio_well)
       well.libraries = create_list(:pacbio_library, 5)
-      puts well
       expect(true).to be_truthy
     end
 
-    # TODO: multiplexing sample sheets
-    xit 'must return a csv file' do
+    it 'must return a csv file' do
       csv_file = csv.generate_sample_sheet
       expect(csv_file.class).to eq CSV
     end
 
-    xit 'must have the correct headers' do
+    it 'must have the correct headers' do
       csv_file = csv.generate_sample_sheet
       headers = CSV.read(csv_file.path)[0]
 

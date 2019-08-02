@@ -10,24 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_30_070417) do
+ActiveRecord::Schema.define(version: 2019_07_31_070350) do
 
-  create_table "pacbio_libraries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
     t.string "library_kit_barcode"
     t.integer "fragment_size"
     t.string "uuid"
-    t.bigint "pacbio_tag_id"
+    t.integer "pacbio_tag_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "pacbio_request_id"
+    t.integer "pacbio_request_id"
     t.index ["pacbio_request_id"], name: "index_pacbio_libraries_on_pacbio_request_id"
     t.index ["pacbio_tag_id"], name: "index_pacbio_libraries_on_pacbio_tag_id"
   end
 
-  create_table "pacbio_plates", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "pacbio_run_id"
+  create_table "pacbio_plates", force: :cascade do |t|
+    t.integer "pacbio_run_id"
     t.string "uuid"
     t.string "barcode"
     t.datetime "created_at", null: false
@@ -35,16 +35,16 @@ ActiveRecord::Schema.define(version: 2019_07_30_070417) do
     t.index ["pacbio_run_id"], name: "index_pacbio_plates_on_pacbio_run_id"
   end
 
-  create_table "pacbio_request_libraries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "pacbio_request_id"
-    t.bigint "pacbio_library_id"
-    t.bigint "tag_id"
+  create_table "pacbio_request_libraries", force: :cascade do |t|
+    t.integer "pacbio_request_id"
+    t.integer "pacbio_library_id"
+    t.integer "tag_id"
     t.index ["pacbio_library_id"], name: "index_pacbio_request_libraries_on_pacbio_library_id"
     t.index ["pacbio_request_id"], name: "index_pacbio_request_libraries_on_pacbio_request_id"
     t.index ["tag_id"], name: "index_pacbio_request_libraries_on_tag_id"
   end
 
-  create_table "pacbio_requests", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "pacbio_requests", force: :cascade do |t|
     t.string "library_type"
     t.integer "estimate_of_gb_required"
     t.integer "number_of_smrt_cells"
@@ -54,7 +54,7 @@ ActiveRecord::Schema.define(version: 2019_07_30_070417) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "pacbio_runs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "pacbio_runs", force: :cascade do |t|
     t.string "name"
     t.string "template_prep_kit_box_barcode"
     t.string "binding_kit_box_barcode"
@@ -67,48 +67,41 @@ ActiveRecord::Schema.define(version: 2019_07_30_070417) do
     t.integer "system_name", default: 0
   end
 
-  create_table "pacbio_tags", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "oligo"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "group_id"
-  end
-
-  create_table "pacbio_well_libraries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "pacbio_well_id"
-    t.bigint "pacbio_library_id"
+  create_table "pacbio_well_libraries", force: :cascade do |t|
+    t.integer "pacbio_well_id"
+    t.integer "pacbio_library_id"
     t.index ["pacbio_library_id"], name: "index_pacbio_well_libraries_on_pacbio_library_id"
     t.index ["pacbio_well_id"], name: "index_pacbio_well_libraries_on_pacbio_well_id"
   end
 
-  create_table "pacbio_wells", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "pacbio_plate_id"
+  create_table "pacbio_wells", force: :cascade do |t|
+    t.integer "pacbio_plate_id"
     t.string "row"
     t.string "column"
-    t.decimal "movie_time", precision: 10
+    t.decimal "movie_time", precision: 3, scale: 1
     t.integer "insert_size"
     t.float "on_plate_loading_concentration"
     t.string "comment"
     t.string "uuid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "pacbio_library_id"
+    t.integer "pacbio_library_id"
     t.integer "sequencing_mode"
     t.index ["pacbio_library_id"], name: "index_pacbio_wells_on_pacbio_library_id"
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
 
-  create_table "requests", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "sample_id"
+  create_table "requests", force: :cascade do |t|
+    t.integer "sample_id"
     t.string "requestable_type"
-    t.bigint "requestable_id"
+    t.integer "requestable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["requestable_type", "requestable_id"], name: "index_requests_on_requestable_type_and_requestable_id"
     t.index ["sample_id"], name: "index_requests_on_sample_id"
   end
 
-  create_table "samples", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "samples", force: :cascade do |t|
     t.string "name"
     t.datetime "deactivated_at"
     t.string "external_id"
@@ -118,49 +111,49 @@ ActiveRecord::Schema.define(version: 2019_07_30_070417) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "saphyr_chips", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "saphyr_chips", force: :cascade do |t|
     t.string "barcode"
     t.string "serial_number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "saphyr_run_id"
+    t.integer "saphyr_run_id"
     t.index ["saphyr_run_id"], name: "index_saphyr_chips_on_saphyr_run_id"
   end
 
-  create_table "saphyr_enzymes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "saphyr_enzymes", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "saphyr_flowcells", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "saphyr_flowcells", force: :cascade do |t|
     t.integer "position"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "saphyr_chip_id"
-    t.bigint "saphyr_library_id"
+    t.integer "saphyr_chip_id"
+    t.integer "saphyr_library_id"
     t.index ["saphyr_chip_id"], name: "index_saphyr_flowcells_on_saphyr_chip_id"
     t.index ["saphyr_library_id"], name: "index_saphyr_flowcells_on_saphyr_library_id"
   end
 
-  create_table "saphyr_libraries", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "saphyr_libraries", force: :cascade do |t|
     t.string "state"
     t.datetime "deactivated_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "saphyr_enzyme_id"
-    t.bigint "saphyr_request_id"
+    t.integer "saphyr_enzyme_id"
+    t.integer "saphyr_request_id"
     t.index ["saphyr_enzyme_id"], name: "index_saphyr_libraries_on_saphyr_enzyme_id"
     t.index ["saphyr_request_id"], name: "index_saphyr_libraries_on_saphyr_request_id"
   end
 
-  create_table "saphyr_requests", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "saphyr_requests", force: :cascade do |t|
     t.string "external_study_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "saphyr_runs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "saphyr_runs", force: :cascade do |t|
     t.integer "state", default: 0
     t.string "name"
     t.datetime "deactivated_at"
@@ -168,7 +161,7 @@ ActiveRecord::Schema.define(version: 2019_07_30_070417) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "tags", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "tags", force: :cascade do |t|
     t.string "oligo"
     t.integer "group_id"
     t.string "set_name"
@@ -176,10 +169,10 @@ ActiveRecord::Schema.define(version: 2019_07_30_070417) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "tubes", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "tubes", force: :cascade do |t|
     t.string "barcode"
     t.string "material_type"
-    t.bigint "material_id"
+    t.integer "material_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["material_type", "material_id"], name: "index_tubes_on_material_type_and_material_id"

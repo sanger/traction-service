@@ -10,7 +10,8 @@ module Pacbio
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
                        inverse_of: :wells
 
-    has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_well_id
+    has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_well_id,
+                              dependent: :nullify, inverse_of: :well
     has_many :libraries, class_name: 'Pacbio::Library', through: :well_libraries
 
     validates :movie_time, :insert_size, :on_plate_loading_concentration,
