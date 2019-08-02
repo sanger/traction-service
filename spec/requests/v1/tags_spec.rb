@@ -3,18 +3,18 @@ require "rails_helper"
 RSpec.describe 'TagsController', type: :request do
 
   context '#get' do
-    let!(:tag1) { create(:pacbio_tag) }
-    let!(:tag2) { create(:pacbio_tag) }
+    let!(:tag1) { create(:tag) }
+    let!(:tag2) { create(:tag) }
 
     it 'returns a list of tags' do
-      get v1_pacbio_tags_path, headers: json_api_headers
+      get v1_tags_path, headers: json_api_headers
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'].length).to eq(2)
     end
 
     it 'returns the correct attributes' do
-      get v1_pacbio_tags_path, headers: json_api_headers
+      get v1_tags_path, headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -32,23 +32,23 @@ RSpec.describe 'TagsController', type: :request do
         {
           data: {
             type: 'tags',
-            attributes: attributes_for(:pacbio_tag)
+            attributes: attributes_for(:tag)
           }
         }.to_json
       end
 
       it 'has a created status' do
-        post v1_pacbio_tags_path, params: body, headers: json_api_headers
+        post v1_tags_path, params: body, headers: json_api_headers
         expect(response).to have_http_status(:created)
       end
 
       it 'creates a tag' do
-        expect { post v1_pacbio_tags_path, params: body, headers: json_api_headers }.to change { Pacbio::Tag.count }.by(1)
+        expect { post v1_tags_path, params: body, headers: json_api_headers }.to change { Tag.count }.by(1)
       end
 
       it 'creates a tag with the correct attributes' do
-        post v1_pacbio_tags_path, params: body, headers: json_api_headers
-        tag = Pacbio::Tag.first
+        post v1_tags_path, params: body, headers: json_api_headers
+        tag = Tag.first
         expect(tag.oligo).to be_present
       end
     end
@@ -65,17 +65,17 @@ RSpec.describe 'TagsController', type: :request do
         end
 
         it 'can returns unprocessable entity status' do
-          post v1_pacbio_tags_path, params: body, headers: json_api_headers
+          post v1_tags_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
         end
 
         it 'cannot create a tag' do
-          expect { post v1_pacbio_tags_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Tag, :count)
+          expect { post v1_tags_path, params: body, headers: json_api_headers }.to_not change(Tag, :count)
         end
 
         it 'has an error message' do
-          post v1_pacbio_tags_path, params: body, headers: json_api_headers
-          expect(JSON.parse(response.body)["data"]).to include("errors" => {"group_id"=>["can't be blank"], "oligo"=>["can't be blank"]})
+          post v1_tags_path, params: body, headers: json_api_headers
+          expect(JSON.parse(response.body)["data"]).to include("errors" => {"group_id"=>["can't be blank"], "oligo"=>["can't be blank"], "set_name"=>["can't be blank"]})
         end
       end
     end
@@ -83,7 +83,7 @@ RSpec.describe 'TagsController', type: :request do
   end
 
   context '#update' do
-    let(:tag) { create(:pacbio_tag) }
+    let(:tag) { create(:tag) }
 
     context 'on success' do
       let(:body) do
@@ -99,18 +99,18 @@ RSpec.describe 'TagsController', type: :request do
       end
 
       it 'has a ok status' do
-        patch v1_pacbio_tag_path(tag), params: body, headers: json_api_headers
+        patch v1_tag_path(tag), params: body, headers: json_api_headers
         expect(response).to have_http_status(:ok)
       end
 
       it 'updates a tag' do
-        patch v1_pacbio_tag_path(tag), params: body, headers: json_api_headers
+        patch v1_tag_path(tag), params: body, headers: json_api_headers
         tag.reload
         expect(tag.oligo).to eq "ACDC"
       end
 
       it 'returns the correct attributes' do
-        patch v1_pacbio_tag_path(tag), params: body, headers: json_api_headers
+        patch v1_tag_path(tag), params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data']['id']).to eq tag.id.to_s
       end
@@ -130,40 +130,40 @@ RSpec.describe 'TagsController', type: :request do
       end
 
       it 'has a ok unprocessable_entity' do
-        patch v1_pacbio_tag_path(123), params: body, headers: json_api_headers
+        patch v1_tag_path(123), params: body, headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'has an error message' do
-        patch v1_pacbio_tag_path(123), params: body, headers: json_api_headers
-        expect(JSON.parse(response.body)["data"]).to include("errors" => "Couldn't find Pacbio::Tag with 'id'=123")
+        patch v1_tag_path(123), params: body, headers: json_api_headers
+        expect(JSON.parse(response.body)["data"]).to include("errors" => "Couldn't find Tag with 'id'=123")
       end
     end
   end
 
   context '#destroy' do
     context 'on success' do
-      let!(:tag) { create(:pacbio_tag) }
+      let!(:tag) { create(:tag) }
 
       it 'returns the correct status' do
-        delete "/v1/pacbio/tags/#{tag.id}", headers: json_api_headers
+        delete "/v1/tags/#{tag.id}", headers: json_api_headers
         expect(response).to have_http_status(:no_content)
       end
 
       it 'destroys the tag' do
-        expect { delete "/v1/pacbio/tags/#{tag.id}", headers: json_api_headers }.to change { Pacbio::Tag.count }.by(-1)
+        expect { delete "/v1/tags/#{tag.id}", headers: json_api_headers }.to change { Tag.count }.by(-1)
       end
 
     end
 
     context 'on failure' do
       it 'returns the correct status' do
-        delete "/v1/pacbio/tags/123", headers: json_api_headers
+        delete "/v1/tags/123", headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'has an error message' do
-        delete v1_pacbio_tag_path(123), headers: json_api_headers
+        delete v1_tag_path(123), headers: json_api_headers
         data = JSON.parse(response.body)['data']
         expect(data['errors']).to be_present
       end

@@ -7,6 +7,11 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
       expect(build(:pacbio_well, movie_time: nil)).to_not be_valid
     end
 
+    it 'can be a decimal' do
+      expect(build(:pacbio_well, movie_time: 0.2).movie_time).to eq(0.2)
+
+    end
+
     it 'must be within range' do
       expect(build(:pacbio_well, movie_time: 15)).to be_valid
       expect(build(:pacbio_well, movie_time: 31)).to_not be_valid

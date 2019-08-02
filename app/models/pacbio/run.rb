@@ -5,7 +5,6 @@ module Pacbio
   class Run < ApplicationRecord
     include Uuidable
 
-    enum sequencing_mode: %w[CLR CCS]
     enum system_name: ['Sequel II', 'Sequel I']
 
     delegate :wells, to: :plate
