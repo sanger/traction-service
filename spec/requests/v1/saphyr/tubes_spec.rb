@@ -90,47 +90,55 @@ RSpec.describe 'TubesController', type: :request do
       end
     end
 
-    # describe 'filter and include' do
-    #   context 'when including material and the material is a request' do
-    #     let(:tubes_with_request) { create_list(:tube_with_saphyr_request, 2)}
-    #
-    #     it 'returns the request data' do
-    #       tube = tubes_with_request[0]
-    #       get "#{v1_saphyr_tubes_path}?filter[barcode]=#{tube.barcode}&include=material", headers: json_api_headers
-    #
-    #       expect(response).to have_http_status(:success)
-    #       json = ActiveSupport::JSON.decode(response.body)
-    #       expect(json['included'][0]['id']).to eq tube.material .id.to_s
-    #       expect(json['included'][0]['type']).to eq "requests"
-    #       expect(json['included'][0]['attributes']['external_study_id']).to eq tube.material.external_study_id
-    #       expect(json['included'][0]['attributes']['sample_name']).to eq tube.material.sample.name
-    #       expect(json['included'][0]['attributes']['barcode']).to eq tube.barcode
-    #
-    #       expect(json['data'][0]['relationships']['material']['data']['type']).to eq 'requests'
-    #       expect(json['data'][0]['relationships']['material']['data']['id']).to eq tube.material.id.to_s
-    #     end
-    #   end
-    #
-    #   context 'when including material and the material is a library' do
-    #     let(:tubes_with_request) { create_list(:tube_with_saphyr_request, 2)}
-    #
-    #     it 'returns the request data' do
-    #       tube = tubes_with_request[0]
-    #       get "#{v1_tubes_path}?filter[barcode]=#{tube.barcode}&include=material", headers: json_api_headers
-    #
-    #       expect(response).to have_http_status(:success)
-    #       json = ActiveSupport::JSON.decode(response.body)
-    #       expect(json['included'][0]['id']).to eq tube.material .id.to_s
-    #       expect(json['included'][0]['type']).to eq "requests"
-    #
-    #       debugger
-    #
-    #       expect(json['included'][0]['attributes']['external_study_id']).to eq tube.material.external_study_id
-    #       expect(json['included'][0]['relationships']['material']['data'][0]['id']).to eq chip.flowcells[0].id.to_s
-    #       expect(json['included'][0]['relationships']['material']['data'][1]['id']).to eq chip.flowcells[1].id.to_s
-    #     end
-    #   end
-    # end
+    describe 'filter and include' do
+      context 'when including material and the material is a request' do
+        let(:tubes_with_request) { create_list(:tube_with_saphyr_request, 2)}
+
+        it 'returns the request data' do
+          tube = tubes_with_request[0]
+          get "#{v1_saphyr_tubes_path}?filter[barcode]=#{tube.barcode}&include=material", headers: json_api_headers
+
+          expect(response).to have_http_status(:success)
+          json = ActiveSupport::JSON.decode(response.body)
+
+          expect(json['data'].length).to eq(1)
+
+          expect(json['included'][0]['id']).to eq tube.material.id.to_s
+          expect(json['included'][0]['type']).to eq "requests"
+
+          expect(json['included'][0]['attributes']['external_study_id']).to eq tube.material.external_study_id
+          expect(json['included'][0]['attributes']['sample_name']).to eq tube.material.sample.name
+          expect(json['included'][0]['attributes']['barcode']).to eq tube.barcode
+
+          expect(json['data'][0]['relationships']['material']['data']['type']).to eq 'requests'
+          expect(json['data'][0]['relationships']['material']['data']['id']).to eq tube.material.id.to_s
+        end
+      end
+
+      context 'when including material and the material is a library' do
+        let(:tubes_with_library) { create_list(:tube_with_saphyr_library, 2)}
+
+        it 'returns the request data' do
+          tube = tubes_with_library[0]
+          get "#{v1_saphyr_tubes_path}?filter[barcode]=#{tube.barcode}&include=material", headers: json_api_headers
+
+          expect(response).to have_http_status(:success)
+          json = ActiveSupport::JSON.decode(response.body)
+
+          expect(json['data'].length).to eq(1)
+
+          expect(json['included'][0]['id']).to eq tube.material.id.to_s
+          expect(json['included'][0]['type']).to eq "libraries"
+
+          expect(json['included'][0]['attributes']['barcode']).to eq tube.barcode
+          expect(json['included'][0]['attributes']['sample_name']).to eq tube.material.request.sample_name
+          expect(json['included'][0]['attributes']['enzyme_name']).to eq tube.material.enzyme.name
+
+          expect(json['data'][0]['relationships']['material']['data']['type']).to eq 'libraries'
+          expect(json['data'][0]['relationships']['material']['data']['id']).to eq tube.material.id.to_s
+        end
+      end
+    end
 
   end
 
