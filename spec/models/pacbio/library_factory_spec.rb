@@ -55,12 +55,5 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
       expect(library.requests.count).to eq(2)
     end
 
-    # it 'does not create any samples if attributes are not valid' do
-    #   attributes << attributes_for(:sample).except(:name).merge(attributes_for(request_model))
-    #   factory = described_class.new(attributes)
-    #   expect(factory).not_to be_valid
-    #   expect(factory.save).to be_falsey
-    #   expect(Tube.all.count).to eq(0)
-    # end
   end
 end

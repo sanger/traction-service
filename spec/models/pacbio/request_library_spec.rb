@@ -24,5 +24,13 @@ RSpec.describe Pacbio::RequestLibrary, type: :model, pacbio: true do
     expect(request_library.tag_group_id).to be_present
     expect(request_library.tag_set_name).to be_present
   end
+
+  it 'tags must be unique within the context of a library' do
+    library = create(:pacbio_library)
+    tag = create(:tag)
+
+    create(:pacbio_request_library, request: create(:pacbio_request), library: library, tag: tag)
+    expect(build(:pacbio_request_library, request: create(:pacbio_request), library: library, tag: tag)).to_not be_valid
+  end
   
 end
