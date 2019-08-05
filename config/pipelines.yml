@@ -43,50 +43,62 @@ default: &default
       key: pac_bio_run
       fields:
         last_updated: *timestamp
-        sample_uuid: *sample_uuid
-        study_uuid: *study_uuid
         id_pac_bio_run_lims:
           type: :model
-          value: plate.run.id
+          value: run.id
         pac_bio_run_uuid:
           type: :model
-          value: plate.run.uuid
-        cost_code:
-          type: :model
-          value: library.request.cost_code
-        tag_sequence:
-          type: :model
-          value: library.tag.oligo
-        tag_set_id_lims:
-          type: :model
-          value: library.tag.group_id
-        tag_identifier:
-          type: :model
-          value: library.tag.id
-        tag_set_name:
-          type: :string
-          value: pacbio
+          value: run.uuid
         plate_barcode:
           type: :model
-          value: plate.barcode
-        plate_uuid:
-          type: :model
-          value: plate.uuid
-        well_label:
-          type: :model
-          value: position
-        well_uuid_lims:
+          value: barcode
+        plate_uuid_lims:
           type: :model
           value: uuid
-        pac_bio_library_tube_id_lims:
-          type: :model
-          value: library.id
-        pac_bio_library_tube_uuid:
-          type: :model
-          value: library.uuid
-        pac_bio_library_tube_name:
-          type: :model
-          value: library.request.sample_name
+        wells:
+          type: :array
+          value: wells
+          children:
+            well_label:
+              type: :model
+              value: position
+            well_uuid_lims:
+              type: :model
+              value: uuid
+            samples:
+              type: :array
+              value: library
+              children:
+                cost_code:
+                  type: :model
+                  value: request.cost_code
+                pac_bio_library_tube_id_lims:
+                  type: :model
+                  value: id
+                pac_bio_library_tube_uuid:
+                  type: :model
+                  value: uuid
+                pac_bio_library_tube_name:
+                  type: :model
+                  value: request.sample_name
+                sample_uuid:
+                  type: :model
+                  value: request.sample.external_id
+                study_uuid:
+                  type: :model
+                  value: request.external_study_id
+                tag_sequence:
+                  type: :model
+                  value: tag.oligo
+                tag_set_id_lims:
+                  type: :model
+                  value: tag.group_id
+                tag_identifier:
+                  type: :model
+                  value: tag.id
+                tag_set_name:
+                  type: :string
+                  value: pacbio
     sample_sheet:
       columns:
         System Name:

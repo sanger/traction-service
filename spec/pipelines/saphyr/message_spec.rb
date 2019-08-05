@@ -58,7 +58,7 @@ RSpec.describe 'Saphyr', type: :model, saphyr: true do
     end
 
     it 'must have an id_library_lims' do
-      expect(key[:id_flowcell_lims]).to eq(flowcell.library.id)
+      expect(key[:id_library_lims]).to eq(flowcell.library.id)
     end
 
     it 'must have a id_flowcell_lims' do
