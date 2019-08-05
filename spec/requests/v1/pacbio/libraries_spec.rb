@@ -18,7 +18,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
     end
 
     it 'returns the correct attributes' do
-      get v1_pacbio_libraries_path, headers: json_api_headers
+      get "#{v1_pacbio_libraries_path}?include=requests", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -28,7 +28,9 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       expect(json['data'][0]['attributes']['library_kit_barcode']).to eq(library1.library_kit_barcode)
       expect(json['data'][0]['attributes']['fragment_size']).to eq(library1.fragment_size)
 
-      
+      requests = json['data'][0]['relationships']['requests']
+      expect(requests.length).to eq(1)
+      expect(requests['data'][0]['id']).to eq(request.id.to_s)
 
       expect(json['data'][1]['attributes']['volume']).to eq(library2.volume)
       expect(json['data'][1]['attributes']['concentration']).to eq(library2.concentration)

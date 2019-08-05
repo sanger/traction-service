@@ -22,10 +22,10 @@ Rails.application.routes.draw do
         %i[index create update destroy]
         get 'sample_sheet', to: 'runs#sample_sheet'
       end
-      resources :plates,        only: %i[index create update destroy]
-      resources :wells,         only: %i[index create update destroy]
-      resources :libraries,     only: %i[index create destroy]
-      resources :requests,      only: %i[index create update destroy]
+      resources :plates,              only: %i[index create update destroy]
+      resources :wells,               only: %i[index create update destroy]
+      resources :libraries,           only: %i[index create destroy]
+      resources :requests,            only: %i[index create update destroy]
     end
   end
 end

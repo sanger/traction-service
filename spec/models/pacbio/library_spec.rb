@@ -31,11 +31,16 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
   end
 
   context 'requests' do
+
+    let(:library) { create(:library)}
+
     it 'can have one or more' do
       library = create(:pacbio_library)
-      create_list(:pacbio_request_library, 5, request: create(:pacbio_request), library: library, tag: create(:tag))
+      (1..5).each do |i|
+        create(:pacbio_request_library, request: create(:pacbio_request), library: library, tag: create(:tag))
+      end
       expect(library.requests.count).to eq(5)
     end
   end
-  
+
 end
