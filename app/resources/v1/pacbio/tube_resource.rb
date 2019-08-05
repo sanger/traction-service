@@ -5,7 +5,6 @@ module V1
     # TubeResource
     class TubeResource < JSONAPI::Resource
       model_name 'Tube'
-      
       attributes :barcode
       has_one :material, polymorphic: true, always_include_linkage_data: true
 

@@ -51,7 +51,6 @@ module Pipelines
         #     memo
         #   end
         # end
-
       end
     end
   end
