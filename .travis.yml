@@ -1,16 +1,20 @@
 language: ruby
 dist: xenial
 sudo: required
+services:
+  - mysql
+before_install:
+  - mysql -e 'CREATE DATABASE traction_service_test;'
 before_script:
-- cp config/database.yml.example config/database.yml
-- cp config/mailer.yml.example config/mailer.yml
-- cp config/bunny.yml.example config/bunny.yml
-- bundle exec rake db:reset
-- bundle exec rake db:setup
+  - cp config/database.yml.travis config/database.yml
+  - cp config/mailer.yml.example config/mailer.yml
+  - cp config/bunny.yml.example config/bunny.yml
+  - bundle exec rake db:reset
 script:
-- bundle exec rspec
-- bundle exec rubocop
+  - bundle exec rspec
+  - bundle exec rubocop
 before_deploy: "./compile-build"
+# Only deploy when a new tag is created
 deploy:
   provider: releases
   api_key:

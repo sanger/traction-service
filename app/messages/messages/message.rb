@@ -10,7 +10,7 @@ module Messages
     def content
       { lims: configuration.lims }.with_indifferent_access.tap do |result|
         result[configuration.key] = configuration.fields.each_with_object({}) do |(k, v), r|
-          r[k] = instance_value(v)
+          r[k] = instance_value(object, v)
         end
       end
     end
@@ -19,9 +19,17 @@ module Messages
       content.to_json
     end
 
+    def build_children(object, field)
+      Array(object.send(field[:value])).collect do |o|
+        field[:children].each_with_object({}) do |(k, v), r|
+          r[k] = instance_value(o, v)
+        end
+      end
+    end
+
     private
 
-    def instance_value(field)
+    def instance_value(object, field)
       case field[:type]
       when :string
         field[:value]
@@ -30,6 +38,8 @@ module Messages
       when :constant
         evaluate_method_chain(field[:value].split('.').first.constantize,
                               field[:value].split('.')[1..-1])
+      when :array
+        build_children(object, field)
       end
     end
 
