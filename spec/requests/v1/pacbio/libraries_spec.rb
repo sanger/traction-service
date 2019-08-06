@@ -5,6 +5,8 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
   context '#get' do
     let!(:library1) { create(:pacbio_library) }
     let!(:library2) { create(:pacbio_library) }
+    let!(:tube1)    { create(:tube, material: library1) }
+    let!(:tube2)    { create(:tube, material: library2) }
 
     it 'returns a list of libraries' do
       get v1_pacbio_libraries_path, headers: json_api_headers
@@ -25,6 +27,8 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       expect(json['data'][0]['attributes']['fragment_size']).to eq(library1.fragment_size)
       expect(json['data'][0]["attributes"]["pacbio_tag_id"]).to eq(library1.pacbio_tag_id)
       expect(json['data'][0]["attributes"]["pacbio_request_id"]).to eq(library1.pacbio_request_id)
+      expect(json['data'][0]["attributes"]["uuid"]).to eq(library1.uuid)
+      expect(json['data'][0]["attributes"]["barcode"]).to eq(library1.tube.barcode)
 
       expect(json['data'][1]['attributes']['volume']).to eq(library2.volume)
       expect(json['data'][1]['attributes']['concentration']).to eq(library2.concentration)
@@ -32,6 +36,8 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       expect(json['data'][1]['attributes']['fragment_size']).to eq(library2.fragment_size)
       expect(json['data'][1]["attributes"]["pacbio_tag_id"]).to eq(library2.pacbio_tag_id)
       expect(json['data'][1]["attributes"]["pacbio_request_id"]).to eq(library2.pacbio_request_id)
+      expect(json['data'][1]["attributes"]["uuid"]).to eq(library2.uuid)
+      expect(json['data'][1]["attributes"]["barcode"]).to eq(library2.tube.barcode)
     end
 
   end
