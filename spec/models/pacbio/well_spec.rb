@@ -116,7 +116,15 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
       expect(sample_names.first).to eq(request_libraries.first.request.sample_name)
     end
 
-    it 'must have unique tags within a well' do
+    it 'can return a list of tags' do
+      expect(well.tags).to eq(request_libraries.collect(&:tag_id))
+    end
+
+  end
+
+  context 'libraries' do
+
+    it 'will only be valid if the tags are unique' do
     end
   end
 

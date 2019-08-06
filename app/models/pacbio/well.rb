@@ -33,11 +33,15 @@ module Pacbio
     end
 
     def request_libraries
-      @request_libraries ||= libraries.collect(&:request_libraries).flatten
+     libraries.collect(&:request_libraries).flatten
     end
 
     def sample_names
-      @sample_names ||= request_libraries.collect(&:request).collect(&:sample_name).join(',')
+     request_libraries.collect(&:request).collect(&:sample_name).join(',')
+    end
+
+    def tags
+      request_libraries.collect(&:tag_id)
     end
   end
 end
