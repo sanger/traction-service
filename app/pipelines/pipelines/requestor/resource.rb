@@ -31,7 +31,7 @@ module Pipelines
       included do
         model_name request_model
 
-        attributes(*pipeline_const.request_attributes, :sample_name, :barcode, :species)
+        attributes(*pipeline_const.request_attributes, :sample_name, :barcode, :species, :created_at)
 
         def barcode
           @model&.tube&.barcode
@@ -39,6 +39,10 @@ module Pipelines
 
         def species
           @model&.sample&.species
+        end
+
+        def created_at
+          @model.created_at.strftime('%m/%d/%Y %I:%M')
         end
       end
     end
