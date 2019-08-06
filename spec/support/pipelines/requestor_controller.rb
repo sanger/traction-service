@@ -148,8 +148,8 @@ shared_examples_for 'requestor controller' do
     context 'on failure' do
 
       it 'does not delete the request' do
+        puts request_model.find_by(id: 123)
         delete send(request_path, 123), headers: json_api_headers
-        puts response.body
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
