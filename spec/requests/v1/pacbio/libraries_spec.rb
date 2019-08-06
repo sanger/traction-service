@@ -30,7 +30,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
       requests = json['data'][0]['relationships']['requests']
       expect(requests.length).to eq(1)
-      expect(requests['data'][0]['id'].to_s).to eq(request.id.to_s)
+      expect(requests['data'][0]['id'].to_s).to eq(request_library.id.to_s)
 
       expect(json['data'][1]['attributes']['volume']).to eq(library2.volume)
       expect(json['data'][1]['attributes']['concentration']).to eq(library2.concentration)
