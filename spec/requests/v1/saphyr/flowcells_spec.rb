@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe 'FlowcellsController', type: :request do
-  
+
   let(:library) { create(:saphyr_library) }
 
   context '#create' do
@@ -14,9 +14,9 @@ RSpec.describe 'FlowcellsController', type: :request do
           data: {
             type: "flowcells",
             attributes: {
-              "position": 1,
-              "saphyr_library_id": library.id,
-              "saphyr_chip_id": chip.id
+              position: 1,
+              saphyr_library_id: library.id,
+              saphyr_chip_id: chip.id
             }
           }
         }.to_json

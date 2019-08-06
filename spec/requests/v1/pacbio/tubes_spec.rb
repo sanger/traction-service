@@ -107,6 +107,7 @@ RSpec.describe 'TubesController', type: :request do
           expect(json['included'][0]['attributes']['external_study_id']).to eq tube.material.external_study_id
           expect(json['included'][0]['attributes']['sample_name']).to eq tube.material.sample.name
           expect(json['included'][0]['attributes']['barcode']).to eq tube.barcode
+          expect(json['included'][0]['attributes']['species']).to eq tube.material.sample.species
 
           expect(json['data'][0]['relationships']['material']['data']['type']).to eq 'requests'
           expect(json['data'][0]['relationships']['material']['data']['id']).to eq tube.material.id.to_s

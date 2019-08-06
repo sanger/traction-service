@@ -31,10 +31,14 @@ module Pipelines
       included do
         model_name request_model
 
-        attributes(*pipeline_const.request_attributes, :sample_name, :barcode)
+        attributes(*pipeline_const.request_attributes, :sample_name, :barcode, :species)
 
         def barcode
           @model&.tube&.barcode
+        end
+
+        def species
+          @model&.sample&.species
         end
       end
     end
