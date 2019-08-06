@@ -32,14 +32,10 @@ module Pipelines
         model_name request_model
 
         attributes(*pipeline_const.request_attributes, :sample_name, :barcode,
-                   :species, :created_at)
+                   :sample_species, :created_at)
 
         def barcode
           @model&.tube&.barcode
-        end
-
-        def species
-          @model&.sample&.species
         end
 
         def created_at
