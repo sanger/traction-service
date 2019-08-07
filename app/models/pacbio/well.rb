@@ -11,8 +11,8 @@ module Pacbio
                        inverse_of: :wells
 
     has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_well_id,
-                              dependent: :nullify, inverse_of: :well
-    has_many :libraries, class_name: 'Pacbio::Library', through: :well_libraries
+                              dependent: :nullify, inverse_of: :well, autosave: false
+    has_many :libraries, class_name: 'Pacbio::Library', through: :well_libraries, autosave: false
 
     validates :movie_time, :insert_size, :on_plate_loading_concentration,
               :row, :column, :sequencing_mode, presence: true

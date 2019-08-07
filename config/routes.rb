@@ -23,7 +23,11 @@ Rails.application.routes.draw do
         get 'sample_sheet', to: 'runs#sample_sheet'
       end
       resources :plates,              only: %i[index create update destroy]
-      resources :wells,               only: %i[index create update destroy]
+      resources :wells,               only: %i[index create update destroy] do
+        scope module: :wells do
+          resources :libraries, only: %i[create]
+        end
+      end
       resources :libraries,           only: %i[index create destroy]
       resources :requests,            only: %i[index create update destroy]
     end

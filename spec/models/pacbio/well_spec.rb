@@ -68,7 +68,6 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     expect(create(:pacbio_well).uuid).to be_present
   end
 
-
   context 'sequencing mode' do
     it 'must be present' do
       expect(build(:pacbio_well, sequencing_mode: nil)).to_not be_valid
@@ -103,7 +102,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     let(:request_libraries)   { create_list(:pacbio_request_library, 2) }
 
     before(:each) do
-      well.libraries << request_libraries.collect(&:library)
+      well.libraries << request_libraries.collect(&:library) 
     end
 
     it 'can have one or more' do
@@ -120,12 +119,6 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
       expect(well.tags).to eq(request_libraries.collect(&:tag_id))
     end
 
-  end
-
-  context 'libraries' do
-
-    it 'will only be valid if the tags are unique' do
-    end
   end
 
 end
