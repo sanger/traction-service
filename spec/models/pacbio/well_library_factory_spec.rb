@@ -13,14 +13,14 @@ RSpec.describe Pacbio::WellLibraryFactory, type: :model, pacbio: true do
   let(:request_library_invalid) { create(:pacbio_request_library, tag: request_library_5.tag)}
   let(:library_ids)             { [
                                     {
-                                      type: 'libraries', id: request_library_4.id
+                                      type: 'libraries', id: request_library_4.library.id
                                     },
                                     {
-                                      type: 'libraries', id: request_library_5.id
+                                      type: 'libraries', id: request_library_5.library.id
                                     }
                                   ]
                                 }
-  let(:library_ids_invalid)     { library_ids.push({type: 'libraries', id: request_library_invalid.id}) }
+  let(:library_ids_invalid)     { library_ids.push({type: 'libraries', id: request_library_invalid.library.id}) }
 
   before(:each) do
     well.libraries << [request_library_1, request_library_2, request_library_3].collect(&:library)
