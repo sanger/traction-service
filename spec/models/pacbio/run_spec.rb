@@ -36,19 +36,26 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     expect(run.plate).to eq(plate)
   end
 
+  it 'can have some wells' do
+    wells = create_list(:pacbio_well, 5)
+    plate = create(:pacbio_plate, wells: wells)
+    run = create(:pacbio_run, plate: plate)
+    expect(run.wells.count).to eq(5)
+  end
+
   it 'can have comments' do
-    wells = create_list(:pacbio_well_with_library, 2)
+    wells = create_list(:pacbio_well_with_libraries, 2)
     plate = create(:pacbio_plate, wells: wells)
     run = create(:pacbio_run, plate: plate)
     expect(run.comments).to eq("#{wells.first.summary};#{wells[1].summary}")
   end
 
   context '#generate_sample_sheet' do
-    after(:all) { File.delete('sample_sheet.csv') }
+    after(:all) { File.delete('sample_sheet.csv') if File.exists?('sample_sheet.csv') }
 
     it 'must call CSVGenerator' do
-      well1 = create(:pacbio_well_with_library, sequencing_mode: 'CCS')
-      well2 = create(:pacbio_well_with_library, sequencing_mode: 'CLR')
+      well1 = create(:pacbio_well_with_libraries, sequencing_mode: 'CCS')
+      well2 = create(:pacbio_well_with_libraries, sequencing_mode: 'CLR')
 
       plate = create(:pacbio_plate, wells: [well1, well2])
       run = create(:pacbio_run, plate: plate)
@@ -58,8 +65,8 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     end
 
     it 'must return a CSV' do
-      well1 = create(:pacbio_well_with_library, sequencing_mode: 'CCS')
-      well2 = create(:pacbio_well_with_library, sequencing_mode: 'CLR')
+      well1 = create(:pacbio_well_with_libraries, sequencing_mode: 'CCS')
+      well2 = create(:pacbio_well_with_libraries, sequencing_mode: 'CLR')
 
       plate = create(:pacbio_plate, wells: [well1, well2])
       run = create(:pacbio_run, plate: plate)

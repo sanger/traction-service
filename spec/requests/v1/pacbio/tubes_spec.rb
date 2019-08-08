@@ -130,14 +130,11 @@ RSpec.describe 'TubesController', type: :request do
           expect(json['included'][0]['id']).to eq tube.material.id.to_s
           expect(json['included'][0]['type']).to eq "libraries"
 
-          expect(json['included'][0]['attributes']['barcode']).to eq tube.barcode
+          expect(json['data'][0]['attributes']['barcode']).to eq tube.barcode
           expect(json['included'][0]['attributes']['volume']).to eq tube.material.volume
           expect(json['included'][0]['attributes']['concentration']).to eq tube.material.concentration
           expect(json['included'][0]['attributes']['library_kit_barcode']).to eq tube.material.library_kit_barcode
           expect(json['included'][0]['attributes']['fragment_size']).to eq tube.material.fragment_size
-          expect(json['included'][0]['attributes']['uuid']).to eq tube.material.uuid
-          expect(json['included'][0]['attributes']['pacbio_tag_id']).to eq tube.material.pacbio_tag_id
-          expect(json['included'][0]['attributes']['pacbio_request_id']).to eq tube.material.pacbio_request_id
 
           expect(json['data'][0]['relationships']['material']['data']['type']).to eq 'libraries'
           expect(json['data'][0]['relationships']['material']['data']['id']).to eq tube.material.id.to_s

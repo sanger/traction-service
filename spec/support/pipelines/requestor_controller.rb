@@ -148,12 +148,12 @@ shared_examples_for 'requestor controller' do
     context 'on failure' do
 
       it 'does not delete the request' do
-        delete send(request_path, 123), headers: json_api_headers
+        delete send(request_path, 'fakerequest'), headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'has an error message' do
-        delete send(request_path, 123), headers: json_api_headers
+        delete send(request_path, 'fakerequest'), headers: json_api_headers
         data = JSON.parse(response.body)['data']
         expect(data['errors']).to be_present
       end

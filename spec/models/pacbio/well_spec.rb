@@ -7,6 +7,11 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
       expect(build(:pacbio_well, movie_time: nil)).to_not be_valid
     end
 
+    it 'can be a decimal' do
+      expect(build(:pacbio_well, movie_time: 0.2).movie_time).to eq(0.2)
+
+    end
+
     it 'must be within range' do
       expect(build(:pacbio_well, movie_time: 15)).to be_valid
       expect(build(:pacbio_well, movie_time: 31)).to_not be_valid
@@ -55,14 +60,13 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
   end
 
   it 'can have a summary' do
-    well = create(:pacbio_well_with_library)
-    expect(well.summary).to eq("#{well.library.request.sample_name},#{well.comment}")
+    well = create(:pacbio_well_with_libraries)
+    expect(well.summary).to eq("#{well.sample_names},#{well.comment}")
   end
 
    it 'will have a uuid' do
     expect(create(:pacbio_well).uuid).to be_present
   end
-
 
   context 'sequencing mode' do
     it 'must be present' do
@@ -82,6 +86,39 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     it 'returns false if sequencing_mode is CLR' do
       expect(create(:pacbio_well, sequencing_mode: 'CLR').generate_ccs_data).to eq false
     end
+  end
+
+  context 'libraries' do
+    it 'can have one or more' do
+      well = create(:pacbio_well)
+      well.libraries << create_list(:pacbio_library, 5)
+      expect(well.libraries.count).to eq(5)
+    end
+  end
+
+  context 'request libraries' do
+
+    let(:well)                { create(:pacbio_well) }
+    let(:request_libraries)   { create_list(:pacbio_request_library, 2) }
+
+    before(:each) do
+      well.libraries << request_libraries.collect(&:library) 
+    end
+
+    it 'can have one or more' do
+      expect(well.request_libraries.length).to eq(2)
+    end
+
+    it 'can return a list of sample names' do
+      sample_names = well.sample_names.split(',')
+      expect(sample_names.length).to eq(2)
+      expect(sample_names.first).to eq(request_libraries.first.request.sample_name)
+    end
+
+    it 'can return a list of tags' do
+      expect(well.tags).to eq(request_libraries.collect(&:tag_id))
+    end
+
   end
 
 end

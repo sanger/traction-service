@@ -5,17 +5,16 @@ module Pacbio
   class Run < ApplicationRecord
     include Uuidable
 
-    enum sequencing_mode: %w[CLR CCS]
     enum system_name: ['Sequel II', 'Sequel I']
 
-    validates :name, :template_prep_kit_box_barcode, :binding_kit_box_barcode,
-              :sequencing_kit_box_barcode, :dna_control_complex_box_barcode,
-              :system_name, presence: true
+    delegate :wells, to: :plate
 
     has_one :plate, foreign_key: :pacbio_run_id,
                     dependent: :destroy, inverse_of: :run
 
-    delegate :wells, to: :plate
+    validates :name, :template_prep_kit_box_barcode, :binding_kit_box_barcode,
+              :sequencing_kit_box_barcode, :dna_control_complex_box_barcode,
+              :system_name, presence: true
 
     def comments
       super || wells.collect(&:summary).join(';')
