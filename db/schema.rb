@@ -18,12 +18,8 @@ ActiveRecord::Schema.define(version: 2019_07_31_070350) do
     t.string "library_kit_barcode"
     t.integer "fragment_size"
     t.string "uuid"
-    t.integer "pacbio_tag_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "pacbio_request_id"
-    t.index ["pacbio_request_id"], name: "index_pacbio_libraries_on_pacbio_request_id"
-    t.index ["pacbio_tag_id"], name: "index_pacbio_libraries_on_pacbio_tag_id"
   end
 
   create_table "pacbio_plates", force: :cascade do |t|
@@ -85,9 +81,7 @@ ActiveRecord::Schema.define(version: 2019_07_31_070350) do
     t.string "uuid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "pacbio_library_id"
     t.integer "sequencing_mode"
-    t.index ["pacbio_library_id"], name: "index_pacbio_wells_on_pacbio_library_id"
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
 

@@ -36,6 +36,13 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     expect(run.plate).to eq(plate)
   end
 
+  it 'can have some wells' do
+    wells = create_list(:pacbio_well, 5)
+    plate = create(:pacbio_plate, wells: wells)
+    run = create(:pacbio_run, plate: plate)
+    expect(run.wells.count).to eq(5)
+  end
+
   it 'can have comments' do
     wells = create_list(:pacbio_well_with_libraries, 2)
     plate = create(:pacbio_plate, wells: wells)

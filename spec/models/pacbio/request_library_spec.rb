@@ -23,6 +23,7 @@ RSpec.describe Pacbio::RequestLibrary, type: :model, pacbio: true do
     expect(request_library.tag_oligo).to be_present
     expect(request_library.tag_group_id).to be_present
     expect(request_library.tag_set_name).to be_present
+    expect(request_library.tag_id).to be_present
   end
 
   it 'tags must be unique within the context of a library' do

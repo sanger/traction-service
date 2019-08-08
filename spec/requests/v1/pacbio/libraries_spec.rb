@@ -22,7 +22,6 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
-
       expect(json['data'][0]['attributes']['volume']).to eq(library1.volume)
       expect(json['data'][0]['attributes']['concentration']).to eq(library1.concentration)
       expect(json['data'][0]['attributes']['library_kit_barcode']).to eq(library1.library_kit_barcode)
@@ -31,6 +30,12 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       requests = json['data'][0]['relationships']['requests']
       expect(requests.length).to eq(1)
       expect(requests['data'][0]['id'].to_s).to eq(request_library.id.to_s)
+
+      request = json['included'][0]['attributes']
+      expect(request['sample_name']).to eq(request_library.sample_name)
+      expect(request['tag_id'].to_s).to eq(request_library.tag_id.to_s)
+      expect(request['tag_set_name']).to eq(request_library.tag_set_name)
+      expect(request['tag_group_id'].to_s).to eq(request_library.tag_group_id.to_s)
 
       expect(json['data'][1]['attributes']['volume']).to eq(library2.volume)
       expect(json['data'][1]['attributes']['concentration']).to eq(library2.concentration)
@@ -232,6 +237,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
           post v1_pacbio_libraries_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:created)
           expect(Pacbio::Library.count).to eq(2)
+          expect(Pacbio::Library.first.requests.count).to eq(2)
         end
       end
 
@@ -328,12 +334,12 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
     context 'on failure' do
 
       it 'does not delete the library' do
-        delete "/v1/pacbio/libraries/123", headers: json_api_headers
+        delete "/v1/pacbio/libraries/dodgyid", headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'has an error message' do
-        delete "/v1/pacbio/libraries/123", headers: json_api_headers
+        delete "/v1/pacbio/libraries/dodgyid", headers: json_api_headers
         data = JSON.parse(response.body)['data']
         expect(data['errors']).to be_present
       end
