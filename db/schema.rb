@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_19_112213) do
+ActiveRecord::Schema.define(version: 2019_07_31_070350) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
@@ -18,12 +18,8 @@ ActiveRecord::Schema.define(version: 2019_07_19_112213) do
     t.string "library_kit_barcode"
     t.integer "fragment_size"
     t.string "uuid"
-    t.integer "pacbio_tag_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "pacbio_request_id"
-    t.index ["pacbio_request_id"], name: "index_pacbio_libraries_on_pacbio_request_id"
-    t.index ["pacbio_tag_id"], name: "index_pacbio_libraries_on_pacbio_tag_id"
   end
 
   create_table "pacbio_plates", force: :cascade do |t|
@@ -33,6 +29,15 @@ ActiveRecord::Schema.define(version: 2019_07_19_112213) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["pacbio_run_id"], name: "index_pacbio_plates_on_pacbio_run_id"
+  end
+
+  create_table "pacbio_request_libraries", force: :cascade do |t|
+    t.integer "pacbio_request_id"
+    t.integer "pacbio_library_id"
+    t.integer "tag_id"
+    t.index ["pacbio_library_id"], name: "index_pacbio_request_libraries_on_pacbio_library_id"
+    t.index ["pacbio_request_id"], name: "index_pacbio_request_libraries_on_pacbio_request_id"
+    t.index ["tag_id"], name: "index_pacbio_request_libraries_on_tag_id"
   end
 
   create_table "pacbio_requests", force: :cascade do |t|
@@ -58,27 +63,25 @@ ActiveRecord::Schema.define(version: 2019_07_19_112213) do
     t.integer "system_name", default: 0
   end
 
-  create_table "pacbio_tags", force: :cascade do |t|
-    t.string "oligo"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "group_id"
+  create_table "pacbio_well_libraries", force: :cascade do |t|
+    t.integer "pacbio_well_id"
+    t.integer "pacbio_library_id"
+    t.index ["pacbio_library_id"], name: "index_pacbio_well_libraries_on_pacbio_library_id"
+    t.index ["pacbio_well_id"], name: "index_pacbio_well_libraries_on_pacbio_well_id"
   end
 
   create_table "pacbio_wells", force: :cascade do |t|
     t.integer "pacbio_plate_id"
     t.string "row"
     t.string "column"
-    t.decimal "movie_time"
+    t.decimal "movie_time", precision: 3, scale: 1
     t.integer "insert_size"
     t.float "on_plate_loading_concentration"
     t.string "comment"
     t.string "uuid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "pacbio_library_id"
     t.integer "sequencing_mode"
-    t.index ["pacbio_library_id"], name: "index_pacbio_wells_on_pacbio_library_id"
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
 
@@ -148,6 +151,14 @@ ActiveRecord::Schema.define(version: 2019_07_19_112213) do
     t.integer "state", default: 0
     t.string "name"
     t.datetime "deactivated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.string "oligo"
+    t.integer "group_id"
+    t.string "set_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

@@ -1,14 +1,20 @@
 require "rails_helper"
 
 RSpec.describe CSVGenerator, type: :model do
-  after(:each) { File.delete('sample_sheet.csv') }
+  after(:each) { File.delete('sample_sheet.csv') if File.exists?('sample_sheet.csv') }
 
   context '#generate_sample_sheet' do
-    let(:well1)   { create(:pacbio_well_with_library, sequencing_mode: 'CCS') }
-    let(:well2)   { create(:pacbio_well_with_library, sequencing_mode: 'CLR') }
+    let(:well1)   { create(:pacbio_well_with_libraries, sequencing_mode: 'CCS') }
+    let(:well2)   { create(:pacbio_well_with_libraries, sequencing_mode: 'CLR') }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_run, plate: plate) }
     let(:csv)     { ::CSVGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet) }
+
+    it 'check validity' do
+      well = create(:pacbio_well)
+      well.libraries = create_list(:pacbio_library, 5)
+      expect(true).to be_truthy
+    end
 
     it 'must return a csv file' do
       csv_file = csv.generate_sample_sheet
@@ -23,6 +29,7 @@ RSpec.describe CSVGenerator, type: :model do
       expect(headers).to eq(expected_headers)
     end
 
+    
     it 'must have the correct body' do
       csv_file = csv.generate_sample_sheet
       array_of_rows = CSV.read(csv_file.path)
@@ -34,7 +41,7 @@ RSpec.describe CSVGenerator, type: :model do
         well1.plate.run.system_name,
         well1.plate.run.name,
         well1.position,
-        well1.library.request.sample_name,
+        well1.sample_names,
         well1.movie_time.to_s,
         well1.insert_size.to_s,
         well1.plate.run.template_prep_kit_box_barcode,
@@ -50,7 +57,7 @@ RSpec.describe CSVGenerator, type: :model do
         well2.plate.run.system_name,
         well2.plate.run.name,
         well2.position,
-        well2.library.request.sample_name,
+        well2.sample_names,
         well2.movie_time.to_s,
         well2.insert_size.to_s,
         well2.plate.run.template_prep_kit_box_barcode,

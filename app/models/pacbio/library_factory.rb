@@ -9,7 +9,7 @@ module Pacbio
     validate :check_libraries
 
     def initialize(attributes = [])
-      attributes.each { |library| libraries << Pacbio::Library.new(library.merge!(tube: Tube.new)) }
+      build_libraries(attributes)
     end
 
     def libraries
@@ -25,9 +25,25 @@ module Pacbio
 
     private
 
+    # TODO: is there a better way to do this.
+    # We can't create request libraries unless the library exists
+    def build_libraries(libraries_attributes)
+      libraries_attributes.each do |library_attributes|
+        request_attributes = library_attributes.delete(:requests)
+        library = Pacbio::Library.create(library_attributes.merge!(tube: Tube.new))
+        if library.persisted?
+          request_attributes&.each do |request_attribute|
+            library.request_libraries.build(pacbio_request_id: request_attribute[:id], tag_id:
+              request_attribute[:tag].try(:[], :id))
+          end
+        end
+        libraries << library
+      end
+    end
+
     def check_libraries
       if libraries.empty?
-        errors.add('libraries', 'the were no libraries')
+        errors.add('libraries', 'there were no libraries')
         return
       end
 
