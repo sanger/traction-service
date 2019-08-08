@@ -7,9 +7,7 @@ class Tube < ApplicationRecord
   after_create :generate_barcode
 
   scope :by_barcode, ->(*barcodes) { where(barcode: barcodes) }
-
-  scope :saphyr_tubes, -> { where('material_type LIKE ?', 'Saphyr::%') }
-  scope :pacbio_tubes, -> { where('material_type LIKE ?', 'Pacbio::%') }
+  scope :by_pipeline, ->(pipeline) { where('material_type LIKE ?', "#{pipeline.capitalize}::%") }
 
   private
 

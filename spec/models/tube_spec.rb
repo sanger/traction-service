@@ -54,21 +54,16 @@ RSpec.describe Tube, type: :model do
   end
 
   context 'scope' do
-    context 'saphyr_tubes' do
-      let!(:saphyr_library_tubes) { create_list(:tube_with_saphyr_library, 2)}
-      let!(:pacbio_library_tubes) { create_list(:tube_with_pacbio_library, 3)}
+    let!(:saphyr_library_tubes) { create_list(:tube_with_saphyr_library, 2)}
+    let!(:pacbio_library_tubes) { create_list(:tube_with_pacbio_library, 3)}
 
+    context 'by_pipeline saphyr' do
       it 'should return only tubes with saphyr materials' do
-        expect(Tube.saphyr_tubes.length).to eq 2
+        expect(Tube.by_pipeline(:saphyr).length).to eq 2
       end
-    end
 
-    context 'pacbio_tubes' do
-      let!(:saphyr_library_tubes) { create_list(:tube_with_saphyr_library, 2)}
-      let!(:pacbio_library_tubes) { create_list(:tube_with_pacbio_library, 3)}
-
-      it 'should return only tubes with saphyr materials' do
-        expect(Tube.pacbio_tubes.length).to eq 3
+      it 'should return only tubes with pacbio materials' do
+        expect(Tube.by_pipeline(:pacbio).length).to eq 3
       end
     end
 

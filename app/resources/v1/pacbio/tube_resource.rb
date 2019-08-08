@@ -12,7 +12,7 @@ module V1
       filter :barcode, apply: ->(records, value, _options) { records.by_barcode(value) }
 
       def self.records(_options = {})
-        ::Tube.pacbio_tubes
+        ::Tube.by_pipeline(:pacbio)
       end
     end
   end
