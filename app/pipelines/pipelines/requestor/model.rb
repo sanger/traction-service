@@ -19,6 +19,7 @@ module Pipelines
         has_one :sample, through: :request
 
         delegate :name, to: :sample, prefix: :sample
+        delegate :species, to: :sample, prefix: :sample
 
         validates(*to_s.deconstantize.constantize.request_attributes, presence: true)
       end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module V1
-  # MaterialResource
+  # RequestResource
   class RequestResource < JSONAPI::Resource
   end
 end
