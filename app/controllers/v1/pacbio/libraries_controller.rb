@@ -52,9 +52,13 @@ module V1
       def request_param_names(params)
         params.require(:relationships)[:requests].require(:data).map do |request|
           request.permit(:id, :type).to_h.tap do |tag|
-            tag[:tag] = request.require(:relationships)[:tag].require(:data).permit(:id, :type).to_h
+            tag[:tag] = tag_param_names(request)
           end
         end.flatten
+      end
+
+      def tag_param_names(params)
+        params.require(:relationships)[:tag].require(:data).permit(:id, :type).to_h
       end
 
       def render_json(status)
