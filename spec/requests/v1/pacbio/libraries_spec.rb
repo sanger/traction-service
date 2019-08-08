@@ -41,6 +41,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       expect(json['data'][1]['attributes']['concentration']).to eq(library2.concentration)
       expect(json['data'][1]['attributes']['library_kit_barcode']).to eq(library2.library_kit_barcode)
       expect(json['data'][1]['attributes']['fragment_size']).to eq(library2.fragment_size)
+
     end
 
   end
