@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Tube, type: :model do
   context 'on creation' do
     it 'should have a barcode' do
-      tube = create(:tube)
+      tube = create(:tube_with_saphyr_request)
       expect(tube.barcode).to eq "TRAC-#{tube.id}"
     end
   end
@@ -39,17 +39,33 @@ RSpec.describe Tube, type: :model do
 
   describe 'scope - by barcode' do
 
-    let(:sample_tubes) { create_list(:tube, 5)}
-    let(:library_tubes) { create_list(:tube_with_saphyr_library, 5)}
+    let(:saphyr_request_tubes) { create_list(:tube_with_saphyr_request, 5)}
+    let(:saphyr_library_tubes) { create_list(:tube_with_saphyr_library, 5)}
 
     it 'will return the correct tubes' do
-      expect(Tube.by_barcode(sample_tubes.first.barcode).length).to eq(1)
-      expect(Tube.by_barcode(sample_tubes.pluck(:barcode)).length).to eq(5)
-      expect(Tube.by_barcode(sample_tubes.pluck(:barcode).concat(library_tubes.pluck(:barcode))).length).to eq(10)
+      expect(Tube.by_barcode(saphyr_request_tubes.first.barcode).length).to eq(1)
+      expect(Tube.by_barcode(saphyr_request_tubes.pluck(:barcode)).length).to eq(5)
+      expect(Tube.by_barcode(saphyr_request_tubes.pluck(:barcode).concat(saphyr_library_tubes.pluck(:barcode))).length).to eq(10)
     end
 
     it ('will return nothing if barcode is dodgy') do
       expect(Tube.by_barcode('DODGY-BARCODE')).to be_empty
     end
+  end
+
+  context 'scope' do
+    let!(:saphyr_library_tubes) { create_list(:tube_with_saphyr_library, 2)}
+    let!(:pacbio_library_tubes) { create_list(:tube_with_pacbio_library, 3)}
+
+    context 'by_pipeline saphyr' do
+      it 'should return only tubes with saphyr materials' do
+        expect(Tube.by_pipeline(:saphyr).length).to eq 2
+      end
+
+      it 'should return only tubes with pacbio materials' do
+        expect(Tube.by_pipeline(:pacbio).length).to eq 3
+      end
+    end
+
   end
 end
