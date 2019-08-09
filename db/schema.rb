@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_31_070350) do
+ActiveRecord::Schema.define(version: 2019_08_09_103819) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
@@ -58,9 +58,9 @@ ActiveRecord::Schema.define(version: 2019_07_31_070350) do
     t.string "dna_control_complex_box_barcode"
     t.string "comments"
     t.string "uuid"
+    t.integer "system_name", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "system_name", default: 0
   end
 
   create_table "pacbio_well_libraries", force: :cascade do |t|
@@ -79,9 +79,9 @@ ActiveRecord::Schema.define(version: 2019_07_31_070350) do
     t.float "on_plate_loading_concentration"
     t.string "comment"
     t.string "uuid"
+    t.integer "sequencing_mode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "sequencing_mode"
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
 
