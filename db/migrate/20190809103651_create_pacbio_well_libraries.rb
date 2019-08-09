@@ -5,4 +5,5 @@ class CreatePacbioWellLibraries < ActiveRecord::Migration[5.2]
       t.belongs_to :pacbio_library, index: true
     end
   end
+  
 end

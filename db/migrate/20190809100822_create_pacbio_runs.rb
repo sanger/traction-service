@@ -1,4 +1,4 @@
-class CreatePacbioRun < ActiveRecord::Migration[5.2]
+class CreatePacbioRuns < ActiveRecord::Migration[5.2]
   def change
     create_table :pacbio_runs do |t|
       t.string :name
@@ -8,7 +8,7 @@ class CreatePacbioRun < ActiveRecord::Migration[5.2]
       t.string :dna_control_complex_box_barcode
       t.string :comments
       t.string :uuid
-      t.integer :sequencing_mode
+      t.integer :system_name, default: 0
       t.timestamps
     end
   end
