@@ -3,6 +3,9 @@
 # Pacbio namespace
 module Pacbio
   # LibraryFactory
+  # A library factory can create multiple libraries
+  # Each of those libraries can contain one or more requests
+  # Each request within that library must contain a tag
   class LibraryFactory
     include ActiveModel::Model
 
@@ -27,6 +30,11 @@ module Pacbio
 
     # TODO: is there a better way to do this.
     # We can't create request libraries unless the library exists
+    # for each set of library attributes:
+    # * create a library
+    # * if the library is valid. For each request in that library:
+    #   create a request library for each request i.e. create a request
+    #   library link with an associated tag
     def build_libraries(libraries_attributes)
       libraries_attributes.each do |library_attributes|
         request_attributes = library_attributes.delete(:requests)
