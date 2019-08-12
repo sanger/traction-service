@@ -4,13 +4,8 @@ RSpec.describe Messages, type: :model do
 
   describe '#publish' do
 
-    let(:run)         { create(:run_with_chip) }
-    let(:flowcell1)   { create(:flowcell_with_library, chip: run.chip)}
-    let(:flowcell2)   { create(:flowcell_with_library, chip: run.chip)}
-
-    before(:all) do
-      Pipelines.configure(Rails.configuration.pipelines)
-    end
+    let(:flowcell1)   { create(:saphyr_flowcell_with_library) }
+    let(:flowcell2)   { create(:saphyr_flowcell_with_library) }
 
     it 'will publish a single message' do
       expect(BrokerHandle).to receive(:publish).once
