@@ -12,4 +12,4 @@ polymorphism: true
 
 # Exclude specified models. Together with only, this will allow to filter out models on your
 # diagram. Default value: nil. Example: exclude="User,Role"
-exclude: ApplicationRecord
+exclude: "ApplicationRecord,ActiveRecord::InternalMetadata,ActiveRecord::SchemaMigration"
