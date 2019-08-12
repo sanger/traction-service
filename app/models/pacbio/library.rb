@@ -2,6 +2,11 @@
 
 module Pacbio
   # Pacbio::Library
+  # A Pacbio Library is capable of being multiplexed i.e.
+  # is capable of containing several samples in the form of requests.
+  # A library can have many requests but can also belong to many requests
+  # A library can be sequenced in more than one well.
+  # This is achieved using a has many through relationship
   class Library < ApplicationRecord
     include Material
     include Uuidable

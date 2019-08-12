@@ -2,6 +2,8 @@
 
 module Pacbio
   # Pacbio::WellLibrary
+  # Creates associations between wells and libraries
+  # Checks whether the tags in the wells are unique
   class WellLibraryFactory
     include ActiveModel::Model
 

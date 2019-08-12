@@ -4,6 +4,7 @@ require 'pacbio/pacbio'
 
 module Pacbio
   # Pacbio::Request
+  # A request can have many libraries
   class Request < ApplicationRecord
     include Pipelines::Requestor::Model
 
