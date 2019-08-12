@@ -2,7 +2,9 @@
 
 # Saphyr namespace
 module Saphyr
-  # Chip
+  # Saphyr::Chip
+  # A saphyr chip belongs to a saphyr run
+  # A saphyr chip has many (two) flowcells
   class Chip < ApplicationRecord
     belongs_to :run, class_name: 'Saphyr::Run', foreign_key: 'saphyr_run_id',
                      optional: true, inverse_of: :chip

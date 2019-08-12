@@ -3,6 +3,8 @@
 # Saphyr namespace
 module Saphyr
   # LibraryFactory
+  # A library factory can create multiple libraries
+  # Each of those libraries is a material with a tube
   class LibraryFactory
     include ActiveModel::Model
 
