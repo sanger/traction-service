@@ -2,6 +2,7 @@
 
 module Pacbio
   # Pacbio::Well
+  # A well can have many libraries
   class Well < ApplicationRecord
     include Uuidable
 
@@ -32,14 +33,20 @@ module Pacbio
       sequencing_mode == 'CCS'
     end
 
+    # collection of all of the requests for a library
+    # useful for messaging
     def request_libraries
       libraries.collect(&:request_libraries).flatten
     end
 
+    # a collection of all the sample names for a particular well
+    # useful for comments
     def sample_names
       request_libraries.collect(&:request).collect(&:sample_name).join(',')
     end
 
+    # a collection of all the tags for a well
+    # useful to check whether they are unique
     def tags
       request_libraries.collect(&:tag_id)
     end

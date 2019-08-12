@@ -36,6 +36,7 @@ module V1
         @library = (params[:id] && ::Pacbio::Library.find_by(id: params[:id]))
       end
 
+      # TODO: abtsract behaviour for params names into separate library.
       def params_names
         params.require(:data).require(:attributes)[:libraries].map do |param|
           library_params_names(param)
