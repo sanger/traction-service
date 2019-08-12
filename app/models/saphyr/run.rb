@@ -2,7 +2,8 @@
 
 # Saphyr namespace
 module Saphyr
-  # Run
+  # Saphyr::Run
+  # A saphyr run can have a saphyr chip
   class Run < ApplicationRecord
     enum state: %i[pending started completed cancelled]
 
