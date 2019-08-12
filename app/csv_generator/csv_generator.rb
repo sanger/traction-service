@@ -44,6 +44,16 @@ class CSVGenerator
     end
   end
 
+  # TODO: refactor duplication with messages/message.rb
+  # Find the instance value for each field
+  # If the field is a:
+  # * [string]    - return the value
+  # * [model]     - take the value split it by the full stop
+  #                 and recursively send the method to the object
+  #                 e.g. it is object.foo.bar will first evaluate
+  #                 foo and then apply bar
+  # * [constant]  - Takes the constant and applies the method chain
+  #                 to it e.g DateTime.now
   def instance_value(obj, field)
     case field[:type]
     when :string

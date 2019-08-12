@@ -2,7 +2,11 @@
 
 # Saphyr namespace
 module Saphyr
-  # Library
+  # Saphyr::Library
+  # A saphyr library is a material
+  # A saphyr library belongs to a saphyr request
+  # A saphyr library belongs to a saphyr enzyme
+  # A saphyr library can have many saphyr flowcells
   class Library < ApplicationRecord
     include Material
 
