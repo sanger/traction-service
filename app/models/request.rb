@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# request
+# Request
 class Request < ApplicationRecord
   belongs_to :sample
   belongs_to :requestable, polymorphic: true
