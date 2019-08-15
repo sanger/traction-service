@@ -4,10 +4,10 @@ module V1
   module Saphyr
     # LibraryResource
     class LibraryResource < JSONAPI::Resource
-      model_name 'Saphyr::Library'
+      model_name 'Saphyr::Library', add_model_hint: false
 
       attributes :state, :barcode, :sample_name, :enzyme_name, :created_at, :deactivated_at
-      has_one :request
+      has_one :request, class_name: 'Request'
       has_one :tube
 
       def barcode

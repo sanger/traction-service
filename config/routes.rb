@@ -8,29 +8,32 @@ Rails.application.routes.draw do
     jsonapi_resources :tags,    only: %i[index create update destroy]
 
     namespace :saphyr do
-      resources :runs,          only: %i[index create show update destroy]
-      resources :chips,         only: %i[index create show update destroy]
-      resources :flowcells,     only: %i[index create show update destroy]
-      resources :libraries,     only: %i[index create show destroy]
-      resources :enzymes,       only: %i[index]
-      resources :requests,      only: %i[index create update destroy]
+      jsonapi_resources :runs,          only: %i[index create show update destroy]
+      jsonapi_resources :chips,         only: %i[index create show update destroy]
+      jsonapi_resources :flowcells,     only: %i[index create show update destroy]
+      jsonapi_resources :libraries,     only: %i[index create show destroy]
+      jsonapi_resources :enzymes,       only: %i[index]
+      jsonapi_resources :requests,      only: %i[index create update destroy]
       jsonapi_resources :tubes, only: %i[index]
     end
 
     namespace :pacbio do
-      resources :runs do
+      jsonapi_resources :runs do
         %i[index create update destroy]
         get 'sample_sheet', to: 'runs#sample_sheet'
       end
-      resources :plates,              only: %i[index create update destroy]
-      resources :wells,               only: %i[index create update destroy] do
+      jsonapi_resources :plates,        only: %i[index create update destroy]
+      jsonapi_resources :wells,         only: %i[index create update destroy] do
         scope module: :wells do
+          # TODO: converting this to jsonapi_resources causes a resource not
+          # found error.
           resources :libraries, only: %i[create]
         end
       end
-      resources :libraries,           only: %i[index create destroy]
-      resources :requests,            only: %i[index create update destroy]
-      resources :wells,         only: %i[index create update destroy]
+      # TODO: converting this to jsonapi_resources causes test failure
+      resources :libraries,     only: %i[index create destroy]
+      jsonapi_resources :requests,      only: %i[index create update destroy]
+      jsonapi_resources :wells,         only: %i[index create update destroy]
       jsonapi_resources :tubes, only: %i[index]
     end
   end
