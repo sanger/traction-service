@@ -29,7 +29,7 @@ module Pipelines
       end
 
       included do
-        model_name request_model
+        model_name request_model, add_model_hint: false
 
         attributes(*pipeline_const.request_attributes, :sample_name, :barcode,
                    :sample_species, :created_at)
