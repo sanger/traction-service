@@ -6,7 +6,7 @@ module Pacbio
   class Well < ApplicationRecord
     include Uuidable
 
-    enum sequencing_mode: %w[CLR CCS]
+    enum sequencing_mode: { 'CLR' => 0, 'CCS' => 1 }
 
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
                        inverse_of: :wells
