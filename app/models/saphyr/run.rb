@@ -5,7 +5,7 @@ module Saphyr
   # Saphyr::Run
   # A saphyr run can have a saphyr chip
   class Run < ApplicationRecord
-    enum state: %i[pending started completed cancelled]
+    enum state: { pending: 0, started: 1, completed: 2, cancelled: 3 }
 
     has_one :chip, foreign_key: :saphyr_run_id,
                    inverse_of: :run, dependent: :nullify
