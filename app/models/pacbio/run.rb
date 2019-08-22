@@ -5,7 +5,7 @@ module Pacbio
   class Run < ApplicationRecord
     include Uuidable
 
-    enum system_name: ['Sequel II', 'Sequel I']
+    enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1 }
 
     delegate :wells, to: :plate
 
