@@ -30,9 +30,6 @@ module V1
         @model&.deactivated_at&.strftime('%m/%d/%Y %I:%M')
       end
 
-      def self.records(_options = {})
-        ::Saphyr::Library.active
-      end
     end
   end
 end
