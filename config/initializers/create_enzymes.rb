@@ -2,9 +2,9 @@
 
 require Rails.root.join('lib', 'dependent_loader')
 
-DependentLoader.start(:enzymes) do |on|
+DependentLoader.start('saphyr/enzymes') do |on|
   on.success do
-    Enzyme.create(
+    Saphyr::Enzyme.create(
       [
         { name: 'Nb.BbvCI' },
         { name: 'Nb.BsmI' },

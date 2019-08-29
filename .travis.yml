@@ -1,23 +1,49 @@
+# only build if not a tag - this is to prevent builing after a tag is created by deployment
+if: tag IS blank
 language: ruby
+cache:
+  - bundler
+git:
+  depth: false
+  submodules: false
 dist: xenial
 sudo: required
+
+services:
+  - mysql
+
+before_install:
+  - export TZ=Europe/London
+  - date
+  - mysql -e 'CREATE DATABASE traction_service_test;'
+
 before_script:
-- cp config/database.yml.example config/database.yml
-- cp config/mailer.yml.example config/mailer.yml
-- cp config/bunny.yml.example config/bunny.yml
-- bundle exec rake db:reset
-- bundle exec rake db:setup
+  - cp config/database.yml.travis config/database.yml
+  - cp config/mailer.yml.example config/mailer.yml
+  - cp config/bunny.yml.example config/bunny.yml
+  - bundle exec rake db:reset
+
 script:
-- bundle exec rspec
-- bundle exec rubocop
-before_deploy: "./compile-build"
+  - bundle exec rspec
+  - bundle exec rubocop
+
+before_deploy:
+  - ./compile-build
+  - export TAG_NAME=${TRAVIS_BRANCH}/$(date +'%Y-%m-%d/%H%M%S')
+  - git tag "${TAG_NAME}"
+
 deploy:
   provider: releases
+  name: ${TAG_NAME}
+  skip_cleanup: true
+  file: release.tar.gz
   api_key:
     secure: CfZ2EH5ESqW+4C6zJLSV7OM25BTb9SGM7/gSBCyiD9U7rZxllulmPj8A8Tt4yPm8mA4hmkz/P4Gx6OydqgYYgXhuiPwyQSOQIOhWI84rdy/ReFNVvN24YBSJKBvQEI9GiLEr9I07DX3wX8CuU+82sZ067z6xaFEye0Cwm0NSy6MuPVggIhKlFWtEJm1FpbcdCi4zFhQIDM6H6B29AQ/1ElEfPIZSAwiVG5FemH3N9yFLXdY8y8y6iiI781TzBoufwf4/ohUZKN77LIlhCuvTCMRrL7kMtOAM9xp+5F9X5WuUIHlVEmKpXqNiJeuQhhWvVaHqEOGLz5ir3SXgwFmcmGxdXEHjqVZYCi8rLzW3tg/LOjnTmk1RDvY39r0eyMnirhO+5hDQHizICf5cr0hBWGDfkIBUmjL1IV0O0jwKgdYaUvauv0+Cb2vBdKSbiH7y73ZNtmT5UBhBc9zVZKETquiJNZhtywgNj0/x75X8kGPL0UKBUzkF4A1Am/czmQwFrf0xZRXV4HfITqDMitZciW4mgJ56JvATBxXpHM2xEbJaGzFriJAkGv15mfRbSNacLh3Y1m6uB8JDtHqr1TuQ0UegNSZeDF5T64Ek4rV68yBRLAu4+JG0EYWNkvgWN8m9l5bw1J/zQnORkqNlKoVhQFtE99cr8YolnZA+Km9saEQ=
-  file: release.tar.gz
-  file_glob: true
-  skip_cleanup: true
   on:
-    tags: true
     repo: sanger/traction-service
+    all_branches: true
+    condition: $TRAVIS_BRANCH =~ ^uat|master$ # only build a release on uat and master branches
+
+notifications:
+  slack:
+    secure: w6bQVdf/bOmp01Oa4FESHbIyHgmnchFXb+JGaBqd6Hf+KnilYlhGtY5YisXpM4Gvja0URjIN3/6jWFl9XeiaGSkH6z+HyRFtwfx1YrQODPOKQMwgjx872jQuhEOjsCE66KK+lnEHuGBxj864rJzMPGlEg96KHanH2VtU0L/bC2e2oE+ng9/rNqkM0rT94E/tFoddTUEBJkG4CrDtvsx1J6CwFM2Oi6TwYaRAJQcFOTzIWpPJm2FoO6jzNcOfrpP1sGav30G+WMWXjU39toY06j8yOm3iqovTeTBH+WdqkImvcCXqpkvIf/QW51v5iSHzKPR9tI0lq7HLbWm4cqXPgSZlMppwR4ZUJDNiB3xX7jLqN7sRHHWWCQufJ4HhjVIYOwpuxWz8t72HZKYMwixOydkkY1Boy3fSCsTeA7y7gg8kw97JQXcs+1WYgZIGz0sao7zxcWOMhplNWFlfJ53FFVDuuHj5+pM9rDqtmOSwU4IKDk0TK/PagAJboBmet9X6n/pf+PPXBIyY1QwNK0mGZKgloo4AwAFQKlMzyyq+Je6MHwSoIf/9NJT/RmNmCEd6t/cf2sp/Oz9pB38aj7id++LL3LyfsMMTSdV/Zd+mT6hjCH7kkFGs6/6b+arKq4PotEoS2uRkNDDpBb0oYHS9TsdNMuM0KlBkjcFy1E/dnXc=

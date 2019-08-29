@@ -1,15 +1,15 @@
 default: &default
   saphyr:
     message:
-      lims: Traction
+      lims: &lims Traction
       key: bmap_flowcell
       fields:
-        sample_uuid:
+        sample_uuid: &sample_uuid
           type: :model
-          value: library.sample.external_id
-        study_uuid: 
+          value: library.request.sample.external_id
+        study_uuid: &study_uuid
           type: :model
-          value: library.sample.external_study_id
+          value: library.request.external_study_id
         experiment_name:
           type: :model
           value: chip.run.name
@@ -34,9 +34,112 @@ default: &default
         instrument_name:
           type: :string
           value: saphyr
-        last_updated:
+        last_updated: &timestamp
           type: :constant
-          value: &timestamp Time.current
+          value: Time.current
+  pacbio:
+    message:
+      lims: *lims
+      key: pac_bio_run
+      fields:
+        last_updated: *timestamp
+        id_pac_bio_run_lims:
+          type: :model
+          value: run.id
+        pac_bio_run_uuid:
+          type: :model
+          value: run.uuid
+        plate_barcode:
+          type: :model
+          value: barcode
+        plate_uuid_lims:
+          type: :model
+          value: uuid
+        wells:
+          type: :array
+          value: wells
+          children:
+            well_label:
+              type: :model
+              value: position
+            well_uuid_lims:
+              type: :model
+              value: uuid
+            samples:
+              type: :array
+              value: request_libraries
+              children:
+                cost_code:
+                  type: :model
+                  value: request.cost_code
+                pac_bio_library_tube_id_lims:
+                  type: :model
+                  value: library.id
+                pac_bio_library_tube_uuid:
+                  type: :model
+                  value: library.uuid
+                pac_bio_library_tube_name:
+                  type: :model
+                  value: request.sample_name
+                sample_uuid:
+                  type: :model
+                  value: request.sample.external_id
+                study_uuid:
+                  type: :model
+                  value: request.external_study_id
+                tag_sequence:
+                  type: :model
+                  value: tag.oligo
+                tag_set_id_lims:
+                  type: :model
+                  value: tag.group_id
+                tag_identifier:
+                  type: :model
+                  value: tag.id
+                tag_set_name:
+                  type: :model
+                  value: tag.set_name
+    sample_sheet:
+      columns:
+        System Name:
+          type: :model
+          value: plate.run.system_name
+        Run Name:
+          type: :model
+          value: plate.run.name
+        Sample Well:
+          type: :model
+          value: position
+        Sample Name:
+          type: :model
+          value: sample_names
+        Movie Time per SMRT Cell (hours):
+          type: :model
+          value: movie_time
+        Insert Size (bp):
+          type: :model
+          value: insert_size
+        Template Prep Kit (Box Barcode):
+          type: :model
+          value: plate.run.template_prep_kit_box_barcode
+        Binding Kit (Box Barcode):
+          type: :model
+          value: plate.run.binding_kit_box_barcode
+        Sequencing Kit (Box Barcode):
+          type: :model
+          value: plate.run.sequencing_kit_box_barcode
+        Sequencing Mode (CLR/ CCS):
+          type: :model
+          value: sequencing_mode
+        On plate loading concentration (mP):
+          type: :model
+          value: on_plate_loading_concentration
+        DNA Control Complex (Box Barcode):
+          type: :model
+          value: plate.run.dna_control_complex_box_barcode
+        Generate CCS Data:
+          type: :model
+          value: generate_ccs_data
 
 development:
   <<: *default

@@ -28,8 +28,12 @@
 
 .DS_Store
 
+# Ignore sensitive config files
 config/database.yml
 config/mailer.yml
 config/bunny.yml
 
 release.tar.gz
+
+.yardoc/
+doc/
