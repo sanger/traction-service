@@ -34,3 +34,6 @@ config/mailer.yml
 config/bunny.yml
 
 release.tar.gz
+
+.yardoc/
+doc/

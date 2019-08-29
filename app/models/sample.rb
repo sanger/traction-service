@@ -2,12 +2,12 @@
 
 # Sample
 class Sample < ApplicationRecord
-  include Material
+  has_many :requests, dependent: :nullify
 
   attr_readonly :name
-  validates :name, :external_id, :external_study_id, :species, presence: true
+
+  validates :name, :external_id, :species, presence: true
   validates :name, uniqueness: true
-  has_many :libraries, dependent: :nullify
 
   def active?
     deactivated_at.nil?
