@@ -4,10 +4,6 @@ require 'rails_helper'
 
 RSpec.describe Sample, type: :model do
 
-  context 'polymorphic behavior' do
-    it_behaves_like "material"
-  end
-
   context 'on creation' do
     it 'should be active' do
       expect(create(:sample)).to be_active
@@ -52,13 +48,6 @@ RSpec.describe Sample, type: :model do
       expect(create(:sample)).to be_active
     end
 
-    describe 'external_study_id' do
-
-      it 'must have an external study id' do
-        expect(build(:sample, external_study_id: nil)).not_to be_valid
-      end
-
-    end
   end
 
   context 'on update' do
@@ -70,12 +59,11 @@ RSpec.describe Sample, type: :model do
     end
   end
 
-  context 'libraries' do
-    it 'can have libraries' do
+  context 'requests' do
+    it 'can have requests' do
       sample = create(:sample)
-      lib1 = create(:library, sample: sample)
-      lib2 = create(:library, sample: sample)
-      expect(sample.libraries.length).to eq 2
+      libraries = create_list(:request, 2, sample: sample)
+      expect(sample.requests.length).to eq 2
     end
   end
 

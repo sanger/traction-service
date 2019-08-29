@@ -1,0 +1,15 @@
+# The file type of the generated diagram. PDF output is strongly recommended, other formats may render
+# significantly worse. The available formats depend on your installation of Graphviz. If you set the
+#file type to dot, raw Graphviz instructions are saved in dot format. This does not require Graphviz
+# to be installed. Default value: pdf
+filetype: jpg
+
+# Specifies whether or not to display polymorphic hierarchies. Polymorphic associations are normally
+# displayed as direct relationships. In some cases this may be confusing, because it masks their
+# true nature. Enable this option if polymorphic associations play a crucial role in your domain
+# model. Enabling this option will also display abstract classes. Default value: false
+polymorphism: true
+
+# Exclude specified models. Together with only, this will allow to filter out models on your
+# diagram. Default value: nil. Example: exclude="User,Role"
+exclude: "ApplicationRecord,ActiveRecord::InternalMetadata,ActiveRecord::SchemaMigration"
