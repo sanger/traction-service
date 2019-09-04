@@ -29,7 +29,6 @@ module V1
       def deactivated_at
         @model&.deactivated_at&.strftime('%m/%d/%Y %I:%M')
       end
-
     end
   end
 end
