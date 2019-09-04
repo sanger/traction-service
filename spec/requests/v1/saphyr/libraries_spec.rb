@@ -41,12 +41,12 @@ RSpec.describe 'LibrariesController', type: :request do
       let!(:tube3) { create(:tube, material: library3)}
       let!(:tube4) { create(:tube, material: library4)}
 
-      it 'only returns active libraries' do
+      it 'returns all libraries' do
         get v1_saphyr_libraries_path, headers: json_api_headers
 
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data'].length).to eq(3)
+        expect(json['data'].length).to eq(4)
       end
     end
   end
