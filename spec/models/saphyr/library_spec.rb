@@ -6,18 +6,16 @@ RSpec.describe Saphyr::Library, type: :model, saphyr: true do
     it_behaves_like "material"
   end
 
+  context 'library' do
+    let(:library_factory) { :saphyr_library }
+    let(:library_model)   { Saphyr::Library}
+
+    it_behaves_like 'library'
+  end
+
   context 'on creation' do
 
     let(:request) { create(:saphyr_request)}
-
-    it 'should be active' do
-      sample = create(:sample)
-      expect(create(:saphyr_library, request: request)).to be_active
-    end
-
-    it 'should set state to pending' do
-      expect(create(:library_no_state).state).to eq('pending')
-    end
 
     it 'should have a request' do
       expect(create(:saphyr_library, request: request).request).to eq(request)
@@ -46,7 +44,6 @@ RSpec.describe Saphyr::Library, type: :model, saphyr: true do
         library = create(:saphyr_library)
         flowcell = create(:saphyr_flowcell, library: library)
         expect(library.flowcells).to eq [flowcell]
-
       end
 
       it 'doesnt have to have a flowcell' do
@@ -65,34 +62,4 @@ RSpec.describe Saphyr::Library, type: :model, saphyr: true do
     end
   end
 
-  context 'deactivate' do
-
-    let(:request) { create(:saphyr_request)}
-
-    it 'can be deactivated' do
-      library = create(:saphyr_library, request: request)
-      expect(library.deactivate).to eq true
-      expect(library.deactivated_at).to be_present
-      expect(library).not_to be_active
-    end
-
-    it 'returns false if already deactivated' do
-      library = create(:saphyr_library, request: request)
-      library.deactivate
-      expect(library.deactivate).to eq false
-    end
-
-  end
-
-  context 'scope' do
-    context 'active' do
-      it 'should return only active libraries' do
-        library = create(:saphyr_library)
-        library = create(:saphyr_library)
-        library = create(:saphyr_library, deactivated_at: DateTime.now)
-        expect(Saphyr::Library.active.length).to eq 2
-      end
-    end
-
-  end
 end
