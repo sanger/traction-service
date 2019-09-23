@@ -9,6 +9,7 @@ module Saphyr
   # A saphyr library can have many saphyr flowcells
   class Library < ApplicationRecord
     include Material
+    include Librarian
 
     belongs_to :request, class_name: 'Saphyr::Request',
                          foreign_key: 'saphyr_request_id', inverse_of: false
@@ -19,22 +20,5 @@ module Saphyr
                          foreign_key: 'saphyr_library_id', inverse_of: :library,
                          dependent: :nullify
 
-    before_create :set_state
-
-    scope :active, -> { where(deactivated_at: nil) }
-
-    def active?
-      deactivated_at.nil?
-    end
-
-    def set_state
-      self.state = 'pending'
-    end
-
-    def deactivate
-      return false unless active?
-
-      update(deactivated_at: DateTime.current)
-    end
   end
 end

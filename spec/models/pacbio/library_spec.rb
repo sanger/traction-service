@@ -22,6 +22,10 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
     expect(create(:pacbio_library).uuid).to be_present
   end
 
+  it 'can have sample names' do
+    expect(create(:pacbio_library).sample_names).to be_truthy
+  end
+
   context 'wells' do
     it 'can have one or more' do
       library = create(:pacbio_library)
@@ -32,15 +36,31 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
 
   context 'requests' do
 
-    let(:library) { create(:library)}
+    let!(:library) { create(:pacbio_library)}
 
-    it 'can have one or more' do
-      library = create(:pacbio_library)
+    before(:each) do
       (1..5).each do |i|
         create(:pacbio_request_library, request: create(:pacbio_request), library: library, tag: create(:tag))
       end
+    end
+
+    it 'can have one or more' do
       expect(library.requests.count).to eq(5)
     end
+
+    it 'will have some sample names' do
+      sample_names = library.sample_names.split(',')
+      expect(sample_names.length).to eq(5)
+      expect(sample_names.any?(&:blank?)).to be_falsey
+    end
+  end
+
+  context 'library' do
+
+    let(:library_factory) { :pacbio_library }
+    let(:library_model) { Pacbio::Library}
+
+    it_behaves_like 'library'
   end
 
 end
