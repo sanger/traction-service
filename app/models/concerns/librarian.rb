@@ -4,7 +4,7 @@
 module Librarian
   extend ActiveSupport::Concern
 
-  included do 
+  included do
     before_create :set_state
 
     scope :active, -> { where(deactivated_at: nil) }
