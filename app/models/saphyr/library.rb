@@ -19,6 +19,5 @@ module Saphyr
     has_many :flowcells, class_name: 'Saphyr::Flowcell',
                          foreign_key: 'saphyr_library_id', inverse_of: :library,
                          dependent: :nullify
-
   end
 end
