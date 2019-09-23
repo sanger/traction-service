@@ -10,6 +10,7 @@ module Pacbio
   class Library < ApplicationRecord
     include Material
     include Uuidable
+    include Librarian
 
     validates :volume, :concentration, :library_kit_barcode, :fragment_size, presence: true
 
@@ -21,5 +22,13 @@ module Pacbio
                                  inverse_of: :library, autosave: true
 
     has_many :requests, class_name: 'Pacbio::Request', through: :request_libraries
+
+
+    def sample_names
+      return '' if requests.blank?
+
+      requests.collect(&:sample_name).join(',')
+    end
+
   end
 end
