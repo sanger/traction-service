@@ -10,6 +10,7 @@ module Saphyr
   class Request < ApplicationRecord
     include Pipelines::Requestor::Model
 
-     has_many :libraries, class_name: 'Saphyr::Library', foreign_key: :saphyr_request_id
+    has_many :libraries, class_name: 'Saphyr::Library', foreign_key: :saphyr_request_id,
+                         dependent: :nullify, inverse_of: :request
   end
 end
