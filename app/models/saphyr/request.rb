@@ -9,5 +9,7 @@ module Saphyr
   # A saphyr request can have one sample
   class Request < ApplicationRecord
     include Pipelines::Requestor::Model
+
+     has_many :libraries, class_name: 'Saphyr::Library', foreign_key: :saphyr_request_id
   end
 end
