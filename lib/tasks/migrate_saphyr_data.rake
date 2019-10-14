@@ -9,14 +9,14 @@ namespace :migrate_saphyr_data do
     table.each do |row|
       created_at = Date.parse(row['created_at'])
       sample = Sample.create!(name: row['name'], species: row['species'], external_id: row['external_id'], created_at: created_at)
-      request = Saphyr::Request.create!(sample: sample, external_study_id: row['external_study_id'], created_at: created_at, tube: Tube.new)
+      Saphyr::Request.create!(sample: sample, external_study_id: row['external_study_id'], created_at: created_at, tube: Tube.new)
     end
 
     # libraries
     table = CSV.parse(File.read(Rails.root.join('lib', 'data', 'saphyr_libraries.csv')), headers: true)
     table.each do |row|
       sample = Sample.find_by(name: row['sample_name'])
-      library = Saphyr::Library.create!(request: sample.requests.first.requestable, enzyme: Saphyr::Enzyme.find_by(name: row['enzyme']), created_at: Date.parse(row['created_at']), tube: Tube.new)
+      Saphyr::Library.create!(request: sample.requests.first.requestable, enzyme: Saphyr::Enzyme.find_by(name: row['enzyme']), created_at: Date.parse(row['created_at']), tube: Tube.new)
     end
 
     # runs
@@ -31,14 +31,14 @@ namespace :migrate_saphyr_data do
       request = sample.requests.first.requestable
       enzyme = Saphyr::Enzyme.find_by(name: row['flowcell_1_enzyme'])
       library = request.libraries.find_by(saphyr_enzyme_id: enzyme.id)
-      flowcell = Saphyr::Flowcell.create(position: 1, chip: chip, library: library, created_at: created_at)
+      Saphyr::Flowcell.create(position: 1, chip: chip, library: library, created_at: created_at)
 
       # flowcell2
       sample = Sample.find_by(name: row['flowcell_2_sample_name'])
       request = sample.requests.first.requestable
       enzyme = Saphyr::Enzyme.find_by(name: row['flowcell_2_enzyme'])
       library = request.libraries.find_by(saphyr_enzyme_id: enzyme.id)
-      flowcell = Saphyr::Flowcell.create(position: 2, chip: chip, library: library, created_at: created_at)
+      Saphyr::Flowcell.create(position: 2, chip: chip, library: library, created_at: created_at)
     end
   end
 
