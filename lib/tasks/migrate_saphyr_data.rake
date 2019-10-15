@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
 require 'csv'
+require Rails.root.join('app', 'pipelines', 'pipelines')
 
 namespace :migrate_saphyr_data do
   task create_runs: :environment do |_t|
+
+    Pipelines.configure(Rails.configuration.pipelines)
+
     # samples and requests
     table = CSV.parse(File.read(Rails.root.join('lib', 'data', 'saphyr_samples.csv')), headers: true)
     table.each do |row|
