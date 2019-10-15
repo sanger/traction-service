@@ -5,7 +5,6 @@ require Rails.root.join('app', 'pipelines', 'pipelines')
 
 namespace :migrate_saphyr_data do
   task create_runs: :environment do |_t|
-
     Pipelines.configure(Rails.configuration.pipelines)
 
     # samples and requests
