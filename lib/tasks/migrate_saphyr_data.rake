@@ -5,7 +5,9 @@ require Rails.root.join('app', 'pipelines', 'pipelines')
 
 namespace :migrate_saphyr_data do
   task create_runs: :environment do |_t|
-    Pipelines.configure(Rails.configuration.pipelines)
+    configuration = Pipelines::Configuration.new(Rails.configuration.pipelines)
+
+    p configuration.saphyr
 
     # samples and requests
     table = CSV.parse(File.read(Rails.root.join('lib', 'data', 'saphyr_samples.csv')), headers: true)
@@ -35,7 +37,7 @@ namespace :migrate_saphyr_data do
       enzyme = Saphyr::Enzyme.find_by(name: row['flowcell_1_enzyme'])
       library = request.libraries.find_by(saphyr_enzyme_id: enzyme.id)
       flowcell = Saphyr::Flowcell.create(position: 1, chip: chip, library: library, created_at: created_at)
-      Messages.publish(flowcell, Pipelines.saphyr.message)
+      Messages.publish(flowcell, configuration.saphyr.message)
 
       # flowcell2
       sample = Sample.find_by(name: row['flowcell_2_sample_name'])
@@ -43,7 +45,7 @@ namespace :migrate_saphyr_data do
       enzyme = Saphyr::Enzyme.find_by(name: row['flowcell_2_enzyme'])
       library = request.libraries.find_by(saphyr_enzyme_id: enzyme.id)
       flowcell = Saphyr::Flowcell.create(position: 2, chip: chip, library: library, created_at: created_at)
-      Messages.publish(flowcell, Pipelines.saphyr.message)
+      Messages.publish(flowcell, configuration.saphyr.message)
     end
   end
 
