@@ -31,14 +31,16 @@ namespace :migrate_saphyr_data do
       request = sample.requests.first.requestable
       enzyme = Saphyr::Enzyme.find_by(name: row['flowcell_1_enzyme'])
       library = request.libraries.find_by(saphyr_enzyme_id: enzyme.id)
-      Saphyr::Flowcell.create(position: 1, chip: chip, library: library, created_at: created_at)
+      flowcell = Saphyr::Flowcell.create(position: 1, chip: chip, library: library, created_at: created_at)
+      Messages.publish(flowcell, Pipelines.saphyr.message)
 
       # flowcell2
       sample = Sample.find_by(name: row['flowcell_2_sample_name'])
       request = sample.requests.first.requestable
       enzyme = Saphyr::Enzyme.find_by(name: row['flowcell_2_enzyme'])
       library = request.libraries.find_by(saphyr_enzyme_id: enzyme.id)
-      Saphyr::Flowcell.create(position: 2, chip: chip, library: library, created_at: created_at)
+      flowcell = Saphyr::Flowcell.create(position: 2, chip: chip, library: library, created_at: created_at)
+      Messages.publish(flowcell, Pipelines.saphyr.message)
     end
   end
 
