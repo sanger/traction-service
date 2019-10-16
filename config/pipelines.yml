@@ -149,3 +149,6 @@ test:
 
 staging:
   <<: *default
+
+production:
+  <<: *default
