@@ -9,6 +9,8 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
     let!(:library1)         { create(:pacbio_library) }
     let!(:request_library)  { create(:pacbio_request_library, library: library1, request: request, tag: tag)}
     let!(:library2)         { create(:pacbio_library) }
+    let!(:tube1) { create(:tube, material: library1)}
+    let!(:tube2) { create(:tube, material: library2)}
 
     it 'returns a list of libraries' do
       get v1_pacbio_libraries_path, headers: json_api_headers
@@ -26,6 +28,12 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       expect(json['data'][0]['attributes']['concentration']).to eq(library1.concentration)
       expect(json['data'][0]['attributes']['library_kit_barcode']).to eq(library1.library_kit_barcode)
       expect(json['data'][0]['attributes']['fragment_size']).to eq(library1.fragment_size)
+      expect(json['data'][0]['attributes']['sample_names']).to eq(library1.sample_names)
+
+      expect(json['data'][0]['attributes']['state']).to eq(library1.state)
+      expect(json['data'][0]['attributes']['barcode']).to eq(library1.tube.barcode)
+      expect(json['data'][0]["attributes"]["created_at"]).to eq(library1.created_at.strftime("%m/%d/%Y %I:%M"))
+      expect(json['data'][0]["attributes"]["deactivated_at"]).to eq(nil)
 
       requests = json['data'][0]['relationships']['requests']
       expect(requests.length).to eq(1)
