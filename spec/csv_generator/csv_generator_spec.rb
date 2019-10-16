@@ -16,23 +16,22 @@ RSpec.describe CSVGenerator, type: :model do
       expect(true).to be_truthy
     end
 
-    it 'must return a csv file' do
-      csv_file = csv.generate_sample_sheet
-      expect(csv_file.class).to eq CSV
+    it 'must return a csv string' do
+      csv_string = csv.generate_sample_sheet
+      expect(csv_string.class).to eq String
     end
 
     it 'must have the correct headers' do
-      csv_file = csv.generate_sample_sheet
-      headers = CSV.read(csv_file.path)[0]
+      csv_string = csv.generate_sample_sheet
+      headers = CSV.parse(csv_string)[0]
 
       expected_headers = Pipelines.pacbio.sample_sheet.columns.map(&:first)
       expect(headers).to eq(expected_headers)
     end
 
-    
     it 'must have the correct body' do
-      csv_file = csv.generate_sample_sheet
-      array_of_rows = CSV.read(csv_file.path)
+      csv_string = csv.generate_sample_sheet
+      array_of_rows = CSV.parse(csv_string)
 
       well_data_1 = array_of_rows[1]
       well_data_2 = array_of_rows[2]

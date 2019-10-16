@@ -12,9 +12,7 @@ class CSVGenerator
   # using run and configuration attributes
   # to generate headers and data
   def generate_sample_sheet
-    file = nil
-    # wb => write binary
-    CSV.open('sample_sheet.csv', 'wb') do |csv|
+    CSV.generate do |csv|
       csv << csv_headers
 
       # assuming each well has one library; this may change in the future
@@ -22,10 +20,7 @@ class CSVGenerator
         # new row per well i.e sample
         csv << csv_data(well)
       end
-
-      file = csv
     end
-    file
   end
 
   private

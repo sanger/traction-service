@@ -64,7 +64,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
       run.generate_sample_sheet
     end
 
-    it 'must return a CSV' do
+    it 'must return a String' do
       well1 = create(:pacbio_well_with_libraries, sequencing_mode: 'CCS')
       well2 = create(:pacbio_well_with_libraries, sequencing_mode: 'CLR')
 
@@ -72,7 +72,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
       run = create(:pacbio_run, plate: plate)
 
       sample_sheet = run.generate_sample_sheet
-      expect(sample_sheet.class).to eq CSV
+      expect(sample_sheet.class).to eq String
     end
   end
 
