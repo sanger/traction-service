@@ -27,6 +27,7 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][0]["attributes"]["sequencing_kit_box_barcode"]).to eq(run1.sequencing_kit_box_barcode)
       expect(json['data'][0]['attributes']['dna_control_complex_box_barcode']).to eq(run1.dna_control_complex_box_barcode)
       expect(json['data'][0]['attributes']['system_name']).to eq(run1.system_name)
+      expect(json['data'][0]['attributes']['created_at']).to eq(run1.created_at.strftime("%m/%d/%Y %H:%M"))
 
       expect(json['data'][1]['attributes']['name']).to eq(run2.name)
       expect(json['data'][1]['attributes']['template_prep_kit_box_barcode']).to eq(run2.template_prep_kit_box_barcode)
@@ -34,6 +35,7 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][1]["attributes"]["sequencing_kit_box_barcode"]).to eq(run2.sequencing_kit_box_barcode)
       expect(json['data'][1]['attributes']['dna_control_complex_box_barcode']).to eq(run2.dna_control_complex_box_barcode)
       expect(json['data'][1]['attributes']['system_name']).to eq(run2.system_name)
+      expect(json['data'][1]['attributes']['created_at']).to eq(run2.created_at.strftime("%m/%d/%Y %H:%M"))
     end
 
     it 'returns the correct relationships' do
