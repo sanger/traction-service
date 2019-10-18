@@ -53,6 +53,7 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
       expect(sample_names.length).to eq(5)
       expect(sample_names.any?(&:blank?)).to be_falsey
     end
+
   end
 
   context 'library' do
