@@ -66,8 +66,9 @@ module Messages
       end
     end
 
+    # we need to do this via try as certain fields may be nil
     def evaluate_method_chain(object, chain)
-      chain.inject(object, :send)
+      chain.inject(object) { |o, meth| o.try(:send, meth) }
     end
   end
 end
