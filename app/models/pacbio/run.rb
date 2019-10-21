@@ -5,6 +5,8 @@ module Pacbio
   class Run < ApplicationRecord
     include Uuidable
 
+    enum state: { pending: 0, started: 1, completed: 2, cancelled: 3 }
+
     enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1 }
 
     delegate :wells, to: :plate
@@ -15,6 +17,8 @@ module Pacbio
     validates :name, :template_prep_kit_box_barcode, :binding_kit_box_barcode,
               :sequencing_kit_box_barcode, :dna_control_complex_box_barcode,
               :system_name, presence: true
+
+    scope :active, -> { where(deactivated_at: nil) }
 
     def comments
       super || wells.collect(&:summary).join(';')
