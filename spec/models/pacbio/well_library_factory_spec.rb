@@ -43,6 +43,8 @@ RSpec.describe Pacbio::WellLibraryFactory, type: :model, pacbio: true do
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages).to_not be_empty
     end
+
+    it 'produces an error if there are multiples requests in any of the libraries and they do not have tags'
   end
 
   context '#save' do
