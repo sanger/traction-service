@@ -169,16 +169,24 @@ RSpec.describe 'WellsController', type: :request do
   end
 
   context '#destroy' do
-    let!(:well) { create(:pacbio_well) }
+    let!(:pacbio_well_library) { create(:pacbio_well_library) }
 
     context 'on success' do
       it 'has a status of no content' do
-        delete v1_pacbio_well_path(well), headers: json_api_headers
+        delete v1_pacbio_well_path(pacbio_well_library), headers: json_api_headers
         expect(response).to have_http_status(:no_content)
       end
 
       it 'deletes the well' do
-        expect { delete v1_pacbio_well_path(well), headers: json_api_headers }.to change { Pacbio::Well.count }.by(-1)
+        expect { delete v1_pacbio_well_path(pacbio_well_library), headers: json_api_headers }.to change { Pacbio::Well.count }.by(-1)
+      end
+
+      it 'deletes the well library' do
+        expect { delete v1_pacbio_well_path(pacbio_well_library), headers: json_api_headers }.to change { Pacbio::WellLibrary.count }.by(-1)
+      end
+
+      it 'does not delete the library' do
+        expect { delete v1_pacbio_well_path(pacbio_well_library), headers: json_api_headers }.to change { Pacbio::Library.count }.by(0)
       end
     end
 
