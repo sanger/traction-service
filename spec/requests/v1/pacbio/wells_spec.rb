@@ -173,6 +173,7 @@ RSpec.describe 'WellsController', type: :request do
 
     context 'on success' do
       it 'has a status of no content' do
+        puts pacbio_well_library
         delete v1_pacbio_well_path(pacbio_well_library), headers: json_api_headers
         expect(response).to have_http_status(:no_content)
       end
