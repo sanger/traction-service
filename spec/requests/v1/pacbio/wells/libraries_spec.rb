@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe 'Well::LibrariesController', type: :request, pacbio: true do
 
   let(:well)                  { create(:pacbio_well) }
-  let(:request_libraries)     { create_list(:pacbio_request_library, 5)}
+  let(:request_libraries)     { create_list(:pacbio_request_library_with_tag, 5)}
   let(:dodgy_request_library) { create(:pacbio_request_library, tag: request_libraries.first.tag) }
 
   context '#create' do

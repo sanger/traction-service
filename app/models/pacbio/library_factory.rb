@@ -9,7 +9,7 @@ module Pacbio
   class LibraryFactory
     include ActiveModel::Model
 
-    validate :check_libraries
+    validate :check_libraries, :check_tags
 
     def initialize(attributes = [])
       build_libraries(attributes)
@@ -60,6 +60,16 @@ module Pacbio
 
         library.errors.each do |k, v|
           errors.add(k, v)
+        end
+      end
+    end
+
+    def check_tags
+      libraries.each do |library|
+        next if library.request_libraries.length < 2
+
+        if library.request_libraries.any? { |rl| rl.tag_id.nil? }
+          errors.add('tag', 'must be present')
         end
       end
     end
