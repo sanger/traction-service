@@ -14,10 +14,10 @@ module Pacbio
     belongs_to :library, class_name: 'Pacbio::Library', foreign_key: :pacbio_library_id,
                          inverse_of: :request_libraries
     # TODO: make this taggable
-    belongs_to :tag, class_name: '::Tag', foreign_key: :tag_id, inverse_of: false
+    belongs_to :tag, class_name: '::Tag', foreign_key: :tag_id, inverse_of: false, optional: true
 
     delegate :sample_name, to: :request
-    delegate :oligo, :group_id, :set_name, :id, to: :tag, prefix: :tag
+    delegate :oligo, :group_id, :set_name, :id, to: :tag, prefix: :tag, allow_nil: true
 
     validates :tag, uniqueness: { scope: :library,
                                   message: 'need to be unique within a library' }

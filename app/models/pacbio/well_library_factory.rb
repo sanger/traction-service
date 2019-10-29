@@ -35,8 +35,10 @@ module Pacbio
       end
     end
 
+    # don't need to worry about nils
     def check_tags
-      all_tags = well.tags + libraries.collect(&:request_libraries).flatten.collect(&:tag_id)
+      all_tags = (well.tags +
+        libraries.collect(&:request_libraries).flatten.collect(&:tag_id)).compact
       return if all_tags.length == all_tags.uniq.length
 
       errors.add(:tags, 'are not unique within the libraries')
