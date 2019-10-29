@@ -36,8 +36,8 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
       expect(factory.errors.full_messages).to_not be_empty
     end
 
-    it 'produces an error if any of the associated requests are invalid' do
-      library_attributes << attributes_for(:pacbio_library).merge(requests: [{id: requests.first.id, type: 'requests'}])
+    it 'produces an error if there is more than one request and they dont have tags' do
+      library_attributes << attributes_for(:pacbio_library).merge(requests: [{id: requests.first.id, type: 'requests'}, {id: requests.last.id, type: 'requests'}])
       factory = Pacbio::LibraryFactory.new(library_attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages).to_not be_empty
