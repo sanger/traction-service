@@ -44,7 +44,8 @@ RSpec.describe 'WellsController', type: :request do
 
   context '#create' do
 
-    let(:plate) { create(:pacbio_plate) }
+    let(:plate)   { create(:pacbio_plate) }
+    let(:library) { create(:pacbio_library)}
 
     context 'when creating a single well' do
       context 'on success' do
@@ -66,6 +67,15 @@ RSpec.describe 'WellsController', type: :request do
                           type: 'plate',
                           id: plate.id
                         }
+                      },
+                      libraries: {
+                        data: [
+                          {
+                            type: 'libraries',
+                            id: library.id
+                          }
+
+                        ]
                       }
                     }
                   }
@@ -83,6 +93,17 @@ RSpec.describe 'WellsController', type: :request do
         it 'creates a well' do
           expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
         end
+
+        it 'creates a plate' do
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          expect(Pacbio::Well.first.plate).to eq(plate)
+        end
+
+        it 'creates libraries' do
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          expect(Pacbio::Well.first.libraries.first).to eq(library)
+        end
+
 
       end
 

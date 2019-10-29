@@ -48,12 +48,22 @@ module V1
         params.permit(:movie_time, :insert_size, :row,
                       :on_plate_loading_concentration, :column,
                       :comment, :sequencing_mode, :relationships).to_h.tap do |well|
-          well[:plate] = plate_params_names(params) if params[:relationships].present?
+          if params[:relationships].present?
+            well[:plate] = plate_params_names(params)
+            well[:libraries] = library_param_names(params) unless
+            params.dig(:relationships, :libraries).nil?
+          end
         end
       end
 
       def plate_params_names(params)
         params.require(:relationships)[:plate].require(:data).permit(:id, :type).to_h
+      end
+
+      def library_param_names(params)
+        params.require(:relationships)[:libraries].require(:data).map do |library|
+          library.permit(:id, :type).to_h
+        end.flatten
       end
 
       def well
