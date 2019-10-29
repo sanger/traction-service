@@ -46,67 +46,75 @@ RSpec.describe 'WellsController', type: :request do
 
     let(:plate) { create(:pacbio_plate) }
 
-    context 'on success' do
-      let(:body) do
-        {
-          data: {
-            type: "wells",
-            attributes: {
-              'row': 'A',
-              'column': '01',
-              'movie_time': 8,
-              'insert_size': 8000,
-              'on_plate_loading_concentration': 8.35,
-              'pacbio_plate_id': plate.id,
-              'sequencing_mode': 'CLR'
+    context 'when creating a single well' do
+      context 'on success' do
+        let(:body) do
+          {
+            data: {
+              type: "wells",
+              attributes: {
+                wells: [
+                  { row: 'A',
+                    column: '1',
+                    movie_time: 8,
+                    insert_size: 8000,
+                    on_plate_loading_concentration: 8.35,
+                    pacbio_plate_id: plate.id,
+                    sequencing_mode: 'CLR'
+                  }
+                ]
+              }
             }
-          }
-        }.to_json
+          }.to_json
+        end
+
+        it 'has a created status' do
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:created)
+        end
+
+        it 'creates a well' do
+          expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
+        end
+
       end
 
-      it 'has a created status' do
-        post v1_pacbio_wells_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:created)
-      end
+      context 'on failure' do
+        let(:body) do
+          {
+            data: {
+              type: "wells",
+              attributes: {
+                wells: [
+                  row: 'A',
+                  column: '01',
+                  insert_size: 8000,
+                  on_plate_loading_concentration: 8.35,
+                  pacbio_plate_id: plate.id
+                ]
+              }
+            }
+          }.to_json
+        end
 
-      it 'creates a well' do
-        expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
-      end
+        it 'has a ok unprocessable_entity' do
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
 
+        it 'does not create a well' do
+          expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Well, :count)
+        end
+
+        it 'has the correct error messages' do
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['data']['errors']
+          expect(errors['movie_time']).to be_present
+        end
+      end
     end
 
-    context 'on failure' do
-      let(:body) do
-        {
-          data: {
-            type: "wells",
-            attributes: {
-              'row': 'A',
-              'column': '01',
-              'insert_size': 8000,
-              'on_plate_loading_concentration': 8.35,
-              'pacbio_plate_id': plate.id
-            }
-          }
-        }.to_json
-      end
-
-      it 'has a ok unprocessable_entity' do
-        post v1_pacbio_wells_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'does not create a well' do
-        expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Well, :count)
-      end
-
-      it 'has the correct error messages' do
-        post v1_pacbio_wells_path, params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        errors = json['data']['errors']
-        expect(errors['movie_time']).to be_present
-      end
-    end
   end
 
   context '#update' do

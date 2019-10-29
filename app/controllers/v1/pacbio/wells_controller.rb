@@ -5,14 +5,16 @@ module V1
     # WellsController
     class WellsController < ApplicationController
       def create
-        @well = ::Pacbio::Well.new(params_names)
-        if @well.save
+        @well_factory = ::Pacbio::WellFactory.new(params_names)
+        puts params_names
+        if @well_factory.save
           render json:
             JSONAPI::ResourceSerializer.new(WellResource)
-                                       .serialize_to_hash(WellResource.new(@well, nil)),
+                                       .serialize_to_hash(WellResource.new(@well_factory.wells.first, nil)),
                  status: :created
         else
-          render json: { data: { errors: @well.errors.messages } },
+          puts @well_factory.errors.messages
+          render json: { data: { errors: @well_factory.errors.messages } },
                  status: :unprocessable_entity
         end
       end
@@ -34,9 +36,15 @@ module V1
       private
 
       def params_names
-        params.require(:data)['attributes'].permit(:movie_time, :insert_size, :row,
-                                                   :on_plate_loading_concentration, :column,
-                                                   :pacbio_plate_id, :comment, :sequencing_mode)
+        # params.require(:data)['attributes'].permit(:movie_time, :insert_size, :row,
+        #                                            :on_plate_loading_concentration, :column,
+        #                                            :pacbio_plate_id, :comment, :sequencing_mode)
+
+        params.require(:data).require(:attributes)[:wells].map do |param|
+          param.permit( :movie_time, :insert_size, :row,
+                        :on_plate_loading_concentration, :column,
+                        :pacbio_plate_id, :comment, :sequencing_mode)
+        end
       end
 
       def well
