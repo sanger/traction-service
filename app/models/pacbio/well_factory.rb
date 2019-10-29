@@ -30,9 +30,9 @@ module Pacbio
 
     def build_wells(wells_attributes)
       wells_attributes.each do |well_attributes|
-        well = Pacbio::Well.new(well_attributes.except(:relationships))
-        well.plate = Pacbio::Plate.find_by(id: well_attributes.dig(:relationships, :plate, :id))
-        libraries = well_attributes.dig(:relationships, :libraries)
+        well = Pacbio::Well.new(well_attributes.except(:plate, :libraries))
+        well.plate = Pacbio::Plate.find_by(id: well_attributes.dig(:plate, :id))
+        libraries = well_attributes[:libraries]
         add_libraries(well, libraries) unless libraries.nil?
         wells << well
       end

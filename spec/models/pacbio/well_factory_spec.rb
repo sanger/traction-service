@@ -8,9 +8,9 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
   let(:libraries)       { create_list(:pacbio_library, 3) }
   let(:wells_attributes) { 
                           [
-                            attributes_for(:pacbio_well).except(:plate).merge({ relationships: { plate: {type: 'plate', id: plate.id}, libraries: [{type: 'libraries', id: libraries.first.id}]}}),
-                            attributes_for(:pacbio_well).except(:plate).merge({ relationships: { plate: {type: 'plate', id: plate.id}, libraries: [{type: 'libraries', id: libraries[1].id}]}}),
-                            attributes_for(:pacbio_well).except(:plate).merge({ relationships: { plate: {type: 'plate', id: plate.id}, libraries: [{type: 'libraries', id: libraries.last.id}]}})
+                            attributes_for(:pacbio_well).except(:plate).merge( plate: {type: 'plate', id: plate.id}, libraries: [{type: 'libraries', id: libraries.first.id}]),
+                            attributes_for(:pacbio_well).except(:plate).merge( plate: {type: 'plate', id: plate.id}, libraries: [{type: 'libraries', id: libraries[1].id}]),
+                            attributes_for(:pacbio_well).except(:plate).merge( plate: {type: 'plate', id: plate.id}, libraries: [{type: 'libraries', id: libraries.last.id}])
                         ]}
 
   context '#initialize' do

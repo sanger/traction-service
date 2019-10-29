@@ -59,10 +59,17 @@ RSpec.describe 'WellsController', type: :request do
                     movie_time: 8,
                     insert_size: 8000,
                     on_plate_loading_concentration: 8.35,
-                    pacbio_plate_id: plate.id,
-                    sequencing_mode: 'CLR'
+                    sequencing_mode: 'CLR',
+                    relationships: {
+                      plate: {
+                        data: {
+                          type: 'plate',
+                          id: plate.id
+                        }
+                      }
+                    }
                   }
-                ]
+                ],
               }
             }
           }.to_json
@@ -90,7 +97,7 @@ RSpec.describe 'WellsController', type: :request do
                   column: '01',
                   insert_size: 8000,
                   on_plate_loading_concentration: 8.35,
-                  pacbio_plate_id: plate.id
+                  sequencing_mode: 'CLR'
                 ]
               }
             }
