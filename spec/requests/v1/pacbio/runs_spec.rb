@@ -30,14 +30,15 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][0]['attributes']['created_at']).to eq(run1.created_at.strftime("%m/%d/%Y %H:%M"))
       expect(json['data'][0]['attributes']['state']).to eq(run1.state)
 
-      expect(json['data'][1]['attributes']['name']).to eq(run2.name)
-      expect(json['data'][1]['attributes']['template_prep_kit_box_barcode']).to eq(run2.template_prep_kit_box_barcode)
-      expect(json['data'][1]['attributes']['binding_kit_box_barcode']).to eq(run2.binding_kit_box_barcode)
-      expect(json['data'][1]["attributes"]["sequencing_kit_box_barcode"]).to eq(run2.sequencing_kit_box_barcode)
-      expect(json['data'][1]['attributes']['dna_control_complex_box_barcode']).to eq(run2.dna_control_complex_box_barcode)
-      expect(json['data'][1]['attributes']['system_name']).to eq(run2.system_name)
-      expect(json['data'][1]['attributes']['created_at']).to eq(run2.created_at.strftime("%m/%d/%Y %H:%M"))
-      expect(json['data'][1]['attributes']['state']).to eq(run2.state)
+      run = json['data'][1]['attributes']
+      expect(run['name']).to eq(run2.name)
+      expect(run['template_prep_kit_box_barcode']).to eq(run2.template_prep_kit_box_barcode)
+      expect(run['binding_kit_box_barcode']).to eq(run2.binding_kit_box_barcode)
+      expect(run["sequencing_kit_box_barcode"]).to eq(run2.sequencing_kit_box_barcode)
+      expect(run['dna_control_complex_box_barcode']).to eq(run2.dna_control_complex_box_barcode)
+      expect(run['system_name']).to eq(run2.system_name)
+      expect(run['created_at']).to eq(run2.created_at.strftime("%m/%d/%Y %H:%M"))
+      expect(run['state']).to eq(run2.state)
     end
 
     it 'returns the correct relationships' do

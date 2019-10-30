@@ -8,6 +8,8 @@ module V1
 
       attributes :movie_time, :insert_size, :on_plate_loading_concentration,
                  :row, :column, :pacbio_plate_id, :comment, :sequencing_mode
+
+      has_many :libraries, class_name: 'WellLibrary', relation_name: :well_libraries
     end
   end
 end
