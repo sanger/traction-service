@@ -4,7 +4,8 @@ RSpec.describe 'WellsController', type: :request do
 
   context '#get' do
     let!(:well1) { create(:pacbio_well) }
-    let!(:well2) { create(:pacbio_well) }
+
+    let!(:well2) { create(:pacbio_well, libraries: build_list(:pacbio_library, 2)) }
 
     it 'returns a list of wells' do
       get v1_pacbio_wells_path, headers: json_api_headers
@@ -14,7 +15,7 @@ RSpec.describe 'WellsController', type: :request do
     end
 
     it 'returns the correct attributes' do
-      get v1_pacbio_wells_path, headers: json_api_headers
+      get "#{v1_pacbio_wells_path}?include=libraries", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -30,15 +31,29 @@ RSpec.describe 'WellsController', type: :request do
       expect(json['data'][0]['attributes']['comment']).to eq(well1.comment)
       expect(json['data'][0]['attributes']['sequencing_mode']).to eq(well1.sequencing_mode)
 
-      expect(json['data'][1]['attributes']['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
-      expect(json['data'][1]['attributes']['row']).to eq(well2.row)
-      expect(json['data'][1]['attributes']['column']).to eq(well2.column)
-      expect(json['data'][1]['attributes']['movie_time'].to_s).to eq(well2.movie_time.to_s)
-      expect(json['data'][1]['attributes']['insert_size']).to eq(well2.insert_size)
-      expect(json['data'][1]['attributes']['on_plate_loading_concentration']).to eq(well2.on_plate_loading_concentration)
-      expect(json['data'][1]['attributes']['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
-      expect(json['data'][1]['attributes']['comment']).to eq(well2.comment)
-      expect(json['data'][1]['attributes']['sequencing_mode']).to eq(well2.sequencing_mode)
+      well = json['data'][1]['attributes']
+      expect(well['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
+      expect(well['row']).to eq(well2.row)
+      expect(well['column']).to eq(well2.column)
+      expect(well['movie_time'].to_s).to eq(well2.movie_time.to_s)
+      expect(well['insert_size']).to eq(well2.insert_size)
+      expect(well['on_plate_loading_concentration']).to eq(well2.on_plate_loading_concentration)
+      expect(well['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
+      expect(well['comment']).to eq(well2.comment)
+      expect(well['sequencing_mode']).to eq(well2.sequencing_mode)
+
+      libraries = json['included']
+      expect(libraries.length).to eq(2)
+
+      library = libraries[1]['attributes']
+      well_library = well2.libraries.last
+
+      expect(library['volume']).to eq(well_library.volume)
+      expect(library['concentration']).to eq(well_library.concentration)
+      expect(library['library_kit_barcode']).to eq(well_library.library_kit_barcode)
+      expect(library['fragment_size']).to eq(well_library.fragment_size)
+      expect(library['sample_names']).to eq(well_library.sample_names)
+
     end
   end
 

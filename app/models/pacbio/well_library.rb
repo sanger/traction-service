@@ -9,5 +9,8 @@ module Pacbio
                       inverse_of: :well_libraries
     belongs_to :library, class_name: 'Pacbio::Library', foreign_key: :pacbio_library_id,
                          inverse_of: :well_libraries
+
+    delegate :volume, :concentration, :library_kit_barcode, :fragment_size,
+             :sample_names, to: :library
   end
 end

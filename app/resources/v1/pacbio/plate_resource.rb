@@ -7,6 +7,8 @@ module V1
       model_name 'Pacbio::Plate'
 
       attributes :pacbio_run_id
+
+      has_many :wells, class_name: 'Well'
     end
   end
 end
