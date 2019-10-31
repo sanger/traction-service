@@ -74,7 +74,7 @@ RSpec.describe 'PlatesController', type: :request do
           data: {
             type: "plates",
             attributes: {
-              pacbio_run_id: run.id
+              pacbio_run_id: 0
             }
           }
         }.to_json
@@ -93,7 +93,7 @@ RSpec.describe 'PlatesController', type: :request do
         post v1_pacbio_plates_path, params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         errors = json['data']['errors']
-        expect(errors['barcode']).to be_present
+        expect(errors['run']).to be_present
       end
 
     end
