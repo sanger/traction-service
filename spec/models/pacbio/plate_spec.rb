@@ -6,7 +6,7 @@ RSpec.describe Pacbio::Plate, type: :model, pacbio: true do
     expect(build(:pacbio_plate, run: nil)).to_not be_valid
   end
 
-  it 'must have a barcode' do
+  xit 'must have a barcode' do
     expect(build(:pacbio_plate, barcode: nil)).to_not be_valid
   end
 
