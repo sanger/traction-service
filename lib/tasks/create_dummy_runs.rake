@@ -19,6 +19,7 @@ namespace :dummy_runs do
     end
 
     # Pacbio
+    # TODO: not creating requests with samples.
     attributes = (6..10).collect do |i|
       { name: "Sample#{i}", external_id: 'DEA103A3484', external_study_id: 4086,
         library_type: "LibraryType#{i}", estimate_of_gb_required: 10, number_of_smrt_cells: 3, cost_code: 'PSD12345', species: "Species#{i}" }
