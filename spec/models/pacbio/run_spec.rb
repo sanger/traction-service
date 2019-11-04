@@ -76,4 +76,52 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     end
   end
 
+  context 'state' do
+    it 'is pending by default' do
+      run = create(:pacbio_run)
+      expect(run).to be_pending
+    end
+
+    it 'can change the state to pending' do
+      run = create(:pacbio_run)
+      run.pending!
+      expect(run).to be_pending
+    end
+
+    it 'can change the state to started' do
+      run = create(:pacbio_run)
+      run.started!
+      expect(run).to be_started
+    end
+
+    it 'can change the state to completed' do
+      run = create(:pacbio_run)
+      run.completed!
+      expect(run).to be_completed
+    end
+
+    it 'can change the state to cancelled' do
+      run = create(:pacbio_run)
+      run.cancelled!
+      expect(run).to be_cancelled
+    end
+
+    it 'can filter runs based on state' do
+      create_list(:pacbio_run, 2)
+      create(:pacbio_run, state: :started)
+      expect(Pacbio::Run.pending.length).to eq 2
+      expect(Pacbio::Run.started.length).to eq 1
+    end
+  end
+
+  context 'scope' do
+    context 'active' do
+      it 'should return only active runs' do
+        create_list(:pacbio_run, 2)
+        run = create(:pacbio_run, deactivated_at: DateTime.now)
+        expect(Pacbio::Run.active.length).to eq 2
+      end
+    end
+  end
+
 end
