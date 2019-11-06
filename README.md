@@ -8,6 +8,7 @@ Rails app which exposes a RESTful API.
 
 1. Ruby (check `.ruby-version` for the version)
 1. Bundler
+1. Graphviz (for mac OS brew install Graphviz)
 
 ## Installation
 
