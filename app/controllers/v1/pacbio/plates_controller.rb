@@ -31,7 +31,7 @@ module V1
       private
 
       def params_names
-        params.require(:data)['attributes'].permit(:pacbio_run_id, :barcode)
+        params.require(:data)['attributes'].permit(:pacbio_run_id)
       end
 
       def plate
