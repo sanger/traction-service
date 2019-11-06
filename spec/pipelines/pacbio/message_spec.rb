@@ -33,10 +33,6 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
       expect(key[:pac_bio_run_uuid]).to eq(plate.run.uuid)
     end
 
-    it 'must have a plate barcode' do
-      expect(key[:plate_barcode]).to eq(plate.barcode)
-    end
-
     it 'must have a plate uuid lims' do
       expect(key[:plate_uuid_lims]).to eq(plate.uuid)
     end
