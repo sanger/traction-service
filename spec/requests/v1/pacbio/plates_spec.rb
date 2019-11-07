@@ -44,8 +44,7 @@ RSpec.describe 'PlatesController', type: :request do
           data: {
             type: "plates",
             attributes: {
-              pacbio_run_id: run.id,
-              barcode: 'PACBIO-1'
+              pacbio_run_id: run.id
             }
           }
         }.to_json
@@ -110,8 +109,7 @@ RSpec.describe 'PlatesController', type: :request do
             type: "plates",
             id: plate.id,
             attributes: {
-              pacbio_run_id: new_run.id,
-              barcode: 'PACBIO-1'
+              pacbio_run_id: new_run.id
             }
           }
         }.to_json
@@ -142,8 +140,7 @@ RSpec.describe 'PlatesController', type: :request do
             type: "plates",
             id: plate.id,
             attributes: {
-              pacbio_run_id: new_run.id,
-              barcode: 'PACBIO-1'
+              pacbio_run_id: new_run.id
             }
           }
         }.to_json
