@@ -49,9 +49,6 @@ default: &default
         pac_bio_run_uuid:
           type: :model
           value: run.uuid
-        plate_barcode:
-          type: :model
-          value: barcode
         plate_uuid_lims:
           type: :model
           value: uuid
