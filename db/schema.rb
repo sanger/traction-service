@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_21_131317) do
+ActiveRecord::Schema.define(version: 2019_11_06_134558) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
@@ -27,7 +27,6 @@ ActiveRecord::Schema.define(version: 2019_10_21_131317) do
   create_table "pacbio_plates", force: :cascade do |t|
     t.integer "pacbio_run_id"
     t.string "uuid"
-    t.string "barcode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["pacbio_run_id"], name: "index_pacbio_plates_on_pacbio_run_id"
