@@ -6,8 +6,14 @@ RSpec.describe Tag, type: :model do
     expect(build(:tag, oligo: nil)).to_not be_valid
   end
 
-  it 'is not valud without a group id' do
+  it 'is not valid without a group id' do
     expect(build(:tag, group_id: nil)).to_not be_valid
+  end
+
+  it 'group id should be unique within set' do
+    tag = create(:tag)
+    expect(build(:tag, group_id: tag.group_id, set_name: 'another set')).to be_valid
+    expect(build(:tag, group_id: tag.group_id, set_name: tag.set_name)).to_not be_valid
   end
 
   it 'is not valid without a set name' do
