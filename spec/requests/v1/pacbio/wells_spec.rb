@@ -3,9 +3,14 @@ require "rails_helper"
 RSpec.describe 'WellsController', type: :request do
 
   context '#get' do
-    let!(:well1) { create(:pacbio_well) }
+    let!(:library1) { create(:pacbio_library) }
+    let!(:library2) { create(:pacbio_library) }
 
-    let!(:well2) { create(:pacbio_well, libraries: build_list(:pacbio_library, 2)) }
+    let!(:tube_with_library1) { create(:tube, material: library1) }
+    let!(:tube_with_library2) { create(:tube, material: library2) }
+
+    let!(:well1) { create(:pacbio_well) }
+    let!(:well2) { create(:pacbio_well, libraries: [library1, library2]) }
 
     it 'returns a list of wells' do
       get v1_pacbio_wells_path, headers: json_api_headers
@@ -48,12 +53,7 @@ RSpec.describe 'WellsController', type: :request do
       library = libraries[1]['attributes']
       well_library = well2.libraries.last
 
-      expect(library['volume']).to eq(well_library.volume)
-      expect(library['concentration']).to eq(well_library.concentration)
-      expect(library['library_kit_barcode']).to eq(well_library.library_kit_barcode)
-      expect(library['fragment_size']).to eq(well_library.fragment_size)
-      expect(library['sample_names']).to eq(well_library.sample_names)
-
+      expect(library['barcode']).to eq(well_library.barcode)
     end
   end
 

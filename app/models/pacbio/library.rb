@@ -28,5 +28,9 @@ module Pacbio
 
       requests.collect(&:sample_name).join(',')
     end
+
+    def barcode
+      tube.barcode
+    end
   end
 end
