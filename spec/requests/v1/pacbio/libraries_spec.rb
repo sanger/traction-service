@@ -43,7 +43,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       expect(request['sample_name']).to eq(request_library.sample_name)
       expect(request['tag_id'].to_s).to eq(request_library.tag_id.to_s)
       expect(request['tag_set_name']).to eq(request_library.tag_set_name)
-      expect(request['tag_group_id'].to_s).to eq(request_library.tag_group_id.to_s)
+      expect(request['tag_group_id']).to eq(request_library.tag_group_id)
       expect(request['tag_oligo'].to_s).to eq(request_library.tag_oligo)
 
       expect(json['data'][1]['attributes']['volume']).to eq(library2.volume)

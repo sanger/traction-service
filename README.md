@@ -21,6 +21,8 @@ To create the database for a fresh install: `bundle exec rails db:setup`
 
 To create a few dummy runs: `bundle exec rails dummy_runs:create`
 
+To create the first set of tags: `bundle exec rails create_tags:create`
+
 ## Messages - RabbitMQ
 
 Sending messages is disabled by default but if you would like to test messages, install a broker
