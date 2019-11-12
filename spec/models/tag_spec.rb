@@ -2,6 +2,10 @@ require "rails_helper"
 
 RSpec.describe Tag, type: :model do
 
+  it 'is valid with all params' do
+    expect(create(:tag, oligo: "CGATCGAATAT", group_id: "1", set_name: 'set name')).to be_valid
+  end
+
   it 'is not valid without an oligo' do
     expect(build(:tag, oligo: nil)).to_not be_valid
   end
@@ -12,8 +16,7 @@ RSpec.describe Tag, type: :model do
 
   it 'group id should be unique within set' do
     tag = create(:tag)
-    expect(build(:tag, group_id: tag.group_id, set_name: 'another set')).to be_valid
-    expect(build(:tag, group_id: tag.group_id, set_name: tag.set_name)).to_not be_valid
+    expect(build(:tag, group_id: tag.group_id)).to_not be_valid
   end
 
   it 'is not valid without a set name' do
@@ -22,7 +25,6 @@ RSpec.describe Tag, type: :model do
 
   it 'oligo should be unique within set' do
     tag = create(:tag)
-    expect(build(:tag, oligo: tag.oligo, set_name: 'another set')).to be_valid
-    expect(build(:tag, oligo: tag.oligo, set_name: tag.set_name)).to_not be_valid
+    expect(build(:tag, oligo: tag.oligo)).to_not be_valid
   end
 end
