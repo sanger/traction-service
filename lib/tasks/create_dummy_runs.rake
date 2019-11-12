@@ -28,8 +28,6 @@ namespace :dummy_runs do
     factory = Pacbio::RequestFactory.new(attributes)
     factory.save
 
-    tag = Tag.create!(oligo: 'ATGC', group_id: 1, set_name: 'pacbio')
-
     Pacbio::Request.all.each_with_index do |request, i|
       library = Pacbio::Library.create!(volume: 1, concentration: 1, library_kit_barcode: 'LK12345', fragment_size: 100, tube: Tube.create)
       Pacbio::RequestLibrary.create!(library: library, request: request, tag: tag)
