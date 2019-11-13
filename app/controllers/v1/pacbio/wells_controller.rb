@@ -8,7 +8,7 @@ module V1
         @well_factory = ::Pacbio::WellFactory.new(params_names)
         if @well_factory.save
           @resources = @well_factory.wells.map { |well| WellResource.new(well, nil) }
-          body = JSONAPI::ResourceSerializer.new(LibraryResource).serialize_to_hash(@resources)
+          body = JSONAPI::ResourceSerializer.new(WellResource).serialize_to_hash(@resources)
           render json: body, status: :created
         else
           render json: { data: { errors: @well_factory.errors.messages } },
@@ -17,8 +17,10 @@ module V1
       end
 
       def update
-        well.update(param_names)
-        render_json(:ok)
+        @well_factory = ::Pacbio::WellFactory.new([param_names])
+        @resources = @well_factory.wells.map { |well| WellResource.new(well, nil) }
+        body = JSONAPI::ResourceSerializer.new(WellResource).serialize_to_hash(@resources)
+        render json: body, status: :ok
       rescue StandardError => e
         render json: { data: { errors: e.message } }, status: :unprocessable_entity
       end
@@ -33,9 +35,17 @@ module V1
       private
 
       def param_names
-        params.require(:data)['attributes'].permit(:movie_time, :insert_size, :row,
-                                                   :on_plate_loading_concentration, :column,
-                                                   :pacbio_plate_id, :comment, :sequencing_mode)
+        p1 = params.require(:data).require(:attributes)
+                   .merge(id: params.require(:data)[:id])
+                   .permit(
+                     :movie_time, :insert_size, :row, :on_plate_loading_concentration,
+                     :column, :comment, :sequencing_mode, :id
+                   )
+
+        if params.require(:data)[:relationships].present?
+          p1[:libraries] = library_param_names(params.require(:data))
+        end
+        p1.to_h
       end
 
       def params_names
