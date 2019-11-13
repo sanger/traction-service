@@ -30,8 +30,15 @@ module Pacbio
 
     def build_wells(wells_attributes)
       wells_attributes.each do |well_attributes|
-        well = Pacbio::Well.new(well_attributes.except(:plate, :libraries))
-        well.plate = Pacbio::Plate.find_by(id: well_attributes.dig(:plate, :id))
+        if well_attributes[:id].present?
+          well = Pacbio::Well.find(well_attributes[:id])
+          attributes_to_update = well_attributes.except(:id, :libraries)
+          well.update(attributes_to_update)
+          well.libraries.destroy_all
+        else
+          well = Pacbio::Well.new(well_attributes.except(:plate, :libraries))
+          well.plate = Pacbio::Plate.find_by(id: well_attributes.dig(:plate, :id))
+        end
         libraries = well_attributes[:libraries]
         add_libraries(well, libraries) unless libraries.nil?
         wells << well

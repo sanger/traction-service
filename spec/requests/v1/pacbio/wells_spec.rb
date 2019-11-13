@@ -161,16 +161,30 @@ RSpec.describe 'WellsController', type: :request do
   end
 
   context '#update' do
-    let(:well) { create(:pacbio_well) }
+    let(:well) { create(:pacbio_well_with_libraries) }
+    let(:movie_time) { "15.0" }
+    let(:insert_size) { 123 }
+    let(:library)       { create(:pacbio_library) }
 
     context 'on success' do
       let(:body) do
         {
           data: {
-            type: "wells",
             id: well.id,
+            type: "wells",
             attributes: {
-              "movie_time": 1
+              movie_time: movie_time,
+              insert_size: insert_size,
+            },
+            relationships:{
+              libraries:{
+                data:[
+                    {
+                      type: "libraries",
+                      id: library.id
+                    }
+                ]
+              }
             }
           }
         }.to_json
@@ -184,13 +198,24 @@ RSpec.describe 'WellsController', type: :request do
       it 'updates a well' do
         patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
         well.reload
-        expect(well.movie_time).to eq 1
+        expect(well.movie_time.to_i).to eq movie_time.to_i
+        expect(well.insert_size.to_i).to eq insert_size.to_i
+      end
+
+      it 'updates a wells libraries' do
+        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        well.reload
+        expect(well.libraries.length).to eq 1
+        expect(well.libraries.first).to eq library
       end
 
       it 'returns the correct attributes' do
         patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['id']).to eq well.id.to_s
+        response = json['data'].first
+        expect(response['id'].to_i).to eq well.id
+        expect(response['attributes']['insert_size']).to eq insert_size
+        expect(response['attributes']['movie_time']).to eq movie_time
       end
     end
 
