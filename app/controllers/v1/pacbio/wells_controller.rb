@@ -18,9 +18,15 @@ module V1
 
       def update
         @well_factory = ::Pacbio::WellFactory.new([param_names])
-        @resources = @well_factory.wells.map { |well| WellResource.new(well, nil) }
-        body = JSONAPI::ResourceSerializer.new(WellResource).serialize_to_hash(@resources)
-        render json: body, status: :ok
+
+        if @well_factory.save
+          @resources = @well_factory.wells.map { |well| WellResource.new(well, nil) }
+          body = JSONAPI::ResourceSerializer.new(WellResource).serialize_to_hash(@resources)
+          render json: body, status: :ok
+        else
+          render json: { data: { errors: @well_factory.errors.messages } },
+                 status: :unprocessable_entity
+        end
       rescue StandardError => e
         render json: { data: { errors: e.message } }, status: :unprocessable_entity
       end
