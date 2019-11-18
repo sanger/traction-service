@@ -26,6 +26,12 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
     expect(create(:pacbio_library).sample_names).to be_truthy
   end
 
+  it 'can have a barcode through tube delegation' do
+    library = create(:pacbio_library)
+    tube_with_library = create(:tube, material: library)
+    expect(library.barcode).to eq tube_with_library.barcode
+  end
+
   context 'wells' do
     it 'can have one or more' do
       library = create(:pacbio_library)

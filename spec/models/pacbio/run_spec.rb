@@ -43,11 +43,16 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     expect(run.wells.count).to eq(5)
   end
 
-  it 'can have comments' do
+  it 'can have run comments ' do
+    run = create(:pacbio_run)
+    expect(run.comments).to eq("A Run Comment")
+  end
+
+  it 'can have the wells summary when no run comments exist' do
     wells = create_list(:pacbio_well_with_libraries, 2)
     plate = create(:pacbio_plate, wells: wells)
-    run = create(:pacbio_run, plate: plate)
-    expect(run.comments).to eq("#{wells.first.summary};#{wells[1].summary}")
+    run = create(:pacbio_run, plate: plate, comments: nil)
+    expect(run.comments).to eq("#{wells.first.summary},#{wells[1].summary}")
   end
 
   context '#generate_sample_sheet' do

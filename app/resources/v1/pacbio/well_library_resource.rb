@@ -6,8 +6,7 @@ module V1
     class WellLibraryResource < JSONAPI::Resource
       model_name 'Pacbio::WellLibrary'
 
-      attributes  :volume, :concentration, :library_kit_barcode, :fragment_size,
-                  :sample_names
+      attributes :barcode
     end
   end
 end
