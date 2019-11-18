@@ -3,9 +3,14 @@ require "rails_helper"
 RSpec.describe 'WellsController', type: :request do
 
   context '#get' do
-    let!(:well1) { create(:pacbio_well) }
+    let!(:library1) { create(:pacbio_library) }
+    let!(:library2) { create(:pacbio_library) }
 
-    let!(:well2) { create(:pacbio_well, libraries: build_list(:pacbio_library, 2)) }
+    let!(:tube_with_library1) { create(:tube, material: library1) }
+    let!(:tube_with_library2) { create(:tube, material: library2) }
+
+    let!(:well1) { create(:pacbio_well) }
+    let!(:well2) { create(:pacbio_well, libraries: [library1, library2]) }
 
     it 'returns a list of wells' do
       get v1_pacbio_wells_path, headers: json_api_headers
@@ -48,12 +53,7 @@ RSpec.describe 'WellsController', type: :request do
       library = libraries[1]['attributes']
       well_library = well2.libraries.last
 
-      expect(library['volume']).to eq(well_library.volume)
-      expect(library['concentration']).to eq(well_library.concentration)
-      expect(library['library_kit_barcode']).to eq(well_library.library_kit_barcode)
-      expect(library['fragment_size']).to eq(well_library.fragment_size)
-      expect(library['sample_names']).to eq(well_library.sample_names)
-
+      expect(library['barcode']).to eq(well_library.barcode)
     end
   end
 
@@ -161,16 +161,30 @@ RSpec.describe 'WellsController', type: :request do
   end
 
   context '#update' do
-    let(:well) { create(:pacbio_well) }
+    let(:well) { create(:pacbio_well_with_libraries) }
+    let(:movie_time) { "15.0" }
+    let(:insert_size) { 123 }
+    let(:library)       { create(:pacbio_library) }
 
     context 'on success' do
       let(:body) do
         {
           data: {
-            type: "wells",
             id: well.id,
+            type: "wells",
             attributes: {
-              "movie_time": 1
+              movie_time: movie_time,
+              insert_size: insert_size,
+            },
+            relationships:{
+              libraries:{
+                data:[
+                    {
+                      type: "libraries",
+                      id: library.id
+                    }
+                ]
+              }
             }
           }
         }.to_json
@@ -184,13 +198,24 @@ RSpec.describe 'WellsController', type: :request do
       it 'updates a well' do
         patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
         well.reload
-        expect(well.movie_time).to eq 1
+        expect(well.movie_time.to_i).to eq movie_time.to_i
+        expect(well.insert_size.to_i).to eq insert_size.to_i
+      end
+
+      it 'updates a wells libraries' do
+        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        well.reload
+        expect(well.libraries.length).to eq 1
+        expect(well.libraries.first).to eq library
       end
 
       it 'returns the correct attributes' do
         patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['id']).to eq well.id.to_s
+        response = json['data'].first
+        expect(response['id'].to_i).to eq well.id
+        expect(response['attributes']['insert_size']).to eq insert_size
+        expect(response['attributes']['movie_time']).to eq movie_time
       end
     end
 
