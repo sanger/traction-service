@@ -7,9 +7,9 @@ module V1
       model_name 'Pacbio::Well'
 
       attributes :movie_time, :insert_size, :on_plate_loading_concentration,
-                 :row, :column, :pacbio_plate_id, :comment, :sequencing_mode
+                 :row, :column, :pacbio_plate_id, :comment, :sequencing_mode, :position
 
-      has_many :libraries, class_name: 'WellLibrary', relation_name: :well_libraries
+      has_many :libraries, class_name: 'WellLibrary'
     end
   end
 end

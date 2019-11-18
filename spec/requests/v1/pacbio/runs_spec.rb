@@ -29,6 +29,7 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][0]['attributes']['system_name']).to eq(run1.system_name)
       expect(json['data'][0]['attributes']['created_at']).to eq(run1.created_at.strftime("%m/%d/%Y %H:%M"))
       expect(json['data'][0]['attributes']['state']).to eq(run1.state)
+      expect(json['data'][0]['attributes']['comments']).to eq(run1.comments)
 
       run = json['data'][1]['attributes']
       expect(run['name']).to eq(run2.name)
@@ -39,6 +40,7 @@ RSpec.describe 'RunsController', type: :request do
       expect(run['system_name']).to eq(run2.system_name)
       expect(run['created_at']).to eq(run2.created_at.strftime("%m/%d/%Y %H:%M"))
       expect(run['state']).to eq(run2.state)
+      expect(run['comments']).to eq(run2.comments)
     end
 
     it 'returns the correct relationships' do
@@ -87,6 +89,7 @@ RSpec.describe 'RunsController', type: :request do
         expect(run.sequencing_kit_box_barcode).to be_present
         expect(run.dna_control_complex_box_barcode).to be_present
         expect(run.system_name).to be_present
+        expect(run.comments).to be_present
       end
 
     end
