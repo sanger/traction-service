@@ -48,10 +48,14 @@ module V1
                      :column, :comment, :sequencing_mode, :id
                    )
 
+        well_param_names(p1)
+      end
+
+      def well_param_names(well_param)
         if params.require(:data)[:relationships].present?
-          p1[:libraries] = library_param_names(params.require(:data))
+          well_param[:libraries] = library_param_names(params.require(:data))
         end
-        p1.to_h
+        well_param.to_h
       end
 
       def params_names
