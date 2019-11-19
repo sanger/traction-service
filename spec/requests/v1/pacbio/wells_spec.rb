@@ -119,6 +119,10 @@ RSpec.describe 'WellsController', type: :request do
           expect(Pacbio::Well.first.libraries.first).to eq(library)
         end
 
+        it 'sends a message to the warehouse' do
+          expect(Messages).to receive(:publish)
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+        end
 
       end
 
@@ -154,6 +158,11 @@ RSpec.describe 'WellsController', type: :request do
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['data']['errors']
           expect(errors['movie_time']).to be_present
+        end
+
+        it 'does not send a message to the warehouse' do
+          expect(Messages).to_not receive(:publish)
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
         end
       end
     end
@@ -217,6 +226,11 @@ RSpec.describe 'WellsController', type: :request do
         expect(response['attributes']['insert_size']).to eq insert_size
         expect(response['attributes']['movie_time']).to eq movie_time
       end
+
+      it 'sends a message to the warehouse' do
+        expect(Messages).to receive(:publish)
+        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+      end
     end
 
     context 'on failure' do
@@ -240,6 +254,11 @@ RSpec.describe 'WellsController', type: :request do
       it 'has an error message' do
         patch v1_pacbio_well_path(123), params: body, headers: json_api_headers
         expect(JSON.parse(response.body)["data"]).to include("errors" => "Couldn't find Pacbio::Well with 'id'=123")
+      end
+
+      it 'does not send a message to the warehouse' do
+        expect(Messages).to_not receive(:publish)
+        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
       end
     end
   end
