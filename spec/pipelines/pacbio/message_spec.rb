@@ -33,10 +33,6 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
       expect(key[:pac_bio_run_uuid]).to eq(plate.run.uuid)
     end
 
-    it 'must have a plate barcode' do
-      expect(key[:plate_barcode]).to eq(plate.barcode)
-    end
-
     it 'must have a plate uuid lims' do
       expect(key[:plate_uuid_lims]).to eq(plate.uuid)
     end
@@ -68,7 +64,7 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
 
       context 'samples' do
 
-        let(:request_libraries)   { create_list(:pacbio_request_library, 5) }
+        let(:request_libraries)   { create_list(:pacbio_request_library, 5, tag: create(:tag)) }
 
         before(:each) do
           plate_well.libraries << request_libraries.collect(&:library)
@@ -103,19 +99,19 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
             expect(message_sample[:study_uuid]).to eq(request_library.request.external_study_id)
           end
 
-          it 'must have a tag sequence' do
+          it 'can have a tag sequence' do
             expect(message_sample[:tag_sequence]).to eq(request_library.tag.oligo)
           end
 
-          it 'must have a tag group id' do
+          it 'can have a tag group id' do
             expect(message_sample[:tag_set_id_lims]).to eq(request_library.tag.group_id)
           end
 
-          it 'must have a tag identifier' do
+          it 'can have a tag identifier' do
             expect(message_sample[:tag_identifier]).to eq(request_library.tag.id)
           end
 
-          it 'must have a tag set name' do
+          it 'can have a tag set name' do
             expect(message_sample[:tag_set_name]).to eq(request_library.tag.set_name)
           end
 

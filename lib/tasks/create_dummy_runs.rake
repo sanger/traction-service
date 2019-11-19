@@ -19,6 +19,7 @@ namespace :dummy_runs do
     end
 
     # Pacbio
+    # TODO: not creating requests with samples.
     attributes = (6..10).collect do |i|
       { name: "Sample#{i}", external_id: 'DEA103A3484', external_study_id: 4086,
         library_type: "LibraryType#{i}", estimate_of_gb_required: 10, number_of_smrt_cells: 3, cost_code: 'PSD12345', species: "Species#{i}" }
@@ -26,8 +27,6 @@ namespace :dummy_runs do
 
     factory = Pacbio::RequestFactory.new(attributes)
     factory.save
-
-    tag = Tag.create!(oligo: 'ATGC', group_id: 1, set_name: 'pacbio')
 
     Pacbio::Request.all.each_with_index do |request, i|
       library = Pacbio::Library.create!(volume: 1, concentration: 1, library_kit_barcode: 'LK12345', fragment_size: 100, tube: Tube.create)

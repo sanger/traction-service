@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_20_143741) do
+ActiveRecord::Schema.define(version: 2019_11_11_115438) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
@@ -27,7 +27,6 @@ ActiveRecord::Schema.define(version: 2019_09_20_143741) do
   create_table "pacbio_plates", force: :cascade do |t|
     t.integer "pacbio_run_id"
     t.string "uuid"
-    t.string "barcode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["pacbio_run_id"], name: "index_pacbio_plates_on_pacbio_run_id"
@@ -63,6 +62,8 @@ ActiveRecord::Schema.define(version: 2019_09_20_143741) do
     t.integer "system_name", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "state", default: 0
+    t.datetime "deactivated_at"
   end
 
   create_table "pacbio_well_libraries", force: :cascade do |t|
@@ -101,7 +102,6 @@ ActiveRecord::Schema.define(version: 2019_09_20_143741) do
     t.string "name"
     t.datetime "deactivated_at"
     t.string "external_id"
-    t.string "external_study_id"
     t.string "species"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -159,7 +159,7 @@ ActiveRecord::Schema.define(version: 2019_09_20_143741) do
 
   create_table "tags", force: :cascade do |t|
     t.string "oligo"
-    t.integer "group_id"
+    t.string "group_id"
     t.string "set_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

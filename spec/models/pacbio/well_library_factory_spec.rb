@@ -5,11 +5,11 @@ require 'rails_helper'
 RSpec.describe Pacbio::WellLibraryFactory, type: :model, pacbio: true do
 
   let(:well)                    { create(:pacbio_well) }
-  let(:request_library_1)       { create(:pacbio_request_library)}
-  let(:request_library_2)       { create(:pacbio_request_library)}
-  let(:request_library_3)       { create(:pacbio_request_library)}
-  let(:request_library_4)       { create(:pacbio_request_library)}
-  let(:request_library_5)       { create(:pacbio_request_library)}
+  let(:request_library_1)       { create(:pacbio_request_library_with_tag) }
+  let(:request_library_2)       { create(:pacbio_request_library_with_tag) }
+  let(:request_library_3)       { create(:pacbio_request_library_with_tag) }
+  let(:request_library_4)       { create(:pacbio_request_library_with_tag) }
+  let(:request_library_5)       { create(:pacbio_request_library_with_tag) }
   let(:request_library_invalid) { create(:pacbio_request_library, tag: request_library_5.tag)}
   let(:library_ids)             { [
                                     {
@@ -43,6 +43,8 @@ RSpec.describe Pacbio::WellLibraryFactory, type: :model, pacbio: true do
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages).to_not be_empty
     end
+
+    it 'produces an error if there are multiples requests in any of the libraries and they do not have tags'
   end
 
   context '#save' do

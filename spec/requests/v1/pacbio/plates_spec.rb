@@ -7,6 +7,7 @@ RSpec.describe 'PlatesController', type: :request do
     let!(:run2) { create(:pacbio_run) }
     let!(:plate1) { create(:pacbio_plate, run: run1) }
     let!(:plate2) { create(:pacbio_plate, run: run2) }
+    let!(:wells) {create_list(:pacbio_well, 5, plate: plate2)}
 
     it 'returns a list of plates' do
       get v1_pacbio_plates_path, headers: json_api_headers
@@ -16,13 +17,20 @@ RSpec.describe 'PlatesController', type: :request do
     end
 
     it 'returns the correct attributes' do
-      get v1_pacbio_plates_path, headers: json_api_headers
+      get "#{v1_pacbio_plates_path}?include=wells", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
       expect(json['data'][0]['attributes']['pacbio_run_id']).to eq(plate1.pacbio_run_id)
       expect(json['data'][1]['attributes']['pacbio_run_id']).to eq(plate2.pacbio_run_id)
+
+      wells = json['included']
+      expect(wells.length).to eq(5)
+
+      well = wells[0]['attributes']
+      plate_well = plate2.wells.first
+      expect(well['insert_size']).to eq(plate_well.insert_size)
     end
 
   end
@@ -36,8 +44,7 @@ RSpec.describe 'PlatesController', type: :request do
           data: {
             type: "plates",
             attributes: {
-              pacbio_run_id: run.id,
-              barcode: 'PACBIO-1'
+              pacbio_run_id: run.id
             }
           }
         }.to_json
@@ -66,7 +73,7 @@ RSpec.describe 'PlatesController', type: :request do
           data: {
             type: "plates",
             attributes: {
-              pacbio_run_id: run.id
+              pacbio_run_id: 0
             }
           }
         }.to_json
@@ -85,7 +92,7 @@ RSpec.describe 'PlatesController', type: :request do
         post v1_pacbio_plates_path, params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         errors = json['data']['errors']
-        expect(errors['barcode']).to be_present
+        expect(errors['run']).to be_present
       end
 
     end
@@ -102,8 +109,7 @@ RSpec.describe 'PlatesController', type: :request do
             type: "plates",
             id: plate.id,
             attributes: {
-              pacbio_run_id: new_run.id,
-              barcode: 'PACBIO-1'
+              pacbio_run_id: new_run.id
             }
           }
         }.to_json
@@ -134,8 +140,7 @@ RSpec.describe 'PlatesController', type: :request do
             type: "plates",
             id: plate.id,
             attributes: {
-              pacbio_run_id: new_run.id,
-              barcode: 'PACBIO-1'
+              pacbio_run_id: new_run.id
             }
           }
         }.to_json
