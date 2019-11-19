@@ -5,21 +5,28 @@ module V1
     # WellsController
     class WellsController < ApplicationController
       def create
-        @well = ::Pacbio::Well.new(params_names)
-        if @well.save
-          render json:
-            JSONAPI::ResourceSerializer.new(WellResource)
-                                       .serialize_to_hash(WellResource.new(@well, nil)),
-                 status: :created
+        @well_factory = ::Pacbio::WellFactory.new(params_names)
+        if @well_factory.save
+          @resources = @well_factory.wells.map { |well| WellResource.new(well, nil) }
+          body = JSONAPI::ResourceSerializer.new(WellResource).serialize_to_hash(@resources)
+          render json: body, status: :created
         else
-          render json: { data: { errors: @well.errors.messages } },
+          render json: { data: { errors: @well_factory.errors.messages } },
                  status: :unprocessable_entity
         end
       end
 
       def update
-        well.update(params_names)
-        render_json(:ok)
+        @well_factory = ::Pacbio::WellFactory.new([param_names])
+
+        if @well_factory.save
+          @resources = @well_factory.wells.map { |well| WellResource.new(well, nil) }
+          body = JSONAPI::ResourceSerializer.new(WellResource).serialize_to_hash(@resources)
+          render json: body, status: :ok
+        else
+          render json: { data: { errors: @well_factory.errors.messages } },
+                 status: :unprocessable_entity
+        end
       rescue StandardError => e
         render json: { data: { errors: e.message } }, status: :unprocessable_entity
       end
@@ -33,10 +40,50 @@ module V1
 
       private
 
+      def param_names
+        p1 = params.require(:data).require(:attributes)
+                   .merge(id: params.require(:data)[:id])
+                   .permit(
+                     :movie_time, :insert_size, :row, :on_plate_loading_concentration,
+                     :column, :comment, :sequencing_mode, :id
+                   )
+
+        well_param_names(p1)
+      end
+
+      def well_param_names(well_param)
+        if params.require(:data)[:relationships].present?
+          well_param[:libraries] = library_param_names(params.require(:data))
+        end
+        well_param.to_h
+      end
+
       def params_names
-        params.require(:data)['attributes'].permit(:movie_time, :insert_size, :row,
-                                                   :on_plate_loading_concentration, :column,
-                                                   :pacbio_plate_id, :comment, :sequencing_mode)
+        params.require(:data).require(:attributes)[:wells].map do |param|
+          well_params_names(param)
+        end.flatten
+      end
+
+      def well_params_names(params)
+        params.permit(:movie_time, :insert_size, :row,
+                      :on_plate_loading_concentration, :column,
+                      :comment, :sequencing_mode, :relationships).to_h.tap do |well|
+          if params[:relationships].present?
+            well[:plate] = plate_params_names(params)
+            well[:libraries] = library_param_names(params) unless
+            params.dig(:relationships, :libraries).nil?
+          end
+        end
+      end
+
+      def plate_params_names(params)
+        params.require(:relationships)[:plate].require(:data).permit(:id, :type).to_h
+      end
+
+      def library_param_names(params)
+        params.require(:relationships)[:libraries].require(:data).map do |library|
+          library.permit(:id, :type).to_h
+        end.flatten
       end
 
       def well

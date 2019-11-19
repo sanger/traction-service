@@ -3,8 +3,14 @@ require "rails_helper"
 RSpec.describe 'WellsController', type: :request do
 
   context '#get' do
+    let!(:library1) { create(:pacbio_library) }
+    let!(:library2) { create(:pacbio_library) }
+
+    let!(:tube_with_library1) { create(:tube, material: library1) }
+    let!(:tube_with_library2) { create(:tube, material: library2) }
+
     let!(:well1) { create(:pacbio_well) }
-    let!(:well2) { create(:pacbio_well) }
+    let!(:well2) { create(:pacbio_well, libraries: [library1, library2]) }
 
     it 'returns a list of wells' do
       get v1_pacbio_wells_path, headers: json_api_headers
@@ -14,7 +20,7 @@ RSpec.describe 'WellsController', type: :request do
     end
 
     it 'returns the correct attributes' do
-      get v1_pacbio_wells_path, headers: json_api_headers
+      get "#{v1_pacbio_wells_path}?include=libraries", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -30,96 +36,155 @@ RSpec.describe 'WellsController', type: :request do
       expect(json['data'][0]['attributes']['comment']).to eq(well1.comment)
       expect(json['data'][0]['attributes']['sequencing_mode']).to eq(well1.sequencing_mode)
 
-      expect(json['data'][1]['attributes']['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
-      expect(json['data'][1]['attributes']['row']).to eq(well2.row)
-      expect(json['data'][1]['attributes']['column']).to eq(well2.column)
-      expect(json['data'][1]['attributes']['movie_time'].to_s).to eq(well2.movie_time.to_s)
-      expect(json['data'][1]['attributes']['insert_size']).to eq(well2.insert_size)
-      expect(json['data'][1]['attributes']['on_plate_loading_concentration']).to eq(well2.on_plate_loading_concentration)
-      expect(json['data'][1]['attributes']['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
-      expect(json['data'][1]['attributes']['comment']).to eq(well2.comment)
-      expect(json['data'][1]['attributes']['sequencing_mode']).to eq(well2.sequencing_mode)
+      well = json['data'][1]['attributes']
+      expect(well['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
+      expect(well['row']).to eq(well2.row)
+      expect(well['column']).to eq(well2.column)
+      expect(well['movie_time'].to_s).to eq(well2.movie_time.to_s)
+      expect(well['insert_size']).to eq(well2.insert_size)
+      expect(well['on_plate_loading_concentration']).to eq(well2.on_plate_loading_concentration)
+      expect(well['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
+      expect(well['comment']).to eq(well2.comment)
+      expect(well['sequencing_mode']).to eq(well2.sequencing_mode)
+
+      libraries = json['included']
+      expect(libraries.length).to eq(2)
+
+      library = libraries[1]['attributes']
+      well_library = well2.libraries.last
+
+      expect(library['barcode']).to eq(well_library.barcode)
     end
   end
 
   context '#create' do
 
-    let(:plate) { create(:pacbio_plate) }
+    let(:plate)   { create(:pacbio_plate) }
+    let(:library) { create(:pacbio_library)}
 
-    context 'on success' do
-      let(:body) do
-        {
-          data: {
-            type: "wells",
-            attributes: {
-              'row': 'A',
-              'column': '01',
-              'movie_time': 8,
-              'insert_size': 8000,
-              'on_plate_loading_concentration': 8.35,
-              'pacbio_plate_id': plate.id,
-              'sequencing_mode': 'CLR'
+    context 'when creating a single well' do
+      context 'on success' do
+        let(:body) do
+          {
+            data: {
+              type: "wells",
+              attributes: {
+                wells: [
+                  { row: 'A',
+                    column: '1',
+                    movie_time: 8,
+                    insert_size: 8000,
+                    on_plate_loading_concentration: 8.35,
+                    sequencing_mode: 'CLR',
+                    relationships: {
+                      plate: {
+                        data: {
+                          type: 'plate',
+                          id: plate.id
+                        }
+                      },
+                      libraries: {
+                        data: [
+                          {
+                            type: 'libraries',
+                            id: library.id
+                          }
+
+                        ]
+                      }
+                    }
+                  }
+                ],
+              }
             }
-          }
-        }.to_json
+          }.to_json
+        end
+
+        it 'has a created status' do
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:created)
+        end
+
+        it 'creates a well' do
+          expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
+        end
+
+        it 'creates a plate' do
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          expect(Pacbio::Well.first.plate).to eq(plate)
+        end
+
+        it 'creates libraries' do
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          expect(Pacbio::Well.first.libraries.first).to eq(library)
+        end
+
+
       end
 
-      it 'has a created status' do
-        post v1_pacbio_wells_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:created)
-      end
+      context 'on failure' do
+        let(:body) do
+          {
+            data: {
+              type: "wells",
+              attributes: {
+                wells: [
+                  row: 'A',
+                  column: '01',
+                  insert_size: 8000,
+                  on_plate_loading_concentration: 8.35,
+                  sequencing_mode: 'CLR'
+                ]
+              }
+            }
+          }.to_json
+        end
 
-      it 'creates a well' do
-        expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
-      end
+        it 'has a ok unprocessable_entity' do
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
 
+        it 'does not create a well' do
+          expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Well, :count)
+        end
+
+        it 'has the correct error messages' do
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['data']['errors']
+          expect(errors['movie_time']).to be_present
+        end
+      end
     end
 
-    context 'on failure' do
-      let(:body) do
-        {
-          data: {
-            type: "wells",
-            attributes: {
-              'row': 'A',
-              'column': '01',
-              'insert_size': 8000,
-              'on_plate_loading_concentration': 8.35,
-              'pacbio_plate_id': plate.id
-            }
-          }
-        }.to_json
-      end
-
-      it 'has a ok unprocessable_entity' do
-        post v1_pacbio_wells_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'does not create a well' do
-        expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Well, :count)
-      end
-
-      it 'has the correct error messages' do
-        post v1_pacbio_wells_path, params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        errors = json['data']['errors']
-        expect(errors['movie_time']).to be_present
-      end
-    end
   end
 
   context '#update' do
-    let(:well) { create(:pacbio_well) }
+    let(:well) { create(:pacbio_well_with_libraries) }
+    let(:movie_time) { "15.0" }
+    let(:insert_size) { 123 }
+    let(:library)       { create(:pacbio_library) }
 
     context 'on success' do
       let(:body) do
         {
           data: {
-            type: "wells",
             id: well.id,
+            type: "wells",
             attributes: {
-              "movie_time": 1
+              movie_time: movie_time,
+              insert_size: insert_size,
+            },
+            relationships:{
+              libraries:{
+                data:[
+                    {
+                      type: "libraries",
+                      id: library.id
+                    }
+                ]
+              }
             }
           }
         }.to_json
@@ -133,13 +198,24 @@ RSpec.describe 'WellsController', type: :request do
       it 'updates a well' do
         patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
         well.reload
-        expect(well.movie_time).to eq 1
+        expect(well.movie_time.to_i).to eq movie_time.to_i
+        expect(well.insert_size.to_i).to eq insert_size.to_i
+      end
+
+      it 'updates a wells libraries' do
+        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        well.reload
+        expect(well.libraries.length).to eq 1
+        expect(well.libraries.first).to eq library
       end
 
       it 'returns the correct attributes' do
         patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['id']).to eq well.id.to_s
+        response = json['data'].first
+        expect(response['id'].to_i).to eq well.id
+        expect(response['attributes']['insert_size']).to eq insert_size
+        expect(response['attributes']['movie_time']).to eq movie_time
       end
     end
 
@@ -170,6 +246,7 @@ RSpec.describe 'WellsController', type: :request do
 
   context '#destroy' do
     let!(:well) { create(:pacbio_well) }
+    let!(:pacbio_well_library) { create(:pacbio_well_library, well: well) }
 
     context 'on success' do
       it 'has a status of no content' do
@@ -179,6 +256,14 @@ RSpec.describe 'WellsController', type: :request do
 
       it 'deletes the well' do
         expect { delete v1_pacbio_well_path(well), headers: json_api_headers }.to change { Pacbio::Well.count }.by(-1)
+      end
+
+      it 'deletes the well library' do
+        expect { delete v1_pacbio_well_path(well), headers: json_api_headers }.to change { Pacbio::WellLibrary.count }.by(-1)
+      end
+
+      it 'does not delete the library' do
+        expect { delete v1_pacbio_well_path(well), headers: json_api_headers }.to change { Pacbio::Library.count }.by(0)
       end
     end
 

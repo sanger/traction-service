@@ -23,6 +23,8 @@ module Pacbio
 
     has_many :requests, class_name: 'Pacbio::Request', through: :request_libraries
 
+    delegate :barcode, to: :tube
+
     def sample_names
       return '' if requests.blank?
 

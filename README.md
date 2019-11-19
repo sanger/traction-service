@@ -8,6 +8,7 @@ Rails app which exposes a RESTful API.
 
 1. Ruby (check `.ruby-version` for the version)
 1. Bundler
+1. Graphviz (for mac OS brew install Graphviz)
 
 ## Installation
 
@@ -19,6 +20,8 @@ Rails app which exposes a RESTful API.
 To create the database for a fresh install: `bundle exec rails db:setup`
 
 To create a few dummy runs: `bundle exec rails dummy_runs:create`
+
+To create the first set of tags: `bundle exec rails create_tags:create`
 
 ## Messages - RabbitMQ
 

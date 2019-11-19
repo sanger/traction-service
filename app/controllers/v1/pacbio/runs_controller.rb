@@ -49,7 +49,9 @@ module V1
                                                    :binding_kit_box_barcode,
                                                    :sequencing_kit_box_barcode,
                                                    :dna_control_complex_box_barcode,
-                                                   :system_name)
+                                                   :system_name,
+                                                   :state,
+                                                   :comments)
       end
 
       def render_json(status)
