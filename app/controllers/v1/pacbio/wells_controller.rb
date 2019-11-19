@@ -7,8 +7,7 @@ module V1
       def create
         @well_factory = ::Pacbio::WellFactory.new(params_names)
         if @well_factory.save
-          @resources = @well_factory.wells.map { |well| WellResource.new(well, nil) }
-          body = JSONAPI::ResourceSerializer.new(WellResource).serialize_to_hash(@resources)
+          publish_message
           render json: body, status: :created
         else
           render json: { data: { errors: @well_factory.errors.messages } },
@@ -20,8 +19,7 @@ module V1
         @well_factory = ::Pacbio::WellFactory.new([param_names])
 
         if @well_factory.save
-          @resources = @well_factory.wells.map { |well| WellResource.new(well, nil) }
-          body = JSONAPI::ResourceSerializer.new(WellResource).serialize_to_hash(@resources)
+          publish_message
           render json: body, status: :ok
         else
           render json: { data: { errors: @well_factory.errors.messages } },
@@ -39,6 +37,15 @@ module V1
       end
 
       private
+
+      def body
+        resources = @well_factory.wells.map { |well| WellResource.new(well, nil) }
+        JSONAPI::ResourceSerializer.new(WellResource).serialize_to_hash(resources)
+      end
+
+      def publish_message
+        Messages.publish(@well_factory.plate, Pipelines.pacbio.message)
+      end
 
       def param_names
         p1 = params.require(:data).require(:attributes)
