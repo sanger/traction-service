@@ -26,6 +26,10 @@ module Pacbio
       true
     end
 
+    def plate
+      @plate ||= wells.first.plate unless wells.empty?
+    end
+
     private
 
     def build_wells(wells_attributes)
