@@ -35,9 +35,19 @@ module Pacbio
     def build_wells(wells_attributes)
       wells_attributes.each do |well_attributes|
         well = create_or_update_well(well_attributes)
+
         libraries = well_attributes[:libraries]
-        add_libraries(well, libraries) unless libraries.nil?
+        build_libraries(well, libraries) unless libraries.nil?
+
         wells << well
+      end
+    end
+
+    def build_libraries(well, libraries)
+      well_library_factory = WellLibraryFactory.new(well, libraries)
+
+      unless well_library_factory.save
+        errors.add('libraries', well_library_factory.errors.messages)
       end
     end
 
@@ -46,7 +56,6 @@ module Pacbio
         well = Pacbio::Well.find(well_attributes[:id])
         attributes_to_update = well_attributes.except(:id, :libraries)
         well.update(attributes_to_update)
-        well.libraries.destroy_all
       else
         well = Pacbio::Well.new(well_attributes.except(:plate, :libraries))
         well.plate = Pacbio::Plate.find_by(id: well_attributes.dig(:plate, :id))
@@ -54,15 +63,9 @@ module Pacbio
       well
     end
 
-    def add_libraries(well, libraries)
-      libraries.each do |library|
-        well.libraries << Pacbio::Library.find(library[:id])
-      end
-    end
-
     def check_wells
       if wells.empty?
-        errors.add('libraries', 'there were no libraries')
+        errors.add('wells', 'there are no wells')
         return
       end
 

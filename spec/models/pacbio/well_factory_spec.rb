@@ -14,14 +14,23 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
                         ]}
 
   context '#initialize' do
-    context 'when the wells dont exist' do
+    context '#create - when the wells dont exist' do
       it 'creates an object for each given well' do
         factory = Pacbio::WellFactory.new(wells_attributes)
+        factory.save
+
         expect(factory.wells.count).to eq(3)
 
-        well = factory.wells.first
-        expect(well.plate).to eq(plate)
-        expect(well.libraries.length).to eq(1)
+        well1 = factory.wells[0]
+        well2 = factory.wells[1]
+        well3 = factory.wells[2]
+        expect(well1.plate).to eq(plate)
+        expect(well2.plate).to eq(plate)
+        expect(well3.plate).to eq(plate)
+
+        expect(well1.libraries.length).to eq(1)
+        expect(well2.libraries.length).to eq(1)
+        expect(well3.libraries.length).to eq(1)
       end
 
       it 'has a plate' do
@@ -29,18 +38,46 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         expect(factory.plate).to eq(plate)
       end
 
-      it 'produces error messages if any of the wells are not valid' do
-        wells_attributes << attributes_for(:pacbio_well).except(:plate)
+      it 'produces an error message if the plate doesnt exist' do
+        wells_attributes << attributes_for(:pacbio_well).except(:plate).merge( libraries: [{type: 'libraries', id: libraries.last.id}])
         factory = Pacbio::WellFactory.new(wells_attributes)
         expect(factory).to_not be_valid
-        expect(factory.errors.full_messages).to_not be_empty
+        expect(factory.errors.full_messages).to include 'Plate must exist'
+      end
+
+      it 'creates the well with no libraries, when libraries arent included' do
+        wells_with_no_libraries = wells_attributes.map { |well| well.except(:libraries) }
+        factory = Pacbio::WellFactory.new(wells_with_no_libraries)
+
+        well = factory.wells[0]
+        expect(well.libraries.length).to eq(0)
+      end
+
+      it 'creates the well with no libraries, if the given libraries dont exist' do
+        wells_attributes.map { |well| well[:libraries][0][:id] = 123 } 
+        factory = Pacbio::WellFactory.new(wells_attributes)
+
+        well = factory.wells[0]
+        expect(well.libraries.length).to eq(0)
+      end
+
+      it 'creates the well with multiple libraries, when there are multiple libraries per well' do
+        new_library = create(:pacbio_library)
+        wells_attributes.map { |well| well[:libraries] << { type: 'libraries', id: new_library.id }}        
+        factory = Pacbio::WellFactory.new(wells_attributes)
+        
+        expect(factory.wells[0].libraries.length).to eq(2)
+        expect(factory.wells[1].libraries.length).to eq(2)
+        expect(factory.wells[2].libraries.length).to eq(2)
       end
     end
 
-    context 'when the wells do exist' do
+    context '#update - when the wells do exist' do
       let(:well_with_libraries)                { create(:pacbio_well_with_libraries) }
+      let(:new_library1) { create(:pacbio_library) }
+      let(:new_library2) { create(:pacbio_library) }
       let(:updated_wells_attributes) {
-        [ id: well_with_libraries.id, insert_size: 123, on_plate_loading_concentration: 12, libraries: [ { type: 'libraries', id: libraries.first.id } ] ]
+        [ id: well_with_libraries.id, insert_size: 123, on_plate_loading_concentration: 12, libraries: [ { type: 'libraries', id: new_library1.id }, { type: 'libraries', id: new_library2.id } ] ]
       }
 
       it 'updates the well' do
@@ -57,7 +94,8 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         expect(factory.wells.count).to eq(1)
         well = factory.wells.first
         expect(well.libraries.length).to eq(updated_wells_attributes.first[:libraries].length)
-        expect(well.libraries.first.id).to eq(libraries.first.id)
+        expect(well.libraries[0].id).to eq(new_library1.id)
+        expect(well.libraries[1].id).to eq(new_library2.id)
       end
 
       it 'has a plate' do

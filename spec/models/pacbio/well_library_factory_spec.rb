@@ -52,7 +52,7 @@ RSpec.describe Pacbio::WellLibraryFactory, type: :model, pacbio: true do
       factory = Pacbio::WellLibraryFactory.new(well, library_ids)
       expect(factory).to be_valid
       expect(factory.save).to be_truthy
-      expect(well.libraries.count).to eq(5)
+      expect(well.libraries.count).to eq(library_ids.length)
     end
 
     it 'if invalid wont save the libraries' do
