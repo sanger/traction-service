@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe 'Well::LibrariesController', type: :request, pacbio: true do
+RSpec.describe.skip 'Well::LibrariesController', type: :request, pacbio: true do
 
   let(:well)                  { create(:pacbio_well) }
   let(:request_libraries)     { create_list(:pacbio_request_library_with_tag, 5)}

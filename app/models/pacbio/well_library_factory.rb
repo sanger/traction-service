@@ -10,6 +10,7 @@ module Pacbio
     attr_reader :well
 
     validate :check_tags
+    # validate :check_libraries_max
 
     def initialize(well, library_attributes)
       @well = well
@@ -23,6 +24,7 @@ module Pacbio
     def save
       return unless valid?
 
+      destroy_libraries
       well.libraries << libraries
       true
     end
@@ -31,8 +33,14 @@ module Pacbio
 
     def build_libraries(library_attributes)
       library_attributes.each do |library|
-        libraries << Pacbio::Library.find(library[:id])
+        if Pacbio::Library.exists?(library[:id])
+          libraries << Pacbio::Library.find(library[:id])
+        end
       end
+    end
+
+    def destroy_libraries
+      well.libraries.destroy_all
     end
 
     # don't need to worry about nils
