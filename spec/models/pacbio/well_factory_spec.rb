@@ -24,6 +24,11 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         expect(well.libraries.length).to eq(1)
       end
 
+      it 'has a plate' do
+        factory = Pacbio::WellFactory.new(wells_attributes)
+        expect(factory.plate).to eq(plate)
+      end
+
       it 'produces error messages if any of the wells are not valid' do
         wells_attributes << attributes_for(:pacbio_well).except(:plate)
         factory = Pacbio::WellFactory.new(wells_attributes)
@@ -53,6 +58,11 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         well = factory.wells.first
         expect(well.libraries.length).to eq(updated_wells_attributes.first[:libraries].length)
         expect(well.libraries.first.id).to eq(libraries.first.id)
+      end
+
+      it 'has a plate' do
+        factory = Pacbio::WellFactory.new(updated_wells_attributes)
+        expect(factory.plate).to be_present
       end
     end
 
