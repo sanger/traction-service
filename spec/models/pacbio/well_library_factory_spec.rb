@@ -21,16 +21,33 @@ RSpec.describe Pacbio::WellLibraryFactory, type: :model, pacbio: true do
                                   ]
                                 }
   let(:library_ids_invalid)     { library_ids.push({type: 'libraries', id: request_library_invalid.library.id}) }
+  let(:library_ids_17)       { create_list(:pacbio_library, 17) }
+  let(:request_library_no_tag)       { create(:pacbio_request_library) }
+  let(:library_ids_no_tag)     { [{ type: 'libraries', id: request_library_no_tag.library.id }, { type: 'libraries', id: request_library_1.library.id }] }
 
   before(:each) do
     well.libraries << [request_library_1, request_library_2, request_library_3].collect(&:library)
   end
 
   context '#initialize' do
-
     it 'creates an object for each given library' do
       factory = Pacbio::WellLibraryFactory.new(well, library_ids)
       expect(factory.libraries.count).to eq(2)
+    end
+
+    it 'is valid if number of libraries in a well is less than or equal to 16' do
+      factory = Pacbio::WellLibraryFactory.new(well, library_ids)
+      expect(factory).to be_valid
+    end
+
+    it 'is not valid if number of libraries is greater than 16' do
+      factory = Pacbio::WellLibraryFactory.new(well, library_ids_17)
+      expect(factory).not_to be_valid
+    end
+
+    it 'is valid if there is only one library in the well' do
+      factory = Pacbio::WellLibraryFactory.new(well, [library_ids[0]])
+      expect(factory).to be_valid
     end
 
     it 'is valid if none of the tags clash' do
@@ -44,7 +61,11 @@ RSpec.describe Pacbio::WellLibraryFactory, type: :model, pacbio: true do
       expect(factory.errors.full_messages).to_not be_empty
     end
 
-    it 'produces an error if there are multiples requests in any of the libraries and they do not have tags'
+    it 'produces an error if there are multiples libraries and they do not have tags' do
+      factory = Pacbio::WellLibraryFactory.new(well, library_ids_no_tag)
+      expect(factory).to_not be_valid
+      expect(factory.errors.full_messages).to_not be_empty
+    end
   end
 
   context '#save' do

@@ -18,17 +18,6 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
       it 'creates an object for each given well' do
         factory = Pacbio::WellFactory.new(wells_attributes)
         expect(factory.wells.count).to eq(3)
-
-        # well1 = factory.wells[0]
-        # well2 = factory.wells[1]
-        # well3 = factory.wells[2]
-        # expect(well1.plate).to eq(plate)
-        # expect(well2.plate).to eq(plate)
-        # expect(well3.plate).to eq(plate)
-
-        # expect(well1.libraries.length).to eq(1)
-        # expect(well2.libraries.length).to eq(1)
-        # expect(well3.libraries.length).to eq(1)
       end
 
       it 'sets the plate of each given well' do
@@ -97,6 +86,15 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
 
           expect(factory.errors.messages[:libraries][0][:libraries]).to include 'There are more than 16 libraries in well ' + factory.wells[0].position
         end
+
+        it 'creates the well with multiple libraries, if each library has a tag' do
+          library = create(:pacbio_library)
+          wells_attributes.map { |well| well[:libraries] << {type: "libraries", id: library.id} }
+          factory = Pacbio::WellFactory.new(wells_attributes)
+
+          expect(factory.wells[0].libraries.length).to eq(2)
+        end
+
       end
     end
 

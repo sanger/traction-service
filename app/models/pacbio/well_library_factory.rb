@@ -9,7 +9,8 @@ module Pacbio
 
     attr_reader :well
 
-    validate :check_tags
+    validate :check_tags_present, if: :multiple_libraries
+    validate :check_tags_uniq, if: :multiple_libraries
     validate :check_libraries_max
 
     def initialize(well, library_attributes)
@@ -41,8 +42,7 @@ module Pacbio
       well.libraries.destroy_all
     end
 
-    # don't need to worry about nils
-    def check_tags
+    def check_tags_uniq
       all_tags = (well.tags +
         libraries.collect(&:request_libraries).flatten.collect(&:tag_id)).compact
       return if all_tags.length == all_tags.uniq.length
@@ -50,10 +50,20 @@ module Pacbio
       errors.add(:tags, 'are not unique within the libraries')
     end
 
+    def check_tags_present
+      return unless libraries.collect(&:request_libraries).flatten.collect(&:tag).any?(nil)
+
+      errors.add(:tags, 'are missing from the libraries')
+    end
+
     def check_libraries_max
       return if libraries.length <= 16
 
       errors.add(:libraries, 'There are more than 16 libraries in well ' + well.position)
+    end
+
+    def multiple_libraries
+      libraries.length > 1
     end
   end
 end
