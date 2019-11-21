@@ -46,9 +46,7 @@ module Pacbio
     def build_libraries(well, libraries)
       well_library_factory = WellLibraryFactory.new(well, libraries)
 
-      unless well_library_factory.save
-        errors.add('libraries', well_library_factory.errors.messages)
-      end
+      errors.add('libraries', well_library_factory.errors.messages) unless well_library_factory.save
     end
 
     def create_or_update_well(well_attributes)

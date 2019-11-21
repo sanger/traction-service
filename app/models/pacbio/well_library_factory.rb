@@ -33,9 +33,7 @@ module Pacbio
 
     def build_libraries(library_attributes)
       library_attributes.each do |library|
-        if Pacbio::Library.exists?(library[:id])
-          libraries << Pacbio::Library.find(library[:id])
-        end
+        libraries << Pacbio::Library.find(library[:id]) if Pacbio::Library.exists?(library[:id])
       end
     end
 
