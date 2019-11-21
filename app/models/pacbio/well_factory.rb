@@ -46,7 +46,7 @@ module Pacbio
     def build_libraries(well, libraries)
       well_library_factory = WellLibraryFactory.new(well, libraries)
 
-      errors.add('libraries', well_library_factory.errors.messages) unless well_library_factory.save
+      errors.add(:libraries, well_library_factory.errors.messages) unless well_library_factory.save
     end
 
     def create_or_update_well(well_attributes)
@@ -63,7 +63,7 @@ module Pacbio
 
     def check_wells
       if wells.empty?
-        errors.add('wells', 'there are no wells')
+        errors.add(:wells, 'there are no wells')
         return
       end
 

@@ -61,14 +61,50 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         expect(well.libraries.length).to eq(0)
       end
 
-      it 'creates the well with multiple libraries, when there are multiple libraries per well' do
-        new_library = create(:pacbio_library)
-        wells_attributes.map { |well| well[:libraries] << { type: 'libraries', id: new_library.id }}        
-        factory = Pacbio::WellFactory.new(wells_attributes)
-        
-        expect(factory.wells[0].libraries.length).to eq(2)
-        expect(factory.wells[1].libraries.length).to eq(2)
-        expect(factory.wells[2].libraries.length).to eq(2)
+      context 'when there are multiple libraries' do
+        let(:libraries_16)       { create_list(:pacbio_library, 16) }
+        let(:libraries_17)       { create_list(:pacbio_library, 17) }
+
+        it 'creates the well with multiple libraries' do
+          new_library = create(:pacbio_library)
+          wells_attributes.map { |well| well[:libraries] << { type: 'libraries', id: new_library.id }}
+          factory = Pacbio::WellFactory.new(wells_attributes)
+
+          expect(factory.wells[0].libraries.length).to eq(2)
+          expect(factory.wells[1].libraries.length).to eq(2)
+          expect(factory.wells[2].libraries.length).to eq(2)
+        end
+
+        it 'creates the well with multiple libraries, when there are up to 16 libraries' do
+          wells_attributes.map { |well| well[:libraries] = libraries_16.map { |l| { type: "libraries", id: l.id } } }
+          factory = Pacbio::WellFactory.new(wells_attributes)
+
+          expect(factory.wells[0].libraries.length).to eq(16)
+          expect(factory.wells[1].libraries.length).to eq(16)
+          expect(factory.wells[2].libraries.length).to eq(16)
+        end
+
+        it 'does not create the well with multiple libraries, when there are more than 16 libraries' do
+          wells_attributes.map { |well| well[:libraries] = libraries_17.map { |l| { type: "libraries", id: l.id } } }
+          factory = Pacbio::WellFactory.new(wells_attributes)
+          expect(factory.wells[0].libraries.length).to eq(0)
+          expect(factory.wells[1].libraries.length).to eq(0)
+          expect(factory.wells[2].libraries.length).to eq(0)
+
+          expect(factory.errors.messages[:libraries][0][:libraries]).to include 'There are more than 16 libraries in well ' + factory.wells[0].position
+          expect(factory.errors.messages[:libraries][1][:libraries]).to include 'There are more than 16 libraries in well ' + factory.wells[1].position
+          expect(factory.errors.messages[:libraries][2][:libraries]).to include 'There are more than 16 libraries in well ' + factory.wells[2].position
+        end
+
+        it 'only creates the well libraries, for wells with 16 or less libraries' do
+          wells_attributes[0][:libraries] = libraries_17.map { |l| { type: "libraries", id: l.id } }
+          factory = Pacbio::WellFactory.new(wells_attributes)
+          expect(factory.wells[0].libraries.length).to eq(0)
+          expect(factory.wells[1].libraries.length).to eq(1)
+          expect(factory.wells[2].libraries.length).to eq(1)
+
+          expect(factory.errors.messages[:libraries][0][:libraries]).to include 'There are more than 16 libraries in well ' + factory.wells[0].position
+        end
       end
     end
 

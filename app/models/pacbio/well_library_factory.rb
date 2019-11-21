@@ -10,7 +10,7 @@ module Pacbio
     attr_reader :well
 
     validate :check_tags
-    # validate :check_libraries_max
+    validate :check_libraries_max
 
     def initialize(well, library_attributes)
       @well = well
@@ -48,6 +48,12 @@ module Pacbio
       return if all_tags.length == all_tags.uniq.length
 
       errors.add(:tags, 'are not unique within the libraries')
+    end
+
+    def check_libraries_max
+      return if libraries.length <= 16
+
+      errors.add(:libraries, 'There are more than 16 libraries in well ' + well.position)
     end
   end
 end
