@@ -14,28 +14,30 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
                         ]}
 
   context '#initialize' do
-    context '#create - when the wells dont exist' do
+    context 'when the wells dont exist' do
       it 'creates an object for each given well' do
         factory = Pacbio::WellFactory.new(wells_attributes)
-        factory.save
-
         expect(factory.wells.count).to eq(3)
 
-        well1 = factory.wells[0]
-        well2 = factory.wells[1]
-        well3 = factory.wells[2]
-        expect(well1.plate).to eq(plate)
-        expect(well2.plate).to eq(plate)
-        expect(well3.plate).to eq(plate)
+        # well1 = factory.wells[0]
+        # well2 = factory.wells[1]
+        # well3 = factory.wells[2]
+        # expect(well1.plate).to eq(plate)
+        # expect(well2.plate).to eq(plate)
+        # expect(well3.plate).to eq(plate)
 
-        expect(well1.libraries.length).to eq(1)
-        expect(well2.libraries.length).to eq(1)
-        expect(well3.libraries.length).to eq(1)
+        # expect(well1.libraries.length).to eq(1)
+        # expect(well2.libraries.length).to eq(1)
+        # expect(well3.libraries.length).to eq(1)
       end
 
-      it 'has a plate' do
+      it 'sets the plate of each given well' do
         factory = Pacbio::WellFactory.new(wells_attributes)
+
         expect(factory.plate).to eq(plate)
+        expect(factory.wells[0].plate).to eq(plate)
+        expect(factory.wells[1].plate).to eq(plate)
+        expect(factory.wells[2].plate).to eq(plate)
       end
 
       it 'produces an error message if the plate doesnt exist' do
@@ -64,16 +66,6 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
       context 'when there are multiple libraries' do
         let(:libraries_16)       { create_list(:pacbio_library, 16) }
         let(:libraries_17)       { create_list(:pacbio_library, 17) }
-
-        it 'creates the well with multiple libraries' do
-          new_library = create(:pacbio_library)
-          wells_attributes.map { |well| well[:libraries] << { type: 'libraries', id: new_library.id }}
-          factory = Pacbio::WellFactory.new(wells_attributes)
-
-          expect(factory.wells[0].libraries.length).to eq(2)
-          expect(factory.wells[1].libraries.length).to eq(2)
-          expect(factory.wells[2].libraries.length).to eq(2)
-        end
 
         it 'creates the well with multiple libraries, when there are up to 16 libraries' do
           wells_attributes.map { |well| well[:libraries] = libraries_16.map { |l| { type: "libraries", id: l.id } } }
@@ -108,7 +100,7 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
       end
     end
 
-    context '#update - when the wells do exist' do
+    context 'when the wells do exist' do
       let(:well_with_libraries)                { create(:pacbio_well_with_libraries) }
       let(:new_library1) { create(:pacbio_library) }
       let(:new_library2) { create(:pacbio_library) }
@@ -116,7 +108,7 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         [ id: well_with_libraries.id, insert_size: 123, on_plate_loading_concentration: 12, libraries: [ { type: 'libraries', id: new_library1.id }, { type: 'libraries', id: new_library2.id } ] ]
       }
 
-      it 'updates the well' do
+      it 'updates the well, if the well id exists' do
         factory = Pacbio::WellFactory.new(updated_wells_attributes)
         expect(factory.wells.count).to eq(1)
         well = factory.wells.first
@@ -125,7 +117,7 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         expect(well.on_plate_loading_concentration).to eq(12)
       end
 
-      it 'updates the wells libraries' do
+      it 'updates the wells libraries, when libraries are present' do
         factory = Pacbio::WellFactory.new(updated_wells_attributes)
         expect(factory.wells.count).to eq(1)
         well = factory.wells.first
@@ -134,31 +126,48 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         expect(well.libraries[1].id).to eq(new_library2.id)
       end
 
+      it 'does not update the wells libraries, when libraries are not present' do
+        factory = Pacbio::WellFactory.new([updated_wells_attributes[0].except(:libraries)])
+        expect(factory.wells.count).to eq(1)
+        well = factory.wells.first
+        expect(well.libraries.length).to eq(well_with_libraries.libraries.length)
+      end
+
       it 'has a plate' do
         factory = Pacbio::WellFactory.new(updated_wells_attributes)
-        expect(factory.plate).to be_present
+        expect(factory.plate).to eq well_with_libraries.plate
       end
     end
 
   end
 
   context '#save' do
-    it 'if valid creates the wells' do
+    it 'creates the wells, if each well is valid' do
       factory = Pacbio::WellFactory.new(wells_attributes)
       expect(factory).to be_valid
       expect(factory.save).to be_truthy
       expect(Pacbio::Well.count).to eq(3)
-      expect(Pacbio::Well.first.libraries.count).to eq(1)
+      expect(Pacbio::Well.all[0].libraries.count).to eq(1)
+      expect(Pacbio::Well.all[1].libraries.count).to eq(1)
+      expect(Pacbio::Well.all[2].libraries.count).to eq(1)
     end
 
-    it 'if invalid wont create the wells' do
+    it 'wont create the wells, if any well is invalid ' do
       wells_attributes << attributes_for(:pacbio_well).except(:plate)
       factory = Pacbio::WellFactory.new(wells_attributes)
       expect(factory).to_not be_valid
       expect(factory.save).to be_falsey
+      expect(factory.errors.full_messages).to include "Plate must exist"
       expect(Pacbio::Well.count).to eq(0)
     end
 
+    it 'wont create the wells , if wells are empty' do
+      factory = Pacbio::WellFactory.new([])
+      expect(factory).to_not be_valid
+      expect(factory.save).to be_falsey
+      expect(factory.errors.full_messages).to include "Wells there are no wells"
+      expect(Pacbio::Well.count).to eq(0)
+    end
   end
 
 end
