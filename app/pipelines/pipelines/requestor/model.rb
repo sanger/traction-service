@@ -21,7 +21,7 @@ module Pipelines
         delegate :name, to: :sample, prefix: :sample
         delegate :species, to: :sample, prefix: :sample
 
-        validates(*to_s.deconstantize.constantize.request_attributes, presence: true)
+        validates(*to_s.deconstantize.constantize.required_request_attributes, presence: true)
       end
     end
   end
