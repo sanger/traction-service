@@ -52,6 +52,32 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         expect(well.libraries.length).to eq(0)
       end
 
+      context 'when there is a sinlge library' do
+        it 'creates the well with a library, if library does not have a tag, as it is singleplex' do
+          library = create(:pacbio_library)
+          wells_attributes.map { |well| well[:libraries] = [{ type: "libraries", id: library.id }] }
+
+          factory = Pacbio::WellFactory.new(wells_attributes)
+          expect(factory.wells[0].libraries[0]).to eq library
+          expect(factory.wells[0].libraries.length).to eq 1
+          expect(factory.wells[1].libraries[0]).to eq library
+          expect(factory.wells[1].libraries.length).to eq 1
+          expect(factory.wells[2].libraries[0]).to eq library
+          expect(factory.wells[2].libraries.length).to eq 1
+        end
+
+        it 'creates the well with a library, if library has a tag' do
+          request_library = create(:pacbio_request_library_with_tag)
+          wells_attributes.map { |well| well[:libraries] = [{ type: "libraries", id: request_library.library.id }] }
+          factory = Pacbio::WellFactory.new(wells_attributes)
+
+          expect(factory.wells[0].libraries.length).to eq(1)
+          expect(factory.wells[0].libraries[0]).to eq request_library.library
+          expect(factory.wells[1].libraries[0]).to eq request_library.library
+          expect(factory.wells[2].libraries[0]).to eq request_library.library
+        end
+      end
+
       context 'when there are multiple libraries' do
         let(:libraries_16)       { create_list(:pacbio_library, 16) }
         let(:libraries_17)       { create_list(:pacbio_library, 17) }
@@ -87,12 +113,63 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
           expect(factory.errors.messages[:libraries][0][:libraries]).to include 'There are more than 16 libraries in well ' + factory.wells[0].position
         end
 
-        it 'creates the well with multiple libraries, if each library has a tag' do
-          library = create(:pacbio_library)
-          wells_attributes.map { |well| well[:libraries] << {type: "libraries", id: library.id} }
+        it 'doesnt create the well with libraries if multiple libraries have the same tag' do
+          request_library = create(:pacbio_request_library_with_tag)
+          request_library_same_tag = create(:pacbio_request_library, tag: request_library.tag)
+
+          wells_attributes << attributes_for(:pacbio_well).except(:plate).merge( libraries:
+            [
+              { type: 'libraries', id: request_library.id },
+              { type: 'libraries', id: request_library_same_tag.id }
+            ])
+
           factory = Pacbio::WellFactory.new(wells_attributes)
 
-          expect(factory.wells[0].libraries.length).to eq(2)
+          expect(factory.wells[0].libraries[0]).to eq libraries[0]
+          expect(factory.wells[1].libraries[0]).to eq libraries[1]
+          expect(factory.wells[2].libraries[0]).to eq libraries[2]
+          expect(factory.wells[3].libraries.length).to eq 0
+          expect(factory.errors.messages[:libraries][0][:tags]).to include 'are not unique within the libraries for well ' + factory.wells[3].position
+        end
+
+        it 'does create the well with libraries if multiple libraries have the different tags' do
+          request_library_1 = create(:pacbio_request_library_with_tag)
+          request_library_2 = create(:pacbio_request_library_with_tag)
+
+          wells_attributes << attributes_for(:pacbio_well).except(:plate).merge( libraries:
+            [
+              { type: 'libraries', id: request_library_1.id },
+              { type: 'libraries', id: request_library_2.id }
+            ])
+
+          factory = Pacbio::WellFactory.new(wells_attributes)
+
+          expect(factory.wells[0].libraries[0]).to eq libraries[0]
+          expect(factory.wells[1].libraries[0]).to eq libraries[1]
+          expect(factory.wells[2].libraries[0]).to eq libraries[2]
+          expect(factory.wells[3].libraries[0]).to eq request_library_1.library
+          expect(factory.wells[3].libraries[1]).to eq request_library_2.library
+        end
+
+        it 'doesnt create the well with libraries if some libraries are missing tags' do
+          request_library_with_tag1 = create(:pacbio_request_library_with_tag)
+          request_library_with_tag2 = create(:pacbio_request_library_with_tag)
+          request_library_no_tag = create(:pacbio_request_library_with_tag, tag: nil)
+
+          wells_attributes << attributes_for(:pacbio_well).except(:plate).merge( libraries:
+            [
+              { type: 'libraries', id: request_library_with_tag1.library.id },
+              { type: 'libraries', id: request_library_with_tag2.library.id },
+              { type: 'libraries', id: request_library_no_tag.library.id },
+            ])
+
+          factory = Pacbio::WellFactory.new(wells_attributes)
+
+          expect(factory.wells[0].libraries[0]).to eq libraries[0]
+          expect(factory.wells[1].libraries[0]).to eq libraries[1]
+          expect(factory.wells[2].libraries[0]).to eq libraries[2]
+          expect(factory.wells[3].libraries.length).to eq 0
+          expect(factory.errors.messages[:libraries][0][:tags]).to include 'are missing from the libraries'
         end
 
       end
