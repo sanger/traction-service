@@ -119,8 +119,8 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
 
           wells_attributes << attributes_for(:pacbio_well).except(:plate).merge( libraries:
             [
-              { type: 'libraries', id: request_library.id },
-              { type: 'libraries', id: request_library_same_tag.id }
+              { type: 'libraries', id: request_library.library.id },
+              { type: 'libraries', id: request_library_same_tag.library.id }
             ])
 
           factory = Pacbio::WellFactory.new(wells_attributes)
@@ -138,8 +138,8 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
 
           wells_attributes << attributes_for(:pacbio_well).except(:plate).merge( libraries:
             [
-              { type: 'libraries', id: request_library_1.id },
-              { type: 'libraries', id: request_library_2.id }
+              { type: 'libraries', id: request_library_1.library.id },
+              { type: 'libraries', id: request_library_2.library.id }
             ])
 
           factory = Pacbio::WellFactory.new(wells_attributes)
