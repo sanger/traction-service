@@ -128,10 +128,6 @@ shared_examples_for 'requestor controller' do
     end
   end
 
-  # context '#update' do
-  #   let!(:pipeline_request) { create(request_factory) }
-  # end
-
   context '#destroy' do
 
     let!(:pipeline_request) { create(request_factory) }
