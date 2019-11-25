@@ -10,7 +10,7 @@ shared_examples_for 'requestor model' do
     expect(create(model).sample_name).to be_present
   end
 
-  modual.request_attributes.each do |attribute|
+  modual.required_request_attributes.each do |attribute|
     it "is not valid without #{attribute.to_s.gsub('_', ' ')}" do
       factory = build(model)
       factory.send("#{attribute}=", nil)
