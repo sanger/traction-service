@@ -11,4 +11,10 @@ module Saphyr
       :external_study_id
     ]
   end
+
+  def self.required_request_attributes
+    [
+      :external_study_id
+    ]
+  end
 end
