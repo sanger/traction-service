@@ -22,8 +22,10 @@ RSpec.describe Pacbio::WellLibraryFactory, type: :model, pacbio: true do
                                 }
   let(:library_ids_invalid)     { library_ids.push({type: 'libraries', id: request_library_invalid.library.id}) }
   let(:library_ids_17)       { create_list(:pacbio_library, 17) }
+  let(:library_ids_16)       { create_list(:pacbio_library, 16) }
   let(:request_library_no_tag)       { create(:pacbio_request_library) }
-  let(:library_ids_no_tag)     { [{ type: 'libraries', id: request_library_no_tag.library.id }, { type: 'libraries', id: request_library_1.library.id }] }
+  let(:library_ids_one_tag)     { [{ type: 'libraries', id: request_library_no_tag.library.id }, { type: 'libraries', id: request_library_1.library.id }] }
+  let(:library_ids_no_tag)     { [{ type: 'libraries', id: request_library_no_tag.library.id }, { type: 'libraries', id: request_library_no_tag.library.id }] }
 
   before(:each) do
     well.libraries << [request_library_1, request_library_2, request_library_3].collect(&:library)
@@ -50,21 +52,38 @@ RSpec.describe Pacbio::WellLibraryFactory, type: :model, pacbio: true do
       expect(factory).to be_valid
     end
 
+    it 'is valid if there is no more than 16 libraries in the well' do
+      factory = Pacbio::WellLibraryFactory.new(well, library_ids_16)
+      expect(factory).to be_valid
+    end
+
+    it 'is not valid if there is more than 16 libraries in the well' do
+      factory = Pacbio::WellLibraryFactory.new(well, library_ids_17)
+      expect(factory).to_not be_valid
+      expect(factory.errors.messages[:libraries][0]).to eq 'There are more than 16 libraries in well ' + well.position
+    end
+
     it 'is valid if none of the tags clash' do
       factory = Pacbio::WellLibraryFactory.new(well, library_ids)
       expect(factory).to be_valid
     end
 
-    it 'produces an error if any of the tags clash' do
+    it 'produces an error if there are multiples libraries and any of the tags clash' do
       factory = Pacbio::WellLibraryFactory.new(well, library_ids_invalid)
       expect(factory).to_not be_valid
-      expect(factory.errors.full_messages).to_not be_empty
+      expect(factory.errors.full_messages[0]).to eq 'Tags are not unique within the libraries for well ' + well.position 
     end
 
     it 'produces an error if there are multiples libraries and they do not have tags' do
       factory = Pacbio::WellLibraryFactory.new(well, library_ids_no_tag)
       expect(factory).to_not be_valid
-      expect(factory.errors.full_messages).to_not be_empty
+      expect(factory.errors.full_messages[0]).to eq 'Tags are missing from the libraries'
+    end
+
+    it 'produces an error if there are multiples libraries and not all have tags' do
+      factory = Pacbio::WellLibraryFactory.new(well, library_ids_one_tag)
+      expect(factory).to_not be_valid
+      expect(factory.errors.full_messages[0]).to eq 'Tags are missing from the libraries'
     end
   end
 

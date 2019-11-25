@@ -43,15 +43,13 @@ module Pacbio
     end
 
     def check_tags_uniq
-      all_tags = (well.tags +
-        libraries.collect(&:request_libraries).flatten.collect(&:tag_id)).compact
       return if all_tags.length == all_tags.uniq.length
 
-      errors.add(:tags, 'are not unique within the libraries')
+      errors.add(:tags, 'are not unique within the libraries for well ' + well.position)
     end
 
     def check_tags_present
-      return unless libraries.collect(&:request_libraries).flatten.collect(&:tag).any?(nil)
+      return unless all_tags.any?(nil)
 
       errors.add(:tags, 'are missing from the libraries')
     end
@@ -64,6 +62,11 @@ module Pacbio
 
     def multiple_libraries
       libraries.length > 1
+    end
+
+    def all_tags
+      # This assumes each library has request_libraries
+      libraries.collect(&:request_libraries).flatten.collect(&:tag)
     end
   end
 end
