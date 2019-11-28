@@ -63,7 +63,7 @@ module Pacbio
         well.id
       end
 
-      # A list of WellFactory::Well::Libraries
+      # WellFactory::Well::Libraries
       def libraries
         @libraries ||= []
       end
@@ -120,6 +120,7 @@ module Pacbio
           build_libraries(library_attributes)
         end
 
+        # Pacbio::Library
         def libraries
           @libraries ||= []
         end
@@ -129,7 +130,6 @@ module Pacbio
 
           destroy_libraries
           well.libraries << libraries
-          # true
         end
 
         private
