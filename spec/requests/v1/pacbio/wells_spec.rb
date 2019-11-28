@@ -164,11 +164,11 @@ RSpec.describe 'WellsController', type: :request do
           expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
         end
 
-        xit 'has the correct error messages' do
+        it 'has the correct error messages' do
           post v1_pacbio_wells_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['data']['errors']
-          expect(errors['movie_time']).to be_present
+          expect(errors[0]['movie_time'][0]).to eq "can't be blank"
         end
 
         it 'does not send a message to the warehouse' do
@@ -180,7 +180,8 @@ RSpec.describe 'WellsController', type: :request do
           body = { data: { type: 'wells', attributes: { wells: [] }}}.to_json
           post v1_pacbio_wells_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
-          expect(json['data']['errors'][0]['wells'][0]).to include "there are no wells"
+          errors = json['data']['errors']
+          expect(errors[0]['wells'][0]).to include "there are no wells"
         end
       end
 
@@ -232,7 +233,8 @@ RSpec.describe 'WellsController', type: :request do
         it 'has the correct data errors' do
           post v1_pacbio_wells_path, params: body, headers: json_api_headers          
           json = ActiveSupport::JSON.decode(response.body)
-          expect(json['data']['errors'][0]['tags'][0]).to include "are not unique within the libraries for well"
+          errors = json['data']['errors']
+          expect(errors[0]['tags'][0]).to include "are not unique within the libraries for well"
         end
       end
     end
