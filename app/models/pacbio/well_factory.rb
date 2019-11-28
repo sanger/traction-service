@@ -30,7 +30,27 @@ module Pacbio
       wells.collect(&:save).all?(true)
     end
 
+    def factory_errors
+      return well_factory_errors unless errors.messages.empty?
+
+      return well_factory_well_errors unless well_factory_well_errors.any?(&:empty?)
+
+      well_factory_well_libraries_errors
+    end
+
     private
+
+    def well_factory_errors
+      [errors.messages]
+    end
+
+    def well_factory_well_errors
+      wells.map(&:errors).collect(&:messages)
+    end
+
+    def well_factory_well_libraries_errors
+      wells.map(&:libraries).map(&:errors).map(&:messages)
+    end
 
     def build_wells(wells_attributes)
       wells_attributes.each do |well_attributes|
