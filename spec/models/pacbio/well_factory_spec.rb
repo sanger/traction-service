@@ -62,6 +62,48 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         expect(factory.errors.messages[:wells]).to eq ['there are no wells']
       end
     end
+
+    context '#errors' do
+      context 'when the error is the in WellFactory' do
+        it 'returns the correct error message' do
+          factory = Pacbio::WellFactory.new([])
+          factory.save
+          expect(factory.factory_errors[0][:wells]).to eq ['there are no wells']
+        end
+      end
+
+      context 'when the error is the in WellFactory:Well' do
+        let(:wells_attributes_well_error)  { 
+                                  [ attributes_for(:pacbio_well).except(:movie_time).except(:plate).merge( plate: {type: 'plate', id: plate.id}, libraries: [{type: 'libraries', id: libraries.first.id}]) ]
+                                }
+
+        it 'returns the correct error message' do
+          factory = Pacbio::WellFactory.new(wells_attributes_well_error)
+          factory.save
+          expect(factory.factory_errors[0][:movie_time]).to eq ["can't be blank", "is not a number"]
+        end
+      end
+
+      context 'when the error is the in WellFactory:Well:Libraries' do
+        let(:request_library)             { create(:pacbio_request_library_with_tag) }
+        let(:libraries_attributes_dupl_tags)  { [
+                                                { type: 'libraries', id: request_library.library.id },
+                                                { type: 'libraries', id: request_library.library.id }
+                                              ] }
+        let(:wells_attributes_libraries_error)  { 
+                                                  [ attributes_for(:pacbio_well).merge( 
+                                                    plate: { type: 'plate', id: plate.id }, 
+                                                    libraries: libraries_attributes_dupl_tags 
+                                                  ) ]
+                                                }
+
+        it 'returns the correct error message' do
+          factory = Pacbio::WellFactory.new(wells_attributes_libraries_error)
+          factory.save
+          expect(factory.factory_errors[0][:tags][0]).to include 'are not unique within the libraries for well'
+        end
+      end
+    end
   end
 
   context 'WellFactory::Well' do

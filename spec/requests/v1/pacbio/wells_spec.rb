@@ -180,8 +180,7 @@ RSpec.describe 'WellsController', type: :request do
           body = { data: { type: 'wells', attributes: { wells: [] }}}.to_json
           post v1_pacbio_wells_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
-          errors = json['data']['errors']
-          expect(errors['wells'][0]).to include "there are no wells"
+          expect(json['data']['errors'][0]['wells'][0]).to include "there are no wells"
         end
       end
 
@@ -230,10 +229,10 @@ RSpec.describe 'WellsController', type: :request do
           expect(response).to have_http_status(:unprocessable_entity)
         end
 
-        xit 'has the correct data errors' do
+        it 'has the correct data errors' do
           post v1_pacbio_wells_path, params: body, headers: json_api_headers          
           json = ActiveSupport::JSON.decode(response.body)
-          expect(json['data']['errors']['libraries'][0]['tags'][0]).to include "are not unique within the libraries for well"
+          expect(json['data']['errors'][0]['tags'][0]).to include "are not unique within the libraries for well"
         end
       end
     end
