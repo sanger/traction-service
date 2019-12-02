@@ -114,7 +114,7 @@ module Pacbio
           end
         end
 
-        return true if libraries.valid?
+        return if libraries.valid?
 
         libraries.errors.each do |k, v|
           errors.add(k, v)
