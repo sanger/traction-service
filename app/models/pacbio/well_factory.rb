@@ -30,27 +30,7 @@ module Pacbio
       wells.collect(&:save).all?(true)
     end
 
-    def factory_errors
-      return well_factory_errors unless errors.messages.empty?
-
-      return well_factory_well_errors unless well_factory_well_errors.any?(&:empty?)
-
-      well_factory_well_libraries_errors
-    end
-
     private
-
-    def well_factory_errors
-      [errors.messages]
-    end
-
-    def well_factory_well_errors
-      wells.map(&:errors).collect(&:messages)
-    end
-
-    def well_factory_well_libraries_errors
-      wells.map(&:libraries).map(&:errors).map(&:messages)
-    end
 
     def build_wells(wells_attributes)
       wells_attributes.each do |well_attributes|
@@ -63,6 +43,15 @@ module Pacbio
         errors.add(:wells, 'there are no wells')
         return
       end
+
+      wells.each do |well|
+        well.valid?
+
+        well.errors.each do |k, v|
+          errors.add(k, v)
+        end
+      end
+
       true
     end
 
@@ -119,9 +108,15 @@ module Pacbio
       end
 
       def validate_well
-        return true if well.valid?
+        unless well.valid?
+          well.errors.each do |k, v|
+            errors.add(k, v)
+          end
+        end
 
-        well.errors.each do |k, v|
+        return true if libraries.valid?
+
+        libraries.errors.each do |k, v|
           errors.add(k, v)
         end
       end

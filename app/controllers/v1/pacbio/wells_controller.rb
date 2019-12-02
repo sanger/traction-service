@@ -10,7 +10,7 @@ module V1
           publish_message
           render json: body, status: :created
         else
-          render json: { data: { errors: @well_factory.factory_errors } },
+          render json: { data: { errors: @well_factory.errors.messages } },
                  status: :unprocessable_entity
         end
       end
@@ -22,7 +22,7 @@ module V1
           publish_message
           render json: body, status: :ok
         else
-          render json: { data: { errors: @well_factory.factory_errors } },
+          render json: { data: { errors: @well_factory.errors.messages } },
                  status: :unprocessable_entity
         end
       rescue StandardError => e

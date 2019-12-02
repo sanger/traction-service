@@ -68,7 +68,7 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         it 'returns the correct error message' do
           factory = Pacbio::WellFactory.new([])
           factory.save
-          expect(factory.factory_errors[0][:wells]).to eq ['there are no wells']
+          expect(factory.errors.messages[:wells]).to eq ['there are no wells']
         end
       end
 
@@ -80,7 +80,7 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         it 'returns the correct error message' do
           factory = Pacbio::WellFactory.new(wells_attributes_well_error)
           factory.save
-          expect(factory.factory_errors[0][:movie_time]).to eq ["can't be blank", "is not a number"]
+          expect(factory.errors.messages[:movie_time]).to eq ["can't be blank", "is not a number"]
         end
       end
 
@@ -100,20 +100,23 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         it 'returns the correct error message' do
           factory = Pacbio::WellFactory.new(wells_attributes_libraries_error)
           factory.save
-          expect(factory.factory_errors[0][:tags][0]).to include 'are not unique within the libraries for well'
+          expect(factory.errors.messages[:tags][0]).to include 'are not unique within the libraries for well'
         end
       end
     end
   end
 
   context 'WellFactory::Well' do
-    let(:well_attributes)          { attributes_for(:pacbio_well).except(:plate).merge( 
-                                      plate: { type: 'plate', id: plate.id }, 
-                                      libraries: [ 
-                                        { type: 'libraries', id: libraries[0].id }, 
-                                        { type: 'libraries', id: libraries[1].id }
-                                      ])
-                                    }
+    let(:request_library_1)             { create(:pacbio_request_library_with_tag) }
+    let(:request_library_2)             { create(:pacbio_request_library_with_tag) }
+    let(:library_attributes)            { [
+                                          { type: 'libraries', id: request_library_1.library.id },
+                                          { type: 'libraries', id: request_library_2.library.id }
+                                        ] }
+    let(:well_attributes)               { attributes_for(:pacbio_well).except(:plate).merge( 
+                                          plate: { type: 'plate', id: plate.id }, 
+                                          libraries: library_attributes )
+                                        }
 
     context '#initialize' do
       context 'when the wells dont exist' do
