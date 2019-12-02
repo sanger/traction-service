@@ -168,7 +168,13 @@ RSpec.describe 'WellsController', type: :request do
           post v1_pacbio_wells_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['data']['errors']
-          expect(errors[0]['movie_time'][0]).to eq "can't be blank"
+
+          expect(errors).to include('plate')
+          expect(errors).to include('movie_time')
+          expect(errors).to include('libraries')
+          expect(errors['plate'][0]).to eq "must exist"
+          expect(errors['movie_time'][0]).to eq "can't be blank"
+          expect(errors['libraries'][0]).to eq "do not exist"
         end
 
         it 'does not send a message to the warehouse' do
@@ -181,7 +187,7 @@ RSpec.describe 'WellsController', type: :request do
           post v1_pacbio_wells_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['data']['errors']
-          expect(errors[0]['wells'][0]).to include "there are no wells"
+          expect(errors['wells'][0]).to include "there are no wells"
         end
       end
 
@@ -234,7 +240,7 @@ RSpec.describe 'WellsController', type: :request do
           post v1_pacbio_wells_path, params: body, headers: json_api_headers          
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['data']['errors']
-          expect(errors[0]['tags'][0]).to include "are not unique within the libraries for well"
+          expect(errors['tags'][0]).to include "are not unique within the libraries for well"
         end
       end
     end
