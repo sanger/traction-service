@@ -45,7 +45,7 @@ module Pacbio
       end
 
       wells.each do |well|
-        well.valid?
+        next if well.valid?
 
         well.errors.each do |k, v|
           errors.add(k, v)
