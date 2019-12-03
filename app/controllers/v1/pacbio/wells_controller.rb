@@ -39,7 +39,9 @@ module V1
       private
 
       def body
-        resources = @well_factory.wells.map { |well| WellResource.new(well, nil) }
+        resources = @well_factory.wells.map do |well_factory|
+          WellResource.new(::Pacbio::Well.find(well_factory.id), nil)
+        end
         JSONAPI::ResourceSerializer.new(WellResource).serialize_to_hash(resources)
       end
 
