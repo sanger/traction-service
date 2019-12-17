@@ -1,5 +1,6 @@
+# frozen_string_literal: true
+
 namespace :enzymes do
-  desc "TODO"
   task create: :environment do
     Saphyr::Enzyme.create!(
       [
@@ -11,6 +12,10 @@ namespace :enzymes do
         { name: 'DLE-1' }
       ]
     )
+  end
+
+  task destroy: :environment do
+    Saphyr::Enzyme.delete_all
   end
 
 end
