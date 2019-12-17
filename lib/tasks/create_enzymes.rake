@@ -17,5 +17,4 @@ namespace :enzymes do
   task destroy: :environment do
     Saphyr::Enzyme.delete_all
   end
-
 end
