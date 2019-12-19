@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-namespace :create_tags do
+namespace :tags do
   task create: :environment do
     Tag.create!(oligo: 'CACATATCAGAGTGCGT', group_id: 'bc1001_BAK8A_OA', set_name: 'pacbio')
     Tag.create!(oligo: 'ACACACAGACTGTGAGT', group_id: 'bc1002_BAK8A_OA', set_name: 'pacbio')
@@ -18,5 +18,9 @@ namespace :create_tags do
     Tag.create!(oligo: 'CACGACACGACGATGTT', group_id: 'bc1020_BAK8B_OA', set_name: 'pacbio')
     Tag.create!(oligo: 'CTATACATAGTGATGTT', group_id: 'bc1021_BAK8B_OA', set_name: 'pacbio')
     Tag.create!(oligo: 'CACTCACGTGTGATATT', group_id: 'bc1022_BAK8B_OA', set_name: 'pacbio')
+  end
+
+  task destroy: :environment do
+    Tag.delete_all
   end
 end
