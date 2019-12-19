@@ -5,7 +5,7 @@ require 'csv'
 namespace :migrate_saphyr_data do
   task create_runs: :environment do |_t|
     # samples and requests
-    table = CSV.parse(File.read(Rails.root.join('lib', 'data', 'saphyr_samples.csv')), headers: true)
+    table = CSV.parse(File.read(Rails.root.join('lib/data/saphyr_samples.csv')), headers: true)
     table.each do |row|
       created_at = Date.parse(row['created_at'])
       sample = Sample.create!(name: row['name'], species: row['species'], external_id: row['external_id'], created_at: created_at)
@@ -13,14 +13,14 @@ namespace :migrate_saphyr_data do
     end
 
     # libraries
-    table = CSV.parse(File.read(Rails.root.join('lib', 'data', 'saphyr_libraries.csv')), headers: true)
+    table = CSV.parse(File.read(Rails.root.join('lib/data/saphyr_libraries.csv')), headers: true)
     table.each do |row|
       sample = Sample.find_by(name: row['sample_name'])
       Saphyr::Library.create!(request: sample.requests.first.requestable, enzyme: Saphyr::Enzyme.find_by(name: row['enzyme']), created_at: Date.parse(row['created_at']), tube: Tube.new)
     end
 
     # runs
-    table = CSV.parse(File.read(Rails.root.join('lib', 'data', 'saphyr_runs.csv')), headers: true)
+    table = CSV.parse(File.read(Rails.root.join('lib/data/saphyr_runs.csv')), headers: true)
     table.each do |row|
       created_at = Date.parse(row['created_at'])
       run = Saphyr::Run.create!(state: 2, created_at: created_at)
