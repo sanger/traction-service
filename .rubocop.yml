@@ -51,7 +51,7 @@ Metrics/MethodLength:
   Exclude:
     - 'db/migrate/*'
 
-Layout/IndentFirstArrayElement:
+Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
 Style/ClassAndModuleChildren:
   Enabled: false
