@@ -47,7 +47,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
 
     it 'can have a position' do
-      expect(build(:pacbio_well, row: 'B', column: '01').position).to eq('B01')
+      expect(build(:pacbio_well, row: 'B', column: '1').position).to eq('B01')
     end
   end
 
