@@ -119,22 +119,22 @@ default: &default
         Insert Size (bp):
           type: :model
           value: insert_size
-        Template Prep Kit (Box Barcode):
+        Template Prep Kit Box Barcode:
           type: :model
           value: plate.run.template_prep_kit_box_barcode
-        Binding Kit (Box Barcode):
+        Binding Kit Box Barcode:
           type: :model
           value: plate.run.binding_kit_box_barcode
-        Sequencing Kit (Box Barcode):
+        Sequencing Kit Box Barcode:
           type: :model
           value: plate.run.sequencing_kit_box_barcode
-        Sequencing Mode (CLR/ CCS):
+        Sequencing Mode:
           type: :model
           value: sequencing_mode
-        On plate loading concentration (mP):
+        On-Plate Loading Concentration (pM):
           type: :model
           value: on_plate_loading_concentration
-        DNA Control Complex (Box Barcode):
+        DNA Control Complex Box Barcode:
           type: :model
           value: plate.run.dna_control_complex_box_barcode
         Generate CCS Data:
