@@ -109,7 +109,7 @@ default: &default
           value: plate.run.name
         Sample Well:
           type: :model
-          value: position
+          value: position_leading_zero
         Sample Name:
           type: :model
           value: sample_names

@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
-require Rails.root.join('lib', 'dependent_loader')
-
-DependentLoader.start('saphyr/enzymes') do |on|
-  on.success do
-    Saphyr::Enzyme.create(
+namespace :enzymes do
+  task create: :environment do
+    Saphyr::Enzyme.create!(
       [
         { name: 'Nb.BbvCI' },
         { name: 'Nb.BsmI' },
@@ -14,5 +12,9 @@ DependentLoader.start('saphyr/enzymes') do |on|
         { name: 'DLE-1' }
       ]
     )
+  end
+
+  task destroy: :environment do
+    Saphyr::Enzyme.delete_all
   end
 end
