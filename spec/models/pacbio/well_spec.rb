@@ -2,6 +2,18 @@ require 'rails_helper'
 
 RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
+  context 'row' do
+    it 'must have a row' do
+      expect(build(:pacbio_well, row: nil)).to_not be_valid
+    end
+  end
+
+  context 'column' do
+    it 'must have a column' do
+      expect(build(:pacbio_well, column: nil)).to_not be_valid
+    end
+  end
+
   context 'movie time' do
     it 'must be present' do
       expect(build(:pacbio_well, movie_time: nil)).to_not be_valid
@@ -37,17 +49,14 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
   end
 
   context 'position' do
-
-    it 'must have a row' do
-      expect(build(:pacbio_well, row: nil)).to_not be_valid
-    end
-
-    it 'must have a column' do
-      expect(build(:pacbio_well, column: nil)).to_not be_valid
-    end
-
     it 'can have a position' do
-      expect(build(:pacbio_well, row: 'B', column: '1').position).to eq('B01')
+      expect(build(:pacbio_well, row: 'B', column: '1').position).to eq('B1')
+    end
+  end
+
+  context 'position_leading_zero' do
+    it 'can have a position with a leading zero for sample sheet generation' do
+      expect(build(:pacbio_well, row: 'B', column: '1').position_leading_zero).to eq('B01')
     end
   end
 

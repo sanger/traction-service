@@ -22,6 +22,10 @@ module Pacbio
     validates :insert_size, numericality: { greater_than_or_equal_to: 10 }
 
     def position
+      "#{row}#{column}"
+    end
+
+    def position_leading_zero
       "#{row}#{column.rjust(2, '0')}"
     end
 

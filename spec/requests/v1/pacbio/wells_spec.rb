@@ -141,7 +141,7 @@ RSpec.describe 'WellsController', type: :request do
               attributes: {
                 wells: [
                   row: 'A',
-                  column: '01',
+                  column: '1',
                   insert_size: 8000,
                   on_plate_loading_concentration: 8.35,
                   sequencing_mode: 'CLR'
