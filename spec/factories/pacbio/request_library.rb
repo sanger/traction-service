@@ -4,7 +4,7 @@ FactoryBot.define do
     library   { create(:pacbio_library) }
 
     factory :pacbio_request_library_with_tag do
-      tag {create(:tag)}
+      tag { create(:tag) }
     end
   end
 end
