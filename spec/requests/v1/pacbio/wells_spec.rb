@@ -141,7 +141,7 @@ RSpec.describe 'WellsController', type: :request do
               attributes: {
                 wells: [
                   row: 'A',
-                  column: '01',
+                  column: '1',
                   insert_size: 8000,
                   on_plate_loading_concentration: 8.35,
                   sequencing_mode: 'CLR'
@@ -171,10 +171,8 @@ RSpec.describe 'WellsController', type: :request do
 
           expect(errors).to include('plate')
           expect(errors).to include('movie_time')
-          expect(errors).to include('libraries')
           expect(errors['plate'][0]).to eq "must exist"
           expect(errors['movie_time'][0]).to eq "can't be blank"
-          expect(errors['libraries'][0]).to eq "do not exist"
         end
 
         it 'does not send a message to the warehouse' do
@@ -248,13 +246,86 @@ RSpec.describe 'WellsController', type: :request do
   end
 
   context '#update' do
-    let(:well) { create(:pacbio_well_with_libraries) }
+    let(:well) { create(:pacbio_well_with_request_libraries) }
+    let(:existing_libraries_data) { well.libraries.map { |l| { type: "libraries", id: l.id } } }
+
+    let(:row) { "A" }
+    let(:column) { "1" }
     let(:movie_time) { "15.0" }
     let(:insert_size) { 123 }
-    let(:request_library1) { create(:pacbio_request_library_with_tag) }
-    let(:request_library2) { create(:pacbio_request_library_with_tag) }
+    let(:on_plate_loading_concentration) { 12 }
+    let(:sequencing_mode) { "CLR" }
 
-    context 'on success' do
+    context 'when only updating the wells attributes' do
+      let(:body) do
+        {
+          data: {
+            id: well.id,
+            type: "wells",
+            attributes: {
+              row: row,
+              column: column,
+              movie_time: movie_time,
+              insert_size: insert_size,
+              on_plate_loading_concentration: on_plate_loading_concentration,
+              sequencing_mode: sequencing_mode
+            },
+            relationships: {
+              libraries: {
+                data: existing_libraries_data
+              }
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a ok status' do
+        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'updates a wells attributes' do
+        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        well.reload
+
+        expect(well.row).to eq row
+        expect(well.column).to eq column
+        expect(well.movie_time.to_i).to eq movie_time.to_i
+        expect(well.insert_size.to_i).to eq insert_size.to_i
+        expect(well.on_plate_loading_concentration).to eq on_plate_loading_concentration
+        expect(well.sequencing_mode).to eq sequencing_mode
+      end
+
+      it 'does not update a wells libraries' do
+        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        well.reload
+        expect(well.libraries.length).to eq existing_libraries_data.length
+      end
+
+      it 'returns the correct attributes' do
+        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+        response = json['data'].first
+        expect(response['id'].to_i).to eq well.id
+        expect(response['attributes']['insert_size']).to eq insert_size
+        expect(response['attributes']['movie_time']).to eq movie_time
+        expect(response['attributes']['row']).to eq row
+        expect(response['attributes']['column']).to eq column
+        expect(response['attributes']['on_plate_loading_concentration']).to eq on_plate_loading_concentration
+        expect(response['attributes']['sequencing_mode']).to eq sequencing_mode
+      end
+
+      it 'sends a message to the warehouse' do
+        expect(Messages).to receive(:publish)
+        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+      end
+    end
+
+    context 'when successfully adding a new library' do
+      let(:uniq_tag) { create(:tag, set_name: 'pipeline2') }
+      let(:request_library1) { create(:pacbio_request_library, tag: uniq_tag) }
+      let(:updated_libraries_data) { existing_libraries_data.push({ type: "libraries", id: request_library1.library.id }) }
+
       let(:body) do
         {
           data: {
@@ -262,11 +333,43 @@ RSpec.describe 'WellsController', type: :request do
             type: "wells",
             attributes: {
               movie_time: movie_time,
-              insert_size: insert_size,
             },
-            relationships:{
-              libraries:{
-                data:[
+            relationships: {
+              libraries: {
+                data: updated_libraries_data
+              }
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a ok status' do
+        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'updates the wells libraries' do
+        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        well.reload
+        expect(well.libraries.length).to eq updated_libraries_data.length
+      end
+    end
+
+    context 'when successfully replacing all libraries' do
+      let(:request_library1) { create(:pacbio_request_library_with_tag) }
+      let(:request_library2) { create(:pacbio_request_library_with_tag) }
+
+      let(:body) do
+        {
+          data: {
+            id: well.id,
+            type: "wells",
+            attributes: {
+              movie_time: movie_time,
+            },
+            relationships: {
+              libraries: {
+                data: [
                     {
                       type: "libraries",
                       id: request_library1.library.id
@@ -287,33 +390,74 @@ RSpec.describe 'WellsController', type: :request do
         expect(response).to have_http_status(:ok)
       end
 
-      it 'updates a well' do
-        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
-        well.reload
-        expect(well.movie_time.to_i).to eq movie_time.to_i
-        expect(well.insert_size.to_i).to eq insert_size.to_i
-      end
-
-      it 'updates a wells libraries' do
+      it 'updates the wells libraries' do
         patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
         well.reload
         expect(well.libraries.length).to eq 2
-        expect(well.libraries[0]).to eq request_library1.library
-        expect(well.libraries[1]).to eq request_library2.library
+      end
+    end
+
+    context 'when successfully removing one library' do
+      let(:updated_libraries_data) { existing_libraries_data.slice(1..-1) }
+
+      let(:body) do
+        {
+          data: {
+            id: well.id,
+            type: "wells",
+            attributes: {
+              movie_time: movie_time,
+            },
+            relationships: {
+              libraries: {
+                data: updated_libraries_data
+              }
+            }
+          }
+        }.to_json
       end
 
-      it 'returns the correct attributes' do
+      it 'has a ok status' do
         patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        response = json['data'].first
-        expect(response['id'].to_i).to eq well.id
-        expect(response['attributes']['insert_size']).to eq insert_size
-        expect(response['attributes']['movie_time']).to eq movie_time
+        expect(response).to have_http_status(:ok)
       end
 
-      it 'sends a message to the warehouse' do
-        expect(Messages).to receive(:publish)
+      it 'updates the wells libraries' do
         patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        well.reload
+        expect(well.libraries.length).to eq updated_libraries_data.length
+      end
+    end
+
+    context 'when successfully removing all libraries' do
+      let(:updated_libraries_data) { existing_libraries_data.slice(1..-1) }
+
+      let(:body) do
+        {
+          data: {
+            id: well.id,
+            type: "wells",
+            attributes: {
+              movie_time: movie_time,
+            },
+            relationships: {
+              libraries: {
+                data: []
+              }
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a ok status' do
+        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'updates the wells libraries' do
+        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        well.reload
+        expect(well.libraries.length).to eq 0
       end
     end
 

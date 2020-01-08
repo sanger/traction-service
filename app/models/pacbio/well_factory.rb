@@ -126,7 +126,6 @@ module Pacbio
         include ActiveModel::Model
         attr_reader :well
 
-        validate :check_libraries_exist
         validate :check_tags_present, if: :multiple_libraries
         validate :check_tags_uniq, if: :multiple_libraries
         validate :check_libraries_max
@@ -160,12 +159,6 @@ module Pacbio
 
         def destroy_libraries
           well.libraries.destroy_all
-        end
-
-        def check_libraries_exist
-          return unless libraries.empty?
-
-          errors.add(:libraries, 'do not exist')
         end
 
         def check_tags_present
