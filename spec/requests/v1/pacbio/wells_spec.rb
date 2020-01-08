@@ -324,7 +324,7 @@ RSpec.describe 'WellsController', type: :request do
     context 'when successfully adding a new library' do
       let(:uniq_tag) { create(:tag, set_name: 'pipeline2') }
       let(:request_library1) { create(:pacbio_request_library, tag: uniq_tag) }
-      let(:updated_libraries_data) { existing_libraries_data.push({ type: "libraries", id: request_library1.id }) }
+      let(:updated_libraries_data) { existing_libraries_data.push({ type: "libraries", id: request_library1.library.id }) }
 
       let(:body) do
         {
