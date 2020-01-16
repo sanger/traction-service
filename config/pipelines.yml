@@ -140,6 +140,25 @@ default: &default
         Generate CCS Data:
           type: :model
           value: generate_ccs_data
+        Run Comments:
+          type: :model
+          value: plate.run.comments
+        Sample is Barcoded:
+          type: :model
+          value: all_libraries_tagged
+        Barcode Name:
+          type: :model
+          value: barcode_name
+        Barcode Set:
+          type: :model
+          value: barcode_set
+        Same Barcodes on Both Ends of Sequence:
+          type: :model
+          value: same_barcodes_on_both_ends_of_sequence
+        Bio Sample Name:
+          type: :model
+          value: bio_sample_name
+
 
 development:
   <<: *default

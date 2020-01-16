@@ -49,7 +49,13 @@ RSpec.describe CSVGenerator, type: :model do
         well1.sequencing_mode,
         well1.on_plate_loading_concentration.to_s,
         well1.plate.run.dna_control_complex_box_barcode,
-        well1.generate_ccs_data.to_s
+        well1.generate_ccs_data.to_s,
+        well1.plate.run.comments,
+        well1.all_libraries_tagged.to_s,
+        well1.barcode_name,
+        well1.barcode_set,
+        well1.same_barcodes_on_both_ends_of_sequence.to_s,
+        well1.bio_sample_name
       ])
 
       expect(well_data_2).to eq([
@@ -65,7 +71,13 @@ RSpec.describe CSVGenerator, type: :model do
         well2.sequencing_mode,
         well2.on_plate_loading_concentration.to_s,
         well2.plate.run.dna_control_complex_box_barcode,
-        well2.generate_ccs_data.to_s
+        well2.generate_ccs_data.to_s,
+        well2.plate.run.comments,
+        well2.all_libraries_tagged.to_s,
+        well2.barcode_name,
+        well2.barcode_set,
+        well2.same_barcodes_on_both_ends_of_sequence.to_s,
+        well2.bio_sample_name
       ])
     end
   end

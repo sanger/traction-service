@@ -5,6 +5,7 @@ module Pacbio
   # A well can have many libraries
   class Well < ApplicationRecord
     include Uuidable
+    include SampleSheet
 
     enum sequencing_mode: { 'CLR' => 0, 'CCS' => 1 }
 

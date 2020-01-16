@@ -130,4 +130,12 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
   end
 
+  context 'sample sheet mixin' do
+    let(:well)                { create(:pacbio_well) }
+
+    it 'includes the Sample Sheet mixin' do
+      expect(well.same_barcodes_on_both_ends_of_sequence).to eq true
+    end
+  end
+
 end
