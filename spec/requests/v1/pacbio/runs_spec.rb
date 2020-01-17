@@ -117,7 +117,6 @@ RSpec.describe 'RunsController', type: :request do
         post v1_pacbio_runs_path, params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         errors = json['data']['errors']
-        expect(errors['name']).to be_present
         expect(errors['template_prep_kit_box_barcode']).to be_present
         expect(errors['binding_kit_box_barcode']).to be_present
         expect(errors['sequencing_kit_box_barcode']).to be_present
