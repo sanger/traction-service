@@ -26,7 +26,7 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
     end
 
     it 'must have a id_pac_bio_run_lims' do
-      expect(key[:id_pac_bio_run_lims]).to eq(plate.run.id)
+      expect(key[:id_pac_bio_run_lims]).to eq(plate.run.name)
     end
 
     it 'must have a pac_bio_run_uuid' do
