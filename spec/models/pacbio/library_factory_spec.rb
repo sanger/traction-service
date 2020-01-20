@@ -6,6 +6,8 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
 
   let(:tags)                { create_list(:tag, 3) }
   let(:requests)            { create_list(:pacbio_request, 3) }
+  let(:request_empty_cost_code) { create(:pacbio_request, cost_code: "")}
+
   let(:library_attributes)  { [
                                 attributes_for(:pacbio_library).merge(requests: [
                                   {id: requests.first.id, type: 'requests', tag: { id: tags.first.id, type: 'tags'}}, 
@@ -42,6 +44,14 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages).to_not be_empty
     end
+
+    it 'produces an error if the request contains an empty cost_code' do
+      library_attributes << attributes_for(:pacbio_library).merge(requests: [{id: request_empty_cost_code.id, type: 'requests'}])
+      factory = Pacbio::LibraryFactory.new(library_attributes)
+      expect(factory).to_not be_valid
+      expect(factory.errors.full_messages).to eq(['Cost code must be present'])
+    end
+
   end
 
   context '#save' do
