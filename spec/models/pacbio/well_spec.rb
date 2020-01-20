@@ -54,12 +54,6 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
-  context 'position_leading_zero' do
-    it 'can have a position with a leading zero for sample sheet generation' do
-      expect(build(:pacbio_well, row: 'B', column: '1').position_leading_zero).to eq('B01')
-    end
-  end
-
   it 'must have to a plate' do
     expect(build(:pacbio_well, plate: nil)).to_not be_valid
   end

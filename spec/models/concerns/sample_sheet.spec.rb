@@ -27,12 +27,9 @@ RSpec.describe SampleSheet do
 
     context 'all_libraries_tagged' do
       xit 'returns true if all well libraries are tagged' do
-      end
+      en
 
-      xit 'returns true is there is only one well library' do
-      end
-
-      xit 'returns false if one well library is not tagged' do
+      xit 'returns false if any of the well libraries are not tagged' do
       end
     end
 
@@ -46,6 +43,12 @@ RSpec.describe SampleSheet do
       end
 
       xit 'returns the wells library requests sample names when the well has many libraries' do
+      end
+    end
+
+    context 'position_leading_zero' do
+      it 'can have a position with a leading zero for sample sheet generation' do
+        expect(build(:pacbio_well, row: 'B', column: '1').position_leading_zero).to eq('B01')
       end
     end
 

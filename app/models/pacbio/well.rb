@@ -26,10 +26,6 @@ module Pacbio
       "#{row}#{column}"
     end
 
-    def position_leading_zero
-      "#{row}#{column.rjust(2, '0')}"
-    end
-
     def summary
       "#{sample_names},#{comment}"
     end
