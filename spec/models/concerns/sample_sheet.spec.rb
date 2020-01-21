@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe SampleSheet do
-
   context 'sample sheet methods' do
     let(:well) { create(:pacbio_well_with_libraries) }
 
@@ -27,7 +26,7 @@ RSpec.describe SampleSheet do
 
     context 'all_libraries_tagged' do
       xit 'returns true if all well libraries are tagged' do
-      en
+      end
 
       xit 'returns false if any of the well libraries are not tagged' do
       end
