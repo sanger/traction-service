@@ -3,6 +3,8 @@
 module Pacbio
   # Pacbio::Run
   class Run < ApplicationRecord
+    NAME_PREFIX = 'TRACTION-RUN-'
+
     include Uuidable
 
     enum state: { pending: 0, started: 1, completed: 2, cancelled: 3 }
@@ -11,12 +13,16 @@ module Pacbio
 
     delegate :wells, to: :plate
 
+    after_create :generate_name
+
     has_one :plate, foreign_key: :pacbio_run_id,
                     dependent: :destroy, inverse_of: :run
 
-    validates :name, :template_prep_kit_box_barcode, :binding_kit_box_barcode,
+    validates :template_prep_kit_box_barcode, :binding_kit_box_barcode,
               :sequencing_kit_box_barcode, :dna_control_complex_box_barcode,
               :system_name, presence: true
+
+    validates :name, uniqueness: true
 
     scope :active, -> { where(deactivated_at: nil) }
 
@@ -35,6 +41,12 @@ module Pacbio
 
     def pacbio_run_sample_sheet_config
       Pipelines.pacbio.sample_sheet
+    end
+
+    def generate_name
+      return if name.present?
+
+      update(name: "#{NAME_PREFIX}#{id}")
     end
   end
 end

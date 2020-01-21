@@ -13,3 +13,18 @@ development:
 test:
   <<: *default
   database: db/test.sqlite3
+
+# Uncomment this if you want to run the tests through mysql
+# This is useful if there are tests failing on Travis which 
+# are due to the differences between mysql and sqlite
+# test:
+#   adapter: mysql2
+#   database: traction_service_test
+#   username: <%= ENV.fetch('DBUSERNAME','root') %>
+#   password: <%= ENV['DBPASSWORD'] %>
+#   encoding: utf8
+#   properties:
+#     characterSetResults: utf8
+#   pool: 5
+#   timeout: 5000
+#   reaping_frequency: 600

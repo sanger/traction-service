@@ -7,8 +7,9 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
   context '#get' do
     let!(:library1)         { create(:pacbio_library) }
-    let!(:request_library)  { create(:pacbio_request_library, library: library1, request: request, tag: tag)}
+    let!(:request_library1)  { create(:pacbio_request_library, library: library1, request: request, tag: tag)}
     let!(:library2)         { create(:pacbio_library) }
+    let!(:request_library2)  { create(:pacbio_request_library, library: library2, request: request, tag: tag)}
     let!(:tube1) { create(:tube, material: library1)}
     let!(:tube2) { create(:tube, material: library2)}
 
@@ -24,33 +25,57 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
+
       expect(json['data'][0]['attributes']['volume']).to eq(library1.volume)
       expect(json['data'][0]['attributes']['concentration']).to eq(library1.concentration)
       expect(json['data'][0]['attributes']['library_kit_barcode']).to eq(library1.library_kit_barcode)
       expect(json['data'][0]['attributes']['fragment_size']).to eq(library1.fragment_size)
       expect(json['data'][0]['attributes']['sample_names']).to eq(library1.sample_names)
-
       expect(json['data'][0]['attributes']['state']).to eq(library1.state)
       expect(json['data'][0]['attributes']['barcode']).to eq(library1.tube.barcode)
       expect(json['data'][0]["attributes"]["created_at"]).to eq(library1.created_at.strftime("%m/%d/%Y %I:%M"))
       expect(json['data'][0]["attributes"]["deactivated_at"]).to eq(nil)
 
-      requests = json['data'][0]['relationships']['requests']
-      expect(requests.length).to eq(1)
-      expect(requests['data'][0]['id'].to_s).to eq(request_library.id.to_s)
-
-      request = json['included'][0]['attributes']
-      expect(request['sample_name']).to eq(request_library.sample_name)
-      expect(request['tag_id'].to_s).to eq(request_library.tag_id.to_s)
-      expect(request['tag_set_name']).to eq(request_library.tag_set_name)
-      expect(request['tag_group_id']).to eq(request_library.tag_group_id)
-      expect(request['tag_oligo'].to_s).to eq(request_library.tag_oligo)
-
       expect(json['data'][1]['attributes']['volume']).to eq(library2.volume)
       expect(json['data'][1]['attributes']['concentration']).to eq(library2.concentration)
       expect(json['data'][1]['attributes']['library_kit_barcode']).to eq(library2.library_kit_barcode)
       expect(json['data'][1]['attributes']['fragment_size']).to eq(library2.fragment_size)
+      expect(json['data'][1]['attributes']['sample_names']).to eq(library2.sample_names)
+      expect(json['data'][1]['attributes']['state']).to eq(library2.state)
+      expect(json['data'][1]['attributes']['barcode']).to eq(library2.tube.barcode)
+      expect(json['data'][1]["attributes"]["created_at"]).to eq(library2.created_at.strftime("%m/%d/%Y %I:%M"))
+      expect(json['data'][1]["attributes"]["deactivated_at"]).to eq(nil)
+    end
 
+    it 'returns the correct relationships and included data' do
+      get "#{v1_pacbio_libraries_path}?include=requests", headers: json_api_headers
+
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+
+      library1Requests = json['data'][0]['relationships']['requests']
+      expect(library1Requests['data'].length).to eq(1)
+      expect(library1Requests['data'][0]['id'].to_s).to eq(request_library1.id.to_s)
+      expect(library1Requests['data'][0]['type'].to_s).to eq('request_libraries')
+
+      library2Requests = json['data'][1]['relationships']['requests']
+      expect(library2Requests['data'].length).to eq(1)
+      expect(library2Requests['data'][0]['id'].to_s).to eq(request_library2.id.to_s)
+      expect(library2Requests['data'][0]['type'].to_s).to eq('request_libraries')
+
+      request1 = json['included'][0]['attributes']
+      expect(request1['sample_name']).to eq(request_library1.sample_name)
+      expect(request1['tag_id'].to_s).to eq(request_library1.tag_id.to_s)
+      expect(request1['tag_set_name']).to eq(request_library1.tag_set_name)
+      expect(request1['tag_group_id']).to eq(request_library1.tag_group_id)
+      expect(request1['tag_oligo'].to_s).to eq(request_library1.tag_oligo)
+
+      request2 = json['included'][1]['attributes']
+      expect(request2['sample_name']).to eq(request_library2.sample_name)
+      expect(request2['tag_id'].to_s).to eq(request_library2.tag_id.to_s)
+      expect(request2['tag_set_name']).to eq(request_library2.tag_set_name)
+      expect(request2['tag_group_id']).to eq(request_library2.tag_group_id)
+      expect(request2['tag_oligo'].to_s).to eq(request_library2.tag_oligo)
     end
 
   end
