@@ -303,13 +303,6 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         expect(factory.save).not_to be_truthy
         expect(factory.errors.messages[:libraries]).to eq ["There are more than 16 libraries in well " + well.position]
       end
-
-      it 'does not update the well libaries, if libraries are invalid - check_libraries_exist' do 
-        factory = Pacbio::WellFactory::Well::Libraries.new(well, library_attributes_fake)
-        expect(factory).not_to be_valid
-        expect(factory.save).not_to be_truthy
-        expect(factory.errors.messages[:libraries]).to eq ["do not exist"]
-      end
     end
 
   end

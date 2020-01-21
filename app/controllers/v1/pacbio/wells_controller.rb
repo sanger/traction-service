@@ -90,7 +90,7 @@ module V1
       end
 
       def library_param_names(params)
-        params.require(:relationships)[:libraries].require(:data).map do |library|
+        params.require(:relationships)[:libraries][:data].map do |library|
           library.permit(:id, :type).to_h
         end.flatten
       end

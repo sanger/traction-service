@@ -41,7 +41,7 @@ Metrics/BlockLength:
     - 'config/routes.rb'
     - 'lib/tasks/*'
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 100
   Exclude:
     - 'lib/tasks/*'
