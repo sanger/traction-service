@@ -6,11 +6,11 @@ module V1
     attributes :name, :external_id, :species, :created_at, :deactivated_at
 
     def created_at
-      @model.created_at.strftime('%Y/%m/%d %I:%M')
+      @model.created_at.to_s(:uk)
     end
 
     def deactivated_at
-      @model&.deactivated_at&.strftime('%Y/%m/%d %I:%M')
+      @model&.deactivated_at&.to_s(:uk)
     end
   end
 end
