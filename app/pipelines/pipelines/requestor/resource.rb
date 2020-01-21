@@ -39,7 +39,7 @@ module Pipelines
         end
 
         def created_at
-          @model.created_at.strftime('%m/%d/%Y %I:%M')
+          @model.created_at.strftime('%Y/%m/%d %I:%M')
         end
       end
     end
