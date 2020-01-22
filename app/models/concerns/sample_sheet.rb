@@ -15,7 +15,7 @@ module SampleSheet
 
   # Barcode Name
   def barcode_name
-    # TODO: check
+    # TODO: check library tags
     'sample sheet module barcode name'
   end
 
@@ -38,7 +38,7 @@ module SampleSheet
 
   # Same Barcodes on Both Ends of Sequence field
   def same_barcodes_on_both_ends_of_sequence
-    # Assuming always true
+    # Always true at the time of writing
     true
   end
 
