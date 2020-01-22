@@ -4,8 +4,8 @@ RSpec.describe CSVGenerator, type: :model do
   after(:each) { File.delete('sample_sheet.csv') if File.exists?('sample_sheet.csv') }
 
   context '#generate_sample_sheet' do
-    let(:well1)   { create(:pacbio_well_with_libraries, sequencing_mode: 'CCS') }
-    let(:well2)   { create(:pacbio_well_with_libraries, sequencing_mode: 'CLR') }
+    let(:well1)   { create(:pacbio_well_with_request_libraries_no_tag, sequencing_mode: 'CCS') }
+    let(:well2)   { create(:pacbio_well_with_request_libraries_no_tag, sequencing_mode: 'CLR') }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_run, plate: plate) }
     let(:csv)     { ::CSVGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet) }

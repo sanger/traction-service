@@ -20,5 +20,11 @@ FactoryBot.define do
         well.libraries = create_list(:pacbio_request_library_with_tag, 5).collect(&:library)
       end
     end
+
+    factory :pacbio_well_with_request_libraries_no_tag do
+      after(:create) do |well|
+        well.libraries = create_list(:pacbio_request_library, 5).collect(&:library)
+      end
+    end
   end
 end
