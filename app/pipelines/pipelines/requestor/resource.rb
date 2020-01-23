@@ -39,7 +39,7 @@ module Pipelines
         end
 
         def created_at
-          @model.created_at.to_s(:uk)
+          @model.created_at.to_s(:us)
         end
       end
     end
