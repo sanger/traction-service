@@ -21,7 +21,7 @@ module SampleSheet
       "#{tag_group_id}--#{tag_group_id};#{sample_name}"
     end
 
-    return result.join('|')
+    result.join('|')
   end
 
   # Barcode Set
@@ -37,7 +37,7 @@ module SampleSheet
     number_of_request_libraries = request_libraries.length
     number_of_tags = tags.compact.length
 
-    return number_of_request_libraries == number_of_tags
+    number_of_request_libraries == number_of_tags
   end
 
   # Same Barcodes on Both Ends of Sequence field
