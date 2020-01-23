@@ -10,7 +10,7 @@ module V1
     end
 
     def deactivated_at
-      @model.deactivated_at&.to_s(:us)
+      @model&.deactivated_at&.to_s(:us)
     end
   end
 end
