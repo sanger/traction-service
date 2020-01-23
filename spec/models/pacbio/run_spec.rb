@@ -70,8 +70,8 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     end
 
     it 'must return a String' do
-      well1 = create(:pacbio_well_with_libraries, sequencing_mode: 'CCS')
-      well2 = create(:pacbio_well_with_libraries, sequencing_mode: 'CLR')
+      well1 = create(:pacbio_well_with_request_libraries, sequencing_mode: 'CCS')
+      well2 = create(:pacbio_well_with_request_libraries, sequencing_mode: 'CLR')
 
       plate = create(:pacbio_plate, wells: [well1, well2])
       run = create(:pacbio_run, plate: plate)
