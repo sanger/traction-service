@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_11_115438) do
+ActiveRecord::Schema.define(version: 2020_01_23_164052) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
@@ -157,12 +157,20 @@ ActiveRecord::Schema.define(version: 2019_11_11_115438) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "tag_sets", force: :cascade do |t|
+    t.string "name"
+    t.string "uuid"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "tags", force: :cascade do |t|
     t.string "oligo"
     t.string "group_id"
-    t.string "set_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "tag_set_id"
+    t.index ["tag_set_id"], name: "index_tags_on_tag_set_id"
   end
 
   create_table "tubes", force: :cascade do |t|

@@ -2,11 +2,13 @@
 
 # Tag
 class Tag < ApplicationRecord
-  validates :oligo, :group_id, :set_name, presence: true
+  belongs_to :tag_set
 
-  validates :oligo, uniqueness: { scope: :set_name,
+  validates :oligo, :group_id, :tag_set_id, presence: true
+
+  validates :oligo, uniqueness: { scope: :tag_set_id,
                                   message: 'oligo should only appear once within set' }
 
-  validates :group_id, uniqueness: { scope: :set_name,
+  validates :group_id, uniqueness: { scope: :tag_set_id,
                                      message: 'group id should only appear once within set' }
 end
