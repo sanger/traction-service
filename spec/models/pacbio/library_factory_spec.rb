@@ -6,6 +6,8 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
 
   let(:tags)                { create_list(:tag, 3) }
   let(:requests)            { create_list(:pacbio_request, 3) }
+  let(:request_empty_cost_code) { create(:pacbio_request, cost_code: "")}
+
   let(:library_attributes)  { [
                                 attributes_for(:pacbio_library).merge(requests: [
                                   {id: requests.first.id, type: 'requests', tag: { id: tags.first.id, type: 'tags'}}, 
@@ -28,21 +30,30 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
       expect(factory.libraries[0].tube).to be_present
       expect(factory.libraries[0].request_libraries.length).to eq(2)
     end
+  end
 
+  context '#validation' do
     it 'produces error messages if any of the libraries are not valid' do
       library_attributes << attributes_for(:pacbio_library).except(:volume)
       factory = Pacbio::LibraryFactory.new(library_attributes)
-      expect(factory).to_not be_valid
+      expect(factory.save).to be_falsy
       expect(factory.errors.full_messages).to_not be_empty
     end
 
     it 'produces an error if there is more than one request and they dont have tags' do
       library_attributes << attributes_for(:pacbio_library).merge(requests: [{id: requests.first.id, type: 'requests'}, {id: requests.last.id, type: 'requests'}])
       factory = Pacbio::LibraryFactory.new(library_attributes)
-      expect(factory).to_not be_valid
+      expect(factory.save).to be_falsy
       expect(factory.errors.full_messages).to_not be_empty
     end
-  end
+
+    it 'produces an error if the request contains an empty cost_code' do
+      library_attributes << attributes_for(:pacbio_library).merge(requests: [{id: request_empty_cost_code.id, type: 'requests'}])
+      factory = Pacbio::LibraryFactory.new(library_attributes)
+      expect(factory.save).to be_falsy
+      expect(factory.errors.full_messages).to eq(['Cost code must be present'])
+    end
+  end 
 
   context '#save' do
     it 'creates a library, a tube, and a request library' do

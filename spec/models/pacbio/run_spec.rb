@@ -2,10 +2,6 @@ require 'rails_helper'
 
 RSpec.describe Pacbio::Run, type: :model, pacbio: true do
 
-  it 'must have a name' do
-    expect(build(:pacbio_run, name: nil)).to_not be_valid
-  end
-
   it 'must have a template prep kit box barcode' do
     expect(build(:pacbio_run, template_prep_kit_box_barcode: nil)).to_not be_valid
   end
@@ -127,6 +123,31 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
         expect(Pacbio::Run.active.length).to eq 2
       end
     end
+  end
+
+  context 'name' do
+    it 'if left blank will populate automatically' do
+      run = create(:pacbio_run, name: nil)
+      expect(run.name).to be_present
+      expect(run.name).to eq("#{Pacbio::Run::NAME_PREFIX}#{run.id}")
+    end
+
+    it 'if added should not be written over' do
+      run = create(:pacbio_run, name: 'run1')
+      expect(run.name).to eq('run1')
+    end
+
+    it 'should be unique' do
+      run = create(:pacbio_run, name: 'run1')
+      expect(build(:pacbio_run, name: run.name)).to_not be_valid
+    end
+
+    it 'should be updateable' do
+      run = create(:pacbio_run)
+      run.update(name: 'run1')
+      expect(run.name).to eq('run1')
+    end
+
   end
 
 end

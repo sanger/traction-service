@@ -45,7 +45,7 @@ default: &default
         last_updated: *timestamp
         id_pac_bio_run_lims:
           type: :model
-          value: run.id
+          value: run.name
         pac_bio_run_uuid:
           type: :model
           value: run.uuid
