@@ -33,7 +33,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       expect(json['data'][0]['attributes']['sample_names']).to eq(library1.sample_names)
       expect(json['data'][0]['attributes']['state']).to eq(library1.state)
       expect(json['data'][0]['attributes']['barcode']).to eq(library1.tube.barcode)
-      expect(json['data'][0]["attributes"]["created_at"]).to eq(library1.created_at.to_s(:uk))
+      expect(json['data'][0]["attributes"]["created_at"]).to eq(library1.created_at.to_s(:us))
       expect(json['data'][0]["attributes"]["deactivated_at"]).to eq(nil)
 
       expect(json['data'][1]['attributes']['volume']).to eq(library2.volume)
@@ -43,7 +43,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       expect(json['data'][1]['attributes']['sample_names']).to eq(library2.sample_names)
       expect(json['data'][1]['attributes']['state']).to eq(library2.state)
       expect(json['data'][1]['attributes']['barcode']).to eq(library2.tube.barcode)
-      expect(json['data'][1]["attributes"]["created_at"]).to eq(library2.created_at.to_s(:uk))
+      expect(json['data'][1]["attributes"]["created_at"]).to eq(library2.created_at.to_s(:us))
       expect(json['data'][1]["attributes"]["deactivated_at"]).to eq(nil)
     end
 

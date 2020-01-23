@@ -6,11 +6,11 @@ module V1
     attributes :name, :external_id, :species, :created_at, :deactivated_at
 
     def created_at
-      @model.created_at.to_s(:uk)
+      @model.created_at.to_s(:us)
     end
 
     def deactivated_at
-      @model&.deactivated_at&.to_s(:uk)
+      @model&.deactivated_at&.to_s(:us)
     end
   end
 end

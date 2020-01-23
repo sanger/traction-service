@@ -27,7 +27,7 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][0]["attributes"]["sequencing_kit_box_barcode"]).to eq(run1.sequencing_kit_box_barcode)
       expect(json['data'][0]['attributes']['dna_control_complex_box_barcode']).to eq(run1.dna_control_complex_box_barcode)
       expect(json['data'][0]['attributes']['system_name']).to eq(run1.system_name)
-      expect(json['data'][0]['attributes']['created_at']).to eq(run1.created_at.to_s(:uk))
+      expect(json['data'][0]['attributes']['created_at']).to eq(run1.created_at.to_s(:us))
       expect(json['data'][0]['attributes']['state']).to eq(run1.state)
       expect(json['data'][0]['attributes']['comments']).to eq(run1.comments)
 
@@ -38,7 +38,7 @@ RSpec.describe 'RunsController', type: :request do
       expect(run["sequencing_kit_box_barcode"]).to eq(run2.sequencing_kit_box_barcode)
       expect(run['dna_control_complex_box_barcode']).to eq(run2.dna_control_complex_box_barcode)
       expect(run['system_name']).to eq(run2.system_name)
-      expect(run['created_at']).to eq(run2.created_at.to_s(:uk))
+      expect(run['created_at']).to eq(run2.created_at.to_s(:us))
       expect(run['state']).to eq(run2.state)
       expect(run['comments']).to eq(run2.comments)
     end
