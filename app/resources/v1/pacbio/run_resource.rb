@@ -13,7 +13,7 @@ module V1
       has_one :plate, foreign_key_on: :related, foreign_key: 'pacbio_run_id'
 
       def created_at
-        @model.created_at.to_s(:uk)
+        @model.created_at.to_s(:us)
       end
     end
   end

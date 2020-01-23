@@ -34,11 +34,11 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][0]['attributes']['state']).to eq(run1.state)
       expect(json['data'][0]['attributes']['name']).to eq(run1.name)
       expect(json['data'][0]['attributes']['chip_barcode']).to eq(run1.chip.barcode)
-      expect(json['data'][0]["attributes"]["created_at"]).to eq(run1.created_at.to_s(:uk))
+      expect(json['data'][0]["attributes"]["created_at"]).to eq(run1.created_at.to_s(:us))
       expect(json['data'][1]['attributes']['state']).to eq(run2.state)
       expect(json['data'][1]['attributes']['name']).to eq(run2.name)
       expect(json['data'][1]['attributes']['chip_barcode']).to eq(run2.chip.barcode)
-      expect(json['data'][1]["attributes"]["created_at"]).to eq(run2.created_at.to_s(:uk))
+      expect(json['data'][1]["attributes"]["created_at"]).to eq(run2.created_at.to_s(:us))
     end
 
     it 'returns the correct relationships' do
