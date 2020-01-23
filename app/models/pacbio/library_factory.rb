@@ -9,7 +9,7 @@ module Pacbio
   class LibraryFactory
     include ActiveModel::Model
 
-    validate :check_libraries, :check_tags
+    validate :check_libraries, :check_tags, :check_cost_codes
 
     def initialize(attributes = [])
       build_libraries(attributes)
@@ -70,6 +70,15 @@ module Pacbio
 
         if library.request_libraries.any? { |rl| rl.tag_id.nil? }
           errors.add('tag', 'must be present')
+        end
+      end
+    end
+
+    def check_cost_codes
+      libraries.each do |library|
+        library.request_libraries.each do |rl|
+          id = rl.pacbio_request_id
+          errors.add('cost code', 'must be present') if Pacbio::Request.find(id).cost_code.empty?
         end
       end
     end
