@@ -4,4 +4,6 @@
 # Also known as a barcode set
 class TagSet < ApplicationRecord
   has_many :tags, dependent: :restrict_with_error
+
+  validates :name, presence: true
 end
