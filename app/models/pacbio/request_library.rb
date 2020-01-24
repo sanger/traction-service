@@ -17,7 +17,8 @@ module Pacbio
     belongs_to :tag, class_name: '::Tag', foreign_key: :tag_id, inverse_of: false, optional: true
 
     delegate :sample_name, to: :request
-    delegate :oligo, :group_id, :set_name, :id, to: :tag, prefix: :tag, allow_nil: true
+    delegate :oligo, :group_id, :id, to: :tag, prefix: :tag, allow_nil: true
+    delegate :tag_set_name, to: :tag, allow_nil: true
 
     validates :tag, uniqueness: { scope: :library,
                                   message: 'need to be unique within a library' }
