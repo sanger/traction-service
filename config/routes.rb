@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   namespace :v1 do
     jsonapi_resources :samples, only: %i[index create]
     jsonapi_resources :tags,    only: %i[index create update destroy]
+    jsonapi_resources :tag_sets,    only: %i[index create update destroy]
 
     namespace :saphyr do
       jsonapi_resources :runs,          only: %i[index create show update destroy]
