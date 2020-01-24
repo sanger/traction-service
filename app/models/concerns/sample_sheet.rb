@@ -29,7 +29,7 @@ module SampleSheet
     # Assuming each request libraries tag has the same set name
     return unless all_libraries_tagged
 
-    request_libraries.first.tag.set_name
+    request_libraries.first.tag.tag_set.uuid
   end
 
   # Sample is Barcoded field
