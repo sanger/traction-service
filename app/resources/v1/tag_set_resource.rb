@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module V1
-  # TagResource
+  # TagSetResource
   class TagSetResource < JSONAPI::Resource
     attributes :name, :uuid
 
