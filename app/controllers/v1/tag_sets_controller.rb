@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module V1
-  # TagsController
+  # TagSetsController
   class TagSetsController < ApplicationController
   end
 end
