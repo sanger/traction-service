@@ -15,7 +15,7 @@ module V1
       end
 
       def created_at
-        @model.created_at.strftime('%m/%d/%Y %H:%M')
+        @model.created_at.to_s(:us)
       end
 
       def self.records(_options = {})
