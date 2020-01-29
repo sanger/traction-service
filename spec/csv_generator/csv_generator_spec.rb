@@ -29,12 +29,12 @@ RSpec.describe CSVGenerator, type: :model do
       expect(headers).to eq(expected_headers)
     end
 
-    it 'must have the correct body' do
+    it 'must have the correct well header rows' do
       csv_string = csv.generate_sample_sheet
       array_of_rows = CSV.parse(csv_string)
 
       well_data_1 = array_of_rows[1]
-      well_data_2 = array_of_rows[2]
+      well_data_2 = array_of_rows[7]
 
       expect(well_data_1).to eq([
         well1.plate.run.system_name,
@@ -52,10 +52,10 @@ RSpec.describe CSVGenerator, type: :model do
         well1.generate_ccs_data.to_s,
         well1.plate.run.comments,
         well1.all_libraries_tagged.to_s,
-        well1.barcode_name,
+        '',
         well1.barcode_set,
         well1.same_barcodes_on_both_ends_of_sequence.to_s,
-        well1.bio_sample_name
+        ''
       ])
 
       expect(well_data_2).to eq([
@@ -74,10 +74,62 @@ RSpec.describe CSVGenerator, type: :model do
         well2.generate_ccs_data.to_s,
         well2.plate.run.comments,
         well2.all_libraries_tagged.to_s,
-        well2.barcode_name,
+        '',
         well2.barcode_set,
         well2.same_barcodes_on_both_ends_of_sequence.to_s,
-        well2.bio_sample_name
+        ''
+      ])
+    end
+
+    it 'must have the correct sample rows' do
+      csv_string = csv.generate_sample_sheet
+      array_of_rows = CSV.parse(csv_string)
+
+      sample_data_1 = array_of_rows[2]
+      sample_data_2 = array_of_rows[8]
+
+      expect(sample_data_1).to eq([
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        well1.libraries.first.request_libraries.first.barcode_name,
+        '',
+        '',
+        well1.libraries.first.request_libraries.first.request.sample_name
+      ])
+
+      expect(sample_data_2).to eq([
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        well2.libraries.first.request_libraries.first.barcode_name,
+        '',
+        '',
+        well2.libraries.first.request_libraries.first.request.sample_name
       ])
     end
   end
