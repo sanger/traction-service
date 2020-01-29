@@ -24,6 +24,5 @@ module Pacbio
 
     validates :tag, uniqueness: { scope: :library,
                                   message: 'need to be unique within a library' }
-
   end
 end
