@@ -16,9 +16,10 @@ namespace :pacbio_runs do
       run = Pacbio::Run.create!(name: "Run#{i}", template_prep_kit_box_barcode: "TPK#{i}", binding_kit_box_barcode: "BKB#{i}",
                                 sequencing_kit_box_barcode: "SKB#{i}", dna_control_complex_box_barcode: "DCCB#{i}")
       plate = Pacbio::Plate.create!(run: run)
-      Pacbio::Well.create!(plate: plate, libraries: [library], movie_time: 1, insert_size: 10, on_plate_loading_concentration: 1,
-                           row: i, column: i, sequencing_mode: 'CLR')
+      Pacbio::Well.create!(plate: plate, libraries: [library], movie_time: 20, insert_size: 10, on_plate_loading_concentration: 1,
+                           row: 'A', column: i + 1, sequencing_mode: 'CLR')
     end
+    puts '-> Pacbio runs successfully created'
   end
 
   task destroy: :environment do
@@ -27,5 +28,6 @@ namespace :pacbio_runs do
     end
     [Pacbio::Request, Pacbio::Library, Pacbio::Run, Pacbio::Plate, Pacbio::Well,
      Pacbio::WellLibrary, Pacbio::RequestLibrary].each(&:delete_all)
+    puts '-> Pacbio runs successfully deleted'
   end
 end
