@@ -18,12 +18,12 @@ class CSVGenerator
       # assuming each well has one library; this may change in the future
       run.plate.wells.map do |well|
         # new row per well
-        csv << csv_data_well(well)
+        csv << csv_data(well, true)
 
         # if well has multiple libraries, add more rows for them here
         well.libraries.map do |library|
           library.request_libraries.map do |request_library|
-            csv << csv_data_sample(request_library)
+            csv << csv_data(request_library, false)
           end
         end
       end
@@ -40,34 +40,19 @@ class CSVGenerator
 
   # Use configuration :type and :value to retrieve well data
   # eg ["Sequel II", "run4"]
-  def csv_data_well(well)
+  def csv_data(obj, is_well_header_row)
     configuration.columns.map do |x|
+      column_options = x[1]
+      should_populate_column = ((is_well_header_row && column_options[:row_type] == :well) ||
+                                (!is_well_header_row && column_options[:row_type] == :sample))
 
-      column_config = x[1]
-
-      if column_config[:row_type].include? :well_header
-        # return 'TRUE' if x[0] == 'Is Collection'
-
-        instance_value(well, column_config)
+      if x[0] == 'Is Collection'
+        is_well_header_row
+      elsif should_populate_column
+        instance_value(obj, column_options)
       else
         ''
       end
-
-    end
-  end
-
-  def csv_data_sample(request_library)
-    configuration.columns.map do |x|
-
-      column_config = x[1]
-
-      if column_config[:row_type].include? :sample
-        # return 'FALSE' if x[0] == 'Is Collection'
-        instance_value(request_library, column_config)
-      else
-        ''
-      end
-
     end
   end
 
@@ -90,8 +75,6 @@ class CSVGenerator
     when :constant
       evaluate_method_chain(field[:value].split('.').first.constantize,
                             field[:value].split('.')[1..-1])
-    when :conditional_row_type
-      field[:value][field[:row_type]]
     end
   end
 

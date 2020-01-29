@@ -39,6 +39,7 @@ RSpec.describe CSVGenerator, type: :model do
       expect(well_data_1).to eq([
         well1.plate.run.system_name,
         well1.plate.run.name,
+        'true',
         well1.position,
         well1.sample_names,
         well1.movie_time.to_s,
@@ -61,6 +62,7 @@ RSpec.describe CSVGenerator, type: :model do
       expect(well_data_2).to eq([
         well2.plate.run.system_name,
         well2.plate.run.name,
+        'true',
         well2.position,
         well2.sample_names,
         well2.movie_time.to_s,
@@ -91,6 +93,7 @@ RSpec.describe CSVGenerator, type: :model do
       expect(sample_data_1).to eq([
         '',
         '',
+        'false',
         '',
         '',
         '',
@@ -113,6 +116,7 @@ RSpec.describe CSVGenerator, type: :model do
       expect(sample_data_2).to eq([
         '',
         '',
+        'false',
         '',
         '',
         '',
