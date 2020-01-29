@@ -9,6 +9,8 @@ module Pacbio
   # The tag and sample information is shown as first class
   # information by delegation
   class RequestLibrary < ApplicationRecord
+    include SampleSheet
+
     belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id,
                          inverse_of: :request_libraries
     belongs_to :library, class_name: 'Pacbio::Library', foreign_key: :pacbio_library_id,
@@ -22,5 +24,6 @@ module Pacbio
 
     validates :tag, uniqueness: { scope: :library,
                                   message: 'need to be unique within a library' }
+
   end
 end
