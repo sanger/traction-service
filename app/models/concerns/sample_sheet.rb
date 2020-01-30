@@ -12,7 +12,7 @@ module SampleSheet
 
   # Barcode Name
   def barcode_name
-    return unless tag.present?
+    return if tag.blank?
 
     "#{tag.group_id}--#{tag.group_id}"
   end
@@ -38,9 +38,4 @@ module SampleSheet
     # Always true at the time of writing
     true
   end
-
-  # Bio Sample Name
-  # def bio_sample_name
-  #   sample_names
-  # end
 end
