@@ -42,18 +42,23 @@ class CSVGenerator
   # eg ["Sequel II", "run4"]
   def csv_data(obj, is_well_header_row)
     configuration.columns.map do |x|
+      column_name = x[0]
       column_options = x[1]
-      should_populate_column = ((is_well_header_row && column_options[:row_type] == :well) ||
-                                (!is_well_header_row && column_options[:row_type] == :sample))
 
-      if x[0] == 'Is Collection'
-        is_well_header_row
-      elsif should_populate_column
+      next is_well_header_row if column_name == 'Is Collection'
+
+      if should_populate_column(column_options[:row_type], is_well_header_row)
         instance_value(obj, column_options)
       else
         ''
       end
     end
+  end
+
+  def should_populate_column(row_type, is_well_header_row)
+    row_type == :all ||
+      row_type == :well && is_well_header_row ||
+      row_type == :sample && !is_well_header_row
   end
 
   # TODO: refactor duplication with messages/message.rb
