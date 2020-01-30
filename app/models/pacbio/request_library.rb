@@ -24,10 +24,5 @@ module Pacbio
 
     validates :tag, uniqueness: { scope: :library,
                                   message: 'need to be unique within a library' }
-
-    def sample_names
-      # library.well.sample_names # doesn't work because there are multiple wells - how to know which one we're in?
-      sample_name
-    end
   end
 end
