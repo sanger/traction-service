@@ -17,12 +17,12 @@ class CSVGenerator
 
       # assuming each well has one library; this may change in the future
       run.plate.wells.map do |well|
-        # new row per well
+        # add well header row
         csv << csv_data(well, true)
 
-        # if well has multiple libraries, add more rows for them here
         well.libraries.map do |library|
           library.request_libraries.map do |request_library|
+            # add row under well header for each sample in the well
             csv << csv_data(request_library, false)
           end
         end
@@ -47,7 +47,7 @@ class CSVGenerator
 
       next is_well_header_row if column_name == 'Is Collection'
 
-      if should_populate_column(column_options[:row_type], is_well_header_row)
+      if should_populate_column(column_options[:populate_on_row_type], is_well_header_row)
         instance_value(obj, column_options)
       else
         ''
@@ -55,10 +55,10 @@ class CSVGenerator
     end
   end
 
-  def should_populate_column(row_type, is_well_header_row)
-    row_type == :all ||
-      row_type == :well && is_well_header_row ||
-      row_type == :sample && !is_well_header_row
+  def should_populate_column(populate_on_row_type, is_well_header_row)
+    populate_on_row_type == :all ||
+      populate_on_row_type == :well && is_well_header_row ||
+      populate_on_row_type == :sample && !is_well_header_row
   end
 
   # TODO: refactor duplication with messages/message.rb
