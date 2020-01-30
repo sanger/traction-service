@@ -12,17 +12,9 @@ module SampleSheet
 
   # Barcode Name
   def barcode_name
-    # e.g. tag1--tag1;samplename1|tag2--tag2;samplename2
-    # return unless all_libraries_tagged
+    return unless tag.present?
 
-    # result = request_libraries.map do |rl|
-    #   tag_group_id = rl.tag.group_id
-    #   sample_name = rl.request.sample.name
-    #   "#{tag_group_id}--#{tag_group_id};#{sample_name}"
-    # end
-
-    # result.join('|')
-    tag&.group_id
+    "#{tag.group_id}--#{tag.group_id}"
   end
 
   # Barcode Set
