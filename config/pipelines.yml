@@ -117,7 +117,7 @@ default: &default
           populate_on_row_type: :well
         Sample Name:
           type: :model
-          value: sample_names
+          value: sample_sheet_sample_name
           populate_on_row_type: :all
         Movie Time per SMRT Cell (hours):
           type: :model

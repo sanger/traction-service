@@ -6,18 +6,20 @@
 module SampleSheet
   # include ActiveSupport::Concern
 
+  # Sample Well field
   def position_leading_zero
     "#{row}#{column.rjust(2, '0')}"
   end
 
-  # Barcode Name
+  # Barcode Name field
+  # Used in context of Request Library model
   def barcode_name
     return if tag.blank?
 
     "#{tag.group_id}--#{tag.group_id}"
   end
 
-  # Barcode Set
+  # Barcode Set field
   def barcode_set
     # Assuming each request libraries tag has the same set name
     return unless all_libraries_tagged
@@ -37,5 +39,19 @@ module SampleSheet
   def same_barcodes_on_both_ends_of_sequence
     # Always true at the time of writing
     true
+  end
+
+  # Sample Name field
+  # Calls different methods for well header / sample rows
+  def sample_sheet_sample_name
+    class_name = self.class.name
+    case class_name
+    when 'Pacbio::Well'
+      sample_names
+    when 'Pacbio::RequestLibrary'
+      sample_name
+    else
+      ''
+    end
   end
 end
