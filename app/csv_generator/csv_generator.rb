@@ -15,20 +15,13 @@ class CSVGenerator
     CSV.generate do |csv|
       csv << csv_headers
 
-      # assuming each well has one library; this may change in the future
       run.plate.wells.each do |well|
         # add well header row
         csv << csv_data(well, true, well.sample_names)
 
-        well.libraries.each do |library|
-          library.request_libraries.each do |request_library|
-            # if there's no tag there will be no information to put in the row
-            next if request_library.tag.blank?
+        next unless well.all_libraries_tagged
 
-            # add row under well header for each sample in the well
-            csv << csv_data(request_library, false, well.sample_names)
-          end
-        end
+        csv_sample_rows(well).each { |sample_row| csv << sample_row }
       end
     end
   end
@@ -39,6 +32,13 @@ class CSVGenerator
   # eg ['System Name', 'Run Name']
   def csv_headers
     configuration.columns.map(&:first)
+  end
+
+  def csv_sample_rows(well)
+    well.request_libraries.map do |request_library|
+      # add row under well header for each sample in the well
+      csv_data(request_library, false, well.sample_names)
+    end
   end
 
   # Use configuration :type and :value to retrieve well data
