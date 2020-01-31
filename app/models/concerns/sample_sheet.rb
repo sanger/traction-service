@@ -40,18 +40,4 @@ module SampleSheet
     # Always true at the time of writing
     true
   end
-
-  # Sample Name field
-  # Calls different methods for well header / sample rows
-  def sample_sheet_sample_name
-    class_name = self.class.name
-    case class_name
-    when 'Pacbio::Well'
-      sample_names
-    when 'Pacbio::RequestLibrary'
-      sample_name
-    else
-      ''
-    end
-  end
 end

@@ -116,9 +116,7 @@ default: &default
           value: position_leading_zero
           populate_on_row_type: :well
         Sample Name:
-          type: :model
-          value: sample_sheet_sample_name
-          populate_on_row_type: :all
+          # placeholder column, populated directly in csv_generator
         Movie Time per SMRT Cell (hours):
           type: :model
           value: movie_time
