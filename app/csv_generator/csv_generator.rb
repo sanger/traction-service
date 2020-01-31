@@ -16,14 +16,17 @@ class CSVGenerator
       csv << csv_headers
 
       # assuming each well has one library; this may change in the future
-      run.plate.wells.map do |well|
+      run.plate.wells.each do |well|
         # add well header row
-        csv << csv_data(well, true)
+        csv << csv_data(well, true, well.sample_names)
 
-        well.libraries.map do |library|
-          library.request_libraries.map do |request_library|
+        well.libraries.each do |library|
+          library.request_libraries.each do |request_library|
+            # if there's no tag there will be no information to put in the row
+            next if request_library.tag.blank?
+
             # add row under well header for each sample in the well
-            csv << csv_data(request_library, false)
+            csv << csv_data(request_library, false, well.sample_names)
           end
         end
       end
@@ -40,12 +43,13 @@ class CSVGenerator
 
   # Use configuration :type and :value to retrieve well data
   # eg ["Sequel II", "run4"]
-  def csv_data(obj, is_well_header_row)
+  def csv_data(obj, is_well_header_row, sample_names)
     configuration.columns.map do |x|
       column_name = x[0]
       column_options = x[1]
 
       next is_well_header_row if column_name == 'Is Collection'
+      next sample_names if column_name == 'Sample Name'
 
       if should_populate_column(column_options[:populate_on_row_type], is_well_header_row)
         instance_value(obj, column_options)
