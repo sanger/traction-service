@@ -19,10 +19,12 @@ namespace :tags do
     Tag.create!(oligo: 'CACGACACGACGATGTT', group_id: 'bc1020_BAK8B_OA', tag_set_id: set.id)
     Tag.create!(oligo: 'CTATACATAGTGATGTT', group_id: 'bc1021_BAK8B_OA', tag_set_id: set.id)
     Tag.create!(oligo: 'CACTCACGTGTGATATT', group_id: 'bc1022_BAK8B_OA', tag_set_id: set.id)
+    puts '-> Tags successfully created'
   end
 
   task destroy: :environment do
     Tag.delete_all
     TagSet.delete_all
+    puts '-> Tags successfully deleted'
   end
 end
