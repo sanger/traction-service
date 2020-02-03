@@ -3,6 +3,7 @@
 namespace :tags do
   task create: :environment do
     set = TagSet.create!(name: 'Sequel_16_barcodes_v3', uuid: '4d87a8ab-4d16-f0b0-77e5-0f467dba442e')
+    puts '-> Tag Set successfully created'
     Tag.create!(oligo: 'CACATATCAGAGTGCGT', group_id: 'bc1001_BAK8A_OA', tag_set_id: set.id)
     Tag.create!(oligo: 'ACACACAGACTGTGAGT', group_id: 'bc1002_BAK8A_OA', tag_set_id: set.id)
     Tag.create!(oligo: 'ACACATCTCGTGAGAGT', group_id: 'bc1003_BAK8A_OA', tag_set_id: set.id)
@@ -24,7 +25,8 @@ namespace :tags do
 
   task destroy: :environment do
     Tag.delete_all
-    TagSet.delete_all
     puts '-> Tags successfully deleted'
+    TagSet.delete_all
+    puts '-> Tag Sets successfully deleted'
   end
 end

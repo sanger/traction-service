@@ -18,6 +18,11 @@ RSpec.describe Tag, type: :model do
     expect(build(:tag, tag_set_id: nil)).to_not be_valid
   end
 
+  it 'delegates set name to tag set' do
+    tag = build(:tag)
+    expect(tag.tag_set_name).to eq(tag.tag_set.name)
+  end
+
   it 'group id should be unique within set' do
     tag = create(:tag)
     expect(build(:tag, group_id: tag.group_id)).to_not be_valid

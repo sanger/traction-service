@@ -98,7 +98,7 @@ default: &default
                   value: tag.id
                 tag_set_name:
                   type: :model
-                  value: tag.tag_set.name
+                  value: tag.tag_set_name
     sample_sheet:
       columns:
         System Name:
