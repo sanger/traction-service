@@ -15,10 +15,13 @@ class CSVGenerator
     CSV.generate do |csv|
       csv << csv_headers
 
-      # assuming each well has one library; this may change in the future
-      run.plate.wells.map do |well|
-        # new row per well i.e sample
-        csv << csv_data(well)
+      run.plate.wells.each do |well|
+        # add well header row
+        csv << csv_data(well, true, well.sample_names)
+
+        next unless well.all_libraries_tagged
+
+        csv_sample_rows(well).each { |sample_row| csv << sample_row }
       end
     end
   end
@@ -31,12 +34,35 @@ class CSVGenerator
     configuration.columns.map(&:first)
   end
 
+  def csv_sample_rows(well)
+    well.request_libraries.map do |request_library|
+      # add row under well header for each sample in the well
+      csv_data(request_library, false, well.sample_names)
+    end
+  end
+
   # Use configuration :type and :value to retrieve well data
   # eg ["Sequel II", "run4"]
-  def csv_data(well)
+  def csv_data(obj, is_well_header_row, sample_names)
     configuration.columns.map do |x|
-      instance_value(well, x[1])
+      column_name = x[0]
+      column_options = x[1]
+
+      next is_well_header_row if column_name == 'Is Collection'
+      next sample_names if column_name == 'Sample Name'
+
+      if should_populate_column(column_options[:populate_on_row_type], is_well_header_row)
+        instance_value(obj, column_options)
+      else
+        ''
+      end
     end
+  end
+
+  def should_populate_column(populate_on_row_type, is_well_header_row)
+    populate_on_row_type == :all ||
+      populate_on_row_type == :well && is_well_header_row ||
+      populate_on_row_type == :sample && !is_well_header_row
   end
 
   # TODO: refactor duplication with messages/message.rb
