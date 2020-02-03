@@ -54,12 +54,6 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
-  context 'position_leading_zero' do
-    it 'can have a position with a leading zero for sample sheet generation' do
-      expect(build(:pacbio_well, row: 'B', column: '1').position_leading_zero).to eq('B01')
-    end
-  end
-
   it 'must have to a plate' do
     expect(build(:pacbio_well, plate: nil)).to_not be_valid
   end
@@ -128,6 +122,14 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
       expect(well.tags).to eq(request_libraries.collect(&:tag_id))
     end
 
+  end
+
+  context 'sample sheet mixin' do
+    let(:well)                { create(:pacbio_well) }
+
+    it 'includes the Sample Sheet mixin' do
+      expect(well.same_barcodes_on_both_ends_of_sequence).to eq true
+    end
   end
 
 end
