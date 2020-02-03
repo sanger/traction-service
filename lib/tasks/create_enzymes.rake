@@ -12,9 +12,11 @@ namespace :enzymes do
         { name: 'DLE-1' }
       ]
     )
+    puts '-> Enzymes succesfully created'
   end
 
   task destroy: :environment do
     Saphyr::Enzyme.delete_all
+    puts '-> Enzymes succesfully deleted'
   end
 end

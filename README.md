@@ -27,6 +27,8 @@ To create pacbio dummy runs: `bundle exec rails pacbio_runs:create`
 
 To create saphyr dummy runs: `bundle exec rails saphyr_runs:create`
 
+To drop the database `bundle exec rails db:drop`
+
 ## Messages - RabbitMQ
 
 Sending messages is disabled by default but if you would like to test messages, install a broker
