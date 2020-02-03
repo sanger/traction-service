@@ -112,7 +112,7 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
           end
 
           it 'can have a tag set name' do
-            expect(message_sample[:tag_set_name]).to eq(request_library.tag.tag_set.name)
+            expect(message_sample[:tag_set_name]).to eq(request_library.tag_set_name)
           end
 
         end
