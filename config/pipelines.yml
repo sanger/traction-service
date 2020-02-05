@@ -49,6 +49,9 @@ default: &default
         pac_bio_run_uuid:
           type: :model
           value: run.uuid
+        pac_bio_run_name:
+          type: :model
+          value: run.name
         plate_barcode:
           type: :string
           value: "plate_barcode placeholder"
