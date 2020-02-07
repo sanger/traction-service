@@ -137,7 +137,6 @@ RSpec.describe 'TagSetsController', type: :request do
         # the failure responses are slightly different to in tags_spec because we are using the default controller
         it 'has an error message' do
           patch v1_tag_set_path(123), params: body, headers: json_api_headers
-          puts "response #{response.body}"
           expect(JSON.parse(response.body)["errors"][0]).to include("detail" => "The record identified by 123 could not be found.")
         end
       end
