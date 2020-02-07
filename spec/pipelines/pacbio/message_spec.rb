@@ -33,6 +33,10 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
       expect(key[:pac_bio_run_uuid]).to eq(plate.run.uuid)
     end
 
+    it 'must have a pac_bio_run_name' do
+      expect(key[:pac_bio_run_name]).to eq(plate.run.name)
+    end
+
     it 'must have a plate uuid lims' do
       expect(key[:plate_uuid_lims]).to eq(plate.uuid)
     end
@@ -112,7 +116,7 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
           end
 
           it 'can have a tag set name' do
-            expect(message_sample[:tag_set_name]).to eq(request_library.tag.set_name)
+            expect(message_sample[:tag_set_name]).to eq(request_library.tag_set_name)
           end
 
         end

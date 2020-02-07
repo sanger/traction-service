@@ -16,6 +16,7 @@ namespace :saphyr_runs do
       chip.save
       Saphyr::Run.create!(chip: chip)
     end
+    puts '-> Saphyr runs successfully created'
   end
 
   task destroy: :environment do
@@ -23,5 +24,6 @@ namespace :saphyr_runs do
       sample.destroy if sample.requests[0].requestable_type == 'Saphyr::Request'
     end
     [Saphyr::Request, Saphyr::Library, Saphyr::Flowcell, Saphyr::Chip, Saphyr::Run].each(&:delete_all)
+    puts '-> Saphyr runs successfully deleted'
   end
 end

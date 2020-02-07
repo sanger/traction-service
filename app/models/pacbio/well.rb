@@ -5,6 +5,7 @@ module Pacbio
   # A well can have many libraries
   class Well < ApplicationRecord
     include Uuidable
+    include SampleSheet
 
     enum sequencing_mode: { 'CLR' => 0, 'CCS' => 1 }
 
@@ -25,10 +26,6 @@ module Pacbio
       "#{row}#{column}"
     end
 
-    def position_leading_zero
-      "#{row}#{column.rjust(2, '0')}"
-    end
-
     def summary
       "#{sample_names},#{comment}"
     end
@@ -45,6 +42,7 @@ module Pacbio
 
     # a collection of all the sample names for a particular well
     # useful for comments
+    # also used in the sample sheet
     def sample_names
       request_libraries.collect(&:request).collect(&:sample_name).join(',')
     end
