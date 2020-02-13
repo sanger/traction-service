@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_23_164052) do
+ActiveRecord::Schema.define(version: 2020_02_12_161842) do
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
@@ -49,6 +49,7 @@ ActiveRecord::Schema.define(version: 2020_01_23_164052) do
     t.string "external_study_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "source_barcode"
   end
 
   create_table "pacbio_runs", force: :cascade do |t|
