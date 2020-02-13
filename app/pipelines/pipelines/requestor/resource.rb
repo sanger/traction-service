@@ -11,7 +11,7 @@ module Pipelines
       # Resource ClassMethods
       module ClassMethods
         # Use the parent_name method in resource which is equivalent to module_path
-        # Something to keey an eye on.
+        # Something to keep an eye on.
         # @return [String] the name of the pipeline e.g. 'Pacbio'
         def pipeline
           @pipeline ||= parent_name.demodulize
