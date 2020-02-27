@@ -95,7 +95,7 @@ default: &default
                   value: tag.oligo
                 tag_set_id_lims:
                   type: :model
-                  value: tag.id
+                  value: tag.tag_set.id
                 tag_identifier:
                   type: :model
                   value: tag.group_id
