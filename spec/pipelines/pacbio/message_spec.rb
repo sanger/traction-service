@@ -108,11 +108,11 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
           end
 
           it 'can have a tag group id' do
-            expect(message_sample[:tag_set_id_lims]).to eq(request_library.tag.group_id)
+            expect(message_sample[:tag_set_id_lims]).to eq(request_library.tag.id)
           end
 
           it 'can have a tag identifier' do
-            expect(message_sample[:tag_identifier]).to eq(request_library.tag.id)
+            expect(message_sample[:tag_identifier]).to eq(request_library.tag.group_id)
           end
 
           it 'can have a tag set name' do
