@@ -4,7 +4,7 @@ namespace :pacbio_runs do
   task create: :environment do
     attributes = (6..10).collect do |i|
       { name: "Sample#{i}", external_id: 'DEA103A3484', external_study_id: 4086,
-        library_type: "LibraryType#{i}", estimate_of_gb_required: 10, number_of_smrt_cells: 3, cost_code: 'PSD12345', species: "Species#{i}" }
+        library_type: "LibraryType#{i}", estimate_of_gb_required: 10, number_of_smrt_cells: 3, cost_code: 'PSD12345', source_barcode: "ABC#{i}", species: "Species#{i}" }
     end
 
     factory = Pacbio::RequestFactory.new(attributes)
