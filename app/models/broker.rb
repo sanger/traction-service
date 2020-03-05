@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Broker setup
 module Broker
   if Rails.configuration.bunny['enabled']
     Handle = Messages::Broker.new(Rails.configuration.bunny)
