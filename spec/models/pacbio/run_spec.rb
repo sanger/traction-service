@@ -54,14 +54,14 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
   context '#generate_sample_sheet' do
     after(:all) { File.delete('sample_sheet.csv') if File.exists?('sample_sheet.csv') }
 
-    it 'must call CSVGenerator' do
+    it 'must call CsvGenerator' do
       well1 = create(:pacbio_well_with_libraries, sequencing_mode: 'CCS')
       well2 = create(:pacbio_well_with_libraries, sequencing_mode: 'CLR')
 
       plate = create(:pacbio_plate, wells: [well1, well2])
       run = create(:pacbio_run, plate: plate)
 
-      expect_any_instance_of(::CSVGenerator).to receive(:generate_sample_sheet)
+      expect_any_instance_of(::CsvGenerator).to receive(:generate_sample_sheet)
       run.generate_sample_sheet
     end
 
