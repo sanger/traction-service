@@ -29,7 +29,7 @@ script:
 
 before_deploy:
   - ./compile-build
-  - export TAG_NAME=${TRAVIS_BRANCH}/$(date +'%Y-%m-%d/%H%M%S')
+  - export TAG_NAME=$([ ${TRAVIS_BRANCH} = "uat" ] && echo "${TRAVIS_BRANCH}/$(date +'%Y-%m-%d/%H%M%S')" || printf '%s\n' $(cat .release-version))
   - git tag "${TAG_NAME}"
 
 deploy:
