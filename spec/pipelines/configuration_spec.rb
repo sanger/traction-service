@@ -91,4 +91,11 @@ RSpec.describe Pipelines::Configuration, type: :model do
     expect(configuration.pipelines).to eq(['pipeline_a', 'pipeline_b'])
   end
 
+  it 'will still work if we create an item' do
+    pipeline_a = Pipelines::Configuration::Item.new(params[:pipeline_a].with_indifferent_access)
+    expect(pipeline_a.lims).to eq('lims_a')
+    expect(pipeline_a.instrument_name).to eq('bert')
+    expect(pipeline_a.message.fields.count).to eq(4)
+  end
+
 end
