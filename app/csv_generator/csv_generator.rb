@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # CSVGenerator
-class CSVGenerator
+class CsvGenerator
   include ActiveModel::Model
 
   # run           => Pacbio::Run

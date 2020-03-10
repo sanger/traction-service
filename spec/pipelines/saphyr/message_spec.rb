@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe 'Saphyr', type: :model, saphyr: true do
 
-  let(:config)            { Pipelines.configure(Rails.configuration.pipelines) }
+  let(:config)            { Pipelines.configure(Pipelines.load_yaml) }
   let(:pipeline_config)   { config.saphyr }
   let(:flowcell)          { create(:saphyr_flowcell_with_library) }
   let(:message)           { Messages::Message.new(object: flowcell, configuration: pipeline_config.message) }
