@@ -17,7 +17,7 @@ module V1
       end
 
       def update
-        library.update(params_names)
+        library.update(library_update_params)
         render_json(:ok)
       rescue StandardError => e
         render json: { data: { errors: e.message } }, status: :unprocessable_entity
@@ -41,6 +41,11 @@ module V1
         params.require(:data).require(:attributes)[:libraries].map do |param|
           library_params_names(param)
         end.flatten
+      end
+
+      # necessary so only certain library params can be updated without having to send unneccessary data in body of request
+      def library_update_params
+        params.require(:data).require(:attributes).permit(:volume, :concentration, :library_kit_barcode, :fragment_size)
       end
 
       def library_params_names(params)
