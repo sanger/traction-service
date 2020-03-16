@@ -14,7 +14,7 @@ module Pipelines
         # Something to keep an eye on.
         # @return [String] the name of the pipeline e.g. 'Pacbio'
         def pipeline
-          @pipeline ||= parent_name.demodulize
+          @pipeline ||= module_parent_name.demodulize
         end
 
         # @return [Constant] the constant of the pipeline e.g. Pacbio

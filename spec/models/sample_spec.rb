@@ -54,7 +54,7 @@ RSpec.describe Sample, type: :model do
     it 'name cannot be updated' do
       sample = create(:sample)
       name = sample.name
-      sample.update_attributes(name: 'sample3')
+      sample.update(name: 'sample3')
       expect(sample.reload.name).to eq(name)
     end
   end

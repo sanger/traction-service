@@ -33,7 +33,7 @@ module Pacbio
     # returns sample sheet csv for a Pacbio::Run
     # using pipelines.yml configuration to generate data
     def generate_sample_sheet
-      csv = ::CSVGenerator.new(run: self, configuration: pacbio_run_sample_sheet_config)
+      csv = ::CsvGenerator.new(run: self, configuration: pacbio_run_sample_sheet_config)
       csv.generate_sample_sheet
     end
 
