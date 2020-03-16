@@ -8,12 +8,12 @@ RSpec.describe Messages, type: :model do
     let(:flowcell2)   { create(:saphyr_flowcell_with_library) }
 
     it 'will publish a single message' do
-      expect(BrokerHandle).to receive(:publish).once
+      expect(Broker::Handle).to receive(:publish).once
       Messages.publish(flowcell1, Pipelines.saphyr.message)
     end
 
     it 'can publish multiple messages' do
-      expect(BrokerHandle).to receive(:publish).twice
+      expect(Broker::Handle).to receive(:publish).twice
       Messages.publish([flowcell1, flowcell2], Pipelines.saphyr.message)
     end
   end

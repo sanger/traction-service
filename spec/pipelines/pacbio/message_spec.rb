@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe 'PacBio', type: :model, pacbio: true do
 
-  let(:config)        { Pipelines.configure(Rails.configuration.pipelines) }
+  let(:config)        { Pipelines.configure(Pipelines.load_yaml) }
   let(:pacbio_config) { config.pacbio }
   let(:plate)         { create(:pacbio_plate_with_wells)}
   let(:message)       { Messages::Message.new(object: plate, configuration: pacbio_config.message) }
