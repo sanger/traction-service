@@ -29,7 +29,7 @@ script:
 
 before_deploy:
   - ./compile-build
-  - export TAG_NAME=$([ ${TRAVIS_BRANCH} = "uat" ] && echo "${TRAVIS_BRANCH}/$(date +'%Y-%m-%d/%H%M%S')" || printf '%s\n' $(cat .release-version))
+  - export TAG_NAME=$([ ${TRAVIS_BRANCH} = "develop" ] && echo "${TRAVIS_BRANCH}/$(date +'%Y-%m-%d/%H%M%S')" || printf '%s\n' $(cat .release-version))
   - git tag "${TAG_NAME}"
 
 deploy:
@@ -42,7 +42,7 @@ deploy:
   on:
     repo: sanger/traction-service
     all_branches: true
-    condition: $TRAVIS_BRANCH =~ ^uat|master$ # only build a release on uat and master branches
+    condition: $TRAVIS_BRANCH =~ ^develop|master$ # only build a release on uat and master branches
 
 notifications:
   slack:
