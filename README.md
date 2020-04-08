@@ -52,4 +52,4 @@ An ERD was created using the `rails-erd` gem by executing: `bundle exec erd`
 On merging a pull request into develop, a release will be created with the tag/name `<branch>/<timestamp>`
 
 #### PROD
-Update `.release-version` with major/minor/patch. On merging a pull request into master, a release will be created with the tag/name from .release-version
+Update `.release-version` with major/minor/patch. On merging a pull request into master, a release will be created with the release version as the tag/name 
