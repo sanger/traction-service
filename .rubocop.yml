@@ -75,3 +75,6 @@ Style/HashTransformKeys:
 
 Style/HashTransformValues:
   Enabled: false
+
+Rails/UniqueValidationWithoutIndex:
+  Enabled: false
