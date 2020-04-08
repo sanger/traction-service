@@ -49,7 +49,7 @@ An ERD was created using the `rails-erd` gem by executing: `bundle exec erd`
 ## Releases
 
 #### UAT
-On merging a pull request into develop, a release will be created with the tag/name 'BRANCH/TIMESTAMP'
+On merging a pull request into develop, a release will be created with the tag/name `<branch>/<timestamp>`
 
 #### PROD
 Update `.release-version` with major/minor/patch. On merging a pull request into master, a release will be created with the tag/name from .release-version
