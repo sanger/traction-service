@@ -45,3 +45,11 @@ To see all the commands available from rails: `bundle exec rails -T`
 An ERD was created using the `rails-erd` gem by executing: `bundle exec erd`
 
 ![ERD](erd.jpg "ERD")
+
+## Releases
+
+#### UAT
+On merging a pull request into develop, a release will be created with the tag/name 'BRANCH/TIMESTAMP'
+
+#### PROD
+Update `.release-version` with major/minor/patch. On merging a pull request into master, a release will be created with the tag/name from .release-version
