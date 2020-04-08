@@ -188,7 +188,7 @@ development:
 test:
   <<: *default
 
-staging:
+uat:
   <<: *default
 
 production:
