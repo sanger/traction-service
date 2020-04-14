@@ -25,6 +25,9 @@ module Pacbio
 
     delegate :barcode, to: :tube
 
+    # https://guides.rubyonrails.org/active_record_validations.html#validates-associated
+    # validates_associated :request_libraries
+
     def sample_names
       return '' if requests.blank?
 
