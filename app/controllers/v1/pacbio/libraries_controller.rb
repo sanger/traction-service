@@ -7,7 +7,7 @@ module V1
       def create
         @library_factory = ::Pacbio::LibraryFactory.new(params_names)
         if @library_factory.save
-          @resources = @library_factory.libraries.map { |lib| LibraryResource.new(lib, nil) }
+          @resources = LibraryResource.new(@library_factory.library, nil)
           body = JSONAPI::ResourceSerializer.new(LibraryResource).serialize_to_hash(@resources)
           render json: body, status: :created
         else

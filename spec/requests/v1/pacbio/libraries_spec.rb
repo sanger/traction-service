@@ -4,6 +4,8 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
   let!(:request) { create(:pacbio_request) }
   let!(:tag) { create(:tag) }
+  let!(:request2) { create(:pacbio_request) }
+  let!(:tag2) { create(:tag) }
 
   context '#get' do
     let!(:library1)         { create(:pacbio_library) }
@@ -100,12 +102,24 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                           data: [
                             { 
                               type: 'requests', 
-                              id: request.id, 
+                              id: request2.id, 
                               relationships: {
                                 tag: {
                                   data: {
                                     type: 'tags',
                                     id: tag.id
+                                  }
+                                }
+                              }
+                            },
+                            { 
+                              type: 'requests', 
+                              id: request.id, 
+                              relationships: {
+                                tag: {
+                                  data: {
+                                    type: 'tags',
+                                    id: tag2.id
                                   }
                                 }
                               }
