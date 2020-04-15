@@ -60,6 +60,10 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
       expect(sample_names.any?(&:blank?)).to be_falsey
     end
 
+    it 'will delete the library requests when the library is deleted' do
+      expect { library.destroy }.to change(Pacbio::RequestLibrary, :count).by(-5)
+    end
+
   end
 
   context 'library' do
