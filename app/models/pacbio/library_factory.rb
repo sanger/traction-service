@@ -45,14 +45,12 @@ module Pacbio
       # Validate the Pacbio::Library and its Pacbio::RequestLibrary(s)
       return false unless valid?
 
-      begin
-        library.save!
-        raise 'Failed' unless request_libraries.save
-      rescue => exception
+      library.save
+      unless request_libraries.save
         library.destroy
-        errors.add('Failed to create library', exception)
         return false
       end
+
       true
     end
 
