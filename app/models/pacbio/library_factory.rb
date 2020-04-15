@@ -5,14 +5,20 @@ module Pacbio
   # LibraryFactory
   # A library factory can create one library
   # A library can contain one or more requests
+
+  # When there is more than one request
   # Each request within that library must contain a tag
+  # And each tag must be unique
 
   # We can't create request libraries unless the library exists
-  # for each set of library attributes:
-  # * create a library
-  # * if the library is valid. For each request in that library:
-  #   create a request library for each request i.e. create a request
-  #   library link with an associated tag
+  # For a set of library attributes:
+  # * build a library
+  # * build the request libraries
+  # * validate the library
+  # * validate the request libraries
+  # * save the library
+  # * save the request libraries
+  # * associate request libraries with the library
   class LibraryFactory
     include ActiveModel::Model
 
@@ -39,12 +45,14 @@ module Pacbio
       # Validate the Pacbio::Library and its Pacbio::RequestLibrary(s)
       return false unless valid?
 
-      # Library has to be saved before the request libraries can be properly validated
-      library.save
-      
-      # Check what happens if request_libraries cannot be saved. Does the library get rolled back?
-      return false unless request_libraries.save
-
+      begin
+        library.save!
+        raise 'Failed' unless request_libraries.save
+      rescue => exception
+        library.destroy
+        errors.add('Failed to create library', exception)
+        return false
+      end
       true
     end
 
