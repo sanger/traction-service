@@ -26,12 +26,12 @@ module Pacbio
     validates :tag, uniqueness: { scope: :library,
                                   message: 'need to be unique within a library' }
     
-    validates_uniqueness_of :pacbio_request_id, scopes: [:pacbio_library_id, :tag_id]
+    # validates_uniqueness_of :pacbio_request_id, scopes: [:pacbio_library_id, :tag_id]
 
     validate :testing
 
     def testing
-      debugger
+      # debugger
     end
   end
 end
