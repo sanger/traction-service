@@ -83,8 +83,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
   end
 
   context '#create' do
-    context 'when creating a single library' do
-
+    context 'when creating a singleplex library' do
       context 'on success' do
         let(:body) do
           {
@@ -102,24 +101,12 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                           data: [
                             { 
                               type: 'requests', 
-                              id: request2.id, 
-                              relationships: {
-                                tag: {
-                                  data: {
-                                    type: 'tags',
-                                    id: tag.id
-                                  }
-                                }
-                              }
-                            },
-                            { 
-                              type: 'requests', 
                               id: request.id, 
                               relationships: {
                                 tag: {
                                   data: {
                                     type: 'tags',
-                                    id: tag2.id
+                                    id: tag.id
                                   }
                                 }
                               }
@@ -153,7 +140,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
       end
 
-      context 'on failure' do
+      context 'on failure when library is missing an attribute' do
         let(:body) do
           {
             data: {
@@ -205,9 +192,8 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
       end
     end
- 
-    context 'when creating multiple libraries' do
-
+  
+    context 'when creating a multiplex library' do
       context 'on success' do
 
         let(:body) do
@@ -238,36 +224,12 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                           },
                           { 
                             type: 'requests', 
-                            id: request.id, 
+                            id: request2.id, 
                             relationships: {
                               tag: {
                                 data: {
                                   type: 'tags',
-                                  id: tag.id
-                                }
-                              }
-                            }
-                          }
-                        ]
-                      }
-                    }
-                },
-                { 
-                    volume: 1.11,
-                    concentration: 2.22,
-                    library_kit_barcode: 'LK1234567',
-                    fragment_size: 100,
-                    relationships: {
-                      requests: {
-                        data: [
-                          { 
-                            type: 'requests', 
-                            id: request.id, 
-                            relationships: {
-                              tag: {
-                                data: {
-                                  type: 'tags',
-                                  id: tag.id
+                                  id: tag2.id
                                 }
                               }
                             }
@@ -285,13 +247,12 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
         it 'can create libraries' do
           post v1_pacbio_libraries_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:created)
-          expect(Pacbio::Library.count).to eq(2)
+          expect(Pacbio::Library.count).to eq(1)
           expect(Pacbio::Library.first.requests.count).to eq(2)
         end
       end
 
-      context 'on failure' do
-
+      context 'on failure when two different library requests have the same tag' do
          let(:body) do
           {
             data: {
@@ -317,21 +278,10 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                                   }
                                 }
                               }
-                            }
-                          ]
-                        }
-                      }
-                  },
-                  { 
-                      concentration: 2.22,
-                      library_kit_barcode: 'LK1234567',
-                      fragment_size: 100,
-                      relationships: {
-                        requests: {
-                          data: [
+                            },
                             { 
                               type: 'requests', 
-                              id: request.id, 
+                              id: request2.id, 
                               relationships: {
                                 tag: {
                                   data: {
@@ -358,7 +308,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
         it 'has an error message' do
           post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          expect(JSON.parse(response.body)["data"]).to include("errors" => {"volume"=>["can't be blank"]})
+          expect(JSON.parse(response.body)["data"]).to include("errors" => {"tag"=>["is used more than once"]})
         end
       end
     end
