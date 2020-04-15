@@ -132,6 +132,41 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
           end
         end
       end
+
+      context 'when save! raises an exception' do
+        before do
+          @factory = Pacbio::LibraryFactory.new([attributes])
+          allow(@factory).to receive(:valid?).and_return true 
+        end
+
+        context 'when the library fails to save' do
+          let(:attributes) { attributes_for(:pacbio_library).except(:volume).merge(requests: request_attributes)}
+
+          it 'doesnt create a library' do
+            expect { @factory.save }.not_to change(Pacbio::Library, :count)
+          end
+
+          it 'doesnt create the request libraries' do
+            expect { @factory.save }.not_to change(Pacbio::RequestLibrary, :count)
+          end
+        end
+      
+        context 'when the request libraries fail to save' do  
+          before do
+            allow(@factory.request_libraries).to receive(:save).and_return false
+          end
+
+          let(:attributes) { attributes_for(:pacbio_library).merge(requests: [{id: requests[0].id, type: 'requests'}] ) }
+
+          it 'doesnt create a library' do
+            expect { @factory.save }.not_to change(Pacbio::Library, :count)
+          end
+
+          it 'doesnt create the request libraries' do
+            expect { @factory.save }.not_to change(Pacbio::RequestLibrary, :count)
+          end
+        end
+      end
     end
 
     context '#id' do
