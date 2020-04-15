@@ -22,16 +22,11 @@ module Pacbio
     delegate :oligo, :group_id, :id, to: :tag, prefix: :tag, allow_nil: true
     delegate :tag_set_name, to: :tag, allow_nil: true
 
-    # this isnt being called from build
     validates :tag, uniqueness: { scope: :library,
                                   message: 'need to be unique within a library' }
     
-    # validates_uniqueness_of :pacbio_request_id, scopes: [:pacbio_library_id, :tag_id]
+    validates :request, uniqueness: { scope: :library,
+                                  message: 'need to be unique within a library' }
 
-    validate :testing
-
-    def testing
-      # debugger
-    end
   end
 end

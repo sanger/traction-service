@@ -83,7 +83,7 @@ module Pacbio
     class RequestLibraries
       include ActiveModel::Model
 
-      validate :check_tags, :check_cost_codes, :check_requests, :check_request_libraries
+      validate :check_tags, :check_cost_codes, :check_requests_uniq
 
       attr_reader :library
 
@@ -106,7 +106,7 @@ module Pacbio
       def build_request_libraries(requests_attributes)
         requests_attributes.map do |request_attributes|
           request_id = request_attributes[:id]
-          tag_id = request_attributes[:tag].try(:[], :id) #request_attributes[:tag][:id]
+          tag_id = request_attributes[:tag].try(:[], :id)
           request_libraries << Pacbio::RequestLibrary.new(pacbio_request_id: request_id, tag_id: tag_id)
         end
       end
@@ -133,32 +133,11 @@ module Pacbio
         end
       end
 
-      # Add a check for request_libraries
-      # which loops through each libraries request_libraries
-      # checking no two request_libraries
-      # have the same pacbio_request_id and pacbio_library_id
-      # However, this is what the request_libraries validation does
-      # so why doesnt the validation pick it up?
-      def check_requests
+      # Check no two requests in one library are the same
+      def check_requests_uniq
         request_ids = request_libraries.map(&:pacbio_request_id)
         if request_ids.length != request_ids.uniq.length
           errors.add('request', 'is used more than once')
-        end
-      end
-
-      def check_request_libraries
-        request_libraries.each do |rl|
-          # cant call rl.valid?
-          # as this will fail
-          # becuase the library hasnt been created
-          # so it will say library doesnt exist
-          # have to run validations manually
-   
-          # unless rl.valid?
-          #   rl.errors.each do |k, v|
-          #     errors.add(k, v)
-          #   end
-          # end
         end
       end
 
