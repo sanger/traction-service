@@ -38,9 +38,9 @@ module V1
 
       # TODO: abtsract behaviour for params names into separate library.
       def params_names
-        params.require(:data).require(:attributes)[:libraries].map do |param|
-          library_params_names(param)
-        end.flatten
+        params.require(:data)['attributes'].permit(:volume, :concentration, :library_kit_barcode, :fragment_size, :relationships).to_h.tap do |library|
+          library[:requests] = request_param_names(params[:data][:attributes])
+        end
       end
 
       # necessary so only certain library params can be updated without
