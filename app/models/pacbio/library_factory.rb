@@ -28,13 +28,11 @@ module Pacbio
     attr_reader :library
 
     def initialize(libraries_attributes)
-      library_attributes = libraries_attributes[0] # TODO singular
+      library_attributes = libraries_attributes[0] # TODO: singular
       build_library(library_attributes)
     end
 
-    def id
-      library.id
-    end
+    delegate :id, to: :library
 
     # WellFactory::RequestLibraries
     def request_libraries
@@ -66,7 +64,7 @@ module Pacbio
       library_attributes_without_requests = library_attributes.except(:requests)
       Pacbio::Library.new(library_attributes_without_requests.merge!(tube: Tube.new))
     end
-    
+
     def build_request_libraries(requests_attributes)
       @request_libraries = RequestLibraries.new(library, requests_attributes)
     end
@@ -111,25 +109,25 @@ module Pacbio
 
       def build_request_libraries(requests_attributes)
         requests_attributes.map do |request_attributes|
-          request_id = request_attributes[:id]
-          tag_id = request_attributes[:tag].try(:[], :id)
-          request_libraries << Pacbio::RequestLibrary.new(pacbio_request_id: request_id, tag_id: tag_id)
+          request_libraries << Pacbio::RequestLibrary.new(
+            pacbio_request_id: request_attributes[:id],
+            tag_id: request_attributes[:tag].try(:[], :id)
+          )
         end
       end
 
       def check_tags
         return true if request_libraries.length < 2
 
-        if request_libraries.any? { |rl| rl.tag_id.nil? }
+        tag_ids = request_libraries.map(&:tag_id)
+        if tag_ids.any?(&:nil?)
           errors.add('tag', 'must be present')
           return
         end
-  
+
         # Check no two tags in one library are the same
         tag_ids = request_libraries.map(&:tag_id)
-        if tag_ids.length != tag_ids.uniq.length
-          errors.add('tag', 'is used more than once')
-        end
+        errors.add('tag', 'is used more than once') if tag_ids.length != tag_ids.uniq.length
       end
 
       def check_cost_codes
@@ -142,11 +140,9 @@ module Pacbio
       # Check no two requests in one library are the same
       def check_requests_uniq
         request_ids = request_libraries.map(&:pacbio_request_id)
-        if request_ids.length != request_ids.uniq.length
-          errors.add('request', 'is used more than once')
-        end
+        errors.add('request', 'is used more than once') if
+          request_ids.length != request_ids.uniq.length
       end
-
     end
   end
 end
