@@ -133,7 +133,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
         end
       end
 
-      context 'when save! raises an exception' do
+      context 'when save errors' do
         before do
           @factory = Pacbio::LibraryFactory.new([attributes])
           allow(@factory).to receive(:valid?).and_return true 
