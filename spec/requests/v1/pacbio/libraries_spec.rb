@@ -154,32 +154,28 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
             {
               data: {
                 type: 'libraries',
-                attributes: {
-                  libraries: [
-                    { 
-                        concentration: 2.22,
-                        library_kit_barcode: 'LK1234567',
-                        fragment_size: 100,
-                        relationships: {
-                          requests: {
-                            data: [
-                              { 
-                                type: 'requests', 
-                                id: request.id, 
-                                relationships: {
-                                  tag: {
-                                    data: {
-                                      type: 'tags',
-                                      id: tag.id
-                                    }
-                                  }
-                                }
+                attributes: { 
+                  concentration: 2.22,
+                  library_kit_barcode: 'LK1234567',
+                  fragment_size: 100,
+                  relationships: {
+                    requests: {
+                      data: [
+                        { 
+                          type: 'requests', 
+                          id: request.id, 
+                          relationships: {
+                            tag: {
+                              data: {
+                                type: 'tags',
+                                id: tag.id
                               }
-                            ]
+                            }
                           }
                         }
+                      ]
                     }
-                  ]
+                  }
                 }
               }
             }.to_json
@@ -213,45 +209,41 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
         {
           data: {
             type: 'libraries',
-            attributes: {
-              libraries: [
-                { 
-                    volume: 1.11,
-                    concentration: 2.22,
-                    library_kit_barcode: 'LK1234567',
-                    fragment_size: 100,
-                    relationships: {
-                      requests: {
-                        data: [
-                          { 
-                            type: 'requests', 
-                            id: request.id, 
-                            relationships: {
-                              tag: {
-                                data: {
-                                  type: 'tags',
-                                  id: tag.id
-                                }
-                              }
-                            }
-                          },
-                          { 
-                            type: 'requests', 
-                            id: request2.id, 
-                            relationships: {
-                              tag: {
-                                data: {
-                                  type: 'tags',
-                                  id: tag2.id
-                                }
-                              }
-                            }
+            attributes: { 
+              volume: 1.11,
+              concentration: 2.22,
+              library_kit_barcode: 'LK1234567',
+              fragment_size: 100,
+              relationships: {
+                requests: {
+                  data: [
+                    { 
+                      type: 'requests', 
+                      id: request.id, 
+                      relationships: {
+                        tag: {
+                          data: {
+                            type: 'tags',
+                            id: tag.id
                           }
-                        ]
+                        }
+                      }
+                    },
+                    { 
+                      type: 'requests', 
+                      id: request2.id, 
+                      relationships: {
+                        tag: {
+                          data: {
+                            type: 'tags',
+                            id: tag2.id
+                          }
+                        }
                       }
                     }
+                  ]
                 }
-              ]
+              }
             }
           }
         }.to_json
@@ -271,45 +263,41 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
             {
               data: {
                 type: 'libraries',
-                attributes: {
-                  libraries: [
-                    { 
-                        volume: 1.11,
-                        concentration: 2.22,
-                        library_kit_barcode: 'LK1234567',
-                        fragment_size: 100,
-                        relationships: {
-                          requests: {
-                            data: [
-                              { 
-                                type: 'requests', 
-                                id: request.id, 
-                                relationships: {
-                                  tag: {
-                                    data: {
-                                      type: 'tags',
-                                      id: tag.id
-                                    }
-                                  }
-                                }
-                              },
-                              { 
-                                type: 'requests', 
-                                id: request2.id, 
-                                relationships: {
-                                  tag: {
-                                    data: {
-                                      type: 'tags',
-                                      id: tag.id
-                                    }
-                                  }
-                                }
+                attributes: { 
+                  volume: 1.11,
+                  concentration: 2.22,
+                  library_kit_barcode: 'LK1234567',
+                  fragment_size: 100,
+                  relationships: {
+                    requests: {
+                      data: [
+                        { 
+                          type: 'requests', 
+                          id: request.id, 
+                          relationships: {
+                            tag: {
+                              data: {
+                                type: 'tags',
+                                id: tag.id
                               }
-                            ]
+                            }
+                          }
+                        },
+                        { 
+                          type: 'requests', 
+                          id: request2.id, 
+                          relationships: {
+                            tag: {
+                              data: {
+                                type: 'tags',
+                                id: tag.id
+                              }
+                            }
                           }
                         }
+                      ]
                     }
-                  ]
+                  }
                 }
               }
             }.to_json
