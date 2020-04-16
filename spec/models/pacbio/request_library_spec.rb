@@ -27,7 +27,7 @@ RSpec.describe Pacbio::RequestLibrary, type: :model, pacbio: true do
   end
 
   describe 'validation' do
-    it 'tags must be unique within the context of a library' do
+    it 'tags must be unique within a library' do
       library = create(:pacbio_library)
       tag = create(:tag)
 
@@ -35,7 +35,7 @@ RSpec.describe Pacbio::RequestLibrary, type: :model, pacbio: true do
       expect(build(:pacbio_request_library, request: create(:pacbio_request), library: library, tag: tag)).to_not be_valid
     end
 
-    it 'requests must be unique within the context of a library and a tag' do
+    it 'requests must be unique within a library' do
       library = create(:pacbio_library)
       request = create(:pacbio_request)
       

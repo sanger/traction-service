@@ -110,8 +110,8 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
         context 'when the request libraries are invalid' do
           let(:request_empty_cost_code) { create(:pacbio_request, cost_code: "")}
 
-          it 'produces an error if there is more than one request and they dont have tags' do
-            invalid_request_attributes = [{id: requests[0].id, type: 'requests'}, {id: requests[1].id, type: 'requests'}]
+          it 'produces an error if there is more than one request and a tag is missing' do
+            invalid_request_attributes = [{id: requests[0].id, type: 'requests'}, {id: requests[1].id, type: 'requests', tag: { id: tags[0].id, type: 'tags'}}]
             library_attributes = attributes_for(:pacbio_library).merge(requests: invalid_request_attributes)
             
             factory = Pacbio::LibraryFactory.new(library_attributes)
@@ -119,16 +119,34 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
             expect(factory.errors.full_messages).to eq ['Tag must be present']
           end
 
-          it 'produces an error if any two tags in a request library are the same' do
+          it 'produces an error if there is more than one request and two tags are the same' do
+            invalid_request_attributes = [{ id: requests[0].id, type: 'requests', tag: { id: tags[0].id, type: 'tags' } },
+                                          { id: requests[1].id, type: 'requests', tag: { id: tags[0].id, type: 'tags' } }]
+            library_attributes = attributes_for(:pacbio_library).merge(requests: invalid_request_attributes)
+
+            factory = Pacbio::LibraryFactory.new(library_attributes)
+            expect(factory.valid?).to be_falsy
+            expect(factory.errors.full_messages).to eq(['Tag is used more than once'])
           end
 
-          it 'produces an error if any request contains an empty cost_code' do
+          it 'produces an error if any request contains an empty cost code' do
             invalid_request_attributes = [{id: request_empty_cost_code.id, type: 'requests', tag: { id: tags[0].id, type: 'tags'} }]
             library_attributes = attributes_for(:pacbio_library).merge(requests: invalid_request_attributes)
 
             factory = Pacbio::LibraryFactory.new(library_attributes)
             expect(factory.valid?).to be_falsy
             expect(factory.errors.full_messages).to eq(['Cost code must be present'])
+          end
+
+          it 'produces an error if any two requests in a library are the same' do
+            invalid_request_attributes = [
+              {id: requests[0].id, type: 'requests', tag: { id: tags[0].id, type: 'tags'}}, 
+              {id: requests[0].id, type: 'requests', tag: { id: tags[1].id, type: 'tags'}}
+            ]
+            library_attributes = attributes_for(:pacbio_library).merge(requests: invalid_request_attributes)
+            factory = Pacbio::LibraryFactory.new(library_attributes)
+            expect(factory.valid?).to be_falsy
+            expect(factory.errors.full_messages).to eq(['Request is used more than once'])
           end
         end
       end
