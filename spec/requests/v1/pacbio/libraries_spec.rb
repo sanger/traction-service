@@ -83,8 +83,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
   end
 
   context '#create' do
-    context 'when creating a single library' do
-
+    context 'when creating a singleplex library' do
       context 'on success' do
         let(:body) do
           {
@@ -149,7 +148,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
       end
 
-      context 'on failure' do
+      context 'on failure when library is missing an attribute' do
         let(:body) do
           {
             data: {
