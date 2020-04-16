@@ -77,7 +77,7 @@ Style/HashTransformValues:
   Enabled: false
 
 Lint/RaiseException:
-  Enabled: false
+  Enabled: true
 
 Lint/StructNewOverride:
-  Enabled: false
+  Enabled: true
