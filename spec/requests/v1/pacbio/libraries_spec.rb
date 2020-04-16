@@ -140,10 +140,10 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
         it 'creates a relationship between the request and tag' do
           post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          request_library = Pacbio::RequestLibrary.first
+          request_library = Pacbio::RequestLibrary.last
           expect(request_library.library).to eq(Pacbio::Library.first) 
           expect(request_library.request).to eq(request) 
-          expect(request_library.tag).to eq(tag) 
+          expect(request_library.tag).to eq(tag2) 
         end
 
       end
@@ -196,163 +196,6 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
       end
     end
- 
-    # context 'when creating multiple libraries' do
-
-    #   context 'on success' do
-
-    #     let(:body) do
-    #     {
-    #       data: {
-    #         type: 'libraries',
-    #         attributes: {
-    #           libraries: [
-    #             { 
-    #                 volume: 1.11,
-    #                 concentration: 2.22,
-    #                 library_kit_barcode: 'LK1234567',
-    #                 fragment_size: 100,
-    #                 relationships: {
-    #                   requests: {
-    #                     data: [
-    #                       { 
-    #                         type: 'requests', 
-    #                         id: request.id, 
-    #                         relationships: {
-    #                           tag: {
-    #                             data: {
-    #                               type: 'tags',
-    #                               id: tag.id
-    #                             }
-    #                           }
-    #                         }
-    #                       },
-    #                       { 
-    #                         type: 'requests', 
-    #                         id: request.id, 
-    #                         relationships: {
-    #                           tag: {
-    #                             data: {
-    #                               type: 'tags',
-    #                               id: tag.id
-    #                             }
-    #                           }
-    #                         }
-    #                       }
-    #                     ]
-    #                   }
-    #                 }
-    #             },
-    #             { 
-    #                 volume: 1.11,
-    #                 concentration: 2.22,
-    #                 library_kit_barcode: 'LK1234567',
-    #                 fragment_size: 100,
-    #                 relationships: {
-    #                   requests: {
-    #                     data: [
-    #                       { 
-    #                         type: 'requests', 
-    #                         id: request.id, 
-    #                         relationships: {
-    #                           tag: {
-    #                             data: {
-    #                               type: 'tags',
-    #                               id: tag.id
-    #                             }
-    #                           }
-    #                         }
-    #                       }
-    #                     ]
-    #                   }
-    #                 }
-    #             }
-    #           ]
-    #         }
-    #       }
-    #     }.to_json
-    #     end
-
-    #     it 'can create libraries' do
-    #       post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-    #       expect(response).to have_http_status(:created)
-    #       expect(Pacbio::Library.count).to eq(2)
-    #       expect(Pacbio::Library.first.requests.count).to eq(2)
-    #     end
-    #   end
-
-    #   context 'on failure' do
-
-    #      let(:body) do
-    #       {
-    #         data: {
-    #           type: 'libraries',
-    #           attributes: {
-    #             libraries: [
-    #               { 
-    #                   volume: 1.11,
-    #                   concentration: 2.22,
-    #                   library_kit_barcode: 'LK1234567',
-    #                   fragment_size: 100,
-    #                   relationships: {
-    #                     requests: {
-    #                       data: [
-    #                         { 
-    #                           type: 'requests', 
-    #                           id: request.id, 
-    #                           relationships: {
-    #                             tag: {
-    #                               data: {
-    #                                 type: 'tags',
-    #                                 id: tag.id
-    #                               }
-    #                             }
-    #                           }
-    #                         }
-    #                       ]
-    #                     }
-    #                   }
-    #               },
-    #               { 
-    #                   concentration: 2.22,
-    #                   library_kit_barcode: 'LK1234567',
-    #                   fragment_size: 100,
-    #                   relationships: {
-    #                     requests: {
-    #                       data: [
-    #                         { 
-    #                           type: 'requests', 
-    #                           id: request.id, 
-    #                           relationships: {
-    #                             tag: {
-    #                               data: {
-    #                                 type: 'tags',
-    #                                 id: tag.id
-    #                               }
-    #                             }
-    #                           }
-    #                         }
-    #                       ]
-    #                     }
-    #                   }
-    #               }
-    #             ]
-    #           }
-    #         }
-    #       }.to_json
-    #     end
-
-    #     it 'cannot create libraries' do
-    #       post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-    #       expect(response).to have_http_status(:unprocessable_entity)
-    #     end
-
-    #     it 'has an error message' do
-    #       post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-    #       expect(JSON.parse(response.body)["data"]).to include("errors" => {"volume"=>["can't be blank"]})
-    #     end
-    #   end
-    # end
 
   end
 

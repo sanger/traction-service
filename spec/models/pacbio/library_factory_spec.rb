@@ -10,7 +10,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
                                   {id: requests[0].id, type: 'requests', tag: { id: tags[0].id, type: 'tags'}}, 
                                   {id: requests[1].id, type: 'requests', tag: { id: tags[1].id, type: 'tags'}}
                                 ]}
-  let(:libraries_attributes)    { [ attributes_for(:pacbio_library).merge(requests: request_attributes) ] }
+  let(:libraries_attributes)    { attributes_for(:pacbio_library).merge(requests: request_attributes) }
 
   context 'LibraryFactory' do
     context '#initialize' do
@@ -101,7 +101,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
         context 'when the library is invalid' do
           it 'produces error messages if the library is missing a required attribute' do
             invalid_library_attributes = attributes_for(:pacbio_library).except(:volume).merge(requests: request_attributes)
-            factory = Pacbio::LibraryFactory.new([invalid_library_attributes])
+            factory = Pacbio::LibraryFactory.new(invalid_library_attributes)
             expect(factory.save).to be_falsy
             expect(factory.errors.full_messages).to include "Volume can't be blank"
           end
@@ -114,7 +114,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
             invalid_request_attributes = [{id: requests[0].id, type: 'requests'}, {id: requests[1].id, type: 'requests'}]
             library_attributes = attributes_for(:pacbio_library).merge(requests: invalid_request_attributes)
             
-            factory = Pacbio::LibraryFactory.new([library_attributes])
+            factory = Pacbio::LibraryFactory.new(library_attributes)
             expect(factory.valid?).to be_falsy
             expect(factory.errors.full_messages).to eq ['Tag must be present']
           end
@@ -126,9 +126,44 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
             invalid_request_attributes = [{id: request_empty_cost_code.id, type: 'requests', tag: { id: tags[0].id, type: 'tags'} }]
             library_attributes = attributes_for(:pacbio_library).merge(requests: invalid_request_attributes)
 
-            factory = Pacbio::LibraryFactory.new([library_attributes])
+            factory = Pacbio::LibraryFactory.new(library_attributes)
             expect(factory.valid?).to be_falsy
             expect(factory.errors.full_messages).to eq(['Cost code must be present'])
+          end
+        end
+      end
+
+      context 'when save errors' do
+        before do
+          @factory = Pacbio::LibraryFactory.new(attributes)
+          allow(@factory).to receive(:valid?).and_return true 
+        end
+
+        context 'when the library fails to save' do
+          let(:attributes) { attributes_for(:pacbio_library).except(:volume).merge(requests: request_attributes)}
+
+          it 'doesnt create a library' do
+            expect { @factory.save }.not_to change(Pacbio::Library, :count)
+          end
+
+          it 'doesnt create the request libraries' do
+            expect { @factory.save }.not_to change(Pacbio::RequestLibrary, :count)
+          end
+        end
+      
+        context 'when the request libraries fail to save' do  
+          before do
+            allow(@factory.request_libraries).to receive(:save).and_return false
+          end
+
+          let(:attributes) { attributes_for(:pacbio_library).merge(requests: [{id: requests[0].id, type: 'requests'}] ) }
+
+          it 'doesnt create a library' do
+            expect { @factory.save }.not_to change(Pacbio::Library, :count)
+          end
+
+          it 'doesnt create the request libraries' do
+            expect { @factory.save }.not_to change(Pacbio::RequestLibrary, :count)
           end
         end
       end

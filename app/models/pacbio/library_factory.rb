@@ -5,14 +5,20 @@ module Pacbio
   # LibraryFactory
   # A library factory can create one library
   # A library can contain one or more requests
+
+  # When there is more than one request
   # Each request within that library must contain a tag
+  # And each tag must be unique
 
   # We can't create request libraries unless the library exists
-  # for each set of library attributes:
-  # * create a library
-  # * if the library is valid. For each request in that library:
-  #   create a request library for each request i.e. create a request
-  #   library link with an associated tag
+  # For a set of library attributes:
+  # * build a library
+  # * build the request libraries
+  # * validate the library
+  # * validate the request libraries
+  # * save the library
+  # * save the request libraries
+  # * associate request libraries with the library
   class LibraryFactory
     include ActiveModel::Model
 
@@ -22,12 +28,11 @@ module Pacbio
     attr_reader :library
 
     def initialize(library_attributes)
+      p library_attributes
       build_library(library_attributes)
     end
 
-    def id
-      library.id
-    end
+    delegate :id, to: :library
 
     # WellFactory::RequestLibraries
     def request_libraries
@@ -38,11 +43,11 @@ module Pacbio
       # Validate the Pacbio::Library and its Pacbio::RequestLibrary(s)
       return false unless valid?
 
-      # Library has to be saved before the request libraries can be properly validated
       library.save
-      
-      # Check what happens if request_libraries cannot be saved. Does the library get rolled back?
-      return false unless request_libraries.save
+      unless request_libraries.save
+        library.destroy
+        return false
+      end
 
       true
     end
@@ -59,7 +64,7 @@ module Pacbio
       library_attributes_without_requests = library_attributes.except(:requests)
       Pacbio::Library.new(library_attributes_without_requests.merge!(tube: Tube.new))
     end
-    
+
     def build_request_libraries(requests_attributes)
       @request_libraries = RequestLibraries.new(library, requests_attributes)
     end
@@ -82,7 +87,7 @@ module Pacbio
     class RequestLibraries
       include ActiveModel::Model
 
-      validate :check_tags, :check_cost_codes, :check_requests, :check_request_libraries
+      validate :check_tags, :check_cost_codes, :check_requests_uniq
 
       attr_reader :library
 
@@ -104,25 +109,25 @@ module Pacbio
 
       def build_request_libraries(requests_attributes)
         requests_attributes.map do |request_attributes|
-          request_id = request_attributes[:id]
-          tag_id = request_attributes[:tag].try(:[], :id) #request_attributes[:tag][:id]
-          request_libraries << Pacbio::RequestLibrary.new(pacbio_request_id: request_id, tag_id: tag_id)
+          request_libraries << Pacbio::RequestLibrary.new(
+            pacbio_request_id: request_attributes[:id],
+            tag_id: request_attributes[:tag].try(:[], :id)
+          )
         end
       end
 
       def check_tags
         return true if request_libraries.length < 2
 
-        if request_libraries.any? { |rl| rl.tag_id.nil? }
+        tag_ids = request_libraries.map(&:tag_id)
+        if tag_ids.any?(&:nil?)
           errors.add('tag', 'must be present')
           return
         end
-  
+
         # Check no two tags in one library are the same
         tag_ids = request_libraries.map(&:tag_id)
-        if tag_ids.length != tag_ids.uniq.length
-          errors.add('tag', 'is used more than once')
-        end
+        errors.add('tag', 'is used more than once') if tag_ids.length != tag_ids.uniq.length
       end
 
       def check_cost_codes
@@ -132,35 +137,12 @@ module Pacbio
         end
       end
 
-      # Add a check for request_libraries
-      # which loops through each libraries request_libraries
-      # checking no two request_libraries
-      # have the same pacbio_request_id and pacbio_library_id
-      # However, this is what the request_libraries validation does
-      # so why doesnt the validation pick it up?
-      def check_requests
+      # Check no two requests in one library are the same
+      def check_requests_uniq
         request_ids = request_libraries.map(&:pacbio_request_id)
-        if request_ids.length != request_ids.uniq.length
-          errors.add('request', 'is used more than once')
-        end
+        errors.add('request', 'is used more than once') if
+          request_ids.length != request_ids.uniq.length
       end
-
-      def check_request_libraries
-        request_libraries.each do |rl|
-          # cant call rl.valid?
-          # as this will fail
-          # becuase the library hasnt been created
-          # so it will say library doesnt exist
-          # have to run validations manually
-   
-          # unless rl.valid?
-          #   rl.errors.each do |k, v|
-          #     errors.add(k, v)
-          #   end
-          # end
-        end
-      end
-
     end
   end
 end

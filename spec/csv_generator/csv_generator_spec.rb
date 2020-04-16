@@ -1,4 +1,4 @@
-]require "rails_helper"
+require "rails_helper"
 
 RSpec.describe CsvGenerator, type: :model do
   after(:each) { File.delete('sample_sheet.csv') if File.exists?('sample_sheet.csv') }
