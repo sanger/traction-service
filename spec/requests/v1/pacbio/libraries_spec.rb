@@ -148,52 +148,183 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
       end
 
-      context 'on failure when library is missing an attribute' do
-        let(:body) do
-          {
-            data: {
-              type: 'libraries',
-              attributes: {
-                concentration: 2.22,
-                library_kit_barcode: 'LK1234567',
-                fragment_size: 100,
-                relationships: {
-                  requests: {
-                    data: [
-                      { 
-                        type: 'requests', 
-                        id: request.id, 
+      context 'on failure' do
+        context 'when library is invalid' do
+          let(:body) do
+            {
+              data: {
+                type: 'libraries',
+                attributes: {
+                  libraries: [
+                    { 
+                        concentration: 2.22,
+                        library_kit_barcode: 'LK1234567',
+                        fragment_size: 100,
                         relationships: {
-                          tag: {
-                            data: {
-                              type: 'tags',
-                              id: tag.id
-                            }
+                          requests: {
+                            data: [
+                              { 
+                                type: 'requests', 
+                                id: request.id, 
+                                relationships: {
+                                  tag: {
+                                    data: {
+                                      type: 'tags',
+                                      id: tag.id
+                                    }
+                                  }
+                                }
+                              }
+                            ]
                           }
                         }
-                      }
-                    ]
-                  }
+                    }
+                  ]
                 }
               }
+            }.to_json
+          end
+
+          it 'returns unprocessable entity status' do
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it 'cannot create a library' do
+            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
+          end
+
+          it 'has an error message' do
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(JSON.parse(response.body)["data"]).to include("errors" => {"volume"=>["can't be blank"]})
+          end
+
+        end
+        context 'when the request is invalid' do
+          # TODO: check correct response and error msg
+        end
+      end
+    end
+  
+    context 'when creating a multiplex library' do
+      context 'on success' do
+
+        let(:body) do
+        {
+          data: {
+            type: 'libraries',
+            attributes: {
+              libraries: [
+                { 
+                    volume: 1.11,
+                    concentration: 2.22,
+                    library_kit_barcode: 'LK1234567',
+                    fragment_size: 100,
+                    relationships: {
+                      requests: {
+                        data: [
+                          { 
+                            type: 'requests', 
+                            id: request.id, 
+                            relationships: {
+                              tag: {
+                                data: {
+                                  type: 'tags',
+                                  id: tag.id
+                                }
+                              }
+                            }
+                          },
+                          { 
+                            type: 'requests', 
+                            id: request2.id, 
+                            relationships: {
+                              tag: {
+                                data: {
+                                  type: 'tags',
+                                  id: tag2.id
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                }
+              ]
             }
-          }.to_json
+          }
+        }.to_json
         end
 
-        it 'returns unprocessable entity status' do
+        it 'can create libraries' do #TODO: create request and request libraries
           post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:created)
+          expect(Pacbio::Library.count).to eq(1)
+          expect(Pacbio::Library.first.requests.count).to eq(2)
         end
+      end
 
-        it 'cannot create a library' do
-          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
+      context 'on failure' do
+        context 'when two library requests are invalid' do
+          let(:body) do
+            {
+              data: {
+                type: 'libraries',
+                attributes: {
+                  libraries: [
+                    { 
+                        volume: 1.11,
+                        concentration: 2.22,
+                        library_kit_barcode: 'LK1234567',
+                        fragment_size: 100,
+                        relationships: {
+                          requests: {
+                            data: [
+                              { 
+                                type: 'requests', 
+                                id: request.id, 
+                                relationships: {
+                                  tag: {
+                                    data: {
+                                      type: 'tags',
+                                      id: tag.id
+                                    }
+                                  }
+                                }
+                              },
+                              { 
+                                type: 'requests', 
+                                id: request2.id, 
+                                relationships: {
+                                  tag: {
+                                    data: {
+                                      type: 'tags',
+                                      id: tag.id
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                    }
+                  ]
+                }
+              }
+            }.to_json
+          end
+
+          it 'cannot create libraries' do #TODO: doesnt change count of library/ request library
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it 'has an error message' do
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(JSON.parse(response.body)["data"]).to include("errors" => {"tag"=>["is used more than once"]})
+          end
         end
-
-        it 'has an error message' do
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          expect(JSON.parse(response.body)["data"]).to include("errors" => {"volume"=>["can't be blank"]})
-        end
-
       end
     end
 
@@ -210,6 +341,10 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
       it 'destroys the library' do
         expect { delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers }.to change { Pacbio::Library.count }.by(-1)
+      end
+
+      it 'destroys the libraries request libraries' do
+        # TODO: check
       end
 
     end
