@@ -28,7 +28,6 @@ module Pacbio
     attr_reader :library
 
     def initialize(library_attributes)
-      p library_attributes
       build_library(library_attributes)
     end
 
