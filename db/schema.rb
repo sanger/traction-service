@@ -37,7 +37,9 @@ ActiveRecord::Schema.define(version: 2020_03_05_113809) do
     t.integer "pacbio_library_id"
     t.integer "tag_id"
     t.index ["pacbio_library_id"], name: "index_pacbio_request_libraries_on_pacbio_library_id"
+    t.index ["pacbio_request_id", "pacbio_library_id"], name: "index_rl_request_library", unique: true
     t.index ["pacbio_request_id"], name: "index_pacbio_request_libraries_on_pacbio_request_id"
+    t.index ["tag_id", "pacbio_library_id"], name: "index_rl_tag_library", unique: true
     t.index ["tag_id"], name: "index_pacbio_request_libraries_on_tag_id"
   end
 
@@ -65,6 +67,7 @@ ActiveRecord::Schema.define(version: 2020_03_05_113809) do
     t.datetime "updated_at", null: false
     t.integer "state", default: 0
     t.datetime "deactivated_at"
+    t.index ["name"], name: "index_pacbio_runs_on_name", unique: true
   end
 
   create_table "pacbio_well_libraries", force: :cascade do |t|
@@ -106,6 +109,7 @@ ActiveRecord::Schema.define(version: 2020_03_05_113809) do
     t.string "species"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_samples_on_name", unique: true
   end
 
   create_table "saphyr_chips", force: :cascade do |t|
@@ -121,6 +125,7 @@ ActiveRecord::Schema.define(version: 2020_03_05_113809) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_saphyr_enzymes_on_name", unique: true
   end
 
   create_table "saphyr_flowcells", force: :cascade do |t|
@@ -171,6 +176,8 @@ ActiveRecord::Schema.define(version: 2020_03_05_113809) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "tag_set_id"
+    t.index ["group_id", "tag_set_id"], name: "index_tags_on_group_id_and_tag_set_id", unique: true
+    t.index ["oligo", "tag_set_id"], name: "index_tags_on_oligo_and_tag_set_id", unique: true
     t.index ["tag_set_id"], name: "index_tags_on_tag_set_id"
   end
 
