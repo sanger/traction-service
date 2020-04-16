@@ -7,10 +7,9 @@ module Pacbio
   # A library can contain one or more requests
 
   # When there is more than one request
-  # Each request within that library must contain a tag
-  # And each tag must be unique
+  # Each request must be unique
+  # Each request must contain a tag, and each tag must be unique
 
-  # We can't create request libraries unless the library exists
   # For a set of library attributes:
   # * build a library
   # * build the request libraries
@@ -116,19 +115,22 @@ module Pacbio
       end
 
       def check_tags
+        # Only check tags if there is more than one request library
         return true if request_libraries.length < 2
 
+        # Check every request library has a tag
         tag_ids = request_libraries.map(&:tag_id)
         if tag_ids.any?(&:nil?)
           errors.add('tag', 'must be present')
           return
         end
 
-        # Check no two tags in one library are the same
+        # Check no two tags are the same
         tag_ids = request_libraries.map(&:tag_id)
         errors.add('tag', 'is used more than once') if tag_ids.length != tag_ids.uniq.length
       end
 
+      # Check every request has a cost code
       def check_cost_codes
         request_libraries.each do |rl|
           id = rl.pacbio_request_id
@@ -136,7 +138,7 @@ module Pacbio
         end
       end
 
-      # Check no two requests in one library are the same
+      # Check no two requests are the same
       def check_requests_uniq
         request_ids = request_libraries.map(&:pacbio_request_id)
         errors.add('request', 'is used more than once') if
