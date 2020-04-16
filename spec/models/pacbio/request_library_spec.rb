@@ -30,21 +30,17 @@ RSpec.describe Pacbio::RequestLibrary, type: :model, pacbio: true do
     it 'tags must be unique within the context of a library' do
       library = create(:pacbio_library)
       tag = create(:tag)
-            request = create(:pacbio_request)
 
-
-      create(:pacbio_request_library, request: request, library: library, tag: tag)
-      expect(build(:pacbio_request_library, request: request, library: library, tag: tag)).to be_valid
+      create(:pacbio_request_library, request: create(:pacbio_request), library: library, tag: tag)
+      expect(build(:pacbio_request_library, request: create(:pacbio_request), library: library, tag: tag)).to_not be_valid
     end
 
     it 'requests must be unique within the context of a library and a tag' do
       library = create(:pacbio_library)
-      tag1 = create(:tag)
-      tag2 = create(:tag)
       request = create(:pacbio_request)
       
-      create(:pacbio_request_library, request: request, library: library, tag: tag1)
-      expect(build(:pacbio_request_library, request: request, library: library, tag: tag1)).to be_valid
+      create(:pacbio_request_library, request: request, library: library, tag: create(:tag))
+      expect(build(:pacbio_request_library, request: request, library: library, tag: create(:tag))).to_not be_valid
     end
   end
 

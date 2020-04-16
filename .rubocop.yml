@@ -75,3 +75,9 @@ Style/HashTransformKeys:
 
 Style/HashTransformValues:
   Enabled: false
+
+Lint/RaiseException:
+  Enabled: false
+
+Lint/StructNewOverride:
+  Enabled: false
