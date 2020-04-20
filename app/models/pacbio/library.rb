@@ -8,7 +8,7 @@ module Pacbio
   # A library can be sequenced in more than one well.
   # This is achieved using a has many through relationship
   class Library < ApplicationRecord
-    include Material
+    include TubeMaterial
     include Uuidable
     include Librarian
 

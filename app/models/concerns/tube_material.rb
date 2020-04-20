@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Material
-module Material
+module TubeMaterial
   extend ActiveSupport::Concern
 
   included do

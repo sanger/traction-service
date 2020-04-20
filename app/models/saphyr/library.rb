@@ -8,7 +8,7 @@ module Saphyr
   # A saphyr library belongs to a saphyr enzyme
   # A saphyr library can have many saphyr flowcells
   class Library < ApplicationRecord
-    include Material
+    include TubeMaterial
     include Librarian
 
     belongs_to :request, class_name: 'Saphyr::Request',

@@ -4,7 +4,7 @@ RSpec.describe Tube, type: :model do
   context 'on creation' do
     it 'should have a barcode' do
       tube = create(:tube_with_saphyr_request)
-      expect(tube.barcode).to eq "TRAC-#{tube.id}"
+      expect(tube.barcode).to eq "TRAC-2-#{tube.id}"
     end
   end
 
