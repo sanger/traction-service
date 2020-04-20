@@ -41,11 +41,16 @@ module Pacbio
       # Validate the Pacbio::Library and its Pacbio::RequestLibrary(s)
       return false unless valid?
 
-      library.save
-      unless request_libraries.save
-        library.destroy
-        return false
+      library.transaction do
+        library.save
+        request_libraries.save
       end
+
+      # library.save
+      # unless request_libraries.save
+      #   library.destroy
+      #   return false
+      # end
 
       true
     end
@@ -85,7 +90,7 @@ module Pacbio
     class RequestLibraries
       include ActiveModel::Model
 
-      validate :check_tags, :check_cost_codes, :check_requests_uniq
+      validate :check_tags, :check_requests_uniq, :validate_request_libraries
 
       attr_reader :library
 
@@ -108,10 +113,28 @@ module Pacbio
       def build_request_libraries(requests_attributes)
         requests_attributes.map do |request_attributes|
           request_libraries << Pacbio::RequestLibrary.new(
+            library: library,
             pacbio_request_id: request_attributes[:id],
             tag_id: request_attributes[:tag].try(:[], :id)
           )
         end
+      end
+
+      def validate_request_libraries
+        if request_libraries.empty?
+          errors.add(:request_libraries, 'there are no request libraries')
+          return
+        end
+  
+        request_libraries.each do |request_library|
+          next if request_library.valid?
+  
+          request_library.errors.each do |k, v|
+            errors.add(k, v)
+          end
+        end
+  
+        true
       end
 
       def check_tags
@@ -131,12 +154,12 @@ module Pacbio
       end
 
       # Check every request has a cost code
-      def check_cost_codes
-        request_libraries.each do |rl|
-          id = rl.pacbio_request_id
-          errors.add('cost code', 'must be present') if Pacbio::Request.find(id).cost_code.empty?
-        end
-      end
+      # def check_cost_codes
+      #   request_libraries.each do |rl|
+      #     id = rl.pacbio_request_id
+      #     errors.add('cost code', 'must be present') if Pacbio::Request.find(id).cost_code.empty?
+      #   end
+      # end
 
       # Check no two requests are the same
       def check_requests_uniq
