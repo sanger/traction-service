@@ -1,7 +1,17 @@
 require 'rails_helper'
 
 RSpec.describe Ont::Request, type: :model do
-  it 'must have a container' do
+  it 'is not valid without a container' do
     expect(build(:ont_request, container: nil)).to_not be_valid
+  end
+
+  it 'is valid with a container' do
+    container = create(:well)
+    expect(create(:ont_request, container: container)).to be_valid
+  end
+
+  it 'has access to its container' do
+    container = create(:well)
+    expect(create(:ont_request, container: container).container).to eq container
   end
 end

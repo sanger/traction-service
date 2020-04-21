@@ -5,6 +5,6 @@ module Container
   extend ActiveSupport::Concern
 
   included do
-    has_one :material, polymorphic: true, dependent: :nullify
+    belongs_to :material, polymorphic: true
   end
 end
