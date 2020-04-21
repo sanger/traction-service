@@ -5,6 +5,6 @@ module Container
   extend ActiveSupport::Concern
 
   included do
-    belongs_to :material, polymorphic: true
+    belongs_to :material, polymorphic: true, optional: true
   end
 end
