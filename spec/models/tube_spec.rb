@@ -1,6 +1,11 @@
 require "rails_helper"
 
 RSpec.describe Tube, type: :model do
+  context 'labware' do
+    let(:labware_model) { :tube_with_saphyr_request }
+    it_behaves_like 'labware'
+  end
+
   context 'on creation' do
     it 'should have a barcode' do
       tube = create(:tube_with_saphyr_request)

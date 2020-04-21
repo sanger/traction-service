@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_20_151009) do
+ActiveRecord::Schema.define(version: 2020_04_21_092146) do
+
+  create_table "ont_requests", force: :cascade do |t|
+    t.string "container_type"
+    t.integer "container_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["container_type", "container_id"], name: "index_ont_requests_on_container_type_and_container_id"
+  end
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
