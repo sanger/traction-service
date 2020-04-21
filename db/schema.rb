@@ -200,8 +200,11 @@ ActiveRecord::Schema.define(version: 2020_04_21_092146) do
   create_table "wells", force: :cascade do |t|
     t.string "position"
     t.integer "plate_id"
+    t.string "material_type"
+    t.integer "material_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["material_type", "material_id"], name: "index_wells_on_material_type_and_material_id"
     t.index ["plate_id"], name: "index_wells_on_plate_id"
   end
 
