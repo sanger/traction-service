@@ -9,10 +9,15 @@ module Labware
     after_create :generate_barcode
   end
 
+  class_methods do
+    def prefix
+      id_prefixes[to_s.downcase.to_sym]
+    end
+  end
+
   def generate_barcode
-    # debugger
     return if barcode.present?
 
-    update(barcode: "TRAC-#{self.class.id_prefixes[self.class.to_s.downcase.to_sym]}-#{id}")
+    update(barcode: "TRAC-#{self.class.prefix}-#{id}")
   end
 end

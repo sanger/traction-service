@@ -8,4 +8,5 @@ RSpec.describe Well, type: :model do
   it 'must have a position' do
     expect(build(:well, position: nil)).to_not be_valid
   end
+
 end
