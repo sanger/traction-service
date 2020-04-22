@@ -3,7 +3,7 @@ class TractionServiceSchema < GraphQL::Schema
   query(Types::WellQueryType)
 
   # Mutations
-  mutation(Types::MutationType)
+  mutation(Types::WellMutationType)
 
   # Opt in to the new runtime (default in future graphql-ruby versions)
   use GraphQL::Execution::Interpreter
