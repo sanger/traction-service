@@ -12,8 +12,8 @@ RSpec.describe Well, type: :model do
 
   it 'can have a material' do
     well = create(:well)
-    container = create(:container, receptacle: well)
-    expect(well.material).to eq(container.material)
+    container_material = create(:container_material, container: well)
+    expect(well.material).to eq(container_material.material)
   end
 
 end
