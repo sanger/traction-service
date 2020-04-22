@@ -2,8 +2,9 @@
 
 # Well
 class Well < ApplicationRecord
-  include Container
+  include Material
 
   belongs_to :plate
+
   validates :position, presence: true
 end

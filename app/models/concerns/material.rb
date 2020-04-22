@@ -5,12 +5,7 @@ module Material
   extend ActiveSupport::Concern
 
   included do
-    belongs_to :container, polymorphic: true
-    after_create :create_inverse_relationship
-  end
-
-  def create_inverse_relationship
-    container.material = self
-    container.save
+    has_one :container, as: :receptacle, dependent: :destroy
+    delegate :material, to: :container
   end
 end

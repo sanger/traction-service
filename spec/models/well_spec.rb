@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Well, type: :model do
-  # it_behaves_like 'container'
 
   it 'must have plate' do
     expect(build(:well, plate: nil)).to_not be_valid
@@ -9,6 +8,12 @@ RSpec.describe Well, type: :model do
 
   it 'must have a position' do
     expect(build(:well, position: nil)).to_not be_valid
+  end
+
+  it 'can have a material' do
+    well = create(:well)
+    container = create(:container, receptacle: well)
+    expect(well.material).to eq(container.material)
   end
 
 end
