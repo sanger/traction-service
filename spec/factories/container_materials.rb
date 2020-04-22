@@ -1,6 +1,6 @@
 FactoryBot.define do
-  factory :container do
-    receptacle { create(:well) }
+  factory :container_material do
+    container { create(:well) }
     material { create(:ont_request) }
   end
 end
