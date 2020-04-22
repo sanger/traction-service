@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module Types
-  class WellQueryType < Types::BaseObject
+  # The type for Well queries.
+  class WellQueryType < BaseObject
     field :wells, [WellType], null: false do
       description 'Find all wells, optionally those associated with a plate.'
       argument :plate_id, Int, required: false
