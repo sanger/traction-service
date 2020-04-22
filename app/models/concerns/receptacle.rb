@@ -5,7 +5,7 @@ module Receptacle
   extend ActiveSupport::Concern
 
   included do
-    has_one :container, as: :material, dependent: :destroy
-    delegate :receptacle, to: :container
+    has_one :container, as: :receptacle, dependent: :destroy
+    delegate :material, to: :container
   end
 end
