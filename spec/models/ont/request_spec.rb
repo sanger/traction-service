@@ -1,9 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe Ont::Request, type: :model do
-  it 'can have a container' do
-    request = create(:ont_request)
-    container_material = create(:container_material, material: request)
-    expect(request.container).to eq(container_material.container)
+RSpec.describe Ont::Request, type: :model, ont: true do
+  context 'material' do
+    let(:material_model) { :ont_request }
+    it_behaves_like 'material'
   end
 end
