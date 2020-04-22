@@ -15,7 +15,7 @@ module Mutations
       if well.save
         {
           well: well,
-          errors: [],
+          errors: []
         }
       else
         {
