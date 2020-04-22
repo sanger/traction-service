@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Mutations
+  # Mutation to handle the update of a well position for a well with a given ID.
   class UpdateWellPosition < BaseMutation
     argument :well_id, ID, required: true
     argument :position, String, required: false
@@ -13,15 +14,9 @@ module Mutations
       well.position = position
 
       if well.save
-        {
-          well: well,
-          errors: []
-        }
+        { well: well, errors: [] }
       else
-        {
-          well: nil,
-          errors: well.errors.full_messages
-        }
+        { well: nil, errors: well.errors.full_messages }
       end
     end
   end
