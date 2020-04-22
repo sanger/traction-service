@@ -13,14 +13,14 @@
 ActiveRecord::Schema.define(version: 2020_04_21_194055) do
 
   create_table "container_materials", force: :cascade do |t|
-    t.string "receptacle_type"
-    t.integer "receptacle_id"
+    t.string "container_type"
+    t.integer "container_id"
     t.string "material_type"
     t.integer "material_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["container_type", "container_id"], name: "index_container_materials_on_container_type_and_container_id"
     t.index ["material_type", "material_id"], name: "index_container_materials_on_material_type_and_material_id"
-    t.index ["receptacle_type", "receptacle_id"], name: "index_container_materials_on_receptacle_type_and_receptacle_id"
   end
 
   create_table "ont_requests", force: :cascade do |t|
