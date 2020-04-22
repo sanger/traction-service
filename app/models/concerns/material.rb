@@ -5,7 +5,7 @@ module Material
   extend ActiveSupport::Concern
 
   included do
-    has_one :container, as: :material, dependent: :destroy
-    delegate :receptacle, to: :container
+    has_one :container_material, as: :material, dependent: :destroy
+    delegate :receptacle, to: :container_material
   end
 end
