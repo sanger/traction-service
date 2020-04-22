@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TractionServiceSchema < GraphQL::Schema
   # Queries
   query(Types::WellQueryType)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Mutations
   class UpdateWellPosition < BaseMutation
     argument :well_id, ID, required: true

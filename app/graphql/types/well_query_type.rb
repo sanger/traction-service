@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Types
   class WellQueryType < Types::BaseObject
     field :wells, [WellType], null: false do
