@@ -2,18 +2,17 @@
 
 module Mutations
   # Mutation to handle the update of a well position for a well with a given ID.
-  class UpdateWellPosition < BaseMutation
-    argument :well_id, ID, required: true
-    argument :position, String, required: false
+  class UpdateWellPositionMutation < BaseMutation
+    argument :id, ID, required: true
+    argument :position, String, required: true
 
     field :well, Types::WellType, null: true
     field :errors, [String], null: false
 
-    def resolve(well_id:, position:)
-      well = Well.find(well_id)
-      well.position = position
+    def resolve(id:, position:)
+      well = Well.find(id)
 
-      if well.save
+      if well.update(position: position)
         { well: well, errors: [] }
       else
         { well: nil, errors: well.errors.full_messages }
