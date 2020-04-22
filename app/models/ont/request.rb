@@ -3,6 +3,6 @@
 module Ont
   # Ont::Request
   class Request < ApplicationRecord
-    include Material
+    include Receptacle
   end
 end

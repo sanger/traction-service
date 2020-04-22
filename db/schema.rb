@@ -10,14 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_21_092146) do
+ActiveRecord::Schema.define(version: 2020_04_21_194055) do
 
-  create_table "ont_requests", force: :cascade do |t|
-    t.string "container_type"
-    t.integer "container_id"
+  create_table "containers", force: :cascade do |t|
+    t.string "receptacle_type"
+    t.integer "receptacle_id"
+    t.string "material_type"
+    t.integer "material_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["container_type", "container_id"], name: "index_ont_requests_on_container_type_and_container_id"
+    t.index ["material_type", "material_id"], name: "index_containers_on_material_type_and_material_id"
+    t.index ["receptacle_type", "receptacle_id"], name: "index_containers_on_receptacle_type_and_receptacle_id"
+  end
+
+  create_table "ont_requests", force: :cascade do |t|
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "pacbio_libraries", force: :cascade do |t|
@@ -200,11 +208,8 @@ ActiveRecord::Schema.define(version: 2020_04_21_092146) do
   create_table "wells", force: :cascade do |t|
     t.string "position"
     t.integer "plate_id"
-    t.string "material_type"
-    t.integer "material_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["material_type", "material_id"], name: "index_wells_on_material_type_and_material_id"
     t.index ["plate_id"], name: "index_wells_on_plate_id"
   end
 
