@@ -10,6 +10,8 @@ module Mutations
     field :errors, [String], null: false
 
     def resolve(id:, position: nil)
+      return { well: nil, errors: ["Well with ID #{id} does not exist."] } unless Well.exists?(id)
+
       well = Well.find(id)
       well.position = position unless position.nil?
 
