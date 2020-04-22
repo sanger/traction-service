@@ -1,6 +1,9 @@
 class TractionServiceSchema < GraphQL::Schema
+  # Queries
+  query(Types::WellQueryType)
+
+  # Mutations
   mutation(Types::MutationType)
-  query(Types::QueryType)
 
   # Opt in to the new runtime (default in future graphql-ruby versions)
   use GraphQL::Execution::Interpreter
