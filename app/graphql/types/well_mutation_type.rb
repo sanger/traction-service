@@ -3,6 +3,6 @@
 module Types
   # The type for Well mutations.
   class WellMutationType < BaseObject
-    field :update_well_position, mutation: Mutations::UpdateWellPosition
+    field :update_well_position, mutation: Mutations::UpdateWellPositionMutation
   end
 end
