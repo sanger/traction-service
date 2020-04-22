@@ -14,6 +14,7 @@ gem 'puma', '~> 3.11' # Use Puma as the app server
 gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX possible
 gem 'rails', '~> 6.0.2.1'
 gem 'rubocop-rails'
+gem 'graphql'
 
 group :development do
   gem 'listen', '>= 3.0.5', '< 3.2'
