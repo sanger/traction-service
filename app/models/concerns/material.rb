@@ -6,6 +6,6 @@ module Material
 
   included do
     has_one :container_material, as: :material, dependent: :destroy
-    delegate :receptacle, to: :container_material
+    delegate :container, to: :container_material
   end
 end

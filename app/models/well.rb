@@ -2,7 +2,7 @@
 
 # Well
 class Well < ApplicationRecord
-  include Receptacle
+  include Container
 
   belongs_to :plate
 

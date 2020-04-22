@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-# Receptacle
-module Receptacle
+# Container
+module Container
   extend ActiveSupport::Concern
 
   included do
-    has_one :container_material, as: :receptacle, dependent: :destroy
+    has_one :container_material, as: :container, dependent: :destroy
     delegate :material, to: :container_material
   end
 end
