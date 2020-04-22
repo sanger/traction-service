@@ -1,5 +1,5 @@
 module Mutations
-  class UpdateWell < BaseMutation
+  class UpdateWellPosition < BaseMutation
     argument :well_id, ID, required: true
     argument :position, String, required: false
 
