@@ -3,6 +3,15 @@
 module Types
   # The type for Well queries.
   class WellQueryType < BaseObject
+    field :well, WellType, null: true do
+      description 'Find a Well by ID.'
+      argument :id, ID, required: true
+    end
+
+    def well(id:)
+      Well.find(id)
+    end
+
     field :wells, [WellType], null: false do
       description 'Find all wells, optionally those associated with a plate.'
       argument :plate_id, Int, required: false
