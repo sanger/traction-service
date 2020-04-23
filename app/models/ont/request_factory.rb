@@ -64,7 +64,8 @@ module Ont
     def build_request(request_attributes)
       sample = build_or_fetch_sample(request_attributes)
       requests << ::Request.new(
-        requestable: Ont::Request.new(external_study_id: Pipelines.ont.covid.request.external_study_id),
+        requestable: Ont::Request.new(
+          external_study_id: Pipelines.ont.covid.request.external_study_id),
         sample: sample
       )
     end
