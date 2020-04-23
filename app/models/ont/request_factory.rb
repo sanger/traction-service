@@ -8,89 +8,84 @@ module Ont
   class RequestFactory
     include ActiveModel::Model
 
-    validate :check_plates, :check_wells, :check_requests, :check_joins
+    validate :check_plate_factory, :check_well_factories, :check_requests, :check_join_factories
 
     def initialize(attributes = {})
-      build_plate(attributes.extract!(:barcode))
-      build_wells_and_requests(attributes[:wells])
+      build_requests(attributes)
     end
 
-    attr_reader :plate
+    attr_reader :plate_factory
 
-    def wells
-      @wells ||= []
+    def well_factories
+      @well_factories ||= []
     end
 
     def requests
       @requests ||= []
     end
 
-    def joins
-      @joins ||= []
+    def join_factories
+      @join_factories ||= []
     end
 
     def save
       return false unless valid?
 
-      plate.save
-      wells.collect(&:save)
+      plate_factory.save
+      well_factories.collect(&:save)
       requests.collect(&:save)
-      joins.collect(&:save)
+      join_factories.collect(&:save)
       true
     end
 
     private
 
-    def build_plate(plate_attributes)
-      @plate = ::Plate.new(plate_attributes)
-    end
+    def build_requests(attributes)
+      wells_with_samples_attributes = attributes.extract!(:wells)
+      build_plate(attributes)
+      wells_with_samples_attributes[:wells].each do |well_with_sample_attributes|
+        build_well(well_with_sample_attributes)
+        next unless well_with_sample_attributes.key?(:sample)
 
-    def build_wells_and_requests(wells_with_samples)
-      wells_with_samples.each do |well_with_sample|
-        well_attributes = well_with_sample.extract!(:position).merge(plate: plate)
-        well = build_well(well_attributes)
-        next unless well_with_sample.key?(:sample)
-
-        sample_attributes = well_with_sample[:sample].extract!(:name)
-        request = build_request(sample_attributes)
-        build_join(well, request)
+        build_request(well_with_sample_attributes[:sample])
+        build_join()
       end
     end
 
-    def build_well(well_attributes)
-      wells << ::Well.new(well_attributes)
-      wells.last
+    def build_plate(attributes)
+      @plate_factory = ::PlateFactory.new(attributes)
     end
 
-    def build_request(sample_attributes)
+    def build_well(well_with_sample_attributes)
+      well_attributes = well_with_sample_attributes.merge(plate: plate_factory.plate)
+      well_factories << ::WellFactory.new(well_attributes)
+    end
+
+    def build_request(request_attributes)
+      sample_attributes = request_attributes.extract!(:name)
       requests << ::Request.new(requestable: Request.new(
         sample: Sample.find_or_initialize_by(sample_attributes)
       ))
-      requests.last
     end
 
-    def build_join(well, request)
-      joins << ::ContainerMaterial.new(container: well, material: request)
+    def build_join
+      join_attributes = { container: well_factories.last.well, material: requests.last }
+      join_factories << ::ContainerMaterialFactory.new(join_attributes)
     end
 
-    def check_plate
-      if plate.nil?
-        errors.add('plate', 'can not be nil')
-        return
-      end
+    def check_plate_factory
+      return if plate_factory.valid?
 
-      errors.add('plate', 'must have a barcode') if plate.barcode.nil?
+      errors.concat(plate_factory.errors)
     end
 
-    def check_wells
-      errors.add('wells', 'there were no wells') if wells.empty?
+    def check_well_factories
+      errors.add('wells', 'there were no wells') if well_factories.empty?
 
-      wells.each do |well|
-        next if well.valid?
+      well_factories.each do |well_factory|
+        next if well_factory.valid?
 
-        well.errors.each do |k, v|
-          errors.add(k, v)
-        end
+        errors.concat(well_factory.errors)
       end
     end
 
@@ -105,14 +100,12 @@ module Ont
       end
     end
 
-    def check_joins
+    def check_join_factories
       # Wells can be empty of samples, so don't fail on no joins
-      joins.find_each do |join|
-        next if join.valid?
+      join_factories.find_each do |join_factory|
+        next if join_factory.valid?
 
-        join.errors.each do |k, v|
-          errors.add(k, v)
-        end
+        errors.concat(join_factory.errors)
       end
     end
   end
