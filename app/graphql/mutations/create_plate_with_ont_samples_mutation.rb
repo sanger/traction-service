@@ -9,13 +9,12 @@ module Mutations
     field :errors, [String], null: false
 
     def resolve(arguments:)
-      #factory = Ont::RequestFactory.new(arguments.to_h)
-      plate = Plate.create(barcode: arguments[:barcode], wells: [])
+      factory = Ont::RequestFactory.new(arguments.to_h)
 
-      if plate.save
-        { plate: plate, errors: [] } # TODO: get the plate from the factory
+      if factory.save
+        { plate: factory.plate_factory.plate, errors: [] }
       else
-        { plate: nil, errors: [] } # TODO: get the errors back from the factory
+        { plate: nil, errors: factory.errors.full_messages }
       end
     end
   end
