@@ -13,7 +13,7 @@ module Types
     end
 
     field :wells, [Types::Outputs::WellType], null: false do
-      description 'Find all wells, optionally those associated with a plate.'
+      description 'Find all Wells.'
       argument :plate_id, Int, required: false
     end
 
@@ -23,7 +23,9 @@ module Types
       wells
     end
 
-    field :plates, [Types::Outputs::PlateType], null: false
+    field :plates, [Types::Outputs::PlateType], null: false do
+      description 'Find all Plates.'
+    end
 
     def plates
       Plate.all
