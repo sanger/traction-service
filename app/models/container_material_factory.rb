@@ -23,11 +23,6 @@ class ContainerMaterialFactory
   private
 
   def check_container_material
-    if container_material.nil?
-      errors.add('container material', 'can not be nil')
-      return
-    end
-
     return if container_material.valid?
 
     container_material.errors.each do |k, v|
