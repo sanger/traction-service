@@ -10,6 +10,7 @@ module Types
 
       field :position, String, null: false
       field :plate_id, Integer, null: false
+      field :material, MaterialUnionType, null: false
     end
   end
 end
