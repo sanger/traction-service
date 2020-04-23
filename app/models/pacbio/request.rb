@@ -13,6 +13,5 @@ module Pacbio
                                  inverse_of: :request
     has_many :libraries, class_name: 'Pacbio::Library', through: :request_libraries,
                          dependent: :nullify
-    validates :cost_code, presence: true, unless: -> { request_libraries.empty? }
   end
 end

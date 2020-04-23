@@ -27,15 +27,5 @@ module Pacbio
 
     validates :request, uniqueness: { scope: :library,
                                       message: 'need to be unique within a library' }
-
-    validate :request_cost_code
-
-    private
-
-    def request_cost_code
-      return if request.nil?
-      return if request.cost_code.present?
-      errors.add(:cost_code, 'must be present') 
-    end
   end
 end
