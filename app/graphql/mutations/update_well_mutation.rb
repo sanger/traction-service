@@ -6,7 +6,7 @@ module Mutations
     argument :id, ID, required: true
     argument :position, String, required: false
 
-    field :well, Types::WellType, null: true
+    field :well, Types::Outputs::WellType, null: true
     field :errors, [String], null: false
 
     def resolve(id:, position: nil)
