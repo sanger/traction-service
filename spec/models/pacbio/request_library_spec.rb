@@ -42,14 +42,6 @@ RSpec.describe Pacbio::RequestLibrary, type: :model, pacbio: true do
       create(:pacbio_request_library, request: request, library: library, tag: create(:tag))
       expect(build(:pacbio_request_library, request: request, library: library, tag: create(:tag))).to_not be_valid
     end
-
-    it 'requests must have a cost code' do
-      library = create(:pacbio_library)
-      request = create(:pacbio_request, cost_code: nil)
-
-      expect(build(:pacbio_request_library, request: request, library: library, tag: create(:tag))).to_not be_valid
-
-    end
   end
 
 end
