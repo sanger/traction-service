@@ -11,4 +11,9 @@ RSpec.describe Ont::Request, type: :model, ont: true do
     expect(request.sample_name).to be_present
     expect(request.sample_name).to eq(request.sample.name)
   end
+
+  it 'is not valid without external study id' do
+    request = build(:ont_request, external_study_id: nil)
+    expect(request).not_to be_valid
+  end
 end
