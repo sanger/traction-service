@@ -2,20 +2,19 @@
 
 module Mutations
   # Mutation to handle the update of a Well.
-  class CreatePlateWithSamplesMutation < BaseMutation
+  class CreatePlateWithOntSamplesMutation < BaseMutation
     argument :arguments, Types::Inputs::PlateWithSamplesInputType, required: true
 
     field :plate, Types::Outputs::PlateType, null: true
     field :errors, [String], null: false
 
     def resolve(arguments:)
-      # TODO: Call the factory methods to create a plate with samples
-      plate = Plate.create(barcode: arguments[:barcode], wells: [])
+      factory = Ont::RequestFactory.new(arguments.to_h)
 
-      if plate.persisted?
-        { plate: plate, errors: [] }
+      if factory.save
+        { plate: factory.plate, errors: [] }
       else
-        { plate: nil, errors: plate.errors.full_messages }
+        { plate: nil, errors: [] } # TODO: get the errors back from the factory
       end
     end
   end
