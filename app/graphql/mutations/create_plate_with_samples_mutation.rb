@@ -10,7 +10,7 @@ module Mutations
 
     def resolve(arguments:)
       # TODO: Call the factory methods to create a plate with samples
-      plate = Plate.create(barcode: 'TEMP-123')
+      plate = Plate.create(barcode: 'TEMP-123', wells: [])
 
       if plate.persisted?
         { plate: plate, errors: [] }

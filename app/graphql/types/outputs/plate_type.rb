@@ -9,6 +9,7 @@ module Types
       field :updated_at, String, null: false
 
       field :barcode, String, null: false
+      field :wells, [WellType], null: false
     end
   end
 end
