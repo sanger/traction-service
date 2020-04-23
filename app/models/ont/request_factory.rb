@@ -63,10 +63,10 @@ module Ont
 
     def build_request(request_attributes)
       sample = build_or_fetch_sample(request_attributes)
-      requests << ::Request.new(requestable: Request.new(
-        request_attributes.merge!(external_study_id: Pipelines.ont.covid.request.external_study_id),
+      requests << ::Request.new(
+        requestable: Ont::Request.new(external_study_id: Pipelines.ont.covid.request.external_study_id),
         sample: sample
-      ))
+      )
     end
 
     def build_or_fetch_sample(request_attributes)
@@ -110,7 +110,7 @@ module Ont
 
     def check_join_factories
       # Wells can be empty of samples, so don't fail on no joins
-      join_factories.find_each do |join_factory|
+      join_factories.each do |join_factory|
         next if join_factory.valid?
 
         errors.concat(join_factory.errors)
