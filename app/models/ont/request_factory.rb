@@ -10,7 +10,7 @@ module Ont
 
     validate :check_plates, :check_wells, :check_requests, :check_joins
 
-    def initialize(attributes = [])
+    def initialize(attributes = {})
       build_plate(attributes.extract!(:barcode))
       build_wells_and_requests(attributes[:wells])
     end
