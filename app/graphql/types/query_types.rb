@@ -22,5 +22,11 @@ module Types
       wells = wells.select { |well| well.plate_id == plate_id } unless plate_id.nil?
       wells
     end
+
+    field :plates, [Types::Outputs::PlateType], null: false
+
+    def plates
+      Plate.all
+    end
   end
 end
