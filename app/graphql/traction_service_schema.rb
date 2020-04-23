@@ -3,10 +3,10 @@
 # The Schema for the GraphQL endpoint in Traction Service.
 class TractionServiceSchema < GraphQL::Schema
   # Queries
-  query(Types::WellQueryType)
+  query(Types::Queries::WellQueryType)
 
   # Mutations
-  mutation(Types::WellMutationType)
+  mutation(Types::Mutations::WellMutationType)
 
   # Opt in to the new runtime (default in future graphql-ruby versions)
   use GraphQL::Execution::Interpreter
