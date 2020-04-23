@@ -6,12 +6,10 @@ module Types
     class MaterialUnionType < BaseUnion
       possible_types RequestType
 
-      def self.resolve_type(object, context)
-        if object.is_a?(Request)
-          RequestType
-        else
-          super.resolve_type(object, context)
-        end
+      def self.resolve_type(object, _context)
+        raise "Can't determine GraphQL type for: #{object.inspect}" unless object.is_a?(Request)
+
+        RequestType
       end
     end
   end
