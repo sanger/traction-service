@@ -42,10 +42,7 @@ module Pacbio
       return false unless valid?
 
       library.save
-      unless request_libraries.save
-        library.destroy
-        return false
-      end
+      request_libraries.save
 
       true
     end

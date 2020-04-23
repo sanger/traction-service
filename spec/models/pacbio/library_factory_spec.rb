@@ -176,10 +176,6 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
 
           let(:attributes) { attributes_for(:pacbio_library).merge(requests: [{id: requests[0].id, type: 'requests'}] ) }
 
-          it 'doesnt create a library' do
-            expect { @factory.save }.not_to change(Pacbio::Library, :count)
-          end
-
           it 'doesnt create the request libraries' do
             expect { @factory.save }.not_to change(Pacbio::RequestLibrary, :count)
           end
