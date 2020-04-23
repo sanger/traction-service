@@ -24,11 +24,6 @@ class PlateFactory
   private
 
   def check_plate
-    if plate.nil?
-      errors.add('plate', 'can not be nil')
-      return
-    end
-
     errors.add('plate', 'must have a barcode') if plate.barcode.nil?
   end
 end
