@@ -23,11 +23,6 @@ class WellFactory
   private
 
   def check_well
-    if well.nil?
-      errors.add('well', 'can not be nil')
-      return
-    end
-
     return if well.valid?
 
     well.errors.each do |k, v|
