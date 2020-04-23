@@ -11,5 +11,6 @@ module Ont
     validates :external_study_id, presence: true
 
     delegate :name, to: :sample, prefix: :sample
+    delegate :species, to: :sample, prefix: :sample
   end
 end
