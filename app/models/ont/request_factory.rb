@@ -48,7 +48,7 @@ module Ont
         next unless well_with_sample_attributes.key?(:sample)
 
         build_request(well_with_sample_attributes[:sample])
-        build_join()
+        build_join
       end
     end
 
@@ -62,10 +62,18 @@ module Ont
     end
 
     def build_request(request_attributes)
-      sample_attributes = request_attributes.extract!(:name)
+      sample = build_or_fetch_sample(request_attributes)
       requests << ::Request.new(requestable: Request.new(
-        sample: Sample.find_or_initialize_by(sample_attributes)
+        request_attributes.merge!(external_study_id: Pipelines.ont.covid.request.external_study_id),
+        sample: sample
       ))
+    end
+
+    def build_or_fetch_sample(request_attributes)
+      sample_attributes = request_attributes
+                          .extract!(:name, :external_id)
+                          .merge!(species: Pipelines.ont.covid.sample.species)
+      Sample.find_or_initialize_by(sample_attributes)
     end
 
     def build_join
