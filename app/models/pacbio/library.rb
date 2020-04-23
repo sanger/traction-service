@@ -18,7 +18,7 @@ module Pacbio
                               dependent: :nullify, inverse_of: :library
     has_many :wells, class_name: 'Pacbio::Well', through: :well_libraries
     has_many :request_libraries, class_name: 'Pacbio::RequestLibrary',
-                                 foreign_key: :pacbio_library_id, dependent: :nullify,
+                                 foreign_key: :pacbio_library_id, dependent: :destroy,
                                  inverse_of: :library, autosave: true
 
     has_many :requests, class_name: 'Pacbio::Request', through: :request_libraries
