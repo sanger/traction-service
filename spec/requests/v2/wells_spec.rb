@@ -26,11 +26,8 @@ RSpec.describe 'GraphQL', type: :request do
   end
 
   context 'get wells' do
-    let!(:plate_1) { create(:plate) }
-    let!(:plate_2) { create(:plate) }
-    let!(:well_1) { create(:well, plate: plate_1) }
-    let!(:well_2) { create(:well, plate: plate_1) }
-    let!(:well_3) { create(:well, plate: plate_2) }
+    let!(:plate_1) { create(:plate_with_wells, well_count: 2) }
+    let!(:plate_2) { create(:plate_with_wells, well_count: 1) }
 
     it 'returns all wells' do
       post v2_path, params: { query: '{ wells { id } }' }
@@ -44,7 +41,6 @@ RSpec.describe 'GraphQL', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data']['wells'].length).to eq(2)
-      expect(json['data']['wells'].map { |well| well['id'] }).to contain_exactly(well_1.id.to_s, well_2.id.to_s)
       expect(json['data']['wells'].map { |well| well['plateId'] }).to contain_exactly(plate_1.id, plate_1.id)
     end
 
@@ -53,7 +49,6 @@ RSpec.describe 'GraphQL', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data']['wells'].length).to eq(1)
-      expect(json['data']['wells'].first['id']).to eq(well_3.id.to_s)
       expect(json['data']['wells'].first['plateId']).to eq(plate_2.id)
     end
 
