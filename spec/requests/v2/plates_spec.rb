@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe 'GraphQL', type: :request do
   context 'get plates' do
-    context 'no plates' do
+    context 'when no plates' do
       it 'returns empty plates' do
         post v2_path, params: { query: '{ plates { id } }' }
         expect(response).to have_http_status(:success)
@@ -13,7 +13,7 @@ RSpec.describe 'GraphQL', type: :request do
       end
     end
 
-    context 'some plates' do
+    context 'when some plates' do
       let!(:plates) { create_list(:plate, 3) }
 
       it 'returns all plates' do
@@ -24,7 +24,7 @@ RSpec.describe 'GraphQL', type: :request do
       end
     end
 
-    context 'a plate with samples' do
+    context 'when there is a plate with samples' do
       let!(:plate) do
         create(:plate_with_ont_samples, samples: [
             { position: 'A1', name: 'Sample in A1' },
