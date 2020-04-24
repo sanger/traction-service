@@ -20,9 +20,11 @@ module Types
     end
 
     def wells(plate_id: nil)
-      wells = Well.all
-      wells = wells.select { |well| well.plate_id == plate_id } unless plate_id.nil?
-      wells
+      if plate_id.nil?
+        Well.all
+      else
+        Well.where(plate_id: plate_id)
+      end
     end
 
     field :plates, [Types::Outputs::PlateType], null: false do

@@ -8,7 +8,7 @@ module Ont
   class RequestFactory
     include ActiveModel::Model
 
-    validate :check_plate, :check_wells, :check_requests, :check_well_request_joins
+    validate :check_wells, :check_requests
 
     def initialize(attributes = {})
       @wells = []
@@ -75,14 +75,6 @@ module Ont
       @well_request_joins << ::ContainerMaterial.new(join_attributes)
     end
 
-    def check_plate
-      return if plate.valid?
-
-      plate.errors.each do |k, v|
-        errors.add(k, v)
-      end
-    end
-
     def check_wells
       errors.add('wells', 'cannot be empty') if @wells.empty?
 
@@ -101,17 +93,6 @@ module Ont
         next if request.valid?
 
         request.errors.each do |k, v|
-          errors.add(k, v)
-        end
-      end
-    end
-
-    def check_well_request_joins
-      # Wells can be empty of samples, so don't fail on no joins
-      @well_request_joins.each do |join|
-        next if join.valid?
-
-        join.errors.each do |k, v|
           errors.add(k, v)
         end
       end
