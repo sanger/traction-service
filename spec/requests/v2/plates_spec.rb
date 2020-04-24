@@ -63,6 +63,12 @@ RSpec.describe 'GraphQL', type: :request do
   end
 
   context 'create plate' do
+    it 'creates a plate with provided parameters' do
 
+    end
+
+    it 'provides an error when wrong parameters given' do
+
+    end
   end
 end
