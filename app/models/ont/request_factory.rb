@@ -11,30 +11,21 @@ module Ont
     validate :check_plate, :check_wells, :check_requests, :check_well_request_joins
 
     def initialize(attributes = {})
+      @wells = []
+      @requests = []
+      @well_request_joins = []
       build_requests(attributes)
     end
 
     attr_reader :plate
 
-    def wells
-      @wells ||= []
-    end
-
-    def requests
-      @requests ||= []
-    end
-
-    def well_request_joins
-      @well_request_joins ||= []
-    end
-
     def save
       return false unless valid?
 
       plate.save
-      wells.collect(&:save)
-      requests.collect(&:save)
-      well_request_joins.collect(&:save)
+      @wells.collect(&:save)
+      @requests.collect(&:save)
+      @well_request_joins.collect(&:save)
       true
     end
 
@@ -59,12 +50,12 @@ module Ont
 
     def build_well(well_with_sample_attributes)
       well_attributes = well_with_sample_attributes.extract!(:position).merge!(plate: plate)
-      wells << ::Well.new(well_attributes)
+      @wells << ::Well.new(well_attributes)
     end
 
     def build_request(request_attributes)
       sample = build_or_fetch_sample(request_attributes)
-      requests << ::Request.new(
+      @requests << ::Request.new(
         requestable: Ont::Request.new(
           external_study_id: Pipelines.ont.covid.request.external_study_id
         ),
@@ -80,8 +71,8 @@ module Ont
     end
 
     def build_well_request_join
-      join_attributes = { container: wells.last, material: requests.last.requestable }
-      well_request_joins << ::ContainerMaterial.new(join_attributes)
+      join_attributes = { container: @wells.last, material: @requests.last.requestable }
+      @well_request_joins << ::ContainerMaterial.new(join_attributes)
     end
 
     def check_plate
@@ -93,9 +84,9 @@ module Ont
     end
 
     def check_wells
-      errors.add('wells', 'cannot be empty') if wells.empty?
+      errors.add('wells', 'cannot be empty') if @wells.empty?
 
-      wells.each do |well|
+      @wells.each do |well|
         next if well.valid?
 
         well.errors.each do |k, v|
@@ -106,7 +97,7 @@ module Ont
 
     def check_requests
       # Wells can be empty of samples, so don't fail on no requests
-      requests.each do |request|
+      @requests.each do |request|
         next if request.valid?
 
         request.errors.each do |k, v|
@@ -117,7 +108,7 @@ module Ont
 
     def check_well_request_joins
       # Wells can be empty of samples, so don't fail on no joins
-      well_request_joins.each do |join|
+      @well_request_joins.each do |join|
         next if join.valid?
 
         join.errors.each do |k, v|
