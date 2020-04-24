@@ -80,7 +80,7 @@ module Ont
     end
 
     def build_well_request_join
-      join_attributes = { container: wells.last.well, material: requests.last }
+      join_attributes = { container: wells.last, material: requests.last }
       well_request_joins << ::ContainerMaterial.new(join_attributes)
     end
 
@@ -92,8 +92,8 @@ module Ont
       end
     end
 
-    def check_well
-      errors.add('wells', 'there were no wells') if wells.empty?
+    def check_wells
+      errors.add('wells', 'cannot be empty') if wells.empty?
 
       wells.each do |well|
         next if well.valid?
