@@ -8,33 +8,33 @@ module Ont
   class RequestFactory
     include ActiveModel::Model
 
-    validate :check_plate_factory, :check_well_factories, :check_requests, :check_join_factories
+    validate :check_plate, :check_wells, :check_requests, :check_joins
 
     def initialize(attributes = {})
       build_requests(attributes)
     end
 
-    attr_reader :plate_factory
+    attr_reader :plate
 
-    def well_factories
-      @well_factories ||= []
+    def wells
+      @wells ||= []
     end
 
     def requests
       @requests ||= []
     end
 
-    def join_factories
-      @join_factories ||= []
+    def joins
+      @joins ||= []
     end
 
     def save
       return false unless valid?
 
-      plate_factory.save
-      well_factories.collect(&:save)
+      plate.save
+      wells.collect(&:save)
       requests.collect(&:save)
-      join_factories.collect(&:save)
+      joins.collect(&:save)
       true
     end
 
@@ -53,12 +53,13 @@ module Ont
     end
 
     def build_plate(attributes)
-      @plate_factory = ::PlateFactory.new(attributes)
+      plate_attributes = attributes.extract!(:barcode)
+      @plate = ::Plate.new(plate_attributes)
     end
 
     def build_well(well_with_sample_attributes)
-      well_attributes = well_with_sample_attributes.merge(plate: plate_factory.plate)
-      well_factories << ::WellFactory.new(well_attributes)
+      well_attributes = well_with_sample_attributes.extract!(:position).merge!(plate: plate)
+      wells << ::Well.new(well_attributes)
     end
 
     def build_request(request_attributes)
@@ -79,23 +80,27 @@ module Ont
     end
 
     def build_join
-      join_attributes = { container: well_factories.last.well, material: requests.last }
-      join_factories << ::ContainerMaterialFactory.new(join_attributes)
+      join_attributes = { container: wells.last.well, material: requests.last }
+      joins << ::ContainerMaterial.new(join_attributes)
     end
 
-    def check_plate_factory
-      return if plate_factory.valid?
+    def check_plate
+      return if plate.valid?
 
-      errors.concat(plate_factory.errors)
+      plate.errors.each do |k, v|
+        errors.add(k, v)
+      end
     end
 
-    def check_well_factories
-      errors.add('wells', 'there were no wells') if well_factories.empty?
+    def check_well
+      errors.add('wells', 'there were no wells') if wells.empty?
 
-      well_factories.each do |well_factory|
-        next if well_factory.valid?
+      wells.each do |well|
+        next if well.valid?
 
-        errors.concat(well_factory.errors)
+        well.errors.each do |k, v|
+          errors.add(k, v)
+        end
       end
     end
 
@@ -110,12 +115,14 @@ module Ont
       end
     end
 
-    def check_join_factories
+    def check_joins
       # Wells can be empty of samples, so don't fail on no joins
-      join_factories.each do |join_factory|
-        next if join_factory.valid?
+      joins.each do |join|
+        next if join.valid?
 
-        errors.concat(join_factory.errors)
+        join.errors.each do |k, v|
+          errors.add(k, v)
+        end
       end
     end
   end
