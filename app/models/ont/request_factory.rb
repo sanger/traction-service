@@ -8,7 +8,7 @@ module Ont
   class RequestFactory
     include ActiveModel::Model
 
-    validate :check_plate, :check_wells, :check_requests, :check_joins
+    validate :check_plate, :check_wells, :check_requests, :check_well_request_joins
 
     def initialize(attributes = {})
       build_requests(attributes)
@@ -24,8 +24,8 @@ module Ont
       @requests ||= []
     end
 
-    def joins
-      @joins ||= []
+    def well_request_joins
+      @well_request_joins ||= []
     end
 
     def save
@@ -34,7 +34,7 @@ module Ont
       plate.save
       wells.collect(&:save)
       requests.collect(&:save)
-      joins.collect(&:save)
+      well_request_joins.collect(&:save)
       true
     end
 
@@ -48,7 +48,7 @@ module Ont
         next unless well_with_sample_attributes.key?(:sample)
 
         build_request(well_with_sample_attributes[:sample])
-        build_join
+        build_well_request_join
       end
     end
 
@@ -79,9 +79,9 @@ module Ont
       Sample.find_or_initialize_by(sample_attributes)
     end
 
-    def build_join
+    def build_well_request_join
       join_attributes = { container: wells.last.well, material: requests.last }
-      joins << ::ContainerMaterial.new(join_attributes)
+      well_request_joins << ::ContainerMaterial.new(join_attributes)
     end
 
     def check_plate
@@ -115,9 +115,9 @@ module Ont
       end
     end
 
-    def check_joins
+    def check_well_request_joins
       # Wells can be empty of samples, so don't fail on no joins
-      joins.each do |join|
+      well_request_joins.each do |join|
         next if join.valid?
 
         join.errors.each do |k, v|
