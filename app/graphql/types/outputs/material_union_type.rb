@@ -7,7 +7,9 @@ module Types
       possible_types Types::Outputs::Ont::RequestType
 
       def self.resolve_type(object, _context)
-        raise "Can't determine GraphQL type for: #{object.inspect}" unless object.is_a?(::Ont::Request)
+        unless object.is_a?(::Ont::Request)
+          raise "Can't determine GraphQL type for: #{object.inspect}"
+        end
 
         Types::Outputs::Ont::RequestType
       end
