@@ -9,6 +9,8 @@ module Types
     end
 
     def well(id:)
+      return nil unless Well.exists?(id)
+
       Well.find(id)
     end
 
