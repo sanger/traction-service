@@ -61,12 +61,93 @@ RSpec.describe 'GraphQL', type: :request do
   end
 
   context 'create plate' do
+    def valid_query()
+      <<~GQL
+      mutation {
+        createPlateWithOntSamples(
+          input: {
+            arguments: {
+              barcode: "PLATE-1234"
+              wells: [
+                { position: "A1" sample: { name: "Sample for A1" externalId: "ExtIdA1" } }
+                { position: "E7" sample: { name: "Sample for E7" externalId: "ExtIdE7" } }
+              ]
+            }
+          }
+        )
+        {
+          plate { barcode wells { material { ... on Request { sample { name externalId } } } } }
+          errors
+        }
+      }
+      GQL
+    end
+
     it 'creates a plate with provided parameters' do
+      post v2_path, params: { query: valid_query }
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
 
+      mutation_json = json['data']['createPlateWithOntSamples']
+      plate_json = mutation_json['plate']
+      expect(plate_json['barcode']).to eq('PLATE-1234')
+
+      samples_json = plate_json['wells'].map { |well| well['material']['sample'] }
+      expect(samples_json).to contain_exactly({
+        'name' => 'Sample for A1',
+        'externalId' => 'ExtIdA1'
+      },
+      {
+        'name' => 'Sample for E7',
+        'externalId' => 'ExtIdE7'
+      })
+
+      expect(mutation_json['errors']).to be_empty
     end
 
-    it 'provides an error when wrong parameters given' do
-
+    def invalid_data_query()
+      # Wells have no positions
+      <<~GQL
+      mutation {
+        createPlateWithOntSamples(
+          input: {
+            arguments: {
+              barcode: "PLATE-1234"
+              wells: [
+                { sample: { name: "Sample for A1" externalId: "ExtIdA1" } }
+                { sample: { name: "Sample for E7" externalId: "ExtIdE7" } }
+              ]
+            }
+          }
+        )
+        {
+          plate { barcode wells { material { ... on Request { sample { name externalId } } } } }
+          errors
+        }
+      }
+      GQL
     end
+
+    it 'provides an error when data was invalid' do
+      post v2_path, params: { query: invalid_data_query }
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+
+      mutation_json = json['data']['createPlateWithOntSamples']
+      expect(mutation_json['plate']).to be_nil
+      expect(mutation_json['errors']).not_to be_empty
+    end
+
+    def missing_required_fields_query()
+      'mutation { createPlateWithOntSamples(input: { arguments: { bogus: "data" } } ) }'
+    end
+
+    it 'provides an error when missing required fields' do
+      post v2_path, params: { query: missing_required_fields_query }
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['errors']).not_to be_empty
+    end
+
   end
 end
