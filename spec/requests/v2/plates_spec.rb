@@ -14,9 +14,7 @@ RSpec.describe 'GraphQL', type: :request do
     end
 
     context 'some plates' do
-      let!(:plate_1) { create(:plate) }
-      let!(:plate_2) { create(:plate) }
-      let!(:plate_3) { create(:plate) }
+      let!(:plates) { create_list(:plate, 3) }
 
       it 'returns all plates' do
         post v2_path, params: { query: '{ plates { id } }' }
