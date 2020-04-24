@@ -2,26 +2,6 @@ require 'rails_helper'
 
 RSpec.describe Ont::RequestFactory, type: :model, ont: true do
   context '#initialise' do
-    it 'produces error messages if the plate is not valid' do
-      # mock a plate to not be valid and as such has an error
-      allow_any_instance_of(::Plate).to receive(:valid?).and_return(false)
-      allow_any_instance_of(::Plate).to receive(:errors).and_return({ plate: 'has an error' })
-      attributes = {
-        wells: [
-          {
-            position: 'A1',
-            sample: {
-              name: 'sample 1',
-              external_id: '1'
-            }
-          }
-        ]
-      }
-      factory = Ont::RequestFactory.new(attributes)
-      expect(factory).to_not be_valid
-      expect(factory.errors.full_messages.length).to eq(1)
-    end
-
     it 'produces error messages if given no wells' do
       attributes = { barcode: 'abc123' }
       factory = Ont::RequestFactory.new(attributes)
@@ -37,7 +17,7 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
     end
 
     it 'produces error messages if any of the wells are not valid' do
-      # well is invalid (should have a position)
+      # well should have a position
       attributes = {
         barcode: 'abc123',
         wells: [
@@ -54,35 +34,14 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
       expect(factory.errors.full_messages.length).to eq(1)
     end
 
-    it 'produces error messages if any of the requests/samples are not valid' do
-      # the request is invalid as it's sample is invalid (should have a name)
+    it 'produces error messages if any of the samples are not valid' do
+      # sample should have a name
       attributes = {
         barcode: 'abc123',
         wells: [
           {
             position: 'A1',
             sample: {
-              external_id: '1'
-            }
-          }
-        ]
-      }
-      factory = Ont::RequestFactory.new(attributes)
-      expect(factory).to_not be_valid
-      expect(factory.errors.full_messages.length).to eq(1)
-    end
-
-    it 'produces error messages if any of the joins are not valid' do
-      # mock the join to not be valid and as such has an error
-      allow_any_instance_of(::ContainerMaterial).to receive(:valid?).and_return(false)
-      allow_any_instance_of(::ContainerMaterial).to receive(:errors).and_return({ container_material: 'has an error' })
-      attributes = {
-        barcode: 'abc123',
-        wells: [
-          {
-            position: 'A1',
-            sample: {
-              name: 'sample 1',
               external_id: '1'
             }
           }
