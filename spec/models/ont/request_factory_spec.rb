@@ -54,65 +54,67 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
   end
 
   context '#save' do
-    let(:attributes) { { barcode: 'abc123', wells: [  { position: 'A1', sample: { name: 'sample 1', external_id: '1' } }, { position: "A2" } ] } }
-    let(:factory) { Ont::RequestFactory.new(attributes) }
-
-    it 'is valid with given attributes' do
-      expect(factory).to be_valid
-    end
-    
-    it 'creates a plate' do
-      expect(factory.save).to be_truthy
-      expect(::Plate.all.count).to eq(1)
-      expect(::Plate.first.barcode).to eq('abc123')
-      expect(factory.plate).to eq(::Plate.first)
-    end
-
-    it 'creates a well for each given well' do
-      expect(factory.save).to be_truthy
-      expect(::Well.all.count).to eq(2)
-      expect(::Well.all.collect(&:plate).uniq.count).to eq(1)
-      expect(::Well.all.collect(&:plate).uniq[0]).to eq(::Plate.first)
-      expect(::Well.first.position).to eq('A1')
-      expect(::Well.second.position).to eq('A2')
-    end
-
-    it 'creates an ont request in a well for each given well with a sample' do
-      expect(factory.save).to be_truthy
-      expect(Ont::Request.all.count).to eq(1)
-      expect(Ont::Request.first.external_study_id).to eq('example id')
-      expect(Ont::Request.first.container).to eq(::Well.where(position: 'A1').first)
-    end
-
-    it 'creates a request for each ont request' do
-      expect(factory.save).to be_truthy
-      expect(::Request.all.count).to eq(1)
-      expect(::Request.first.requestable).to eq(Ont::Request.first)
-    end
-
-    it 'creates a container material for each ont request' do
-      expect(factory.save).to be_truthy
-      expect(::ContainerMaterial.all.count).to eq(1)
-      expect(::ContainerMaterial.first.container).to eq(::Well.where(position: 'A1').first)
-      expect(::ContainerMaterial.first.material).to eq(Ont::Request.first)
-    end
-
-    it 'creates a sample for a request if that sample does not exist' do
-      expect(factory.save).to be_truthy
-      expect(::Sample.all.count).to eq(1)
-      expect(::Sample.first.name).to eq('sample 1')
-      expect(::Sample.first.external_id).to eq('1')
-      expect(::Sample.first.species).to eq('example species')
-      expect(::Sample.first.requests.count).to eq(1)
-      expect(::Sample.first.requests.first.requestable).to eq(Ont::Request.first)
-    end
-
-    it 'does not create a sample for a request if that sample already exists' do
-      create(:sample, name: 'sample 1', external_id: '1', species: 'example species')
-      expect(factory.save).to be_truthy
-      expect(::Sample.all.count).to eq(1)
-      expect(::Sample.first.requests.count).to eq(1)
-      expect(::Sample.first.requests.first.requestable).to eq(Ont::Request.first)
+    context 'valid build' do
+      let(:attributes) { { barcode: 'abc123', wells: [  { position: 'A1', sample: { name: 'sample 1', external_id: '1' } }, { position: "A2" } ] } }
+      let(:factory) { Ont::RequestFactory.new(attributes) }
+  
+      it 'is valid with given attributes' do
+        expect(factory).to be_valid
+      end
+      
+      it 'creates a plate' do
+        expect(factory.save).to be_truthy
+        expect(::Plate.all.count).to eq(1)
+        expect(::Plate.first.barcode).to eq('abc123')
+        expect(factory.plate).to eq(::Plate.first)
+      end
+  
+      it 'creates a well for each given well' do
+        expect(factory.save).to be_truthy
+        expect(::Well.all.count).to eq(2)
+        expect(::Well.all.collect(&:plate).uniq.count).to eq(1)
+        expect(::Well.all.collect(&:plate).uniq[0]).to eq(::Plate.first)
+        expect(::Well.first.position).to eq('A1')
+        expect(::Well.second.position).to eq('A2')
+      end
+  
+      it 'creates an ont request in a well for each given well with a sample' do
+        expect(factory.save).to be_truthy
+        expect(Ont::Request.all.count).to eq(1)
+        expect(Ont::Request.first.external_study_id).to eq('example id')
+        expect(Ont::Request.first.container).to eq(::Well.where(position: 'A1').first)
+      end
+  
+      it 'creates a request for each ont request' do
+        expect(factory.save).to be_truthy
+        expect(::Request.all.count).to eq(1)
+        expect(::Request.first.requestable).to eq(Ont::Request.first)
+      end
+  
+      it 'creates a container material for each ont request' do
+        expect(factory.save).to be_truthy
+        expect(::ContainerMaterial.all.count).to eq(1)
+        expect(::ContainerMaterial.first.container).to eq(::Well.where(position: 'A1').first)
+        expect(::ContainerMaterial.first.material).to eq(Ont::Request.first)
+      end
+  
+      it 'creates a sample for a request if that sample does not exist' do
+        expect(factory.save).to be_truthy
+        expect(::Sample.all.count).to eq(1)
+        expect(::Sample.first.name).to eq('sample 1')
+        expect(::Sample.first.external_id).to eq('1')
+        expect(::Sample.first.species).to eq('example species')
+        expect(::Sample.first.requests.count).to eq(1)
+        expect(::Sample.first.requests.first.requestable).to eq(Ont::Request.first)
+      end
+  
+      it 'does not create a sample for a request if that sample already exists' do
+        create(:sample, name: 'sample 1', external_id: '1', species: 'example species')
+        expect(factory.save).to be_truthy
+        expect(::Sample.all.count).to eq(1)
+        expect(::Sample.first.requests.count).to eq(1)
+        expect(::Sample.first.requests.first.requestable).to eq(Ont::Request.first)
+      end
     end
 
     context 'invalid build' do
