@@ -12,7 +12,7 @@ module Mutations
       factory = Ont::RequestFactory.new(arguments.to_h)
 
       if factory.save
-        { plate: factory.plate_factory.plate, errors: [] }
+        { plate: factory.plate, errors: [] }
       else
         { plate: nil, errors: factory.errors.full_messages }
       end
