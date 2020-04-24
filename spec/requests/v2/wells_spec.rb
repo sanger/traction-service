@@ -28,24 +28,9 @@ RSpec.describe 'GraphQL', type: :request do
   context 'get wells' do
     let!(:plate_1) { create(:plate) }
     let!(:plate_2) { create(:plate) }
-
-    let!(:well_1) do
-      create(:well) do |well|
-        well.update(plate: plate_1)
-      end
-    end
-
-    let!(:well_2) do
-      create(:well) do |well|
-        well.update(plate: plate_1)
-      end
-    end
-
-    let!(:well_3) do
-      create(:well) do |well|
-        well.update(plate: plate_2)
-      end
-    end
+    let!(:well_1) { create(:well, plate: plate_1) }
+    let!(:well_2) { create(:well, plate: plate_1) }
+    let!(:well_3) { create(:well, plate: plate_2) }
 
     it 'returns all wells' do
       post v2_path, params: { query: '{ wells { id } }' }
