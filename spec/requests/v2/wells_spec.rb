@@ -18,6 +18,13 @@ RSpec.describe 'GraphQL', type: :request do
         )
       end
 
+      it 'handles that there is no sample in the well' do
+        post v2_path, params: { query: '{ well(id: 1) { id plateId material { ... on Request { id } } } }' }
+        expect(response).to have_http_status(:success)
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data']['well']['material']).to be_nil
+      end
+
       it 'returns null when well invalid ID' do
         post v2_path, params: { query: '{ well(id: 10) { id } }' }
         expect(response).to have_http_status(:success)
