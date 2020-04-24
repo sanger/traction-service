@@ -7,4 +7,9 @@ RSpec.shared_examples "container" do
     expect(container_material.material).to be_present
     expect(container.material).to eq(container_material.material)
   end
+
+  it "produces nil for delegates material if it doesn't exist" do
+    container = create(factory, container_material: nil)
+    expect(container.material).to be_nil
+  end
 end
