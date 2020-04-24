@@ -4,12 +4,12 @@ module Types
   module Outputs
     # The type for polymorphic Material objects.
     class MaterialUnionType < BaseUnion
-      possible_types RequestType
+      possible_types Types::Outputs::Ont::RequestType
 
       def self.resolve_type(object, _context)
-        raise "Can't determine GraphQL type for: #{object.inspect}" unless object.is_a?(Request)
+        raise "Can't determine GraphQL type for: #{object.inspect}" unless object.is_a?(::Ont::Request)
 
-        RequestType
+        Types::Outputs::Ont::RequestType
       end
     end
   end
