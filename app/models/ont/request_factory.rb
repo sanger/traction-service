@@ -43,7 +43,7 @@ module Ont
     def build_requests(attributes)
       wells_with_samples_attributes = attributes.extract!(:wells)
       build_plate(attributes)
-      wells_with_samples_attributes[:wells].each do |well_with_sample_attributes|
+      (wells_with_samples_attributes[:wells] || []).each do |well_with_sample_attributes|
         build_well(well_with_sample_attributes)
         next unless well_with_sample_attributes.key?(:sample)
 
@@ -80,7 +80,7 @@ module Ont
     end
 
     def build_well_request_join
-      join_attributes = { container: wells.last, material: requests.last }
+      join_attributes = { container: wells.last, material: requests.last.requestable }
       well_request_joins << ::ContainerMaterial.new(join_attributes)
     end
 
