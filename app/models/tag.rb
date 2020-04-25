@@ -9,8 +9,10 @@ class Tag < ApplicationRecord
   validates :oligo, :group_id, :tag_set_id, presence: true
 
   validates :oligo, uniqueness: { scope: :tag_set_id,
-                                  message: 'oligo should only appear once within set', case_sensitive: false }
+                                  message: 'oligo should only appear once within set',
+                                  case_sensitive: false }
 
   validates :group_id, uniqueness: { scope: :tag_set_id,
-                                     message: 'group id should only appear once within set', case_sensitive: false }
+                                     message: 'group id should only appear once within set',
+                                     case_sensitive: false }
 end
