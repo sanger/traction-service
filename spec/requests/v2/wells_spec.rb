@@ -9,17 +9,17 @@ RSpec.describe 'GraphQL', type: :request do
       let!(:well) { create(:well) }
 
       it 'returns the well with valid ID' do
-        post v2_path, params: { query: '{ well(id: 1) { id plateId } }' }
+        post v2_path, params: { query: "{ well(id: #{well.id}) { id plateId } }" }
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data']['well']).to include(
-          'id' => '1',
-          'plateId' => 1
+          'id' => well.id.to_s,
+          'plateId' => well.plate.id
         )
       end
 
       it 'handles that there is no sample in the well' do
-        post v2_path, params: { query: '{ well(id: 1) { id plateId material { ... on Request { id } } } }' }
+        post v2_path, params: { query: "{ well(id: #{well.id}) { id plateId material { ... on Request { id } } } }" }
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data']['well']['material']).to be_nil
