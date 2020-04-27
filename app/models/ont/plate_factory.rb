@@ -27,11 +27,11 @@ module Ont
     private
 
     def build_requests(attributes)
-      wells_with_samples_attributes = attributes.extract!(:wells)
+      wells_attributes = attributes.extract!(:wells)
       build_plate(attributes)
-      @well_factories = (wells_with_samples_attributes[:wells] || []).map { |well_with_sample_attributes|
-        WellFactory.new(plate: plate, well_with_sample_attributes: well_with_sample_attributes)
-      }
+      @well_factories = (wells_attributes[:wells] || []).map do |well_attributes|
+        WellFactory.new(plate: plate, well_with_sample_attributes: well_attributes)
+      end
     end
 
     def build_plate(attributes)
