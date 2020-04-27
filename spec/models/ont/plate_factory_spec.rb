@@ -1,6 +1,19 @@
 require 'rails_helper'
 
 RSpec.describe Ont::PlateFactory, type: :model, ont: true do
+  def mock_valid_well_factories()
+    allow_any_instance_of(Ont::WellFactory).to receive(:valid?).and_return(true)
+    allow_any_instance_of(Ont::WellFactory).to receive(:save).and_return(true)
+  end
+
+  def mock_invalid_well_factories()
+    errors = ActiveModel::Errors.new(Ont::WellFactory.new)
+    errors.add('well factories', message: 'This is a test error')
+
+    allow_any_instance_of(Ont::WellFactory).to receive(:valid?).and_return(false)
+    allow_any_instance_of(Ont::WellFactory).to receive(:errors).and_return(errors)
+  end
+
   context '#initialise' do
     it 'produces error messages if given no wells' do
       attributes = { barcode: 'abc123' }
@@ -16,48 +29,25 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
       expect(factory.errors.full_messages.length).to eq(1)
     end
 
-    it 'produces error messages if any of the wells are not valid' do
-      # well should have a position
-      attributes = {
-        barcode: 'abc123',
-        wells: [
-          {
-            sample: {
-              name: 'sample 1',
-              external_id: '1'
-            }
-          }
-        ]
-      }
+    it 'produces error messages if any of the well factories are not valid' do
+      mock_invalid_well_factories()
+      attributes = { barcode: 'abc123', wells: [ { position: 'A1' } ] }
       factory = Ont::PlateFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages.length).to eq(1)
-    end
-
-    it 'produces error messages if any of the samples are not valid' do
-      # sample should have a name
-      attributes = {
-        barcode: 'abc123',
-        wells: [
-          {
-            position: 'A1',
-            sample: {
-              external_id: '1'
-            }
-          }
-        ]
-      }
-      factory = Ont::PlateFactory.new(attributes)
-      expect(factory).to_not be_valid
-      expect(factory.errors.full_messages.length).to eq(1)
+      expect(factory.errors.full_messages).to contain_exactly('Well factories {:message=>"This is a test error"}')
     end
   end
 
   context '#save' do
-    context 'valid build' do
-      let(:attributes) { { barcode: 'abc123', wells: [  { position: 'A1', sample: { name: 'sample 1', external_id: '1' } }, { position: "A2" } ] } }
+    let(:attributes) { { barcode: 'abc123', wells: [ { position: 'A1' }, { position: "A2" } ] } }
+    context 'valid build' do  
       let(:factory) { Ont::PlateFactory.new(attributes) }
-  
+
+      before do
+        mock_valid_well_factories()
+      end
+
       it 'is valid with given attributes' do
         expect(factory).to be_valid
       end
@@ -68,88 +58,36 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
         expect(::Plate.first.barcode).to eq('abc123')
         expect(factory.plate).to eq(::Plate.first)
       end
-  
-      it 'creates a well for each given well' do
+
+      it 'creates and saves a well factory for each given well' do
+        expect(factory.well_factories).to all(receive(:save).exactly(1))
         expect(factory.save).to be_truthy
-        expect(::Well.all.count).to eq(2)
-        expect(::Well.all.collect(&:plate).uniq.count).to eq(1)
-        expect(::Well.all.collect(&:plate).uniq[0]).to eq(::Plate.first)
-        expect(::Well.first.position).to eq('A1')
-        expect(::Well.second.position).to eq('A2')
-      end
-  
-      it 'creates an ont request in a well for each given well with a sample' do
-        expect(factory.save).to be_truthy
-        expect(Ont::Request.all.count).to eq(1)
-        expect(Ont::Request.first.external_study_id).to eq('example id')
-        expect(Ont::Request.first.container).to eq(::Well.where(position: 'A1').first)
-      end
-  
-      it 'creates a request for each ont request' do
-        expect(factory.save).to be_truthy
-        expect(::Request.all.count).to eq(1)
-        expect(::Request.first.requestable).to eq(Ont::Request.first)
-      end
-  
-      it 'creates a container material for each ont request' do
-        expect(factory.save).to be_truthy
-        expect(::ContainerMaterial.all.count).to eq(1)
-        expect(::ContainerMaterial.first.container).to eq(::Well.where(position: 'A1').first)
-        expect(::ContainerMaterial.first.material).to eq(Ont::Request.first)
-      end
-  
-      it 'creates a sample for a request if that sample does not exist' do
-        expect(factory.save).to be_truthy
-        expect(::Sample.all.count).to eq(1)
-        expect(::Sample.first.name).to eq('sample 1')
-        expect(::Sample.first.external_id).to eq('1')
-        expect(::Sample.first.species).to eq('example species')
-        expect(::Sample.first.requests.count).to eq(1)
-        expect(::Sample.first.requests.first.requestable).to eq(Ont::Request.first)
-      end
-  
-      it 'does not create a sample for a request if that sample already exists' do
-        create(:sample, name: 'sample 1', external_id: '1', species: 'example species')
-        expect(factory.save).to be_truthy
-        expect(::Sample.all.count).to eq(1)
-        expect(::Sample.first.requests.count).to eq(1)
-        expect(::Sample.first.requests.first.requestable).to eq(Ont::Request.first)
       end
     end
 
     context 'invalid build' do
-      let(:factory) { Ont::PlateFactory.new({}) }
+      before do
+        mock_invalid_well_factories()
+      end
 
       it 'is invalid' do
+        factory = Ont::PlateFactory.new(attributes)
         expect(factory).to_not be_valid
       end
 
       it 'returns false on save' do
+        factory = Ont::PlateFactory.new(attributes)
         expect(factory.save).to be_falsey
       end
 
       it 'does not create a plate' do
+        factory = Ont::PlateFactory.new(attributes)
         expect(::Plate.all.count).to eq(0)
       end
   
-      it 'does not create any wells' do
-        expect(::Well.all.count).to eq(0)
-      end
-  
-      it 'does not create any ont requests' do
-        expect(Ont::Request.all.count).to eq(0)
-      end
-  
-      it 'does not create any requests' do
-        expect(::Request.all.count).to eq(0)
-      end
-  
-      it 'does not create any samples' do
-        expect(::Sample.all.count).to eq(0)
-      end
-  
-      it 'does not create any joins' do
-        expect(::ContainerMaterial.all.count).to eq(0)
+      it 'does not save any well factories' do
+        factory = Ont::PlateFactory.new(attributes)
+        expect_any_instance_of(Ont::WellFactory).to_not receive(:save)
       end
     end
   end
