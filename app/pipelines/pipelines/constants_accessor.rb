@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Pipelines
-  # Wrapper around pipeline constants
+  # An accessor for constant values in the pipeline for configuration options
   class ConstantsAccessor
     def initialize(base)
       @constants_base = base
