@@ -60,6 +60,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
       end
 
       it 'creates and saves a well factory for each given well' do
+        expect(factory.well_factories.length).to eq(2)
         expect(factory.well_factories).to all(receive(:save).exactly(1))
         expect(factory.save).to be_truthy
       end
