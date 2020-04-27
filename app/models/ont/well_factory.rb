@@ -12,9 +12,9 @@ module Ont
 
     def initialize(attributes = {})
       @plate = attributes[:plate]
-      return unless attributes.key?(:well_with_sample_attributes)
+      return unless attributes.key?(:well_attributes)
 
-      build_well(attributes[:well_with_sample_attributes])
+      build_well(attributes[:well_attributes])
     end
 
     attr_reader :plate, :well, :request, :well_request_join
