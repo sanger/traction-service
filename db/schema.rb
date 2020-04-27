@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 2020_04_21_194055) do
   end
 
   create_table "ont_requests", force: :cascade do |t|
+    t.string "external_study_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
