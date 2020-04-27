@@ -64,6 +64,11 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
     context 'valid build' do
       let(:plate) { create(:plate) }
       let(:well_with_sample) { { plate: plate, well_with_sample_attributes: { position: 'A1', sample: { name: 'sample 1', external_id: '1' } } } }
+
+      before do
+        allow_any_instance_of(Pipelines::ConstantsAccessor).to receive(:request_external_study_id).and_return('test external id')
+        allow_any_instance_of(Pipelines::ConstantsAccessor).to receive(:sample_species).and_return('test sample species')
+      end
       
       it 'is valid with given attributes' do
         factory = Ont::WellFactory.new(well_with_sample)
@@ -84,7 +89,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
         it 'creates an ont request' do
           expect(factory.save).to be_truthy
           expect(Ont::Request.all.count).to eq(1)
-          expect(Ont::Request.first.external_study_id).to eq('example id')
+          expect(Ont::Request.first.external_study_id).to eq('test external id')
           expect(Ont::Request.first.container).to eq(::Well.where(position: 'A1').first)
         end
     
@@ -106,13 +111,13 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
           expect(::Sample.all.count).to eq(1)
           expect(::Sample.first.name).to eq('sample 1')
           expect(::Sample.first.external_id).to eq('1')
-          expect(::Sample.first.species).to eq('example species')
+          expect(::Sample.first.species).to eq('test sample species')
           expect(::Sample.first.requests.count).to eq(1)
           expect(::Sample.first.requests.first.requestable).to eq(Ont::Request.first)
         end
     
         it 'does not create a sample for a request if that sample already exists' do
-          create(:sample, name: 'sample 1', external_id: '1', species: 'example species')
+          create(:sample, name: 'sample 1', external_id: '1', species: 'test sample species')
           expect(factory.save).to be_truthy
           expect(::Sample.all.count).to eq(1)
           expect(::Sample.first.requests.count).to eq(1)
