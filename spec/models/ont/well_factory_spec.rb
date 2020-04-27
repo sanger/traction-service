@@ -43,7 +43,20 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
     end
 
     it 'produces error messages if the generated ont request is not valid' do
-      # TODO invalidate the ont request (by mocking it to have no external study id)
+      allow_any_instance_of(Pipelines::ConstantsAccessor).to receive(:request_external_study_id).and_return(nil)
+      attributes = {
+        plate: plate,
+        well_with_sample_attributes: {
+          position: 'A1',
+          sample: {
+            name: 'sample 1',
+            external_id: '1'
+          }
+        }
+      }
+      factory = Ont::WellFactory.new(attributes)
+      expect(factory).to_not be_valid
+      expect(factory.errors.full_messages.length).to eq(1)
     end
   end
 
