@@ -1,12 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe Ont::PlateFactory, type: :model, ont: true do
-  def mock_valid_well_factories()
+  def mock_valid_well_factories
     allow_any_instance_of(Ont::WellFactory).to receive(:valid?).and_return(true)
     allow_any_instance_of(Ont::WellFactory).to receive(:save).and_return(true)
   end
 
-  def mock_invalid_well_factories()
+  def mock_invalid_well_factories
     errors = ActiveModel::Errors.new(Ont::WellFactory.new)
     errors.add('well factories', message: 'This is a test error')
 
@@ -30,7 +30,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
     end
 
     it 'produces error messages if any of the well factories are not valid' do
-      mock_invalid_well_factories()
+      mock_invalid_well_factories
       attributes = { barcode: 'abc123', wells: [ { position: 'A1' } ] }
       factory = Ont::PlateFactory.new(attributes)
       expect(factory).to_not be_valid
@@ -45,7 +45,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
       let(:factory) { Ont::PlateFactory.new(attributes) }
 
       before do
-        mock_valid_well_factories()
+        mock_valid_well_factories
       end
 
       it 'is valid with given attributes' do
@@ -60,6 +60,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
       end
 
       it 'creates and saves a well factory for each given well' do
+        expect(factory.well_factories.length).to eq(2)
         expect(factory.well_factories).to all(receive(:save).exactly(1))
         expect(factory.save).to be_truthy
       end
@@ -67,7 +68,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
 
     context 'invalid build' do
       before do
-        mock_invalid_well_factories()
+        mock_invalid_well_factories
       end
 
       it 'is invalid' do
