@@ -44,7 +44,7 @@ module Ont
       sample = build_or_fetch_sample(request_attributes, constants_accessor)
       @request = ::Request.new(
         requestable: Ont::Request.new(
-          external_study_id: constants_accessor.request_external_study_id
+          external_study_id: constants_accessor.external_study_id
         ),
         sample: sample
       )
@@ -53,7 +53,7 @@ module Ont
     def build_or_fetch_sample(request_attributes, constants_accessor)
       sample_attributes = request_attributes
                           .extract!(:name, :external_id)
-                          .merge!(species: constants_accessor.sample_species)
+                          .merge!(species: constants_accessor.species)
       Sample.find_or_initialize_by(sample_attributes)
     end
 

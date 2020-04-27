@@ -43,7 +43,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
     end
 
     it 'produces error messages if the generated ont request is not valid' do
-      allow_any_instance_of(Pipelines::ConstantsAccessor).to receive(:request_external_study_id).and_return(nil)
+      allow_any_instance_of(Pipelines::ConstantsAccessor).to receive(:external_study_id).and_return(nil)
       attributes = {
         plate: plate,
         well_attributes: {
@@ -66,15 +66,15 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
       let(:well_with_sample) { { plate: plate, well_attributes: { position: 'A1', sample: { name: 'sample 1', external_id: '1' } } } }
 
       before do
-        allow_any_instance_of(Pipelines::ConstantsAccessor).to receive(:request_external_study_id).and_return('test external id')
-        allow_any_instance_of(Pipelines::ConstantsAccessor).to receive(:sample_species).and_return('test sample species')
+        allow_any_instance_of(Pipelines::ConstantsAccessor).to receive(:external_study_id).and_return('test external id')
+        allow_any_instance_of(Pipelines::ConstantsAccessor).to receive(:species).and_return('test sample species')
       end
-      
+
       it 'is valid with given attributes' do
         factory = Ont::WellFactory.new(well_with_sample)
         expect(factory).to be_valid
       end
-  
+
       it 'creates a well' do
         factory = Ont::WellFactory.new(well_with_sample)
         expect(factory.save).to be_truthy
@@ -92,20 +92,20 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
           expect(Ont::Request.first.external_study_id).to eq('test external id')
           expect(Ont::Request.first.container).to eq(::Well.where(position: 'A1').first)
         end
-    
+
         it 'creates a request' do
           expect(factory.save).to be_truthy
           expect(::Request.all.count).to eq(1)
           expect(::Request.first.requestable).to eq(Ont::Request.first)
         end
-    
+
         it 'creates a container material' do
           expect(factory.save).to be_truthy
           expect(::ContainerMaterial.all.count).to eq(1)
           expect(::ContainerMaterial.first.container).to eq(::Well.where(position: 'A1').first)
           expect(::ContainerMaterial.first.material).to eq(Ont::Request.first)
         end
-    
+
         it 'creates a sample for a request if that sample does not exist' do
           expect(factory.save).to be_truthy
           expect(::Sample.all.count).to eq(1)
@@ -115,7 +115,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
           expect(::Sample.first.requests.count).to eq(1)
           expect(::Sample.first.requests.first.requestable).to eq(Ont::Request.first)
         end
-    
+
         it 'does not create a sample for a request if that sample already exists' do
           create(:sample, name: 'sample 1', external_id: '1', species: 'test sample species')
           expect(factory.save).to be_truthy
@@ -133,17 +133,17 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
           expect(factory.save).to be_truthy
           expect(Ont::Request.all.count).to eq(0)
         end
-    
+
         it 'does not create a request' do
           expect(factory.save).to be_truthy
           expect(::Request.all.count).to eq(0)
         end
-    
+
         it 'does not create a container material' do
           expect(factory.save).to be_truthy
           expect(::ContainerMaterial.all.count).to eq(0)
         end
-    
+
         it 'does not create a sample' do
           expect(factory.save).to be_truthy
           expect(::Sample.all.count).to eq(0)
@@ -165,23 +165,23 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
       it 'does not create a plate' do
         expect(::Plate.all.count).to eq(0)
       end
-  
+
       it 'does not create a well' do
         expect(::Well.all.count).to eq(0)
       end
-  
+
       it 'does not create an ont request' do
         expect(Ont::Request.all.count).to eq(0)
       end
-  
+
       it 'does not create a request' do
         expect(::Request.all.count).to eq(0)
       end
-  
+
       it 'does not create a sample' do
         expect(::Sample.all.count).to eq(0)
       end
-  
+
       it 'does not create a join' do
         expect(::ContainerMaterial.all.count).to eq(0)
       end
