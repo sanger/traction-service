@@ -5,7 +5,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
     let(:plate) { create(:plate) }
 
     it 'produces error messages if given no plate' do
-      attributes = { well_with_sample_attributes: { position: 'A1' } }
+      attributes = { well_attributes: { position: 'A1' } }
       factory = Ont::WellFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages.length).to eq(1)
@@ -20,7 +20,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
 
     it 'produces error messages if generated well is not valid' do
       # well should have a position
-      attributes = { plate: plate, well_with_sample_attributes: {} }
+      attributes = { plate: plate, well_attributes: {} }
       factory = Ont::WellFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages.length).to eq(1)
@@ -30,7 +30,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
       # sample should have a name
       attributes = {
         plate: plate,
-        well_with_sample_attributes: {
+        well_attributes: {
           position: 'A1',
           sample: {
             external_id: '1'
@@ -46,7 +46,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
       allow_any_instance_of(Pipelines::ConstantsAccessor).to receive(:request_external_study_id).and_return(nil)
       attributes = {
         plate: plate,
-        well_with_sample_attributes: {
+        well_attributes: {
           position: 'A1',
           sample: {
             name: 'sample 1',
@@ -63,7 +63,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
   context '#save' do
     context 'valid build' do
       let(:plate) { create(:plate) }
-      let(:well_with_sample) { { plate: plate, well_with_sample_attributes: { position: 'A1', sample: { name: 'sample 1', external_id: '1' } } } }
+      let(:well_with_sample) { { plate: plate, well_attributes: { position: 'A1', sample: { name: 'sample 1', external_id: '1' } } } }
 
       before do
         allow_any_instance_of(Pipelines::ConstantsAccessor).to receive(:request_external_study_id).and_return('test external id')
@@ -126,7 +126,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
       end
 
       context 'without sample' do
-        let(:well_without_sample) { { plate: plate, well_with_sample_attributes: { position: 'A2' } } }
+        let(:well_without_sample) { { plate: plate, well_attributes: { position: 'A2' } } }
         let(:factory) { Ont::WellFactory.new(well_without_sample) }
 
         it 'does not create an ont request' do

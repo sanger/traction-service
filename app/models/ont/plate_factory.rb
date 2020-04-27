@@ -30,7 +30,7 @@ module Ont
       wells_attributes = attributes.extract!(:wells)
       build_plate(attributes)
       @well_factories = (wells_attributes[:wells] || []).map do |well_attributes|
-        WellFactory.new(plate: plate, well_with_sample_attributes: well_attributes)
+        WellFactory.new(plate: plate, well_attributes: well_attributes)
       end
     end
 
