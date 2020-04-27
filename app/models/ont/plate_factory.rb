@@ -2,10 +2,10 @@
 
 # Ont namespace
 module Ont
-  # RequestFactory
+  # PlateFactory
   # The factory will build a plate, associated wells and
   # requests from the request parameters
-  class RequestFactory
+  class PlateFactory
     include ActiveModel::Model
 
     validate :check_wells, :check_requests

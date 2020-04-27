@@ -1,17 +1,17 @@
 require 'rails_helper'
 
-RSpec.describe Ont::RequestFactory, type: :model, ont: true do
+RSpec.describe Ont::PlateFactory, type: :model, ont: true do
   context '#initialise' do
     it 'produces error messages if given no wells' do
       attributes = { barcode: 'abc123' }
-      factory = Ont::RequestFactory.new(attributes)
+      factory = Ont::PlateFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages.length).to eq(1)
     end
 
     it 'produces error messages if given wells are empty' do
       attributes = { barcode: 'abc123', wells: [] }
-      factory = Ont::RequestFactory.new(attributes)
+      factory = Ont::PlateFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages.length).to eq(1)
     end
@@ -29,7 +29,7 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
           }
         ]
       }
-      factory = Ont::RequestFactory.new(attributes)
+      factory = Ont::PlateFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages.length).to eq(1)
     end
@@ -47,7 +47,7 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
           }
         ]
       }
-      factory = Ont::RequestFactory.new(attributes)
+      factory = Ont::PlateFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages.length).to eq(1)
     end
@@ -56,7 +56,7 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
   context '#save' do
     context 'valid build' do
       let(:attributes) { { barcode: 'abc123', wells: [  { position: 'A1', sample: { name: 'sample 1', external_id: '1' } }, { position: "A2" } ] } }
-      let(:factory) { Ont::RequestFactory.new(attributes) }
+      let(:factory) { Ont::PlateFactory.new(attributes) }
   
       it 'is valid with given attributes' do
         expect(factory).to be_valid
@@ -118,7 +118,7 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
     end
 
     context 'invalid build' do
-      let(:factory) { Ont::RequestFactory.new({}) }
+      let(:factory) { Ont::PlateFactory.new({}) }
 
       it 'is invalid' do
         expect(factory).to_not be_valid
