@@ -10,7 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_05_113809) do
+ActiveRecord::Schema.define(version: 2020_04_21_194055) do
+
+  create_table "container_materials", force: :cascade do |t|
+    t.string "container_type"
+    t.integer "container_id"
+    t.string "material_type"
+    t.integer "material_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["container_type", "container_id"], name: "index_container_materials_on_container_type_and_container_id"
+    t.index ["material_type", "material_id"], name: "index_container_materials_on_material_type_and_material_id"
+  end
+
+  create_table "ont_requests", force: :cascade do |t|
+    t.string "external_study_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
@@ -90,6 +107,12 @@ ActiveRecord::Schema.define(version: 2020_03_05_113809) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
+  end
+
+  create_table "plates", force: :cascade do |t|
+    t.string "barcode"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "requests", force: :cascade do |t|
@@ -188,6 +211,14 @@ ActiveRecord::Schema.define(version: 2020_03_05_113809) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["material_type", "material_id"], name: "index_tubes_on_material_type_and_material_id"
+  end
+
+  create_table "wells", force: :cascade do |t|
+    t.string "position"
+    t.integer "plate_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["plate_id"], name: "index_wells_on_plate_id"
   end
 
 end

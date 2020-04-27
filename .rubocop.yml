@@ -18,6 +18,10 @@ AllCops:
     - 'bin/*'
     - 'config/application.rb'
     - 'config/initializers/content_security_policy.rb'
+    # Exclude auto-generated GraphQL classes
+    - 'app/controllers/graphql_controller.rb'
+    - 'app/graphql/mutations/base_*'
+    - 'app/graphql/types/base_*'
 
 # The cop is meant to enforce conventions regarding variables containing numbers
 # However in 0.43.0 it is bugged. Both changed on master and disabled by default
@@ -81,3 +85,4 @@ Lint/RaiseException:
 
 Lint/StructNewOverride:
   Enabled: true
+
