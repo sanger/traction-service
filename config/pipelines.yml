@@ -182,10 +182,8 @@ default: &default
           populate_on_row_type: :sample
   ont:
     covid:
-      request:
-        external_study_id: "example id"
-      sample:
-        species: "example species"
+      external_study_id: "example id"
+      species: "example species"
 
 
 development:
