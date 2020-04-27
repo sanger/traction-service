@@ -106,11 +106,11 @@ RSpec.describe 'GraphQL', type: :request do
     end
 
     it 'responds with errors provided by the request factory' do
-      errors = ActiveModel::Errors.new(Ont::RequestFactory.new)
+      errors = ActiveModel::Errors.new(Ont::PlateFactory.new)
       errors.add('wells', message: 'This is a test error')
 
-      allow_any_instance_of(Ont::RequestFactory).to receive(:save).and_return(false)
-      allow_any_instance_of(Ont::RequestFactory).to receive(:errors).and_return(errors)
+      allow_any_instance_of(Ont::PlateFactory).to receive(:save).and_return(false)
+      allow_any_instance_of(Ont::PlateFactory).to receive(:errors).and_return(errors)
 
       post v2_path, params: { query: valid_query }
       expect(response).to have_http_status(:success)

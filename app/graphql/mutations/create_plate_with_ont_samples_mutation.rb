@@ -9,7 +9,7 @@ module Mutations
     field :errors, [String], null: false
 
     def resolve(arguments:)
-      factory = Ont::RequestFactory.new(arguments.to_h)
+      factory = Ont::PlateFactory.new(arguments.to_h)
 
       if factory.save
         { plate: factory.plate, errors: [] }
