@@ -13,6 +13,7 @@ module Ont
     def initialize(attributes = {})
       @plate = attributes[:plate]
       return unless attributes.key?(:well_with_sample_attributes)
+
       build_well(attributes[:well_with_sample_attributes])
     end
 
@@ -22,8 +23,8 @@ module Ont
       return false unless valid?
 
       well.save
-      request.save unless request.nil?
-      well_request_join.save unless well_request_join.nil?
+      request&.save
+      well_request_join&.save
       true
     end
 
@@ -34,7 +35,8 @@ module Ont
       return unless attributes.key?(:sample)
 
       build_request(attributes[:sample])
-      @well_request_join = ::ContainerMaterial.new({ container: well, material: request.requestable })
+      @well_request_join = ::ContainerMaterial.new({ container: well,
+                                                     material: request.requestable })
     end
 
     def build_request(request_attributes)
@@ -60,7 +62,7 @@ module Ont
         errors.add('well', 'cannot be nil')
         return
       end
-    
+
       return if well.valid?
 
       well.errors.each do |k, v|
