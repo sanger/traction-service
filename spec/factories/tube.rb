@@ -1,6 +1,5 @@
 FactoryBot.define do
   factory :tube do
-    sequence(:barcode) { |n| "TRAC-#{n}" }
 
     factory :tube_with_saphyr_request do
       material { create(:saphyr_request) }
