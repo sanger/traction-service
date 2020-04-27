@@ -105,37 +105,20 @@ RSpec.describe 'GraphQL', type: :request do
       expect(mutation_json['errors']).to be_empty
     end
 
-    def invalid_data_query()
-      # Wells have no positions
-      <<~GQL
-      mutation {
-        createPlateWithOntSamples(
-          input: {
-            arguments: {
-              barcode: "PLATE-1234"
-              wells: [
-                { sample: { name: "Sample for A1" externalId: "ExtIdA1" } }
-                { sample: { name: "Sample for E7" externalId: "ExtIdE7" } }
-              ]
-            }
-          }
-        )
-        {
-          plate { barcode wells { material { ... on Request { sample { name externalId } } } } }
-          errors
-        }
-      }
-      GQL
-    end
+    it 'responds with errors provided by the request factory' do
+      errors = ActiveModel::Errors.new(Ont::RequestFactory.new)
+      errors.add('wells', message: 'This is a test error')
 
-    it 'provides an error when data was invalid' do
-      post v2_path, params: { query: invalid_data_query }
+      allow_any_instance_of(Ont::RequestFactory).to receive(:save).and_return(false)
+      allow_any_instance_of(Ont::RequestFactory).to receive(:errors).and_return(errors)
+
+      post v2_path, params: { query: valid_query }
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
       mutation_json = json['data']['createPlateWithOntSamples']
       expect(mutation_json['plate']).to be_nil
-      expect(mutation_json['errors']).not_to be_empty
+      expect(mutation_json['errors']).to contain_exactly('Wells {:message=>"This is a test error"}')
     end
 
     def missing_required_fields_query()
