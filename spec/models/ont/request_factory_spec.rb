@@ -115,6 +115,10 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
     context 'invalid build' do
       let(:factory) { Ont::RequestFactory.new({}) }
 
+      before do
+        factory.save
+      end
+
       it 'is invalid' do
         expect(factory).to_not be_valid
       end
