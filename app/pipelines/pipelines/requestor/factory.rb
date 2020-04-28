@@ -68,13 +68,16 @@ module Pipelines
       # @param attributes [Array of ActionController::Parameters] list of request parameters
       # @return [Array of ActiveRecord Requests] for the chosen pipeline
       def build_requests(attributes)
-        attributes.each do |request|
-          sample_attributes = request.extract!(:name, :external_id, :species)
-          requests << ::Request.new(requestable:
-            self.class.request_model.new(request),
-                                    sample: Sample.find_or_initialize_by(sample_attributes))
-          container_materials << ContainerMaterial.new(container: Tube.new, material:requests.last)
+        attributes.each do |request_attributes|
+          build_request(request_attributes)
         end
+      end
+
+      def build_request(request_attributes)
+        sample_attributes = request_attributes.extract!(:name, :external_id, :species)
+        requests << ::Request.new(requestable: self.class.request_model.new(request_attributes),
+                                  sample: Sample.find_or_initialize_by(sample_attributes))
+        container_materials << ContainerMaterial.new(container: Tube.new, material: requests.last)
       end
 
       # Validates the requests:

@@ -7,9 +7,9 @@ module TubeMaterial
 
   included do
     def tube
-      return nil unless self.container.is_a?(Tube)
+      return nil unless container.is_a?(Tube)
 
-      self.container
+      container
     end
   end
 end
