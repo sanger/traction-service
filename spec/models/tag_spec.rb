@@ -32,4 +32,28 @@ RSpec.describe Tag, type: :model do
     tag = create(:tag)
     expect(build(:tag, oligo: tag.oligo)).to_not be_valid
   end
+
+  it 'returns empty taggables with no tag_taggables' do
+    tag = create(:tag)
+    expect(tag.taggables).to be_empty
+  end
+
+  it 'returns all taggables from many tag_taggables' do
+    tag = create(:tag_with_taggables)
+    expect(tag.taggables).to_not be_empty
+    expect(tag.taggables).to eq(tag.tag_taggables.map { |tag_taggable| tag_taggable.taggable })
+  end
+
+  it 'on destroy destroys tag taggables, not taggables' do
+    tag = create(:tag_with_taggables)
+    numTaggables = tag.taggables.count
+    # sanity check
+    expect(numTaggables).to eq(3)
+    expect(Ont::Request.all.count).to eq(numTaggables)
+    # destroy the tag
+    tag.destroy
+    # test outcome
+    expect(TagTaggable.all.count).to eq(0)
+    expect(Ont::Request.all.count).to eq(numTaggables)
+  end
 end
