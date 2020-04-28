@@ -6,11 +6,11 @@ FactoryBot.define do
 
     factory :tag_with_taggables do   
       transient do
-        tags_count { 3 }
+        taggables_count { 3 }
       end   
 
       after(:create) do |tag, evaluator|
-        create_list(:tag_taggable, evaluator.tags_count, tag: tag)
+        create_list(:tag_taggable, evaluator.taggables_count, tag: tag)
       end
     end
   end
