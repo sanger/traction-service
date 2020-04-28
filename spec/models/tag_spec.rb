@@ -34,7 +34,7 @@ RSpec.describe Tag, type: :model do
   end
 
   it 'returns empty taggables with no tag_taggables' do
-    tag = create(:tag)
+    tag = create(:tag_with_taggables, taggables_count: 0)
     expect(tag.taggables).to be_empty
   end
 
