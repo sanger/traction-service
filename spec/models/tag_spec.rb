@@ -33,15 +33,15 @@ RSpec.describe Tag, type: :model do
     expect(build(:tag, oligo: tag.oligo)).to_not be_valid
   end
 
-  it 'returns empty taggables with no tag_taggables' do
+  it 'can have no tag taggables' do
     tag = create(:tag_with_taggables, taggables_count: 0)
-    expect(tag.taggables).to be_empty
+    expect(tag.tag_taggables).to be_empty
   end
 
-  it 'returns all taggables from many tag_taggables' do
-    tag = create(:tag_with_taggables)
-    expect(tag.taggables).to_not be_empty
-    expect(tag.taggables).to eq(tag.tag_taggables.map { |tag_taggable| tag_taggable.taggable })
+  it 'can have many tag taggables' do
+    numTaggables = 3
+    tag = create(:tag_with_taggables, taggables_count: 3)
+    expect(tag.tag_taggables.count).to eq(3)
   end
 
   it 'on destroy destroys tag taggables, not taggables' do
