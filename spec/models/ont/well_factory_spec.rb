@@ -162,10 +162,6 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
         expect(factory.save).to be_falsey
       end
 
-      it 'does not create a plate' do
-        expect(::Plate.all.count).to eq(0)
-      end
-
       it 'does not create a well' do
         expect(::Well.all.count).to eq(0)
       end
