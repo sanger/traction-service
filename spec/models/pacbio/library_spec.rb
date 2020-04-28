@@ -28,8 +28,9 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
 
   it 'can have a barcode through tube delegation' do
     library = create(:pacbio_library)
-    tube_with_library = create(:tube, material: library)
-    expect(library.barcode).to eq tube_with_library.barcode
+    tube = create(:tube)
+    create(:container_material, container: tube, material: library)
+    expect(library.barcode).to eq tube.barcode
   end
 
   context 'wells' do

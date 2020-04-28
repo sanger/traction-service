@@ -12,8 +12,10 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
     let!(:request_library1)  { create(:pacbio_request_library, library: library1, request: request, tag: tag)}
     let!(:library2)         { create(:pacbio_library) }
     let!(:request_library2)  { create(:pacbio_request_library, library: library2, request: request, tag: tag)}
-    let!(:tube1) { create(:tube, material: library1)}
-    let!(:tube2) { create(:tube, material: library2)}
+    let!(:tube1) { create(:tube)}
+    let!(:container_material1) { create(:container_material, container: tube1, material: library1)}
+    let!(:tube2) { create(:tube)}
+    let!(:container_material2) { create(:container_material, container: tube2, material: library2)}
 
     it 'returns a list of libraries' do
       get v1_pacbio_libraries_path, headers: json_api_headers
@@ -97,9 +99,9 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                 relationships: {
                   requests: {
                     data: [
-                      { 
-                        type: 'requests', 
-                        id: request.id, 
+                      {
+                        type: 'requests',
+                        id: request.id,
                         relationships: {
                           tag: {
                             data: {
@@ -133,9 +135,9 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
         it 'associates the request, library request and tag' do
           post v1_pacbio_libraries_path, params: body, headers: json_api_headers
           request_library = Pacbio::RequestLibrary.first
-          expect(request_library.library).to eq(Pacbio::Library.first) 
-          expect(request_library.request).to eq(request) 
-          expect(request_library.tag).to eq(tag) 
+          expect(request_library.library).to eq(Pacbio::Library.first)
+          expect(request_library.request).to eq(request)
+          expect(request_library.tag).to eq(tag)
         end
       end
 
@@ -145,16 +147,16 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
             {
               data: {
                 type: 'libraries',
-                attributes: { 
+                attributes: {
                   concentration: 2.22,
                   library_kit_barcode: 'LK1234567',
                   fragment_size: 100,
                   relationships: {
                     requests: {
                       data: [
-                        { 
-                          type: 'requests', 
-                          id: request.id, 
+                        {
+                          type: 'requests',
+                          id: request.id,
                           relationships: {
                             tag: {
                               data: {
@@ -198,7 +200,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
             {
               data: {
                 type: 'libraries',
-                attributes: { 
+                attributes: {
                   volume: 1.11,
                   concentration: 2.22,
                   library_kit_barcode: 'LK1234567',
@@ -206,9 +208,9 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                   relationships: {
                     requests: {
                       data: [
-                        { 
-                          type: 'requests', 
-                          id: request_empty_cost_code.id, 
+                        {
+                          type: 'requests',
+                          id: request_empty_cost_code.id,
                           relationships: {
                             tag: {
                               data: {
@@ -247,14 +249,14 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
         end
       end
     end
-  
+
     context 'when creating a multiplex library' do
       context 'on success' do
         let(:body) do
         {
           data: {
             type: 'libraries',
-            attributes: { 
+            attributes: {
               volume: 1.11,
               concentration: 2.22,
               library_kit_barcode: 'LK1234567',
@@ -262,9 +264,9 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
               relationships: {
                 requests: {
                   data: [
-                    { 
-                      type: 'requests', 
-                      id: request.id, 
+                    {
+                      type: 'requests',
+                      id: request.id,
                       relationships: {
                         tag: {
                           data: {
@@ -274,9 +276,9 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                         }
                       }
                     },
-                    { 
-                      type: 'requests', 
-                      id: request2.id, 
+                    {
+                      type: 'requests',
+                      id: request2.id,
                       relationships: {
                         tag: {
                           data: {
@@ -310,13 +312,13 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
         it 'associates the request, library request and tag' do
           post v1_pacbio_libraries_path, params: body, headers: json_api_headers
           request_library1 = Pacbio::RequestLibrary.first
-          expect(request_library1.library).to eq(Pacbio::Library.first) 
-          expect(request_library1.request).to eq(request) 
-          expect(request_library1.tag).to eq(tag) 
+          expect(request_library1.library).to eq(Pacbio::Library.first)
+          expect(request_library1.request).to eq(request)
+          expect(request_library1.tag).to eq(tag)
           request_library2 = Pacbio::RequestLibrary.last
-          expect(request_library2.library).to eq(Pacbio::Library.first) 
-          expect(request_library2.request).to eq(request2) 
-          expect(request_library2.tag).to eq(tag2) 
+          expect(request_library2.library).to eq(Pacbio::Library.first)
+          expect(request_library2.request).to eq(request2)
+          expect(request_library2.tag).to eq(tag2)
         end
       end
 
@@ -326,7 +328,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
             {
               data: {
                 type: 'libraries',
-                attributes: { 
+                attributes: {
                   volume: 1.11,
                   concentration: 2.22,
                   library_kit_barcode: 'LK1234567',
@@ -334,9 +336,9 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                   relationships: {
                     requests: {
                       data: [
-                        { 
-                          type: 'requests', 
-                          id: request.id, 
+                        {
+                          type: 'requests',
+                          id: request.id,
                           relationships: {
                             tag: {
                               data: {
@@ -346,9 +348,9 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                             }
                           }
                         },
-                        { 
-                          type: 'requests', 
-                          id: request2.id, 
+                        {
+                          type: 'requests',
+                          id: request2.id,
                           relationships: {
                             tag: {
                               data: {

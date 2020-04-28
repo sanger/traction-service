@@ -8,6 +8,10 @@ module V1
       attributes :barcode
       has_one :material, polymorphic: true, always_include_linkage_data: true
 
+      def material_id
+        @model.material.id
+      end
+
       # Filters
       filter :barcode, apply: ->(records, value, _options) { records.by_barcode(value) }
 

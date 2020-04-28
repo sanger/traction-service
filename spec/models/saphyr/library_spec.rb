@@ -34,7 +34,8 @@ RSpec.describe Saphyr::Library, type: :model, saphyr: true do
 
       it 'can be initialised with a tube' do
         library = create(:saphyr_library)
-        tube = create(:tube, material: library)
+        tube = create(:tube)
+        create(:container_material, container: tube, material: library)
         expect(library.tube).to eq tube
       end
     end

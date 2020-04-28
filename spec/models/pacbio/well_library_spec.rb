@@ -13,10 +13,11 @@ RSpec.describe Pacbio::WellLibrary, type: :model, pacbio: true do
   it 'will have some library attributes' do
     request = create(:pacbio_request)
     library = create(:pacbio_library)
-    tube_with_library = create(:tube, material: library)
+    tube = create(:tube)
+    create(:container_material, container: tube, material: library)
     well_library = create(:pacbio_well_library, library: library)
-    
+
     expect(well_library.barcode).to be_present
   end
-  
+
 end
