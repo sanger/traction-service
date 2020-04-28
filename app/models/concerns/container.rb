@@ -8,7 +8,7 @@ module Container
     has_many :container_materials, as: :container, dependent: :destroy
 
     def materials
-      return container_materials.map { |container_material| container_material.material }
+      container_materials.map(&:material)
     end
   end
 end
