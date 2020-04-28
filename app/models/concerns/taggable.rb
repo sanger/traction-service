@@ -5,10 +5,10 @@ module Taggable
   extend ActiveSupport::Concern
 
   included do
-    has_many :tag_taggables, as: :taggables, dependent: :destroy # Will it only destroy the join table entry?
+    has_many :tag_taggables, as: :taggable, dependent: :destroy
 
     def tags
-      return tag_taggables.map { |tag_taggable| tag_taggable.tags }
+      return tag_taggables.map { |tag_taggable| tag_taggable.tag }
     end
   end
 end
