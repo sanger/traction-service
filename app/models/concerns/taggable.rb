@@ -6,9 +6,6 @@ module Taggable
 
   included do
     has_many :tag_taggables, as: :taggable, dependent: :destroy
-
-    def tags
-      return tag_taggables.map { |tag_taggable| tag_taggable.tag }
-    end
+    has_many :tags, through: :tag_taggables
   end
 end
