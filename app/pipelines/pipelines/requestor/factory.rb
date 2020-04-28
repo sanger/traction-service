@@ -41,6 +41,10 @@ module Pipelines
         @requests ||= []
       end
 
+      def container_materials
+        @container_materials ||= []
+      end
+
       # @return [Array of ActiveRecord Requestables] for the chosen pipeline
       def requestables
         requests.collect(&:requestable)
@@ -52,6 +56,7 @@ module Pipelines
         return false unless valid?
 
         requests.collect(&:save)
+        container_materials.collect(&:save)
         true
       end
 
@@ -66,8 +71,9 @@ module Pipelines
         attributes.each do |request|
           sample_attributes = request.extract!(:name, :external_id, :species)
           requests << ::Request.new(requestable:
-            self.class.request_model.new(request.merge!(tube: Tube.new)),
+            self.class.request_model.new(request),
                                     sample: Sample.find_or_initialize_by(sample_attributes))
+          container_materials << ContainerMaterial.new(container: Tube.new, material:requests.last)
         end
       end
 

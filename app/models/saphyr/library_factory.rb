@@ -11,17 +11,25 @@ module Saphyr
     validate :check_libraries
 
     def initialize(attributes = [])
-      attributes.each { |library| libraries << Saphyr::Library.new(library.merge!(tube: Tube.new)) }
+      attributes.each do |library|
+        libraries << Saphyr::Library.new(library)
+        container_materials << ContainerMaterial.new(container: Tube.new, material: libraries.last)
+      end
     end
 
     def libraries
       @libraries ||= []
     end
 
+    def container_materials
+      @container_materials ||= []
+    end
+
     def save
       return false unless valid?
 
       libraries.collect(&:save)
+      container_materials.collect(&:save)
       true
     end
 

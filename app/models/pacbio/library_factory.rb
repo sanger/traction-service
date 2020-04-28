@@ -43,6 +43,7 @@ module Pacbio
 
       library.save
       request_libraries.save
+      @container_material.save
 
       true
     end
@@ -57,7 +58,9 @@ module Pacbio
 
     def create_library(library_attributes)
       library_attributes_without_requests = library_attributes.except(:requests)
-      Pacbio::Library.new(library_attributes_without_requests.merge!(tube: Tube.new))
+      library = Pacbio::Library.new(library_attributes_without_requests)
+      @container_material = ContainerMaterial.new(container: Tube.new, material:library)
+      library
     end
 
     def build_request_libraries(requests_attributes)

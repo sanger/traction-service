@@ -5,8 +5,10 @@ RSpec.describe 'LibrariesController', type: :request do
   context '#get' do
     let!(:library1) { create(:saphyr_library) }
     let!(:library2) { create(:saphyr_library) }
-    let!(:tube1) { create(:tube, material: library1)}
-    let!(:tube2) { create(:tube, material: library2)}
+    let!(:tube1) { create(:tube)}
+    let!(:tube2) { create(:tube)}
+    let!(:container_material1) { create(:container_material, container: tube1, material: library1)}
+    let!(:container_material2) { create(:container_material, container: tube2, material: library2)}
 
     it 'returns a list of libraries' do
       get v1_saphyr_libraries_path, headers: json_api_headers
@@ -38,8 +40,10 @@ RSpec.describe 'LibrariesController', type: :request do
     context 'when some libraries are deactivated' do
       let!(:library3) { create(:saphyr_library) }
       let!(:library4) { create(:saphyr_library, deactivated_at: DateTime.now) }
-      let!(:tube3) { create(:tube, material: library3)}
-      let!(:tube4) { create(:tube, material: library4)}
+      let!(:tube3) { create(:tube)}
+      let!(:tube4) { create(:tube)}
+      let!(:container_material3) { create(:container_material, container: tube3, material: library3)}
+      let!(:container_material4) { create(:container_material, container: tube4, material: library4)}
 
       it 'only returns active libraries' do
         get v1_saphyr_libraries_path, headers: json_api_headers
@@ -228,7 +232,8 @@ RSpec.describe 'LibrariesController', type: :request do
   context '#destroy' do
     context 'on success' do
       let!(:library) { create(:saphyr_library) }
-      let!(:tube) { create(:tube, material: library)}
+      let!(:tube) { create(:tube)}
+      let!(:container_material) { create(:container_material, container: tube, material: library)}
 
       it 'deactivates the library' do
         delete "/v1/saphyr/libraries/#{library.id}", headers: json_api_headers

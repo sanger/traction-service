@@ -3,8 +3,13 @@
 # Material
 module TubeMaterial
   extend ActiveSupport::Concern
+  include Material
 
   included do
-    has_one :tube, as: :material, dependent: :nullify
+    def tube
+      return nil unless self.container.is_a?(Tube)
+
+      self.container
+    end
   end
 end
