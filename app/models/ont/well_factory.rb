@@ -8,7 +8,7 @@ module Ont
   class WellFactory
     include ActiveModel::Model
 
-    validate :check_well, :check_request
+    validate :check_well, :check_request_factories
 
     def initialize(attributes = {})
       @plate = attributes[:plate]
@@ -17,14 +17,17 @@ module Ont
       build_well(attributes[:well_attributes])
     end
 
-    attr_reader :plate, :well, :request, :well_request_join
+    attr_reader :plate, :well
+
+    def request_factories
+      @request_factories ||= []
+    end
 
     def save
       return false unless valid?
 
       well.save
-      request&.save
-      well_request_join&.save
+      request_factories.collect(&:save)
       true
     end
 
@@ -32,29 +35,11 @@ module Ont
 
     def build_well(attributes)
       @well = ::Well.new(position: attributes[:position], plate: plate)
-      return unless attributes.key?(:sample)
+      return unless attributes.key?(:samples)
 
-      build_request(attributes[:sample])
-      @well_request_join = ::ContainerMaterial.new({ container: well,
-                                                     material: request.requestable })
-    end
-
-    def build_request(request_attributes)
-      constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
-      sample = build_or_fetch_sample(request_attributes, constants_accessor)
-      @request = ::Request.new(
-        requestable: Ont::Request.new(
-          external_study_id: constants_accessor.external_study_id
-        ),
-        sample: sample
-      )
-    end
-
-    def build_or_fetch_sample(request_attributes, constants_accessor)
-      sample_attributes = request_attributes
-                          .extract!(:name, :external_id)
-                          .merge!(species: constants_accessor.species)
-      Sample.find_or_initialize_by(sample_attributes)
+      @request_factories = attributes[:samples].map do |request_attributes|
+        RequestFactory.new(well: well, request_attributes: request_attributes)
+      end
     end
 
     def check_well
@@ -70,11 +55,15 @@ module Ont
       end
     end
 
-    def check_request
-      return if request.nil? || request.valid?
+    def check_request_factories
+      return if request_factories.empty?
 
-      request.errors.each do |k, v|
-        errors.add(k, v)
+      request_factories.each do |request_factory|
+        next if request_factory.valid?
+
+        request_factory.errors.each do |k, v|
+          errors.add(k, v)
+        end
       end
     end
   end
