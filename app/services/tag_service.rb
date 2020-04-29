@@ -16,7 +16,7 @@ class TagService
     tag
   end
 
-  def is_complete
-    return tag_set.tags.count == tags.uniq.count
+  def complete?
+    tag_set.tags.count == tags.uniq.count
   end
 end
