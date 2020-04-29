@@ -10,15 +10,15 @@ module Ont
 
     validate :check_request, :check_tag
 
-    def initialize(attributes = {})
+    def initialize(attributes = {}, tag_service = nil)
       @well = attributes[:well]
-      @tag_set = attributes[:tag_set]
+      @tag_service = tag_service
       return unless attributes.key?(:request_attributes)
 
       build_request(attributes[:request_attributes])
     end
 
-    attr_reader :well, :tag_set, :tag_taggable, :request, :well_request_join
+    attr_reader :well, :tag_service, :tag_taggable, :request, :well_request_join
 
     def save
       return false unless valid?
@@ -41,9 +41,9 @@ module Ont
 
     def build_ont_request(request_attributes, constants_accessor)
       ont_request = Ont::Request.new(external_study_id: constants_accessor.external_study_id)
-      unless tag_set.nil?
+      unless tag_service.nil?
         if request_attributes.key?(:tag_group_id)
-          tag = ::Tag.find_by(tag_set_id: tag_set.id, group_id: request_attributes[:tag_group_id])
+          tag = tag_service.find_and_register_tag(request_attributes[:tag_group_id])
           @tag_taggable = ::TagTaggable.new(taggable: ont_request, tag: tag)
         end
       end
@@ -71,7 +71,7 @@ module Ont
     end
 
     def check_tag
-      return if tag_set.nil?
+      return if tag_service.nil?
 
       if tag_taggable.nil?
         errors.add('request', 'must have a tag')
