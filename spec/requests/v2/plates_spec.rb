@@ -91,6 +91,13 @@ RSpec.describe 'GraphQL', type: :request do
     end
 
     it 'creates a plate with provided parameters' do
+      plate = create(:plate_with_ont_samples, barcode: 'PLATE-1234', wells: [
+        { position: 'A1', samples: [ { name: 'Sample 1 for A1', external_id: 'ExtIdA1-1' }, { name: 'Sample 2 for A1', external_id: 'ExtIdA1-2' } ] },
+        { position: 'E7', samples: [ { name: 'Sample for E7', external_id: 'ExtIdE7' } ] }])
+
+      allow_any_instance_of(Ont::PlateFactory).to receive(:save).and_return(true)
+      allow_any_instance_of(Ont::PlateFactory).to receive(:plate).and_return(plate)
+
       post v2_path, params: { query: valid_query }
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
