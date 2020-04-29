@@ -86,3 +86,6 @@ Lint/RaiseException:
 Lint/StructNewOverride:
   Enabled: true
 
+# Set Enables: true, fix
+Rails/UniqueValidationWithoutIndex:
+  Enabled: false

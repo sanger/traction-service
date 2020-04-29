@@ -9,7 +9,7 @@ module Mutations
     field :errors, [String], null: false
 
     def resolve(arguments:)
-      plate_id = arguments.plate_id
+      # plate_id = arguments.plate_id
     end
   end
 end
