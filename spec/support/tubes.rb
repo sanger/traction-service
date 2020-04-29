@@ -110,7 +110,7 @@ shared_examples_for 'tubes' do
 
           expect(json['data'].length).to eq(1)
 
-          expect(json['included'][0]['id']).to eq tube.material.id.to_s
+          expect(json['included'][0]['id']).to eq tube.container_material.id.to_s
           expect(json['included'][0]['type']).to be_present
 
           expect(json['included'][0]['attributes']['external_study_id']).to eq tube.material.external_study_id
@@ -136,7 +136,7 @@ shared_examples_for 'tubes' do
 
           expect(json['data'].length).to eq(1)
 
-          expect(json['included'][0]['id']).to eq tube.material.id.to_s
+          expect(json['included'][0]['id']).to eq tube.container_material.id.to_s
           expect(json['included'][0]['type']).to be_present
 
           expect(json['data'][0]['attributes']['barcode']).to eq tube.barcode
