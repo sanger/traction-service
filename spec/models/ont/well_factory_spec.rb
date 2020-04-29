@@ -47,16 +47,46 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
       expect(factory.errors.full_messages.length).to eq(1)
       expect(factory.errors.full_messages).to contain_exactly('Request factories {:message=>"This is a test error"}')
     end
+
+    it 'produces error messages with unsupported number of samples' do
+      mock_valid_request_factories
+      attributes = { plate: plate, well_attributes: { position: 'A1', samples: [ { name: 'sample 1' }, { name: 'sample 2' } ] } }
+      factory = Ont::WellFactory.new(attributes)
+      expect(factory).to_not be_valid
+      expect(factory.errors.full_messages.length).to eq(1)
+      expect(factory.errors.full_messages).to contain_exactly("Exception raised: '2' is not a supported number of samples")
+    end
+
+    it 'produces error messages when the tag set cannot be found' do
+      attributes = { plate: plate, well_attributes: { position: 'A1', samples: (0..95).map { |x| { name: "sample #{x}" } } } }
+      factory = Ont::WellFactory.new(attributes)
+      expect(factory).to_not be_valid
+      expect(factory.errors.full_messages.length).to eq(1)
+      expect(factory.errors.full_messages).to contain_exactly("Exception raised: Couldn't find TagSet")
+    end
+
+    it 'produces error messages with incomplete sample set' do
+      mock_valid_request_factories
+      create(:tag_set, name: 'OntWell96Samples')
+      allow_any_instance_of(::TagService).to receive(:complete?).and_return(false)
+      attributes = { plate: plate, well_attributes: { position: 'A1', samples: (0..95).map { |x| { name: "sample #{x}" } } } }
+      factory = Ont::WellFactory.new(attributes)
+      expect(factory).to_not be_valid
+      expect(factory.errors.full_messages.length).to eq(1)
+      expect(factory.errors.full_messages).to contain_exactly('Samples should all be uniquely tagged')
+    end
   end
 
   context '#save' do
     context 'valid build' do
       let(:well_with_no_sample) { { plate: plate, well_attributes: { position: 'A1' } } }
       let(:well_with_one_sample) { { plate: plate, well_attributes: { position: 'A1', samples: [ { name: 'sample 1' } ] } } }
-      let(:well_with_many_samples) { { plate: plate, well_attributes: { position: 'A1', samples: [ { name: 'sample 1' }, { name: 'sample 2' }, { name: 'sample 3' } ] } } }
+      let(:well_with_many_samples) { { plate: plate, well_attributes: { position: 'A1', samples: (0..95).map { |x| { name: "sample #{x}" } } } } }
 
       before do
         mock_valid_request_factories
+        create(:tag_set, name: 'OntWell96Samples')
+        allow_any_instance_of(::TagService).to receive(:complete?).and_return(true)
       end
 
       it 'is valid' do
@@ -88,7 +118,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
 
       it 'creates and saves many request factories if given many samples' do
         factory = Ont::WellFactory.new(well_with_many_samples)
-        expect(factory.request_factories.length).to eq(3)
+        expect(factory.request_factories.length).to eq(96)
         expect(factory.request_factories).to all(receive(:save).exactly(1))
         expect(factory.save).to be_truthy
       end

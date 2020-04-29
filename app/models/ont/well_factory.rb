@@ -8,7 +8,7 @@ module Ont
   class WellFactory
     include ActiveModel::Model
 
-    validate :check_well, :check_request_factories
+    validate :check_well, :check_request_factories, :check_tag_service, :check_for_raised_exceptions
 
     def initialize(attributes = {})
       @plate = attributes[:plate]
@@ -17,10 +17,14 @@ module Ont
       build_well(attributes[:well_attributes])
     end
 
-    attr_reader :plate, :well
+    attr_reader :plate, :well, :tag_service
 
     def request_factories
       @request_factories ||= []
+    end
+
+    def raised_exceptions
+      @raised_exceptions ||= []
     end
 
     def save
@@ -37,8 +41,27 @@ module Ont
       @well = ::Well.new(position: attributes[:position], plate: plate)
       return unless attributes.key?(:samples)
 
-      @request_factories = attributes[:samples].map do |request_attributes|
-        RequestFactory.new(well: well, request_attributes: request_attributes)
+      begin
+        @tag_service = create_tag_service(attributes[:samples].count)
+        @request_factories = attributes[:samples].map do |request_attributes|
+          RequestFactory.new(attributes: { well: well, request_attributes: request_attributes },
+                             tag_service: tag_service)
+        end
+      rescue StandardError => e
+        raised_exceptions << e
+      end
+    end
+
+    def create_tag_service(num_samples)
+      case num_samples
+      when 1
+        nil
+      when 96
+        ::TagService.new(::TagSet.find_by!(name: 'OntWell96Samples'))
+      when 384
+        ::TagService.new(::TagSet.find_by!(name: 'OntWell384Samples'))
+      else
+        raise "'#{num_samples}' is not a supported number of samples"
       end
     end
 
@@ -64,6 +87,20 @@ module Ont
         request_factory.errors.each do |k, v|
           errors.add(k, v)
         end
+      end
+    end
+
+    def check_tag_service
+      return if tag_service.nil?
+
+      errors.add('samples', 'should all be uniquely tagged') unless tag_service.complete?
+    end
+
+    def check_for_raised_exceptions
+      return if raised_exceptions.empty?
+
+      raised_exceptions.each do |ex|
+        errors.add('exception raised:', ex.message)
       end
     end
   end
