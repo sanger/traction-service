@@ -11,7 +11,7 @@ FactoryBot.define do
       after :create do |well, options|
         options.samples.each do |sample_spec|
           sample = create(:sample, name: sample_spec[:name])
-          request = create(:request, sample: sample)
+          request = build(:request, sample: sample, requestable: nil )
           ont_request = create(:ont_request, request: request)
           create(:container_material, container: well, material: ont_request)
         end
