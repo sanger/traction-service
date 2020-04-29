@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe TagService, type: :helper do
+RSpec.describe TagService do
   let!(:tag1) { create(:tag) }
   let!(:tag2) { create(:tag) }
 
@@ -19,20 +19,20 @@ RSpec.describe TagService, type: :helper do
   it 'is not complete without registering all tags in a set' do
     tag_service = TagService.new(tag1.tag_set)
     tag_service.find_and_register_tag(tag1.group_id)
-    expect(tag_service.is_complete).to be_falsey
+    expect(tag_service.complete?).to be_falsey
   end
 
   it 'is not complete having registered a tag more than once' do
     tag_service = TagService.new(tag1.tag_set)
     tag_service.find_and_register_tag(tag1.group_id)
     tag_service.find_and_register_tag(tag1.group_id)
-    expect(tag_service.is_complete).to be_falsey
+    expect(tag_service.complete?).to be_falsey
   end
 
   it 'is complete with all tags in a set registered' do
     tag_service = TagService.new(tag1.tag_set)
     tag_service.find_and_register_tag(tag1.group_id)
     tag_service.find_and_register_tag(tag2.group_id)
-    expect(tag_service.is_complete).to be_truthy
+    expect(tag_service.complete?).to be_truthy
   end
 end
