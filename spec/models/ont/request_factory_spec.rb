@@ -60,14 +60,6 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
         expect(factory).to be_valid
       end
 
-      it 'creates a request' do
-        factory = Ont::RequestFactory.new(attributes)
-        expect(factory.save).to be_truthy
-        expect(::Well.all.count).to eq(1)
-        expect(::Well.all.first.plate).to eq(::Plate.first)
-        expect(::Well.first.position).to eq('A1')
-      end
-
       it 'creates an ont request' do
         factory = Ont::RequestFactory.new(attributes)
         expect(factory.save).to be_truthy
