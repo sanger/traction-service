@@ -26,33 +26,29 @@ RSpec.describe 'GraphQL', type: :request do
 
     context 'when there is a plate with samples' do
       let!(:plate) do
-        create(:plate_with_ont_samples, samples: [
-            { position: 'A1', name: 'Sample in A1' },
-            { position: 'H12', name: 'Sample in H12' }
-          ]
-        )
+        create(:plate_with_ont_samples, wells: [
+            { position: 'A1', samples: [ { name: 'Sample in A1' } ] },
+            { position: 'H12', samples: [ { name: 'Sample 1 in H12' }, { name: 'Sample 2 in H12' } ] }
+          ])
       end
 
       it 'returns plate with nested sample' do
-        post v2_path, params: { query: '{ plates { wells { material { ... on Request { sample { name } } } } } }' }
+        post v2_path, params: { query: '{ plates { wells { materials { ... on Request { sample { name } } } } } }' }
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data']['plates'].length).to eq(1)
         expect(json['data']['plates'].first).to include(
           'wells' => [
             {
-              'material' => {
-                'sample' => {
-                  'name' => 'Sample in A1'
-                }
-              }
+              'materials' => [
+                { 'sample' => { 'name' => 'Sample in A1' } }
+              ]
             },
             {
-              'material' => {
-                'sample' => {
-                  'name' => 'Sample in H12'
-                }
-              }
+              'materials' => [
+                { 'sample' => { 'name' => 'Sample 1 in H12' } },
+                { 'sample' => { 'name' => 'Sample 2 in H12' } }
+              ]
             }
           ]
         )
