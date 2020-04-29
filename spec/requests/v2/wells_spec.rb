@@ -30,7 +30,6 @@ RSpec.describe 'GraphQL', type: :request do
         post v2_path, params: { query: "{ well(id: #{well.id}) { id plateId materials { ... on Request { sample { name } } } } }" }
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
-        debugger
         expect(json['data']['well']['materials'].count).to eq(2)
         expect(json['data']['well']['materials'][0]['sample']).to include({ 'name' => 'Sample 1 in A1' })
         expect(json['data']['well']['materials'][1]['sample']).to include({ 'name' => 'Sample 2 in A1' })
