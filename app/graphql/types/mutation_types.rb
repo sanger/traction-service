@@ -6,6 +6,6 @@ module Types
     # Plates
     field :create_plate_with_ont_samples, mutation: Mutations::CreatePlateWithOntSamplesMutation
 
-    field :createLibrary, mutation: Mutations::CreateLibraryMutation
+    field :poolSamples, mutation: Mutations::PoolSamplesMutation
   end
 end
