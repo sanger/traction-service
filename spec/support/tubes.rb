@@ -33,14 +33,14 @@ shared_examples_for 'tubes' do
         tube = pipeline_tube_requests.first
         expect(json['data'][0]['attributes']['barcode']).to eq(tube.barcode)
         expect(json['data'][0]['relationships']['material']).to be_present
-        expect(json['data'][0]['relationships']['material']['data']['type']).to eq("requests")
-        expect(json['data'][0]['relationships']['material']['data']['id'].to_s).to eq(tube.material.id.to_s)
+        expect(json['data'][0]['relationships']['material']['data']['type']).to be_present
+        expect(json['data'][0]['relationships']['material']['data']['id']).to eq(tube.container_material.id.to_s)
 
         tube = pipeline_tube_requests.last
         expect(json['data'][1]['attributes']['barcode']).to eq(tube.barcode)
         expect(json['data'][1]['relationships']['material']).to be_present
-        expect(json['data'][1]['relationships']['material']['data']['type']).to eq("requests")
-        expect(json['data'][1]['relationships']['material']['data']['id']).to eq(tube.material.id.to_s)
+        expect(json['data'][1]['relationships']['material']['data']['type']).to be_present
+        expect(json['data'][1]['relationships']['material']['data']['id']).to eq(tube.container_material.id.to_s)
 
       end
     end
@@ -57,14 +57,14 @@ shared_examples_for 'tubes' do
         tube = pipeline_tube_libraries.first
         expect(json['data'][0]['attributes']['barcode']).to eq(tube.barcode)
         expect(json['data'][0]['relationships']['material']).to be_present
-        expect(json['data'][0]['relationships']['material']['data']['type']).to eq("libraries")
-        expect(json['data'][0]['relationships']['material']['data']['id']).to eq(tube.material.id.to_s)
+        expect(json['data'][0]['relationships']['material']['data']['type']).to be_present
+        expect(json['data'][0]['relationships']['material']['data']['id']).to eq(tube.container_material.id.to_s)
 
         tube = pipeline_tube_libraries.last
         expect(json['data'][1]['attributes']['barcode']).to eq(tube.barcode)
         expect(json['data'][1]['relationships']['material']).to be_present
-        expect(json['data'][1]['relationships']['material']['data']['type']).to eq("libraries")
-        expect(json['data'][1]['relationships']['material']['data']['id']).to eq(tube.material.id.to_s)
+        expect(json['data'][1]['relationships']['material']['data']['type']).to be_present
+        expect(json['data'][1]['relationships']['material']['data']['id']).to eq(tube.container_material.id.to_s)
       end
     end
 
@@ -111,7 +111,7 @@ shared_examples_for 'tubes' do
           expect(json['data'].length).to eq(1)
 
           expect(json['included'][0]['id']).to eq tube.material.id.to_s
-          expect(json['included'][0]['type']).to eq "requests"
+          expect(json['included'][0]['type']).to be_present
 
           expect(json['included'][0]['attributes']['external_study_id']).to eq tube.material.external_study_id
           expect(json['included'][0]['attributes']['sample_name']).to eq tube.material.sample.name
@@ -119,7 +119,7 @@ shared_examples_for 'tubes' do
           expect(json['included'][0]['attributes']['sample_species']).to eq tube.material.sample.species
           expect(json['included'][0]['attributes']['created_at']).to eq tube.material.sample.created_at.to_s(:us)
 
-          expect(json['data'][0]['relationships']['material']['data']['type']).to eq 'requests'
+          expect(json['data'][0]['relationships']['material']['data']['type']).to be_present
           expect(json['data'][0]['relationships']['material']['data']['id'].to_s).to eq tube.material.id.to_s
         end
       end
@@ -137,11 +137,11 @@ shared_examples_for 'tubes' do
           expect(json['data'].length).to eq(1)
 
           expect(json['included'][0]['id']).to eq tube.material.id.to_s
-          expect(json['included'][0]['type']).to eq "libraries"
+          expect(json['included'][0]['type']).to be_present
 
           expect(json['data'][0]['attributes']['barcode']).to eq tube.barcode
 
-          expect(json['data'][0]['relationships']['material']['data']['type']).to eq 'libraries'
+          expect(json['data'][0]['relationships']['material']['data']['type']).to be_present
           expect(json['data'][0]['relationships']['material']['data']['id'].to_s).to eq tube.material.id.to_s
         end
       end
