@@ -75,4 +75,9 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
     it_behaves_like 'library'
   end
 
+  context 'tube material' do
+    let(:material_model) { :pacbio_library }
+    it_behaves_like "tube_material"
+  end
+
 end

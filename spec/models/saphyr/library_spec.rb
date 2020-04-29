@@ -2,7 +2,8 @@ require "rails_helper"
 
 RSpec.describe Saphyr::Library, type: :model, saphyr: true do
 
-  context 'polymorphic behavior' do
+  context 'tube material' do
+    let(:material_model) { :saphyr_library }
     it_behaves_like "tube_material"
   end
 
