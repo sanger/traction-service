@@ -28,11 +28,13 @@ RSpec.describe 'TagsController', type: :request do
   context '#create' do
     context 'on success' do
 
+      let!(:tag_set) {create(:tag_set)}
+
       let(:body) do
         {
           data: {
             type: 'tags',
-            attributes: attributes_for(:tag)
+            attributes: attributes_for(:tag).merge(tag_set_id: tag_set.id)
           }
         }.to_json
       end
