@@ -17,11 +17,7 @@ module Ont
       build_well(attributes[:well_attributes])
     end
 
-    attr_reader :plate, :well
-
-    def request_factories
-      @request_factories ||= []
-    end
+    attr_reader :well
 
     def save
       return false unless valid?
@@ -32,6 +28,12 @@ module Ont
     end
 
     private
+
+    attr_reader :plate
+
+    def request_factories
+      @request_factories ||= []
+    end
 
     def build_well(attributes)
       @well = ::Well.new(position: attributes[:position], plate: plate)
