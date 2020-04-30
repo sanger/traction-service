@@ -17,7 +17,7 @@ module Ont
       build_request(attributes[:request_attributes])
     end
 
-    attr_reader :well, :request, :well_request_join
+    attr_reader :request
 
     def save
       return false unless valid?
@@ -28,6 +28,8 @@ module Ont
     end
 
     private
+
+    attr_reader :well, :well_request_join
 
     def build_request(request_attributes)
       constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)

@@ -73,23 +73,22 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
       end
 
       it 'does not create or save any request factories if given no samples' do
+        expect(Ont::RequestFactory).to_not receive(:new)
+        expect_any_instance_of(Ont::RequestFactory).to_not receive(:save)
         factory = Ont::WellFactory.new(well_with_no_sample)
-        expect(factory.request_factories.length).to eq(0)
         expect(factory.save).to be_truthy
-        expect_any_instance_of(Ont::WellFactory).to_not receive(:save)
       end
 
       it 'creates and saves a single request factory if given one sample' do
+        expect(Ont::RequestFactory).to receive(:new).exactly(1).and_call_original
+        expect_any_instance_of(Ont::RequestFactory).to receive(:save)
         factory = Ont::WellFactory.new(well_with_one_sample)
-        expect(factory.request_factories.length).to eq(1)
-        expect(factory.request_factories).to all(receive(:save).exactly(1))
         expect(factory.save).to be_truthy
       end
 
-      it 'creates and saves many request factories if given many samples' do
+      it 'creates many request factories if given many samples' do
+        expect(Ont::RequestFactory).to receive(:new).exactly(3).and_call_original
         factory = Ont::WellFactory.new(well_with_many_samples)
-        expect(factory.request_factories.length).to eq(3)
-        expect(factory.request_factories).to all(receive(:save).exactly(1))
         expect(factory.save).to be_truthy
       end
 
