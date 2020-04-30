@@ -78,7 +78,7 @@ RSpec.describe 'LibrariesController', type: :request do
           post v1_saphyr_libraries_path, params: body, headers: json_api_headers
           expect(Saphyr::Library.last.tube).to be_present
           tube_id = Saphyr::Library.last.tube.id
-          expect(Tube.find(tube_id).material).to eq Saphyr::Library.last
+          expect(Tube.find(tube_id).materials.first).to eq Saphyr::Library.last
         end
 
         it 'creates a library with a request' do

@@ -27,8 +27,7 @@ RSpec.describe Saphyr::LibraryFactory, type: :model, saphyr: true do
       expect(factory).to be_valid
       expect(factory.save).to be_truthy
       expect(Saphyr::Library.all.count).to eq(attributes.length)
-      expect(Saphyr::Library.first.tube.material).to eq(Saphyr::Library.first)
-
+      expect(Saphyr::Library.first.tube.materials.first).to eq(Saphyr::Library.first)
     end
 
     it 'does not create any libraries if attributes are not valid' do

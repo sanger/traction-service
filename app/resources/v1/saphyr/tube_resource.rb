@@ -6,8 +6,8 @@ module V1
     class TubeResource < JSONAPI::Resource
       model_name 'Tube'
       attributes :barcode
-      has_one :material, class_name: 'ContainerMaterial', relation_name: :container_material,
-                         foreign_key_on: :related, always_include_linkage_data: true
+      has_many :materials, class_name: 'ContainerMaterial', relation_name: :container_materials,
+                           foreign_key_on: :related, always_include_linkage_data: true
 
       # Filters
       filter :barcode, apply: ->(records, value, _options) { records.by_barcode(value) }

@@ -64,7 +64,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
           tube = @factory.library.tube
           expect(tube.id).not_to be_nil
           expect(tube.barcode).not_to be_nil
-          expect(tube.material.id).to eq @factory.library.id
+          expect(tube.materials.first.id).to eq @factory.library.id
           expect(tube.created_at).to be_present
           expect(tube.updated_at).to be_present
         end
