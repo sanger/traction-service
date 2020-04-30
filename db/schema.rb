@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_28_064825) do
+ActiveRecord::Schema.define(version: 2020_04_28_092948) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -216,11 +216,8 @@ ActiveRecord::Schema.define(version: 2020_04_28_064825) do
 
   create_table "tubes", force: :cascade do |t|
     t.string "barcode"
-    t.string "material_type"
-    t.integer "material_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["material_type", "material_id"], name: "index_tubes_on_material_type_and_material_id"
   end
 
   create_table "wells", force: :cascade do |t|
