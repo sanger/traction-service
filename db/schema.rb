@@ -196,11 +196,10 @@ ActiveRecord::Schema.define(version: 2020_04_28_064825) do
   create_table "tag_taggables", force: :cascade do |t|
     t.string "taggable_type"
     t.integer "taggable_id"
-    t.string "tag_type"
     t.integer "tag_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["tag_type", "tag_id"], name: "index_tag_taggables_on_tag_type_and_tag_id"
+    t.index ["tag_id"], name: "index_tag_taggables_on_tag_id"
     t.index ["taggable_type", "taggable_id"], name: "index_tag_taggables_on_taggable_type_and_taggable_id"
   end
 
