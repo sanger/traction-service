@@ -2,7 +2,8 @@ require "rails_helper"
 
 RSpec.describe Saphyr::Library, type: :model, saphyr: true do
 
-  context 'polymorphic behavior' do
+  context 'tube material' do
+    let(:material_model) { :saphyr_library }
     it_behaves_like "tube_material"
   end
 
@@ -34,7 +35,8 @@ RSpec.describe Saphyr::Library, type: :model, saphyr: true do
 
       it 'can be initialised with a tube' do
         library = create(:saphyr_library)
-        tube = create(:tube, material: library)
+        tube = create(:tube)
+        create(:container_material, container: tube, material: library)
         expect(library.tube).to eq tube
       end
     end
