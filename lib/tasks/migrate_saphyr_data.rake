@@ -9,14 +9,16 @@ namespace :migrate_saphyr_data do
     table.each do |row|
       created_at = Date.parse(row['created_at'])
       sample = Sample.create!(name: row['name'], species: row['species'], external_id: row['external_id'], created_at: created_at)
-      Saphyr::Request.create!(sample: sample, external_study_id: row['external_study_id'], created_at: created_at, tube: Tube.new)
+      request = Saphyr::Request.create!(sample: sample, external_study_id: row['external_study_id'], created_at: created_at)
+      ContainerMaterial.create(container: Tube.create, material: request)
     end
 
     # libraries
     table = CSV.parse(File.read(Rails.root.join('lib/data/saphyr_libraries.csv')), headers: true)
     table.each do |row|
       sample = Sample.find_by(name: row['sample_name'])
-      Saphyr::Library.create!(request: sample.requests.first.requestable, enzyme: Saphyr::Enzyme.find_by(name: row['enzyme']), created_at: Date.parse(row['created_at']), tube: Tube.new)
+      library = Saphyr::Library.create!(request: sample.requests.first.requestable, enzyme: Saphyr::Enzyme.find_by(name: row['enzyme']), created_at: Date.parse(row['created_at']))
+      ContainerMaterial.create(container: Tube.create, material: library)
     end
 
     # runs
