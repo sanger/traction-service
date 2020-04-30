@@ -11,9 +11,10 @@ module Ont
     validate :check_well, :check_request_factories
 
     def initialize(attributes = {})
-      @plate = attributes[:plate]
+      @request_factories = []
       return unless attributes.key?(:well_attributes)
 
+      @plate = attributes[:plate]
       build_well(attributes[:well_attributes])
     end
 
@@ -23,20 +24,14 @@ module Ont
       return false unless valid?
 
       well.save
-      request_factories.collect(&:save)
+      @request_factories.collect(&:save)
       true
     end
 
     private
 
-    attr_reader :plate
-
-    def request_factories
-      @request_factories ||= []
-    end
-
     def build_well(attributes)
-      @well = ::Well.new(position: attributes[:position], plate: plate)
+      @well = ::Well.new(position: attributes[:position], plate: @plate)
       return unless attributes.key?(:samples)
 
       @request_factories = attributes[:samples].map do |request_attributes|
@@ -58,9 +53,9 @@ module Ont
     end
 
     def check_request_factories
-      return if request_factories.empty?
+      return if @request_factories.empty?
 
-      request_factories.each do |request_factory|
+      @request_factories.each do |request_factory|
         next if request_factory.valid?
 
         request_factory.errors.each do |k, v|
