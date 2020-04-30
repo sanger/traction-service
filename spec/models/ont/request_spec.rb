@@ -6,6 +6,11 @@ RSpec.describe Ont::Request, type: :model, ont: true do
     it_behaves_like 'material'
   end
 
+  context 'taggable' do
+    let(:taggable_model) { :ont_request_with_tags }
+    it_behaves_like 'taggable'
+  end
+
   it 'returns sample name' do
     request = create(:ont_request)
     expect(request.sample_name).to be_present
