@@ -8,5 +8,12 @@ FactoryBot.define do
     factory :library_no_state do
       state { nil }
     end
+
+    factory :saphyr_library_in_tube do
+      after :create do |library|
+        tube = create(:tube)
+        create(:container_material, container: tube, material: library)
+      end
+    end
   end
 end

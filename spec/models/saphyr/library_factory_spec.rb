@@ -9,7 +9,6 @@ RSpec.describe Saphyr::LibraryFactory, type: :model, saphyr: true do
     it 'creates an object for each given library' do
       factory = Saphyr::LibraryFactory.new(attributes)
       expect(factory.libraries.count).to eq(1)
-      expect(factory.libraries[0].tube).to be_present
     end
 
     it 'produces error messages if any of the libraries are not valid' do
@@ -28,8 +27,7 @@ RSpec.describe Saphyr::LibraryFactory, type: :model, saphyr: true do
       expect(factory).to be_valid
       expect(factory.save).to be_truthy
       expect(Saphyr::Library.all.count).to eq(attributes.length)
-      expect(Saphyr::Library.first.tube).to eq(attributes.first[:tube])
-      expect(Saphyr::Library.first.tube.material_id).to be_present
+      expect(Saphyr::Library.first.tube.material).to eq(Saphyr::Library.first)
 
     end
 
