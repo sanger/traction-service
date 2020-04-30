@@ -25,12 +25,12 @@ RSpec.describe Tag, type: :model do
 
   it 'group id should be unique within set' do
     tag = create(:tag)
-    expect(build(:tag, group_id: tag.group_id)).to_not be_valid
+    expect(build(:tag, group_id: tag.group_id, tag_set_id: tag.tag_set_id)).to_not be_valid
   end
 
   it 'oligo should be unique within set' do
     tag = create(:tag)
-    expect(build(:tag, oligo: tag.oligo)).to_not be_valid
+    expect(build(:tag, oligo: tag.oligo, tag_set_id: tag.tag_set_id)).to_not be_valid
   end
 
   it 'can have no tag taggables' do
