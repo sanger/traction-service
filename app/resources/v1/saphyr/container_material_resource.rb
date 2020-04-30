@@ -19,8 +19,7 @@ module V1
         if @model.material.is_a?(::Saphyr::Library)
           %i[state barcode created_at enzyme_name deactivated_at sample_name]
         elsif @model.material.is_a?(::Saphyr::Request)
-          %i[external_study_id
-             sample_name barcode sample_species created_at]
+          %i[external_study_id sample_name barcode sample_species created_at]
         else
           super
         end
