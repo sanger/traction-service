@@ -44,7 +44,7 @@ RSpec.describe Tag, type: :model do
     expect(tag.tag_taggables.count).to eq(3)
   end
 
-  it 'on destroy destroys tag taggables, not taggables' do
+  it 'on destroy destroys tag_taggables, not taggables' do
     numTaggables = 3
     tag = create(:tag_with_taggables, taggables_count: numTaggables)
     # sanity check
