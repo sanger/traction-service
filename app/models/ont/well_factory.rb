@@ -11,17 +11,14 @@ module Ont
     validate :check_well, :check_request_factories, :check_tag_service, :check_for_raised_exceptions
 
     def initialize(attributes = {})
-      @plate = attributes[:plate]
+      @request_factories = []
       return unless attributes.key?(:well_attributes)
 
+      @plate = attributes[:plate]
       build_well(attributes[:well_attributes])
     end
 
-    attr_reader :plate, :well, :tag_service
-
-    def request_factories
-      @request_factories ||= []
-    end
+    attr_reader :well
 
     def raised_exceptions
       @raised_exceptions ||= []
@@ -31,21 +28,21 @@ module Ont
       return false unless valid?
 
       well.save
-      request_factories.collect(&:save)
+      @request_factories.collect(&:save)
       true
     end
 
     private
 
     def build_well(attributes)
-      @well = ::Well.new(position: attributes[:position], plate: plate)
+      @well = ::Well.new(position: attributes[:position], plate: @plate)
       return unless attributes.key?(:samples)
 
       begin
         @tag_service = create_tag_service(attributes[:samples].count)
         @request_factories = attributes[:samples].map do |request_attributes|
           RequestFactory.new(attributes: { well: well, request_attributes: request_attributes },
-                             tag_service: tag_service)
+                             tag_service: @tag_service)
         end
       rescue StandardError => e
         raised_exceptions << e
@@ -79,9 +76,9 @@ module Ont
     end
 
     def check_request_factories
-      return if request_factories.empty?
+      return if @request_factories.empty?
 
-      request_factories.each do |request_factory|
+      @request_factories.each do |request_factory|
         next if request_factory.valid?
 
         request_factory.errors.each do |k, v|
@@ -91,9 +88,9 @@ module Ont
     end
 
     def check_tag_service
-      return if tag_service.nil?
+      return if @tag_service.nil?
 
-      errors.add('samples', 'should all be uniquely tagged') unless tag_service.complete?
+      errors.add('samples', 'should all be uniquely tagged') unless @tag_service.complete?
     end
 
     def check_for_raised_exceptions

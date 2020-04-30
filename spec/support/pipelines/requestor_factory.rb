@@ -8,7 +8,6 @@ shared_examples_for 'requestor factory' do
     it 'creates an object for each given request' do
       factory = described_class.new(attributes)
       expect(factory.requests.count).to eq(3)
-      expect(factory.requests[0].requestable.tube).to be_present
     end
 
     it 'produces error messages if any of the resources are not valid' do
@@ -50,5 +49,5 @@ shared_examples_for 'requestor factory' do
       expect(Tube.all.count).to eq(0)
     end
   end
- 
+
 end

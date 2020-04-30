@@ -18,14 +18,14 @@ module Ont
       build_request(attributes[:request_attributes])
     end
 
-    attr_reader :well, :tag_service, :tag_taggable, :request, :well_request_join
+    attr_reader :request
 
     def save
       return false unless valid?
 
       request.save
-      tag_taggable&.save
-      well_request_join.save
+      @tag_taggable&.save
+      @well_request_join.save
       true
     end
 
@@ -36,14 +36,14 @@ module Ont
       sample = build_or_fetch_sample(request_attributes, constants_accessor)
       ont_request = build_ont_request(request_attributes, constants_accessor)
       @request = ::Request.new(requestable: ont_request, sample: sample)
-      @well_request_join = ::ContainerMaterial.new(container: well, material: request.requestable)
+      @well_request_join = ::ContainerMaterial.new(container: @well, material: request.requestable)
     end
 
     def build_ont_request(request_attributes, constants_accessor)
       ont_request = Ont::Request.new(external_study_id: constants_accessor.external_study_id)
-      unless tag_service.nil?
+      unless @tag_service.nil?
         if request_attributes.key?(:tag_group_id)
-          tag = tag_service.find_and_register_tag(request_attributes[:tag_group_id])
+          tag = @tag_service.find_and_register_tag(request_attributes[:tag_group_id])
           @tag_taggable = ::TagTaggable.new(taggable: ont_request, tag: tag)
         end
       end
@@ -71,16 +71,16 @@ module Ont
     end
 
     def check_tag
-      return if tag_service.nil?
+      return if @tag_service.nil?
 
-      if tag_taggable.nil?
+      if @tag_taggable.nil?
         errors.add('request', 'must have a tag')
         return
       end
 
-      return if tag_taggable.valid?
+      return if @tag_taggable.valid?
 
-      tag_taggable.errors.each do |k, v|
+      @tag_taggable.errors.each do |k, v|
         errors.add(k, v)
       end
     end

@@ -25,12 +25,12 @@ RSpec.describe Tag, type: :model do
 
   it 'group id should be unique within set' do
     tag = create(:tag)
-    expect(build(:tag, group_id: tag.group_id)).to_not be_valid
+    expect(build(:tag, group_id: tag.group_id, tag_set_id: tag.tag_set_id)).to_not be_valid
   end
 
   it 'oligo should be unique within set' do
     tag = create(:tag)
-    expect(build(:tag, oligo: tag.oligo)).to_not be_valid
+    expect(build(:tag, oligo: tag.oligo, tag_set_id: tag.tag_set_id)).to_not be_valid
   end
 
   it 'can have no tag taggables' do
@@ -39,20 +39,20 @@ RSpec.describe Tag, type: :model do
   end
 
   it 'can have many tag taggables' do
-    numTaggables = 3
-    tag = create(:tag_with_taggables, taggables_count: 3)
-    expect(tag.tag_taggables.count).to eq(3)
+    num_taggables = 3
+    tag = create(:tag_with_taggables, taggables_count: num_taggables)
+    expect(tag.tag_taggables.count).to eq(num_taggables)
   end
 
-  it 'on destroy destroys tag taggables, not taggables' do
-    numTaggables = 3
-    tag = create(:tag_with_taggables, taggables_count: numTaggables)
+  it 'on destroy destroys tag_taggables, not taggables' do
+    num_taggables = 3
+    tag = create(:tag_with_taggables, taggables_count: num_taggables)
     # sanity check
-    expect(Ont::Request.all.count).to eq(numTaggables)
+    expect(Ont::Request.all.count).to eq(num_taggables)
     # destroy the tag
     tag.destroy
     # test outcome
     expect(TagTaggable.all.count).to eq(0)
-    expect(Ont::Request.all.count).to eq(numTaggables)
+    expect(Ont::Request.all.count).to eq(num_taggables)
   end
 end
