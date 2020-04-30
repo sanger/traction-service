@@ -3,14 +3,8 @@ require "rails_helper"
 RSpec.describe 'WellsController', type: :request do
 
   context '#get' do
-    let!(:library1) { create(:pacbio_library) }
-    let!(:library2) { create(:pacbio_library) }
-
-    let!(:tube1) { create(:tube) }
-    let!(:tube2) { create(:tube) }
-
-    let!(:container_material1) { create(:container_material, container: tube1, material: library1) }
-    let!(:container_material2) { create(:container_material, container: tube2, material: library2) }
+    let!(:library1) { create(:pacbio_library_in_tube) }
+    let!(:library2) { create(:pacbio_library_in_tube) }
 
     let!(:well1) { create(:pacbio_well) }
     let!(:well2) { create(:pacbio_well, libraries: [library1, library2]) }

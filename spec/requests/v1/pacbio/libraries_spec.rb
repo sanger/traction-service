@@ -8,14 +8,10 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
   let!(:tag2) { create(:tag) }
 
   context '#get' do
-    let!(:library1)         { create(:pacbio_library) }
+    let!(:library1)         { create(:pacbio_library_in_tube) }
     let!(:request_library1)  { create(:pacbio_request_library, library: library1, request: request, tag: tag)}
-    let!(:library2)         { create(:pacbio_library) }
+    let!(:library2)         { create(:pacbio_library_in_tube) }
     let!(:request_library2)  { create(:pacbio_request_library, library: library2, request: request, tag: tag)}
-    let!(:tube1) { create(:tube)}
-    let!(:container_material1) { create(:container_material, container: tube1, material: library1)}
-    let!(:tube2) { create(:tube)}
-    let!(:container_material2) { create(:container_material, container: tube2, material: library2)}
 
     it 'returns a list of libraries' do
       get v1_pacbio_libraries_path, headers: json_api_headers
