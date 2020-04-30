@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-# Material
+# TubeMaterial -- A material that is contained in a tube.
+# This is here to support legacy features of Pacbio and Saphyr
+# after Containers were introduced as a concern.
 module TubeMaterial
   extend ActiveSupport::Concern
   include Material
