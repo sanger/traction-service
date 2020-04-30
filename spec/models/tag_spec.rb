@@ -39,20 +39,20 @@ RSpec.describe Tag, type: :model do
   end
 
   it 'can have many tag taggables' do
-    numTaggables = 3
+    num_taggables = 3
     tag = create(:tag_with_taggables, taggables_count: 3)
     expect(tag.tag_taggables.count).to eq(3)
   end
 
   it 'on destroy destroys tag_taggables, not taggables' do
-    numTaggables = 3
-    tag = create(:tag_with_taggables, taggables_count: numTaggables)
+    num_taggables = 3
+    tag = create(:tag_with_taggables, taggables_count: num_taggables)
     # sanity check
-    expect(Ont::Request.all.count).to eq(numTaggables)
+    expect(Ont::Request.all.count).to eq(num_taggables)
     # destroy the tag
     tag.destroy
     # test outcome
     expect(TagTaggable.all.count).to eq(0)
-    expect(Ont::Request.all.count).to eq(numTaggables)
+    expect(Ont::Request.all.count).to eq(num_taggables)
   end
 end
