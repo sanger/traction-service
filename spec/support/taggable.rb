@@ -11,14 +11,14 @@ RSpec.shared_examples "taggable" do
   end
 
   it 'on destroy destroys tag_taggables, not taggables' do
-    numTags = 3
-    taggable = create(taggable_model, tags_count: numTags)
+    num_tags = 3
+    taggable = create(taggable_model, tags_count: num_tags)
     # sanity check
-    expect(Tag.all.count).to eq(numTags)
+    expect(Tag.all.count).to eq(num_tags)
     # destroy the taggable
     taggable.destroy
     # test outcome
     expect(TagTaggable.all.count).to eq(0)
-    expect(Tag.all.count).to eq(numTags)
+    expect(Tag.all.count).to eq(num_tags)
   end
 end
