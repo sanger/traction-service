@@ -40,8 +40,8 @@ RSpec.describe Tag, type: :model do
 
   it 'can have many tag taggables' do
     num_taggables = 3
-    tag = create(:tag_with_taggables, taggables_count: 3)
-    expect(tag.tag_taggables.count).to eq(3)
+    tag = create(:tag_with_taggables, taggables_count: num_taggables)
+    expect(tag.tag_taggables.count).to eq(num_taggables)
   end
 
   it 'on destroy destroys tag_taggables, not taggables' do
