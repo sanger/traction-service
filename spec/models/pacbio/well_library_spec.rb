@@ -11,7 +11,6 @@ RSpec.describe Pacbio::WellLibrary, type: :model, pacbio: true do
   end
 
   it 'will have some library attributes' do
-    request = create(:pacbio_request)
     library = create(:pacbio_library_in_tube)
     well_library = create(:pacbio_well_library, library: library)
 
