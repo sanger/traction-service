@@ -23,13 +23,11 @@ module Ont
       return false unless valid?
 
       request.save
-      well_request_join.save
+      @well_request_join.save
       true
     end
 
     private
-
-    attr_reader :well, :well_request_join
 
     def build_request(request_attributes)
       constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
@@ -40,7 +38,7 @@ module Ont
         ),
         sample: sample
       )
-      @well_request_join = ::ContainerMaterial.new({ container: well,
+      @well_request_join = ::ContainerMaterial.new({ container: @well,
                                                      material: request.requestable })
     end
 
