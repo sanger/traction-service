@@ -26,33 +26,29 @@ RSpec.describe 'GraphQL', type: :request do
 
     context 'when there is a plate with samples' do
       let!(:plate) do
-        create(:plate_with_ont_samples, samples: [
-            { position: 'A1', name: 'Sample in A1' },
-            { position: 'H12', name: 'Sample in H12' }
-          ]
-        )
+        create(:plate_with_ont_samples, wells: [
+            { position: 'A1', samples: [ { name: 'Sample in A1' } ] },
+            { position: 'H12', samples: [ { name: 'Sample 1 in H12' }, { name: 'Sample 2 in H12' } ] }
+          ])
       end
 
       it 'returns plate with nested sample' do
-        post v2_path, params: { query: '{ plates { wells { material { ... on Request { sample { name } } } } } }' }
+        post v2_path, params: { query: '{ plates { wells { materials { ... on Request { sample { name } } } } } }' }
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data']['plates'].length).to eq(1)
         expect(json['data']['plates'].first).to include(
           'wells' => [
             {
-              'material' => {
-                'sample' => {
-                  'name' => 'Sample in A1'
-                }
-              }
+              'materials' => [
+                { 'sample' => { 'name' => 'Sample in A1' } }
+              ]
             },
             {
-              'material' => {
-                'sample' => {
-                  'name' => 'Sample in H12'
-                }
-              }
+              'materials' => [
+                { 'sample' => { 'name' => 'Sample 1 in H12' } },
+                { 'sample' => { 'name' => 'Sample 2 in H12' } }
+              ]
             }
           ]
         )
@@ -61,7 +57,7 @@ RSpec.describe 'GraphQL', type: :request do
   end
 
   context 'create plate' do
-    def valid_query()
+    def valid_query
       <<~GQL
       mutation {
         createPlateWithOntSamples(
@@ -69,14 +65,25 @@ RSpec.describe 'GraphQL', type: :request do
             arguments: {
               barcode: "PLATE-1234"
               wells: [
-                { position: "A1" sample: { name: "Sample for A1" externalId: "ExtIdA1" } }
-                { position: "E7" sample: { name: "Sample for E7" externalId: "ExtIdE7" } }
+                {
+                  position: "A1"
+                  samples: [
+                    { name: "Sample 1 for A1" externalId: "ExtIdA1-1" }
+                    { name: "Sample 2 for A1" externalId: "ExtIdA1-2" }
+                  ]
+                }
+                {
+                  position: "E7" 
+                  samples: [
+                    { name: "Sample for E7" externalId: "ExtIdE7" }
+                  ]
+                }
               ]
             }
           }
         )
         {
-          plate { barcode wells { material { ... on Request { sample { name externalId } } } } }
+          plate { barcode wells { materials { ... on Request { sample { name externalId } } } } }
           errors
         }
       }
@@ -92,16 +99,13 @@ RSpec.describe 'GraphQL', type: :request do
       plate_json = mutation_json['plate']
       expect(plate_json['barcode']).to eq('PLATE-1234')
 
-      samples_json = plate_json['wells'].map { |well| well['material']['sample'] }
-      expect(samples_json).to contain_exactly({
-        'name' => 'Sample for A1',
-        'externalId' => 'ExtIdA1'
-      },
-      {
-        'name' => 'Sample for E7',
-        'externalId' => 'ExtIdE7'
-      })
-
+      expect(plate_json['wells'][0]['materials']).to contain_exactly(
+        { 'sample' => { 'name' => 'Sample 1 for A1', 'externalId' => 'ExtIdA1-1' } },
+        { 'sample' => { 'name' => 'Sample 2 for A1', 'externalId' => 'ExtIdA1-2' } }
+      )
+      expect(plate_json['wells'][1]['materials']).to contain_exactly(
+        { 'sample' => { 'name' => 'Sample for E7', 'externalId' => 'ExtIdE7' } }
+      )
       expect(mutation_json['errors']).to be_empty
     end
 
@@ -121,7 +125,7 @@ RSpec.describe 'GraphQL', type: :request do
       expect(mutation_json['errors']).to contain_exactly('Wells {:message=>"This is a test error"}')
     end
 
-    def missing_required_fields_query()
+    def missing_required_fields_query
       'mutation { createPlateWithOntSamples(input: { arguments: { bogus: "data" } } ) }'
     end
 

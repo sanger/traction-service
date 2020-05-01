@@ -8,7 +8,7 @@ class Tube < ApplicationRecord
   scope :by_barcode, ->(*barcodes) { where(barcode: barcodes) }
   scope :by_pipeline,
         lambda { |pipeline|
-          joins(:container_material).where(
+          joins(:container_materials).where(
             'container_materials.material_type LIKE ?', "#{pipeline.capitalize}::%"
           )
         }
