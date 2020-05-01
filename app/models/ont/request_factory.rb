@@ -13,7 +13,7 @@ module Ont
     def initialize(attributes = {})
       @well = attributes[:well]
       @tag_service = attributes[:tag_service]
-      return unless attributes.key?(:request_attributes)
+      return unless attributes.key?(:request_attributes) 
 
       build_request(attributes[:request_attributes])
     end
@@ -41,11 +41,9 @@ module Ont
 
     def build_ont_request(request_attributes, constants_accessor)
       ont_request = Ont::Request.new(external_study_id: constants_accessor.external_study_id)
-      unless @tag_service.nil?
-        if request_attributes.key?(:tag_group_id)
-          tag = @tag_service.find_and_register_tag(request_attributes[:tag_group_id])
-          @tag_taggable = ::TagTaggable.new(taggable: ont_request, tag: tag)
-        end
+      if request_attributes.key?(:tag_group_id)
+        tag = @tag_service.find_and_register_tag(request_attributes[:tag_group_id])
+        @tag_taggable = ::TagTaggable.new(taggable: ont_request, tag: tag)
       end
       ont_request
     end
@@ -71,14 +69,7 @@ module Ont
     end
 
     def check_tag
-      return if @tag_service.nil?
-
-      if @tag_taggable.nil?
-        errors.add('request', 'must have a tag')
-        return
-      end
-
-      return if @tag_taggable.valid?
+      return if @tag_taggable.nil? || @tag_taggable.valid?
 
       @tag_taggable.errors.each do |k, v|
         errors.add(k, v)
