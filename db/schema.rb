@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_28_092948) do
+ActiveRecord::Schema.define(version: 2020_05_01_073510) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -23,10 +23,21 @@ ActiveRecord::Schema.define(version: 2020_04_28_092948) do
     t.index ["material_type", "material_id"], name: "index_container_materials_on_material_type_and_material_id"
   end
 
+  create_table "ont_libraries", force: :cascade do |t|
+    t.string "plate_barcode"
+    t.integer "pool"
+    t.string "well_range"
+    t.integer "pool_size"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "ont_requests", force: :cascade do |t|
     t.string "external_study_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "ont_library_id"
+    t.index ["ont_library_id"], name: "index_ont_requests_on_ont_library_id"
   end
 
   create_table "pacbio_libraries", force: :cascade do |t|
