@@ -53,12 +53,13 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
       it 'produces error messages if given attributes contain no tag group id' do
         attributes = {
           well: well,
+          tag_service: tag_service,
           request_attributes: {
             name: 'sample 1',
             external_id: '1'
           }
         }
-        factory = Ont::RequestFactory.new(attributes, tag_service)
+        factory = Ont::RequestFactory.new(attributes)
         expect(factory).to_not be_valid
         expect(factory.errors.full_messages.length).to eq(1)
       end
@@ -67,13 +68,14 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
         allow_any_instance_of(::TagService).to receive(:find_and_register_tag).and_return(nil)
         attributes = {
           well: well,
+          tag_service: tag_service,
           request_attributes: {
             name: 'sample 1',
             external_id: '1',
             tag_group_id: 'not a valid group id'
           }
         }
-        factory = Ont::RequestFactory.new(attributes, tag_service)
+        factory = Ont::RequestFactory.new(attributes)
         expect(factory).to_not be_valid
         expect(factory.errors.full_messages.length).to eq(1)
       end
@@ -117,19 +119,21 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
       end
 
       context 'with tag service' do
+        let(:attributes_with_tag) { attributes.merge(tag_service: tag_service) }
+
         before do
           allow_any_instance_of(::TagService).to receive(:find_and_register_tag).and_return(tag)
         end
 
         it 'creates a tagged ont request' do
-          factory = Ont::RequestFactory.new(attributes, tag_service)
+          factory = Ont::RequestFactory.new(attributes_with_tag)
           expect(factory.save).to be_truthy
           expect(Ont::Request.first.tags.count).to eq(1)
           expect(Ont::Request.first.tags).to contain_exactly(tag)
         end
 
         it 'creates a tag taggable' do
-          factory = Ont::RequestFactory.new(attributes, tag_service)
+          factory = Ont::RequestFactory.new(attributes_with_tag)
           expect(factory.save).to be_truthy
           expect(::TagTaggable.count).to eq(1)
           expect(::TagTaggable.first.tag).to eq(tag)
