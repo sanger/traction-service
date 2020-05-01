@@ -50,7 +50,7 @@ module Ont
     def create_tag_service(num_samples)
       case num_samples
       when 1
-        nil
+        ::TagService.new(nil)
       when 96
         ::TagService.new(::TagSet.find_by!(name: 'OntWell96Samples'))
       when 384

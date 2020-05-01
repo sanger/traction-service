@@ -41,6 +41,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
 
     it 'produces error messages if any of the request factories are not valid' do
       mock_invalid_request_factories
+      allow_any_instance_of(::TagService).to receive(:complete?).and_return(true)
       attributes = { plate: plate, well_attributes: { position: 'A1', samples: [ { name: 'sample 1' } ] } }
       factory = Ont::WellFactory.new(attributes)
       expect(factory).to_not be_valid
