@@ -5,7 +5,10 @@ module Container
   extend ActiveSupport::Concern
 
   included do
-    has_one :container_material, as: :container, dependent: :destroy
-    delegate :material, to: :container_material, allow_nil: true
+    has_many :container_materials, as: :container, dependent: :destroy
+
+    def materials
+      container_materials.map(&:material)
+    end
   end
 end

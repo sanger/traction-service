@@ -7,7 +7,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
   let(:tags)                    { create_list(:tag, 3) }
   let(:requests)                { create_list(:pacbio_request, 3) }
   let(:request_attributes)      {[
-                                  {id: requests[0].id, type: 'requests', tag: { id: tags[0].id, type: 'tags'}}, 
+                                  {id: requests[0].id, type: 'requests', tag: { id: tags[0].id, type: 'tags'}},
                                   {id: requests[1].id, type: 'requests', tag: { id: tags[1].id, type: 'tags'}}
                                 ]}
   let(:libraries_attributes)    { attributes_for(:pacbio_library).merge(requests: request_attributes) }
@@ -29,16 +29,6 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
         expect(@pacbio_library.updated_at).to be_nil
         expect(@pacbio_library.state).to be_nil
       end
-
-      it 'creates a Tube object for the librarys tube' do
-        pacbio_library_tube = @pacbio_library.tube
-        expect(pacbio_library_tube.id).to be_nil
-        expect(pacbio_library_tube.barcode).to be_nil
-        expect(pacbio_library_tube.material_id).to be_nil
-        expect(pacbio_library_tube.material_type).to eq "Pacbio::Library"
-        expect(pacbio_library_tube.created_at).to be_nil 
-        expect(pacbio_library_tube.updated_at).to be_nil
-      end
     end
 
     context '#request_libraries' do
@@ -56,7 +46,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
           @factory = Pacbio::LibraryFactory.new(libraries_attributes)
           @factory.save
         end
-        
+
         it 'can save' do
           expect(@factory).to be_valid
         end
@@ -74,9 +64,9 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
           tube = @factory.library.tube
           expect(tube.id).not_to be_nil
           expect(tube.barcode).not_to be_nil
-          expect(tube.material_id).to eq @factory.library.id
-          expect(tube.created_at).not_to be_nil
-          expect(tube.updated_at).not_to be_nil
+          expect(tube.materials.first.id).to eq @factory.library.id
+          expect(tube.created_at).to be_present
+          expect(tube.updated_at).to be_present
         end
 
         it 'associates the list of Pacbio::RequestLibrary(s) and tags, with the Pacbio::Library' do
@@ -113,7 +103,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
           it 'produces an error if there is more than one request and a tag is missing' do
             invalid_request_attributes = [{id: requests[0].id, type: 'requests'}, {id: requests[1].id, type: 'requests', tag: { id: tags[0].id, type: 'tags'}}]
             library_attributes = attributes_for(:pacbio_library).merge(requests: invalid_request_attributes)
-            
+
             factory = Pacbio::LibraryFactory.new(library_attributes)
             expect(factory.valid?).to be_falsy
             expect(factory.errors.full_messages).to eq ['Tag must be present']
@@ -140,7 +130,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
 
           it 'produces an error if any two requests in a library are the same' do
             invalid_request_attributes = [
-              {id: requests[0].id, type: 'requests', tag: { id: tags[0].id, type: 'tags'}}, 
+              {id: requests[0].id, type: 'requests', tag: { id: tags[0].id, type: 'tags'}},
               {id: requests[0].id, type: 'requests', tag: { id: tags[1].id, type: 'tags'}}
             ]
             library_attributes = attributes_for(:pacbio_library).merge(requests: invalid_request_attributes)
@@ -154,7 +144,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
       context 'when save errors' do
         before do
           @factory = Pacbio::LibraryFactory.new(attributes)
-          allow(@factory).to receive(:valid?).and_return true 
+          allow(@factory).to receive(:valid?).and_return true
         end
 
         context 'when the library fails to save' do
@@ -168,8 +158,8 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
             expect { @factory.save }.not_to change(Pacbio::RequestLibrary, :count)
           end
         end
-      
-        context 'when the request libraries fail to save' do  
+
+        context 'when the request libraries fail to save' do
           before do
             allow(@factory.request_libraries).to receive(:save).and_return false
           end
@@ -191,8 +181,8 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
         expect(factory.id).to eq library.id
       end
     end
-  end        
-  
+  end
+
   context 'LibraryFactory::RequestLibraries' do
     let(:library) { build(:pacbio_library) }
 
@@ -233,6 +223,6 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
         expect(library.request_libraries[1].pacbio_library_id).to eq library.id
       end
     end
-  end 
+  end
 
 end
