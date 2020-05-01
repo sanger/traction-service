@@ -69,7 +69,7 @@ RSpec.describe 'GraphQL', type: :request do
                   position: "A1"
                   samples: [
                     { name: "Sample 1 for A1" externalId: "ExtIdA1-1" }
-                    { name: "Sample 2 for A1" externalId: "ExtIdA1-2" }
+                    { name: "Sample 2 for A1" externalId: "ExtIdA1-2" tagGroupId: "Tag123" }
                   ]
                 }
                 {
