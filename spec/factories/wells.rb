@@ -10,7 +10,8 @@ FactoryBot.define do
   
       after :create do |well, options|
         options.samples.each do |sample_spec|
-          sample = create(:sample, name: sample_spec[:name])
+          sample = build(:sample, name: sample_spec[:name])
+          sample.external_id = sample_spec[:external_id] if sample_spec.key?(:external_id)
           request = build(:request, sample: sample, requestable: nil )
           ont_request = create(:ont_request, request: request)
           create(:container_material, container: well, material: ont_request)

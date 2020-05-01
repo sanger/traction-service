@@ -2,8 +2,12 @@ require 'rails_helper'
 
 RSpec.describe Ont::RequestFactory, type: :model, ont: true do
   let(:well) { create(:well) }
+  let(:tag) { create(:tag) }
+  let(:tag_service) { ::TagService.new(tag.tag_set) }
 
   context '#initialise' do
+    
+
     it 'produces error messages if given no well' do
       attributes = { request_attributes: { external_id: '1' } }
       factory = Ont::RequestFactory.new(attributes)
@@ -44,11 +48,43 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages.length).to eq(1)
     end
+
+    context 'with tag service' do
+      it 'produces error messages if given attributes contain no tag group id' do
+        attributes = {
+          well: well,
+          tag_service: tag_service,
+          request_attributes: {
+            name: 'sample 1',
+            external_id: '1'
+          }
+        }
+        factory = Ont::RequestFactory.new(attributes)
+        expect(factory).to_not be_valid
+        expect(factory.errors.full_messages.length).to eq(1)
+      end
+
+      it 'produces error messages if no matching tag exists' do
+        allow_any_instance_of(::TagService).to receive(:find_and_register_tag).and_return(nil)
+        attributes = {
+          well: well,
+          tag_service: tag_service,
+          request_attributes: {
+            name: 'sample 1',
+            external_id: '1',
+            tag_group_id: 'not a valid group id'
+          }
+        }
+        factory = Ont::RequestFactory.new(attributes)
+        expect(factory).to_not be_valid
+        expect(factory.errors.full_messages.length).to eq(1)
+      end
+    end
   end
 
   context '#save' do
     context 'valid build' do
-      let(:attributes) { { well: well, request_attributes: { name: 'sample 1', external_id: '1' } } }
+      let(:attributes) { { well: well, request_attributes: { name: 'sample 1', external_id: '1', tag_group_id: tag.group_id } } }
 
       before do
         allow_any_instance_of(Pipelines::ConstantsAccessor).to receive(:external_study_id).and_return('test external id')
@@ -60,15 +96,7 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
         expect(factory).to be_valid
       end
 
-      it 'creates a request' do
-        factory = Ont::RequestFactory.new(attributes)
-        expect(factory.save).to be_truthy
-        expect(::Well.all.count).to eq(1)
-        expect(::Well.all.first.plate).to eq(::Plate.first)
-        expect(::Well.first.position).to eq('A1')
-      end
-
-      it 'creates an ont request' do
+      it 'creates ont request' do
         factory = Ont::RequestFactory.new(attributes)
         expect(factory.save).to be_truthy
         expect(Ont::Request.all.count).to eq(1)
@@ -76,11 +104,41 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
         expect(Ont::Request.first.container).to eq(::Well.where(position: 'A1').first)
       end
 
-      it 'creates a request' do
-        factory = Ont::RequestFactory.new(attributes)
-        expect(factory.save).to be_truthy
-        expect(::Request.all.count).to eq(1)
-        expect(::Request.first.requestable).to eq(Ont::Request.first)
+      context 'without tag service' do
+        it 'creates an untagged ont request' do
+          factory = Ont::RequestFactory.new(attributes)
+          expect(factory.save).to be_truthy
+          expect(Ont::Request.first.tags.count).to eq(0)
+        end
+
+        it 'does not create a tag taggable' do
+          factory = Ont::RequestFactory.new(attributes)
+          expect(factory.save).to be_truthy
+          expect(::TagTaggable.count).to eq(0)
+        end
+      end
+
+      context 'with tag service' do
+        let(:attributes_with_tag) { attributes.merge(tag_service: tag_service) }
+
+        before do
+          allow_any_instance_of(::TagService).to receive(:find_and_register_tag).and_return(tag)
+        end
+
+        it 'creates a tagged ont request' do
+          factory = Ont::RequestFactory.new(attributes_with_tag)
+          expect(factory.save).to be_truthy
+          expect(Ont::Request.first.tags.count).to eq(1)
+          expect(Ont::Request.first.tags).to contain_exactly(tag)
+        end
+
+        it 'creates a tag taggable' do
+          factory = Ont::RequestFactory.new(attributes_with_tag)
+          expect(factory.save).to be_truthy
+          expect(::TagTaggable.count).to eq(1)
+          expect(::TagTaggable.first.tag).to eq(tag)
+          expect(::TagTaggable.first.taggable).to eq(Ont::Request.first)
+        end
       end
 
       it 'creates a container material' do
@@ -141,6 +199,10 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
 
       it 'does not create a join' do
         expect(::ContainerMaterial.all.count).to eq(0)
+      end
+
+      it 'does not create a tag taggable' do
+        expect(TagTaggable.all.count).to eq(0)
       end
     end
   end
