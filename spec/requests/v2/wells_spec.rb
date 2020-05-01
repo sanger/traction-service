@@ -46,8 +46,8 @@ RSpec.describe 'GraphQL', type: :request do
 
   context 'get wells' do
     context 'when there are two plates with wells' do
-      let!(:plate_1) { create(:plate_with_wells, well_count: 2) }
-      let!(:plate_2) { create(:plate_with_wells, well_count: 1) }
+      let!(:plate_1) { create(:plate_with_wells, column_count: 2) }
+      let!(:plate_2) { create(:plate_with_wells, column_count: 1) }
 
       it 'returns all wells' do
         post v2_path, params: { query: '{ wells { id } }' }
