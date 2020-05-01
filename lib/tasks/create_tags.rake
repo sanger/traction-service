@@ -2,23 +2,25 @@
 
 require 'securerandom'
 
+# Extension methods for String
+# to handle incrementing oligo sequences
 class String
   def increment_oligo!
     upcase!
     increment_base_at_index!(length - 1)
   end
 
-private
+  private
 
   def increment_base_at_index!(index)
     return unless index >= 0 && index < length
 
-    base_sequence = ['A', 'C', 'G', 'T']
+    base_sequence = %w[A C G T]
     char_at_index = self[index]
     current_sequence_index = base_sequence.index(char_at_index)
     new_sequence_index = current_sequence_index.nil? ? 0 : current_sequence_index + 1
 
-    if (new_sequence_index == base_sequence.length)
+    if new_sequence_index == base_sequence.length
       # We passed the last base in the sequence
       self[index] = base_sequence.first
       increment_base_at_index!(index - 1)
@@ -60,12 +62,14 @@ namespace :tags do
       tag_set_prefix = +'ACGTA'
       96.times do |tag_set_index|
         oligo = +"#{tag_set_prefix}ACGTA"
-        tag_set = TagSet.create!(name: ("Dummy_96_barcodes_%02d" % [tag_set_index + 1]),
+        padded_tag_set_number = format('%<tag_set_number>02i', { tag_set_number: tag_set_index + 1 })
+        tag_set = TagSet.create!(name: "Dummy_96_barcodes_#{padded_tag_set_number}",
                                  uuid: SecureRandom.uuid)
 
         96.times do |tag_index|
+          padded_tag_number = format('%<tag_number>02i', { tag_number: tag_index + 1 })
           Tag.create!(oligo: oligo,
-                      group_id: ("dt%02d_%02d" % [tag_set_index + 1, tag_index + 1]),
+                      group_id: "dt#{padded_tag_set_number}_#{padded_tag_number}",
                       tag_set_id: tag_set.id)
           oligo.increment_oligo!
         end
