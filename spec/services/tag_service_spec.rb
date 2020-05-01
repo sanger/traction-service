@@ -8,9 +8,9 @@ RSpec.describe TagService do
       expect(tag).to be_nil
     end
 
-    it 'is not complete' do
+    it 'is complete' do
       tag_service = TagService.new(nil)
-      expect(tag_service.complete?).to be_falsey
+      expect(tag_service.complete?).to be_truthy
     end
   end
 
