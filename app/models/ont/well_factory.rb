@@ -41,7 +41,8 @@ module Ont
       begin
         @tag_service = create_tag_service(attributes[:samples].count)
         @request_factories = attributes[:samples].map do |request_attributes|
-          RequestFactory.new(attributes: { well: well, request_attributes: request_attributes },
+          RequestFactory.new(well: well,
+                             request_attributes: request_attributes,
                              tag_service: @tag_service)
         end
       rescue StandardError => e

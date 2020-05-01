@@ -10,9 +10,9 @@ module Ont
 
     validate :check_request, :check_tag
 
-    def initialize(attributes = {}, tag_service = nil)
+    def initialize(attributes = {})
       @well = attributes[:well]
-      @tag_service = tag_service
+      @tag_service = attributes[:tag_service]
       return unless attributes.key?(:request_attributes)
 
       build_request(attributes[:request_attributes])
