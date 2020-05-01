@@ -14,7 +14,7 @@ module Ont
       build_requests(attributes)
     end
 
-    attr_reader :plate, :well_factories
+    attr_reader :plate
 
     def save
       return false unless valid?
@@ -25,6 +25,8 @@ module Ont
     end
 
     private
+
+    attr_reader :well_factories
 
     def build_requests(attributes)
       wells_attributes = attributes.extract!(:wells)

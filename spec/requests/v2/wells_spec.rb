@@ -18,11 +18,21 @@ RSpec.describe 'GraphQL', type: :request do
         )
       end
 
-      it 'handles that there is no sample in the well' do
-        post v2_path, params: { query: "{ well(id: #{well.id}) { id plateId material { ... on Request { id } } } }" }
+      it 'handles that there are no samples in the well' do
+        post v2_path, params: { query: "{ well(id: #{well.id}) { id plateId materials { ... on Request { id } } } }" }
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['well']['material']).to be_nil
+        expect(json['data']['well']['materials']).to be_empty
+      end
+
+      it 'handles that there are many samples in the well' do
+        well = create(:well_with_ont_samples, position: 'A1', samples: [{ name: 'Sample 1 in A1' }, { name: 'Sample 2 in A1' } ])
+        post v2_path, params: { query: "{ well(id: #{well.id}) { id plateId materials { ... on Request { sample { name } } } } }" }
+        expect(response).to have_http_status(:success)
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data']['well']['materials'].count).to eq(2)
+        expect(json['data']['well']['materials'][0]['sample']).to include({ 'name' => 'Sample 1 in A1' })
+        expect(json['data']['well']['materials'][1]['sample']).to include({ 'name' => 'Sample 2 in A1' })
       end
 
       it 'returns null when well invalid ID' do
