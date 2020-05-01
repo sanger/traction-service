@@ -13,7 +13,7 @@ module Ont
     def initialize(attributes = {})
       @well = attributes[:well]
       @tag_service = attributes[:tag_service]
-      return unless attributes.key?(:request_attributes) 
+      return unless attributes.key?(:request_attributes)
 
       build_request(attributes[:request_attributes])
     end
