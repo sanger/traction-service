@@ -6,37 +6,46 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
   let(:tag_service) { ::TagService.new(tag.tag_set) }
 
   context '#initialise' do
-    it 'produces error messages if given no well' do
-      attributes = { request_attributes: { external_id: '1' } }
+    it 'is not valid if given no well' do
+      attributes = { tag_service: tag_service, request_attributes: { external_id: '1' } }
       factory = Ont::RequestFactory.new(attributes)
       expect(factory).to_not be_valid
-      expect(factory.errors.full_messages.length).to eq(1)
+      expect(factory.errors.full_messages).to_not be_empty
     end
 
-    it 'produces error messages if given no request attributes' do
-      attributes = { well: well }
+    it 'is not valid if given no tag service' do
+      attributes = { well: well, request_attributes: { external_id: '1' } }
       factory = Ont::RequestFactory.new(attributes)
       expect(factory).to_not be_valid
-      expect(factory.errors.full_messages.length).to eq(1)
+      expect(factory.errors.full_messages).to_not be_empty
     end
 
-    it 'produces error messages if the generated sample is not valid' do
+    it 'is not valid if given no request attributes' do
+      attributes = { well: well, tag_service: tag_service }
+      factory = Ont::RequestFactory.new(attributes)
+      expect(factory).to_not be_valid
+      expect(factory.errors.full_messages).to_not be_empty
+    end
+
+    it 'is not valid if the generated sample is not valid' do
       # request attributes should include a name
       attributes = {
         well: well,
+        tag_service: tag_service,
         request_attributes: {
           external_id: '1'
         }
       }
       factory = Ont::RequestFactory.new(attributes)
       expect(factory).to_not be_valid
-      expect(factory.errors.full_messages.length).to eq(1)
+      expect(factory.errors.full_messages).to_not be_empty
     end
 
-    it 'produces error messages if the generated ont request is not valid' do
+    it 'is not valid if the generated ont request is not valid' do
       allow_any_instance_of(Pipelines::ConstantsAccessor).to receive(:external_study_id).and_return(nil)
       attributes = {
         well: well,
+        tag_service: tag_service,
         request_attributes: {
           name: 'sample 1',
           external_id: '1'
@@ -44,45 +53,29 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
       }
       factory = Ont::RequestFactory.new(attributes)
       expect(factory).to_not be_valid
-      expect(factory.errors.full_messages.length).to eq(1)
+      expect(factory.errors.full_messages).to_not be_empty
     end
 
-    context 'with tag service' do
-      it 'produces error messages if given attributes contain no tag group id' do
-        attributes = {
-          well: well,
-          tag_service: tag_service,
-          request_attributes: {
-            name: 'sample 1',
-            external_id: '1'
-          }
+    it 'is not valid if no matching tag exists' do
+      allow_any_instance_of(::TagService).to receive(:find_and_register_tag).and_return(nil)
+      attributes = {
+        well: well,
+        tag_service: tag_service,
+        request_attributes: {
+          name: 'sample 1',
+          external_id: '1',
+          tag_group_id: 'not a valid group id'
         }
-        factory = Ont::RequestFactory.new(attributes)
-        expect(factory).to_not be_valid
-        expect(factory.errors.full_messages.length).to eq(1)
-      end
-
-      it 'produces error messages if no matching tag exists' do
-        allow_any_instance_of(::TagService).to receive(:find_and_register_tag).and_return(nil)
-        attributes = {
-          well: well,
-          tag_service: tag_service,
-          request_attributes: {
-            name: 'sample 1',
-            external_id: '1',
-            tag_group_id: 'not a valid group id'
-          }
-        }
-        factory = Ont::RequestFactory.new(attributes)
-        expect(factory).to_not be_valid
-        expect(factory.errors.full_messages.length).to eq(1)
-      end
+      }
+      factory = Ont::RequestFactory.new(attributes)
+      expect(factory).to_not be_valid
+      expect(factory.errors.full_messages).to_not be_empty
     end
   end
 
   context '#save' do
     context 'valid build' do
-      let(:attributes) { { well: well, request_attributes: { name: 'sample 1', external_id: '1', tag_group_id: tag.group_id } } }
+      let(:attributes) { { well: well, tag_service: tag_service, request_attributes: { name: 'sample 1', external_id: '1', tag_group_id: tag.group_id } } }
 
       before do
         allow_any_instance_of(Pipelines::ConstantsAccessor).to receive(:external_study_id).and_return('test external id')
@@ -102,41 +95,42 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
         expect(Ont::Request.first.container).to eq(::Well.where(position: 'A1').first)
       end
 
-      context 'without tag service' do
+      context 'without tag_group_id' do
+        let(:attributes_without_tag) { { well: well, tag_service: tag_service, request_attributes: { name: 'sample 1', external_id: '1' } } }
+
         it 'creates an untagged ont request' do
-          factory = Ont::RequestFactory.new(attributes)
+          factory = Ont::RequestFactory.new(attributes_without_tag)
           expect(factory.save).to be_truthy
           expect(Ont::Request.first.tags.count).to eq(0)
         end
 
         it 'does not create a tag taggable' do
-          factory = Ont::RequestFactory.new(attributes)
+          factory = Ont::RequestFactory.new(attributes_without_tag)
           expect(factory.save).to be_truthy
           expect(::TagTaggable.count).to eq(0)
         end
       end
 
-      context 'with tag service' do
-        let(:attributes_with_tag) { attributes.merge(tag_service: tag_service) }
-
+      context 'with tag_group_id' do
         before do
           allow_any_instance_of(::TagService).to receive(:find_and_register_tag).and_return(tag)
         end
 
         it 'creates a tagged ont request' do
-          factory = Ont::RequestFactory.new(attributes_with_tag)
+          factory = Ont::RequestFactory.new(attributes)
           expect(factory.save).to be_truthy
           expect(Ont::Request.first.tags.count).to eq(1)
           expect(Ont::Request.first.tags).to contain_exactly(tag)
         end
 
         it 'creates a tag taggable' do
-          factory = Ont::RequestFactory.new(attributes_with_tag)
+          factory = Ont::RequestFactory.new(attributes)
           expect(factory.save).to be_truthy
           expect(::TagTaggable.count).to eq(1)
           expect(::TagTaggable.first.tag).to eq(tag)
           expect(::TagTaggable.first.taggable).to eq(Ont::Request.first)
         end
+
       end
 
       it 'creates a container material' do
