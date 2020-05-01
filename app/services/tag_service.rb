@@ -19,7 +19,7 @@ class TagService
   end
 
   def complete?
-    return false if tag_set.nil?
+    return true if tag_set.nil?
 
     tag_set.tags.count == tags.uniq.count
   end
