@@ -12,6 +12,7 @@ module Ont
 
     def initialize(attributes = {})
       @request_factories = []
+      @raised_exceptions = []
       return unless attributes.key?(:well_attributes)
 
       @plate = attributes[:plate]
@@ -19,10 +20,6 @@ module Ont
     end
 
     attr_reader :well
-
-    def raised_exceptions
-      @raised_exceptions ||= []
-    end
 
     def save
       return false unless valid?
@@ -46,7 +43,7 @@ module Ont
                              tag_service: @tag_service)
         end
       rescue StandardError => e
-        raised_exceptions << e
+        @raised_exceptions << e
       end
     end
 
@@ -95,9 +92,9 @@ module Ont
     end
 
     def check_for_raised_exceptions
-      return if raised_exceptions.empty?
+      return if @raised_exceptions.empty?
 
-      raised_exceptions.each do |ex|
+      @raised_exceptions.each do |ex|
         errors.add('exception raised:', ex.message)
       end
     end

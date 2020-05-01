@@ -6,8 +6,6 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
   let(:tag_service) { ::TagService.new(tag.tag_set) }
 
   context '#initialise' do
-    
-
     it 'produces error messages if given no well' do
       attributes = { request_attributes: { external_id: '1' } }
       factory = Ont::RequestFactory.new(attributes)
