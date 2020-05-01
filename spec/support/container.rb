@@ -1,15 +1,16 @@
 RSpec.shared_examples "container" do
   let(:factory) { described_class.to_s.downcase.to_sym}
 
-  it 'delegates material call to container_material join object' do
-    container = create(factory)
-    container_material = create(:container_material, container: container)
-    expect(container_material.material).to be_present
-    expect(container.material).to eq(container_material.material)
+  it "returns empty materials for no container materials" do
+    container = create(factory, container_materials: [])
+    expect(container.materials).to be_empty
   end
 
-  it "produces nil for delegates material if it doesn't exist" do
-    container = create(factory, container_material: nil)
-    expect(container.material).to be_nil
+  it 'returns all materials for some container materials' do
+    container = create(factory)
+    num_materials = 3
+    container_materials = create_list(:container_material, num_materials, container: container)
+    expect(container.materials.count).to eq(num_materials)
+    expect(container.materials).to eq(container_materials.map { |con_mat| con_mat.material })
   end
 end
