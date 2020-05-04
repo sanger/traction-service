@@ -5,7 +5,7 @@ module Ont
   class Library < ApplicationRecord
     include Material
 
-    has_many :requests, inverse_of: :library, dependent: :destroy
+    has_many :requests, foreign_key: :ont_library_id, inverse_of: :library, dependent: :destroy
 
     validates :plate_barcode, :pool, :well_range, :pool_size, presence: true
 
