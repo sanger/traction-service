@@ -5,18 +5,17 @@ require 'graphql/client/http'
 
 # Prepare and manage the Traction GraphQL server
 module TractionGraphQL
-  class LongTimeoutHTTP < GraphQL::Client::HTTP
+  class NoTimeoutHTTP < GraphQL::Client::HTTP
     def connection
       http = super
-      http.open_timeout = 300
-      http.read_timeout = 300
+      http.read_timeout = nil
       http
     end
   end
 
   # Configure GraphQL endpoint using the basic HTTP network adapter.
   RAILS_ROOT_URI = (ENV['RAILS_ROOT_URI'] || 'http://localhost:3000').chomp '/'
-  HTTP = LongTimeoutHTTP.new("#{RAILS_ROOT_URI}/v2/")
+  HTTP = NoTimeoutHTTP.new("#{RAILS_ROOT_URI}/v2/")
 
   # Fetch latest schema on init, this will make a network request
   #   Schema = GraphQL::Client.load_schema(HTTP)
