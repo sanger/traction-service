@@ -86,7 +86,7 @@ namespace :ont_runs do
     submit_create_plate_query(description: 'pooling scenario 1', barcode: 'PLATE-PS01', wells: variables.wells(samples_per_well: 1))
     submit_create_plate_query(description: 'pooling scenario 2', barcode: 'PLATE-PS02', wells: variables.wells(samples_per_well: 1))
     submit_create_plate_query(description: 'pooling scenario 3', barcode: 'PLATE-PS03', wells: variables.wells(samples_per_well: 96))
-    puts '-> Successfully create all ONT runs'
+    puts '-> Successfully created all ONT runs'
   end
 
   task destroy: :environment do
