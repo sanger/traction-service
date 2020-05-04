@@ -90,6 +90,7 @@ namespace :ont_runs do
   end
 
   task destroy: :environment do
+    # TODO: This needs to be made to work correctly for ONT
     Sample.all.each do |sample|
       sample.destroy if sample.requests[0].requestable_type == 'Ont::Request'
     end
