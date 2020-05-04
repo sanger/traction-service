@@ -1,28 +1,5 @@
 # frozen_string_literal: true
 
-require 'graphql/client'
-require 'graphql/client/http'
-
-module TractionGraphQL
-  # Configure GraphQL endpoint using the basic HTTP network adapter.
-  RAILS_ROOT_URI = ENV['RAILS_ROOT_URI'] || 'http://localhost:3000'
-  HTTP = GraphQL::Client::HTTP.new("#{RAILS_ROOT_URI}/v2/")
-
-  # Fetch latest schema on init, this will make a network request
-  #   Schema = GraphQL::Client.load_schema(HTTP)
-  #
-  # Alternatively, to avoid the network request each time a rake task is performed,
-  # you can dump this to a JSON file and load from disk
-  # Dump:
-  #   GraphQL::Client.dump_schema(TractionGraphQL::HTTP, 'lib/graphql_schema.json')
-  # Load:
-  #   Schema = GraphQL::Client.load_schema('lib/graphql_schema.json')
-  Schema = GraphQL::Client.load_schema('lib/graphql_schema.json')
-
-  # Client = GraphQL::Client.new(schema: Schema, execute: HTTP)
-  Client = GraphQL::Client.new(schema: Schema, execute: HTTP)
-end
-
 # A set of GraphQL queries for creating ONT plates
 module CreatePlateQueries
   def self.wells
