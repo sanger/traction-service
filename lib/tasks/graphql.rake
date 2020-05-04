@@ -5,6 +5,7 @@ require 'graphql/client/http'
 
 # Prepare and manage the Traction GraphQL server
 module TractionGraphQL
+  # An HTTP class with no timeouts
   class NoTimeoutHTTP < GraphQL::Client::HTTP
     def connection
       http = super
