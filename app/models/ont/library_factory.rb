@@ -61,7 +61,7 @@ module Ont
     end
 
     def validate_tag_set_for_plate
-      return true unless @plate.wells.count % tag_set.tags.count == 0
+      return true if @plate.wells.count % tag_set.tags.count == 0
 
       validation_errors << ['Tag set', 'tag count must be a factor of plate well count']
       false
@@ -81,7 +81,7 @@ module Ont
       end
     end
 
-    def build_libaries
+    def build_libraries
       num_tags = @tag_set.tags.count
       (@plate.wells.count / num_tags).times do |lib_idx|
         build_library(lib_idx, num_tags)
@@ -90,11 +90,11 @@ module Ont
 
     def build_library(lib_idx, num_tags)
       wells = get_wells(lib_idx, num_tags)
-      @libraries << Ont::Library(plate_barcode: @plate.barcode,
-                                 well_range: "#{wells[0].position}-#{wells[-1].position}",
-                                 pool: lib_idx + 1,
-                                 pool_size: num_tags,
-                                 requests: get_and_tag_requests(wells))
+      @libraries << Library.new(plate_barcode: @plate.barcode,
+                                well_range: "#{wells[0].position}-#{wells[-1].position}",
+                                pool: lib_idx + 1,
+                                pool_size: num_tags,
+                                requests: get_and_tag_requests(wells))
       @container_materials << ::ContainerMaterial.new(container: Tube.new,
                                                       material: @libraries.last)
     end
@@ -138,11 +138,6 @@ module Ont
     end
 
     def check_tag_taggables
-      if @tag_taggables.empty?
-        errors.add('tags', 'were not created')
-        return
-      end
-
       @tag_taggables.each do |tag_taggable|
         next if tag_taggable.valid?
 
