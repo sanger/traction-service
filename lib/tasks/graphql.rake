@@ -39,7 +39,8 @@ namespace :graphql do
     if gql.dump_schema
       puts '-> GraphQL schema dumped successfully'
     else
-      puts '-> GraphQL schema dump FAILED -- is the server running?'
+      puts "-> Failed to dump the GraphQL schema from Rails server at #{TractionGraphQL::RAILS_ROOT_URI}"
+      puts '   Use the RAILS_ROOT_URI environment variable to specify a different URI'
     end
   end
 end
