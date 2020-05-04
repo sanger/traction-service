@@ -81,6 +81,7 @@ namespace :ont_runs do
 
   task create: :environment do
     puts '-> Creating ONT runs using GraphQL'
+    puts '   Note these could take a few minutes to complete'
     variables = OntPlates::Variables.new
     submit_create_plate_query(description: 'pooling scenario 1', barcode: 'PLATE-PS01', wells: variables.wells(samples_per_well: 1))
     submit_create_plate_query(description: 'pooling scenario 2', barcode: 'PLATE-PS02', wells: variables.wells(samples_per_well: 1))
