@@ -23,9 +23,7 @@ To create the database for a fresh install: `bundle exec rails db:setup`
 
 To create a set of enzymes (needed for saphyr dummy runs): `bundle exec rails enzymes:create`
 
-To create the first set of tags (needed for pacbio dummy runs): `bundle exec rails tags:create:sequel_16_barcodes`
-
-To create 96 dummy tag sets with 96 unique tags each (takes a few minutes -- needed for ONT dummy runs): `bundle exec rails tags:create:dummy_sets_96`
+To create the first set of tags (needed for pacbio and ont dummy runs): `bundle exec rails tags:create`
 
 To create pacbio dummy runs: `bundle exec rails pacbio_runs:create`
 
