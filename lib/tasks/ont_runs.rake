@@ -109,7 +109,7 @@ namespace :ont_runs do
 
   task create: :environment do
     puts '-> Creating ONT runs using GraphQL'
-    puts '   Note these take a long time to complete'
+    puts '   Note these can take a long time to complete'
     submit_create_plate_query(CreatePlateQueries::PoolingScenario1, 'pooling scenario 1')
     submit_create_plate_query(CreatePlateQueries::PoolingScenario2, 'pooling scenario 2')
     submit_create_plate_query(CreatePlateQueries::PoolingScenario3, 'pooling scenario 3')
