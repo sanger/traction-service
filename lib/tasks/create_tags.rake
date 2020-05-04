@@ -56,7 +56,7 @@ namespace :tags do
 
     puts
     puts '-> Creating ONT tag set for 96 sample wells'
-    tag_set = TagSet.create!(name: "OntWell96Samples", uuid: SecureRandom.uuid)
+    tag_set = TagSet.create!(name: 'OntWell96Samples', uuid: SecureRandom.uuid)
     puts '-> Tag Set successfully created'
     oligo = +'ACGTACGTACGTACGT'
     (1..96).each do |tag_index|
