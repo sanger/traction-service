@@ -59,23 +59,21 @@ namespace :tags do
     desc 'Create 96 tag sets with 96 unique tags each'
     task dummy_sets_96: :environment do
       puts '-> Creating 96 dummy tag sets with 96 dummy tags each'
-      tag_set_prefix = +'ACGTA'
-      96.times do |tag_set_index|
-        oligo = +"#{tag_set_prefix}ACGTA"
-        padded_tag_set_number = format('%<tag_set_number>02i', { tag_set_number: tag_set_index + 1 })
+      oligo = +'ACGTACGTACGT'
+      (1..96).each do |tag_set_index|
+        padded_tag_set_number = format('%<tag_set_number>02i', { tag_set_number: tag_set_index })
         tag_set = TagSet.create!(name: "Dummy_96_barcodes_#{padded_tag_set_number}",
                                  uuid: SecureRandom.uuid)
 
-        96.times do |tag_index|
-          padded_tag_number = format('%<tag_number>02i', { tag_number: tag_index + 1 })
+        (1..96).each do |tag_index|
+          padded_tag_number = format('%<tag_number>02i', { tag_number: tag_index })
           Tag.create!(oligo: oligo,
                       group_id: "dt#{padded_tag_set_number}_#{padded_tag_number}",
                       tag_set_id: tag_set.id)
           oligo.increment_oligo!
         end
 
-        puts "-> Created dummy tag set number #{tag_set_index + 1}"
-        tag_set_prefix.increment_oligo!
+        puts "-> Created dummy tag set number #{tag_set_index}"
       end
 
       puts '-> All dummy tag sets successfully created'
