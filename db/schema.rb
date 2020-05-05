@@ -24,7 +24,7 @@ ActiveRecord::Schema.define(version: 2020_05_01_073510) do
   end
 
   create_table "ont_libraries", force: :cascade do |t|
-    t.string "plate_barcode"
+    t.string "name"
     t.integer "pool"
     t.string "well_range"
     t.integer "pool_size"

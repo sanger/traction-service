@@ -106,7 +106,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
 
         it 'creates library with empty requests' do
           expect(Ont::Library.count).to eq(1)
-          expect(Ont::Library.first.plate_barcode).to eq(plate.barcode)
+          expect(Ont::Library.first.name).to eq("#{plate.barcode}-1")
           expect(Ont::Library.first.well_range).to eq('A1-C3')
           expect(Ont::Library.first.pool).to eq(1)
           expect(Ont::Library.first.pool_size).to eq(9)
@@ -154,7 +154,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
 
           it 'creates a new library with linked requests' do
             expect(Ont::Library.count).to eq(1)
-            expect(Ont::Library.first.plate_barcode).to eq(plate_with_requests.barcode)
+            expect(Ont::Library.first.name).to eq("#{plate_with_requests.barcode}-1")
             expect(Ont::Library.first.well_range).to eq('A1-C3')
             expect(Ont::Library.first.pool).to eq(1)
             expect(Ont::Library.first.pool_size).to eq(9)
@@ -193,9 +193,9 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
 
           it 'creates new libraries with the correct requests' do
             expect(Ont::Library.count).to eq(3)
-            expect(Ont::Library.all.map { |lib| lib.plate_barcode  }).to all( eq(plate_with_requests.barcode) )
             expect(Ont::Library.all.map { |lib| lib.pool_size  }).to all( eq(3) )
 
+            expect(Ont::Library.first.name).to eq("#{plate_with_requests.barcode}-1")
             expect(Ont::Library.first.pool).to eq(1)
             expect(Ont::Library.first.well_range).to eq('A1-A3')
             expect(Ont::Library.first.requests.count).to eq(4)
@@ -203,6 +203,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
               expect(Ont::Library.first.requests).to include(Sample.find_by(external_id: external_id).requests.first.requestable)
             end
 
+            expect(Ont::Library.second.name).to eq("#{plate_with_requests.barcode}-2")
             expect(Ont::Library.second.pool).to eq(2)
             expect(Ont::Library.second.well_range).to eq('B1-B3')
             expect(Ont::Library.second.requests.count).to eq(3)
@@ -210,6 +211,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
               expect(Ont::Library.second.requests).to include(Sample.find_by(external_id: external_id).requests.first.requestable)
             end
 
+            expect(Ont::Library.third.name).to eq("#{plate_with_requests.barcode}-3")
             expect(Ont::Library.third.pool).to eq(3)
             expect(Ont::Library.third.well_range).to eq('C1-C3')
             expect(Ont::Library.third.requests.count).to eq(4)
