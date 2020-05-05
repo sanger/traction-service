@@ -34,7 +34,7 @@ RSpec.describe 'GraphQL', type: :request do
           }
         )
         {
-          libraries { plateBarcode pool wellRange poolSize name }
+          libraries { name pool wellRange poolSize }
           errors
         }
       }
@@ -44,6 +44,7 @@ RSpec.describe 'GraphQL', type: :request do
     it 'creates libraries with provided parameters' do
       libraries = create_list(:ont_library, 4).each_with_index do |library, i|
         library.pool = i+1
+        library.name = "PLATE-1-1234-#{i+1}"
         library.well_range = "A#{(i*2)+1}-H#{(i+1)*2}"
       end
 
@@ -57,29 +58,25 @@ RSpec.describe 'GraphQL', type: :request do
       mutation_json = json['data']['createOntLibraries']
       libraries_json = mutation_json['libraries']
 
-      expect(libraries_json[0]['plateBarcode']).to eq('PLATE-1-123456')
+      expect(libraries_json[0]['name']).to eq('PLATE-1-1234-1')
       expect(libraries_json[0]['pool']).to eq(1)
       expect(libraries_json[0]['wellRange']).to eq('A1-H2')
       expect(libraries_json[0]['poolSize']).to eq(24)
-      expect(libraries_json[0]['name']).to eq('PLATE-1-123456-1')
 
-      expect(libraries_json[1]['plateBarcode']).to eq('PLATE-1-123456')
+      expect(libraries_json[1]['name']).to eq('PLATE-1-1234-2')
       expect(libraries_json[1]['pool']).to eq(2)
       expect(libraries_json[1]['wellRange']).to eq('A3-H4')
       expect(libraries_json[1]['poolSize']).to eq(24)
-      expect(libraries_json[1]['name']).to eq('PLATE-1-123456-2')
 
-      expect(libraries_json[2]['plateBarcode']).to eq('PLATE-1-123456')
+      expect(libraries_json[2]['name']).to eq('PLATE-1-1234-3')
       expect(libraries_json[2]['pool']).to eq(3)
       expect(libraries_json[2]['wellRange']).to eq('A5-H6')
       expect(libraries_json[2]['poolSize']).to eq(24)
-      expect(libraries_json[2]['name']).to eq('PLATE-1-123456-3')
 
-      expect(libraries_json[3]['plateBarcode']).to eq('PLATE-1-123456')
+      expect(libraries_json[3]['name']).to eq('PLATE-1-1234-4')
       expect(libraries_json[3]['pool']).to eq(4)
       expect(libraries_json[3]['wellRange']).to eq('A7-H8')
       expect(libraries_json[3]['poolSize']).to eq(24)
-      expect(libraries_json[3]['name']).to eq('PLATE-1-123456-4')
     end
 
     it 'responds with errors provided by the request factory' do
