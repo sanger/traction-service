@@ -6,8 +6,8 @@ RSpec.describe Ont::Library, type: :model do
     it_behaves_like 'material'
   end
 
-  it 'must have a plate_barcode' do
-    library = build(:ont_library, plate_barcode: nil)
+  it 'must have a name' do
+    library = build(:ont_library, name: nil)
     expect(library).to_not be_valid
   end
 
@@ -24,10 +24,5 @@ RSpec.describe Ont::Library, type: :model do
   it 'must have a pool_size' do
     library = build(:ont_library, pool_size: nil)
     expect(library).to_not be_valid
-  end
-
-  it 'returns expected name' do
-    library = build(:ont_library, plate_barcode: 'TRAC-1-abc123', pool: 3)
-    expect(library.name).to eq('TRAC-1-abc123-3')
   end
 end

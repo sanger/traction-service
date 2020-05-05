@@ -99,9 +99,10 @@ module Ont
 
     def build_library(lib_idx, num_tags)
       wells = get_wells(lib_idx, num_tags)
-      @libraries << Library.new(plate_barcode: @plate.barcode,
+      pool = lib_idx + 1
+      @libraries << Library.new(name: "#{@plate.barcode}-#{pool}",
                                 well_range: "#{wells[0].position}-#{wells[-1].position}",
-                                pool: lib_idx + 1,
+                                pool: pool,
                                 pool_size: num_tags,
                                 requests: get_and_tag_requests(wells))
       @container_materials << ::ContainerMaterial.new(container: Tube.new,
