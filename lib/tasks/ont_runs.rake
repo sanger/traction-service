@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'benchmark'
+
 # A set of GraphQL queries for creating ONT plates
 module OntPlates
   CreatePlate = TractionGraphQL::Client.parse <<~GRAPHQL
@@ -79,14 +81,52 @@ namespace :ont_runs do
                  '   Use the RAILS_ROOT_URI environment variable to specify a different URI']
   end
 
-  task create: :environment do
+  task create: %i[environment create_scenario_1_plate create_scenario_2_plate create_scenario_3_plate] do
     puts '-> Creating ONT runs using GraphQL'
     puts '   Note these could take a few minutes to complete'
-    variables = OntPlates::Variables.new
-    submit_create_plate_query(description: 'pooling scenario 1', barcode: 'PLATE-PS01', wells: variables.wells(samples_per_well: 1))
-    submit_create_plate_query(description: 'pooling scenario 2', barcode: 'PLATE-PS02', wells: variables.wells(samples_per_well: 1))
-    submit_create_plate_query(description: 'pooling scenario 3', barcode: 'PLATE-PS03', wells: variables.wells(samples_per_well: 96))
+
+    # TODO: Create ONT runs when the endpoints are available
+
     puts '-> Successfully created all ONT runs'
+  end
+
+  task create_scenario_1_plate: :environment do
+    variables = OntPlates::Variables.new
+
+    time = Benchmark.measure do
+      submit_create_plate_query(description: 'pooling scenario 1', barcode: 'PLATE-PS01', wells: variables.wells(samples_per_well: 1))
+    end
+
+    puts
+    puts 'Time taken:'
+    puts time.real
+    puts
+  end
+
+  task create_scenario_2_plate: :environment do
+    variables = OntPlates::Variables.new
+
+    time = Benchmark.measure do
+      submit_create_plate_query(description: 'pooling scenario 2', barcode: 'PLATE-PS02', wells: variables.wells(samples_per_well: 1))
+    end
+
+    puts
+    puts 'Time taken:'
+    puts time.real
+    puts
+  end
+
+  task create_scenario_3_plate: :environment do
+    variables = OntPlates::Variables.new
+
+    time = Benchmark.measure do
+      submit_create_plate_query(description: 'pooling scenario 3', barcode: 'PLATE-PS03', wells: variables.wells(samples_per_well: 96))
+    end
+
+    puts
+    puts 'Time taken:'
+    puts time.real
+    puts
   end
 
   task destroy: :environment do
