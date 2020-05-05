@@ -9,6 +9,7 @@ module Types
         field :pool, Integer, null: false
         field :well_range, String, null: false
         field :pool_size, Integer, null: false
+        field :requests, [RequestType], null: false
       end
     end
   end
