@@ -34,5 +34,15 @@ module Types
     def plates
       Plate.all
     end
+
+    # Ont
+
+    field :ont_libraries, [Types::Outputs::Ont::LibraryType], null: false do
+      description 'Find all Ont Libraries.'
+    end
+
+    def ont_libraries
+      Ont::Library.all
+    end
   end
 end
