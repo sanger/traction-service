@@ -3,7 +3,24 @@
 require "rails_helper"
 
 RSpec.describe 'GraphQL', type: :request do
-  context 'create ont libraries' do
+  context 'get libraries' do
+    it 'returns empty array when no libraries exist' do
+      post v2_path, params: { query: '{ ontLibraries { id } }' }
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data']['ontLibraries']).to be_empty
+    end
+
+    it 'returns all libraries when many exist' do
+      create_list(:ont_library, 3)
+      post v2_path, params: { query: '{ ontLibraries { id } }' }
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data']['ontLibraries'].length).to eq(3)
+    end
+  end
+
+  context 'create libraries' do
     def valid_query
       <<~GQL
       mutation {
@@ -17,7 +34,7 @@ RSpec.describe 'GraphQL', type: :request do
           }
         )
         {
-          libraries { plateBarcode pool wellRange poolSize }
+          libraries { plateBarcode pool wellRange poolSize name }
           errors
         }
       }
@@ -44,21 +61,25 @@ RSpec.describe 'GraphQL', type: :request do
       expect(libraries_json[0]['pool']).to eq(1)
       expect(libraries_json[0]['wellRange']).to eq('A1-H2')
       expect(libraries_json[0]['poolSize']).to eq(24)
+      expect(libraries_json[0]['name']).to eq('PLATE-1-123456-1')
 
       expect(libraries_json[1]['plateBarcode']).to eq('PLATE-1-123456')
       expect(libraries_json[1]['pool']).to eq(2)
       expect(libraries_json[1]['wellRange']).to eq('A3-H4')
       expect(libraries_json[1]['poolSize']).to eq(24)
+      expect(libraries_json[1]['name']).to eq('PLATE-1-123456-2')
 
       expect(libraries_json[2]['plateBarcode']).to eq('PLATE-1-123456')
       expect(libraries_json[2]['pool']).to eq(3)
       expect(libraries_json[2]['wellRange']).to eq('A5-H6')
       expect(libraries_json[2]['poolSize']).to eq(24)
+      expect(libraries_json[2]['name']).to eq('PLATE-1-123456-3')
 
       expect(libraries_json[3]['plateBarcode']).to eq('PLATE-1-123456')
       expect(libraries_json[3]['pool']).to eq(4)
       expect(libraries_json[3]['wellRange']).to eq('A7-H8')
       expect(libraries_json[3]['poolSize']).to eq(24)
+      expect(libraries_json[3]['name']).to eq('PLATE-1-123456-4')
     end
 
     it 'responds with errors provided by the request factory' do
