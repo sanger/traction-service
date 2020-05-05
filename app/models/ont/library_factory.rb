@@ -16,7 +16,12 @@ module Ont
       @libraries = []
       @tag_taggables = []
       @container_materials = []
-      build_libraries if fetch_and_validate_entities(attributes)
+
+      return unless fetch_and_validate_entities(attributes)
+
+      num_libraries.times do |lib_idx|
+        build_library(lib_idx, @tag_set.tags.count)
+      end
     end
 
     def save
@@ -33,6 +38,7 @@ module Ont
     attr_reader :validation_errors,
                 :tag_set,
                 :plate,
+                :num_libraries,
                 :sorted_wells,
                 :tag_taggables,
                 :container_materials
@@ -61,7 +67,15 @@ module Ont
     end
 
     def validate_tag_set_for_plate
-      return true if @plate.wells.count % tag_set.tags.count == 0
+      num_wells = @plate.wells.count
+      num_tags = @tag_set.tags.count
+      if num_wells == 0 && num_tags == 0
+        @num_libraries = 0
+        return true
+      elsif num_tags != 0 && num_wells % num_tags == 0
+        @num_libraries = num_wells / num_tags
+        return true
+      end
 
       validation_errors << ['Tag set', 'tag count must be a factor of plate well count']
       false
@@ -78,13 +92,6 @@ module Ont
         validation_errors << ['Wells',
                               "cannot be grouped by direction '#{primary_grouping_direction}'"]
         false
-      end
-    end
-
-    def build_libraries
-      num_tags = @tag_set.tags.count
-      (@plate.wells.count / num_tags).times do |lib_idx|
-        build_library(lib_idx, num_tags)
       end
     end
 
