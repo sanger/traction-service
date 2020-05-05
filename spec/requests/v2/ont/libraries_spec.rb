@@ -11,6 +11,15 @@ RSpec.describe 'GraphQL', type: :request do
       expect(json['data']['ontLibraries']).to be_empty
     end
 
+    it 'returns single library when one exists' do
+      create(:ont_library_with_requests)
+      post v2_path, params: { query: '{ ontLibraries { requests { sample { id } } } }' }
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data']['ontLibraries'].count).to eq(1)
+      expect(json['data']['ontLibraries'][0]['requests']).to_not be_empty
+    end
+
     it 'returns all libraries when many exist' do
       create_list(:ont_library, 3)
       post v2_path, params: { query: '{ ontLibraries { id } }' }
