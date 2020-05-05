@@ -59,22 +59,22 @@ RSpec.describe 'GraphQL', type: :request do
       mutation_json = json['data']['createOntLibraries']
       tubes_json = mutation_json['tubes']
 
-      expect(tubes_json[0]['barcode']).to eq('TRAC-2-1')
+      expect(tubes_json[0]['barcode']).to be_present
       expect(tubes_json[0]['materials']).to contain_exactly(
         { 'name' => 'PLATE-1-1234-1', 'pool' => 1, 'wellRange' => 'A1-H2', 'poolSize' => 24 }
       )
 
-      expect(tubes_json[1]['barcode']).to eq('TRAC-2-2')
+      expect(tubes_json[1]['barcode']).to be_present
       expect(tubes_json[1]['materials']).to contain_exactly(
         { 'name' => 'PLATE-1-1234-2', 'pool' => 2, 'wellRange' => 'A3-H4', 'poolSize' => 24 }
       )
 
-      expect(tubes_json[2]['barcode']).to eq('TRAC-2-3')
+      expect(tubes_json[2]['barcode']).to be_present
       expect(tubes_json[2]['materials']).to contain_exactly(
         { 'name' => 'PLATE-1-1234-3', 'pool' => 3, 'wellRange' => 'A5-H6', 'poolSize' => 24 }
       )
 
-      expect(tubes_json[3]['barcode']).to eq('TRAC-2-4')
+      expect(tubes_json[3]['barcode']).to be_present
       expect(tubes_json[3]['materials']).to contain_exactly(
         { 'name' => 'PLATE-1-1234-4', 'pool' => 4, 'wellRange' => 'A7-H8', 'poolSize' => 24 }
       )
