@@ -101,18 +101,24 @@ module Ont
     def build_library(lib_idx, num_tags)
       wells = get_wells(lib_idx, num_tags)
       pool = lib_idx + 1
-      @libraries << Library.new(name: "#{@plate.barcode}-#{pool}",
-                                well_range: "#{wells[0].position}-#{wells[-1].position}",
+      @libraries << Library.new(name: get_library_name(pool),
+                                well_range: get_well_range(wells),
                                 pool: pool,
                                 pool_size: num_tags,
                                 requests: get_and_tag_requests(wells))
-      @tubes << Tube.new
-      @container_materials << ::ContainerMaterial.new(container: @tubes.last,
-                                                      material: @libraries.last)
+      add_to_tube(@libraries.last)
     end
 
     def get_wells(lib_idx, num_tags)
       @sorted_wells[(lib_idx * num_tags), num_tags]
+    end
+
+    def get_library_name(pool)
+      "#{@plate.barcode}-#{pool}"
+    end
+
+    def get_well_range(sorted_wells)
+      "#{sorted_wells[0].position}-#{sorted_wells[-1].position}"
     end
 
     def get_and_tag_requests(wells)
@@ -124,6 +130,12 @@ module Ont
         end
       end
       all_requests
+    end
+
+    def add_to_tube(library)
+      @tubes << Tube.new
+      @container_materials << ::ContainerMaterial.new(container: @tubes.last,
+                                                      material: library)
     end
 
     def check_validation_errors
