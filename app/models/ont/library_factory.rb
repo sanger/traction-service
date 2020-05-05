@@ -5,7 +5,7 @@
 # Ont namespace
 module Ont
   # LibraryFactory
-  # The factory will create libraries from a given plate
+  # The factory will create libraries in tubes from a given plate
   class LibraryFactory
     include ActiveModel::Model
 
