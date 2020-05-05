@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :ont_library, class: 'Ont::Library' do
-    plate_barcode { "PLATE-1-123456" }
+    name { "PLATE-1-123456-2" }
     pool { 2 }
     well_range { "A1-H8" }
     pool_size { 24 }
