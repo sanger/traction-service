@@ -5,7 +5,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
 
   context '#initialise' do
     let!(:tag_set) { create(:tag_set_with_tags, number_of_tags: 9) }
-    let!(:well_primary_grouping_direction) { 'column' }
+    let!(:well_primary_grouping_direction) { 'vertical' }
 
     it 'is invalid if given no plate_barcode' do
       attributes = { 
@@ -85,7 +85,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
       attributes = {
         plate_barcode: create(:plate).barcode,
         tag_set_name: create(:tag_set).name,
-        well_primary_grouping_direction: 'column'
+        well_primary_grouping_direction: 'vertical'
       }
       factory = Ont::LibraryFactory.new(attributes)
       expect(factory).to_not be_valid
@@ -97,7 +97,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
     context 'valid build' do
       context 'with empty wells' do
         let!(:tag_set) { create(:tag_set_with_tags, number_of_tags: 9) }
-        let!(:attributes) { { plate_barcode: plate.barcode, tag_set_name: tag_set.name, well_primary_grouping_direction: 'column' } }
+        let!(:attributes) { { plate_barcode: plate.barcode, tag_set_name: tag_set.name, well_primary_grouping_direction: 'vertical' } }
 
         before do
           factory = Ont::LibraryFactory.new(attributes)
@@ -135,7 +135,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
 
         context 'with one tag set iteration' do
           let!(:tag_set) { create(:tag_set_with_tags, number_of_tags: 9) }
-          let!(:attributes) { { plate_barcode: plate_with_requests.barcode, tag_set_name: tag_set.name, well_primary_grouping_direction: 'column' } }
+          let!(:attributes) { { plate_barcode: plate_with_requests.barcode, tag_set_name: tag_set.name, well_primary_grouping_direction: 'vertical' } }
 
           before do
             factory = Ont::LibraryFactory.new(attributes)
@@ -171,7 +171,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
   
         context 'with many tag set iterations' do
           let!(:tag_set) { create(:tag_set_with_tags, number_of_tags: 3) }
-          let!(:attributes) { { plate_barcode: plate_with_requests.barcode, tag_set_name: tag_set.name, well_primary_grouping_direction: 'row' } }
+          let!(:attributes) { { plate_barcode: plate_with_requests.barcode, tag_set_name: tag_set.name, well_primary_grouping_direction: 'horizontal' } }
 
           before do
             factory = Ont::LibraryFactory.new(attributes)
