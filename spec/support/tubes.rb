@@ -110,8 +110,8 @@ shared_examples_for 'tubes' do
           get "#{send(tubes_path)}?filter[barcode]=#{tube.barcode}&include=materials", headers: json_api_headers
 
           expect(response).to have_http_status(:success)
-          json = ActiveSupport::JSON.decode(response.body)
 
+          json = ActiveSupport::JSON.decode(response.body)
           expect(json['data'].length).to eq(1)
 
           expect(json['included'][0]['id']).to eq tube.container_materials.first.id.to_s
@@ -122,6 +122,7 @@ shared_examples_for 'tubes' do
           expect(json['included'][0]['attributes']['barcode']).to eq tube.barcode
           expect(json['included'][0]['attributes']['sample_species']).to eq tube.materials.first.sample.species
           expect(json['included'][0]['attributes']['created_at']).to eq tube.materials.first.sample.created_at.to_s(:us)
+          expect(json['included'][0]['attributes']['material_type']).to eq 'request'
 
           expect(json['data'][0]['relationships']['materials']['data'].count).to eq(1)
           expect(json['data'][0]['relationships']['materials']['data'].first['type']).to be_present
@@ -145,6 +146,7 @@ shared_examples_for 'tubes' do
           expect(json['included'][0]['type']).to be_present
 
           expect(json['data'][0]['attributes']['barcode']).to eq tube.barcode
+          expect(json['included'][0]['attributes']['material_type']).to eq 'library'
 
           expect(json['data'][0]['relationships']['materials']['data'].count).to eq(1)
           expect(json['data'][0]['relationships']['materials']['data'].first['type']).to be_present
