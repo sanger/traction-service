@@ -14,5 +14,11 @@ FactoryBot.define do
         create_list(:ont_request, evaluator.requests_count, library: library)
       end
     end
+
+    factory :ont_library_in_tube do
+      after(:create) do |library|
+        create(:container_material, material: library, container: create(:tube))
+      end
+    end
   end
 end
