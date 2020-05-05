@@ -15,6 +15,7 @@ module Ont
       @validation_errors = []
       @libraries = []
       @tag_taggables = []
+      @tubes = []
       @container_materials = []
 
       return unless fetch_and_validate_entities(attributes)
@@ -24,7 +25,7 @@ module Ont
       end
     end
 
-    attr_reader :libraries
+    attr_reader :tubes
 
     def save
       return false unless valid?
@@ -105,7 +106,8 @@ module Ont
                                 pool: pool,
                                 pool_size: num_tags,
                                 requests: get_and_tag_requests(wells))
-      @container_materials << ::ContainerMaterial.new(container: Tube.new,
+      @tubes << Tube.new
+      @container_materials << ::ContainerMaterial.new(container: @tubes.last,
                                                       material: @libraries.last)
     end
 
