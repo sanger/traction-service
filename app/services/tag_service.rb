@@ -4,27 +4,21 @@
 # The service will allow checking a collection of tags are unique
 class TagService
   def initialize(tag_set)
-    @tag_set = tag_set
-    @tags = []
+    @all_tags = tag_set.nil? ? [] : Tag.where(tag_set_id: tag_set.id)
+    @registered_tags = Set.new
   end
 
-  attr_reader :tag_set
-
   def find_and_register_tag(group_id)
-    return if tag_set.nil?
-
-    tag = Tag.find_by(tag_set_id: tag_set.id, group_id: group_id)
-    tags << tag unless tag.nil?
-    tag
+    found_tag = all_tags.find { |tag| tag.group_id == group_id }
+    registered_tags << found_tag unless found_tag.nil?
+    found_tag
   end
 
   def complete?
-    return true if tag_set.nil?
-
-    tag_set.tags.count == tags.uniq.count
+    all_tags.count == registered_tags.count
   end
 
   private
 
-  attr_reader :tags
+  attr_reader :all_tags, :registered_tags
 end
