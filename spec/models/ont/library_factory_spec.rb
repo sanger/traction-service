@@ -80,6 +80,17 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages).to_not be_empty
     end
+
+    it 'is not valid with no wells or tags' do
+      attributes = {
+        plate_barcode: create(:plate).barcode,
+        tag_set_name: create(:tag_set).name,
+        well_primary_grouping_direction: 'column'
+      }
+      factory = Ont::LibraryFactory.new(attributes)
+      expect(factory).to_not be_valid
+      expect(factory.errors.full_messages).to_not be_empty
+    end
   end
 
   context '#save' do
