@@ -24,6 +24,8 @@ module Ont
       end
     end
 
+    attr_reader :libraries
+
     def save
       return false unless valid?
 
