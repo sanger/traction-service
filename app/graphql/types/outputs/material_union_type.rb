@@ -12,7 +12,7 @@ module Types
         elsif object.is_a?(::Ont::Library)
           Types::Outputs::Ont::LibraryType
         else
-          raise "Can't determine GraphQL type for: #{object.inspect}"  
+          raise "Can't determine GraphQL type for: #{object.inspect}"
         end
       end
     end
