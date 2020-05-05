@@ -98,6 +98,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
       context 'with empty wells' do
         let!(:tag_set) { create(:tag_set_with_tags, number_of_tags: 9) }
         let!(:attributes) { { plate_barcode: plate.barcode, tag_set_name: tag_set.name, well_primary_grouping_direction: 'column' } }
+        factory = nil
 
         before do
           factory = Ont::LibraryFactory.new(attributes)
@@ -113,8 +114,9 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
           expect(Ont::Library.first.requests).to be_empty
         end
 
-        it 'creates a tube that contains the library' do
+        it 'creates and exposes a tube that contains the library' do
           expect(Tube.count).to eq(1)
+          expect(factory.tubes).to match_array(Tube.all)
           expect(Tube.first.materials.count).to eq(1)
           expect(Tube.first.materials).to contain_exactly(Ont::Library.first)
         end
@@ -136,6 +138,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
         context 'with one tag set iteration' do
           let!(:tag_set) { create(:tag_set_with_tags, number_of_tags: 9) }
           let!(:attributes) { { plate_barcode: plate_with_requests.barcode, tag_set_name: tag_set.name, well_primary_grouping_direction: 'column' } }
+          factory = nil
 
           before do
             factory = Ont::LibraryFactory.new(attributes)
@@ -162,8 +165,9 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
             expect(Ont::Library.first.requests.all).to match_array(Ont::Request.all)
           end
 
-          it 'creates a tube that contains the library' do
+          it 'creates and exposes a tube that contains the library' do
             expect(Tube.count).to eq(1)
+            expect(factory.tubes).to match_array(Tube.all)
             expect(Tube.first.materials.count).to eq(1)
             expect(Tube.first.materials).to contain_exactly(Ont::Library.first)
           end
@@ -172,6 +176,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
         context 'with many tag set iterations' do
           let!(:tag_set) { create(:tag_set_with_tags, number_of_tags: 3) }
           let!(:attributes) { { plate_barcode: plate_with_requests.barcode, tag_set_name: tag_set.name, well_primary_grouping_direction: 'row' } }
+          factory = nil
 
           before do
             factory = Ont::LibraryFactory.new(attributes)
@@ -220,8 +225,9 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
             end
           end
 
-          it 'creates a tube for each library' do
+          it 'creates and exposes tubes for each library' do
             expect(Tube.count).to eq(3)
+            expect(factory.tubes).to match_array(Tube.all)
             # test each tube has one material AND all tubes contain all libraries => each library exists in a different tube
             expect(Tube.all.map { |tube| tube.materials.count }).to all( eq(1) )
             expect(Tube.all.map { |tube| tube.materials }.flatten).to match_array(Ont::Library.all)
