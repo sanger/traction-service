@@ -73,12 +73,21 @@ module Pipelines
         end
       end
 
-      #TODO: needs to be refactored.
+      # TODO: needs to be refactored.
       def build_request(request_attributes)
         sample_attributes = request_attributes.extract!(:name, :external_id, :species)
+        add_request(request_attributes, sample_attributes)
+        add_container_material
+      end
+
+      def add_request(request_attributes, sample_attributes)
         requests << ::Request.new(requestable: self.class.request_model.new(request_attributes),
                                   sample: Sample.find_or_initialize_by(sample_attributes))
-        container_materials << ContainerMaterial.new(container: Tube.new, material: requests.last.requestable)
+      end
+
+      def add_container_material
+        container_materials << ContainerMaterial.new(container: Tube.new,
+                                                     material: requests.last.requestable)
       end
 
       # Validates the requests:
