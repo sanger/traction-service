@@ -25,4 +25,9 @@ RSpec.describe Ont::Library, type: :model do
     library = build(:ont_library, pool_size: nil)
     expect(library).to_not be_valid
   end
+
+  it 'must have a plate_barcode' do
+    library = build(:ont_library, plate_barcode: nil)
+    expect(library).to_not be_valid
+  end
 end
