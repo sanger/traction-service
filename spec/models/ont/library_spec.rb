@@ -21,9 +21,28 @@ RSpec.describe Ont::Library, type: :model do
     expect(library).to_not be_valid
   end
 
-  it 'must have a plate_barcode' do
-    library = build(:ont_library, plate_barcode: nil)
-    expect(library).to_not be_valid
+  context 'library name' do
+    it 'returns nil with nil plate_barcode' do
+      name = Ont::Library.library_name(nil, 2)
+      expect(name).to be_nil
+    end
+
+    it 'returns nil with nil pool' do
+      name = Ont::Library.library_name("PLATE-1234", nil)
+      expect(name).to be_nil
+    end
+
+    it 'returns expected name' do
+      name = Ont::Library.library_name("PLATE-1234", 2)
+      expect(name).to eq("PLATE-1234-2")
+    end
+  end
+
+  context 'plate barcode' do
+    it 'returns expected plate barcode' do
+      library = create(:ont_library)
+      expect(library.plate_barcode).to eq("PLATE-1-123456")
+    end
   end
 
   context 'tag set name' do

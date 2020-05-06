@@ -104,7 +104,6 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
           factory.save
           expect(Ont::Library.count).to eq(1)
           expect(Ont::Library.first.name).to eq("#{plate.barcode}-1")
-          expect(Ont::Library.first.plate_barcode).to eq(plate.barcode)
           expect(Ont::Library.first.pool).to eq(1)
           expect(Ont::Library.first.pool_size).to eq(9)
         end
@@ -182,7 +181,6 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
             factory.save
             expect(Ont::Library.count).to eq(1)
             expect(Ont::Library.first.name).to eq("#{plate_with_requests.barcode}-1")
-            expect(Ont::Library.first.plate_barcode).to eq(plate_with_requests.barcode)
             expect(Ont::Library.first.pool).to eq(1)
             expect(Ont::Library.first.pool_size).to eq(9)
           end
@@ -258,15 +256,12 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
             expect(Ont::Library.all.map { |lib| lib.pool_size  }).to all( eq(3) )
 
             expect(Ont::Library.first.name).to eq("#{plate_with_requests.barcode}-1")
-            expect(Ont::Library.first.plate_barcode).to eq(plate_with_requests.barcode)
             expect(Ont::Library.first.pool).to eq(1)
 
             expect(Ont::Library.second.name).to eq("#{plate_with_requests.barcode}-2")
-            expect(Ont::Library.second.plate_barcode).to eq(plate_with_requests.barcode)
             expect(Ont::Library.second.pool).to eq(2)
 
             expect(Ont::Library.third.name).to eq("#{plate_with_requests.barcode}-3")
-            expect(Ont::Library.third.plate_barcode).to eq(plate_with_requests.barcode)
             expect(Ont::Library.third.pool).to eq(3)
           end
 
