@@ -153,6 +153,20 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
         expect(::Sample.first.requests.count).to eq(1)
         expect(::Sample.first.requests.first.requestable).to eq(Ont::Request.first)
       end
+
+      it 'validates the tag taggable only once by default' do
+        validation_count = 0
+        allow_any_instance_of(TagTaggable).to receive(:valid?) { |_| validation_count += 1 }
+        factory.save
+        expect(validation_count).to eq(1)
+      end
+
+      it 'validates the container material join only once by default' do
+        validation_count = 0
+        allow_any_instance_of(ContainerMaterial).to receive(:valid?) { |_| validation_count += 1 }
+        factory.save
+        expect(validation_count).to eq(1)
+      end
     end
 
     context 'invalid build' do
