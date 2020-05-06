@@ -25,6 +25,7 @@ ActiveRecord::Schema.define(version: 2020_05_01_073510) do
 
   create_table "ont_libraries", force: :cascade do |t|
     t.string "name"
+    t.string "plate_barcode"
     t.integer "pool"
     t.string "well_range"
     t.integer "pool_size"
@@ -36,8 +37,6 @@ ActiveRecord::Schema.define(version: 2020_05_01_073510) do
     t.string "external_study_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "ont_library_id"
-    t.index ["ont_library_id"], name: "index_ont_requests_on_ont_library_id"
   end
 
   create_table "pacbio_libraries", force: :cascade do |t|
