@@ -24,7 +24,7 @@ shared_examples_for 'requestor factory' do
       expect(factory).to be_valid
       expect(factory.save).to be_truthy
       expect(described_class.request_model.all.count).to eq(attributes.length)
-      expect(described_class.request_model.first.tube).to eq(attributes.first[:tube])
+      expect(described_class.request_model.first.tube).to be_present
     end
 
     it 'has some requestables' do
