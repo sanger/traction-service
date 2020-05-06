@@ -2,12 +2,16 @@ FactoryBot.define do
   factory :plate do
     factory :plate_with_wells do
       transient do
-        well_count { 1 }
+        row_count { 1 }
+        column_count { 3 }
       end
   
       after :create do |plate, options|
-        options.well_count.times do |i|
-          create(:well, position: "A#{i}", plate: plate)
+        fail if options.row_count > 8
+        ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].first(options.row_count).each do |row|
+          (1..options.column_count).each do |col|
+            create(:well, position: "#{row}#{col}", plate: plate)
+          end
         end
       end
     end
