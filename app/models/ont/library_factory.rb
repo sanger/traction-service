@@ -9,12 +9,12 @@ module Ont
   class LibraryFactory
     include ActiveModel::Model
 
-    validate :check_validation_errors, :check_libraries, :check_tag_taggables
+    validate :check_validation_errors, :check_libraries, :check_library_requests
 
     def initialize(attributes = {})
       @validation_errors = []
       @libraries = []
-      @tag_taggables = []
+      @library_requests = []
       @tubes = []
       @container_materials = []
 
@@ -31,7 +31,7 @@ module Ont
       return false unless valid?
 
       @libraries.collect(&:save)
-      @tag_taggables.collect(&:save)
+      @library_requests.collect(&:save)
       @container_materials.collect(&:save)
       true
     end
@@ -43,7 +43,7 @@ module Ont
                 :plate,
                 :num_libraries,
                 :sorted_wells,
-                :tag_taggables,
+                :library_requests,
                 :container_materials
 
     def fetch_and_validate_entities(attributes)
@@ -101,11 +101,12 @@ module Ont
     def build_library(lib_idx, num_tags)
       wells = get_wells(lib_idx, num_tags)
       pool = lib_idx + 1
-      @libraries << Library.new(name: get_library_name(pool),
-                                well_range: get_well_range(wells),
+      @libraries << Library.new(name: "#{@plate.barcode}-#{pool}",
+                                plate_barcode: @plate.barcode,
+                                well_range: "#{wells[0].position}-#{wells[-1].position}",
                                 pool: pool,
-                                pool_size: num_tags,
-                                requests: get_and_tag_requests(wells))
+                                pool_size: num_tags)
+      build_library_requests(wells, @libraries.last)
       add_to_tube(@libraries.last)
     end
 
@@ -113,23 +114,12 @@ module Ont
       @sorted_wells[(lib_idx * num_tags), num_tags]
     end
 
-    def get_library_name(pool)
-      "#{@plate.barcode}-#{pool}"
-    end
-
-    def get_well_range(sorted_wells)
-      "#{sorted_wells[0].position}-#{sorted_wells[-1].position}"
-    end
-
-    def get_and_tag_requests(wells)
-      all_requests = []
+    def build_library_requests(wells, library)
       @tag_set.tags.each_with_index do |tag, tag_idx|
         wells[tag_idx].materials.each do |request|
-          @tag_taggables << ::TagTaggable.new(taggable: request, tag: tag)
-          all_requests << request
+          @library_requests << Ont::LibraryRequest.new(library: library, request: request, tag: tag)
         end
       end
-      all_requests
     end
 
     def add_to_tube(library)
@@ -161,11 +151,11 @@ module Ont
       end
     end
 
-    def check_tag_taggables
-      @tag_taggables.each do |tag_taggable|
-        next if tag_taggable.valid?
+    def check_library_requests
+      @library_requests.each do |library_request|
+        next if library_request.valid?
 
-        tag_taggable.errors.each do |k, v|
+        library_request.errors.each do |k, v|
           errors.add(k, v)
         end
       end
