@@ -3,7 +3,7 @@
 module Mutations
   # Mutation to handle the update of a Well.
   class CreateOntLibrariesMutation < BaseMutation
-    argument :arguments, Types::Inputs::Ont::LibrariesInputType, required: true
+    argument :arguments, Types::Inputs::Ont::LibraryCreationArgumentsInputType, required: true
 
     field :tubes, [Types::Outputs::TubeType], null: true
     field :errors, [String], null: false
