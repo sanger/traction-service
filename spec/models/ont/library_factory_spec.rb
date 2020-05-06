@@ -98,14 +98,10 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
       context 'with empty wells' do
         let!(:tag_set) { create(:tag_set_with_tags, number_of_tags: 9) }
         let!(:attributes) { { plate_barcode: plate.barcode, tag_set_name: tag_set.name, well_primary_grouping_direction: 'vertical' } }
-        factory = nil
-
-        before do
-          factory = Ont::LibraryFactory.new(attributes)
-          factory.save
-        end
 
         it 'creates expected library' do
+          factory = Ont::LibraryFactory.new(attributes)
+          factory.save
           expect(Ont::Library.count).to eq(1)
           expect(Ont::Library.first.name).to eq("#{plate.barcode}-1")
           expect(Ont::Library.first.plate_barcode).to eq(plate.barcode)
@@ -115,6 +111,8 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
         end
 
         it 'creates and exposes a tube that contains the library' do
+          factory = Ont::LibraryFactory.new(attributes)
+          factory.save
           expect(Tube.count).to eq(1)
           expect(factory.tubes).to match_array(Tube.all)
           expect(Tube.first.materials.count).to eq(1)
@@ -122,7 +120,44 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
         end
 
         it 'does not create any library_request joins' do
+          factory = Ont::LibraryFactory.new(attributes)
+          factory.save
           expect(Ont::LibraryRequest.count).to eq(0)
+        end
+
+        context 'validates' do
+          it 'each library exactly once' do
+            validation_count = 0
+            allow_any_instance_of(Ont::Library).to receive(:valid?) { |_| validation_count+=1 }
+            factory = Ont::LibraryFactory.new(attributes)
+            factory.save
+            expect(validation_count).to eq(Ont::Library.count)
+          end
+
+          it 'each library request exactly once' do
+            validation_count = 0
+            allow_any_instance_of(Ont::LibraryRequest).to receive(:valid?) { |_| validation_count+=1 }
+            factory = Ont::LibraryFactory.new(attributes)
+            factory.save
+            expect(validation_count).to eq(Ont::LibraryRequest.count)
+          end
+
+          it 'each tube exactly once' do
+            validation_count = 0
+            allow_any_instance_of(Tube).to receive(:valid?) { |_| validation_count+=1 }
+            factory = Ont::LibraryFactory.new(attributes)
+            factory.save
+            expect(validation_count).to eq(Tube.count)
+          end
+
+          it 'each tube container_material exactly once' do
+            validation_count = 0
+            allow_any_instance_of(ContainerMaterial).to receive(:valid?) { |_| validation_count+=1 }
+            factory = Ont::LibraryFactory.new(attributes)
+            factory.save
+            #
+            expect(validation_count).to eq(Tube.count)
+          end
         end
       end
       
@@ -142,14 +177,10 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
         context 'with one tag set iteration' do
           let!(:tag_set) { create(:tag_set_with_tags, number_of_tags: 9) }
           let!(:attributes) { { plate_barcode: plate_with_requests.barcode, tag_set_name: tag_set.name, well_primary_grouping_direction: 'vertical' } }
-          factory = nil
-
-          before do
-            factory = Ont::LibraryFactory.new(attributes)
-            factory.save
-          end
 
           it 'creates expected library' do
+            factory = Ont::LibraryFactory.new(attributes)
+            factory.save
             expect(Ont::Library.count).to eq(1)
             expect(Ont::Library.first.name).to eq("#{plate_with_requests.barcode}-1")
             expect(Ont::Library.first.plate_barcode).to eq(plate_with_requests.barcode)
@@ -159,6 +190,8 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
           end
 
           it 'creates and exposes a tube that contains the library' do
+            factory = Ont::LibraryFactory.new(attributes)
+            factory.save
             expect(Tube.count).to eq(1)
             expect(factory.tubes).to match_array(Tube.all)
             expect(Tube.first.materials.count).to eq(1)
@@ -166,6 +199,8 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
           end
 
           it 'creates expected library_request joins' do
+            factory = Ont::LibraryFactory.new(attributes)
+            factory.save
             # sanity check
             expect(Ont::Request.count).to eq(11)
             expect(Tag.count).to eq(9)
@@ -178,19 +213,49 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
               end
             end
           end
+
+          context 'validates' do
+            it 'each library exactly once' do
+              validation_count = 0
+              allow_any_instance_of(Ont::Library).to receive(:valid?) { |_| validation_count+=1 }
+              factory = Ont::LibraryFactory.new(attributes)
+              factory.save
+              expect(validation_count).to eq(Ont::Library.count)
+            end
+  
+            it 'each library request exactly once' do
+              validation_count = 0
+              allow_any_instance_of(Ont::LibraryRequest).to receive(:valid?) { |_| validation_count+=1 }
+              factory = Ont::LibraryFactory.new(attributes)
+              factory.save
+              expect(validation_count).to eq(Ont::LibraryRequest.count)
+            end
+  
+            it 'each tube exactly once' do
+              validation_count = 0
+              allow_any_instance_of(Tube).to receive(:valid?) { |_| validation_count+=1 }
+              factory = Ont::LibraryFactory.new(attributes)
+              factory.save
+              expect(validation_count).to eq(Tube.count)
+            end
+  
+            it 'each tube container_material exactly once' do
+              validation_count = 0
+              allow_any_instance_of(ContainerMaterial).to receive(:valid?) { |_| validation_count+=1 }
+              factory = Ont::LibraryFactory.new(attributes)
+              factory.save
+              expect(validation_count).to eq(Tube.count)
+            end
+          end
         end
   
         context 'with many tag set iterations' do
           let!(:tag_set) { create(:tag_set_with_tags, number_of_tags: 3) }
           let!(:attributes) { { plate_barcode: plate_with_requests.barcode, tag_set_name: tag_set.name, well_primary_grouping_direction: 'horizontal' } }
-          factory = nil
-
-          before do
-            factory = Ont::LibraryFactory.new(attributes)
-            factory.save
-          end
 
           it 'creates expected libraries' do
+            factory = Ont::LibraryFactory.new(attributes)
+            factory.save
             expect(Ont::Library.count).to eq(3)
             expect(Ont::Library.all.map { |lib| lib.pool_size  }).to all( eq(3) )
 
@@ -211,6 +276,8 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
           end
 
           it 'creates and exposes tubes for each library' do
+            factory = Ont::LibraryFactory.new(attributes)
+            factory.save
             expect(Tube.count).to eq(3)
             expect(factory.tubes).to match_array(Tube.all)
             # test each tube has one material AND all tubes contain all libraries => each library exists in a different tube
@@ -219,6 +286,8 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
           end
 
           it 'creates expected library_request joins' do
+            factory = Ont::LibraryFactory.new(attributes)
+            factory.save
             # sanity check
             expect(Ont::Request.count).to eq(11)
             expect(Tag.count).to eq(3)
@@ -232,6 +301,40 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
                   expect(Ont::LibraryRequest.where(library: library, request: request, tag: tag).count).to eq(1)
                 end
               end
+            end
+          end
+
+          context 'validates' do
+            it 'each library exactly once' do
+              validation_count = 0
+              allow_any_instance_of(Ont::Library).to receive(:valid?) { |_| validation_count+=1 }
+              factory = Ont::LibraryFactory.new(attributes)
+              factory.save
+              expect(validation_count).to eq(Ont::Library.count)
+            end
+  
+            it 'each library request exactly once' do
+              validation_count = 0
+              allow_any_instance_of(Ont::LibraryRequest).to receive(:valid?) { |_| validation_count+=1 }
+              factory = Ont::LibraryFactory.new(attributes)
+              factory.save
+              expect(validation_count).to eq(Ont::LibraryRequest.count)
+            end
+  
+            it 'each tube exactly once' do
+              validation_count = 0
+              allow_any_instance_of(Tube).to receive(:valid?) { |_| validation_count+=1 }
+              factory = Ont::LibraryFactory.new(attributes)
+              factory.save
+              expect(validation_count).to eq(Tube.count)
+            end
+  
+            it 'each tube container_material exactly once' do
+              validation_count = 0
+              allow_any_instance_of(ContainerMaterial).to receive(:valid?) { |_| validation_count+=1 }
+              factory = Ont::LibraryFactory.new(attributes)
+              factory.save
+              expect(validation_count).to eq(Tube.count)
             end
           end
         end
