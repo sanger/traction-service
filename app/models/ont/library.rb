@@ -13,5 +13,15 @@ module Ont
     # Dynamically calculated/transient attributes:
     # - tag_set_name
     # - tube_barcode
+
+    def tag_set_name
+      library_requests.first.nil? ? nil : library_requests.first.tag.tag_set_name
+    end
+
+    def tube_barcode
+      return nil if container_material.nil? || !container_material.container.is_a?(::Tube)
+
+      container_material.container.barcode
+    end
   end
 end
