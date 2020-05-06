@@ -8,7 +8,7 @@ module Ont
     has_many :library_requests, foreign_key: :ont_library_id,
                                 inverse_of: :library, dependent: :destroy
 
-    validates :name, :plate_barcode, :pool, :well_range, :pool_size, presence: true
+    validates :name, :plate_barcode, :pool, :pool_size, presence: true
 
     def tag_set_name
       library_requests.first.nil? ? nil : library_requests.first.tag.tag_set_name

@@ -15,12 +15,12 @@ RSpec.describe 'GraphQL', type: :request do
       create(:ont_library)
       allow_any_instance_of(Ont::Library).to receive(:tag_set_name).and_return('test tag set')
       allow_any_instance_of(Ont::Library).to receive(:tube_barcode).and_return('test tube barcode')
-      post v2_path, params: { query: '{ ontLibraries { name plateBarcode pool wellRange poolSize tagSetName tubeBarcode } }' }
+      post v2_path, params: { query: '{ ontLibraries { name plateBarcode pool poolSize tagSetName tubeBarcode } }' }
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data']['ontLibraries']).to contain_exactly(
         { 'name' => 'PLATE-1-123456-2', 'plateBarcode' => 'PLATE-1-123456', 'pool' => 2,
-          'wellRange' => 'A1-H8', 'poolSize' => 24, 'tagSetName' => 'test tag set', 'tubeBarcode' => 'test tube barcode'})
+          'poolSize' => 24, 'tagSetName' => 'test tag set', 'tubeBarcode' => 'test tube barcode'})
     end
 
     it 'returns all libraries when many exist' do
@@ -46,7 +46,7 @@ RSpec.describe 'GraphQL', type: :request do
           }
         )
         {
-          tubes { barcode materials { ... on Library { name pool wellRange poolSize } } }
+          tubes { barcode materials { ... on Library { name pool poolSize } } }
           errors
         }
       }
@@ -57,7 +57,6 @@ RSpec.describe 'GraphQL', type: :request do
       libraries = create_list(:ont_library_in_tube, 4).each_with_index do |library, i|
         library.pool = i+1
         library.name = "PLATE-1-1234-#{i+1}"
-        library.well_range = "A#{(i*2)+1}-H#{(i+1)*2}"
         library.save
       end
 
@@ -73,22 +72,22 @@ RSpec.describe 'GraphQL', type: :request do
 
       expect(tubes_json[0]['barcode']).to be_present
       expect(tubes_json[0]['materials']).to contain_exactly(
-        { 'name' => 'PLATE-1-1234-1', 'pool' => 1, 'wellRange' => 'A1-H2', 'poolSize' => 24 }
+        { 'name' => 'PLATE-1-1234-1', 'pool' => 1, 'poolSize' => 24 }
       )
 
       expect(tubes_json[1]['barcode']).to be_present
       expect(tubes_json[1]['materials']).to contain_exactly(
-        { 'name' => 'PLATE-1-1234-2', 'pool' => 2, 'wellRange' => 'A3-H4', 'poolSize' => 24 }
+        { 'name' => 'PLATE-1-1234-2', 'pool' => 2, 'poolSize' => 24 }
       )
 
       expect(tubes_json[2]['barcode']).to be_present
       expect(tubes_json[2]['materials']).to contain_exactly(
-        { 'name' => 'PLATE-1-1234-3', 'pool' => 3, 'wellRange' => 'A5-H6', 'poolSize' => 24 }
+        { 'name' => 'PLATE-1-1234-3', 'pool' => 3, 'poolSize' => 24 }
       )
 
       expect(tubes_json[3]['barcode']).to be_present
       expect(tubes_json[3]['materials']).to contain_exactly(
-        { 'name' => 'PLATE-1-1234-4', 'pool' => 4, 'wellRange' => 'A7-H8', 'poolSize' => 24 }
+        { 'name' => 'PLATE-1-1234-4', 'pool' => 4, 'poolSize' => 24 }
       )
 
       expect(mutation_json['errors']).to be_empty

@@ -100,19 +100,13 @@ module Ont
     end
 
     def build_library(lib_idx, num_tags)
-      wells = get_wells(lib_idx, num_tags)
       pool = lib_idx + 1
       @libraries << Library.new(name: "#{@plate.barcode}-#{pool}",
                                 plate_barcode: @plate.barcode,
-                                well_range: "#{wells[0].position}-#{wells[-1].position}",
                                 pool: pool,
                                 pool_size: num_tags)
-      build_library_requests(wells, @libraries.last)
+      build_library_requests(@sorted_wells[(lib_idx * num_tags), num_tags], @libraries.last)
       add_to_tube(@libraries.last)
-    end
-
-    def get_wells(lib_idx, num_tags)
-      @sorted_wells[(lib_idx * num_tags), num_tags]
     end
 
     def build_library_requests(wells, library)
