@@ -36,10 +36,12 @@ ActiveRecord::Schema.define(version: 2020_05_06_064846) do
   create_table "ont_library_requests", force: :cascade do |t|
     t.integer "ont_library_id"
     t.integer "ont_request_id"
+    t.integer "tag_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["ont_library_id"], name: "index_ont_library_requests_on_ont_library_id"
     t.index ["ont_request_id"], name: "index_ont_library_requests_on_ont_request_id"
+    t.index ["tag_id"], name: "index_ont_library_requests_on_tag_id"
   end
 
   create_table "ont_requests", force: :cascade do |t|
