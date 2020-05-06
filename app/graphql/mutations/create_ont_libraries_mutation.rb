@@ -5,7 +5,7 @@ module Mutations
   class CreateOntLibrariesMutation < BaseMutation
     argument :arguments, Types::Inputs::Ont::LibrariesInputType, required: true
 
-    field :tubes, [Types::Outputs::TubeType], null: false
+    field :tubes, [Types::Outputs::TubeType], null: true
     field :errors, [String], null: false
 
     def resolve(arguments:)
@@ -14,7 +14,7 @@ module Mutations
       if factory.save
         { tubes: factory.tubes, errors: [] }
       else
-        { tubes: [], errors: factory.errors.full_messages }
+        { tubes: nil, errors: factory.errors.full_messages }
       end
     end
   end
