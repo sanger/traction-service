@@ -10,10 +10,6 @@ module Ont
 
     validates :name, :plate_barcode, :pool, :well_range, :pool_size, presence: true
 
-    # Dynamically calculated/transient attributes:
-    # - tag_set_name
-    # - tube_barcode
-
     def tag_set_name
       library_requests.first.nil? ? nil : library_requests.first.tag.tag_set_name
     end
