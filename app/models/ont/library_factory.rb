@@ -9,7 +9,10 @@ module Ont
   class LibraryFactory
     include ActiveModel::Model
 
-    validate :check_validation_errors, :check_libraries, :check_library_requests, :check_container_materials
+    validate :check_validation_errors,
+             :check_libraries,
+             :check_library_requests,
+             :check_container_materials
 
     def initialize(attributes = {})
       @validation_errors = []
