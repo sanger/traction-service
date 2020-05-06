@@ -105,13 +105,13 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
           factory.save
         end
 
-        it 'creates library with empty requests' do
+        it 'creates expected library' do
           expect(Ont::Library.count).to eq(1)
           expect(Ont::Library.first.name).to eq("#{plate.barcode}-1")
+          expect(Ont::Library.first.plate_barcode).to eq(plate.barcode)
           expect(Ont::Library.first.well_range).to eq('A1-C3')
           expect(Ont::Library.first.pool).to eq(1)
           expect(Ont::Library.first.pool_size).to eq(9)
-          expect(Ont::Library.first.requests).to be_empty
         end
 
         it 'creates and exposes a tube that contains the library' do
@@ -119,6 +119,10 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
           expect(factory.tubes).to match_array(Tube.all)
           expect(Tube.first.materials.count).to eq(1)
           expect(Tube.first.materials).to contain_exactly(Ont::Library.first)
+        end
+
+        it 'does not create any library_request joins' do
+          expect(Ont::LibraryRequest.count).to eq(0)
         end
       end
       
@@ -145,24 +149,13 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
             factory.save
           end
 
-          it 'tags requests according to the primary grouping direction' do
-            # sanity check
-            expect(Ont::Request.count).to eq(11)
-            expect(Tag.count).to eq(9)
-            # test requests are tagged correctly
-            ['A1', 'B1', 'C1', 'A2', 'B2', 'C2', 'A3', 'B3', 'C3'].each_with_index do |position, idx|
-              expect(Well.find_by(position: position).materials.map { |mat| mat.tags }).to all( contain_exactly(Tag.find_by(group_id: idx + 1, tag_set_id: tag_set.id)) )
-            end
-          end
-
-          it 'creates a new library with linked requests' do
+          it 'creates expected library' do
             expect(Ont::Library.count).to eq(1)
             expect(Ont::Library.first.name).to eq("#{plate_with_requests.barcode}-1")
+            expect(Ont::Library.first.plate_barcode).to eq(plate_with_requests.barcode)
             expect(Ont::Library.first.well_range).to eq('A1-C3')
             expect(Ont::Library.first.pool).to eq(1)
             expect(Ont::Library.first.pool_size).to eq(9)
-            expect(Ont::Library.first.requests.count).to eq(Ont::Request.count)
-            expect(Ont::Library.first.requests.all).to match_array(Ont::Request.all)
           end
 
           it 'creates and exposes a tube that contains the library' do
@@ -170,6 +163,20 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
             expect(factory.tubes).to match_array(Tube.all)
             expect(Tube.first.materials.count).to eq(1)
             expect(Tube.first.materials).to contain_exactly(Ont::Library.first)
+          end
+
+          it 'creates expected library_request joins' do
+            # sanity check
+            expect(Ont::Request.count).to eq(11)
+            expect(Tag.count).to eq(9)
+            # test requests are tagged correctly
+            library = Ont::Library.first              
+            ['A1', 'B1', 'C1', 'A2', 'B2', 'C2', 'A3', 'B3', 'C3'].each_with_index do |position, idx|
+              tag = tag_set.tags[idx]
+              plate_with_requests.wells.find_by(position: position).materials.each do |request|
+                expect(Ont::LibraryRequest.where(library: library, request: request, tag: tag).count).to eq(1)
+              end
+            end
           end
         end
   
@@ -183,46 +190,24 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
             factory.save
           end
 
-          it 'tags requests according to the primary grouping direction' do
-            # sanity check
-            expect(Ont::Request.count).to eq(11)
-            expect(Tag.count).to eq(3)
-            # test requests are tagged correctly
-            ['A', 'B', 'C'].each_with_index do |row, row_idx|
-              (1..3).each do |col|
-                position = "#{row}#{col}"
-                expect(Well.find_by(position: position).materials.map { |mat| mat.tags }).to all( contain_exactly(Tag.find_by(group_id: col, tag_set_id: tag_set.id)) )
-              end
-            end
-          end
-
-          it 'creates new libraries with the correct requests' do
+          it 'creates expected libraries' do
             expect(Ont::Library.count).to eq(3)
             expect(Ont::Library.all.map { |lib| lib.pool_size  }).to all( eq(3) )
 
             expect(Ont::Library.first.name).to eq("#{plate_with_requests.barcode}-1")
+            expect(Ont::Library.first.plate_barcode).to eq(plate_with_requests.barcode)
             expect(Ont::Library.first.pool).to eq(1)
             expect(Ont::Library.first.well_range).to eq('A1-A3')
-            expect(Ont::Library.first.requests.count).to eq(4)
-            ['ExtIdA1-1', 'ExtIdA1-2', 'ExtIdA2', 'ExtIdA3'].each do |external_id|
-              expect(Ont::Library.first.requests).to include(Sample.find_by(external_id: external_id).requests.first.requestable)
-            end
 
             expect(Ont::Library.second.name).to eq("#{plate_with_requests.barcode}-2")
+            expect(Ont::Library.second.plate_barcode).to eq(plate_with_requests.barcode)
             expect(Ont::Library.second.pool).to eq(2)
             expect(Ont::Library.second.well_range).to eq('B1-B3')
-            expect(Ont::Library.second.requests.count).to eq(3)
-            ['ExtIdB1', 'ExtIdB2', 'ExtIdB3'].each do |external_id|
-              expect(Ont::Library.second.requests).to include(Sample.find_by(external_id: external_id).requests.first.requestable)
-            end
 
             expect(Ont::Library.third.name).to eq("#{plate_with_requests.barcode}-3")
+            expect(Ont::Library.third.plate_barcode).to eq(plate_with_requests.barcode)
             expect(Ont::Library.third.pool).to eq(3)
             expect(Ont::Library.third.well_range).to eq('C1-C3')
-            expect(Ont::Library.third.requests.count).to eq(4)
-            ['ExtIdC1', 'ExtIdC2-1', 'ExtIdC2-2', 'ExtIdC3'].each do |external_id|
-              expect(Ont::Library.third.requests).to include(Sample.find_by(external_id: external_id).requests.first.requestable)
-            end
           end
 
           it 'creates and exposes tubes for each library' do
@@ -231,6 +216,23 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
             # test each tube has one material AND all tubes contain all libraries => each library exists in a different tube
             expect(Tube.all.map { |tube| tube.materials.count }).to all( eq(1) )
             expect(Tube.all.map { |tube| tube.materials }.flatten).to match_array(Ont::Library.all)
+          end
+
+          it 'creates expected library_request joins' do
+            # sanity check
+            expect(Ont::Request.count).to eq(11)
+            expect(Tag.count).to eq(3)
+            # test requests are tagged correctly
+            ['A', 'B', 'C'].each_with_index do |row, row_idx|
+              library = Ont::Library.all[row_idx]
+              (1..3).each do |col|
+                position = "#{row}#{col}"
+                tag = tag_set.tags[col - 1]
+                plate_with_requests.wells.find_by(position: position).materials.each do |request|
+                  expect(Ont::LibraryRequest.where(library: library, request: request, tag: tag).count).to eq(1)
+                end
+              end
+            end
           end
         end
       end
