@@ -25,7 +25,6 @@ ActiveRecord::Schema.define(version: 2020_05_06_064846) do
 
   create_table "ont_libraries", force: :cascade do |t|
     t.string "name"
-    t.string "plate_barcode"
     t.integer "pool"
     t.integer "pool_size"
     t.datetime "created_at", precision: 6, null: false

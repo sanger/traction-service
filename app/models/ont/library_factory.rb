@@ -101,10 +101,8 @@ module Ont
 
     def build_library(lib_idx, num_tags)
       pool = lib_idx + 1
-      @libraries << Library.new(name: "#{@plate.barcode}-#{pool}",
-                                plate_barcode: @plate.barcode,
-                                pool: pool,
-                                pool_size: num_tags)
+      name = Ont::Library.library_name(@plate.barcode, pool)
+      @libraries << Ont::Library.new(name: name, pool: pool, pool_size: num_tags)
       build_library_requests(@sorted_wells[(lib_idx * num_tags), num_tags], @libraries.last)
       add_to_tube(@libraries.last)
     end
