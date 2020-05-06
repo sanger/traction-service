@@ -15,18 +15,22 @@ module V1
                  :external_study_id, :source_barcode, :sample_name, :sample_species
 
       # Shared attributes
-      attributes :barcode, :created_at
+      attributes :barcode, :created_at, :material_type
 
       def fetchable_fields
         if @model.material.is_a?(::Pacbio::Library)
           %i[state barcode volume concentration library_kit_barcode fragment_size created_at
-             deactivated_at sample_names]
+             deactivated_at sample_names material_type]
         elsif @model.material.is_a?(::Pacbio::Request)
           %i[library_type estimate_of_gb_required number_of_smrt_cells cost_code external_study_id
-             source_barcode sample_name barcode sample_species created_at]
+             source_barcode sample_name barcode sample_species created_at material_type]
         else
           super
         end
+      end
+
+      def material_type
+        @model.material_type.demodulize.downcase
       end
 
       # Delegations to Container
