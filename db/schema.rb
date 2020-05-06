@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_01_073510) do
+ActiveRecord::Schema.define(version: 2020_05_06_064846) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -31,6 +31,15 @@ ActiveRecord::Schema.define(version: 2020_05_01_073510) do
     t.integer "pool_size"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "ont_library_requests", force: :cascade do |t|
+    t.integer "ont_library_id"
+    t.integer "ont_request_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["ont_library_id"], name: "index_ont_library_requests_on_ont_library_id"
+    t.index ["ont_request_id"], name: "index_ont_library_requests_on_ont_request_id"
   end
 
   create_table "ont_requests", force: :cascade do |t|
