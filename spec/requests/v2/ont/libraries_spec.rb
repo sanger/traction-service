@@ -105,7 +105,7 @@ RSpec.describe 'GraphQL', type: :request do
       json = ActiveSupport::JSON.decode(response.body)
 
       mutation_json = json['data']['createOntLibraries']
-      expect(mutation_json['tubes']).to be_empty
+      expect(mutation_json['tubes']).to be_nil
       expect(mutation_json['errors']).to contain_exactly('Libraries {:message=>"This is a test error"}')
     end
 
