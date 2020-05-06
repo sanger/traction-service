@@ -9,7 +9,7 @@ module Ont
   class LibraryFactory
     include ActiveModel::Model
 
-    validate :check_validation_errors, :check_libraries, :check_library_requests
+    validate :check_validation_errors, :check_libraries, :check_library_requests, :check_container_materials
 
     def initialize(attributes = {})
       @validation_errors = []
@@ -30,9 +30,10 @@ module Ont
     def save
       return false unless valid?
 
-      @libraries.collect(&:save)
-      @library_requests.collect(&:save)
-      @container_materials.collect(&:save)
+      @libraries.each { |lib| lib.save(validate: false) }
+      @library_requests.each { |lib_req| lib_req.save(validate: false) }
+      @tubes.each { |tube| tube.save(validate: false) }
+      @container_materials.each { |cont_mat| cont_mat.save(validate: false) }
       true
     end
 
@@ -156,6 +157,16 @@ module Ont
         next if library_request.valid?
 
         library_request.errors.each do |k, v|
+          errors.add(k, v)
+        end
+      end
+    end
+
+    def check_container_materials
+      @container_materials.each do |container_material|
+        next if container_material.valid?
+
+        container_material.errors.each do |k, v|
           errors.add(k, v)
         end
       end
