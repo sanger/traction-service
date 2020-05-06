@@ -24,10 +24,6 @@ module Ont
     def save(**options)
       return false unless options[:validate] == false || valid?
 
-      check_tag_service
-      check_for_raised_exceptions
-      return false if errors.any?
-
       # No need to validate any lower level objects since validation above has already checked them
       well.save(validate: false)
       @request_factories.map { |request_factory| request_factory.save(validate: false) }
