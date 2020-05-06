@@ -27,7 +27,6 @@ ActiveRecord::Schema.define(version: 2020_05_06_064846) do
     t.string "name"
     t.string "plate_barcode"
     t.integer "pool"
-    t.string "well_range"
     t.integer "pool_size"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
