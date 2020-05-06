@@ -9,6 +9,9 @@ module Ont
   class LibraryFactory
     include ActiveModel::Model
 
+    # Do not explicitly validate tubes to avoid duplicate validations
+    # Tubes are validated through the below validation checks
+    # Validation is implemented such that each created entity is validated exactly once
     validate :check_validation_errors,
              :check_libraries,
              :check_library_requests,
