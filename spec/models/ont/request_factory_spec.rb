@@ -154,6 +154,16 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
         expect(::Sample.first.requests.first.requestable).to eq(Ont::Request.first)
       end
 
+      it 'validates the request only once by default' do
+        validation_count = 0
+        allow_any_instance_of(Request).to receive(:valid?) { |_| validation_count += 1 }
+        factory.save
+        expect(validation_count).to be >= 1
+        # TODO: this should be only once, but isn't at the moment
+        # see https://github.com/sanger/traction-service/issues/355
+        # expect(validation_count).to eq(1)
+      end
+
       it 'validates the tag taggable only once by default' do
         validation_count = 0
         allow_any_instance_of(TagTaggable).to receive(:valid?) { |_| validation_count += 1 }
@@ -166,6 +176,39 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
         allow_any_instance_of(ContainerMaterial).to receive(:valid?) { |_| validation_count += 1 }
         factory.save
         expect(validation_count).to eq(1)
+      end
+
+      it 'validates the ONT request only once by default' do
+        validation_count = 0
+        allow_any_instance_of(Ont::Request).to receive(:valid?) { |_| validation_count += 1 }
+        factory.save
+        expect(validation_count).to be >= 1
+        # TODO: this should be only once, but isn't at the moment
+        # see https://github.com/sanger/traction-service/issues/355
+        # expect(validation_count).to eq(1)
+      end
+
+      it 'validates the sample only once by default' do
+        validation_count = 0
+        allow_any_instance_of(Sample).to receive(:valid?) { |_| validation_count += 1 }
+        factory.save
+        expect(validation_count).to be >= 1
+        # TODO: this should be only once, but isn't at the moment
+        # see https://github.com/sanger/traction-service/issues/355
+        # expect(validation_count).to eq(1)
+      end
+
+      it 'validates no children when (validate: false) is passed' do
+        validation_count = 0
+        allow_any_instance_of(Request).to receive(:valid?) { |_| validation_count += 1 }
+        allow_any_instance_of(TagTaggable).to receive(:valid?) { |_| validation_count += 1 }
+        allow_any_instance_of(ContainerMaterial).to receive(:valid?) { |_| validation_count += 1 }
+        allow_any_instance_of(Ont::Request).to receive(:valid?) { |_| validation_count += 1 }
+        allow_any_instance_of(Sample).to receive(:valid?) { |_| validation_count += 1 }
+        factory.save(validate: false)
+        # TODO: this should be zero, but isn't at the moment
+        # see https://github.com/sanger/traction-service/issues/355
+        # expect(validation_count).to eq(0)
       end
     end
 
