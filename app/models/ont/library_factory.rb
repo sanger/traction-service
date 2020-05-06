@@ -31,8 +31,8 @@ module Ont
 
     attr_reader :tubes
 
-    def save
-      return false unless valid?
+    def save(**options)
+      return false unless options[:validate] == false || valid?
 
       @libraries.each { |lib| lib.save(validate: false) }
       @library_requests.each { |lib_req| lib_req.save(validate: false) }
