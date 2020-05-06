@@ -157,6 +157,32 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
             expect(validation_count).to eq(Tube.count)
           end
         end
+
+        context 'without validation' do
+          it 'does not validate created libraries' do
+            expect_any_instance_of(Ont::Library).to_not receive(:valid?)
+            factory = Ont::LibraryFactory.new(attributes)
+            factory.save(validate: false)
+          end
+
+          it 'does not validate created library requests' do
+            expect_any_instance_of(Ont::LibraryRequest).to_not receive(:valid?)
+            factory = Ont::LibraryFactory.new(attributes)
+            factory.save(validate: false)
+          end
+
+          it 'does not validate created tubes' do
+            expect_any_instance_of(Tube).to_not receive(:valid?)
+            factory = Ont::LibraryFactory.new(attributes)
+            factory.save(validate: false)
+          end
+
+          it 'does not validate created container materials' do
+            expect_any_instance_of(ContainerMaterial).to_not receive(:valid?)
+            factory = Ont::LibraryFactory.new(attributes)
+            factory.save(validate: false)
+          end
+        end
       end
       
       context 'with filled wells' do
@@ -243,6 +269,32 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
               expect(validation_count).to eq(Tube.count)
             end
           end
+
+          context 'without validation' do
+            it 'does not validate created libraries' do
+              expect_any_instance_of(Ont::Library).to_not receive(:valid?)
+              factory = Ont::LibraryFactory.new(attributes)
+              factory.save(validate: false)
+            end
+  
+            it 'does not validate created library requests' do
+              expect_any_instance_of(Ont::LibraryRequest).to_not receive(:valid?)
+              factory = Ont::LibraryFactory.new(attributes)
+              factory.save(validate: false)
+            end
+  
+            it 'does not validate created tubes' do
+              expect_any_instance_of(Tube).to_not receive(:valid?)
+              factory = Ont::LibraryFactory.new(attributes)
+              factory.save(validate: false)
+            end
+  
+            it 'does not validate created container materials' do
+              expect_any_instance_of(ContainerMaterial).to_not receive(:valid?)
+              factory = Ont::LibraryFactory.new(attributes)
+              factory.save(validate: false)
+            end
+          end
         end
   
         context 'with many tag set iterations' do
@@ -325,6 +377,32 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
               factory = Ont::LibraryFactory.new(attributes)
               factory.save
               expect(validation_count).to eq(Tube.count)
+            end
+          end
+
+          context 'without validation' do
+            it 'does not validate created libraries' do
+              expect_any_instance_of(Ont::Library).to_not receive(:valid?)
+              factory = Ont::LibraryFactory.new(attributes)
+              factory.save(validate: false)
+            end
+  
+            it 'does not validate created library requests' do
+              expect_any_instance_of(Ont::LibraryRequest).to_not receive(:valid?)
+              factory = Ont::LibraryFactory.new(attributes)
+              factory.save(validate: false)
+            end
+  
+            it 'does not validate created tubes' do
+              expect_any_instance_of(Tube).to_not receive(:valid?)
+              factory = Ont::LibraryFactory.new(attributes)
+              factory.save(validate: false)
+            end
+  
+            it 'does not validate created container materials' do
+              expect_any_instance_of(ContainerMaterial).to_not receive(:valid?)
+              factory = Ont::LibraryFactory.new(attributes)
+              factory.save(validate: false)
             end
           end
         end
