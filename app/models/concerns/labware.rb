@@ -19,6 +19,6 @@ module Labware
     return if barcode.present?
 
     self.barcode = "TRAC-#{self.class.prefix}-#{id}"
-    self.save(validate: false)
+    save(validate: false)
   end
 end
