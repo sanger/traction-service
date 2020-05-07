@@ -3,9 +3,13 @@
 module Types
   # Mutations.
   class MutationTypes < BaseObject
-    # Plates
+    # Ont::Plates
     field :create_plate_with_ont_samples, mutation: Mutations::CreatePlateWithOntSamplesMutation
-    # Libraries
+
+    # Ont::Libraries
     field :create_ont_libraries, mutation: Mutations::CreateOntLibrariesMutation
+
+    # Ont::Runs
+    field :create_ont_run, mutation: Mutations::CreateOntRunMutation
   end
 end
