@@ -18,7 +18,6 @@ module Labware
   def generate_barcode
     return if barcode.present?
 
-    self.barcode = "TRAC-#{self.class.prefix}-#{id}"
-    save(validate: false)
+    update(barcode: "TRAC-#{self.class.prefix}-#{id}")
   end
 end
