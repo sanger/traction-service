@@ -1,23 +1,16 @@
 # frozen_string_literal: true
 
-# Saphyr namespace
-module Saphyr
-  # Saphyr::Run
-  # A saphyr run can have a saphyr chip
+module Ont
+  # Ont::Run
   class Run < ApplicationRecord
     include Stateful
 
-    has_one :chip, foreign_key: :saphyr_run_id,
-                   inverse_of: :run, dependent: :nullify
+    has_many :flowcells, foreign_key: :ont_run_id, inverse_of: :run, dependent: :destroy
 
     scope :active, -> { where(deactivated_at: nil) }
 
     def active?
       deactivated_at.nil?
-    end
-
-    def name
-      super.presence || id
     end
 
     def cancel
