@@ -21,11 +21,12 @@ module Ont
 
     attr_reader :well
 
-    def save
-      return false unless valid?
+    def save(**options)
+      return false unless options[:validate] == false || valid?
 
-      well.save
-      @request_factories.collect(&:save)
+      # No need to validate any lower level objects since validation above has already checked them
+      well.save(validate: false)
+      @request_factories.map { |request_factory| request_factory.save(validate: false) }
       true
     end
 

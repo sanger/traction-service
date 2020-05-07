@@ -8,7 +8,8 @@ module Ont
   class RequestFactory
     include ActiveModel::Model
 
-    validate :check_request, :check_tag
+    validate :check_request, :check_tag, :check_well_request_join
+    # Note that @ont_request and @sample are validated by association with @request
 
     def initialize(attributes = {})
       @well = attributes[:well]
@@ -20,23 +21,26 @@ module Ont
 
     attr_reader :request
 
-    def save
-      return false unless valid?
+    def save(**options)
+      return false unless options[:validate] == false || valid?
 
-      request.save
-      @tag_taggable&.save
-      @well_request_join.save
+      # No need to validate any lower level objects since validation above has already checked them
+      request.save(validate: false)
+      tag_taggable&.save(validate: false)
+      well_request_join.save(validate: false)
       true
     end
 
     private
+
+    attr_reader :tag_taggable, :tag_service, :well, :well_request_join
 
     def build_request(request_attributes)
       constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
       sample = build_or_fetch_sample(request_attributes, constants_accessor)
       ont_request = build_ont_request(request_attributes, constants_accessor)
       @request = ::Request.new(requestable: ont_request, sample: sample)
-      @well_request_join = ::ContainerMaterial.new(container: @well, material: request.requestable)
+      @well_request_join = ::ContainerMaterial.new(container: well, material: request.requestable)
     end
 
     def build_ont_request(request_attributes, constants_accessor)
@@ -45,6 +49,7 @@ module Ont
         tag = @tag_service.find_and_register_tag(request_attributes[:tag_group_id])
         @tag_taggable = ::TagTaggable.new(taggable: ont_request, tag: tag)
       end
+
       ont_request
     end
 
@@ -69,9 +74,17 @@ module Ont
     end
 
     def check_tag
-      return if @tag_taggable.nil? || @tag_taggable.valid?
+      return if tag_taggable.nil? || tag_taggable.valid?
 
-      @tag_taggable.errors.each do |k, v|
+      tag_taggable.errors.each do |k, v|
+        errors.add(k, v)
+      end
+    end
+
+    def check_well_request_join
+      return if well_request_join.nil? || well_request_join.valid?
+
+      well_request_join.errors.each do |k, v|
         errors.add(k, v)
       end
     end
