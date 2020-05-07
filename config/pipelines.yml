@@ -180,6 +180,40 @@ default: &default
           type: :model
           value: request.sample_name
           populate_on_row_type: :sample
+    covid:
+      message:
+        lims: *lims
+        key: ont_request
+        fields:
+          updated_at: *timestamp
+          id_flowcell_lims:
+            type: :model
+            value: library.flowcell.id
+          sample_uuid:
+            type: :model
+            value: request.sample.external_id
+          study_uuid:
+            type: :model
+            value: request.external_study_id
+          experiment_name:
+            type: :model
+            value: library.flowcell.run.id
+          instrument_name:
+            type: :model
+            value: library.flowcell.run.instrument_name
+          instrument_slot:
+            type: :model
+            value: library.flowcell.position
+          # pipeline_id_lims:
+          # library_preparation_type:
+          # tag_identifier:
+          # tag_sequence:
+          # tag_set_id_lims:
+          # tag_set_name:
+          # tag2_identifier:
+          # tag2_sequence:
+          # tag2_set_id_lims:
+          # tag2_set_name:
 
 
 development:
