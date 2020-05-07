@@ -12,6 +12,10 @@ RSpec.describe Pipelines::ConstantsAccessor, type: :model do
           def species
             'test species'
           end
+
+          def instrument_name
+            'test instrument name'
+          end
         end.new
       )
     }
@@ -22,6 +26,10 @@ RSpec.describe Pipelines::ConstantsAccessor, type: :model do
 
     it 'will return the species' do
       expect(constants_accessor.species).to eq('test species')
+    end
+
+    it 'will return the instrument name' do
+      expect(constants_accessor.instrument_name).to eq('test instrument name')
     end
   end
 end
