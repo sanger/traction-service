@@ -17,6 +17,11 @@ RSpec.describe Ont::Run, type: :model, ont: true do
       run = create(:ont_run)
       expect(run).to be_active
     end
+
+    it 'is not valid without instrument_name' do
+      run = build(:ont_run, instrument_name: nil)
+      expect(run).not_to be_valid
+    end
   end
 
   context 'state' do
