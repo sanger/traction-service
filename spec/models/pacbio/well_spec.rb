@@ -2,6 +2,11 @@ require 'rails_helper'
 
 RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
+  context 'uuidable' do
+    let(:uuidable_model) { :pacbio_well }
+    it_behaves_like 'uuidable'
+  end
+
   context 'row' do
     it 'must have a row' do
       expect(build(:pacbio_well, row: nil)).to_not be_valid
@@ -65,10 +70,6 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
   it 'can have a summary' do
     well = create(:pacbio_well_with_libraries)
     expect(well.summary).to eq("#{well.sample_names},#{well.comment}")
-  end
-
-   it 'will have a uuid' do
-    expect(create(:pacbio_well).uuid).to be_present
   end
 
   context 'sequencing mode' do
