@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_06_141138) do
+ActiveRecord::Schema.define(version: 2020_05_07_071910) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -23,12 +23,23 @@ ActiveRecord::Schema.define(version: 2020_05_06_141138) do
     t.index ["material_type", "material_id"], name: "index_container_materials_on_material_type_and_material_id"
   end
 
+  create_table "ont_flowcells", force: :cascade do |t|
+    t.integer "position"
+    t.string "uuid"
+    t.integer "ont_run_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["ont_run_id"], name: "index_ont_flowcells_on_ont_run_id"
+  end
+
   create_table "ont_libraries", force: :cascade do |t|
     t.string "name"
     t.integer "pool"
     t.integer "pool_size"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "ont_flowcell_id"
+    t.index ["ont_flowcell_id"], name: "index_ont_libraries_on_ont_flowcell_id"
   end
 
   create_table "ont_library_requests", force: :cascade do |t|

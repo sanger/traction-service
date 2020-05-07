@@ -5,6 +5,8 @@ module Ont
   class Run < ApplicationRecord
     include Stateful
 
+    has_many :flowcells, foreign_key: :ont_run_id, inverse_of: :run, dependent: :destroy
+
     scope :active, -> { where(deactivated_at: nil) }
 
     def active?
