@@ -21,7 +21,7 @@ module Ont
     end
 
     def tag_set_name
-      library_requests.first.nil? ? nil : library_requests.first.tag.tag_set_name
+      library_requests.first&.tag&.tag_set_name
     end
 
     def tube_barcode
