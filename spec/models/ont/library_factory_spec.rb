@@ -124,61 +124,70 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
         end
 
         context 'validates' do
+          let!(:library) { create(:ont_library) }
+          let!(:library_request) { create(:ont_library_request) }
+          let!(:tube) { create(:tube) }
+          let!(:container_material) { create(:container_material) }
+
           it 'each library exactly once' do
-            validation_count = 0
-            allow_any_instance_of(Ont::Library).to receive(:valid?) { |_| validation_count+=1 }
+            allow(Ont::Library).to receive(:new).and_return(library)
+            expect(library).to receive(:valid?).exactly(1)
             factory = Ont::LibraryFactory.new(attributes)
             factory.save
-            expect(validation_count).to eq(Ont::Library.count)
           end
 
           it 'each library request exactly once' do
-            validation_count = 0
-            allow_any_instance_of(Ont::LibraryRequest).to receive(:valid?) { |_| validation_count+=1 }
+            allow(Ont::LibraryRequest).to receive(:new).and_return(library_request)
+            expect(library_request).to receive(:valid?).exactly(0) # none should be created as wells empty
             factory = Ont::LibraryFactory.new(attributes)
             factory.save
-            expect(validation_count).to eq(Ont::LibraryRequest.count)
           end
 
           it 'each tube exactly once' do
-            validation_count = 0
-            allow_any_instance_of(Tube).to receive(:valid?) { |_| validation_count+=1 }
+            allow(Tube).to receive(:new).and_return(tube)
+            expect(tube).to receive(:valid?).exactly(1)
             factory = Ont::LibraryFactory.new(attributes)
             factory.save
-            expect(validation_count).to eq(Tube.count)
           end
 
           it 'each tube container_material exactly once' do
-            validation_count = 0
-            allow_any_instance_of(ContainerMaterial).to receive(:valid?) { |_| validation_count+=1 }
+            allow(ContainerMaterial).to receive(:new).and_return(container_material)
+            expect(container_material).to receive(:valid?).exactly(1)
             factory = Ont::LibraryFactory.new(attributes)
             factory.save
-            #
-            expect(validation_count).to eq(Tube.count)
           end
         end
 
         context 'without validation' do
+          let!(:library) { create(:ont_library) }
+          let!(:library_request) { create(:ont_library_request) }
+          let!(:tube) { create(:tube) }
+          let!(:container_material) { create(:container_material) }
+
           it 'does not validate created libraries' do
-            expect_any_instance_of(Ont::Library).to_not receive(:valid?)
+            allow(Ont::Library).to receive(:new).and_return(library)
+            expect(library).to_not receive(:valid?)
             factory = Ont::LibraryFactory.new(attributes)
             factory.save(validate: false)
           end
 
           it 'does not validate created library requests' do
-            expect_any_instance_of(Ont::LibraryRequest).to_not receive(:valid?)
+            allow(Ont::LibraryRequest).to receive(:new).and_return(library_request)
+            expect(library_request).to_not receive(:valid?)
             factory = Ont::LibraryFactory.new(attributes)
             factory.save(validate: false)
           end
 
           it 'does not validate created tubes' do
-            expect_any_instance_of(Tube).to_not receive(:valid?)
+            allow(Tube).to receive(:new).and_return(tube)
+            expect(tube).to_not receive(:valid?)
             factory = Ont::LibraryFactory.new(attributes)
             factory.save(validate: false)
           end
 
           it 'does not validate created container materials' do
-            expect_any_instance_of(ContainerMaterial).to_not receive(:valid?)
+            allow(ContainerMaterial).to receive(:new).and_return(container_material)
+            expect(container_material).to_not receive(:valid?)
             factory = Ont::LibraryFactory.new(attributes)
             factory.save(validate: false)
           end
@@ -237,60 +246,70 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
           end
 
           context 'validates' do
+            let!(:library) { create(:ont_library) }
+            let!(:library_request) { create(:ont_library_request) }
+            let!(:tube) { create(:tube) }
+            let!(:container_material) { create(:container_material) }
+  
             it 'each library exactly once' do
-              validation_count = 0
-              allow_any_instance_of(Ont::Library).to receive(:valid?) { |_| validation_count+=1 }
+              allow(Ont::Library).to receive(:new).and_return(library)
+              expect(library).to receive(:valid?).exactly(1)
               factory = Ont::LibraryFactory.new(attributes)
               factory.save
-              expect(validation_count).to eq(Ont::Library.count)
             end
   
             it 'each library request exactly once' do
-              validation_count = 0
-              allow_any_instance_of(Ont::LibraryRequest).to receive(:valid?) { |_| validation_count+=1 }
+              allow(Ont::LibraryRequest).to receive(:new).and_return(library_request)
+              expect(library_request).to receive(:valid?).exactly(11) # one for each request
               factory = Ont::LibraryFactory.new(attributes)
               factory.save
-              expect(validation_count).to eq(Ont::LibraryRequest.count)
             end
   
             it 'each tube exactly once' do
-              validation_count = 0
-              allow_any_instance_of(Tube).to receive(:valid?) { |_| validation_count+=1 }
+              allow(Tube).to receive(:new).and_return(tube)
+              expect(tube).to receive(:valid?).exactly(1)
               factory = Ont::LibraryFactory.new(attributes)
               factory.save
-              expect(validation_count).to eq(Tube.count)
             end
   
             it 'each tube container_material exactly once' do
-              validation_count = 0
-              allow_any_instance_of(ContainerMaterial).to receive(:valid?) { |_| validation_count+=1 }
+              allow(ContainerMaterial).to receive(:new).and_return(container_material)
+              expect(container_material).to receive(:valid?).exactly(1)
               factory = Ont::LibraryFactory.new(attributes)
               factory.save
-              expect(validation_count).to eq(Tube.count)
             end
           end
 
           context 'without validation' do
+            let!(:library) { create(:ont_library) }
+            let!(:library_request) { create(:ont_library_request) }
+            let!(:tube) { create(:tube) }
+            let!(:container_material) { create(:container_material) }
+  
             it 'does not validate created libraries' do
-              expect_any_instance_of(Ont::Library).to_not receive(:valid?)
+              allow(Ont::Library).to receive(:new).and_return(library)
+              expect(library).to_not receive(:valid?)
               factory = Ont::LibraryFactory.new(attributes)
               factory.save(validate: false)
             end
   
             it 'does not validate created library requests' do
-              expect_any_instance_of(Ont::LibraryRequest).to_not receive(:valid?)
+              allow(Ont::LibraryRequest).to receive(:new).and_return(library_request)
+              expect(library_request).to_not receive(:valid?)
               factory = Ont::LibraryFactory.new(attributes)
               factory.save(validate: false)
             end
   
             it 'does not validate created tubes' do
-              expect_any_instance_of(Tube).to_not receive(:valid?)
+              allow(Tube).to receive(:new).and_return(tube)
+              expect(tube).to_not receive(:valid?)
               factory = Ont::LibraryFactory.new(attributes)
               factory.save(validate: false)
             end
   
             it 'does not validate created container materials' do
-              expect_any_instance_of(ContainerMaterial).to_not receive(:valid?)
+              allow(ContainerMaterial).to receive(:new).and_return(container_material)
+              expect(container_material).to_not receive(:valid?)
               factory = Ont::LibraryFactory.new(attributes)
               factory.save(validate: false)
             end
@@ -347,60 +366,70 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
           end
 
           context 'validates' do
+            let!(:library) { create(:ont_library) }
+            let!(:library_request) { create(:ont_library_request) }
+            let!(:tube) { create(:tube) }
+            let!(:container_material) { create(:container_material) }
+  
             it 'each library exactly once' do
-              validation_count = 0
-              allow_any_instance_of(Ont::Library).to receive(:valid?) { |_| validation_count+=1 }
+              allow(Ont::Library).to receive(:new).and_return(library)
+              expect(library).to receive(:valid?).exactly(3)
               factory = Ont::LibraryFactory.new(attributes)
               factory.save
-              expect(validation_count).to eq(Ont::Library.count)
             end
   
             it 'each library request exactly once' do
-              validation_count = 0
-              allow_any_instance_of(Ont::LibraryRequest).to receive(:valid?) { |_| validation_count+=1 }
+              allow(Ont::LibraryRequest).to receive(:new).and_return(library_request)
+              expect(library_request).to receive(:valid?).exactly(11) # one for each request
               factory = Ont::LibraryFactory.new(attributes)
               factory.save
-              expect(validation_count).to eq(Ont::LibraryRequest.count)
             end
   
             it 'each tube exactly once' do
-              validation_count = 0
-              allow_any_instance_of(Tube).to receive(:valid?) { |_| validation_count+=1 }
+              allow(Tube).to receive(:new).and_return(tube)
+              expect(tube).to receive(:valid?).exactly(3)
               factory = Ont::LibraryFactory.new(attributes)
               factory.save
-              expect(validation_count).to eq(Tube.count)
             end
   
             it 'each tube container_material exactly once' do
-              validation_count = 0
-              allow_any_instance_of(ContainerMaterial).to receive(:valid?) { |_| validation_count+=1 }
+              allow(ContainerMaterial).to receive(:new).and_return(container_material)
+              expect(container_material).to receive(:valid?).exactly(3)
               factory = Ont::LibraryFactory.new(attributes)
               factory.save
-              expect(validation_count).to eq(Tube.count)
             end
           end
 
           context 'without validation' do
+            let!(:library) { create(:ont_library) }
+            let!(:library_request) { create(:ont_library_request) }
+            let!(:tube) { create(:tube) }
+            let!(:container_material) { create(:container_material) }
+  
             it 'does not validate created libraries' do
-              expect_any_instance_of(Ont::Library).to_not receive(:valid?)
+              allow(Ont::Library).to receive(:new).and_return(library)
+              expect(library).to_not receive(:valid?)
               factory = Ont::LibraryFactory.new(attributes)
               factory.save(validate: false)
             end
   
             it 'does not validate created library requests' do
-              expect_any_instance_of(Ont::LibraryRequest).to_not receive(:valid?)
+              allow(Ont::LibraryRequest).to receive(:new).and_return(library_request)
+              expect(library_request).to_not receive(:valid?)
               factory = Ont::LibraryFactory.new(attributes)
               factory.save(validate: false)
             end
   
             it 'does not validate created tubes' do
-              expect_any_instance_of(Tube).to_not receive(:valid?)
+              allow(Tube).to receive(:new).and_return(tube)
+              expect(tube).to_not receive(:valid?)
               factory = Ont::LibraryFactory.new(attributes)
               factory.save(validate: false)
             end
   
             it 'does not validate created container materials' do
-              expect_any_instance_of(ContainerMaterial).to_not receive(:valid?)
+              allow(ContainerMaterial).to receive(:new).and_return(container_material)
+              expect(container_material).to_not receive(:valid?)
               factory = Ont::LibraryFactory.new(attributes)
               factory.save(validate: false)
             end
