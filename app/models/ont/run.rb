@@ -7,6 +7,8 @@ module Ont
 
     has_many :flowcells, foreign_key: :ont_run_id, inverse_of: :run, dependent: :destroy
 
+    validates :instrument_name, presence: true
+
     scope :active, -> { where(deactivated_at: nil) }
 
     def active?
