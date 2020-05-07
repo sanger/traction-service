@@ -6,8 +6,8 @@ module Ont
     include Uuidable
 
     belongs_to :run, foreign_key: :ont_run_id, inverse_of: :flowcells, dependent: :destroy
-    has_one :library, foreign_key: :ont_flowcell_id, inverse_of: :flowcell, dependent: :nullify
+    belongs_to :library, foreign_key: :ont_library_id, inverse_of: :flowcell
 
-    validates :position, :library, presence: true
+    validates :position, presence: true
   end
 end

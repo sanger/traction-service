@@ -27,8 +27,10 @@ ActiveRecord::Schema.define(version: 2020_05_07_071910) do
     t.integer "position"
     t.string "uuid"
     t.integer "ont_run_id"
+    t.integer "ont_library_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["ont_library_id"], name: "index_ont_flowcells_on_ont_library_id"
     t.index ["ont_run_id"], name: "index_ont_flowcells_on_ont_run_id"
   end
 
@@ -38,8 +40,6 @@ ActiveRecord::Schema.define(version: 2020_05_07_071910) do
     t.integer "pool_size"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "ont_flowcell_id"
-    t.index ["ont_flowcell_id"], name: "index_ont_libraries_on_ont_flowcell_id"
   end
 
   create_table "ont_library_requests", force: :cascade do |t|
