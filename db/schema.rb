@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_06_064846) do
+ActiveRecord::Schema.define(version: 2020_05_07_071910) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -21,6 +21,17 @@ ActiveRecord::Schema.define(version: 2020_05_06_064846) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["container_type", "container_id"], name: "index_container_materials_on_container_type_and_container_id"
     t.index ["material_type", "material_id"], name: "index_container_materials_on_material_type_and_material_id"
+  end
+
+  create_table "ont_flowcells", force: :cascade do |t|
+    t.integer "position"
+    t.string "uuid"
+    t.integer "ont_run_id"
+    t.integer "ont_library_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["ont_library_id"], name: "index_ont_flowcells_on_ont_library_id"
+    t.index ["ont_run_id"], name: "index_ont_flowcells_on_ont_run_id"
   end
 
   create_table "ont_libraries", force: :cascade do |t|
@@ -44,6 +55,14 @@ ActiveRecord::Schema.define(version: 2020_05_06_064846) do
 
   create_table "ont_requests", force: :cascade do |t|
     t.string "external_study_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "ont_runs", force: :cascade do |t|
+    t.string "instrument_name"
+    t.integer "state", default: 0
+    t.datetime "deactivated_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

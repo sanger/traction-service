@@ -6,8 +6,7 @@ module Pacbio
     NAME_PREFIX = 'TRACTION-RUN-'
 
     include Uuidable
-
-    enum state: { pending: 0, started: 1, completed: 2, cancelled: 3 }
+    include Stateful
 
     enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1 }
 
