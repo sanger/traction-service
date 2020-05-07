@@ -8,6 +8,6 @@ module Ont
     belongs_to :run, foreign_key: :ont_run_id, inverse_of: :flowcells, dependent: :destroy
     has_one :library, foreign_key: :ont_flowcell_id, inverse_of: :flowcell, dependent: :nullify
 
-    validates :position, presence: true
+    validates :position, :library, presence: true
   end
 end
