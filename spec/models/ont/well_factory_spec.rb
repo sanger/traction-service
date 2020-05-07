@@ -123,6 +123,30 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
         expect(factory.save).to be_truthy
       end
 
+      it 'validates the well only once by default' do
+        validation_count = 0
+        allow_any_instance_of(Well).to receive(:valid?) { |_| validation_count += 1 }
+        factory = Ont::WellFactory.new(well_with_many_samples)
+        factory.save
+        expect(validation_count).to eq(1)
+      end
+
+      it 'validates the request factories only once each by default' do
+        validation_count = 0
+        allow_any_instance_of(Ont::RequestFactory).to receive(:valid?) { |_| validation_count += 1 }
+        factory = Ont::WellFactory.new(well_with_many_samples)
+        factory.save
+        expect(validation_count).to eq(96)
+      end
+
+      it 'validates no children when (validate: false) is passed' do
+        validation_count = 0
+        allow_any_instance_of(Well).to receive(:valid?) { |_| validation_count += 1 }
+        allow_any_instance_of(Ont::RequestFactory).to receive(:valid?) { |_| validation_count += 1 }
+        factory = Ont::WellFactory.new(well_with_many_samples)
+        factory.save(validate: false)
+        expect(validation_count).to eq(0)
+      end
     end
 
     context 'invalid build' do

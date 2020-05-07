@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_28_092948) do
+ActiveRecord::Schema.define(version: 2020_05_06_214419) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -132,6 +132,7 @@ ActiveRecord::Schema.define(version: 2020_04_28_092948) do
     t.string "species"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name", "external_id", "species"], name: "index_samples_on_name_and_external_id_and_species"
     t.index ["name"], name: "index_samples_on_name", unique: true
   end
 
