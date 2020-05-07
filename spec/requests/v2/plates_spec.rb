@@ -73,7 +73,7 @@ RSpec.describe 'GraphQL', type: :request do
                   ]
                 }
                 {
-                  position: "E7" 
+                  position: "E7"
                   samples: [
                     { name: "Sample for E7" externalId: "ExtIdE7" }
                   ]
@@ -133,7 +133,7 @@ RSpec.describe 'GraphQL', type: :request do
     end
 
     def missing_required_fields_query
-      'mutation { createPlateWithOntSamples(input: { arguments: { bogus: "data" } } ) }'
+      'mutation { createPlateWithOntSamples(input: { arguments: { bogus: "data" } } ) { plate { id } } }'
     end
 
     it 'provides an error when missing required fields' do
@@ -142,6 +142,5 @@ RSpec.describe 'GraphQL', type: :request do
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['errors']).not_to be_empty
     end
-
   end
 end
