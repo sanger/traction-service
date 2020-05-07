@@ -184,6 +184,7 @@ default: &default
     covid:
       external_study_id: "example id"
       species: "example species"
+      instrument_name: 'GridIon'
 
 
 development:
