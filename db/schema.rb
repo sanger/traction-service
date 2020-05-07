@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_06_064846) do
+ActiveRecord::Schema.define(version: 2020_05_06_141138) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -44,6 +44,14 @@ ActiveRecord::Schema.define(version: 2020_05_06_064846) do
 
   create_table "ont_requests", force: :cascade do |t|
     t.string "external_study_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "ont_runs", force: :cascade do |t|
+    t.string "instrument_name"
+    t.integer "state", default: 0
+    t.datetime "deactivated_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
