@@ -10,7 +10,6 @@ module Ont
     validate :check_run, :check_flowcells
 
     def initialize(attributes = [])
-      @flowcells = []
       build_run(attributes)
     end
 
@@ -19,14 +18,16 @@ module Ont
     def save(**options)
       return false unless options[:validate] == false || valid?
 
-      @run.save(validate: false)
-      @flowcells.each { |flowcell| flowcell.save(validate: false) }
+      run.save(validate: false)
+      flowcells.each { |flowcell| flowcell.save(validate: false) }
       true
     end
 
     private
 
-    attr_reader :flowcells
+    def flowcells
+      @flowcells ||= []
+    end
 
     def build_run(attributes)
       constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
@@ -35,24 +36,24 @@ module Ont
         # the flowcell requires a library, so if a library does not exist
         # the flowcell, and therefore factory, will be invalid
         library = Ont::Library.find_by(name: flowcell_spec[:library_name])
-        @flowcells << Ont::Flowcell.new(position: flowcell_spec[:position],
+        flowcells << Ont::Flowcell.new(position: flowcell_spec[:position],
                                         run: run, library:
         library)
       end
     end
 
     def check_run
-      errors.add('run', 'was not created') if @run.nil?
+      errors.add('run', 'was not created') if run.nil?
 
       return if @run.valid?
 
-      @run.errors.each do |k, v|
+      run.errors.each do |k, v|
         errors.add(k, v)
       end
     end
 
     def check_flowcells
-      @flowcells.each do |flowcell|
+      flowcells.each do |flowcell|
         next if flowcell.valid?
 
         flowcell.errors.each do |k, v|
