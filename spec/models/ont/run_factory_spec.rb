@@ -22,14 +22,14 @@ RSpec.describe Ont::RunFactory, type: :model, ont: true do
       errors.add('run', message: 'This is a test error')
       allow_any_instance_of(Ont::Flowcell).to receive(:valid?).and_return(false)
       allow_any_instance_of(Ont::Flowcell).to receive(:errors).and_return(errors)
-      factory = Ont::RunFactory.new(['PLATE-2-1234-2'])
+      factory = Ont::RunFactory.new([{ position: 1, library_name: 'PLATE-2-1234-2' }])
       expect(factory).to_not be_valid
     end
   end
 
   context '#save' do
     context 'valid build' do
-      context 'with no library names' do
+      context 'with no flowcells' do
         it 'creates a run' do
           factory = Ont::RunFactory.new([])
           factory.save
@@ -82,31 +82,31 @@ RSpec.describe Ont::RunFactory, type: :model, ont: true do
         end
       end
       
-      context 'with library names' do
+      context 'with flowcells' do
         let!(:libraries) { create_list(:ont_library, 3).each_with_index do |library, idx|
           library.update(name: "library number #{idx + 1}")
         end }
-        let!(:library_names) { libraries.collect(&:name) }
+        let!(:attributes) { libraries.collect(&:name).each_with_index.map { |name, idx| { position: idx + 1, library_name: name } } }
 
         it 'creates a run' do
-          factory = Ont::RunFactory.new(library_names)
+          factory = Ont::RunFactory.new(attributes)
           factory.save
           expect(Ont::Run.count).to eq(1)
           expect(Ont::Run.first.instrument_name).to eq(instrument_name)
         end
 
         it 'creates expected flowcells' do
-          factory = Ont::RunFactory.new(library_names)
+          factory = Ont::RunFactory.new(attributes)
           factory.save
           expect(Ont::Flowcell.count).to eq(3)
           expect(Ont::Flowcell.all.map { |flowcell| flowcell.run }).to all( eq(Ont::Run.first) )
 
           expect(Ont::Flowcell.first.position).to eq(1)
-          expect(Ont::Flowcell.first.library).to eq(Ont::Library.find_by(name: library_names.first))
+          expect(Ont::Flowcell.first.library).to eq(Ont::Library.find_by(name: libraries.first.name))
           expect(Ont::Flowcell.second.position).to eq(2)
-          expect(Ont::Flowcell.second.library).to eq(Ont::Library.find_by(name: library_names.second))
+          expect(Ont::Flowcell.second.library).to eq(Ont::Library.find_by(name: libraries.second.name))
           expect(Ont::Flowcell.third.position).to eq(3)
-          expect(Ont::Flowcell.third.library).to eq(Ont::Library.find_by(name: library_names.third))
+          expect(Ont::Flowcell.third.library).to eq(Ont::Library.find_by(name: libraries.third.name))
         end
 
         context 'validates' do
@@ -116,14 +116,14 @@ RSpec.describe Ont::RunFactory, type: :model, ont: true do
           it 'the run exactly once' do
             allow(Ont::Run).to receive(:new).and_return(run)
             expect(run).to receive(:valid?).exactly(1)
-            factory = Ont::RunFactory.new(library_names)
+            factory = Ont::RunFactory.new(attributes)
             factory.save
           end
 
           it 'each flowcell exactly once' do
             allow(Ont::Flowcell).to receive(:new).and_return(flowcell)
             expect(flowcell).to receive(:valid?).exactly(3)
-            factory = Ont::RunFactory.new(library_names)
+            factory = Ont::RunFactory.new(attributes)
             factory.save
           end
         end
@@ -135,14 +135,14 @@ RSpec.describe Ont::RunFactory, type: :model, ont: true do
           it 'does not validate created run' do
             allow(Ont::Run).to receive(:new).and_return(run)
             expect(run).to_not receive(:valid?)
-            factory = Ont::RunFactory.new(library_names)
+            factory = Ont::RunFactory.new(attributes)
             factory.save(validate: false)
           end
 
           it 'does not validate any flowcells' do
             allow(Ont::Flowcell).to receive(:new).and_return(flowcell)
             expect(flowcell).to_not receive(:valid?)
-            factory = Ont::RunFactory.new(library_names)
+            factory = Ont::RunFactory.new(attributes)
             factory.save(validate: false)
           end
         end
