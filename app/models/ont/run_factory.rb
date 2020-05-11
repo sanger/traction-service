@@ -35,7 +35,9 @@ module Ont
         # the flowcell requires a library, so if a library does not exist
         # the flowcell, and therefore factory, will be invalid
         library = Ont::Library.find_by(name: flowcell_spec[:library_name])
-        @flowcells << Ont::Flowcell.new(position: flowcell_spec[:position], run: run, library: library)
+        @flowcells << Ont::Flowcell.new(position: flowcell_spec[:position],
+                                        run: run, library:
+        library)
       end
     end
 
