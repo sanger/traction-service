@@ -41,7 +41,6 @@ RSpec.describe 'GraphQL', type: :request do
             arguments: {
               plateBarcode: "PLATE-1234"
               tagSetName: "Test Tag Set"
-              wellPrimaryGroupingDirection: "row"
             }
           }
         )

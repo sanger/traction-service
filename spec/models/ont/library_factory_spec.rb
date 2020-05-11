@@ -60,16 +60,6 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
       expect(factory.errors.full_messages).to_not be_empty
     end
 
-    it 'is invalid if given no well_primary_grouping_direction' do
-      attributes = {
-        plate_barcode: plate.barcode,
-        tag_set_name: tag_set.name,
-      }
-      factory = Ont::LibraryFactory.new(attributes)
-      expect(factory).to_not be_valid
-      expect(factory.errors.full_messages).to_not be_empty
-    end
-
     it 'is invalid if given unknown well_primary_grouping_direction' do
       attributes = {
         plate_barcode: plate.barcode,
@@ -97,7 +87,8 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
     context 'valid build' do
       context 'with empty wells' do
         let!(:tag_set) { create(:tag_set_with_tags, number_of_tags: 9) }
-        let!(:attributes) { { plate_barcode: plate.barcode, tag_set_name: tag_set.name, well_primary_grouping_direction: 'vertical' } }
+        # Note not specifying the grouping direction should default to `vertical`
+        let!(:attributes) { { plate_barcode: plate.barcode, tag_set_name: tag_set.name } }
 
         it 'creates expected library' do
           factory = Ont::LibraryFactory.new(attributes)

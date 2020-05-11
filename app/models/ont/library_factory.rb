@@ -90,7 +90,7 @@ module Ont
     end
 
     def try_get_sorted_wells(primary_grouping_direction)
-      if primary_grouping_direction == 'vertical'
+      if primary_grouping_direction.nil? || primary_grouping_direction == 'vertical'
         @sorted_wells = @plate.wells_by_column_then_row
         true
       elsif primary_grouping_direction == 'horizontal'
