@@ -26,14 +26,14 @@ RSpec.describe 'GraphQL', type: :request do
 
     context 'when there is a plate with samples' do
       let!(:plate) do
-        create(:plate_with_ont_samples, wells: [
-            { position: 'A1', samples: [ { name: 'Sample in A1' } ] },
-            { position: 'H12', samples: [ { name: 'Sample 1 in H12' }, { name: 'Sample 2 in H12' } ] }
+        create(:plate_with_ont_requests, wells: [
+            { position: 'A1', requests: [ { name: 'Sample in A1' } ] },
+            { position: 'H12', requests: [ { name: 'Sample 1 in H12' }, { name: 'Sample 2 in H12' } ] }
           ])
       end
 
       it 'returns plate with nested sample' do
-        post v2_path, params: { query: '{ plates { wells { materials { ... on Request { sample { name } } } } } }' }
+        post v2_path, params: { query: '{ plates { wells { materials { ... on Request { name } } } } }' }
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data']['plates'].length).to eq(1)
@@ -41,13 +41,13 @@ RSpec.describe 'GraphQL', type: :request do
           'wells' => [
             {
               'materials' => [
-                { 'sample' => { 'name' => 'Sample in A1' } }
+                { 'name' => 'Sample in A1' }
               ]
             },
             {
               'materials' => [
-                { 'sample' => { 'name' => 'Sample 1 in H12' } },
-                { 'sample' => { 'name' => 'Sample 2 in H12' } }
+                { 'name' => 'Sample 1 in H12' },
+                { 'name' => 'Sample 2 in H12' }
               ]
             }
           ]
@@ -65,25 +65,14 @@ RSpec.describe 'GraphQL', type: :request do
             arguments: {
               barcode: "PLATE-1234"
               wells: [
-                {
-                  position: "A1"
-                  samples: [
-                    { name: "Sample 1 for A1" externalId: "ExtIdA1-1" }
-                    { name: "Sample 2 for A1" externalId: "ExtIdA1-2" tagGroupId: "Tag123" }
-                  ]
-                }
-                {
-                  position: "E7"
-                  samples: [
-                    { name: "Sample for E7" externalId: "ExtIdE7" }
-                  ]
-                }
+                { position: "A1" sample: { name: "Sample for A1" externalId: "ExtIdA1-1" } }
+                { position: "E7" sample: { name: "Sample for E7" externalId: "ExtIdE7" } }
               ]
             }
           }
         )
         {
-          plate { barcode wells { materials { ... on Request { sample { name externalId } } } } }
+          plate { barcode wells { materials { ... on Request { name externalId } } } }
           errors
         }
       }
@@ -91,9 +80,9 @@ RSpec.describe 'GraphQL', type: :request do
     end
 
     it 'creates a plate with provided parameters' do
-      plate = create(:plate_with_ont_samples, barcode: 'PLATE-1234', wells: [
-        { position: 'A1', samples: [ { name: 'Sample 1 for A1', external_id: 'ExtIdA1-1' }, { name: 'Sample 2 for A1', external_id: 'ExtIdA1-2' } ] },
-        { position: 'E7', samples: [ { name: 'Sample for E7', external_id: 'ExtIdE7' } ] }])
+      plate = create(:plate_with_ont_requests, barcode: 'PLATE-1234', wells: [
+        { position: 'A1', requests: [ { name: 'Sample for A1', external_id: 'ExtIdA1-1' } ] },
+        { position: 'E7', requests: [ { name: 'Sample for E7', external_id: 'ExtIdE7' } ] } ] )
 
       allow_any_instance_of(Ont::PlateFactory).to receive(:save).and_return(true)
       allow_any_instance_of(Ont::PlateFactory).to receive(:plate).and_return(plate)
@@ -107,11 +96,10 @@ RSpec.describe 'GraphQL', type: :request do
       expect(plate_json['barcode']).to eq('PLATE-1234')
 
       expect(plate_json['wells'][0]['materials']).to contain_exactly(
-        { 'sample' => { 'name' => 'Sample 1 for A1', 'externalId' => 'ExtIdA1-1' } },
-        { 'sample' => { 'name' => 'Sample 2 for A1', 'externalId' => 'ExtIdA1-2' } }
+        { 'name' => 'Sample for A1', 'externalId' => 'ExtIdA1-1' }
       )
       expect(plate_json['wells'][1]['materials']).to contain_exactly(
-        { 'sample' => { 'name' => 'Sample for E7', 'externalId' => 'ExtIdE7' } }
+        { 'name' => 'Sample for E7', 'externalId' => 'ExtIdE7' }
       )
       expect(mutation_json['errors']).to be_empty
     end
