@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_06_064846) do
+ActiveRecord::Schema.define(version: 2020_05_11_095257) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -43,9 +43,10 @@ ActiveRecord::Schema.define(version: 2020_05_06_064846) do
   end
 
   create_table "ont_requests", force: :cascade do |t|
-    t.string "external_study_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "name"
+    t.string "external_id"
   end
 
   create_table "pacbio_libraries", force: :cascade do |t|
@@ -151,6 +152,7 @@ ActiveRecord::Schema.define(version: 2020_05_06_064846) do
     t.string "species"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name", "external_id", "species"], name: "index_samples_on_name_and_external_id_and_species"
     t.index ["name"], name: "index_samples_on_name", unique: true
   end
 
