@@ -21,14 +21,14 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
       attributes = { well_attributes: { position: 'A1' } }
       factory = Ont::WellFactory.new(attributes)
       expect(factory).to_not be_valid
-      expect(factory.errors.full_messages.length).to eq(1)
+      expect(factory.errors.full_messages).to_not be_empty
     end
 
     it 'produces error messages if given no well attributes' do
       attributes = { plate: plate }
       factory = Ont::WellFactory.new(attributes)
       expect(factory).to_not be_valid
-      expect(factory.errors.full_messages.length).to eq(1)
+      expect(factory.errors.full_messages).to_not be_empty
     end
 
     it 'produces error messages if generated well is not valid' do
@@ -36,33 +36,24 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
       attributes = { plate: plate, well_attributes: {} }
       factory = Ont::WellFactory.new(attributes)
       expect(factory).to_not be_valid
-      expect(factory.errors.full_messages.length).to eq(1)
+      expect(factory.errors.full_messages).to_not be_empty
     end
 
-    it 'produces error messages if any of the request factories are not valid' do
+    it 'produces error messages if the request factory is not valid' do
       mock_invalid_request_factories
       allow_any_instance_of(::TagService).to receive(:complete?).and_return(true)
-      attributes = { plate: plate, well_attributes: { position: 'A1', samples: [ { name: 'sample 1' } ] } }
+      attributes = { plate: plate, well_attributes: { position: 'A1', sample: { name: 'sample 1' } } }
       factory = Ont::WellFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages.length).to eq(1)
       expect(factory.errors.full_messages).to contain_exactly('Request factories {:message=>"This is a test error"}')
-    end
-
-    it 'produces error messages with unsupported number of samples' do
-      mock_valid_request_factories
-      attributes = { plate: plate, well_attributes: { position: 'A1', samples: [ { name: 'sample 1' }, { name: 'sample 2' } ] } }
-      factory = Ont::WellFactory.new(attributes)
-      expect(factory).to_not be_valid
-      expect(factory.errors.full_messages.length).to eq(1)
-      expect(factory.errors.full_messages).to contain_exactly("Exception raised: '2' is not a supported number of samples")
     end
   end
 
   context '#save' do
     context 'valid build' do
       let(:well_with_no_sample) { { plate: plate, well_attributes: { position: 'A1' } } }
-      let(:well_with_one_sample) { { plate: plate, well_attributes: { position: 'A1', samples: [ { name: 'sample 1' } ] } } }
+      let(:well_with_one_sample) { { plate: plate, well_attributes: { position: 'A1', sample: { name: 'sample 1' } } } }
 
       before do
         mock_valid_request_factories
