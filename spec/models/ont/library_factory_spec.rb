@@ -195,16 +195,16 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
       end
       
       context 'with filled wells' do
-        let!(:plate_with_requests) { create(:plate_with_ont_samples, barcode: 'PLATE-1234', wells: [
-          { position: 'A1', samples: [ { name: 'Sample 1 for A1', external_id: 'ExtIdA1-1' }, { name: 'Sample 2 for A1', external_id: 'ExtIdA1-2' } ] },
-          { position: 'A2', samples: [ { name: 'Sample for A2', external_id: 'ExtIdA2' } ] },
-          { position: 'A3', samples: [ { name: 'Sample for A3', external_id: 'ExtIdA3' } ] },
-          { position: 'B3', samples: [ { name: 'Sample for B3', external_id: 'ExtIdB3' } ] },
-          { position: 'B2', samples: [ { name: 'Sample for B2', external_id: 'ExtIdB2' } ] },
-          { position: 'B1', samples: [ { name: 'Sample for B1', external_id: 'ExtIdB1' } ] },
-          { position: 'C2', samples: [ { name: 'Sample 1 for C2', external_id: 'ExtIdC2-1' }, { name: 'Sample 2 for C2', external_id: 'ExtIdC2-2' } ] },
-          { position: 'C1', samples: [ { name: 'Sample for C1', external_id: 'ExtIdC1' } ] },
-          { position: 'C3', samples: [ { name: 'Sample for C3', external_id: 'ExtIdC3' } ] } ])
+        let!(:plate_with_requests) { create(:plate_with_ont_requests, barcode: 'PLATE-1234', wells: [
+          { position: 'A1', requests: [ { name: 'Sample 1 for A1', external_id: 'ExtIdA1-1' }, { name: 'Sample 2 for A1', external_id: 'ExtIdA1-2' } ] },
+          { position: 'A2', requests: [ { name: 'Sample for A2', external_id: 'ExtIdA2' } ] },
+          { position: 'A3', requests: [ { name: 'Sample for A3', external_id: 'ExtIdA3' } ] },
+          { position: 'B3', requests: [ { name: 'Sample for B3', external_id: 'ExtIdB3' } ] },
+          { position: 'B2', requests: [ { name: 'Sample for B2', external_id: 'ExtIdB2' } ] },
+          { position: 'B1', requests: [ { name: 'Sample for B1', external_id: 'ExtIdB1' } ] },
+          { position: 'C2', requests: [ { name: 'Sample 1 for C2', external_id: 'ExtIdC2-1' }, { name: 'Sample 2 for C2', external_id: 'ExtIdC2-2' } ] },
+          { position: 'C1', requests: [ { name: 'Sample for C1', external_id: 'ExtIdC1' } ] },
+          { position: 'C3', requests: [ { name: 'Sample for C3', external_id: 'ExtIdC3' } ] } ])
         }
 
         context 'with one tag set iteration' do
