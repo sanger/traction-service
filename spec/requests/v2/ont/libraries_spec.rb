@@ -39,7 +39,6 @@ RSpec.describe 'GraphQL', type: :request do
           input: {
             arguments: {
               plateBarcode: "PLATE-1234"
-              tagSetName: "Test Tag Set"
             }
           }
         )
