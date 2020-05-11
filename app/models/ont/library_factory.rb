@@ -5,16 +5,21 @@
 # Ont namespace
 module Ont
   # LibraryFactory
-  # The factory will create libraries from a given plate
+  # The factory will create libraries in tubes from a given plate
   class LibraryFactory
     include ActiveModel::Model
 
-    validate :check_validation_errors, :check_libraries, :check_tag_taggables
+    validate :check_validation_errors,
+             :check_libraries,
+             :check_library_requests,
+             :check_tubes,
+             :check_container_materials
 
     def initialize(attributes = {})
       @validation_errors = []
       @libraries = []
-      @tag_taggables = []
+      @library_requests = []
+      @tubes = []
       @container_materials = []
 
       return unless fetch_and_validate_entities(attributes)
@@ -24,12 +29,15 @@ module Ont
       end
     end
 
-    def save
-      return false unless valid?
+    attr_reader :tubes
 
-      @libraries.collect(&:save)
-      @tag_taggables.collect(&:save)
-      @container_materials.collect(&:save)
+    def save(**options)
+      return false unless options[:validate] == false || valid?
+
+      @libraries.each { |lib| lib.save(validate: false) }
+      @library_requests.each { |lib_req| lib_req.save(validate: false) }
+      @tubes.each { |tube| tube.save(validate: false) }
+      @container_materials.each { |cont_mat| cont_mat.save(validate: false) }
       true
     end
 
@@ -40,7 +48,7 @@ module Ont
                 :plate,
                 :num_libraries,
                 :sorted_wells,
-                :tag_taggables,
+                :library_requests,
                 :container_materials
 
     def fetch_and_validate_entities(attributes)
@@ -96,30 +104,25 @@ module Ont
     end
 
     def build_library(lib_idx, num_tags)
-      wells = get_wells(lib_idx, num_tags)
       pool = lib_idx + 1
-      @libraries << Library.new(name: "#{@plate.barcode}-#{pool}",
-                                well_range: "#{wells[0].position}-#{wells[-1].position}",
-                                pool: pool,
-                                pool_size: num_tags,
-                                requests: get_and_tag_requests(wells))
-      @container_materials << ::ContainerMaterial.new(container: Tube.new,
-                                                      material: @libraries.last)
+      name = Ont::Library.library_name(@plate.barcode, pool)
+      @libraries << Ont::Library.new(name: name, pool: pool, pool_size: num_tags)
+      build_library_requests(@sorted_wells[(lib_idx * num_tags), num_tags], @libraries.last)
+      add_to_tube(@libraries.last)
     end
 
-    def get_wells(lib_idx, num_tags)
-      @sorted_wells[(lib_idx * num_tags), num_tags]
-    end
-
-    def get_and_tag_requests(wells)
-      all_requests = []
+    def build_library_requests(wells, library)
       @tag_set.tags.each_with_index do |tag, tag_idx|
         wells[tag_idx].materials.each do |request|
-          @tag_taggables << ::TagTaggable.new(taggable: request, tag: tag)
-          all_requests << request
+          @library_requests << Ont::LibraryRequest.new(library: library, request: request, tag: tag)
         end
       end
-      all_requests
+    end
+
+    def add_to_tube(library)
+      @tubes << Tube.new
+      @container_materials << ::ContainerMaterial.new(container: @tubes.last,
+                                                      material: library)
     end
 
     def check_validation_errors
@@ -145,11 +148,31 @@ module Ont
       end
     end
 
-    def check_tag_taggables
-      @tag_taggables.each do |tag_taggable|
-        next if tag_taggable.valid?
+    def check_library_requests
+      @library_requests.each do |library_request|
+        next if library_request.valid?
 
-        tag_taggable.errors.each do |k, v|
+        library_request.errors.each do |k, v|
+          errors.add(k, v)
+        end
+      end
+    end
+
+    def check_tubes
+      @tubes.each do |tube|
+        next if tube.valid?
+
+        tube.errors.each do |k, v|
+          errors.add(k, v)
+        end
+      end
+    end
+
+    def check_container_materials
+      @container_materials.each do |container_material|
+        next if container_material.valid?
+
+        container_material.errors.each do |k, v|
           errors.add(k, v)
         end
       end

@@ -23,7 +23,7 @@ FactoryBot.define do
   
       after :create do |plate, options|
         options.wells.each do |well_spec|
-          well = create(:well_with_ont_samples, plate: plate, position: well_spec[:position], samples: well_spec[:samples])
+          plate.wells << create(:well_with_ont_samples, plate: plate, position: well_spec[:position], samples: well_spec[:samples])
         end
       end
     end

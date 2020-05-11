@@ -16,13 +16,66 @@ RSpec.describe Ont::Library, type: :model do
     expect(library).to_not be_valid
   end
 
-  it 'must have a well_range' do
-    library = build(:ont_library, well_range: nil)
-    expect(library).to_not be_valid
-  end
-
   it 'must have a pool_size' do
     library = build(:ont_library, pool_size: nil)
     expect(library).to_not be_valid
+  end
+
+  context 'library name' do
+    it 'returns nil with nil plate_barcode' do
+      name = Ont::Library.library_name(nil, 2)
+      expect(name).to be_nil
+    end
+
+    it 'returns nil with nil pool' do
+      name = Ont::Library.library_name("PLATE-1234", nil)
+      expect(name).to be_nil
+    end
+
+    it 'returns expected name' do
+      name = Ont::Library.library_name("PLATE-1234", 2)
+      expect(name).to eq("PLATE-1234-2")
+    end
+  end
+
+  context 'plate barcode' do
+    it 'returns expected plate barcode' do
+      library = create(:ont_library)
+      expect(library.plate_barcode).to eq("PLATE-1-123456")
+    end
+  end
+
+  context 'tag set name' do
+    it 'returns nil for no library requests' do
+      library = create(:ont_library)
+      expect(library.tag_set_name).to be_nil
+    end
+
+    it 'returns first library request tag set name' do
+      library = create(:ont_library)
+      library_request_1 = create(:ont_library_request, library: library)
+      library_request_2 = create(:ont_library_request, library: library)
+      expect(library.tag_set_name).to eq(library_request_1.tag.tag_set_name)
+    end
+  end
+
+  context 'tube barcode' do
+    it 'returns nil for no container material' do
+      library = create(:ont_library)
+      expect(library.tube_barcode).to be_nil
+    end
+
+    it 'returns nil if container is not a tube' do
+      library = create(:ont_library)
+      create(:container_material, container: create(:well), material: library)
+      expect(library.tube_barcode).to be_nil
+    end
+
+    it 'returns tube barcode' do
+      library = create(:ont_library)
+      tube = create(:tube)
+      create(:container_material, container: tube, material: library)
+      expect(library.tube_barcode).to eq(tube.barcode)
+    end
   end
 end
