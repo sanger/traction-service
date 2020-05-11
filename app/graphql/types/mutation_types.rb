@@ -10,6 +10,6 @@ module Types
     field :create_ont_libraries, mutation: Mutations::CreateOntLibrariesMutation
 
     # Ont::Runs
-    field :create_ont_run, mutation: Mutations::CreateOntRunMutation
+    field :create_covid_run, mutation: Mutations::CreateCovidRunMutation
   end
 end
