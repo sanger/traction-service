@@ -14,5 +14,9 @@ module Pipelines
     def species
       @constants_base.species
     end
+
+    def instrument_name
+      @constants_base.instrument_name
+    end
   end
 end
