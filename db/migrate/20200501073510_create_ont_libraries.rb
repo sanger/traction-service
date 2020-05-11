@@ -6,5 +6,9 @@ class CreateOntLibraries < ActiveRecord::Migration[6.0]
       t.integer :pool_size
       t.timestamps
     end
+
+    change_table :ont_requests do |t|
+      t.belongs_to :ont_library, index: true
+    end
   end
 end
