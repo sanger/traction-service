@@ -8,10 +8,9 @@ module Ont
   class WellFactory
     include ActiveModel::Model
 
-    validate :check_well, :check_request_factories, :check_tag_service, :check_for_raised_exceptions
+    validate :check_well, :check_request_factory
 
     def initialize(attributes = {})
-      @request_factories = []
       @raised_exceptions = []
       return unless attributes.key?(:well_attributes)
 
@@ -25,40 +24,22 @@ module Ont
       return false unless options[:validate] == false || valid?
 
       # No need to validate any lower level objects since validation above has already checked them
-      well.save(validate: false)
-      @request_factories.map { |request_factory| request_factory.save(validate: false) }
+      ActiveRecord::Base.transaction do
+        well.save(validate: false)
+        request_factory&.save(validate: false)
+      end
       true
     end
 
     private
 
+    attr_reader :request_factory
+
     def build_well(attributes)
       @well = ::Well.new(position: attributes[:position], plate: @plate)
-      return unless attributes.key?(:samples)
+      return unless attributes.key?(:sample)
 
-      begin
-        @tag_service = create_tag_service(attributes[:samples].count)
-        @request_factories = attributes[:samples].map do |request_attributes|
-          RequestFactory.new(well: well,
-                             request_attributes: request_attributes,
-                             tag_service: @tag_service)
-        end
-      rescue StandardError => e
-        @raised_exceptions << e
-      end
-    end
-
-    def create_tag_service(num_samples)
-      case num_samples
-      when 1
-        ::TagService.new(nil)
-      when 96
-        ::TagService.new(::TagSet.find_by!(name: 'OntWell96Samples'))
-      when 384
-        ::TagService.new(::TagSet.find_by!(name: 'OntWell384Samples'))
-      else
-        raise "'#{num_samples}' is not a supported number of samples"
-      end
+      @request_factory = RequestFactory.new(well: well, request_attributes: attributes[:sample])
     end
 
     def check_well
@@ -74,29 +55,11 @@ module Ont
       end
     end
 
-    def check_request_factories
-      return if @request_factories.empty?
+    def check_request_factory
+      return if request_factory.nil? || request_factory.valid?
 
-      @request_factories.each do |request_factory|
-        next if request_factory.valid?
-
-        request_factory.errors.each do |k, v|
-          errors.add(k, v)
-        end
-      end
-    end
-
-    def check_tag_service
-      return if @tag_service.nil?
-
-      errors.add('samples', 'should all be uniquely tagged') unless @tag_service.complete?
-    end
-
-    def check_for_raised_exceptions
-      return if @raised_exceptions.empty?
-
-      @raised_exceptions.each do |ex|
-        errors.add('exception raised:', ex.message)
+      request_factory.errors.each do |k, v|
+        errors.add(k, v)
       end
     end
   end
