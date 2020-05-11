@@ -31,22 +31,13 @@ ActiveRecord::Schema.define(version: 2020_05_11_095257) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "ont_library_requests", force: :cascade do |t|
-    t.integer "ont_library_id"
-    t.integer "ont_request_id"
-    t.integer "tag_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["ont_library_id"], name: "index_ont_library_requests_on_ont_library_id"
-    t.index ["ont_request_id"], name: "index_ont_library_requests_on_ont_request_id"
-    t.index ["tag_id"], name: "index_ont_library_requests_on_tag_id"
-  end
-
   create_table "ont_requests", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "ont_library_id"
     t.string "name"
     t.string "external_id"
+    t.index ["ont_library_id"], name: "index_ont_requests_on_ont_library_id"
   end
 
   create_table "pacbio_libraries", force: :cascade do |t|
