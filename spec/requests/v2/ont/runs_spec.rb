@@ -13,7 +13,7 @@ RSpec.describe 'GraphQL', type: :request do
     def valid_query
       <<~GQL
       mutation {
-        createOntRun(
+        createCovidRun(
           input: {
             flowcells: []
           }
@@ -35,7 +35,7 @@ RSpec.describe 'GraphQL', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      mutation_json = json['data']['createOntRun']
+      mutation_json = json['data']['createCovidRun']
       run_json = mutation_json['run']
       expect(run_json['id']).to eq(run.id.to_s)
       expect(run_json['state']).to eq(run.state)
@@ -64,13 +64,13 @@ RSpec.describe 'GraphQL', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      mutation_json = json['data']['createOntRun']
+      mutation_json = json['data']['createCovidRun']
       expect(mutation_json['run']).to be_nil
       expect(mutation_json['errors']).to contain_exactly('test error')
     end
 
     def missing_required_fields_query
-      'mutation { createOntRun(input: { flowcells: { bogus: "data" } } ) { run { id } } }'
+      'mutation { createCovidRun(input: { flowcells: { bogus: "data" } } ) { run { id } } }'
     end
 
     it 'provides an error when missing required fields' do

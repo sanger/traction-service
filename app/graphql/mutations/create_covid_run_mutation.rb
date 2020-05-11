@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Mutations
-  # Mutation to create an ONT run.
-  class CreateOntRunMutation < BaseMutation
+  # Mutation to create a COVID run.
+  class CreateCovidRunMutation < BaseMutation
     argument :flowcells, [Types::Inputs::Ont::FlowcellInputType], required: true
 
     field :run, Types::Outputs::Ont::RunType, null: true
