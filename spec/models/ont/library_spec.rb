@@ -45,20 +45,6 @@ RSpec.describe Ont::Library, type: :model do
     end
   end
 
-  context 'tag set name' do
-    it 'returns nil for no library requests' do
-      library = create(:ont_library)
-      expect(library.tag_set_name).to be_nil
-    end
-
-    it 'returns first library request tag set name' do
-      library = create(:ont_library)
-      library_request_1 = create(:ont_library_request, library: library)
-      library_request_2 = create(:ont_library_request, library: library)
-      expect(library.tag_set_name).to eq(library_request_1.tag.tag_set_name)
-    end
-  end
-
   context 'tube barcode' do
     it 'returns nil for no container material' do
       library = create(:ont_library)
