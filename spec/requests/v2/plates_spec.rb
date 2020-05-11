@@ -60,7 +60,7 @@ RSpec.describe 'GraphQL', type: :request do
     def valid_query
       <<~GQL
       mutation {
-        createPlateWithOntSamples(
+        createPlateWithCovidSamples(
           input: {
             arguments: {
               barcode: "PLATE-1234"
@@ -73,7 +73,7 @@ RSpec.describe 'GraphQL', type: :request do
                   ]
                 }
                 {
-                  position: "E7" 
+                  position: "E7"
                   samples: [
                     { name: "Sample for E7" externalId: "ExtIdE7" }
                   ]
@@ -102,7 +102,7 @@ RSpec.describe 'GraphQL', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      mutation_json = json['data']['createPlateWithOntSamples']
+      mutation_json = json['data']['createPlateWithCovidSamples']
       plate_json = mutation_json['plate']
       expect(plate_json['barcode']).to eq('PLATE-1234')
 
@@ -127,13 +127,13 @@ RSpec.describe 'GraphQL', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      mutation_json = json['data']['createPlateWithOntSamples']
+      mutation_json = json['data']['createPlateWithCovidSamples']
       expect(mutation_json['plate']).to be_nil
       expect(mutation_json['errors']).to contain_exactly('Wells {:message=>"This is a test error"}')
     end
 
     def missing_required_fields_query
-      'mutation { createPlateWithOntSamples(input: { arguments: { bogus: "data" } } ) }'
+      'mutation { createPlateWithCovidSamples(input: { arguments: { bogus: "data" } } ) }'
     end
 
     it 'provides an error when missing required fields' do
