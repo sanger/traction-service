@@ -63,15 +63,21 @@ module OntPlates
       tags = TagSet.find_by(name: 'OntWell96Samples').tags
 
       well_positions.each_with_index.map do |position, index|
-        {
-          'position' => position,
-          'sample' => {
-            'name' => "Sample #{sample_name} in #{position}",
-            'externalId' => "#{position}-ExtId",
-            'tagOligo' => tags[index].oligo
-          }
-        }
+        well position: position, sample_name: sample_name, tag_oligo: tags[index].oligo
       end
+    end
+
+    private
+
+    def well(position:, sample_name:, tag_oligo:)
+      {
+        'position' => position,
+        'sample' => {
+          'name' => "Sample #{sample_name} in #{position}",
+          'externalId' => "#{position}-ExtId",
+          'tagOligo' => tag_oligo
+        }
+      }
     end
   end
 end
