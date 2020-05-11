@@ -13,14 +13,13 @@ RSpec.describe 'GraphQL', type: :request do
 
     it 'returns single library when one exists' do
       create(:ont_library)
-      allow_any_instance_of(Ont::Library).to receive(:tag_set_name).and_return('test tag set')
       allow_any_instance_of(Ont::Library).to receive(:tube_barcode).and_return('test tube barcode')
-      post v2_path, params: { query: '{ ontLibraries { name plateBarcode pool poolSize tagSetName tubeBarcode } }' }
+      post v2_path, params: { query: '{ ontLibraries { name plateBarcode pool poolSize tubeBarcode } }' }
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data']['ontLibraries']).to contain_exactly(
         { 'name' => 'PLATE-1-123456-2', 'plateBarcode' => 'PLATE-1-123456', 'pool' => 2,
-          'poolSize' => 24, 'tagSetName' => 'test tag set', 'tubeBarcode' => 'test tube barcode'})
+          'poolSize' => 24, 'tubeBarcode' => 'test tube barcode'})
     end
 
     it 'returns all libraries when many exist' do

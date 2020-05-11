@@ -20,10 +20,6 @@ module Ont
       name.delete_suffix("-#{pool}")
     end
 
-    def tag_set_name
-      library_requests.first&.tag&.tag_set_name
-    end
-
     def tube_barcode
       return nil if container_material.nil? || !container_material.container.is_a?(::Tube)
 
