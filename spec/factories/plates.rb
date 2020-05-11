@@ -12,14 +12,14 @@ FactoryBot.define do
       end
     end
 
-    factory :plate_with_ont_samples do
+    factory :plate_with_ont_requests do
       transient do
-        wells { [ { position: 'A1', samples: [ { name: 'Sample in A1' } ] } ] }
+        wells { [ { position: 'A1', requests: [ { name: 'Sample in A1' } ] } ] }
       end
   
       after :create do |plate, options|
         options.wells.each do |well_spec|
-          well = create(:well_with_ont_samples, plate: plate, position: well_spec[:position], samples: well_spec[:samples])
+          well = create(:well_with_ont_requests, plate: plate, position: well_spec[:position], requests: well_spec[:requests])
         end
       end
     end
