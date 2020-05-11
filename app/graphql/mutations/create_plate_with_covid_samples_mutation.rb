@@ -3,7 +3,7 @@
 module Mutations
   # Mutation to handle the update of a Well.
   class CreatePlateWithCovidSamplesMutation < BaseMutation
-    argument :arguments, Types::Inputs::PlateWithSamplesInputType, required: true
+    argument :arguments, Types::Inputs::Ont::PlateWithSamplesInputType, required: true
 
     field :plate, Types::Outputs::PlateType, null: true
     field :errors, [String], null: false
