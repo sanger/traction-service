@@ -36,7 +36,7 @@ RSpec.describe 'GraphQL', type: :request do
     def valid_query
       <<~GQL
       mutation {
-        createOntLibraries(
+        createCovidLibraries(
           input: {
             arguments: {
               plateBarcode: "PLATE-1234"
@@ -67,7 +67,7 @@ RSpec.describe 'GraphQL', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      mutation_json = json['data']['createOntLibraries']
+      mutation_json = json['data']['createCovidLibraries']
       tubes_json = mutation_json['tubes']
 
       expect(tubes_json[0]['barcode']).to be_present
@@ -104,13 +104,13 @@ RSpec.describe 'GraphQL', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      mutation_json = json['data']['createOntLibraries']
+      mutation_json = json['data']['createCovidLibraries']
       expect(mutation_json['tubes']).to be_nil
       expect(mutation_json['errors']).to contain_exactly('Libraries {:message=>"This is a test error"}')
     end
 
     def missing_required_fields_query
-      'mutation { createOntLibraries(input: { arguments: { bogus: "data" } } ) }'
+      'mutation { createCovidLibraries(input: { arguments: { bogus: "data" } } ) }'
     end
 
     it 'provides an error when missing required fields' do

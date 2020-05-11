@@ -6,6 +6,6 @@ module Types
     # Plates
     field :create_plate_with_ont_samples, mutation: Mutations::CreatePlateWithOntSamplesMutation
     # Libraries
-    field :create_ont_libraries, mutation: Mutations::CreateOntLibrariesMutation
+    field :create_covid_libraries, mutation: Mutations::CreateCovidLibrariesMutation
   end
 end
