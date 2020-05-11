@@ -7,7 +7,6 @@ module Types
       class LibraryCreationArgumentsInputType < BaseInputObject
         argument :plate_barcode, String, required: false
         argument :tag_set_name, String, required: false
-        argument :well_primary_grouping_direction, String, required: false
       end
     end
   end
