@@ -60,24 +60,13 @@ RSpec.describe 'GraphQL', type: :request do
     def valid_query
       <<~GQL
       mutation {
-        createPlateWithOntSamples(
+        createPlateWithCovidSamples(
           input: {
             arguments: {
               barcode: "PLATE-1234"
               wells: [
-                {
-                  position: "A1"
-                  samples: [
-                    { name: "Sample 1 for A1" externalId: "ExtIdA1-1" }
-                    { name: "Sample 2 for A1" externalId: "ExtIdA1-2" tagGroupId: "Tag123" }
-                  ]
-                }
-                {
-                  position: "E7" 
-                  samples: [
-                    { name: "Sample for E7" externalId: "ExtIdE7" }
-                  ]
-                }
+                { position: "A1" sample: { name: "Sample for A1" externalId: "ExtIdA1-1" } }
+                { position: "E7" sample: { name: "Sample for E7" externalId: "ExtIdE7" } }
               ]
             }
           }
@@ -92,8 +81,8 @@ RSpec.describe 'GraphQL', type: :request do
 
     it 'creates a plate with provided parameters' do
       plate = create(:plate_with_ont_requests, barcode: 'PLATE-1234', wells: [
-        { position: 'A1', requests: [ { name: 'Sample 1 for A1', external_id: 'ExtIdA1-1' }, { name: 'Sample 2 for A1', external_id: 'ExtIdA1-2' } ] },
-        { position: 'E7', requests: [ { name: 'Sample for E7', external_id: 'ExtIdE7' } ] }])
+        { position: 'A1', requests: [ { name: 'Sample for A1', external_id: 'ExtIdA1-1' } ] },
+        { position: 'E7', requests: [ { name: 'Sample for E7', external_id: 'ExtIdE7' } ] } ] )
 
       allow_any_instance_of(Ont::PlateFactory).to receive(:save).and_return(true)
       allow_any_instance_of(Ont::PlateFactory).to receive(:plate).and_return(plate)
@@ -102,13 +91,12 @@ RSpec.describe 'GraphQL', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      mutation_json = json['data']['createPlateWithOntSamples']
+      mutation_json = json['data']['createPlateWithCovidSamples']
       plate_json = mutation_json['plate']
       expect(plate_json['barcode']).to eq('PLATE-1234')
 
       expect(plate_json['wells'][0]['materials']).to contain_exactly(
-        { 'name' => 'Sample 1 for A1', 'externalId' => 'ExtIdA1-1' },
-        { 'name' => 'Sample 2 for A1', 'externalId' => 'ExtIdA1-2' }
+        { 'name' => 'Sample for A1', 'externalId' => 'ExtIdA1-1' }
       )
       expect(plate_json['wells'][1]['materials']).to contain_exactly(
         { 'name' => 'Sample for E7', 'externalId' => 'ExtIdE7' }
@@ -127,13 +115,13 @@ RSpec.describe 'GraphQL', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      mutation_json = json['data']['createPlateWithOntSamples']
+      mutation_json = json['data']['createPlateWithCovidSamples']
       expect(mutation_json['plate']).to be_nil
       expect(mutation_json['errors']).to contain_exactly('Wells {:message=>"This is a test error"}')
     end
 
     def missing_required_fields_query
-      'mutation { createPlateWithOntSamples(input: { arguments: { bogus: "data" } } ) }'
+      'mutation { createPlateWithCovidSamples(input: { arguments: { bogus: "data" } } ) }'
     end
 
     it 'provides an error when missing required fields' do
