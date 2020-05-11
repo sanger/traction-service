@@ -40,7 +40,6 @@ module Ont
       @request_factory = RequestFactory.new(well: well, request_attributes: attributes[:sample])
     end
 
-
     def check_well
       if well.nil?
         errors.add('well', 'cannot be nil')
