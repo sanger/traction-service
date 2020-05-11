@@ -8,7 +8,7 @@ module Ont
   class WellFactory
     include ActiveModel::Model
 
-    validate :check_well, :check_request_factories, :check_tag_service, :check_for_raised_exceptions
+    validate :check_well, :check_request_factories, :check_for_raised_exceptions
 
     def initialize(attributes = {})
       @request_factories = []
@@ -37,28 +37,17 @@ module Ont
       return unless attributes.key?(:samples)
 
       begin
-        @tag_service = create_tag_service(attributes[:samples].count)
+        validate_num_samples(attributes[:samples].count)
         @request_factories = attributes[:samples].map do |request_attributes|
-          RequestFactory.new(well: well,
-                             request_attributes: request_attributes,
-                             tag_service: @tag_service)
+          RequestFactory.new(well: well, request_attributes: request_attributes)
         end
       rescue StandardError => e
         @raised_exceptions << e
       end
     end
 
-    def create_tag_service(num_samples)
-      case num_samples
-      when 1
-        ::TagService.new(nil)
-      when 96
-        ::TagService.new(::TagSet.find_by!(name: 'OntWell96Samples'))
-      when 384
-        ::TagService.new(::TagSet.find_by!(name: 'OntWell384Samples'))
-      else
-        raise "'#{num_samples}' is not a supported number of samples"
-      end
+    def validate_num_samples(num_samples)
+      raise "'#{num_samples}' is not a supported number of samples" unless num_samples == 1 
     end
 
     def check_well
@@ -84,12 +73,6 @@ module Ont
           errors.add(k, v)
         end
       end
-    end
-
-    def check_tag_service
-      return if @tag_service.nil?
-
-      errors.add('samples', 'should all be uniquely tagged') unless @tag_service.complete?
     end
 
     def check_for_raised_exceptions
