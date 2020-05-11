@@ -8,73 +8,59 @@ module Ont
   class RequestFactory
     include ActiveModel::Model
 
-    validate :check_request, :check_tag, :check_well_request_join
-    # Note that @ont_request and @sample are validated by association with @request
+    validate :check_ont_request, :check_tag_taggable, :check_well_request_join
 
     def initialize(attributes = {})
       @well = attributes[:well]
-      @tag_service = attributes[:tag_service]
       return unless attributes.key?(:request_attributes)
 
       build_request(attributes[:request_attributes])
     end
 
-    attr_reader :request
+    attr_reader :ont_request
 
     def save(**options)
       return false unless options[:validate] == false || valid?
 
       # No need to validate any lower level objects since validation above has already checked them
-      request.save(validate: false)
-      tag_taggable&.save(validate: false)
+      ont_request.save(validate: false)
+      tag_taggable.save(validate: false)
       well_request_join.save(validate: false)
       true
     end
 
     private
 
-    attr_reader :tag_taggable, :tag_service, :well, :well_request_join
+    attr_reader :tag_taggable, :well, :well_request_join
 
     def build_request(request_attributes)
-      constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
-      sample = build_or_fetch_sample(request_attributes, constants_accessor)
-      ont_request = build_ont_request(request_attributes, constants_accessor)
-      @request = ::Request.new(requestable: ont_request, sample: sample)
-      @well_request_join = ::ContainerMaterial.new(container: well, material: request.requestable)
+      tag = ::Tag.find_by(group_id: request_attributes[:tag_group_id])
+      @ont_request = Ont::Request.new(external_id: request_attributes[:external_id],
+                                      name: request_attributes[:name])
+      @tag_taggable = ::TagTaggable.new(taggable: ont_request, tag: tag)
+      @well_request_join = ::ContainerMaterial.new(container: well, material: ont_request)
     end
 
-    def build_ont_request(request_attributes, constants_accessor)
-      ont_request = Ont::Request.new(external_study_id: constants_accessor.external_study_id)
-      if request_attributes.key?(:tag_group_id)
-        tag = @tag_service.find_and_register_tag(request_attributes[:tag_group_id])
-        @tag_taggable = ::TagTaggable.new(taggable: ont_request, tag: tag)
-      end
-
-      ont_request
-    end
-
-    def build_or_fetch_sample(request_attributes, constants_accessor)
-      sample_attributes = request_attributes
-                          .extract!(:name, :external_id)
-                          .merge!(species: constants_accessor.species)
-      Sample.find_or_initialize_by(sample_attributes)
-    end
-
-    def check_request
-      if request.nil?
+    def check_ont_request
+      if ont_request.nil?
         errors.add('request', 'cannot be nil')
         return
       end
 
-      return if request.valid?
+      return if ont_request.valid?
 
-      request.errors.each do |k, v|
+      ont_request.errors.each do |k, v|
         errors.add(k, v)
       end
     end
 
-    def check_tag
-      return if tag_taggable.nil? || tag_taggable.valid?
+    def check_tag_taggable
+      if tag_taggable.nil?
+        errors.add('tag', 'cannot be nil')
+        return
+      end
+
+      return if tag_taggable.valid?
 
       tag_taggable.errors.each do |k, v|
         errors.add(k, v)
