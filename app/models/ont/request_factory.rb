@@ -35,7 +35,8 @@ module Ont
 
     def build_request(request_attributes)
       tag = ::Tag.find_by(group_id: request_attributes[:tag_group_id])
-      @ont_request = Ont::Request.new(external_id: request_attributes[:external_id], name: request_attributes[:name])
+      @ont_request = Ont::Request.new(external_id: request_attributes[:external_id],
+                                      name: request_attributes[:name])
       @tag_taggable = ::TagTaggable.new(taggable: ont_request, tag: tag)
       @well_request_join = ::ContainerMaterial.new(container: well, material: ont_request)
     end

@@ -47,7 +47,7 @@ module Ont
     end
 
     def validate_num_samples(num_samples)
-      raise "'#{num_samples}' is not a supported number of samples" unless num_samples == 1 
+      raise "'#{num_samples}' is not a supported number of samples" unless num_samples == 1
     end
 
     def check_well
