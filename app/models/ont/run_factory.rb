@@ -9,9 +9,9 @@ module Ont
 
     validate :check_run, :check_flowcells
 
-    def initialize(library_names = [])
+    def initialize(attributes = [])
       @flowcells = []
-      build_run(library_names)
+      build_run(attributes)
     end
 
     attr_reader :run
@@ -28,14 +28,16 @@ module Ont
 
     attr_reader :flowcells
 
-    def build_run(library_names)
+    def build_run(attributes)
       constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
       @run = Ont::Run.new(instrument_name: constants_accessor.instrument_name)
-      library_names.each_with_index do |library_name, idx|
+      attributes.each do |flowcell_spec|
         # the flowcell requires a library, so if a library does not exist
         # the flowcell, and therefore factory, will be invalid
-        library = Ont::Library.find_by(name: library_name)
-        @flowcells << Ont::Flowcell.new(position: idx + 1, run: run, library: library)
+        library = Ont::Library.find_by(name: flowcell_spec[:library_name])
+        @flowcells << Ont::Flowcell.new(position: flowcell_spec[:position],
+                                        run: run, library:
+        library)
       end
     end
 

@@ -20,4 +20,10 @@ RSpec.describe Ont::Flowcell, type: :model, ont: true do
     flowcell = build(:ont_flowcell, library: nil)
     expect(flowcell).to_not be_valid
   end
+
+  it 'must have a unique position' do
+    flowcell = create(:ont_flowcell)
+    new_flowcell = build(:ont_flowcell, position: flowcell.position, run:flowcell.run)
+    expect(new_flowcell).to_not be_valid
+  end
 end
