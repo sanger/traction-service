@@ -23,9 +23,11 @@ module Ont
       return false unless options[:validate] == false || valid?
 
       # No need to validate any lower level objects since validation above has already checked them
-      ont_request.save(validate: false)
-      tag_taggable.save(validate: false)
-      well_request_join.save(validate: false)
+      ActiveRecord::Base.transaction do
+        ont_request.save(validate: false)
+        tag_taggable.save(validate: false)
+        well_request_join.save(validate: false)
+      end
       true
     end
 

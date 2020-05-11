@@ -24,8 +24,10 @@ module Ont
       return false unless options[:validate] == false || valid?
 
       # No need to validate any lower level objects since validation above has already checked them
-      well.save(validate: false)
-      request_factory&.save(validate: false)
+      ActiveRecord::Base.transaction do
+        well.save(validate: false)
+        request_factory&.save(validate: false)
+      end
       true
     end
 
