@@ -36,14 +36,12 @@ def submit_create_plate_query(plate_no:, barcode:, wells:)
   result = TractionGraphQL::Client.query(OntPlates::CreatePlate, variables: { barcode: barcode, wells: wells })
 
   errors_array = result.original_hash['data']['createPlateWithCovidSamples']['errors']
-  if errors_array.any?
-    show_errors ["-> Failed to create plate number #{plate_no}: #{errors_array}"]
-  end
+  show_errors ["-> Failed to create plate number #{plate_no}: #{errors_array}"] if errors_array.any?
 
   puts "-> Succesfully created plate number #{plate_no}"
 rescue Errno::ECONNREFUSED
   show_errors ["-> Failed to connect to the Rails server at #{TractionGraphQL::RAILS_ROOT_URI}",
-                '   Use the RAILS_ROOT_URI environment variable to specify a different URI']
+               '   Use the RAILS_ROOT_URI environment variable to specify a different URI']
 end
 
 def create_plates(count:)
