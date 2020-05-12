@@ -42,8 +42,8 @@ end
 # A set of GraphQL queries for creating ONT plates
 module OntPlates
   CreatePlate = TractionGraphQL::Client.parse <<~GRAPHQL
-    mutation($barcode: String!, $wells: [WellWithSamplesInput!]!) {
-      createPlateWithOntSamples(
+    mutation($barcode: String!, $wells: [WellWithSampleInput!]!) {
+      createPlateWithCovidSamples(
         input: {
           arguments: {
             barcode: $barcode
@@ -56,44 +56,27 @@ module OntPlates
 
   # Methods to create variable objects for GraphQL
   class Variables
-    def wells(samples_per_well:)
+    def wells(sample_name:)
       well_positions = ((1..12).to_a.product %w[A B C D E F G H]).map do |pair|
         "#{pair[1]}#{pair[0]}"
       end
+      tags = TagSet.find_by(name: 'OntWell96Samples').tags
 
-      well_positions.map do |position|
-        well position: position, num_samples: samples_per_well
+      well_positions.each_with_index.map do |position, index|
+        well position: position, sample_name: sample_name, tag_oligo: tags[index].oligo
       end
     end
 
     private
 
-    def sample(position:, sample_number:, tag_group_id_prefix:)
-      padded_sample_number = format('%<number>03i', { number: sample_number })
-
-      sample = {
-        'name' => "Sample #{padded_sample_number} for #{position}",
-        'externalId' => "#{position}-#{padded_sample_number}-ExtId"
-      }
-
-      unless tag_group_id_prefix.nil?
-        padded_tag_number = format('%<number>02i', { number: sample_number })
-        sample['tagGroupId'] = "#{tag_group_id_prefix}#{padded_tag_number}"
-      end
-
-      sample
-    end
-
-    def well(position:, num_samples:)
+    def well(position:, sample_name:, tag_oligo:)
       {
         'position' => position,
-        'samples' => (1..num_samples).map do |number|
-          sample(
-            position: position,
-            sample_number: number,
-            tag_group_id_prefix: num_samples == 96 ? 'ont_96_tag_' : nil
-          )
-        end
+        'sample' => {
+          'name' => "Sample #{sample_name} in #{position}",
+          'externalId' => "#{position}-ExtId",
+          'tagOligo' => tag_oligo
+        }
       }
     end
   end
