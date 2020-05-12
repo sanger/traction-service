@@ -12,7 +12,7 @@ module Ont
              :check_container_material
 
     def initialize(attributes = {})
-       build_library(attributes)
+      build_library(attributes)
     end
 
     attr_reader :tube
@@ -34,21 +34,20 @@ module Ont
       plate = ::Plate.find_by(barcode: attributes[:plate_barcode])
       return if plate.nil?
 
-      requests = plate.wells.flat_map { |well| well.materials }
-      if check_requests_uniquely_tagged(requests)
-        @library = Ont::Library.new(name: Ont::Library.library_name(plate.barcode, 1),
-        pool: 1,
-        pool_size: plate.wells.count,
-        requests: requests)
-        add_to_tube(library)
-      end
+      requests = plate.wells.flat_map(&:materials)
+      return unless check_requests_uniquely_tagged(requests)
 
+      @library = Ont::Library.new(name: Ont::Library.library_name(plate.barcode, 1),
+                                  pool: 1,
+                                  pool_size: plate.wells.count,
+                                  requests: requests)
+      add_to_tube(library)
     end
 
     def check_requests_uniquely_tagged(requests)
-      unique_oligo_joins = Set.new()
+      unique_oligo_joins = Set.new
       requests.each do |request|
-        unique_oligo_joins.add(request.sorted_tags.map { |tag| tag.oligo }.join)
+        unique_oligo_joins.add(request.sorted_tags.map(&:oligo).join)
       end
       unique_oligo_joins.count == requests.count
     end
@@ -89,7 +88,7 @@ module Ont
         errors.add('container material', 'was not created')
         return
       end
-      
+
       return if container_material.valid?
 
       container_material.errors.each do |k, v|
