@@ -365,20 +365,6 @@
               "deprecationReason": null
             },
             {
-              "name": "tagSetName",
-              "description": null,
-              "args": [
-
-              ],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
               "name": "tubeBarcode",
               "description": null,
               "args": [
@@ -426,26 +412,6 @@
           "inputFields": [
             {
               "name": "plateBarcode",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "tagSetName",
-              "description": null,
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "wellPrimaryGroupingDirection",
               "description": null,
               "type": {
                 "kind": "SCALAR",
