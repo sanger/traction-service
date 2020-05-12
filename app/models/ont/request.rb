@@ -6,8 +6,8 @@ module Ont
     include Material
     include Taggable
 
-    has_one :library_request, foreign_key: :ont_request_id,
-                              inverse_of: :request, dependent: :destroy
+    belongs_to :library, foreign_key: :ont_library_id, inverse_of: :requests,
+                         dependent: :destroy, optional: true
     validates :name, :external_id, presence: true
   end
 end
