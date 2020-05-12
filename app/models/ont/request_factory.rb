@@ -36,7 +36,8 @@ module Ont
     attr_reader :tag_taggable, :well, :well_request_join
 
     def build_request(request_attributes)
-      tag = ::Tag.find_by(group_id: request_attributes[:tag_group_id])
+      tag_set_id = TagSet.find_by(name: 'OntWell96Samples')
+      tag = ::Tag.find_by(tag_set_id: tag_set_id, oligo: request_attributes[:tag_oligo])
       @ont_request = Ont::Request.new(external_id: request_attributes[:external_id],
                                       name: request_attributes[:name])
       @tag_taggable = ::TagTaggable.new(taggable: ont_request, tag: tag)
