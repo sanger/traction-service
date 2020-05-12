@@ -10,7 +10,7 @@ FactoryBot.define do
         fail if options.row_count > 8
         ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].first(options.row_count).each do |row|
           (1..options.column_count).each do |col|
-            create(:well, position: "#{row}#{col}", plate: plate,)
+            create(:well, position: "#{row}#{col}", plate: plate)
           end
         end
       end
