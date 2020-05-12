@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 
-ADDED_OR_MODIFIED = /^\s*(A|M)+/.freeze
-
 changed_files = `git status --porcelain`.split(/\n/)
 unstaged_files = `git ls-files -m`.split(/\n/)
 
-changed_files = changed_files.select { |f| f =~ ADDED_OR_MODIFIED }
-changed_files = changed_files.map { |f| f.split(" ")[1..-1].join(' ') }
+changed_files = changed_files.map do |file|
+  /^\s*[AM]+\s+(?<filename>.+)$/ =~ file  # Find added or removed files
+  filename
+end.compact
 
 changed_files -= (unstaged_files - changed_files)
 
