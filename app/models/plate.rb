@@ -6,6 +6,8 @@ class Plate < ApplicationRecord
 
   has_many :wells, inverse_of: :plate, dependent: :destroy
 
+  validates :barcode, uniqueness: { case_sensitive: false }
+
   # Plates are assumed to have wells with layout
   # A1 A2 A3 ...
   # B1 B2 ...
