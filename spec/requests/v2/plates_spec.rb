@@ -27,8 +27,8 @@ RSpec.describe 'GraphQL', type: :request do
     context 'when there is a plate with samples' do
       let!(:plate) do
         create(:plate_with_ont_requests, wells: [
-            { position: 'A1', requests: [ { name: 'Sample in A1' } ] },
-            { position: 'H12', requests: [ { name: 'Sample 1 in H12' }, { name: 'Sample 2 in H12' } ] }
+            { position: 'A1', requests: [ { name: 'Sample in A1', external_id: '1' } ] },
+            { position: 'H12', requests: [ { name: 'Sample 1 in H12', external_id: '2' }, { name: 'Sample 2 in H12', external_id: '3' } ] }
           ])
       end
 
