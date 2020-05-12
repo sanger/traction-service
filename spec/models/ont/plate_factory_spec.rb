@@ -41,7 +41,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
 
   context '#save' do
     let(:attributes) { { barcode: 'abc123', wells: [ { position: 'A1' }, { position: "A2" } ] } }
-    context 'valid build' do  
+    context 'valid build' do
       let(:factory) { Ont::PlateFactory.new(attributes) }
 
       before do
@@ -51,7 +51,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
       it 'is valid with given attributes' do
         expect(factory).to be_valid
       end
-      
+
       it 'creates a plate' do
         expect(factory.save).to be_truthy
         expect(::Plate.all.count).to eq(1)
@@ -62,6 +62,28 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
       it 'creates a well factory for each given well' do
         expect(Ont::WellFactory).to receive(:new).exactly(2).and_call_original
         expect(factory.save).to be_truthy
+      end
+
+      it 'validates the plate only once by default' do
+        validation_count = 0
+        allow_any_instance_of(Plate).to receive(:valid?) { |_| validation_count += 1 }
+        factory.save
+        expect(validation_count).to eq(1)
+      end
+
+      it 'validates the well factories only once each by default' do
+        validation_count = 0
+        allow_any_instance_of(Ont::WellFactory).to receive(:valid?) { |_| validation_count += 1 }
+        factory.save
+        expect(validation_count).to eq(2)
+      end
+
+      it 'validates no children when (validate: false) is passed' do
+        validation_count = 0
+        allow_any_instance_of(Plate).to receive(:valid?) { |_| validation_count += 1 }
+        allow_any_instance_of(Ont::WellFactory).to receive(:valid?) { |_| validation_count += 1 }
+        factory.save(validate: false)
+        expect(validation_count).to eq(0)
       end
     end
 
@@ -85,7 +107,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
       it 'does not create a plate' do
         expect(::Plate.all.count).to eq(0)
       end
-  
+
       it 'does not save any well factories' do
         expect_any_instance_of(Ont::WellFactory).to_not receive(:save)
       end
