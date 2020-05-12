@@ -1,8 +1,6 @@
 #!/usr/bin/env ruby
 
-# frozen_string_literal: true
-
-ADDED_OR_MODIFIED = /^\s*(A|AM|M)/
+ADDED_OR_MODIFIED = /^\s*(A|AM|M)/.freeze
 
 changed_files = `git status --porcelain`.split(/\n/)
 unstaged_files = `git ls-files -m`.split(/\n/)
