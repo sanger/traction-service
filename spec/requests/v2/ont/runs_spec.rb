@@ -18,7 +18,7 @@ RSpec.describe 'GraphQL', type: :request do
             flowcells: []
           }
         ) {
-          run { id state instrumentName flowcells { position library { name } } }
+          run { id state flowcells { position library { name } } }
           errors
         }
       }
@@ -39,7 +39,6 @@ RSpec.describe 'GraphQL', type: :request do
       run_json = mutation_json['run']
       expect(run_json['id']).to eq(run.id.to_s)
       expect(run_json['state']).to eq(run.state)
-      expect(run_json['instrumentName']).to eq(run.instrument_name)
 
       flowcell_json = run_json['flowcells']
       expect(flowcell_json.count).to eq(run.flowcells.count)
