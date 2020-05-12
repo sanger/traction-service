@@ -330,6 +330,7 @@
 
         <h1>
 <a id="createcovidlibraries" class="anchor" href="#createcovidlibraries" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>createCovidLibraries</h1>
+<p>Create a library from a 96-well plate containing Covid samples.</p>
 <h2>
 <a id="input-fields" class="anchor" href="#input-fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Input fields</h2>
 <div class="field-entry ">
@@ -348,11 +349,13 @@
 <div class="field-entry ">
   <span id="errors" class="field-name anchored">errors (<code><a href="/v2/docs/scalar/string">[String!]!</a></code>)</span>
   <div class="description-wrapper">
+   <p>An array of error messages thrown when creating libraries.</p>
   </div>
 </div>
 <div class="field-entry ">
   <span id="tubes" class="field-name anchored">tubes (<code><a href="/v2/docs/object/tube">[Tube!]</a></code>)</span>
   <div class="description-wrapper">
+   <p>An array of tubes containing the generated libraries, or null if errors were thrown.</p>
   </div>
 </div>
 
