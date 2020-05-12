@@ -5,9 +5,9 @@ module Types
     module Ont
       # The type for Ont::Run objects.
       class RunType < CommonOutputObject
-        field :state, String, null: false
-        field :deactivated_at, String, null: true
-        field :flowcells, [FlowcellType], null: false
+        field :state, String, 'The description of the state for this run.', null: false
+        field :deactivated_at, String, 'The date this run was deactivated.', null: true
+        field :flowcells, [FlowcellType], 'An array of flowcells in this run.', null: false
       end
     end
   end
