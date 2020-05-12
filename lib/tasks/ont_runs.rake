@@ -7,7 +7,7 @@ namespace :ont_runs do
     puts '-> Creating ONT runs using GraphQL'
 
     create_plates(count: 5)
-    # TODO: Create libraries from plates
+    create_libraries(count: 5)
     # TODO: Create ONT runs when the endpoints are available
 
     puts
@@ -56,4 +56,30 @@ def create_plates(count:)
   end
 
   puts '-> Successfully created ONT plates'
+end
+
+def submit_create_library_query(plate_barcode:)
+  puts "-> Creating library for plate with barcode #{plate_barcode}"
+  result = TractionGraphQL::Client.query(OntLibraries::CreateLibraries, variables: { plate_barcode: plate_barcode })
+
+  errors_array = result.original_hash['data']['createCovidLibraries']['errors']
+  if errors_array.any?
+    show_errors ["-> Failed to create library for plate with barcode #{plate_barcode}: #{errors_array}"]
+  end
+
+  puts "-> Succesfully created library for plate with barcode number #{plate_barcode}"
+rescue Errno::ECONNREFUSED
+  show_errors ["-> Failed to connect to the Rails server at #{TractionGraphQL::RAILS_ROOT_URI}",
+               '   Use the RAILS_ROOT_URI environment variable to specify a different URI']
+end
+
+def create_libraries(count:)
+  puts
+  puts "-> Creating #{count} ONT libraries from plates"
+
+  count.times do |i|
+    submit_create_library_query(plate_barcode: "DEMO-PLATE-#{i + 1}")
+  end
+
+  puts '-> Successfully created ONT libraries'
 end
