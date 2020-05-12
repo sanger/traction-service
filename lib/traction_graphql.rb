@@ -91,3 +91,13 @@ module OntLibraries
     }
   GRAPHQL
 end
+
+# A set of GraphQL queries for creating ONT runs
+module OntRuns
+  CreateRun = TractionGraphQL::Client.parse <<~GRAPHQL
+    mutation($flowcells: [FlowcellInput!]!) {
+      createCovidRun( input: { flowcells: $flowcells } )
+      { errors }
+    }
+  GRAPHQL
+end
