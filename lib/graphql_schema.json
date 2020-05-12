@@ -27,7 +27,7 @@
           "inputFields": [
             {
               "name": "arguments",
-              "description": null,
+              "description": "Arguments describing the source for libraries to be created.",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -75,7 +75,7 @@
             },
             {
               "name": "errors",
-              "description": null,
+              "description": "An array of error messages thrown when creating libraries.",
               "args": [
 
               ],
@@ -101,7 +101,7 @@
             },
             {
               "name": "tubes",
-              "description": null,
+              "description": "An array of tubes containing the generated libraries, or null if errors were thrown.",
               "args": [
 
               ],
@@ -137,7 +137,7 @@
           "inputFields": [
             {
               "name": "arguments",
-              "description": null,
+              "description": "Arguments describing the plate, wells and samples to create a plate for.",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -185,7 +185,7 @@
             },
             {
               "name": "errors",
-              "description": null,
+              "description": "An array of error messages thrown when creating the plate.",
               "args": [
 
               ],
@@ -211,7 +211,7 @@
             },
             {
               "name": "plate",
-              "description": null,
+              "description": "The generated plate, or nil if errors were thrown.",
               "args": [
 
               ],
@@ -258,7 +258,7 @@
           "fields": [
             {
               "name": "createdAt",
-              "description": null,
+              "description": "The time this object was created.",
               "args": [
 
               ],
@@ -276,7 +276,7 @@
             },
             {
               "name": "id",
-              "description": null,
+              "description": "The unique database ID of this object.",
               "args": [
 
               ],
@@ -294,7 +294,7 @@
             },
             {
               "name": "name",
-              "description": null,
+              "description": "The name of this library.",
               "args": [
 
               ],
@@ -312,7 +312,7 @@
             },
             {
               "name": "plateBarcode",
-              "description": null,
+              "description": "The barcode of the plate this library was created from.",
               "args": [
 
               ],
@@ -330,7 +330,7 @@
             },
             {
               "name": "pool",
-              "description": null,
+              "description": "An index of the group of wells combined from the plate to form this library.",
               "args": [
 
               ],
@@ -348,7 +348,7 @@
             },
             {
               "name": "poolSize",
-              "description": null,
+              "description": "The number of samples contained in this library.",
               "args": [
 
               ],
@@ -366,7 +366,7 @@
             },
             {
               "name": "tubeBarcode",
-              "description": null,
+              "description": "The barcode of the tube this library is contained in.",
               "args": [
 
               ],
@@ -380,7 +380,7 @@
             },
             {
               "name": "updatedAt",
-              "description": null,
+              "description": "The time this object was last updated.",
               "args": [
 
               ],
@@ -412,7 +412,7 @@
           "inputFields": [
             {
               "name": "plateBarcode",
-              "description": null,
+              "description": "The barcode of the plate to create libraries from.",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -453,7 +453,7 @@
           "fields": [
             {
               "name": "createCovidLibraries",
-              "description": null,
+              "description": "Create a library from a 96-well plate containing Covid samples.",
               "args": [
                 {
                   "name": "input",
@@ -480,7 +480,7 @@
             },
             {
               "name": "createPlateWithCovidSamples",
-              "description": null,
+              "description": "Create a plate with a single Covid sample per well.",
               "args": [
                 {
                   "name": "input",
@@ -520,7 +520,7 @@
           "fields": [
             {
               "name": "barcode",
-              "description": null,
+              "description": "The barcode of this plate.",
               "args": [
 
               ],
@@ -538,7 +538,7 @@
             },
             {
               "name": "createdAt",
-              "description": null,
+              "description": "The time this object was created.",
               "args": [
 
               ],
@@ -556,7 +556,7 @@
             },
             {
               "name": "id",
-              "description": null,
+              "description": "The unique database ID of this object.",
               "args": [
 
               ],
@@ -574,7 +574,7 @@
             },
             {
               "name": "updatedAt",
-              "description": null,
+              "description": "The time this object was last updated.",
               "args": [
 
               ],
@@ -592,7 +592,7 @@
             },
             {
               "name": "wells",
-              "description": null,
+              "description": "An array of wells that exist on this plate.",
               "args": [
 
               ],
@@ -632,7 +632,7 @@
           "inputFields": [
             {
               "name": "barcode",
-              "description": null,
+              "description": "The barcode of the plate.  If not specified, a barcode will be generated.",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -642,7 +642,7 @@
             },
             {
               "name": "wells",
-              "description": null,
+              "description": "An array of wells on the plate.",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -730,7 +730,7 @@
               "args": [
                 {
                   "name": "id",
-                  "description": null,
+                  "description": "The ID of the Well to find.",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -757,10 +757,10 @@
               "args": [
                 {
                   "name": "plateId",
-                  "description": null,
+                  "description": "The Plate ID to fetch wells for.",
                   "type": {
                     "kind": "SCALAR",
-                    "name": "Int",
+                    "name": "ID",
                     "ofType": null
                   },
                   "defaultValue": null
@@ -801,7 +801,7 @@
           "fields": [
             {
               "name": "createdAt",
-              "description": null,
+              "description": "The time this object was created.",
               "args": [
 
               ],
@@ -819,7 +819,7 @@
             },
             {
               "name": "externalId",
-              "description": null,
+              "description": "The external ID of the sample in this request.",
               "args": [
 
               ],
@@ -837,7 +837,7 @@
             },
             {
               "name": "id",
-              "description": null,
+              "description": "The unique database ID of this object.",
               "args": [
 
               ],
@@ -855,7 +855,7 @@
             },
             {
               "name": "name",
-              "description": null,
+              "description": "The name of the sample in this request.",
               "args": [
 
               ],
@@ -873,7 +873,7 @@
             },
             {
               "name": "updatedAt",
-              "description": null,
+              "description": "The time this object was last updated.",
               "args": [
 
               ],
@@ -905,7 +905,7 @@
           "inputFields": [
             {
               "name": "name",
-              "description": null,
+              "description": "The name of the sample.",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -915,7 +915,7 @@
             },
             {
               "name": "externalId",
-              "description": null,
+              "description": "The external ID for the sample.",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -925,7 +925,7 @@
             },
             {
               "name": "tagOligo",
-              "description": null,
+              "description": "The oligo sequence used to tag the sample.",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -955,7 +955,7 @@
           "fields": [
             {
               "name": "barcode",
-              "description": null,
+              "description": "The barcode of this tube.",
               "args": [
 
               ],
@@ -973,7 +973,7 @@
             },
             {
               "name": "createdAt",
-              "description": null,
+              "description": "The time this object was created.",
               "args": [
 
               ],
@@ -991,7 +991,7 @@
             },
             {
               "name": "id",
-              "description": null,
+              "description": "The unique database ID of this object.",
               "args": [
 
               ],
@@ -1009,7 +1009,7 @@
             },
             {
               "name": "materials",
-              "description": null,
+              "description": "The material contained in this tube.",
               "args": [
 
               ],
@@ -1031,7 +1031,7 @@
             },
             {
               "name": "updatedAt",
-              "description": null,
+              "description": "The time this object was last updated.",
               "args": [
 
               ],
@@ -1062,7 +1062,7 @@
           "fields": [
             {
               "name": "createdAt",
-              "description": null,
+              "description": "The time this object was created.",
               "args": [
 
               ],
@@ -1080,7 +1080,7 @@
             },
             {
               "name": "id",
-              "description": null,
+              "description": "The unique database ID of this object.",
               "args": [
 
               ],
@@ -1098,7 +1098,7 @@
             },
             {
               "name": "materials",
-              "description": null,
+              "description": "The material contained within this well.",
               "args": [
 
               ],
@@ -1120,7 +1120,7 @@
             },
             {
               "name": "plateId",
-              "description": null,
+              "description": "The ID of the plate this well belongs to.",
               "args": [
 
               ],
@@ -1129,7 +1129,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "SCALAR",
-                  "name": "Int",
+                  "name": "ID",
                   "ofType": null
                 }
               },
@@ -1138,7 +1138,7 @@
             },
             {
               "name": "position",
-              "description": null,
+              "description": "The description of the position for this well on the plate.",
               "args": [
 
               ],
@@ -1156,7 +1156,7 @@
             },
             {
               "name": "updatedAt",
-              "description": null,
+              "description": "The time this object was last updated.",
               "args": [
 
               ],
@@ -1188,7 +1188,7 @@
           "inputFields": [
             {
               "name": "position",
-              "description": null,
+              "description": "The description of the position of the well.  Typically A1 through to H12.",
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
@@ -1198,7 +1198,7 @@
             },
             {
               "name": "sample",
-              "description": null,
+              "description": "The sample contained in the well.",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "SampleInput",
