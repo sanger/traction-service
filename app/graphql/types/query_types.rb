@@ -5,11 +5,8 @@ module Types
   class QueryTypes < BaseObject
     # Wells
 
-    field :well, Types::Outputs::WellType, null: true do
-      description 'Find a Well by ID.'
-      argument :id, ID, required: true do
-        description 'The ID of the Well to find.'
-      end
+    field :well, Types::Outputs::WellType, 'Find a Well by ID.', null: true do
+      argument :id, ID, 'The ID of the Well to find.', required: true
     end
 
     def well(id:)
@@ -18,11 +15,8 @@ module Types
       Well.find(id)
     end
 
-    field :wells, [Types::Outputs::WellType], null: false do
-      description 'Find all Wells.'
-      argument :plate_id, ID, required: false do
-        description 'The Plate ID to fetch wells for.'
-      end
+    field :wells, [Types::Outputs::WellType], 'Find all Wells.', null: false do
+      argument :plate_id, ID, 'The Plate ID to fetch wells for.', required: false
     end
 
     def wells(plate_id: nil)
@@ -35,9 +29,7 @@ module Types
 
     # Plates
 
-    field :plates, [Types::Outputs::PlateType], null: false do
-      description 'Find all Plates.'
-    end
+    field :plates, [Types::Outputs::PlateType], 'Find all Plates.', null: false
 
     def plates
       Plate.all
@@ -45,9 +37,7 @@ module Types
 
     # Ont::Libraries
 
-    field :ont_libraries, [Types::Outputs::Ont::LibraryType], null: false do
-      description 'Find all Ont Libraries.'
-    end
+    field :ont_libraries, [Types::Outputs::Ont::LibraryType], 'Find all Ont Libraries.', null: false
 
     def ont_libraries
       Ont::Library.all
