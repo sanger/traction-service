@@ -180,10 +180,6 @@ default: &default
           type: :model
           value: request.sample_name
           populate_on_row_type: :sample
-  ont:
-    covid:
-      external_study_id: "example id"
-      species: "example species"
 
 
 development:

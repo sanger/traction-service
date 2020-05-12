@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Ont::RequestFactory, type: :model, ont: true do
   let(:well) { create(:well) }
-  let(:tag) { create(:tag) }
+  let(:tag_set) { create(:tag_set_with_tags, name: 'OntWell96Samples') }
 
   context '#initialise' do
     it 'is not valid if given no well' do
@@ -25,7 +25,7 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
         well: well,
         request_attributes: {
           external_id: '1',
-          tag_group_if: tag.group_id
+          tag_oligoo: tag_set.tags.first.oligo
         }
       }
       factory = Ont::RequestFactory.new(attributes)
@@ -39,18 +39,34 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
         request_attributes: {
           name: 'sample 1',
           external_id: '1',
-          tag_group_id: 'not a valid group id'
+          tag_oligo: 'NOT_AN_OLIGO'
         }
       }
       factory = Ont::RequestFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages).to_not be_empty
     end
+
+    it 'is not valid if the tag is not in the correct tag set' do
+      wrong_tag_set = create(:tag_set_with_tags, name: 'WrongTagSet')
+      attributes = {
+        well: well,
+        request_attributes: {
+          name: 'sample 1',
+          external_id: '1',
+          tag_oligo: wrong_tag_set.tags.first.oligo
+        }
+      }
+      factory = Ont::RequestFactory.new(attributes)
+      expect(factory).to_not be_valid
+      expect(factory.errors.full_messages).to_not be_empty
+    end
+
   end
 
   context '#save' do
     context 'valid build' do
-      let(:attributes) { { well: well, request_attributes: { name: 'sample 1', external_id: '1', tag_group_id: tag.group_id } } }
+      let(:attributes) { { well: well, request_attributes: { name: 'sample 1', external_id: '1', tag_oligo: tag_set.tags.first.oligo } } }
       let(:factory) { Ont::RequestFactory.new(attributes) }
 
       before do
@@ -69,7 +85,7 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
 
       it 'creates tag_taggable' do
         expect(::TagTaggable.count).to eq(1)
-        expect(::TagTaggable.first.tag).to eq(tag)
+        expect(::TagTaggable.first.tag).to eq(tag_set.tags.first)
         expect(::TagTaggable.first.taggable).to eq(Ont::Request.first)
       end
 
