@@ -1,12 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Ont::RunFactory, type: :model, ont: true do
-  let!(:instrument_name) { 'test instrument name' }
-
-  before do
-    allow_any_instance_of(Pipelines::ConstantsAccessor).to receive(:instrument_name).and_return(instrument_name)
-  end
-
   context '#initialise' do
     it 'is invalid if run is invalid' do
       errors = ActiveModel::Errors.new(Ont::Run.new)
@@ -34,7 +28,6 @@ RSpec.describe Ont::RunFactory, type: :model, ont: true do
           factory = Ont::RunFactory.new([])
           factory.save
           expect(Ont::Run.count).to eq(1)
-          expect(Ont::Run.first.instrument_name).to eq(instrument_name)
         end
 
         it 'creates no flowcells' do
@@ -92,7 +85,6 @@ RSpec.describe Ont::RunFactory, type: :model, ont: true do
           factory = Ont::RunFactory.new(attributes)
           factory.save
           expect(Ont::Run.count).to eq(1)
-          expect(Ont::Run.first.instrument_name).to eq(instrument_name)
         end
 
         it 'creates expected flowcells' do

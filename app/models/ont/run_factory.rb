@@ -30,8 +30,7 @@ module Ont
     end
 
     def build_run(attributes)
-      constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
-      @run = Ont::Run.new(instrument_name: constants_accessor.instrument_name)
+      @run = Ont::Run.new
       attributes.each do |flowcell_spec|
         # the flowcell requires a library, so if a library does not exist
         # the flowcell, and therefore factory, will be invalid

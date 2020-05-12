@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_07_071910) do
+ActiveRecord::Schema.define(version: 2020_05_11_095257) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -42,25 +42,16 @@ ActiveRecord::Schema.define(version: 2020_05_07_071910) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "ont_library_requests", force: :cascade do |t|
-    t.integer "ont_library_id"
-    t.integer "ont_request_id"
-    t.integer "tag_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["ont_library_id"], name: "index_ont_library_requests_on_ont_library_id"
-    t.index ["ont_request_id"], name: "index_ont_library_requests_on_ont_request_id"
-    t.index ["tag_id"], name: "index_ont_library_requests_on_tag_id"
-  end
-
   create_table "ont_requests", force: :cascade do |t|
-    t.string "external_study_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "ont_library_id"
+    t.string "name"
+    t.string "external_id"
+    t.index ["ont_library_id"], name: "index_ont_requests_on_ont_library_id"
   end
 
   create_table "ont_runs", force: :cascade do |t|
-    t.string "instrument_name"
     t.integer "state", default: 0
     t.datetime "deactivated_at"
     t.datetime "created_at", precision: 6, null: false
@@ -170,6 +161,7 @@ ActiveRecord::Schema.define(version: 2020_05_07_071910) do
     t.string "species"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name", "external_id", "species"], name: "index_samples_on_name_and_external_id_and_species"
     t.index ["name"], name: "index_samples_on_name", unique: true
   end
 

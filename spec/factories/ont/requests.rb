@@ -1,12 +1,9 @@
 FactoryBot.define do
   factory :ont_request, class: Ont::Request do
-    external_study_id { '1' }
+    name { 'request name' }
+    external_id { 'request external id' }
 
-    after(:create) do |req|
-      req.request = create(:request, requestable: req, sample: create(:sample)) if req.request.nil?
-    end
-
-    factory :ont_request_with_tags do   
+    factory :ont_request_with_tags do
       transient do
         tags_count { 3 }
       end   

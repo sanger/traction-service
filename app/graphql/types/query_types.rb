@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 module Types
-  # The type for Well queries.
+  # The type for defining GraphQL queries.
   class QueryTypes < BaseObject
+    # Wells
+
     field :well, Types::Outputs::WellType, null: true do
       description 'Find a Well by ID.'
       argument :id, ID, required: true
@@ -27,6 +29,8 @@ module Types
       end
     end
 
+    # Plates
+
     field :plates, [Types::Outputs::PlateType], null: false do
       description 'Find all Plates.'
     end
@@ -35,7 +39,7 @@ module Types
       Plate.all
     end
 
-    # Ont
+    # Ont::Libraries
 
     field :ont_libraries, [Types::Outputs::Ont::LibraryType], null: false do
       description 'Find all Ont Libraries.'

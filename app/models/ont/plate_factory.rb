@@ -8,7 +8,7 @@ module Ont
   class PlateFactory
     include ActiveModel::Model
 
-    validate :check_well_factories
+    validate :check_plate, :check_well_factories
 
     def initialize(attributes = {})
       build_requests(attributes)
@@ -16,11 +16,12 @@ module Ont
 
     attr_reader :plate
 
-    def save
-      return false unless valid?
+    def save(**options)
+      return false unless options[:validate] == false || valid?
 
-      plate.save
-      well_factories.collect(&:save)
+      # No need to validate any lower level objects since validation above has already checked them
+      plate.save(validate: false)
+      well_factories.map { |well_factory| well_factory.save(validate: false) }
       true
     end
 
@@ -39,6 +40,14 @@ module Ont
     def build_plate(attributes)
       plate_attributes = attributes.extract!(:barcode)
       @plate = ::Plate.new(plate_attributes)
+    end
+
+    def check_plate
+      return if plate.valid?
+
+      plate.errors.each do |k, v|
+        errors.add(k, v)
+      end
     end
 
     def check_well_factories

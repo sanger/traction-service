@@ -3,17 +3,27 @@ FactoryBot.define do
     plate 
     position { 'A1' }
 
-    factory :well_with_ont_samples do
+    factory :well_with_ont_requests do
       transient do
-        samples { [{ name: 'Sample in A1' }] }
+        requests { [{ name: 'Sample in A1', external_id: 'test external id' }] }
       end
   
       after :create do |well, options|
-        options.samples.each do |sample_spec|
-          sample = build(:sample, name: sample_spec[:name])
-          sample.external_id = sample_spec[:external_id] if sample_spec.key?(:external_id)
-          request = build(:request, sample: sample, requestable: nil )
-          ont_request = create(:ont_request, request: request)
+        options.requests.each do |request_spec|
+          ont_request = create(:ont_request, name: request_spec[:name], external_id: request_spec[:external_id])
+          create(:container_material, container: well, material: ont_request)
+        end
+      end
+    end
+
+    factory :well_with_tagged_ont_requests do
+      transient do
+        requests { [{ name: 'Sample in well', external_id: 'test external id' }] }
+      end
+  
+      after :create do |well, options|
+        options.requests.each do |request_spec|
+          ont_request = create(:ont_request_with_tags, tags_count: 1, name: request_spec[:name], external_id: request_spec[:external_id])
           create(:container_material, container: well, material: ont_request)
         end
       end
