@@ -36,27 +36,26 @@ module Ont
 
       requests = plate.wells.flat_map { |well| well.materials }
       if check_requests_uniquely_tagged(requests)
-        @library = Ont::Library.new(name: Ont::Library.library_name(@plate.barcode, pool),
-        pool: pool,
-        pool_size: num_tags,
+        @library = Ont::Library.new(name: Ont::Library.library_name(plate.barcode, 1),
+        pool: 1,
+        pool_size: plate.wells.count,
         requests: requests)
-        add_to_tube(@library)
+        add_to_tube(library)
       end
 
     end
 
     def check_requests_uniquely_tagged(requests)
-      set = Set.new()
+      unique_oligo_joins = Set.new()
       requests.each do |request|
-        set.add(request.sorted_tags.map { |tag| tag.oligo }.join)
+        unique_oligo_joins.add(request.sorted_tags.map { |tag| tag.oligo }.join)
       end
-      set.count == requests.count
+      unique_oligo_joins.count == requests.count
     end
 
     def add_to_tube(library)
-      @tubes << Tube.new
-      @container_materials << ::ContainerMaterial.new(container: @tubes.last,
-                                                      material: library)
+      @tube = Tube.new
+      @container_material = ::ContainerMaterial.new(container: tube, material: library)
     end
 
     def check_library
