@@ -81,3 +81,13 @@ module OntPlates
     end
   end
 end
+
+# A set of GraphQL queries for creating ONT libraries
+module OntLibraries
+  CreateLibraries = TractionGraphQL::Client.parse <<~GRAPHQL
+    mutation($plate_barcode: String!) {
+      createCovidLibraries( input: { arguments: { plateBarcode: $plate_barcode } } )
+      { errors }
+    }
+  GRAPHQL
+end
