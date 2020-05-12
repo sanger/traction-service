@@ -12,7 +12,7 @@ module Mutations
       factory = Ont::LibraryFactory.new(arguments.to_h)
 
       if factory.save
-        { tubes: factory.tubes, errors: [] }
+        { tubes: [factory.tube], errors: [] }
       else
         { tubes: nil, errors: factory.errors.full_messages }
       end
