@@ -7,6 +7,8 @@ module Labware
   included do
     enum id_prefix: { plate: 1, tube: 2 }
     after_create :generate_barcode
+
+    validates :barcode, uniqueness: { case_sensitive: false }
   end
 
   class_methods do
