@@ -23,14 +23,8 @@ RSpec.shared_examples "taggable" do
   end
 
   it 'returns expected sorted tags' do
-    taggable = create(taggable_model, tags_count: 4) # creates tags in different sets
-    create(:tag_taggable, taggable: taggable, tag: create(:tag, tag_set: Tag.first.tag_set)) # create tag in same set as above
-    expected_tags = []
-    TagSet.all.sort { |a, b| a.id <=> b.id }.each do |tag_set|
-      tag_set.tags.sort { |a, b| a.id <=> b.id }.each do |tag|
-        expected_tags << tag
-      end
-    end
+    taggable = create(taggable_model, tags_count: 5)
+    expected_tags = Tag.all.sort { |a, b| a.id <=> b.id }
     expect(taggable.sorted_tags).to match_array(expected_tags)
   end
 end
