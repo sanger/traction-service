@@ -9,8 +9,8 @@ module Taggable
     has_many :tags, through: :tag_taggables
   end
 
-  # returns tags sorted by tag_set id, then tag id
+  # returns tags sorted by id
   def sorted_tags
-    tags.sort { |a, b| a.tag_set.id == b.tag_set.id ? a.id <=> b.id : a.tag_set.id <=> b.tag_set.id }
+    tags.order('id ASC')
   end
 end
