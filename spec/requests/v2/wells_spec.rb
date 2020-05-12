@@ -14,7 +14,7 @@ RSpec.describe 'GraphQL', type: :request do
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data']['well']).to include(
           'id' => well.id.to_s,
-          'plateId' => well.plate.id
+          'plateId' => well.plate.id.to_s
         )
       end
 
@@ -61,7 +61,7 @@ RSpec.describe 'GraphQL', type: :request do
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data']['wells'].length).to eq(2)
-        expect(json['data']['wells'].map { |well| well['plateId'] }).to contain_exactly(plate_1.id, plate_1.id)
+        expect(json['data']['wells'].map { |well| well['plateId'] }).to contain_exactly(plate_1.id.to_s, plate_1.id.to_s)
       end
 
       it 'returns well for plate 2' do
@@ -69,7 +69,7 @@ RSpec.describe 'GraphQL', type: :request do
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data']['wells'].length).to eq(1)
-        expect(json['data']['wells'].first['plateId']).to eq(plate_2.id)
+        expect(json['data']['wells'].first['plateId']).to eq(plate_2.id.to_s)
       end
 
       it 'returns no well for invalid plate ID' do
