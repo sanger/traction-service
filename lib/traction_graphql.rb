@@ -100,4 +100,19 @@ module OntRuns
       { errors }
     }
   GRAPHQL
+
+  class Variables
+    def flowcells(library_names:)
+      library_names.each_with_index.map do |library_name, idx|
+        flowcell library_name: library_name, position: idx + 1
+      end
+    end
+
+    def flowcell(library_name:, position:)
+      {
+        'libraryName' => library_name,
+        'position' => position
+      }
+    end
+  end
 end
