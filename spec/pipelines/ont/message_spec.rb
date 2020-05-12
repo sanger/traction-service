@@ -3,9 +3,9 @@ require "rails_helper"
 RSpec.describe 'Ont', type: :model, ont: true do
 
   let(:config)            { Pipelines.configure(Pipelines.load_yaml) }
-  let(:pipeline_config)   { config.ont }
-  let(:library_request)   { create(:ont_library_request, library: create(:ont_flowcell).library) }
-  let(:message)           { Messages::Message.new(object: library_request, configuration: pipeline_config.message) }
+  let(:pipeline_config)   { config.ont.covid }
+  let(:request)           { create(:ont_request, library: create(:ont_flowcell).library) }
+  let(:message)           { Messages::Message.new(object: request, configuration: pipeline_config.message) }
 
   it 'should have a lims' do
     expect(message.content[:lims]).to eq(pipeline_config.lims)
@@ -30,23 +30,23 @@ RSpec.describe 'Ont', type: :model, ont: true do
     end
 
     it 'must have a sample_uuid' do
-      expect(key[:sample_uuid]).to eq(library_request.request.sample.external_id)
+      expect(key[:sample_uuid]).to eq(request.external_id)
     end
 
     it 'must have a study_uuid' do
-      expect(key[:study_uuid]).to eq(library_request.request.external_study_id)
+      expect(key[:study_uuid]).to eq("test study id")
     end
 
     it 'must have an experiment_name' do
-      expect(key[:experiment_name]).to eq(library_request.library.flowcell.run.id)
+      expect(key[:experiment_name]).to eq(request.library.flowcell.run.id)
     end
 
     it 'must have an instrument_name' do
-      expect(key[:instrument_name]).to eq(library_request.library.flowcell.run.instrument_name)
+      expect(key[:instrument_name]).to eq("GridION")
     end
 
     it 'must have an instrument_slot' do
-      expect(key[:instrument_slot]).to eq(library_request.library.flowcell.position)
+      expect(key[:instrument_slot]).to eq(request.library.flowcell.position)
     end
 
     # TODO: test for the below when added to yaml
