@@ -7,7 +7,9 @@ module Types
 
     field :well, Types::Outputs::WellType, null: true do
       description 'Find a Well by ID.'
-      argument :id, ID, required: true
+      argument :id, ID, required: true do
+        description 'The ID of the Well to find.'
+      end
     end
 
     def well(id:)
@@ -18,7 +20,9 @@ module Types
 
     field :wells, [Types::Outputs::WellType], null: false do
       description 'Find all Wells.'
-      argument :plate_id, Int, required: false
+      argument :plate_id, ID, required: false do
+        description 'The Plate ID to fetch wells for.'
+      end
     end
 
     def wells(plate_id: nil)
