@@ -7,9 +7,9 @@ module Ont
   class LibraryFactory
     include ActiveModel::Model
 
-    validate :check_libraries,
-             :check_tubes,
-             :check_container_materials
+    validate :check_library,
+             :check_tube,
+             :check_container_material
 
     def initialize(attributes = {})
        build_library(attributes)
