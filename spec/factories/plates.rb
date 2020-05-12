@@ -27,5 +27,21 @@ FactoryBot.define do
         end
       end
     end
+
+    factory :plate_with_tagged_ont_requests do
+      transient do
+        row_count { 1 }
+        column_count { 3 }
+      end
+  
+      after :create do |plate, options|
+        fail if options.row_count > 8
+        ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].first(options.row_count).each do |row|
+          (1..options.column_count).each do |col|
+            create(:well_with_tagged_ont_requests, position: "#{row}#{col}", plate: plate)
+          end
+        end
+      end
+    end
   end
 end

@@ -5,8 +5,8 @@ module Ont
   class Library < ApplicationRecord
     include Material
 
-    has_many :library_requests, foreign_key: :ont_library_id,
-                                inverse_of: :library, dependent: :destroy
+    has_many :requests, foreign_key: :ont_library_id,
+                        inverse_of: :library, dependent: :nullify
 
     validates :name, :pool, :pool_size, presence: true
 
@@ -18,10 +18,6 @@ module Ont
 
     def plate_barcode
       name.delete_suffix("-#{pool}")
-    end
-
-    def tag_set_name
-      library_requests.first&.tag&.tag_set_name
     end
 
     def tube_barcode
