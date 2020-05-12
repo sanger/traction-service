@@ -20,9 +20,9 @@ module Ont
     def save(**options)
       return false unless options[:validate] == false || valid?
 
-      @library.save(validate: false)
-      @tube.save(validate: false)
-      @container_material.save(validate: false)
+      library.save(validate: false)
+      tube.save(validate: false)
+      container_material.save(validate: false)
       true
     end
 
