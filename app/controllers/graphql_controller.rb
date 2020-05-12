@@ -6,6 +6,14 @@ class GraphqlController < ApplicationController
   # but you'll have to authenticate your user separately
   # protect_from_forgery with: :null_session
 
+  def show_docs
+    if File.exist?(Pathname.new(Rails.root + "app/views/graphql/#{params[:path]}/index.html"))
+      render template: "graphql/#{params[:path]}/index.html"
+    elsif File.exist?(Pathname.new(Rails.root + "app/views/graphql/#{params[:path]}.#{params[:format]}"))
+      render file: Rails.root + "app/views/graphql/#{params[:path]}.#{params[:format]}"
+    end
+  end
+
   def execute
     variables = ensure_hash(params[:variables])
     query = params[:query]

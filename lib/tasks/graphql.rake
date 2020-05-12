@@ -16,7 +16,9 @@ GraphQL::RakeTask.new(options)
 namespace :graphql do
   namespace :docs do
     task generate: :environment do
-      GraphQLDocs.build(filename: File.join(options[:directory], options[:idl_outfile]))
+      GraphQLDocs.build(filename: File.join(options[:directory], options[:idl_outfile]),
+                        base_url: '/v2/docs',
+                        output_dir: './app/views/graphql')
     end
   end
 end
