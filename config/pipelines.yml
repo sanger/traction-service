@@ -180,6 +180,7 @@ default: &default
           type: :model
           value: request.sample_name
           populate_on_row_type: :sample
+  ont: 
     covid:
       message:
         lims: *lims
@@ -191,16 +192,16 @@ default: &default
             value: library.flowcell.id
           sample_uuid:
             type: :model
-            value: request.sample.external_id
+            value: external_id
           study_uuid:
-            type: :model
-            value: request.external_study_id
+            type: :string
+            value: test study id
           experiment_name:
             type: :model
             value: library.flowcell.run.id
           instrument_name:
-            type: :model
-            value: library.flowcell.run.instrument_name
+            type: :string
+            value: GridION
           instrument_slot:
             type: :model
             value: library.flowcell.position
