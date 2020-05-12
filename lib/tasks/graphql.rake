@@ -5,7 +5,7 @@ require 'graphql/rake_task'
 require 'graphql-docs'
 
 options = {
-  schema_name: "TractionServiceSchema",
+  schema_name: 'TractionServiceSchema',
   directory: 'lib',
   idl_outfile: 'graphql_schema.graphql',
   json_outfile: 'graphql_schema.json'
