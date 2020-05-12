@@ -3,7 +3,7 @@ FactoryBot.define do
     name { 'request name' }
     external_id { 'request external id' }
 
-    factory :ont_request_with_tags do   
+    factory :ont_request_with_tags do
       transient do
         tags_count { 3 }
       end   

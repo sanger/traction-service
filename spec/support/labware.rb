@@ -11,4 +11,10 @@ RSpec.shared_examples "labware" do
     expect(labware.barcode).to eq("TRAC-#{described_class.prefix}-#{labware.id}")
   end
 
+  it 'should have a unique barcode' do
+    labware = create(labware_model)
+    new_labware = build(labware_model, barcode: labware.barcode)
+    expect(new_labware).to_not be_valid
+  end
+
 end
