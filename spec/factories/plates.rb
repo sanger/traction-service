@@ -38,7 +38,7 @@ FactoryBot.define do
         fail if options.row_count > 8
         ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].first(options.row_count).each do |row|
           (1..options.column_count).each do |col|
-            create(:well_with_ont_requests, position: "#{row}#{col}", plate: plate, requests: [create(:ont_request_with_tags, tags_count: 1)])
+            create(:well_with_tagged_ont_requests, position: "#{row}#{col}", plate: plate)
           end
         end
       end
