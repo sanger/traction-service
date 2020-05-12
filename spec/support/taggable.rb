@@ -21,4 +21,10 @@ RSpec.shared_examples "taggable" do
     expect(TagTaggable.all.count).to eq(0)
     expect(Tag.all.count).to eq(num_tags)
   end
+
+  it 'returns expected sorted tags' do
+    taggable = create(taggable_model, tags_count: 5)
+    expected_tags = Tag.all.sort { |a, b| a.id <=> b.id }
+    expect(taggable.sorted_tags).to match_array(expected_tags)
+  end
 end

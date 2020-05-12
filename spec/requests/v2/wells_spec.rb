@@ -26,7 +26,7 @@ RSpec.describe 'GraphQL', type: :request do
       end
 
       it 'handles that there are many requests in the well' do
-        well = create(:well_with_ont_requests, position: 'A1', requests: [{ name: 'Sample 1 in A1' }, { name: 'Sample 2 in A1' } ])
+        well = create(:well_with_ont_requests, position: 'A1', requests: [{ name: 'Sample 1 in A1', external_id: '1' }, { name: 'Sample 2 in A1', external_id: '2' } ])
         post v2_path, params: { query: "{ well(id: #{well.id}) { id plateId materials { ... on Request { name } } } }" }
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
@@ -46,8 +46,8 @@ RSpec.describe 'GraphQL', type: :request do
 
   context 'get wells' do
     context 'when there are two plates with wells' do
-      let!(:plate_1) { create(:plate_with_wells, well_count: 2) }
-      let!(:plate_2) { create(:plate_with_wells, well_count: 1) }
+      let!(:plate_1) { create(:plate_with_wells, column_count: 2) }
+      let!(:plate_2) { create(:plate_with_wells, column_count: 1) }
 
       it 'returns all wells' do
         post v2_path, params: { query: '{ wells { id } }' }

@@ -23,11 +23,21 @@ ActiveRecord::Schema.define(version: 2020_05_11_095257) do
     t.index ["material_type", "material_id"], name: "index_container_materials_on_material_type_and_material_id"
   end
 
+  create_table "ont_libraries", force: :cascade do |t|
+    t.string "name"
+    t.integer "pool"
+    t.integer "pool_size"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "ont_requests", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "ont_library_id"
     t.string "name"
     t.string "external_id"
+    t.index ["ont_library_id"], name: "index_ont_requests_on_ont_library_id"
   end
 
   create_table "pacbio_libraries", force: :cascade do |t|
