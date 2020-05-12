@@ -330,6 +330,7 @@
 
         <h1>
 <a id="createplatewithcovidsamples" class="anchor" href="#createplatewithcovidsamples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>createPlateWithCovidSamples</h1>
+<p>Create a plate with a single Covid sample per well.</p>
 <h2>
 <a id="input-fields" class="anchor" href="#input-fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Input fields</h2>
 <div class="field-entry ">
@@ -348,11 +349,13 @@
 <div class="field-entry ">
   <span id="errors" class="field-name anchored">errors (<code><a href="/v2/docs/scalar/string">[String!]!</a></code>)</span>
   <div class="description-wrapper">
+   <p>An array of error messages thrown when creating the plate.</p>
   </div>
 </div>
 <div class="field-entry ">
   <span id="plate" class="field-name anchored">plate (<code><a href="/v2/docs/object/plate">Plate</a></code>)</span>
   <div class="description-wrapper">
+   <p>The generated plate, or nil if errors were thrown.</p>
   </div>
 </div>
 
