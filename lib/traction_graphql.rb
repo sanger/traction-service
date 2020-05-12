@@ -101,6 +101,7 @@ module OntRuns
     }
   GRAPHQL
 
+  # Methods to create variable objects for GraphQL
   class Variables
     def flowcells(library_names:)
       library_names.each_with_index.map do |library_name, idx|

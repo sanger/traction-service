@@ -84,7 +84,8 @@ def create_libraries(count:)
   puts '-> Successfully created ONT libraries'
 end
 
-def submit_create_run_query(flowcells:, library_names:)
+def submit_create_run_query(variables:, library_names:)
+  flowcells = variables.flowcells(library_names: library_names)
   joined_library_names = library_names.join(', ')
   puts "-> Creating run for libraries with names: #{joined_library_names}"
   result = TractionGraphQL::Client.query(OntRuns::CreateRun, variables: { flowcells: flowcells })
@@ -107,12 +108,11 @@ def create_runs(library_count:)
   variables = OntRuns::Variables.new
   library_names = library_count.times.map { |i| "DEMO-PLATE-#{i + 1}-1" }
   num_run_one = (library_count / 2.0).ceil
-  run_one_lib_names = library_names.first(num_run_one)
-  run_two_lib_names = library_names.last(library_count - num_run_one)
-  
-  submit_create_run_query(flowcells: variables.flowcells(library_names: run_one_lib_names), library_names: run_one_lib_names)
-  if run_two_lib_names.count > 0
-    submit_create_run_query(flowcells: variables.flowcells(library_names: run_two_lib_names), library_names: run_two_lib_names)
+  num_run_two = library_count - num_run_one
+
+  submit_create_run_query(variables: variables, library_names: library_names.first(num_run_one))
+  if num_run_two > 0
+    submit_create_run_query(variables: variables, library_names: library_names.last(num_run_two))
   end
 
   puts '-> Successfully created ONT runs'
