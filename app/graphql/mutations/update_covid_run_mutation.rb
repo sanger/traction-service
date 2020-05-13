@@ -16,7 +16,36 @@ module Mutations
       run = Ont::Run.find_by(id: id)
       return { run: nil, errors: ["Couldn't find the specified run."] } if run.nil?
 
-      { run: run, errors: [] }
+      update_run_state(run, properties.state)
+      errors = update_run_flowcells(run, properties.flowcells)
+
+      if !errors.nil? && errors.any?
+        { run: nil, errors: errors }
+      else
+        { run: run, errors: [] }
+      end
+    end
+
+    private
+
+    def update_run_state(run, state)
+      run.update(state: properties.state) unless state.nil?
+    end
+
+    def update_run_flowcells(run, flowcell_specs)
+      return if flowcell_specs.nil? || flowcell_specs.count == 0
+
+      # Get an array of the pre-existing flowcells for the run
+      old_flowcells = run.flowcells.clone
+
+      # Create new flowcells and attempt to save them
+      factory = Ont::FlowcellFactory.new(run: run, flowcell_specs: flowcell_specs)
+
+      return factory.errors.full_messages unless factory.save
+
+      # Destroy the old flowcells
+      old_flowcells.each(&:destroy)
+      nil
     end
   end
 end
