@@ -47,12 +47,14 @@ def create_plates(count:)
   puts
   puts "-> Creating #{count} ONT plates"
   variables = OntPlates::Variables.new
+  constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
 
   count.times do |i|
     plate_no = i + 1
     submit_create_plate_query(plate_no: plate_no,
                               barcode: "DEMO-PLATE-#{plate_no}",
-                              wells: variables.wells(sample_name: "for Demo Plate #{plate_no}"))
+                              wells: variables.wells(sample_name: "for Demo Plate #{plate_no}",
+                                                     constants_accessor: constants_accessor))
   end
 
   puts '-> Successfully created ONT plates'
