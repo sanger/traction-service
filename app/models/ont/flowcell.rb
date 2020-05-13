@@ -11,6 +11,6 @@ module Ont
     validates :position,
               presence: true,
               uniqueness: { scope: :ont_run_id,
-                            message: 'position should only appear once within run' }
+                            message: 'should only appear once within run' }
   end
 end
