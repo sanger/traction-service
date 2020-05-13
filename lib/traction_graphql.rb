@@ -109,6 +109,8 @@ module OntRuns
       end
     end
 
+    private
+
     def flowcell(library_name:, position:)
       {
         'libraryName' => library_name,
