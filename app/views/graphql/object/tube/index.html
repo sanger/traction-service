@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="Tube GraphQL documentation">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Tube</title>
+    <link rel="stylesheet" href="/v2/docs/assets/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
+    <script>
+
+    // Add anchors on DOMContentLoaded
+    document.addEventListener("DOMContentLoaded", function(event) {
+      anchors.options = {
+        placement: 'left',
+        visible: 'hover',
+        icon: '¶'
+      };
+      anchors.add('h2, h3, h4, h5, h6, .anchored');
+    });
+
+    </script>
+  </head>
+  <body>
+
+    <div id="wrap">
+      <div id="header">
+      </div>
+      <div id="sidebar">
+        <ul class="categories">
+  <li>
+    <ul class="menu-root">
+      <li>
+        <a href="/v2/docs">GraphQL Reference</a>
+    </ul>
+  </li>
+
+  <li>
+    <p>Queries</p>
+    <ul class="menu-root">
+      <li>
+        <a href="/v2/docs/operation/query/" class="sidebar-link">
+          Query
+        </a>
+      </li>
+      <li>
+        <a href="/v2/docs/operation/mutation/" class="sidebar-link">
+          Mutation
+        </a>
+      </li>
+    </ul>
+  </li>
+
+  <li>
+    <p><a href="/v2/docs/object">Objects</a></p>
+    <ul class="menu-root">
+      
+        
+      <li>
+        <a href="/v2/docs/object/createcovidlibrariesmutationpayload/" class="sidebar-link">
+          CreateCovidLibrariesMutationPayload
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/createplatewithcovidsamplesmutationpayload/" class="sidebar-link">
+          CreatePlateWithCovidSamplesMutationPayload
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/library/" class="sidebar-link">
+          Library
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/plate/" class="sidebar-link">
+          Plate
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/request/" class="sidebar-link">
+          Request
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/tube/" class="sidebar-link">
+          Tube
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/well/" class="sidebar-link">
+          Well
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/__directive/" class="sidebar-link">
+          __Directive
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/__enumvalue/" class="sidebar-link">
+          __EnumValue
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/__field/" class="sidebar-link">
+          __Field
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/__inputvalue/" class="sidebar-link">
+          __InputValue
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/__schema/" class="sidebar-link">
+          __Schema
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/__type/" class="sidebar-link">
+          __Type
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+
+  <li>
+    <p><a href="/v2/docs/operation/mutation">Mutations</a></p>
+    <ul class="menu-root">
+      
+      
+      <li>
+        <a href="/v2/docs/mutation/createcovidlibraries/" class="sidebar-link">
+          createCovidLibraries
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/v2/docs/mutation/createplatewithcovidsamples/" class="sidebar-link">
+          createPlateWithCovidSamples
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+
+  <li>
+    <p><a href="/v2/docs/interface">Interfaces</a></p>
+    <ul class="menu-root">
+      
+    </ul>
+  </li>
+
+  <li>
+    <p><a href="/v2/docs/enum">Enums</a></p>
+    <ul class="menu-root">
+      
+      
+      <li>
+        <a href="/v2/docs/enum/__directivelocation/" class="sidebar-link">
+          __DirectiveLocation
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/v2/docs/enum/__typekind/" class="sidebar-link">
+          __TypeKind
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+
+  <li>
+    <p><a href="/v2/docs/union">Unions</a></p>
+    <ul class="menu-root">
+      
+      
+      <li>
+        <a href="/v2/docs/union/materialunion/" class="sidebar-link">
+          MaterialUnion
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+
+  <li>
+    <p><a href="/v2/docs/input_object">Input Objects</a></p>
+    <ul class="menu-root">
+      
+      
+      <li>
+        <a href="/v2/docs/input_object/createcovidlibrariesmutationinput/" class="sidebar-link">
+          CreateCovidLibrariesMutationInput
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/v2/docs/input_object/createplatewithcovidsamplesmutationinput/" class="sidebar-link">
+          CreatePlateWithCovidSamplesMutationInput
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/v2/docs/input_object/librarycreationargumentsinput/" class="sidebar-link">
+          LibraryCreationArgumentsInput
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/v2/docs/input_object/platewithsamplesinput/" class="sidebar-link">
+          PlateWithSamplesInput
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/v2/docs/input_object/sampleinput/" class="sidebar-link">
+          SampleInput
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/v2/docs/input_object/wellwithsampleinput/" class="sidebar-link">
+          WellWithSampleInput
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+
+  <li>
+    <p><a href="/v2/docs/scalar">Scalars</a></p>
+    <ul class="menu-root">
+      
+      
+      <li>
+        <a href="/v2/docs/scalar/boolean/" class="sidebar-link">
+          Boolean
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/v2/docs/scalar/id/" class="sidebar-link">
+          ID
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/v2/docs/scalar/int/" class="sidebar-link">
+          Int
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/v2/docs/scalar/string/" class="sidebar-link">
+          String
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+
+  <li>
+    <p><a href="/v2/docs/directive">Directives</a></p>
+    <ul class="menu-root">
+      
+      
+      <li>
+        <a href="/v2/docs/directive/deprecated/" class="sidebar-link">
+          deprecated
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/v2/docs/directive/include/" class="sidebar-link">
+          include
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/v2/docs/directive/skip/" class="sidebar-link">
+          skip
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+      </div>
+      <div id="content">
+
+        <h1>
+<a id="tube" class="anchor" href="#tube" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tube</h1>
+<h2>
+<a id="fields" class="anchor" href="#fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fields</h2>
+<div class="field-entry ">
+  <span id="barcode" class="field-name anchored">barcode (<code><a href="/v2/docs/scalar/string">String!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>The barcode of this tube.</p>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="createdat" class="field-name anchored">createdAt (<code><a href="/v2/docs/scalar/string">String!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>The time this object was created.</p>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="id" class="field-name anchored">id (<code><a href="/v2/docs/scalar/id">ID!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>The unique database ID of this object.</p>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="materials" class="field-name anchored">materials (<code><a href="/v2/docs/union/materialunion">[MaterialUnion!]</a></code>)</span>
+  <div class="description-wrapper">
+   <p>The material contained in this tube.</p>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="updatedat" class="field-name anchored">updatedAt (<code><a href="/v2/docs/scalar/string">String!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>The time this object was last updated.</p>
+  </div>
+</div>
+
+      </div>
+
+      <!-- mobile only -->
+      <div id="mobile-header">
+        <a class="menu-button" onclick="document.body.classList.toggle('sidebar-open')"></a>
+        <a class="logo" href="/v2/docs">
+
+        </a>
+      </div>
+      <div id="mobile-shade"></div>
+
+    </div>
+
+  </body>
+</html>
