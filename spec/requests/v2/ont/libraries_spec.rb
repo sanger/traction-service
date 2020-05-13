@@ -29,6 +29,25 @@ RSpec.describe 'GraphQL', type: :request do
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data']['ontLibraries'].length).to eq(3)
     end
+
+    it 'returns all libraries when many exist and some are loaded in a flowcell' do
+      create_list(:ont_library, 3)
+      run = create(:ont_run)
+      post v2_path, params: { query: '{ ontLibraries { id } }' }
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data']['ontLibraries'].length).to eq(3 + run.flowcells.count)
+    end
+
+    it 'returns only unassigned libraries when many exist and some are loaded in a flowcell' do
+      create_list(:ont_library, 3)
+      run = create(:ont_run)
+      post v2_path, params: { query: '{ ontLibraries(unassignedToFlowcells: true) { id } }' }
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(run.flowcells.count).to be > 0
+      expect(json['data']['ontLibraries'].length).to eq(3)
+    end
   end
 
   context 'create libraries' do
