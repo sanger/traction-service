@@ -3,6 +3,30 @@
 require 'rails_helper'
 
 RSpec.describe 'GraphQL', type: :request do
+  context 'get run' do
+    context 'when there is a valid run' do
+      let!(:run) { create(:ont_run) }
+
+      it 'returns the run with valid ID' do
+        post v2_path, params: { query:
+          "{ ontRun(id: #{run.id}) { id state deactivatedAt flowcells { id } } }" }
+        expect(response).to have_http_status(:success)
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data']['ontRun']).to include(
+          'id' => run.id.to_s, 'state' => run.state.to_s, 'deactivatedAt' => run.deactivated_at,
+          'flowcells' => run.flowcells.map { |fc| { 'id' => fc.id.to_s } }
+        )
+      end
+
+      it 'returns null when run invalid ID' do
+        post v2_path, params: { query: '{ ontRun(id: 10) { id } }' }
+        expect(response).to have_http_status(:success)
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data']['ontRun']).to be_nil
+      end
+    end
+  end
+
   context 'get runs' do
     it 'returns empty array when no runs exist' do
       post v2_path, params: { query: '{ ontRuns { id } }' }
