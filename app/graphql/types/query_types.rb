@@ -54,6 +54,16 @@ module Types
 
     # Ont::Runs
 
+    field :ont_run, Types::Outputs::Ont::RunType, 'Find an Ont Run by ID.', null: true do
+      argument :id, ID, 'The ID of the Ont Run to find.', required: true
+    end
+
+    def ont_run(id:)
+      return nil unless Ont::Run.exists?(id)
+
+      Ont::Run.find(id)
+    end
+
     field :ont_runs, [Types::Outputs::Ont::RunType], 'Find all Ont Runs.', null: false
 
     def ont_runs
