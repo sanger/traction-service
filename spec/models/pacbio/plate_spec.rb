@@ -2,12 +2,13 @@ require 'rails_helper'
 
 RSpec.describe Pacbio::Plate, type: :model, pacbio: true do
 
-  it 'must have a run' do
-    expect(build(:pacbio_plate, run: nil)).to_not be_valid
+  context 'uuidable' do
+    let(:uuidable_model) { :pacbio_plate }
+    it_behaves_like 'uuidable'
   end
 
-  it 'will have a uuid' do
-    expect(create(:pacbio_plate).uuid).to be_present
+  it 'must have a run' do
+    expect(build(:pacbio_plate, run: nil)).to_not be_valid
   end
   
 end
