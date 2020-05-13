@@ -63,6 +63,8 @@ module Messages
                               field[:value].split('.')[1..-1])
       when :array
         build_children(object, field)
+      when :nil
+        nil
       end
     end
 

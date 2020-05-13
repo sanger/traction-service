@@ -43,7 +43,8 @@ RSpec.describe Messages::Message, type: :model do
                         field_a: { type: :model, value: 'attr_a' }, 
                         field_b: { type: :model, value: 'attr_b' }, 
                         field_c: { type: :model, value: 'attr_c.attr_d' },
-                        updated_at: { type: :constant, value: 'Time.current' }
+                        updated_at: { type: :constant, value: 'Time.current' },
+                        field_nil: { type: :nil }
                       }
                     }.with_indifferent_access
                   }
@@ -64,7 +65,8 @@ RSpec.describe Messages::Message, type: :model do
         field_b: 'attr_b',
         field_c: 'attr_d',
         updated_at: timestamp,
-        instrument_name: 'saphyr'
+        instrument_name: 'saphyr',
+        field_nil: nil
       },
       lims: config[:lims],
       }.with_indifferent_access
