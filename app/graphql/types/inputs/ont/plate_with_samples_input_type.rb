@@ -5,7 +5,8 @@ module Types
     module Ont
       # The input arguments for a Plate with accompanying Samples.
       class PlateWithSamplesInputType < PlateInputType
-        argument :wells, [WellWithSampleInputType], required: true
+        argument :wells, [WellWithSampleInputType], 'An array of wells on the plate.',
+                 required: true
       end
     end
   end

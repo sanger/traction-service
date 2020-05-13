@@ -1,10 +1,21 @@
 # frozen_string_literal: true
 
+# The controller for GraphQL endpoints
 class GraphqlController < ApplicationController
   # If accessing from outside this domain, nullify the session
   # This allows for outside API access while preventing CSRF attacks,
   # but you'll have to authenticate your user separately
   # protect_from_forgery with: :null_session
+
+  def show_docs
+    template_file = "graphql/#{params[:path]}/index.html"
+    static_file = Rails.root + "app/views/graphql/#{params[:path]}.#{params[:format]}"
+    if File.exist?(Pathname.new(Rails.root + "app/views/#{template_file}"))
+      render template: template_file
+    elsif File.exist?(Pathname.new(static_file))
+      render file: static_file
+    end
+  end
 
   def execute
     variables = ensure_hash(params[:variables])
