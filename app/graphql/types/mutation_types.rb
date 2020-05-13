@@ -15,7 +15,11 @@ module Types
 
     # Ont::Runs
     field :create_covid_run,
-          'Create a GriION run containing up to five flow cells loaded with Covid libraries.',
+          'Create a GridION run containing up to five flow cells loaded with Covid libraries.',
           mutation: Mutations::CreateCovidRunMutation
+
+    field :update_covid_run,
+          'Update an existing GridION run with new properties.',
+          mutation: Mutations::UpdateCovidRunMutation
   end
 end
