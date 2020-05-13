@@ -195,27 +195,41 @@ default: &default
             value: external_id
           study_uuid:
             type: :string
-            value: test study id
+            value: "test study id"
           experiment_name:
             type: :model
             value: library.flowcell.run.id
           instrument_name:
             type: :string
-            value: GridION
+            value: GridION # TODO - change once known
           instrument_slot:
             type: :model
             value: library.flowcell.position
-          # TODO - add the below fields when we know what values to use
-          # pipeline_id_lims:
+          pipeline_id_lims:
+            type: :string
+            value: "test value" # TODO - change once known
+          tag_identifier:
+            type: :model
+            value: tags.first.id
+          tag_sequence:
+            type: :model
+            value: tags.first.oligo
+          tag_set_id_lims: 
+            type: :model
+            value: tags.first.tag_set.id
+          tag_set_name:
+            type: :model
+            value: tags.first.tag_set.name
+          tag2_identifier: &nil
+            type: :nil
+          tag2_sequence: *nil
+          tag2_set_id_lims: *nil
+          tag2_set_name: *nil
+          
+          # TODO - add the below fields when we know which values to use:
           # library_preparation_type:
-          # tag_identifier:
-          # tag_sequence:
-          # tag_set_id_lims:
-          # tag_set_name:
-          # tag2_identifier:
-          # tag2_sequence:
-          # tag2_set_id_lims:
-          # tag2_set_name:
+          # requested_data_type:
+
 
 
 development:

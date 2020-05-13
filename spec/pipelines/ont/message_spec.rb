@@ -4,7 +4,7 @@ RSpec.describe 'Ont', type: :model, ont: true do
 
   let(:config)            { Pipelines.configure(Pipelines.load_yaml) }
   let(:pipeline_config)   { config.ont.covid }
-  let(:request)           { create(:ont_request, library: create(:ont_flowcell).library) }
+  let(:request)           { create(:ont_request_with_tags, tags_count: 1, library: create(:ont_flowcell).library) }
   let(:message)           { Messages::Message.new(object: request, configuration: pipeline_config.message) }
 
   it 'should have a lims' do
@@ -29,6 +29,10 @@ RSpec.describe 'Ont', type: :model, ont: true do
       expect(key[:last_updated]).to eq(timestamp)
     end
 
+    it 'must have an id_flowcell_lims' do
+      expect(key[:id_flowcell_lims]).to eq(request.library.flowcell.id)
+    end
+
     it 'must have a sample_uuid' do
       expect(key[:sample_uuid]).to eq(request.external_id)
     end
@@ -47,6 +51,42 @@ RSpec.describe 'Ont', type: :model, ont: true do
 
     it 'must have an instrument_slot' do
       expect(key[:instrument_slot]).to eq(request.library.flowcell.position)
+    end
+
+    it 'must have a pipeline_id_lims' do
+      expect(key[:pipeline_id_lims]).to eq("test value")
+    end
+
+    it 'must have a tag_identifier' do
+      expect(key[:tag_identifier]).to eq(request.tags.first.id)
+    end
+
+    it 'must have a tag_sequence' do
+      expect(key[:tag_sequence]).to eq(request.tags.first.oligo)
+    end
+
+    it 'must have a tag_set_id_lims' do
+      expect(key[:tag_set_id_lims]).to eq(request.tags.first.tag_set.id)
+    end
+
+    it 'must have a tag_set_id_lims' do
+      expect(key[:tag_set_name]).to eq(request.tags.first.tag_set.name)
+    end
+
+    it 'has nil tag2_identifier' do
+      expect(key[:tag2_identifier]).to be_nil
+    end
+
+    it 'has nil tag2_sequence' do
+      expect(key[:tag2_sequence]).to be_nil
+    end
+
+    it 'has nil tag2_set_id_lims' do
+      expect(key[:tag2_set_id_lims]).to be_nil
+    end
+
+    it 'has nil tag2_set_name' do
+      expect(key[:tag2_set_name]).to be_nil
     end
   end
 end
