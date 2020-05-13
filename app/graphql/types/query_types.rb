@@ -37,10 +37,19 @@ module Types
 
     # Ont::Libraries
 
-    field :ont_libraries, [Types::Outputs::Ont::LibraryType], 'Find all Ont Libraries.', null: false
+    field :ont_libraries, [Types::Outputs::Ont::LibraryType], 'Find all Ont Libraries.',
+          null: false do
+      desc = "Whether to only include libraries that haven't been loaded into flowcells yet.  " \
+             'Default: false.'
+      argument :unassigned_to_flowcells, Boolean, desc, required: false
+    end
 
-    def ont_libraries
-      Ont::Library.all
+    def ont_libraries(unassigned_to_flowcells: false)
+      if unassigned_to_flowcells
+        Ont::Library.left_outer_joins(:flowcell).where(ont_flowcells: { id: nil })
+      else
+        Ont::Library.all
+      end
     end
   end
 end
