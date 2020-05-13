@@ -7,10 +7,11 @@ module Ont
   class RunFactory
     include ActiveModel::Model
 
-    validate :check_run, :check_flowcell_factory
+    validate :check_run
 
-    def initialize(flowcell_specs = [])
-      build_run(flowcell_specs)
+    def initialize(flowcell_specs = [], run = nil)
+      @run = run || Ont::Run.new
+      build_flowcells(flowcell_specs)
     end
 
     attr_reader :run
@@ -19,33 +20,27 @@ module Ont
       return false unless options[:validate] == false || valid?
 
       run.save(validate: false)
-      flowcell_factory.save(validate: false)
       true
     end
 
     private
 
-    attr_reader :flowcell_factory
-
-    def build_run(flowcell_specs)
-      @run = Ont::Run.new
-      @flowcell_factory = FlowcellFactory.new(run: run, flowcell_specs: flowcell_specs)
+    def build_flowcells(flowcell_specs)
+      flowcell_specs.each do |flowcell_spec|
+        # The flowcell requires a library, so if a library does not exist
+        # the flowcell, and therefore factory, will be invalid.
+        library = Ont::Library.find_by(name: flowcell_spec[:library_name])
+        run.flowcells << Ont::Flowcell.new(position: flowcell_spec[:position],
+                                           run: run, library: library)
+      end
     end
 
     def check_run
       errors.add('run', 'was not created') if run.nil?
 
-      return if @run.valid?
+      return if run.valid?
 
       run.errors.each do |k, v|
-        errors.add(k, v)
-      end
-    end
-
-    def check_flowcell_factory
-      return if flowcell_factory.valid?
-
-      flowcell_factory.errors.each do |k, v|
         errors.add(k, v)
       end
     end

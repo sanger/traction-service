@@ -40,9 +40,9 @@ module Mutations
       run.flowcells = []
 
       # Create new flowcells and attempt to save them
-      factory = Ont::FlowcellFactory.new(run: run, flowcell_specs: flowcell_specs)
+      factory = Ont::RunFactory.new(flowcell_specs, run)
 
-      return factory.errors.full_messages unless factory.save && run.save
+      return factory.errors.full_messages unless factory.save
 
       # Destroy the old flowcells
       old_flowcells.each(&:destroy)
