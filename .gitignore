@@ -37,3 +37,6 @@ release.tar.gz
 
 .yardoc/
 doc/
+
+# Ignore GraphQL documentation build artefacts
+.sass-cache/
