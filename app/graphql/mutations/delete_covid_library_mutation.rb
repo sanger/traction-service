@@ -16,9 +16,10 @@ module Mutations
         { success: false, errors: ["Library with name '#{library_name}' does not exist"] }
       elsif !library.flowcell.nil?
         { success: false, errors: ['Cannot delete a library that is used in a run'] }
-      elsif library.destroy
-        { success: true, errors: [] }
       else
+        Tube.destroy_by(barcode: library.tube_barcode)
+        return { success: true, errors: [] } if library.destroy
+
         { success: false, errors: flowcell.errors.full_messages }
       end
     end
