@@ -30,13 +30,6 @@ module TractionGraphQL
   SchemaPath = File.join('lib', 'graphql_schema.json')
   Schema = GraphQL::Client.load_schema(SchemaPath)
   Client = GraphQL::Client.new(schema: Schema, execute: HTTP)
-
-  def self.dump_schema
-    GraphQL::Client.dump_schema(HTTP, SchemaPath)
-    true
-  rescue Errno::ECONNREFUSED
-    false
-  end
 end
 
 # A set of GraphQL queries for creating ONT plates

@@ -5,7 +5,8 @@ module Types
     module Ont
       # The input arguments for Ont libraries.
       class LibraryCreationArgumentsInputType < BaseInputObject
-        argument :plate_barcode, String, required: false
+        argument :plate_barcode, String, 'The barcode of the plate to create libraries from.',
+                 required: false
       end
     end
   end

@@ -5,8 +5,8 @@ module Types
     module Ont
       # The type for Ont::Request objects.
       class RequestType < CommonOutputObject
-        field :name, String, null: false
-        field :external_id, String, null: false
+        field :name, String, 'The name of the sample in this request.', null: false
+        field :external_id, String, 'The external ID of the sample in this request.', null: false
       end
     end
   end
