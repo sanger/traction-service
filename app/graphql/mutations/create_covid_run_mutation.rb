@@ -15,6 +15,9 @@ module Mutations
       factory = Ont::RunFactory.new(flowcells.to_a)
 
       if factory.save
+        factory.run.flowcells.each do |flowcell|
+          Messages.publish(flowcell.library.requests, Pipelines.ont.covid.message)
+        end
         { run: factory.run, errors: [] }
       else
         { run: nil, errors: factory.errors.full_messages }
