@@ -5,23 +5,15 @@ RSpec.describe Pipelines::ConstantsAccessor, type: :model do
     let(:constants_accessor) {
       Pipelines::ConstantsAccessor.new(
         Class.new do
-          def external_study_id
-            'test study id'
-          end
-
-          def species
-            'test species'
+          def pcr_tag_set_name
+            'test tag set name'
           end
         end.new
       )
     }
 
-    it 'will return the external study id' do
-      expect(constants_accessor.external_study_id).to eq('test study id')
-    end
-
-    it 'will return the species' do
-      expect(constants_accessor.species).to eq('test species')
+    it 'will return the pcr tag set name' do
+      expect(constants_accessor.pcr_tag_set_name).to eq('test tag set name')
     end
   end
 end

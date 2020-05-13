@@ -7,12 +7,8 @@ module Pipelines
       @constants_base = base
     end
 
-    def external_study_id
-      @constants_base.external_study_id
-    end
-
-    def species
-      @constants_base.species
+    def pcr_tag_set_name
+      @constants_base.pcr_tag_set_name
     end
   end
 end
