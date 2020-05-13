@@ -29,7 +29,7 @@ module Mutations
     private
 
     def update_run_state(run, state)
-      run.update(state: properties.state) unless state.nil?
+      run.update(state: state) unless state.nil?
     end
 
     def update_run_flowcells(run, flowcell_specs)
@@ -37,11 +37,12 @@ module Mutations
 
       # Get an array of the pre-existing flowcells for the run
       old_flowcells = run.flowcells.clone
+      run.flowcells = []
 
       # Create new flowcells and attempt to save them
       factory = Ont::FlowcellFactory.new(run: run, flowcell_specs: flowcell_specs)
 
-      return factory.errors.full_messages unless factory.save
+      return factory.errors.full_messages unless factory.save && run.save
 
       # Destroy the old flowcells
       old_flowcells.each(&:destroy)
