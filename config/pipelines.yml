@@ -205,6 +205,7 @@ default: &default
           instrument_slot:
             type: :model
             value: library.flowcell.position
+          # TODO - add the below fields when we know what values to use
           # pipeline_id_lims:
           # library_preparation_type:
           # tag_identifier:
