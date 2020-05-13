@@ -23,6 +23,17 @@ ActiveRecord::Schema.define(version: 2020_05_11_095257) do
     t.index ["material_type", "material_id"], name: "index_container_materials_on_material_type_and_material_id"
   end
 
+  create_table "ont_flowcells", force: :cascade do |t|
+    t.integer "position"
+    t.string "uuid"
+    t.integer "ont_run_id"
+    t.integer "ont_library_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["ont_library_id"], name: "index_ont_flowcells_on_ont_library_id"
+    t.index ["ont_run_id"], name: "index_ont_flowcells_on_ont_run_id"
+  end
+
   create_table "ont_libraries", force: :cascade do |t|
     t.string "name"
     t.integer "pool"
@@ -38,6 +49,13 @@ ActiveRecord::Schema.define(version: 2020_05_11_095257) do
     t.string "name"
     t.string "external_id"
     t.index ["ont_library_id"], name: "index_ont_requests_on_ont_library_id"
+  end
+
+  create_table "ont_runs", force: :cascade do |t|
+    t.integer "state", default: 0
+    t.datetime "deactivated_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "pacbio_libraries", force: :cascade do |t|

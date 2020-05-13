@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Ont::PlateFactory, type: :model, ont: true do
+RSpec.describe Ont::LibraryFactory, type: :model, ont: true do
   let!(:plate) { create(:plate_with_tagged_ont_requests, row_count: 3, column_count: 3) }
 
   context '#initialise' do
