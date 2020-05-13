@@ -182,6 +182,7 @@ default: &default
           populate_on_row_type: :sample
   ont: 
     covid:
+      pcr_tag_set_name: "OntWell96Samples"
       message:
         lims: *lims
         key: oseq_flowcell
@@ -229,8 +230,6 @@ default: &default
           # TODO - add the below fields when we know which values to use:
           # library_preparation_type:
           # requested_data_type:
-
-
 
 development:
   <<: *default

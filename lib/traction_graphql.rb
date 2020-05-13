@@ -30,13 +30,6 @@ module TractionGraphQL
   SchemaPath = File.join('lib', 'graphql_schema.json')
   Schema = GraphQL::Client.load_schema(SchemaPath)
   Client = GraphQL::Client.new(schema: Schema, execute: HTTP)
-
-  def self.dump_schema
-    GraphQL::Client.dump_schema(HTTP, SchemaPath)
-    true
-  rescue Errno::ECONNREFUSED
-    false
-  end
 end
 
 # A set of GraphQL queries for creating ONT plates
@@ -90,4 +83,32 @@ module OntLibraries
       { errors }
     }
   GRAPHQL
+end
+
+# A set of GraphQL queries for creating ONT runs
+module OntRuns
+  CreateRun = TractionGraphQL::Client.parse <<~GRAPHQL
+    mutation($flowcells: [FlowcellInput!]!) {
+      createCovidRun( input: { flowcells: $flowcells } )
+      { errors }
+    }
+  GRAPHQL
+
+  # Methods to create variable objects for GraphQL
+  class Variables
+    def flowcells(library_names:)
+      library_names.each_with_index.map do |library_name, idx|
+        flowcell library_name: library_name, position: idx + 1
+      end
+    end
+
+    private
+
+    def flowcell(library_name:, position:)
+      {
+        'libraryName' => library_name,
+        'position' => position
+      }
+    end
+  end
 end

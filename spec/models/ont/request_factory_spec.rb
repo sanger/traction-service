@@ -1,8 +1,17 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Ont::RequestFactory, type: :model, ont: true do
   let(:well) { create(:well) }
-  let(:tag_set) { create(:tag_set_with_tags, name: 'OntWell96Samples') }
+  let(:tag_set_name) { 'OntWell96Samples' }
+  let(:tag_set) { create(:tag_set_with_tags, name: tag_set_name) }
+
+  before do
+    allow_any_instance_of(Pipelines::ConstantsAccessor)
+      .to receive(:pcr_tag_set_name)
+      .and_return(tag_set_name)
+  end
 
   context '#initialise' do
     it 'is not valid if given no well' do
