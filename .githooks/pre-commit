@@ -3,14 +3,11 @@
 # frozen_string_literal: true
 
 changed_files = `git status --porcelain`.split(/\n/)
-unstaged_files = `git ls-files -m`.split(/\n/)
 
-changed_files = changed_files.map do |file|
-  /^\s*[AM]+\s+(?<filename>.+)$/ =~ file # Find added or removed files
+staged_files = changed_files.map do |file|
+  /^[AM].\s(?<filename>.+)$/ =~ file # Find added or modified files that are staged
   filename
 end.compact
-
-staged_files = changed_files - unstaged_files
 
 staged_ruby_files = staged_files.select do |file_name|
   file_extension = File.extname(file_name)
