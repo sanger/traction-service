@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+changed_files = `git status --porcelain`.split(/\n/)
+unstaged_files = `git ls-files -m`.split(/\n/)
+
+changed_files = changed_files.map do |file|
+  /^\s*[AM]+\s+(?<filename>.+)$/ =~ file # Find added or removed files
+  filename
+end.compact
+
+staged_files = changed_files - unstaged_files
+
+staged_ruby_files = staged_files.select do |file_name|
+  file_extension = File.extname(file_name)
+  file_extension == '.rb' || file_extension == '.rake'
+end
+
+exit(0) if staged_ruby_files.empty?
+
+success = system(%(rubocop #{staged_ruby_files.join(' ')}))
+
+exit(0) if success
+
+puts 'Rubocop generated warnings on added/modified files.  Commit hook failed.'
+exit(1)
