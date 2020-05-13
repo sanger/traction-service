@@ -52,7 +52,6 @@ ActiveRecord::Schema.define(version: 2020_05_11_095257) do
   end
 
   create_table "ont_runs", force: :cascade do |t|
-    t.string "instrument_name"
     t.integer "state", default: 0
     t.datetime "deactivated_at"
     t.datetime "created_at", precision: 6, null: false

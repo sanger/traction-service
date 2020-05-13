@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Mutations
-  # Mutation to handle the update of a Well.
+  # Mutation to create ONT libraries from a plate.
   class CreateCovidLibrariesMutation < BaseMutation
     argument :arguments, Types::Inputs::Ont::LibraryCreationArgumentsInputType, required: true
 
