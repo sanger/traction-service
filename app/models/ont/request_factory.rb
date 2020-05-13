@@ -42,7 +42,11 @@ module Ont
       @ont_request = Ont::Request.new(external_id: request_attributes[:external_id],
                                       name: request_attributes[:name])
       @tag_taggable = ::TagTaggable.new(taggable: ont_request, tag: tag)
-      @well_request_join = ::ContainerMaterial.new(container: well, material: ont_request)
+      add_to_well(ont_request)
+    end
+
+    def add_to_well(material)
+      @well_request_join = ::ContainerMaterial.new(container: well, material: material)
     end
 
     def check_ont_request
