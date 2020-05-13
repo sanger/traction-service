@@ -19,6 +19,7 @@ namespace :graphql do
       puts '-> Generating GraphQL documentation from the saved schema.'
       puts '   If the schema is out of date, run rake task graphql:schema:dump first.'
       GraphQLDocs.build(filename: File.join(options[:directory], options[:idl_outfile]),
+                        delete_output: true,
                         base_url: '/v2/docs',
                         output_dir: './app/views/graphql')
       puts '-> Finished generating GraphQL documentation.  View it at served path v2/docs/.'
