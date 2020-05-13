@@ -36,7 +36,8 @@ module Ont
     attr_reader :tag_taggable, :well, :well_request_join
 
     def build_request(request_attributes)
-      tag_set_id = TagSet.find_by(name: 'OntWell96Samples')
+      constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
+      tag_set_id = TagSet.find_by(name: constants_accessor.pcr_tag_set_name)
       tag = ::Tag.find_by(tag_set_id: tag_set_id, oligo: request_attributes[:tag_oligo])
       @ont_request = Ont::Request.new(external_id: request_attributes[:external_id],
                                       name: request_attributes[:name])
