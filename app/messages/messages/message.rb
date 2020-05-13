@@ -52,6 +52,7 @@ module Messages
     # * [constant]  - Takes the constant and applies the method chain
     #                 to it e.g DateTime.now
     # * [array]     - usually an array of fields
+    # rubocop:disable Metrics/MethodLength
     def instance_value(object, field)
       case field[:type]
       when :string
@@ -67,6 +68,7 @@ module Messages
         nil
       end
     end
+    # rubocop:enable Metrics/MethodLength
 
     # we need to do this via try as certain fields may be nil
     def evaluate_method_chain(object, chain)
