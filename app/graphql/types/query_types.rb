@@ -51,5 +51,13 @@ module Types
         Ont::Library.all
       end
     end
+
+    # Ont::Runs
+
+    field :ont_runs, [Types::Outputs::Ont::RunType], 'Find all Ont Runs.', null: false
+
+    def ont_runs
+      Ont::Run.all
+    end
   end
 end
