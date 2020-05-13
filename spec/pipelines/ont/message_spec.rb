@@ -48,19 +48,5 @@ RSpec.describe 'Ont', type: :model, ont: true do
     it 'must have an instrument_slot' do
       expect(key[:instrument_slot]).to eq(request.library.flowcell.position)
     end
-
-    # TODO: test for the below when added to yaml
-    # pipeline_id_lims:
-    # library_preparation_type:
-    # tag_identifier:
-    # tag_sequence:
-    # tag_set_id_lims:
-    # tag_set_name:
-    # tag2_identifier:
-    # tag2_sequence:
-    # tag2_set_id_lims:
-    # tag2_set_name:
-
   end
-
 end
