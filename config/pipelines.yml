@@ -186,7 +186,7 @@ default: &default
         lims: *lims
         key: ont_request
         fields:
-          updated_at: *timestamp
+          last_updated: *timestamp
           id_flowcell_lims:
             type: :model
             value: library.flowcell.id
