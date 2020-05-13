@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "rails_helper"
+require 'rails_helper'
 
 RSpec.describe 'GraphQL', type: :request do
-  let(:run_factory) { instance_double("Ont::RunFactory") }
+  let(:run_factory) { instance_double('Ont::RunFactory') }
 
   before do
     allow(Ont::RunFactory).to receive(:new).and_return(run_factory)
@@ -12,16 +12,16 @@ RSpec.describe 'GraphQL', type: :request do
   context 'create run' do
     def valid_query
       <<~GQL
-      mutation {
-        createCovidRun(
-          input: {
-            flowcells: []
+        mutation {
+          createCovidRun(
+            input: {
+              flowcells: []
+            }
+          ) {
+            run { id state flowcells { position library { name } } }
+            errors
           }
-        ) {
-          run { id state flowcells { position library { name } } }
-          errors
         }
-      }
       GQL
     end
 
@@ -38,12 +38,12 @@ RSpec.describe 'GraphQL', type: :request do
       mutation_json = json['data']['createCovidRun']
       run_json = mutation_json['run']
       expect(run_json['id']).to eq(run.id.to_s)
-      expect(run_json['state']).to eq(run.state)
+      expect(run_json['state']).to eq(run.state.upcase)
 
       flowcell_json = run_json['flowcells']
       expect(flowcell_json.count).to eq(run.flowcells.count)
       expect(flowcell_json.map { |fc| fc['position'] })
-        .to match_array(run.flowcells.map { |fc| fc.position })
+        .to match_array(run.flowcells.map(&:position))
 
       expect(flowcell_json.map { |fc| fc['library']['name'] })
         .to match_array(run.flowcells.map { |fc| fc.library.name })
@@ -52,7 +52,7 @@ RSpec.describe 'GraphQL', type: :request do
     it 'responds with errors provided by the run factory' do
       errors = Class.new do
         def full_messages
-          [ 'test error' ]
+          ['test error']
         end
       end.new
 
