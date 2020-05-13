@@ -184,7 +184,7 @@ default: &default
     covid:
       message:
         lims: *lims
-        key: ont_request
+        key: oseq_flowcell
         fields:
           last_updated: *timestamp
           id_flowcell_lims:
