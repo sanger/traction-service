@@ -7,7 +7,7 @@ module Types
       field :position, String, 'The description of the position for this well on the plate.',
             null: false
       field :plate_id, ID, 'The ID of the plate this well belongs to.', null: false
-      field :materials, [MaterialUnionType], 'The material contained within this well.', null: true
+      field :materials, [MaterialUnionType], 'The materials contained within this well.', null: true
     end
   end
 end
