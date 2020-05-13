@@ -25,8 +25,8 @@ RSpec.describe 'Ont', type: :model, ont: true do
       allow(Time).to receive(:current).and_return timestamp
     end
 
-    it 'must have a updated_at field' do
-      expect(key[:updated_at]).to eq(timestamp)
+    it 'must have a last_updated field' do
+      expect(key[:last_updated]).to eq(timestamp)
     end
 
     it 'must have a sample_uuid' do
