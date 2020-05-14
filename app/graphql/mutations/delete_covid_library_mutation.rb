@@ -10,22 +10,22 @@ module Mutations
           null: false
 
     def resolve(library_name:)
-      library = Ont::Library.find_by(library_name: library_name)
+      library = Ont::Library.find_by(name: library_name)
 
       if library.nil?
         { success: false, errors: ["Library with name '#{library_name}' does not exist"] }
       elsif !library.flowcell.nil?
         { success: false, errors: ['Cannot delete a library that is used in a run'] }
       else
-        tube = tube.find_by(barcode: library.tube_barcode)
+        tube = Tube.find_by(barcode: library.tube_barcode)
         ActiveRecord::Base.transaction do
-          tube.destroy!
+          tube&.destroy!
           library.destroy!
         end
         { success: true, errors: [] }
       end
-    rescue ActiveRecord::RecordNotDestroyed
-      { success: false, errors: library.errors.full_messages + tube.errors.full_messages }
+    rescue ActiveRecord::RecordNotDestroyed => e
+      { success: false, errors: [e.message] }
     end
   end
 end
