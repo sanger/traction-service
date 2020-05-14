@@ -73,20 +73,20 @@ RSpec.describe 'Ont', type: :model, ont: true do
       expect(key[:tag_set_name]).to eq(request.tags.first.tag_set.name)
     end
 
-    it 'has nil tag2_identifier' do
-      expect(key[:tag2_identifier]).to be_nil
+    it 'must have a tag2_identifier' do
+      expect(key[:tag2_identifier]).to eq("")
     end
 
-    it 'has nil tag2_sequence' do
-      expect(key[:tag2_sequence]).to be_nil
+    it 'must have a tag2_sequence' do
+      expect(key[:tag2_sequence]).to eq("")
     end
 
-    it 'has nil tag2_set_id_lims' do
-      expect(key[:tag2_set_id_lims]).to be_nil
+    it 'must have a tag2_set_id_lims' do
+      expect(key[:tag2_set_id_lims]).to eq("")
     end
 
-    it 'has nil tag2_set_name' do
-      expect(key[:tag2_set_name]).to be_nil
+    it 'must have a tag2_set_name' do
+      expect(key[:tag2_set_name]).to eq("")
     end
   end
 end
