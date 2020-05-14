@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="description" content="SampleInput GraphQL documentation">
+    <meta name="description" content="Flowcell GraphQL documentation">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>SampleInput</title>
+    <title>Flowcell</title>
     <link rel="stylesheet" href="/v2/docs/assets/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
     <script>
@@ -406,25 +406,43 @@
       <div id="content">
 
         <h1>
-<a id="sampleinput" class="anchor" href="#sampleinput" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SampleInput</h1>
+<a id="flowcell" class="anchor" href="#flowcell" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Flowcell</h1>
 <h2>
-<a id="input-fields" class="anchor" href="#input-fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Input Fields</h2>
+<a id="fields" class="anchor" href="#fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fields</h2>
 <div class="field-entry ">
-  <span id="externalid" class="field-name anchored">externalId (<code><a href="/v2/docs/scalar/string">String</a></code>)</span>
+  <span id="createdat" class="field-name anchored">createdAt (<code><a href="/v2/docs/scalar/string">String!</a></code>)</span>
   <div class="description-wrapper">
-   <p>The external ID for the sample.</p>
+   <p>The time this object was created.</p>
   </div>
 </div>
 <div class="field-entry ">
-  <span id="name" class="field-name anchored">name (<code><a href="/v2/docs/scalar/string">String</a></code>)</span>
+  <span id="id" class="field-name anchored">id (<code><a href="/v2/docs/scalar/id">ID!</a></code>)</span>
   <div class="description-wrapper">
-   <p>The name of the sample.</p>
+   <p>The unique database ID of this object.</p>
   </div>
 </div>
 <div class="field-entry ">
-  <span id="tagoligo" class="field-name anchored">tagOligo (<code><a href="/v2/docs/scalar/string">String</a></code>)</span>
+  <span id="library" class="field-name anchored">library (<code><a href="/v2/docs/object/library">Library!</a></code>)</span>
   <div class="description-wrapper">
-   <p>The oligo sequence used to tag the sample.</p>
+   <p>The library loaded onto this flowcell.</p>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="position" class="field-name anchored">position (<code><a href="/v2/docs/scalar/int">Int!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>The numerical position of this flowcell in the GriION machine.</p>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="updatedat" class="field-name anchored">updatedAt (<code><a href="/v2/docs/scalar/string">String!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>The time this object was last updated.</p>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="uuid" class="field-name anchored">uuid (<code><a href="/v2/docs/scalar/string">String!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>The UUID of this flowcell.</p>
   </div>
 </div>
 
