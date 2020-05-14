@@ -11,6 +11,7 @@ module Ont
 
     def initialize(flowcell_specs = [], run = nil)
       @run = run || Ont::Run.new
+      @old_flowcells = @run.flowcells.to_a
       build_flowcells(flowcell_specs)
     end
 
@@ -20,10 +21,13 @@ module Ont
       return false unless options[:validate] == false || valid?
 
       run.save(validate: false)
+      old_flowcells.each(&:destroy)
       true
     end
 
     private
+
+    attr_reader :old_flowcells
 
     def build_flowcells(flowcell_specs)
       run.flowcells.clear
