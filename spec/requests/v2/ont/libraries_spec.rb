@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "rails_helper"
+require 'rails_helper'
 
 RSpec.describe 'GraphQL', type: :request do
   context 'get libraries' do
@@ -14,12 +14,14 @@ RSpec.describe 'GraphQL', type: :request do
     it 'returns single library when one exists' do
       create(:ont_library)
       allow_any_instance_of(Ont::Library).to receive(:tube_barcode).and_return('test tube barcode')
-      post v2_path, params: { query: '{ ontLibraries { name plateBarcode pool poolSize tubeBarcode } }' }
+      post v2_path, params: { query:
+        '{ ontLibraries { name plateBarcode pool poolSize tubeBarcode } }' }
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data']['ontLibraries']).to contain_exactly(
         { 'name' => 'PLATE-1-123456-2', 'plateBarcode' => 'PLATE-1-123456', 'pool' => 2,
-          'poolSize' => 24, 'tubeBarcode' => 'test tube barcode'})
+          'poolSize' => 24, 'tubeBarcode' => 'test tube barcode' }
+      )
     end
 
     it 'returns all libraries when many exist' do
@@ -29,29 +31,48 @@ RSpec.describe 'GraphQL', type: :request do
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data']['ontLibraries'].length).to eq(3)
     end
+
+    it 'returns all libraries when many exist and some are loaded in a flowcell' do
+      create_list(:ont_library, 3)
+      run = create(:ont_run)
+      post v2_path, params: { query: '{ ontLibraries { id } }' }
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data']['ontLibraries'].length).to eq(3 + run.flowcells.count)
+    end
+
+    it 'returns only unassigned libraries when many exist and some are loaded in a flowcell' do
+      create_list(:ont_library, 3)
+      run = create(:ont_run)
+      post v2_path, params: { query: '{ ontLibraries(unassignedToFlowcells: true) { id } }' }
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(run.flowcells.count).to be > 0
+      expect(json['data']['ontLibraries'].length).to eq(3)
+    end
   end
 
   context 'create libraries' do
     def valid_query
       <<~GQL
-      mutation {
-        createCovidLibraries(
-          input: {
-            arguments: {
-              plateBarcode: "PLATE-1234"
+        mutation {
+          createCovidLibraries(
+            input: {
+              arguments: {
+                plateBarcode: "PLATE-1234"
+              }
             }
+          )
+          {
+            tubes { barcode materials { ... on Library { name pool poolSize } } }
+            errors
           }
-        )
-        {
-          tubes { barcode materials { ... on Library { name pool poolSize } } }
-          errors
         }
-      }
       GQL
     end
 
     it 'creates tubes with libraries with provided parameters' do
-      libraries = create(:ont_library_in_tube)
+      create(:ont_library_in_tube)
 
       allow_any_instance_of(Ont::LibraryFactory).to receive(:save).and_return(true)
       allow_any_instance_of(Ont::LibraryFactory).to receive(:tube).and_return(Tube.first)
@@ -84,7 +105,9 @@ RSpec.describe 'GraphQL', type: :request do
 
       mutation_json = json['data']['createCovidLibraries']
       expect(mutation_json['tubes']).to be_nil
-      expect(mutation_json['errors']).to contain_exactly('Libraries {:message=>"This is a test error"}')
+      expect(mutation_json['errors']).to contain_exactly(
+        'Libraries {:message=>"This is a test error"}'
+      )
     end
 
     def missing_required_fields_query
