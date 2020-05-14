@@ -12,16 +12,15 @@ RSpec.describe 'GraphQL', type: :request do
     end
 
     it 'returns single library when one exists' do
-      create(:ont_library)
+      library = create(:ont_library)
       allow_any_instance_of(Ont::Library).to receive(:tube_barcode).and_return('test tube barcode')
       post v2_path, params: { query:
         '{ ontLibraries { name plateBarcode pool poolSize tubeBarcode } }' }
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data']['ontLibraries']).to contain_exactly(
-        { 'name' => 'PLATE-1-123456-2', 'plateBarcode' => 'PLATE-1-123456', 'pool' => 2,
-          'poolSize' => 24, 'tubeBarcode' => 'test tube barcode' }
-      )
+        { 'name' => library.name, 'plateBarcode' => library.plate_barcode, 'pool' => library.pool,
+          'poolSize' => 24, 'tubeBarcode' => 'test tube barcode'})
     end
 
     it 'returns all libraries when many exist' do
@@ -72,7 +71,7 @@ RSpec.describe 'GraphQL', type: :request do
     end
 
     it 'creates tubes with libraries with provided parameters' do
-      create(:ont_library_in_tube)
+      library = create(:ont_library_in_tube)
 
       allow_any_instance_of(Ont::LibraryFactory).to receive(:save).and_return(true)
       allow_any_instance_of(Ont::LibraryFactory).to receive(:tube).and_return(Tube.first)
@@ -86,7 +85,7 @@ RSpec.describe 'GraphQL', type: :request do
 
       expect(tubes_json[0]['barcode']).to be_present
       expect(tubes_json[0]['materials']).to contain_exactly(
-        { 'name' => 'PLATE-1-123456-2', 'pool' => 2, 'poolSize' => 24 }
+        { 'name' => library.name, 'pool' => library.pool, 'poolSize' => 24 }
       )
 
       expect(mutation_json['errors']).to be_empty
