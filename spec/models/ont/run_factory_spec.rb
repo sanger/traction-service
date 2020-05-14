@@ -21,21 +21,72 @@ RSpec.describe Ont::RunFactory, type: :model, ont: true do
       factory = Ont::RunFactory.new([{ position: 1, library_name: 'PLATE-2-1234-2' }])
       expect(factory).to_not be_valid
     end
+
+    context 'with valid flowcell specs' do
+      let(:library) { create(:ont_library) }
+
+      it 'is a valid factory when no existing run provided' do
+        factory = Ont::RunFactory.new([{ position: 1, library_name: library.name }])
+        expect(factory).to be_valid
+      end
+
+      it 'is a valid factory when an existing run is provided' do
+        run = create(:ont_run)
+        factory = Ont::RunFactory.new([{ position: 1, library_name: library.name }], run)
+        expect(factory).to be_valid
+      end
+
+      it 'updates an existing run with new flowcells' do
+        run = create(:ont_run)
+        existing_flowcell_ids = run.flowcells.map(&:id)
+        Ont::RunFactory.new([{ position: 1, library_name: library.name }], run)
+        new_flowcell_ids = run.flowcells.map(&:id)
+        expect(new_flowcell_ids - existing_flowcell_ids).to match_array(new_flowcell_ids)
+      end
+    end
   end
 
   context '#save' do
     context 'valid build' do
       context 'with no flowcells' do
-        it 'creates a run' do
-          factory = Ont::RunFactory.new([])
-          factory.save
-          expect(Ont::Run.count).to eq(1)
+        context 'with no existing run supplied' do
+          it 'creates a run' do
+            factory = Ont::RunFactory.new([])
+            factory.save
+            expect(Ont::Run.count).to eq(1)
+          end
+
+          it 'creates no flowcells' do
+            factory = Ont::RunFactory.new([])
+            factory.save
+            expect(Ont::Flowcell.count).to eq(0)
+          end
         end
 
-        it 'creates no flowcells' do
-          factory = Ont::RunFactory.new([])
-          factory.save
-          expect(Ont::Flowcell.count).to eq(0)
+        context 'with existing run supplied' do
+          let(:run) { create(:ont_run) }
+
+          it 'saves the existing run' do
+            expect(run).to receive(:save)
+            factory = Ont::RunFactory.new([], run)
+            factory.save
+            expect(Ont::Run.count).to eq(1)
+          end
+
+          it "replaces the run's flowcells with none" do
+            expect(run.flowcells.count).to be > 0
+            factory = Ont::RunFactory.new([], run)
+            factory.save
+            expect(run.flowcells.count).to eq(0)
+          end
+
+          it 'destroys the old flowcells' do
+            run.flowcells.each do |fc|
+              expect(fc).to receive(:destroy)
+            end
+            factory = Ont::RunFactory.new([], run)
+            factory.save
+          end
         end
 
         context 'validates' do
@@ -90,27 +141,70 @@ RSpec.describe Ont::RunFactory, type: :model, ont: true do
           end
         end
 
-        it 'creates a run' do
-          factory = Ont::RunFactory.new(attributes)
-          factory.save
-          expect(Ont::Run.count).to eq(1)
+        context 'with no existing run supplied' do
+          it 'creates a run' do
+            factory = Ont::RunFactory.new(attributes)
+            factory.save
+            expect(Ont::Run.count).to eq(1)
+          end
+
+          it 'creates expected flowcells' do
+            factory = Ont::RunFactory.new(attributes)
+            factory.save
+            expect(Ont::Flowcell.count).to eq(3)
+            expect(Ont::Flowcell.all.map(&:run)).to all(eq(Ont::Run.first))
+
+            expect(Ont::Flowcell.first.position).to eq(1)
+            expect(Ont::Flowcell.first.library)
+              .to eq(Ont::Library.find_by(name: libraries.first.name))
+            expect(Ont::Flowcell.second.position).to eq(2)
+            expect(Ont::Flowcell.second.library)
+              .to eq(Ont::Library.find_by(name: libraries.second.name))
+            expect(Ont::Flowcell.third.position).to eq(3)
+            expect(Ont::Flowcell.third.library)
+              .to eq(Ont::Library.find_by(name: libraries.third.name))
+          end
         end
 
-        it 'creates expected flowcells' do
-          factory = Ont::RunFactory.new(attributes)
-          factory.save
-          expect(Ont::Flowcell.count).to eq(3)
-          expect(Ont::Flowcell.all.map(&:run)).to all(eq(Ont::Run.first))
+        context 'with existing run supplied' do
+          let(:run) { create(:ont_run) }
 
-          expect(Ont::Flowcell.first.position).to eq(1)
-          expect(Ont::Flowcell.first.library)
-            .to eq(Ont::Library.find_by(name: libraries.first.name))
-          expect(Ont::Flowcell.second.position).to eq(2)
-          expect(Ont::Flowcell.second.library)
-            .to eq(Ont::Library.find_by(name: libraries.second.name))
-          expect(Ont::Flowcell.third.position).to eq(3)
-          expect(Ont::Flowcell.third.library)
-            .to eq(Ont::Library.find_by(name: libraries.third.name))
+          it 'saves the existing run' do
+            expect(run).to receive(:save)
+            factory = Ont::RunFactory.new(attributes, run)
+            factory.save
+            expect(Ont::Run.count).to eq(1)
+          end
+
+          it "replaces the run's flowcells with new from attributes" do
+            initial_flowcell_ids = run.flowcells.map(&:id)
+            factory = Ont::RunFactory.new(attributes, run)
+            factory.save
+            new_flowcell_ids = run.flowcells.map(&:id)
+            expect(run.flowcells.count).to eq(3)
+            expect(new_flowcell_ids - initial_flowcell_ids).to match_array(new_flowcell_ids)
+
+            expect(Ont::Flowcell.where(id: new_flowcell_ids).map(&:run))
+              .to all(eq(run))
+
+            expect(run.flowcells.first.position).to eq(1)
+            expect(run.flowcells.first.library)
+              .to eq(Ont::Library.find_by(name: libraries.first.name))
+            expect(run.flowcells.second.position).to eq(2)
+            expect(run.flowcells.second.library)
+              .to eq(Ont::Library.find_by(name: libraries.second.name))
+            expect(run.flowcells.third.position).to eq(3)
+            expect(run.flowcells.third.library)
+              .to eq(Ont::Library.find_by(name: libraries.third.name))
+          end
+
+          it 'destroys the old flowcells' do
+            run.flowcells.each do |fc|
+              expect(fc).to receive(:destroy)
+            end
+            factory = Ont::RunFactory.new([], run)
+            factory.save
+          end
         end
 
         context 'validates' do
@@ -158,11 +252,15 @@ RSpec.describe Ont::RunFactory, type: :model, ont: true do
     end
 
     context 'invalid build' do
-      before do
+      def set_up_invalid_run
         errors = ActiveModel::Errors.new(Ont::Run.new)
         errors.add('run', message: 'This is a test error')
         allow_any_instance_of(Ont::Run).to receive(:valid?).and_return(false)
         allow_any_instance_of(Ont::Run).to receive(:errors).and_return(errors)
+      end
+
+      before do |test|
+        set_up_invalid_run unless test.metadata[:needs_valid_run]
       end
 
       it 'returns false on save' do
@@ -170,16 +268,42 @@ RSpec.describe Ont::RunFactory, type: :model, ont: true do
         expect(factory.save).to be_falsey
       end
 
-      it 'does not create any runs' do
-        factory = Ont::RunFactory.new([])
-        factory.save
-        expect(Ont::Run.count).to eq(0)
+      context 'with no existing run supplied' do
+        it 'does not create any runs' do
+          factory = Ont::RunFactory.new([])
+          factory.save
+          expect(Ont::Run.count).to eq(0)
+        end
+
+        it 'does not create any flowcells' do
+          factory = Ont::RunFactory.new([])
+          factory.save
+          expect(Ont::Flowcell.count).to eq(0)
+        end
       end
 
-      it 'does not create any flowcells' do
-        factory = Ont::RunFactory.new([])
-        factory.save
-        expect(Ont::Flowcell.count).to eq(0)
+      context 'with existing run supplied' do
+        let!(:run) { create(:ont_run) }
+
+        it 'does not save the state of the original run', :needs_valid_run do
+          expect(run).to_not receive(:save)
+
+          set_up_invalid_run # After we created a valid one above
+
+          factory = Ont::RunFactory.new([], run)
+          factory.save
+        end
+
+        it 'does not destroy the original flowcells', :needs_valid_run do
+          run.flowcells.each do |fc|
+            expect(fc).to_not receive(:destroy)
+          end
+
+          set_up_invalid_run # After we created a valid one above
+
+          factory = Ont::RunFactory.new([], run)
+          factory.save
+        end
       end
     end
   end
