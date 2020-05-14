@@ -18,7 +18,7 @@ namespace :ont_runs do
     Plate.all.each do |plate|
       plate.destroy if plate.barcode.start_with? 'DEMO-PLATE-'
     end
-    [Ont::Request, Ont::Library, Ont::Flowcell, Ont::Run].each(&:delete_all)
+    [Ont::Request, Ont::Library, Ont::Flowcell, Ont::Run].each(&:destroy_all)
     puts '-> ONT runs successfully deleted'
   end
 end
@@ -47,12 +47,14 @@ def create_plates(count:)
   puts
   puts "-> Creating #{count} ONT plates"
   variables = OntPlates::Variables.new
+  constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
 
   count.times do |i|
     plate_no = i + 1
     submit_create_plate_query(plate_no: plate_no,
                               barcode: "DEMO-PLATE-#{plate_no}",
-                              wells: variables.wells(sample_name: "for Demo Plate #{plate_no}"))
+                              wells: variables.wells(sample_name: "for Demo Plate #{plate_no}",
+                                                     constants_accessor: constants_accessor))
   end
 
   puts '-> Successfully created ONT plates'
