@@ -9,6 +9,7 @@ module Mutations
     field :errors, [String], 'An array of error messages thrown when deleting the library',
           null: false
 
+    # rubocop:disable Metrics/MethodLength
     def resolve(library_name:)
       library = Ont::Library.find_by(name: library_name)
 
@@ -27,5 +28,6 @@ module Mutations
     rescue ActiveRecord::RecordNotDestroyed => e
       { success: false, errors: [e.message] }
     end
+    # rubocop:enable Metrics/MethodLength
   end
 end
