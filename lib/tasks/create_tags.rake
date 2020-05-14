@@ -70,9 +70,9 @@ namespace :tags do
   end
 
   task destroy: :environment do
-    Tag.delete_all
+    Tag.destroy_all
     puts '-> Tags successfully deleted'
-    TagSet.delete_all
+    TagSet.destroy_all
     puts '-> Tag Sets successfully deleted'
   end
 end
