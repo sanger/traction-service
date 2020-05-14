@@ -250,11 +250,13 @@ RSpec.describe 'GraphQL', type: :request do
           library = create(:ont_library_in_tube)
           # sanity check
           expect(Tube.count).to eq(1)
+          expect(ContainerMaterial.count).to eq(1)
   
           # post and test
           post v2_path, params: { query: valid_query(library.name) }
           expect(response).to have_http_status(:success)
           expect(Tube.count).to eq(0)
+          expect(ContainerMaterial.count).to eq(0)
         end
   
         it 'returns false with errors if library deletion fails' do
@@ -282,11 +284,13 @@ RSpec.describe 'GraphQL', type: :request do
 
           # sanity check
           expect(Tube.count).to eq(1)
+          expect(ContainerMaterial.count).to eq(1)
   
           # post and test
           post v2_path, params: { query: valid_query(library.name) }
           expect(response).to have_http_status(:success)
           expect(Tube.count).to eq(1)
+          expect(ContainerMaterial.count).to eq(1)
         end
   
         it 'returns false with errors if tube deletion fails' do
