@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="description" content="Well GraphQL documentation">
+    <meta name="description" content="FlowcellInput GraphQL documentation">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Well</title>
+    <title>FlowcellInput</title>
     <link rel="stylesheet" href="/v2/docs/assets/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
     <script>
@@ -371,43 +371,19 @@
       <div id="content">
 
         <h1>
-<a id="well" class="anchor" href="#well" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Well</h1>
+<a id="flowcellinput" class="anchor" href="#flowcellinput" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>FlowcellInput</h1>
 <h2>
-<a id="fields" class="anchor" href="#fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fields</h2>
+<a id="input-fields" class="anchor" href="#input-fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Input Fields</h2>
 <div class="field-entry ">
-  <span id="createdat" class="field-name anchored">createdAt (<code><a href="/v2/docs/scalar/string">String!</a></code>)</span>
+  <span id="libraryname" class="field-name anchored">libraryName (<code><a href="/v2/docs/scalar/string">String</a></code>)</span>
   <div class="description-wrapper">
-   <p>The time this object was created.</p>
+   <p>The name of the library to be loaded in this flowcell.</p>
   </div>
 </div>
 <div class="field-entry ">
-  <span id="id" class="field-name anchored">id (<code><a href="/v2/docs/scalar/id">ID!</a></code>)</span>
+  <span id="position" class="field-name anchored">position (<code><a href="/v2/docs/scalar/int">Int</a></code>)</span>
   <div class="description-wrapper">
-   <p>The unique database ID of this object.</p>
-  </div>
-</div>
-<div class="field-entry ">
-  <span id="materials" class="field-name anchored">materials (<code><a href="/v2/docs/union/materialunion">[MaterialUnion!]</a></code>)</span>
-  <div class="description-wrapper">
-   <p>The materials contained within this well.</p>
-  </div>
-</div>
-<div class="field-entry ">
-  <span id="plateid" class="field-name anchored">plateId (<code><a href="/v2/docs/scalar/id">ID!</a></code>)</span>
-  <div class="description-wrapper">
-   <p>The ID of the plate this well belongs to.</p>
-  </div>
-</div>
-<div class="field-entry ">
-  <span id="position" class="field-name anchored">position (<code><a href="/v2/docs/scalar/string">String!</a></code>)</span>
-  <div class="description-wrapper">
-   <p>The description of the position for this well on the plate.</p>
-  </div>
-</div>
-<div class="field-entry ">
-  <span id="updatedat" class="field-name anchored">updatedAt (<code><a href="/v2/docs/scalar/string">String!</a></code>)</span>
-  <div class="description-wrapper">
-   <p>The time this object was last updated.</p>
+   <p>The numerical position of this flowcell in the GriION machine</p>
   </div>
 </div>
 
