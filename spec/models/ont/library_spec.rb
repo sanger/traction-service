@@ -21,6 +21,18 @@ RSpec.describe Ont::Library, type: :model do
     expect(library).to_not be_valid
   end
 
+  it 'does not delete associated requests on destroy' do
+    library = create(:ont_library)
+    num_requests = 3
+    library.requests = create_list(:ont_request, num_requests)
+    # sanity check
+    expect(Ont::Library.count).to eq(1)
+    expect(Ont::Request.count).to eq(num_requests)
+    library.destroy
+    expect(Ont::Library.count).to eq(0)
+    expect(Ont::Request.count).to eq(num_requests)
+  end
+  
   context 'library name' do
     it 'returns nil with nil plate_barcode' do
       name = Ont::Library.library_name(nil, 2)
