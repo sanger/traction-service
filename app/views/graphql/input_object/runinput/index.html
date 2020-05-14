@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="description" content="SampleInput GraphQL documentation">
+    <meta name="description" content="RunInput GraphQL documentation">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>SampleInput</title>
+    <title>RunInput</title>
     <link rel="stylesheet" href="/v2/docs/assets/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
     <script>
@@ -406,25 +406,19 @@
       <div id="content">
 
         <h1>
-<a id="sampleinput" class="anchor" href="#sampleinput" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SampleInput</h1>
+<a id="runinput" class="anchor" href="#runinput" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>RunInput</h1>
 <h2>
 <a id="input-fields" class="anchor" href="#input-fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Input Fields</h2>
 <div class="field-entry ">
-  <span id="externalid" class="field-name anchored">externalId (<code><a href="/v2/docs/scalar/string">String</a></code>)</span>
+  <span id="flowcells" class="field-name anchored">flowcells (<code><a href="/v2/docs/input_object/flowcellinput">[FlowcellInput!]</a></code>)</span>
   <div class="description-wrapper">
-   <p>The external ID for the sample.</p>
+   <p>An array of flowcells to assign to the run.</p>
   </div>
 </div>
 <div class="field-entry ">
-  <span id="name" class="field-name anchored">name (<code><a href="/v2/docs/scalar/string">String</a></code>)</span>
+  <span id="state" class="field-name anchored">state (<code><a href="/v2/docs/enum/runstateenum">RunStateEnum</a></code>)</span>
   <div class="description-wrapper">
-   <p>The name of the sample.</p>
-  </div>
-</div>
-<div class="field-entry ">
-  <span id="tagoligo" class="field-name anchored">tagOligo (<code><a href="/v2/docs/scalar/string">String</a></code>)</span>
-  <div class="description-wrapper">
-   <p>The oligo sequence used to tag the sample.</p>
+   <p>The state for the run.</p>
   </div>
 </div>
 
