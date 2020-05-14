@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :ont_library, class: 'Ont::Library' do
-    name { "PLATE-1-123456-2" }
-    pool { 2 }
+    sequence(:pool) { |n| n }
+    name { "PLATE-1-123456-#{pool}" }
     pool_size { 24 }
     
     factory :ont_library_in_tube do
