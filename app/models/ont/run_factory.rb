@@ -3,7 +3,7 @@
 # Ont namespace
 module Ont
   # RunFactory
-  # Creates a run from a list of flowcell metadata.
+  # Creates or updates a run from a list of flowcell metadata.
   class RunFactory
     include ActiveModel::Model
 
@@ -26,12 +26,13 @@ module Ont
     private
 
     def build_flowcells(flowcell_specs)
+      run.flowcells.clear
+
       flowcell_specs.each do |flowcell_spec|
         # The flowcell requires a library, so if a library does not exist
         # the flowcell, and therefore factory, will be invalid.
         library = Ont::Library.find_by(name: flowcell_spec[:library_name])
-        run.flowcells << Ont::Flowcell.new(position: flowcell_spec[:position],
-                                           run: run, library: library)
+        run.flowcells.build(position: flowcell_spec[:position], run: run, library: library)
       end
     end
 
