@@ -221,11 +221,12 @@ default: &default
           tag_set_name:
             type: :model
             value: tags.first.tag_set.name
-          tag2_identifier: &nil
-            type: :nil
-          tag2_sequence: *nil
-          tag2_set_id_lims: *nil
-          tag2_set_name: *nil
+          tag2_identifier: &empty_string
+            type: :string
+            value: ""
+          tag2_sequence: *empty_string
+          tag2_set_id_lims: *empty_string
+          tag2_set_name: *empty_string
           
           # TODO - add the below fields when we know which values to use:
           # library_preparation_type:
