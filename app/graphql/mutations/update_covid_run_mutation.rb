@@ -35,16 +35,10 @@ module Mutations
     def update_run_flowcells(run, flowcell_specs)
       return if flowcell_specs.nil? || flowcell_specs.count == 0
 
-      # Get an array of the pre-existing flowcells for the run
-      old_flowcells = run.flowcells.to_a
-
       # Create new flowcells and attempt to save them
       factory = Ont::RunFactory.new(flowcell_specs, run)
-
       return factory.errors.full_messages unless factory.save
 
-      # Destroy the old flowcells
-      old_flowcells.each(&:destroy)
       nil
     end
   end
