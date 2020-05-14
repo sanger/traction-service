@@ -10,6 +10,8 @@ module Ont
     has_one :flowcell, foreign_key: :ont_library_id, inverse_of: :library, dependent: :destroy
 
     validates :name, :pool, :pool_size, presence: true
+    validates :name, uniqueness: { case_sensitive: false,
+                                   message: 'must be unique: a pool already exists for this plate' }
 
     def self.library_name(plate_barcode, pool)
       return nil if plate_barcode.nil? || pool.nil?

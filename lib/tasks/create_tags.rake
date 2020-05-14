@@ -56,7 +56,8 @@ namespace :tags do
 
     puts
     puts '-> Creating ONT tag set for 96 sample wells'
-    tag_set = TagSet.create!(name: 'OntWell96Samples', uuid: SecureRandom.uuid)
+    constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
+    tag_set = TagSet.create!(name: constants_accessor.pcr_tag_set_name, uuid: SecureRandom.uuid)
     puts '-> Tag Set successfully created'
     oligo = +'ACGTACGTACGTACGT'
     (1..96).each do |tag_index|
@@ -70,9 +71,9 @@ namespace :tags do
   end
 
   task destroy: :environment do
-    Tag.delete_all
+    Tag.destroy_all
     puts '-> Tags successfully deleted'
-    TagSet.delete_all
+    TagSet.destroy_all
     puts '-> Tag Sets successfully deleted'
   end
 end
