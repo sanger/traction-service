@@ -57,10 +57,13 @@ RSpec.describe 'GraphQL', type: :request do
   end
 
   context 'create run' do
+    let(:run) { create(:ont_run) }
     let(:run_factory) { instance_double('Ont::RunFactory') }
+    let(:message) { { key: 'value' } }
 
     before do
       allow(Ont::RunFactory).to receive(:new).and_return(run_factory)
+      allow(Pipelines).to receive_message_chain(:ont, :covid, :message).and_return(message)
     end
 
     def valid_query
@@ -79,8 +82,6 @@ RSpec.describe 'GraphQL', type: :request do
     end
 
     it 'creates a run with provided parameters' do
-      run = create(:ont_run)
-
       allow(run_factory).to receive(:save).and_return(true)
       allow(run_factory).to receive(:run).and_return(run)
 
@@ -100,6 +101,17 @@ RSpec.describe 'GraphQL', type: :request do
 
       expect(flowcell_json.map { |fc| fc['library']['name'] })
         .to match_array(run.flowcells.map { |fc| fc.library.name })
+    end
+
+    it 'sends a message to the warehouse for each request' do
+      run.flowcells.each do |flowcell|
+        expect(Messages).to receive(:publish).with(flowcell.library.requests, message).exactly(:once)
+      end      
+
+      allow(run_factory).to receive(:save).and_return(true)
+      allow(run_factory).to receive(:run).and_return(run)
+
+      post v2_path, params: { query: valid_query }
     end
 
     it 'responds with errors provided by the run factory' do

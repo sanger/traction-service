@@ -18,7 +18,7 @@ namespace :ont_runs do
     Plate.all.each do |plate|
       plate.destroy if plate.barcode.start_with? 'DEMO-PLATE-'
     end
-    [Ont::Request, Ont::Library, Ont::Flowcell, Ont::Run].each(&:delete_all)
+    [Ont::Request, Ont::Library, Ont::Flowcell, Ont::Run].each(&:destroy_all)
     puts '-> ONT runs successfully deleted'
   end
 end

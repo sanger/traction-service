@@ -180,10 +180,57 @@ default: &default
           type: :model
           value: request.sample_name
           populate_on_row_type: :sample
-  ont:
+  ont: 
     covid:
       pcr_tag_set_name: "OntWell96Samples"
-
+      message:
+        lims: *lims
+        key: oseq_flowcell
+        fields:
+          last_updated: *timestamp
+          id_flowcell_lims:
+            type: :model
+            value: library.flowcell.id
+          sample_uuid:
+            type: :model
+            value: external_id
+          study_uuid:
+            type: :string
+            value: "test study id"
+          experiment_name:
+            type: :model
+            value: library.flowcell.run.id
+          instrument_name:
+            type: :string
+            value: GridION # TODO - change once known
+          instrument_slot:
+            type: :model
+            value: library.flowcell.position
+          pipeline_id_lims:
+            type: :string
+            value: "test value" # TODO - change once known
+          tag_identifier:
+            type: :model
+            value: tags.first.id
+          tag_sequence:
+            type: :model
+            value: tags.first.oligo
+          tag_set_id_lims: 
+            type: :model
+            value: tags.first.tag_set.id
+          tag_set_name:
+            type: :model
+            value: tags.first.tag_set.name
+          tag2_identifier: &empty_string
+            type: :string
+            value: ""
+          tag2_sequence: *empty_string
+          tag2_set_id_lims: *empty_string
+          tag2_set_name: *empty_string
+          
+          # TODO - add the below fields when we know which values to use:
+          # library_preparation_type:
+          # requested_data_type:
 
 development:
   <<: *default
