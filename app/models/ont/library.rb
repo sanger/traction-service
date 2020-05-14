@@ -9,6 +9,8 @@ module Ont
                         inverse_of: :library, dependent: :nullify
 
     validates :name, :pool, :pool_size, presence: true
+    validates :name, uniqueness: { case_sensitive: false,
+                                   message: 'must be unique: a pool already exists for this plate' }
 
     def self.library_name(plate_barcode, pool)
       return nil if plate_barcode.nil? || pool.nil?
