@@ -42,7 +42,7 @@ RSpec.describe 'GraphQL', type: :request do
 
     it 'returns only unassigned libraries when many exist and some are loaded in a flowcell' do
       create_list(:ont_library, 3)
-      run = create(:ont_run)
+      run = create(:ont_run_with_flowcells)
       post v2_path, params: { query: '{ ontLibraries(unassignedToFlowcells: true) { id } }' }
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
