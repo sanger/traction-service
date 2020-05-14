@@ -36,8 +36,7 @@ module Mutations
       return if flowcell_specs.nil? || flowcell_specs.count == 0
 
       # Get an array of the pre-existing flowcells for the run
-      old_flowcells = run.flowcells.clone
-      run.flowcells = []
+      old_flowcells = run.flowcells.to_a
 
       # Create new flowcells and attempt to save them
       factory = Ont::RunFactory.new(flowcell_specs, run)
