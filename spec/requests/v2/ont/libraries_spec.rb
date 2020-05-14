@@ -98,4 +98,67 @@ RSpec.describe 'GraphQL', type: :request do
       expect(json['errors']).not_to be_empty
     end
   end
+
+  context 'delete library' do
+    let!(:library) { create(:ont_library) } 
+
+    def validQuery
+      <<~GQL
+      mutation {
+        deleteCovidLibrary(
+          input: {
+            arguments: {
+              plateBarcode: "PLATE-1234"
+            }
+          }
+        )
+        {
+          tubes { barcode materials { ... on Library { name pool poolSize } } }
+          errors
+        }
+      }
+      GQL
+    end
+
+    it 'returns false with errors if library does not exist' do
+
+    end
+
+    it 'provides an error when missing required fields' do
+
+    end
+
+    context 'with flowcell' do
+      it 'returns false with errors' do
+      end
+
+      it 'does not delete library' do
+      end
+
+      it 'does not delete tube' do
+      end
+    end
+
+    context 'without flowcell' do
+      it 'returns true with no errors on success' do
+
+      end
+
+      it 'returns false with errors if library deletion fails' do
+
+      end
+
+      it 'does not delete tube if library deletion fails' do
+
+      end
+
+      it 'returns false with errors if tube deletion fails' do
+
+      end
+
+      it 'does not delete library if tube deletion fails' do
+
+      end
+    end
+  end
 end

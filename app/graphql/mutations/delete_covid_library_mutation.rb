@@ -17,11 +17,15 @@ module Mutations
       elsif !library.flowcell.nil?
         { success: false, errors: ['Cannot delete a library that is used in a run'] }
       else
-        Tube.destroy_by(barcode: library.tube_barcode)
-        return { success: true, errors: [] } if library.destroy
-
-        { success: false, errors: flowcell.errors.full_messages }
+        tube = tube.find_by(barcode: library.tube_barcode)
+        ActiveRecord::Base.transaction do
+          tube.destroy!
+          library.destroy!
+        end
+        { success: true, errors: [] }
       end
+    rescue ActiveRecord::RecordNotDestroyed
+      { success: false, errors: library.errors.full_messages + tube.errors.full_messages }
     end
   end
 end
