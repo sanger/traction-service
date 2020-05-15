@@ -125,7 +125,7 @@ type Flowcell {
   library: Library!
 
   """
-  The numerical position of this flowcell in the GriION machine.
+  The numerical position of this flowcell in the GridION machine.
   """
   position: Int!
 
@@ -268,7 +268,27 @@ type QueryTypes {
   """
   Find all Ont Libraries.
   """
-  ontLibraries: [Library!]!
+  ontLibraries(
+    """
+    Whether to only include libraries that haven't been loaded into flowcells yet.  Default: false.
+    """
+    unassignedToFlowcells: Boolean
+  ): [Library!]!
+
+  """
+  Find an Ont Run by ID.
+  """
+  ontRun(
+    """
+    The ID of the Ont Run to find.
+    """
+    id: ID!
+  ): Run
+
+  """
+  Find all Ont Runs.
+  """
+  ontRuns: [Run!]!
 
   """
   Find all Plates.
