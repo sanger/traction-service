@@ -8,7 +8,7 @@ namespace :ont_runs do
 
     create_plates(count: 5)
     create_libraries(count: 5)
-    # TODO: Create ONT runs when the endpoints are available
+    create_runs(library_count: 5)
 
     puts
     puts '-> Successfully created all ONT runs'
@@ -18,7 +18,7 @@ namespace :ont_runs do
     Plate.all.each do |plate|
       plate.destroy if plate.barcode.start_with? 'DEMO-PLATE-'
     end
-    [Ont::Request, Ont::Library].each(&:delete_all)
+    [Ont::Request, Ont::Library, Ont::Flowcell, Ont::Run].each(&:destroy_all)
     puts '-> ONT runs successfully deleted'
   end
 end
@@ -84,4 +84,38 @@ def create_libraries(count:)
   end
 
   puts '-> Successfully created ONT libraries'
+end
+
+def submit_create_run_query(variables:, library_names:)
+  flowcells = variables.flowcells(library_names: library_names)
+  joined_library_names = library_names.join(', ')
+  puts "-> Creating run for libraries with names: #{joined_library_names}"
+  result = TractionGraphQL::Client.query(OntRuns::CreateRun, variables: { flowcells: flowcells })
+
+  errors_array = result.original_hash['data']['createCovidRun']['errors']
+  if errors_array.any?
+    show_errors ["-> Failed to create run for libraries with names #{joined_library_names}: #{errors_array}"]
+  end
+
+  puts "-> Succesfully created run for libraries with names: #{joined_library_names}"
+rescue Errno::ECONNREFUSED
+  show_errors ["-> Failed to connect to the Rails server at #{TractionGraphQL::RAILS_ROOT_URI}",
+               '   Use the RAILS_ROOT_URI environment variable to specify a different URI']
+end
+
+def create_runs(library_count:)
+  puts
+  puts "-> Creating 2 ONT runs from #{library_count} libraries"
+
+  variables = OntRuns::Variables.new
+  library_names = library_count.times.map { |i| "DEMO-PLATE-#{i + 1}-1" }
+  num_run_one = (library_count / 2.0).ceil
+  num_run_two = library_count - num_run_one
+
+  submit_create_run_query(variables: variables, library_names: library_names.first(num_run_one))
+  if num_run_two > 0
+    submit_create_run_query(variables: variables, library_names: library_names.last(num_run_two))
+  end
+
+  puts '-> Successfully created ONT runs'
 end

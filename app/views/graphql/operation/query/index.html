@@ -64,8 +64,22 @@
       
         
       <li>
+        <a href="/v2/docs/object/createcovidrunmutationpayload/" class="sidebar-link">
+          CreateCovidRunMutationPayload
+        </a>
+      </li>
+      
+        
+      <li>
         <a href="/v2/docs/object/createplatewithcovidsamplesmutationpayload/" class="sidebar-link">
           CreatePlateWithCovidSamplesMutationPayload
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/flowcell/" class="sidebar-link">
+          Flowcell
         </a>
       </li>
       
@@ -87,6 +101,13 @@
       <li>
         <a href="/v2/docs/object/request/" class="sidebar-link">
           Request
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/run/" class="sidebar-link">
+          Run
         </a>
       </li>
       
@@ -162,6 +183,13 @@
       
       
       <li>
+        <a href="/v2/docs/mutation/createcovidrun/" class="sidebar-link">
+          createCovidRun
+        </a>
+      </li>
+      
+      
+      <li>
         <a href="/v2/docs/mutation/createplatewithcovidsamples/" class="sidebar-link">
           createPlateWithCovidSamples
         </a>
@@ -225,8 +253,22 @@
       
       
       <li>
+        <a href="/v2/docs/input_object/createcovidrunmutationinput/" class="sidebar-link">
+          CreateCovidRunMutationInput
+        </a>
+      </li>
+      
+      
+      <li>
         <a href="/v2/docs/input_object/createplatewithcovidsamplesmutationinput/" class="sidebar-link">
           CreatePlateWithCovidSamplesMutationInput
+        </a>
+      </li>
+      
+      
+      <li>
+        <a href="/v2/docs/input_object/flowcellinput/" class="sidebar-link">
+          FlowcellInput
         </a>
       </li>
       
@@ -337,6 +379,58 @@
   <span id="ontlibraries" class="field-name anchored">ontLibraries (<code><a href="/v2/docs/object/library">[Library!]!</a></code>)</span>
   <div class="description-wrapper">
    <p>Find all Ont Libraries.</p>
+     <table class="arguments">
+  <thead>
+  <tr>
+    <th>Argument</th>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+  <td><code class="anchored">unassignedToFlowcells</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/boolean">Boolean</a></code>
+  </td>
+  <td>
+    <p>Whether to only include libraries that haven't been loaded into flowcells yet.  Default: false.</p>
+   </td>
+  </tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="ontrun" class="field-name anchored">ontRun (<code><a href="/v2/docs/object/run">Run</a></code>)</span>
+  <div class="description-wrapper">
+   <p>Find an Ont Run by ID.</p>
+     <table class="arguments">
+  <thead>
+  <tr>
+    <th>Argument</th>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+  <td><code class="anchored">id</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/id">ID!</a></code>
+  </td>
+  <td>
+    <p>The ID of the Ont Run to find.</p>
+   </td>
+  </tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="ontruns" class="field-name anchored">ontRuns (<code><a href="/v2/docs/object/run">[Run!]!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>Find all Ont Runs.</p>
   </div>
 </div>
 <div class="field-entry ">
