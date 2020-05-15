@@ -7,6 +7,7 @@ module Ont
 
     has_many :requests, foreign_key: :ont_library_id,
                         inverse_of: :library, dependent: :nullify
+    has_one :flowcell, foreign_key: :ont_library_id, inverse_of: :library, dependent: :destroy
 
     validates :name, :pool, :pool_size, presence: true
     validates :name, uniqueness: { case_sensitive: false,

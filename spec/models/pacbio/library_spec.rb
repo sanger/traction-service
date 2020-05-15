@@ -2,6 +2,11 @@ require 'rails_helper'
 
 RSpec.describe Pacbio::Library, type: :model, pacbio: true do
 
+  context 'uuidable' do
+    let(:uuidable_model) { :pacbio_library }
+    it_behaves_like 'uuidable'
+  end
+
   it 'must have a volume' do
     expect(build(:pacbio_library, volume: nil)).to_not be_valid
   end
@@ -17,11 +22,7 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
   it 'must have a fragment size' do
     expect(build(:pacbio_library, fragment_size: nil)).to_not be_valid
   end
-
-  it 'will have a uuid' do
-    expect(create(:pacbio_library).uuid).to be_present
-  end
-
+  
   it 'can have sample names' do
     expect(create(:pacbio_library).sample_names).to be_truthy
   end

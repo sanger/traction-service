@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require "rails_helper"
+require 'rails_helper'
 
 RSpec.describe 'GraphQL', type: :request do
-
   context 'get well' do
     context 'when there is a valid well' do
       let!(:well) { create(:well) }
@@ -19,7 +18,8 @@ RSpec.describe 'GraphQL', type: :request do
       end
 
       it 'handles that there are no requests in the well' do
-        post v2_path, params: { query: "{ well(id: #{well.id}) { id plateId materials { ... on Request { id } } } }" }
+        post v2_path, params:
+          { query: "{ well(id: #{well.id}) { id plateId materials { ... on Request { id } } } }" }
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data']['well']['materials']).to be_empty

@@ -121,7 +121,7 @@ RSpec.describe 'GraphQL', type: :request do
     end
 
     def missing_required_fields_query
-      'mutation { createPlateWithCovidSamples(input: { arguments: { bogus: "data" } } ) }'
+      'mutation { createPlateWithCovidSamples(input: { arguments: { bogus: "data" } } ) { plate { id } } }'
     end
 
     it 'provides an error when missing required fields' do
@@ -130,6 +130,5 @@ RSpec.describe 'GraphQL', type: :request do
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['errors']).not_to be_empty
     end
-
   end
 end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Mutations
-  # Mutation to handle the update of a Well.
+  # Mutation to create a plate with ONT samples.
   class CreatePlateWithCovidSamplesMutation < BaseMutation
     argument :arguments, Types::Inputs::Ont::PlateWithSamplesInputType,
              'Arguments describing the plate, wells and samples to create a plate for.',
