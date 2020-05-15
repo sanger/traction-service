@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :ont_flowcell, class: Ont::Flowcell do
     position { 3 }
