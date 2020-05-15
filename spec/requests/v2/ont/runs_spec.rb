@@ -48,11 +48,11 @@ RSpec.describe 'GraphQL', type: :request do
         '{ ontRuns { id state deactivatedAt flowcells { id } } }' }
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
-      expect(json['data']['ontRuns']).to contain_exactly({
-        'id' => run.id.to_s, 'state' => run.state.to_s.upcase,
-        'deactivatedAt' => run.deactivated_at,
-        'flowcells' => run.flowcells.map { |fc| { 'id' => fc.id.to_s } }
-      })
+      expect(json['data']['ontRuns']).to contain_exactly(
+        { 'id' => run.id.to_s, 'state' => run.state.to_s.upcase,
+          'deactivatedAt' => run.deactivated_at,
+          'flowcells' => run.flowcells.map { |fc| { 'id' => fc.id.to_s } } }
+      )
     end
 
     it 'returns all runs when many exist' do
@@ -107,7 +107,8 @@ RSpec.describe 'GraphQL', type: :request do
 
     it 'sends a message to the warehouse for each request' do
       run.flowcells.each do |flowcell|
-        expect(Messages).to receive(:publish).with(flowcell.library.requests, message).exactly(:once)
+        expect(Messages).to receive(:publish)
+          .with(flowcell.library.requests, message).exactly(:once)
       end
 
       allow(run_factory).to receive(:save).and_return(true)

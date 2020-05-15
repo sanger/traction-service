@@ -20,7 +20,8 @@ RSpec.describe 'GraphQL', type: :request do
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data']['ontLibraries']).to contain_exactly(
         { 'name' => library.name, 'plateBarcode' => library.plate_barcode, 'pool' => library.pool,
-          'poolSize' => 24, 'tubeBarcode' => 'test tube barcode'})
+          'poolSize' => 24, 'tubeBarcode' => 'test tube barcode' }
+      )
     end
 
     it 'returns all libraries when many exist' do
