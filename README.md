@@ -52,7 +52,14 @@ When running with Traction-UI, UI expects the service to be on port 3100. `PORT=
 ## Messages - RabbitMQ
 
 Sending messages is disabled by default but if you would like to test messages, install a broker
-(RabbitMQ) and update the config in `config/bunny.yml`.
+(RabbitMQ) and update the config in `config/bunny.yml` by enabling the development settings.
+
+After installing RabbitMQ, you will need to create the exchange you will be sending messages over.
+You can do this by issuing a command in your terminal such as
+
+    rabbitmqadmin declare exchange name="bunny.examples.exchange" type="topic"
+
+making sure you match the exchange name with the one specified in `config/bunny.yml`.
 
 ## Miscellaneous
 
