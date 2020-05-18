@@ -3,14 +3,14 @@
 require_relative '../traction_graphql'
 
 namespace :ont_data do
-  task :create, [:num] => :environment do |t, args|
+  task :create, [:num] => :environment do |_t, args|
     puts '-> Creating ONT data using GraphQL'
 
     count = args[:num]&.to_i || 5
 
     # create count plates
     barcodes = create_plates(count: count)
-    plates = Plate.where(barcode: barcodes)
+    Plate.where(barcode: barcodes)
 
     # create count plates with libraries
     barcodes = create_plates(count: count)
@@ -38,7 +38,7 @@ namespace :ont_data do
       plate.destroy if plate.barcode.start_with? 'DEMO-PLATE-'
     end
     [Ont::Request, Ont::Library, Ont::Flowcell, Ont::Run].each(&:destroy_all)
-    puts '-> ONT runs successfully deleted'
+    puts '-> ONT data successfully deleted'
   end
 end
 
@@ -65,25 +65,33 @@ end
 def create_plates(count:)
   puts
   puts "-> Creating #{count} ONT plates"
-  variables = OntPlates::Variables.new
-  constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
 
-  current = Plate&.last&.id || 0
+  plate_no = Plate&.last&.id || 0
 
-  barcodes = [].tap do |b|
-    count.times do |i|
-      plate_no = current += 1
-      barcode = "DEMO-PLATE-#{plate_no}"
-      submit_create_plate_query(plate_no: plate_no,
-                                barcode: barcode,
-                                wells: variables.wells(sample_name: "for Demo Plate #{plate_no}",
-                                                      constants_accessor: constants_accessor))
-      b << barcode
-    end
-  end
+  barcodes = create_number_of_plates(count, plate_no)
 
   puts '-> Successfully created ONT plates'
   barcodes
+end
+
+def create_number_of_plates(count, plate_no)
+  variables = OntPlates::Variables.new
+  constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
+  [].tap do |barcodes|
+    count.times do |_i|
+      plate_no += 1
+      barcodes << create_plate(plate_no, variables, constants_accessor)
+    end
+  end
+end
+
+def create_plate(plate_no, variables, constants_accessor)
+  barcode = "DEMO-PLATE-#{plate_no}"
+  submit_create_plate_query(plate_no: plate_no,
+                            barcode: barcode,
+                            wells: variables.wells(sample_name: "for Demo Plate #{plate_no}",
+                                                   constants_accessor: constants_accessor))
+  barcode
 end
 
 def submit_create_library_query(plate_barcode:)
