@@ -9,23 +9,20 @@ namespace :ont_data do
     count = args[:num]&.to_i || 5
 
     # create count plates
-    barcodes = create_plates(count: count)
-    Plate.where(barcode: barcodes)
+    create_plates(count: count)
 
     # create count plates with libraries
     barcodes = create_plates(count: count)
-    plates = Plate.where(barcode: barcodes)
-    create_libraries(plates: plates)
+    create_libraries(barcodes: barcodes)
 
     # create count plates with libraries and runs
     barcodes = create_plates(count: count)
-    plates = Plate.where(barcode: barcodes)
-    create_libraries(plates: plates)
+    create_libraries(barcodes: barcodes)
 
     # TODO: assumptions are made here
     # probably needs to be a bit more robust
-    plates.in_groups_of(5).each do |group_of_plates|
-      library_names = group_of_plates.compact.collect { |plate| "#{plate.barcode}-1" }
+    barcodes.in_groups_of(5).each do |group_of_barcodes|
+      library_names = group_of_barcodes.compact.collect { |barcode| "#{barcode}-1" }
       create_runs(library_names: library_names)
     end
 
@@ -77,11 +74,9 @@ end
 def create_number_of_plates(count, plate_no)
   variables = OntPlates::Variables.new
   constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
-  [].tap do |barcodes|
-    count.times do |_i|
-      plate_no += 1
-      barcodes << create_plate(plate_no, variables, constants_accessor)
-    end
+
+  plate_no.upto(plate_no+count-1).collect do |i|
+    create_plate(i, variables, constants_accessor)
   end
 end
 
@@ -109,12 +104,12 @@ rescue Errno::ECONNREFUSED
                '   Use the RAILS_ROOT_URI environment variable to specify a different URI']
 end
 
-def create_libraries(plates:)
+def create_libraries(barcodes:)
   puts
-  puts "-> Creating #{plates.count} ONT libraries from plates"
+  puts "-> Creating #{barcodes.length} ONT libraries from plates"
 
-  plates.each do |plate|
-    submit_create_library_query(plate_barcode: plate.barcode)
+  barcodes.each do |barcode|
+    submit_create_library_query(plate_barcode: barcode)
   end
 
   puts '-> Successfully created ONT libraries'
