@@ -742,7 +742,7 @@
             },
             {
               "name": "createCovidRun",
-              "description": "Create a GriION run containing up to five flow cells loaded with Covid libraries.",
+              "description": "Create a GridION run containing up to five flow cells loaded with Covid libraries.",
               "args": [
                 {
                   "name": "input",
@@ -789,6 +789,33 @@
               "type": {
                 "kind": "OBJECT",
                 "name": "CreatePlateWithCovidSamplesMutationPayload",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updateCovidRun",
+              "description": "Update an existing GridION run with new properties.",
+              "args": [
+                {
+                  "name": "input",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "UpdateCovidRunMutationInput",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "UpdateCovidRunMutationPayload",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -1331,7 +1358,7 @@
             },
             {
               "name": "state",
-              "description": "The description of the state for this run.",
+              "description": "The state of this run.",
               "args": [
 
               ],
@@ -1339,8 +1366,8 @@
                 "kind": "NON_NULL",
                 "name": null,
                 "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
+                  "kind": "ENUM",
+                  "name": "RunStateEnum",
                   "ofType": null
                 }
               },
@@ -1371,6 +1398,80 @@
 
           ],
           "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "RunInput",
+          "description": null,
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "state",
+              "description": "The state for the run.",
+              "type": {
+                "kind": "ENUM",
+                "name": "RunStateEnum",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "flowcells",
+              "description": "An array of flowcells to assign to the run.",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "FlowcellInput",
+                    "ofType": null
+                  }
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "RunStateEnum",
+          "description": null,
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "PENDING",
+              "description": "The run is awaiting to be started.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "STARTED",
+              "description": "The run is currently running but not yet completed.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "COMPLETED",
+              "description": "The run has completed.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "CANCELLED",
+              "description": "The run has been cancelled.",
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
           "possibleTypes": null
         },
         {
@@ -1519,6 +1620,122 @@
                   "name": "String",
                   "ofType": null
                 }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "UpdateCovidRunMutationInput",
+          "description": "Autogenerated input type of UpdateCovidRunMutation",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "id",
+              "description": "The ID of the Ont Run to update.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "properties",
+              "description": "The properties to update on the run.",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "RunInput",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "clientMutationId",
+              "description": "A unique identifier for the client performing the mutation.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "UpdateCovidRunMutationPayload",
+          "description": "Autogenerated return type of UpdateCovidRunMutation",
+          "fields": [
+            {
+              "name": "clientMutationId",
+              "description": "A unique identifier for the client performing the mutation.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "errors",
+              "description": "An array of error messages thrown while updating the run.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "run",
+              "description": "The updated Run, or null if errors were thrown.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Run",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null

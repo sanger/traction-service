@@ -3,6 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe 'GraphQL', type: :request do
+  let(:run_factory) { instance_double('Ont::RunFactory') }
+
+  before do
+    allow(Ont::RunFactory).to receive(:new).and_return(run_factory)
+  end
+
   context 'get run' do
     context 'when there is a valid run' do
       let!(:run) { create(:ont_run) }
@@ -13,7 +19,8 @@ RSpec.describe 'GraphQL', type: :request do
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data']['ontRun']).to include(
-          'id' => run.id.to_s, 'state' => run.state.to_s, 'deactivatedAt' => run.deactivated_at,
+          'id' => run.id.to_s, 'state' => run.state.to_s.upcase,
+          'deactivatedAt' => run.deactivated_at,
           'flowcells' => run.flowcells.map { |fc| { 'id' => fc.id.to_s } }
         )
       end
@@ -42,7 +49,8 @@ RSpec.describe 'GraphQL', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data']['ontRuns']).to contain_exactly(
-        { 'id' => run.id.to_s, 'state' => run.state.to_s, 'deactivatedAt' => run.deactivated_at,
+        { 'id' => run.id.to_s, 'state' => run.state.to_s.upcase,
+          'deactivatedAt' => run.deactivated_at,
           'flowcells' => run.flowcells.map { |fc| { 'id' => fc.id.to_s } } }
       )
     end
@@ -69,14 +77,8 @@ RSpec.describe 'GraphQL', type: :request do
     def valid_query
       <<~GQL
         mutation {
-          createCovidRun(
-            input: {
-              flowcells: []
-            }
-          ) {
-            run { id state flowcells { position library { name } } }
-            errors
-          }
+          createCovidRun( input: { flowcells: [] })
+          { run { id state flowcells { position library { name } } } errors }
         }
       GQL
     end
@@ -92,7 +94,7 @@ RSpec.describe 'GraphQL', type: :request do
       mutation_json = json['data']['createCovidRun']
       run_json = mutation_json['run']
       expect(run_json['id']).to eq(run.id.to_s)
-      expect(run_json['state']).to eq(run.state)
+      expect(run_json['state']).to eq(run.state.upcase)
 
       flowcell_json = run_json['flowcells']
       expect(flowcell_json.count).to eq(run.flowcells.count)
@@ -105,8 +107,9 @@ RSpec.describe 'GraphQL', type: :request do
 
     it 'sends a message to the warehouse for each request' do
       run.flowcells.each do |flowcell|
-        expect(Messages).to receive(:publish).with(flowcell.library.requests, message).exactly(:once)
-      end      
+        expect(Messages).to receive(:publish)
+          .with(flowcell.library.requests, message).exactly(:once)
+      end
 
       allow(run_factory).to receive(:save).and_return(true)
       allow(run_factory).to receive(:run).and_return(run)
@@ -142,6 +145,159 @@ RSpec.describe 'GraphQL', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['errors']).not_to be_empty
+    end
+  end
+
+  context 'update run' do
+    let(:run) { create(:ont_run) }
+
+    def valid_query
+      <<~GQL
+        mutation ($id: ID!, $state: RunStateEnum, $flowcells: [FlowcellInput!]) {
+          updateCovidRun( input: { id: $id properties: { state: $state, flowcells: $flowcells } } )
+          { run { id state flowcells { position library { name } } } errors }
+        }
+      GQL
+    end
+
+    context 'invalid id' do
+      let(:variables) { ActiveSupport::JSON.encode({ id: 10, state: nil, flowcells: nil }) }
+
+      it 'gives no run back' do
+        post v2_path, params: { query: valid_query, variables: variables }
+        expect(response).to have_http_status(:success)
+        json = ActiveSupport::JSON.decode(response.body)
+
+        mutation_json = json['data']['updateCovidRun']
+        expect(mutation_json['run']).to be_nil
+      end
+
+      it 'generates an error' do
+        post v2_path, params: { query: valid_query, variables: variables }
+        expect(response).to have_http_status(:success)
+        json = ActiveSupport::JSON.decode(response.body)
+
+        mutation_json = json['data']['updateCovidRun']
+        expect(mutation_json['errors'].count).to be(1)
+      end
+    end
+
+    context 'no properties' do
+      let(:variables) { ActiveSupport::JSON.encode({ id: run.id, state: nil, flowcells: nil }) }
+
+      it 'returns the run unmodified' do
+        expect(Ont::RunFactory).to_not receive(:new)
+
+        post v2_path, params: { query: valid_query, variables: variables }
+        expect(response).to have_http_status(:success)
+        json = ActiveSupport::JSON.decode(response.body)
+
+        run.reload # Must reload to see the updated values
+
+        mutation_json = json['data']['updateCovidRun']
+        expect(mutation_json['errors']).to be_empty
+        run_json = mutation_json['run']
+
+        expect(run_json['id']).to eq(run.id.to_s)
+        expect(run_json['state']).to eq(run.state.upcase)
+      end
+    end
+
+    context 'updated state' do
+      let(:variables) do
+        ActiveSupport::JSON.encode({ id: run.id, state: 'STARTED', flowcells: nil })
+      end
+
+      it 'updates the state on the existing run' do
+        expect(run.state).to eq(:pending.to_s)
+        expect(Ont::RunFactory).to_not receive(:new)
+
+        post v2_path, params: { query: valid_query, variables: variables }
+        expect(response).to have_http_status(:success)
+        json = ActiveSupport::JSON.decode(response.body)
+
+        run.reload # Must reload to see the updated values
+
+        mutation_json = json['data']['updateCovidRun']
+        expect(mutation_json['errors']).to be_empty
+        run_json = mutation_json['run']
+
+        expect(run_json['id']).to eq(run.id.to_s)
+        expect(run_json['state']).to eq(:started.to_s.upcase)
+        expect(run.state).to eq(:started.to_s)
+      end
+    end
+
+    context 'updated flowcells' do
+      context 'empty array' do
+        let(:variables) { ActiveSupport::JSON.encode({ id: run.id, state: nil, flowcells: [] }) }
+
+        it "doesn't invoke the RunFactory" do
+          allow(run_factory).to receive(:save).and_return(true)
+          expect(Ont::RunFactory).to_not receive(:new)
+          expect(run_factory).to_not receive(:save)
+
+          post v2_path, params: { query: valid_query, variables: variables }
+          expect(response).to have_http_status(:success)
+          json = ActiveSupport::JSON.decode(response.body)
+
+          mutation_json = json['data']['updateCovidRun']
+          expect(mutation_json['errors']).to be_empty
+          expect(mutation_json['run']).to be
+
+          expect(mutation_json['run']['id']).to eq(run.id.to_s)
+        end
+      end
+
+      context 'one flowcell' do
+        let(:library) { create(:ont_library) }
+        let(:variables) do
+          ActiveSupport::JSON.encode({ id: run.id, state: nil, flowcells: [
+            { 'position' => 4, libraryName: library.name }
+          ] })
+        end
+
+        describe 'with a valid factory build' do
+          it 'sends the flowcells and run to RunFactory' do
+            allow(run_factory).to receive(:save).and_return(true)
+            expect(Ont::RunFactory).to receive(:new).with(kind_of(Array), run)
+            expect(run_factory).to receive(:save)
+
+            post v2_path, params: { query: valid_query, variables: variables }
+            expect(response).to have_http_status(:success)
+            json = ActiveSupport::JSON.decode(response.body)
+
+            mutation_json = json['data']['updateCovidRun']
+            expect(mutation_json['errors']).to be_empty
+            expect(mutation_json['run']).to be
+
+            expect(mutation_json['run']['id']).to eq(run.id.to_s)
+          end
+        end
+
+        describe 'with an invalid factory build' do
+          it 'reports errors and returns no run' do
+            errors = Class.new do
+              def full_messages
+                ['test error']
+              end
+            end.new
+
+            allow(run_factory).to receive(:save).and_return(false)
+            allow(run_factory).to receive(:errors).and_return(errors)
+
+            expect(Ont::RunFactory).to receive(:new).with(kind_of(Array), run)
+
+            post v2_path, params: { query: valid_query, variables: variables }
+            expect(response).to have_http_status(:success)
+            json = ActiveSupport::JSON.decode(response.body)
+
+            mutation_json = json['data']['updateCovidRun']
+            expect(mutation_json['errors']).to contain_exactly('test error')
+            expect(mutation_json['run']).to be_nil
+          end
+        end
+      end
     end
   end
 end

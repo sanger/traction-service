@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Ont::Flowcell, type: :model, ont: true do
@@ -23,7 +25,19 @@ RSpec.describe Ont::Flowcell, type: :model, ont: true do
 
   it 'must have a unique position' do
     flowcell = create(:ont_flowcell)
-    new_flowcell = build(:ont_flowcell, position: flowcell.position, run:flowcell.run)
+    new_flowcell = build(:ont_flowcell, position: flowcell.position, run: flowcell.run)
     expect(new_flowcell).to_not be_valid
+  end
+
+  context 'on #destroy' do
+    let(:flowcell) { create(:ont_flowcell) }
+
+    it 'does not destroy the associated run' do
+      run = flowcell.run
+      initial_flowcell_count = run.flowcells.count
+      flowcell.destroy
+      expect(run.destroyed?).to be_falsey
+      expect(run.flowcells.count).to be(initial_flowcell_count - 1)
+    end
   end
 end
