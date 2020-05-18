@@ -66,6 +66,14 @@ An ERD was created using the `rails-erd` gem by executing: `bundle exec erd`
 
 ![ERD](erd.jpg "ERD")
 
+### GraphQL
+
+The documentation for GraphQL can be accessed by navigating to [http://localhost:3000/v2/docs](http://localhost:3000/v2/docs) while the development rails server is running.
+This documentation can be updated by running the following commands:
+
+1. Update the stored schema: `bundle exec rails graphql:schema:dump`
+1. Update the documentation: `bundle exec rails graphql:docs:generate`
+
 ## Releases
 
 #### UAT
