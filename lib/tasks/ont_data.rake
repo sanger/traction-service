@@ -75,7 +75,7 @@ def create_number_of_plates(count, plate_no)
   variables = OntPlates::Variables.new
   constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
 
-  plate_no.upto(plate_no+count-1).collect do |i|
+  plate_no.upto(plate_no + count - 1).collect do |i|
     create_plate(i, variables, constants_accessor)
   end
 end
