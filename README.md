@@ -29,7 +29,7 @@ To create pacbio dummy runs: `bundle exec rails pacbio_runs:create`
 
 To create saphyr dummy runs: `bundle exec rails saphyr_runs:create`
 
-To create ont dummy runs: `bundle exec rails ont_runs:create`
+To create ont dummy data: `bundle exec rails ont_data:create`
 
 ## Database drop
 

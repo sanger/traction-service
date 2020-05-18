@@ -2,16 +2,32 @@
 
 require_relative '../traction_graphql'
 
-namespace :ont_runs do
-  task create: :environment do
-    puts '-> Creating ONT runs using GraphQL'
+namespace :ont_data do
+  task :create, [:num] => :environment do |_t, args|
+    puts '-> Creating ONT data using GraphQL'
 
-    create_plates(count: 5)
-    create_libraries(count: 5)
-    create_runs(library_count: 5)
+    count = args[:num]&.to_i || 5
+
+    # create count plates
+    create_plates(count: count)
+
+    # create count plates with libraries
+    barcodes = create_plates(count: count)
+    create_libraries(barcodes: barcodes)
+
+    # create count plates with libraries and runs
+    barcodes = create_plates(count: count)
+    create_libraries(barcodes: barcodes)
+
+    # TODO: assumptions are made here
+    # probably needs to be a bit more robust
+    barcodes.in_groups_of(5).each do |group_of_barcodes|
+      library_names = group_of_barcodes.compact.collect { |barcode| "#{barcode}-1" }
+      create_runs(library_names: library_names)
+    end
 
     puts
-    puts '-> Successfully created all ONT runs'
+    puts '-> Successfully created all data'
   end
 
   task destroy: :environment do
@@ -19,7 +35,7 @@ namespace :ont_runs do
       plate.destroy if plate.barcode.start_with? 'DEMO-PLATE-'
     end
     [Ont::Request, Ont::Library, Ont::Flowcell, Ont::Run].each(&:destroy_all)
-    puts '-> ONT runs successfully deleted'
+    puts '-> ONT data successfully deleted'
   end
 end
 
@@ -46,18 +62,31 @@ end
 def create_plates(count:)
   puts
   puts "-> Creating #{count} ONT plates"
+
+  plate_no = Plate&.last&.id || 0
+
+  barcodes = create_number_of_plates(count, plate_no)
+
+  puts '-> Successfully created ONT plates'
+  barcodes
+end
+
+def create_number_of_plates(count, plate_no)
   variables = OntPlates::Variables.new
   constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
 
-  count.times do |i|
-    plate_no = i + 1
-    submit_create_plate_query(plate_no: plate_no,
-                              barcode: "DEMO-PLATE-#{plate_no}",
-                              wells: variables.wells(sample_name: "for Demo Plate #{plate_no}",
-                                                     constants_accessor: constants_accessor))
+  plate_no.upto(plate_no + count - 1).collect do |i|
+    create_plate(i, variables, constants_accessor)
   end
+end
 
-  puts '-> Successfully created ONT plates'
+def create_plate(plate_no, variables, constants_accessor)
+  barcode = "DEMO-PLATE-#{plate_no}"
+  submit_create_plate_query(plate_no: plate_no,
+                            barcode: barcode,
+                            wells: variables.wells(sample_name: "for Demo Plate #{plate_no}",
+                                                   constants_accessor: constants_accessor))
+  barcode
 end
 
 def submit_create_library_query(plate_barcode:)
@@ -75,12 +104,12 @@ rescue Errno::ECONNREFUSED
                '   Use the RAILS_ROOT_URI environment variable to specify a different URI']
 end
 
-def create_libraries(count:)
+def create_libraries(barcodes:)
   puts
-  puts "-> Creating #{count} ONT libraries from plates"
+  puts "-> Creating #{barcodes.length} ONT libraries from plates"
 
-  count.times do |i|
-    submit_create_library_query(plate_barcode: "DEMO-PLATE-#{i + 1}")
+  barcodes.each do |barcode|
+    submit_create_library_query(plate_barcode: barcode)
   end
 
   puts '-> Successfully created ONT libraries'
@@ -103,19 +132,12 @@ rescue Errno::ECONNREFUSED
                '   Use the RAILS_ROOT_URI environment variable to specify a different URI']
 end
 
-def create_runs(library_count:)
+def create_runs(library_names:)
   puts
-  puts "-> Creating 2 ONT runs from #{library_count} libraries"
-
+  puts "-> Creating ONT runs from #{library_names.length} libraries"
   variables = OntRuns::Variables.new
-  library_names = library_count.times.map { |i| "DEMO-PLATE-#{i + 1}-1" }
-  num_run_one = (library_count / 2.0).ceil
-  num_run_two = library_count - num_run_one
 
-  submit_create_run_query(variables: variables, library_names: library_names.first(num_run_one))
-  if num_run_two > 0
-    submit_create_run_query(variables: variables, library_names: library_names.last(num_run_two))
-  end
+  submit_create_run_query(variables: variables, library_names: library_names)
 
   puts '-> Successfully created ONT runs'
 end
