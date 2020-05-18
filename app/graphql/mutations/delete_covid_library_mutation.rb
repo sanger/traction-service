@@ -6,7 +6,7 @@ module Mutations
     argument :library_name, String, 'The name of the library to delete.', required: true
 
     field :success, Boolean, 'Whether the library was successfully deleted.', null: false
-    field :errors, [String], 'An array of error messages thrown when deleting the library',
+    field :errors, [String], 'An array of error messages thrown when deleting the library.',
           null: false
 
     # rubocop:disable Metrics/MethodLength
