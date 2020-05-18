@@ -9,7 +9,6 @@ module Mutations
     field :errors, [String], 'An array of error messages thrown when deleting the library.',
           null: false
 
-    # rubocop:disable Metrics/MethodLength
     def resolve(library_name:)
       library = Ont::Library.find_by(name: library_name)
 
@@ -18,15 +17,19 @@ module Mutations
       elsif !library.flowcell.nil?
         { success: false, errors: ['Cannot delete a library that is used in a run'] }
       else
-        ActiveRecord::Base.transaction do
-          library.container&.destroy!
-          library.destroy!
-        end
-        { success: true, errors: [] }
+        error = destory_library(library: library)
+        error.nil? ? { success: true, errors: [] } : { success: false, errors: [error] }
       end
-    rescue ActiveRecord::RecordNotDestroyed => e
-      { success: false, errors: [e.message] }
     end
-    # rubocop:enable Metrics/MethodLength
+
+    def destory_library(library:)
+      ActiveRecord::Base.transaction do
+        library.container&.destroy!
+        library.destroy!
+      end
+      nil
+    rescue ActiveRecord::RecordNotDestroyed => e
+      e.message
+    end
   end
 end
