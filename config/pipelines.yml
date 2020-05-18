@@ -206,12 +206,6 @@ default: &default
           instrument_slot:
             type: :model
             value: library.flowcell.position
-          pipeline_id_lims:
-            type: :string
-            value: "not needed" # TODO - will be removed when nullable in warehouse
-          requested_data_type:
-            type: :string
-            value: "not needed" # TODO - will be removed when nullable in warehouse
           tag_identifier:
             type: :model
             value: tags.first.id
@@ -224,12 +218,6 @@ default: &default
           tag_set_name:
             type: :model
             value: tags.first.tag_set.name
-          tag2_identifier: &empty_string
-            type: :string
-            value: ""
-          tag2_sequence: *empty_string
-          tag2_set_id_lims: *empty_string
-          tag2_set_name: *empty_string
 
 development:
   <<: *default
