@@ -54,6 +54,8 @@ When running with Traction-UI, UI expects the service to be on port 3100. `PORT=
 Sending messages is disabled by default but if you would like to test messages, install a broker
 (RabbitMQ) and update the config in `config/bunny.yml`.
 
+A web interface to administrate RabbitMQ is always available at [http://localhost:15672/](http://localhost:15672/) once the service is running.
+
 ## Miscellaneous
 
 ### Rails
