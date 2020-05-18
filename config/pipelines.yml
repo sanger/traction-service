@@ -182,7 +182,7 @@ default: &default
           populate_on_row_type: :sample
   ont:
     covid:
-      pcr_tag_set_name: "OntWell96Samples"
+      pcr_tag_set_name: "ONT_EXP-PBC096"
       message:
         lims: *lims
         key: oseq_flowcell
