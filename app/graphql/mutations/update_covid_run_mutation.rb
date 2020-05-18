@@ -2,7 +2,7 @@
 
 module Mutations
   # Mutation to update a COVID run.
-  class UpdateCovidRunMutation < BaseMutation
+  class UpdateCovidRunMutation < BaseCovidRunMutation
     argument :id, ID, 'The ID of the Ont Run to update.', required: true
     argument :properties, Types::Inputs::Ont::RunInputType, 'The properties to update on the run.',
              required: true
@@ -16,12 +16,15 @@ module Mutations
       run = Ont::Run.find_by(id: id)
       return { run: nil, errors: ["Couldn't find the specified run."] } if run.nil?
 
-      update_run_state(run, properties.state)
+      run_was_updated = false
+      run_was_updated ||= update_run_state(run, properties.state)
       errors = update_run_flowcells(run, properties.flowcells)
+      run_was_updated ||= errors.nil?
 
-      if !errors.nil? && errors.any?
+      if errors&.any?
         { run: nil, errors: errors }
       else
+        send_messages(run: run) if run_was_updated
         { run: run, errors: [] }
       end
     end
@@ -29,11 +32,16 @@ module Mutations
     private
 
     def update_run_state(run, state)
-      run.update(state: state) unless state.nil?
+      return false if state.nil?
+
+      run.update(state: state)
+
+      true
     end
 
     def update_run_flowcells(run, flowcell_specs)
-      return if flowcell_specs.nil? || flowcell_specs.count == 0
+      return [] if flowcell_specs.nil?
+      return ['Invalid empty array provided for updated flowcells.'] if flowcell_specs.count == 0
 
       # Create new flowcells and attempt to save them
       factory = Ont::RunFactory.new(flowcell_specs, run)
