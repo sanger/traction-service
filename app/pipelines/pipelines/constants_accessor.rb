@@ -8,7 +8,11 @@ module Pipelines
     end
 
     def pcr_tag_set_name
-      @constants_base.pcr_tag_set_name
+      @constants_base.pcr_tag_set.name
+    end
+
+    def pcr_tag_set_hostname
+      @constants_base.pcr_tag_set.hostname
     end
   end
 end
