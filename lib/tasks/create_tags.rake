@@ -75,8 +75,7 @@ namespace :tags do
     constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
     tag_group_name = constants_accessor.pcr_tag_set_name
     puts "-> Fetching tag set '#{tag_group_name}' from sequencescape"
-    # TODO - use correct hostname for different environments
-    uri = URI("http://localhost:3000/api/v2/tag_groups?filter[name]=#{tag_group_name}")
+    uri = URI("http://#{constants_accessor.pcr_tag_set_hostname}/api/v2/tag_groups?filter[name]=#{tag_group_name}")
     res = Net::HTTP.get_response(uri)
     if res.is_a?(Net::HTTPSuccess)
       res_hash = eval(res.body)
