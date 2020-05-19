@@ -64,7 +64,7 @@ RSpec.describe Ont::RunFactory, type: :model, ont: true do
         end
 
         context 'with existing run supplied' do
-          let(:run) { create(:ont_run) }
+          let(:run) { create(:ont_run_with_flowcells) }
 
           it 'saves the existing run' do
             expect(run).to receive(:save)
