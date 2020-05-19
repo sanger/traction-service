@@ -78,16 +78,18 @@ namespace :tags do
     uri = URI("http://#{constants_accessor.pcr_tag_set_hostname}/api/v2/tag_groups?filter[name]=#{tag_group_name}")
     res = Net::HTTP.get_response(uri)
     if res.is_a?(Net::HTTPSuccess)
-      res_hash = eval(res.body)
-      tag_groups = res_hash[:data]
-      show_errors ["-> Expected one and only one tag group"] if tag_groups.count != 1
+      json_res = JSON.parse(res.body)
+      tag_groups = json_res['data']
+      show_errors ['-> Expected one and only one tag group'] if tag_groups.count != 1
       tag_group = tag_groups.first
-      show_errors ["-> Expected tag group with name '#{tag_group_name}'"] if tag_group[:attributes][:name] != tag_group_name
+      if tag_group['attributes']['name'] != tag_group_name
+        show_errors ["-> Expected tag group with name '#{tag_group_name}'"]
+      end
       tag_set = TagSet.create!(name: tag_group_name, uuid: SecureRandom.uuid)
       puts "-> #{tag_group_name} successfully created"
-      tag_group[:attributes][:tags].each_with_index do |tag, idx|
+      tag_group['attributes']['tags'].each_with_index do |tag, idx|
         padded_tag_number = format('%<tag_number>02i', { tag_number: idx + 1 })
-        Tag.create!(oligo: tag[:oligo],
+        Tag.create!(oligo: tag['oligo'],
                     group_id: "#{tag_group_name}-#{padded_tag_number}",
                     tag_set_id: tag_set.id)
       end
