@@ -70,6 +70,32 @@ namespace :tags do
     puts '-> ONT tag set for 96 sample wells successfully created'
   end
 
+  desc 'Fetch tags and tag sets from sequencescape'
+  task fetch: :environment do
+    constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
+    tag_group_name = constants_accessor.pcr_tag_set_name
+    puts "-> Fetching tag set '#{tag_group_name}' from sequencescape"
+    # TODO - use correct hostname for different environments
+    uri = URI("http://localhost:3000/api/v2/tag_groups?filter[name]=#{tag_group_name}")
+    res = Net::HTTP.get_response(uri)
+    if res.is_a?(Net::HTTPSuccess)
+      res_hash = eval(res.body)
+      tag_groups = res_hash[:data]
+      show_errors ["-> Expected one and only one tag group"] if tag_groups.count != 1
+      tag_group = tag_groups.first
+      show_errors ["-> Expected tag group with name '#{tag_group_name}'"] if tag_group[:attributes][:name] != tag_group_name
+      tag_set = TagSet.create!(name: tag_group_name, uuid: SecureRandom.uuid)
+      puts "-> #{tag_group_name} successfully created"
+      tag_group[:attributes][:tags].each_with_index do |tag, idx|
+        padded_tag_number = format('%<tag_number>02i', { tag_number: idx + 1 })
+        Tag.create!(oligo: tag[:oligo],
+                    group_id: "#{tag_group_name}-#{padded_tag_number}",
+                    tag_set_id: tag_set.id)
+      end
+      puts "-> #{tag_group_name} tags successfully created"
+    end
+  end
+
   task destroy: :environment do
     Tag.destroy_all
     puts '-> Tags successfully deleted'
