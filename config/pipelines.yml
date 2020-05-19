@@ -197,7 +197,7 @@ default: &default
             value: external_id
           study_uuid:
             type: :string
-            value: "test study id"
+            value: "8196c1f6-6a9c-11ea-8d18-fa163eac8e97"
           experiment_name:
             type: :model
             value: library.flowcell.run.id
