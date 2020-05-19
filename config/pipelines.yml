@@ -182,8 +182,9 @@ default: &default
           populate_on_row_type: :sample
   ont:
     covid:
-      pcr_tag_set_name: "ONT_EXP-PBC096"
-      message:
+      pcr_tag_set_name: &pcr_tag_set_name
+        'ONT_EXP-PBC096'
+      message: &ont_covid_message
         lims: *lims
         key: oseq_flowcell
         fields:
@@ -233,12 +234,36 @@ default: &default
 
 development:
   <<: *default
+  ont:
+    covid:
+      pcr_tag_set:
+        name: *pcr_tag_set_name
+        hostname: 'localhost:3000'
+      message: *ont_covid_message
 
 test:
   <<: *default
+  ont:
+    covid:
+      pcr_tag_set:
+        name: *pcr_tag_set_name
+        hostname: 'localhost:3000'
+      message: *ont_covid_message
 
 uat:
   <<: *default
+  ont:
+    covid:
+      pcr_tag_set:
+        name: *pcr_tag_set_name
+        hostname: 'uat.sequencescape.psd.sanger.ac.uk'
+      message: *ont_covid_message
 
 production:
   <<: *default
+  ont:
+    covid:
+      pcr_tag_set:
+        name: *pcr_tag_set_name
+        hostname: 'sequencescape.psd.sanger.ac.uk'
+      message: *ont_covid_message
