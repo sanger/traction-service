@@ -57,12 +57,12 @@ RSpec.describe 'Ont', type: :model, ont: true do
       expect(key[:instrument_slot]).to eq(request.library.flowcell.position)
     end
 
-    it 'must have a pipeline_id_lims' do
-      expect(key[:pipeline_id_lims]).to eq('not needed')
+    it 'passes pipeline_id_lims as nil' do
+      expect(key[:pipeline_id_lims]).to be_nil
     end
 
-    it 'must have a requested_data_type' do
-      expect(key[:requested_data_type]).to eq('not needed')
+    it 'passes requested_data_type as nil' do
+      expect(key[:requested_data_type]).to be_nil
     end
 
     it 'must have a tag_identifier' do
@@ -81,20 +81,20 @@ RSpec.describe 'Ont', type: :model, ont: true do
       expect(key[:tag_set_name]).to eq(request.tags.first.tag_set.name)
     end
 
-    it 'must have a tag2_identifier' do
-      expect(key[:tag2_identifier]).to eq('')
+    it 'passes tag2_identifier as nil' do
+      expect(key[:tag2_identifier]).to be_nil
     end
 
-    it 'must have a tag2_sequence' do
-      expect(key[:tag2_sequence]).to eq('')
+    it 'passes tag2_sequence as nil' do
+      expect(key[:tag2_sequence]).to be_nil
     end
 
-    it 'must have a tag2_set_id_lims' do
-      expect(key[:tag2_set_id_lims]).to eq('')
+    it 'passes tag2_set_id_lims as nil' do
+      expect(key[:tag2_set_id_lims]).to be_nil
     end
 
-    it 'must have a tag2_set_name' do
-      expect(key[:tag2_set_name]).to eq('')
+    it 'passes tag2_set_name as nil' do
+      expect(key[:tag2_set_name]).to be_nil
     end
   end
 end

@@ -2,7 +2,7 @@
 
 module Mutations
   # Mutation to create a COVID run.
-  class CreateCovidRunMutation < BaseMutation
+  class CreateCovidRunMutation < BaseCovidRunMutation
     argument :flowcells, [Types::Inputs::Ont::FlowcellInputType],
              'An array of flowcells to include in the run.', required: true
 
@@ -19,14 +19,6 @@ module Mutations
         { run: factory.run, errors: [] }
       else
         { run: nil, errors: factory.errors.full_messages }
-      end
-    end
-
-    private
-
-    def send_messages(run:)
-      run.flowcells.each do |flowcell|
-        Messages.publish(flowcell.library.requests, Pipelines.ont.covid.message)
       end
     end
   end

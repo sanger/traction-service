@@ -29,7 +29,7 @@ To create pacbio dummy runs: `bundle exec rails pacbio_runs:create`
 
 To create saphyr dummy runs: `bundle exec rails saphyr_runs:create`
 
-To create ont dummy runs: `bundle exec rails ont_runs:create`
+To create ont dummy data: `bundle exec rails ont_data:create`
 
 ## Database drop
 
@@ -52,7 +52,16 @@ When running with Traction-UI, UI expects the service to be on port 3100. `PORT=
 ## Messages - RabbitMQ
 
 Sending messages is disabled by default but if you would like to test messages, install a broker
-(RabbitMQ) and update the config in `config/bunny.yml`.
+(RabbitMQ) and update the config in `config/bunny.yml` by enabling the development settings.
+
+After installing RabbitMQ, you will need to create the exchange you will be sending messages over.
+You can do this by issuing a command in your terminal such as
+
+    rabbitmqadmin declare exchange name="bunny.examples.exchange" type="topic"
+
+making sure you match the exchange name with the one specified in `config/bunny.yml`.
+
+A web interface to administrate RabbitMQ is always available at [http://localhost:15672/](http://localhost:15672/) once the service is running.
 
 ## Miscellaneous
 
@@ -65,6 +74,14 @@ To see all the commands available from rails: `bundle exec rails -T`
 An ERD was created using the `rails-erd` gem by executing: `bundle exec erd`
 
 ![ERD](erd.jpg "ERD")
+
+### GraphQL
+
+The documentation for GraphQL can be accessed by navigating to [http://localhost:3000/v2/docs](http://localhost:3000/v2/docs) while the development rails server is running.
+This documentation can be updated by running the following commands:
+
+1. Update the stored schema: `bundle exec rails graphql:schema:dump`
+1. Update the documentation: `bundle exec rails graphql:docs:generate`
 
 ## Releases
 
