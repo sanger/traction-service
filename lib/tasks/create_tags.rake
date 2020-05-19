@@ -70,7 +70,7 @@ namespace :tags do
     puts '-> ONT tag set for 96 sample wells successfully created'
   end
 
-  desc 'Fetch tags and tag sets from sequencescape'
+  desc 'Fetch tags and tag sets from sequencescape. Used to seed ONT Covid tags'
   task fetch: :environment do
     constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
     tag_group_name = constants_accessor.pcr_tag_set_name
