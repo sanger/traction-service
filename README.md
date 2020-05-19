@@ -61,6 +61,8 @@ You can do this by issuing a command in your terminal such as
 
 making sure you match the exchange name with the one specified in `config/bunny.yml`.
 
+A web interface to administrate RabbitMQ is always available at [http://localhost:15672/](http://localhost:15672/) once the service is running.
+
 ## Miscellaneous
 
 ### Rails
@@ -72,6 +74,14 @@ To see all the commands available from rails: `bundle exec rails -T`
 An ERD was created using the `rails-erd` gem by executing: `bundle exec erd`
 
 ![ERD](erd.jpg "ERD")
+
+### GraphQL
+
+The documentation for GraphQL can be accessed by navigating to [http://localhost:3000/v2/docs](http://localhost:3000/v2/docs) while the development rails server is running.
+This documentation can be updated by running the following commands:
+
+1. Update the stored schema: `bundle exec rails graphql:schema:dump`
+1. Update the documentation: `bundle exec rails graphql:docs:generate`
 
 ## Releases
 
