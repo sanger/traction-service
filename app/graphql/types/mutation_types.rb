@@ -12,6 +12,9 @@ module Types
     field :create_covid_libraries,
           'Create a library from a 96-well plate containing Covid samples.',
           mutation: Mutations::CreateCovidLibrariesMutation
+    field :delete_covid_library,
+          'Delete a covid library and containing tube',
+          mutation: Mutations::DeleteCovidLibraryMutation
 
     # Ont::Runs
     field :create_covid_run,
