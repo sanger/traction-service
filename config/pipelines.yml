@@ -226,9 +226,6 @@ default: &default
                   value: tags.first.tag_set.name
 
 development: *default
-
 test: *default
-
 uat: *default
-
 production: *default
