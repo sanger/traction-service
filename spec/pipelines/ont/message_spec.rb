@@ -50,7 +50,7 @@ RSpec.describe 'Ont', type: :model, ont: true do
     context 'flowcells' do
       let(:flowcell) { run.flowcells.first }
       let(:message_flowcell) { key[:flowcells].first }
-      
+
       it 'will have the correct number' do
         expect(key[:flowcells].length).to eq(run.flowcells.count)
       end
@@ -81,7 +81,7 @@ RSpec.describe 'Ont', type: :model, ont: true do
           end
 
           it 'must have a study_uuid' do
-            expect(message_sample[:study_uuid]).to be_present
+            expect(message_sample[:study_uuid]).to eq(Pipelines.ont.covid.study_uuid)
           end
       
           it 'must have a tag_identifier' do
