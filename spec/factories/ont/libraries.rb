@@ -13,7 +13,7 @@ FactoryBot.define do
     end
 
     factory :ont_library_with_requests do
-      requests { [create(:ont_request)] }
+      requests { [create(:ont_request_with_tags)] }
     end
   end
 end
