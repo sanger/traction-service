@@ -20,7 +20,7 @@ RSpec.describe Ont::Run, type: :model, ont: true do
 
     it 'has an experiment name' do
       run = create(:ont_run)
-      expect(run.experiment_name).to eq("ontrun-#{run.id}")
+      expect(run.experiment_name).to eq("ONTRUN-#{run.id}")
     end
   end
 
