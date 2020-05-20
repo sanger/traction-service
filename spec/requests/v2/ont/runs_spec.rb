@@ -71,7 +71,7 @@ RSpec.describe 'GraphQL', type: :request do
 
     before do
       allow(Ont::RunFactory).to receive(:new).and_return(run_factory)
-      allow(Pipelines).to receive_message_chain(:ont, :covid, :message).and_return(message)
+      allow(Pipelines).to receive_message_chain(:ont, :message).and_return(message)
     end
 
     def valid_query
@@ -159,7 +159,7 @@ RSpec.describe 'GraphQL', type: :request do
     end
 
     before do
-      allow(Pipelines).to receive_message_chain(:ont, :covid, :message).and_return(message)
+      allow(Pipelines).to receive_message_chain(:ont, :message).and_return(message)
     end
 
     context 'invalid id' do

@@ -6,7 +6,7 @@ module Mutations
     protected
 
     def send_messages(run:)
-      Messages.publish(run, Pipelines.ont.covid.message)
+      Messages.publish(run, Pipelines.ont.message)
     end
   end
 end
