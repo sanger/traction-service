@@ -20,7 +20,7 @@ module Ont
     end
 
     def experiment_name
-      "ontrun-#{id}"
+      "ONTRUN-#{id}"
     end
   end
 end
