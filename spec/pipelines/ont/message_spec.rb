@@ -48,16 +48,14 @@ RSpec.describe 'Ont', type: :model, ont: true do
     end
 
     context 'flowcells' do
-
       let(:flowcell) { run.flowcells.first }
       let(:message_flowcell) { key[:flowcells].first }
-
+      
       it 'will have the correct number' do
         expect(key[:flowcells].length).to eq(run.flowcells.count)
       end
 
       context 'each' do
-
         it 'must have an id_flowcell_lims' do
           expect(message_flowcell[:id_flowcell_lims]).to eq(flowcell.uuid)
         end
@@ -65,11 +63,9 @@ RSpec.describe 'Ont', type: :model, ont: true do
         it 'must have an instrument_slot' do
           expect(message_flowcell[:instrument_slot]).to eq(flowcell.position)
         end
-
       end
 
       context 'samples' do
-
         let(:requests) { flowcell.requests }
 
         it 'will have the correct number' do
@@ -77,8 +73,7 @@ RSpec.describe 'Ont', type: :model, ont: true do
         end
 
         context 'each' do
-
-          let(:message_sample)  { message_flowcell[:samples].first }
+          let(:message_sample) { message_flowcell[:samples].first }
           let(:request) { requests.first }
 
           it 'must have a sample_uuid' do
