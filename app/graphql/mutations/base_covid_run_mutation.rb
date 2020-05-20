@@ -6,9 +6,7 @@ module Mutations
     protected
 
     def send_messages(run:)
-      run.flowcells.each do |flowcell|
-        Messages.publish(flowcell.library.requests, Pipelines.ont.covid.message)
-      end
+      Messages.publish(run, Pipelines.ont.covid.message)
     end
   end
 end

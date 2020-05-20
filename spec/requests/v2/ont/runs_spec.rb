@@ -105,11 +105,8 @@ RSpec.describe 'GraphQL', type: :request do
         .to match_array(run.flowcells.map { |fc| fc.library.name })
     end
 
-    it 'sends a message to the warehouse for each request' do
-      run.flowcells.each do |flowcell|
-        expect(Messages).to receive(:publish)
-          .with(flowcell.library.requests, message).exactly(:once)
-      end
+    it 'sends a single message to the warehouse' do
+      expect(Messages).to receive(:publish).with(run, message).exactly(:once)
 
       allow(run_factory).to receive(:save).and_return(true)
       allow(run_factory).to receive(:run).and_return(run)
@@ -245,10 +242,7 @@ RSpec.describe 'GraphQL', type: :request do
       end
 
       it 'sends a message to the warehouse for each request' do
-        run.flowcells.each do |flowcell|
-          expect(Messages).to receive(:publish)
-            .with(flowcell.library.requests, message).exactly(:once)
-        end
+        expect(Messages).to receive(:publish).with(run, message).exactly(:once)
 
         allow(run_factory).to receive(:save).and_return(true)
         allow(run_factory).to receive(:run).and_return(run)
@@ -326,10 +320,7 @@ RSpec.describe 'GraphQL', type: :request do
           end
 
           it 'sends a message to the warehouse for each request' do
-            run.flowcells.each do |flowcell|
-              expect(Messages).to receive(:publish)
-                .with(flowcell.library.requests, message).exactly(:once)
-            end
+            expect(Messages).to receive(:publish).with(run, message).exactly(:once)
 
             allow(run_factory).to receive(:save).and_return(true)
             allow(run_factory).to receive(:run).and_return(run)
