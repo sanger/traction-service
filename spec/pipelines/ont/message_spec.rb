@@ -81,7 +81,7 @@ RSpec.describe 'Ont', type: :model, ont: true do
           end
 
           it 'must have a study_uuid' do
-            expect(message_sample[:study_uuid]).to eq(Pipelines.ont.covid.study_uuid)
+            expect(message_sample[:study_uuid]).to be_present
           end
       
           it 'must have a tag_identifier' do
