@@ -8,8 +8,8 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
   let(:tag_set) { create(:tag_set_with_tags, name: tag_set_name) }
 
   before do
-    allow_any_instance_of(Pipelines::ConstantsAccessor)
-      .to receive(:pcr_tag_set_name)
+    allow(Pipelines::ConstantsAccessor)
+      .to receive(:ont_covid_pcr_tag_set_name)
       .and_return(tag_set_name)
   end
 
@@ -70,12 +70,20 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages).to_not be_empty
     end
-
   end
 
   context '#save' do
     context 'valid build' do
-      let(:attributes) { { well: well, request_attributes: { name: 'sample 1', external_id: '1', tag_oligo: tag_set.tags.first.oligo } } }
+      let(:attributes) do
+        {
+          well: well,
+          request_attributes: {
+            name: 'sample 1',
+            external_id: '1',
+            tag_oligo: tag_set.tags.first.oligo
+          }
+        }
+      end
       let(:factory) { Ont::RequestFactory.new(attributes) }
 
       before do

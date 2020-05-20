@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Ont', type: :model, ont: true do
   let(:config)            { Pipelines.configure(Pipelines.load_yaml) }
-  let(:pipeline_config)   { config.ont.covid }
+  let(:pipeline_config)   { config.ont.message }
   let(:run)               { create(:ont_run_with_flowcells) }
   let(:message) do
     Messages::Message.new(object: run, configuration: pipeline_config.message)
@@ -83,35 +83,35 @@ RSpec.describe 'Ont', type: :model, ont: true do
           it 'must have a study_uuid' do
             expect(message_sample[:study_uuid]).to be_present
           end
-      
+
           it 'must have a tag_identifier' do
             expect(message_sample[:tag_identifier]).to eq(request.tags.first.id)
           end
-      
+
           it 'must have a tag_sequence' do
             expect(message_sample[:tag_sequence]).to eq(request.tags.first.oligo)
           end
-      
+
           it 'must have a tag_set_id_lims' do
             expect(message_sample[:tag_set_id_lims]).to eq(request.tags.first.tag_set.id)
           end
-      
+
           it 'must have a tag_set_id_lims' do
             expect(message_sample[:tag_set_name]).to eq(request.tags.first.tag_set.name)
           end
-      
+
           it 'passes tag2_identifier as nil' do
             expect(message_sample[:tag2_identifier]).to be_nil
           end
-      
+
           it 'passes tag2_sequence as nil' do
             expect(message_sample[:tag2_sequence]).to be_nil
           end
-      
+
           it 'passes tag2_set_id_lims as nil' do
             expect(message_sample[:tag2_set_id_lims]).to be_nil
           end
-      
+
           it 'passes tag2_set_name as nil' do
             expect(message_sample[:tag2_set_name]).to be_nil
           end
