@@ -228,8 +228,6 @@ default: &default
                     type: :model
                     value: tags.first.tag_set.name
 
-
-
 development:
   <<: *default
   ont:
