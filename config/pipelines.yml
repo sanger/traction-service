@@ -181,12 +181,6 @@ default: &default
           value: request.sample_name
           populate_on_row_type: :sample
   ont:
-    covid:
-      pcr_tag_set: &pcr_tag_set
-        name: 'ONT_EXP-PBC096'
-        hostname: 'localhost:3000'
-      study_uuid: &study_uuid
-        'NEEDS OVERRIDE'
     message: &ont_covid_message
       lims: *lims
       key: oseq_flowcell_run
@@ -217,7 +211,7 @@ default: &default
                   value: external_id
                 study_uuid:
                   type: :constant
-                  value: Pipelines.ont.covid.study_uuid
+                  value: Pipelines::ConstantsAccessor.ont_covid_study_uuid
                 tag_identifier:
                   type: :model
                   value: tags.first.id
@@ -231,39 +225,10 @@ default: &default
                   type: :model
                   value: tags.first.tag_set.name
 
-development:
-  <<: *default
-  ont:
-    covid:
-      pcr_tag_set: *pcr_tag_set
-      study_uuid: '8196c1f6-6a9c-11ea-8d18-fa163eac8e97'
-    message: *ont_covid_message
+development: *default
 
-test:
-  <<: *default
-  ont:
-    covid:
-      pcr_tag_set: *pcr_tag_set
-      study_uuid: '8196c1f6-6a9c-11ea-8d18-fa163eac8e97'
-    message: *ont_covid_message
+test: *default
 
+uat: *default
 
-uat:
-  <<: *default
-  ont:
-    covid:
-      pcr_tag_set:
-        name: 'ONT_EXP-PBC096'
-        hostname: 'uat.sequencescape.psd.sanger.ac.uk'
-      study_uuid: '468e0cd0-6a9d-11ea-a04f-fa163e68e77d'
-    message: *ont_covid_message
-
-production:
-  <<: *default
-  ont:
-    covid:
-      pcr_tag_set:
-        name: 'ONT_EXP-PBC096'
-        hostname: 'sequencescape.psd.sanger.ac.uk'
-      study_uuid: 'd1c76052-6d28-11ea-bfad-fa163e9d6485'
-    message: *ont_covid_message
+production: *default
