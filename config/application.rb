@@ -47,17 +47,10 @@ module TractionService
 
     config.autoload_paths += %W{#{Rails.root}/app}
 
-     # Rails 5
-    config.middleware.insert_before 0, Rack::Cors do
-      allow do
-        origins '*'
-        resource '*', headers: :any, methods: [:get, :post, :put, :patch, :options]
-      end
-    end
-
     # RabbitMQ config
     config.bunny = config_for(:bunny)
 
     config.autoload_paths += %W{#{Rails.root}/app}
+
   end
 end

@@ -53,6 +53,8 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
+  config.db_connection = :sqlite
+
   config.middleware.insert_before 0, Rack::Cors do
     allow do
       origins '*'
