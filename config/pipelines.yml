@@ -182,84 +182,88 @@ default: &default
           populate_on_row_type: :sample
   ont:
     covid:
-      pcr_tag_set_name: &pcr_tag_set_name
-        'ONT_EXP-PBC096'
-      message: &ont_covid_message
-        lims: *lims
-        key: oseq_flowcell_run
-        fields:
-          last_updated: *timestamp
-          experiment_name:
-            type: :model
-            value: experiment_name
-          instrument_name:
-            type: :string
-            value: GXB02004
-          flowcells:
-            type: :array
-            value: flowcells
-            children:
-              id_flowcell_lims:
-                type: :model
-                value: uuid
-              instrument_slot:
-                type: :model
-                value: position
-              samples:
-                type: :array
-                value: requests
-                children:
-                  sample_uuid:
-                    type: :model
-                    value: external_id
-                  study_uuid:
-                    type: :string
-                    value: "8196c1f6-6a9c-11ea-8d18-fa163eac8e97"
-                  tag_identifier:
-                    type: :model
-                    value: tags.first.id
-                  tag_sequence:
-                    type: :model
-                    value: tags.first.oligo
-                  tag_set_id_lims:
-                    type: :model
-                    value: tags.first.tag_set.id
-                  tag_set_name:
-                    type: :model
-                    value: tags.first.tag_set.name
+      pcr_tag_set: &pcr_tag_set
+        name: 'ONT_EXP-PBC096'
+        hostname: 'localhost:3000'
+      study_uuid: &study_uuid
+        'NEEDS OVERRIDE'
+    message: &ont_covid_message
+      lims: *lims
+      key: oseq_flowcell_run
+      fields:
+        last_updated: *timestamp
+        experiment_name:
+          type: :model
+          value: experiment_name
+        instrument_name:
+          type: :string
+          value: GXB02004
+        flowcells:
+          type: :array
+          value: flowcells
+          children:
+            id_flowcell_lims:
+              type: :model
+              value: uuid
+            instrument_slot:
+              type: :model
+              value: position
+            samples:
+              type: :array
+              value: requests
+              children:
+                sample_uuid:
+                  type: :model
+                  value: external_id
+                study_uuid:
+                  type: :constant
+                  value: Pipelines.ont.covid.study_uuid
+                tag_identifier:
+                  type: :model
+                  value: tags.first.id
+                tag_sequence:
+                  type: :model
+                  value: tags.first.oligo
+                tag_set_id_lims:
+                  type: :model
+                  value: tags.first.tag_set.id
+                tag_set_name:
+                  type: :model
+                  value: tags.first.tag_set.name
 
 development:
   <<: *default
   ont:
     covid:
-      pcr_tag_set:
-        name: *pcr_tag_set_name
-        hostname: 'localhost:3000'
-      message: *ont_covid_message
+      pcr_tag_set: *pcr_tag_set
+      study_uuid: '8196c1f6-6a9c-11ea-8d18-fa163eac8e97'
+    message: *ont_covid_message
 
 test:
   <<: *default
   ont:
     covid:
-      pcr_tag_set:
-        name: *pcr_tag_set_name
-        hostname: 'localhost:3000'
-      message: *ont_covid_message
+      pcr_tag_set: *pcr_tag_set
+      study_uuid: '8196c1f6-6a9c-11ea-8d18-fa163eac8e97'
+    message: *ont_covid_message
+
 
 uat:
   <<: *default
   ont:
     covid:
       pcr_tag_set:
-        name: *pcr_tag_set_name
+        name: 'ONT_EXP-PBC096'
         hostname: 'uat.sequencescape.psd.sanger.ac.uk'
-      message: *ont_covid_message
+      study_uuid: '468e0cd0-6a9d-11ea-a04f-fa163e68e77d'
+    message: *ont_covid_message
 
 production:
   <<: *default
   ont:
     covid:
       pcr_tag_set:
-        name: *pcr_tag_set_name
+        name: 'ONT_EXP-PBC096'
         hostname: 'sequencescape.psd.sanger.ac.uk'
-      message: *ont_covid_message
+      study_uuid: 'd1c76052-6d28-11ea-bfad-fa163e9d6485'
+    message: *ont_covid_message
