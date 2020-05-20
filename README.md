@@ -65,6 +65,11 @@ A web interface to administrate RabbitMQ is always available at [http://localhos
 
 ## Miscellaneous
 
+### Git commit hook
+
+You may wish to enable the provided git commit hook if you want to be notified of rubocop issues in the files you've edited before they are committed.
+To do this, refer to the documentation in `.githooks/README.txt`.
+
 ### Rails
 
 To see all the commands available from rails: `bundle exec rails -T`
