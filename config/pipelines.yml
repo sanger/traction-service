@@ -237,7 +237,7 @@ test:
         name: *pcr_tag_set_name
         hostname: 'localhost:3000'
       message: *ont_covid_message
-
+        
 uat:
   <<: *default
   ont:
@@ -245,7 +245,11 @@ uat:
       pcr_tag_set:
         name: *pcr_tag_set_name
         hostname: 'uat.sequencescape.psd.sanger.ac.uk'
-      message: *ont_covid_message
+      message: 
+        <<: *ont_covid_message
+        study_uuid: 
+          type: :string
+          value: 468e0cd0-6a9d-11ea-a04f-fa163e68e77d
 
 production:
   <<: *default
@@ -254,4 +258,8 @@ production:
       pcr_tag_set:
         name: *pcr_tag_set_name
         hostname: 'sequencescape.psd.sanger.ac.uk'
-      message: *ont_covid_message
+      message: 
+        <<: *ont_covid_message
+        study_uuid: 
+          type: :string
+          value: d1c76052-6d28-11ea-bfad-fa163e9d6485
