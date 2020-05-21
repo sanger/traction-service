@@ -33,13 +33,13 @@ module Ont
       self.class.resolved_query.find(id)
     end
 
-    def self.includes_args(*except_keys)
-      if except_keys.include?(:requests)
-        [ flowcell: Ont::Flowcell.includes_args(:library) ]
-      elsif except_keys.include?(:flowcell)
+    def self.includes_args(except: except)
+      if except == :requests
+        [ flowcell: Ont::Flowcell.includes_args(except: :library) ]
+      elsif except == :flowcell
         [ requests: { tags: :tag_set } ]
       else
-        [ flowcell: Ont::Flowcell.includes_args(:library), requests: { tags: :tag_set } ]
+        [ flowcell: Ont::Flowcell.includes_args(except: :library), requests: { tags: :tag_set } ]
       end
     end
 

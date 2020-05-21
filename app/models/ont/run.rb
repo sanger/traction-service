@@ -27,10 +27,10 @@ module Ont
       self.class.resolved_query.find(id)
     end
 
-    def self.includes_args(*except_keys)
-      return [] if except_keys.include?(:flowcells)
+    def self.includes_args(except: except)
+      return [] if except == :flowcells
 
-      [ flowcells: Ont::Flowcell.includes_args(:run) ]
+      [flowcells: Ont::Flowcell.includes_args(except: :run)]
     end
 
     def self.resolved_run(id:)

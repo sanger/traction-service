@@ -92,11 +92,11 @@ RSpec.describe Ont::Run, type: :model, ont: true do
 
     context 'class' do
       it 'returns expected includes_args' do
-        expect(Ont::Run.includes_args).to eq([flowcells: Ont::Flowcell.includes_args(:run)])
+        expect(Ont::Run.includes_args).to eq([flowcells: Ont::Flowcell.includes_args(except: :run)])
       end
 
       it 'removes keys from includes_args' do
-        expect(Ont::Run.includes_args(:flowcells)).to be_empty
+        expect(Ont::Run.includes_args(except: :flowcells)).to be_empty
       end
 
       it 'returns a single run' do
