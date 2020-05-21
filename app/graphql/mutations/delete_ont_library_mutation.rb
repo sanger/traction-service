@@ -2,7 +2,7 @@
 
 module Mutations
   # Mutation to delete a single ONT library
-  class DeleteCovidLibraryMutation < BaseMutation
+  class DeleteOntLibraryMutation < BaseMutation
     argument :library_name, String, 'The name of the library to delete.', required: true
 
     field :success, Boolean, 'Whether the library was successfully deleted.', null: false
