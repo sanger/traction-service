@@ -52,8 +52,6 @@ module Ont
       resolved_query.all
     end
 
-    private
-
     def self.resolved_query
       Ont::Library.includes(includes_hash)
     end
