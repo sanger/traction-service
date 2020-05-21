@@ -61,13 +61,13 @@ module Types
     def ont_run(id:)
       return nil unless Ont::Run.exists?(id)
 
-      Ont::Run.find(id)
+      Ont::Run.resolved_run(id: id)
     end
 
     field :ont_runs, [Types::Outputs::Ont::RunType], 'Find all Ont Runs.', null: false
 
     def ont_runs
-      Ont::Run.all
+      Ont::Run.all_resolved_runs
     end
   end
 end

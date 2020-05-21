@@ -45,4 +45,10 @@ RSpec.describe Ont::Flowcell, type: :model, ont: true do
       expect(run.flowcells.count).to be(initial_flowcell_count - 1)
     end
   end
+
+  context 'resolve' do
+    it 'returns expected includes_hash' do
+      expect(Ont::Flowcell.includes_hash).to eq({ library: { requests: { tags: :tag_set } } })
+    end
+  end
 end

@@ -13,5 +13,9 @@ module Ont
               presence: true,
               uniqueness: { scope: :ont_run_id,
                             message: 'should only appear once within run' }
+
+    def self.includes_hash
+      { library: { requests: { tags: :tag_set } } }
+    end
   end
 end
