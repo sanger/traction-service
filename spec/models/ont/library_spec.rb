@@ -83,4 +83,40 @@ RSpec.describe Ont::Library, type: :model do
       expect(library.tube_barcode).to eq(tube.barcode)
     end
   end
+
+  context 'resolved' do
+    context 'instance' do
+      it 'returns a single library' do
+        library = create(:ont_library_with_requests)
+        expect(library.resolved_library).to eq(library)
+      end
+    end
+
+    context 'class' do
+      it 'returns expected includes_hash' do
+        expect(Ont::Library.includes_hash).to eq({
+          flowcell: Ont::Flowcell.includes_hash(:library),
+          requests: { tags: :tag_set }
+        })
+      end
+
+      it 'removes requests from includes_hash' do
+        expect(Ont::Library.includes_hash(:requests)).to eq({ flowcell: Ont::Flowcell.includes_hash(:library) })
+      end
+  
+      it 'removes flowcell from includes_hash' do
+        expect(Ont::Library.includes_hash(:flowcell)).to eq({ requests: { tags: :tag_set } })
+      end
+
+      it 'returns a single library' do
+        library = create(:ont_library_with_requests)
+        expect(Ont::Library.resolved_library(id: library.id)).to eq(library)
+      end
+
+      it 'returns all libraries' do
+        libraries = create_list(:ont_library_with_requests, 3)
+        expect(Ont::Library.all_resolved_libraries).to match_array(libraries)
+      end
+    end
+  end
 end

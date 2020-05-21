@@ -28,5 +28,34 @@ module Ont
 
       container_material.container.barcode
     end
+
+    def resolved_library
+      self.class.resolved_query.find(id)
+    end
+
+    def self.includes_hash(*except_keys)
+      if except_keys.include?(:requests)
+        { flowcell: Ont::Flowcell.includes_hash(:library) }
+      elsif except_keys.include?(:flowcell)
+        { requests: { tags: :tag_set } }
+      else
+        { flowcell: Ont::Flowcell.includes_hash(:library),
+          requests: { tags: :tag_set } }
+      end
+    end
+
+    def self.resolved_library(id:)
+      resolved_query.find(id)
+    end
+
+    def self.all_resolved_libraries
+      resolved_query.all
+    end
+
+    private
+
+    def self.resolved_query
+      Ont::Library.includes(includes_hash)
+    end
   end
 end
