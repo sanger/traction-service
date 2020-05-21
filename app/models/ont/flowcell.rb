@@ -14,14 +14,13 @@ module Ont
               uniqueness: { scope: :ont_run_id,
                             message: 'should only appear once within run' }
 
-    def self.includes_hash(*except_keys)
+    def self.includes_args(*except_keys)
       if except_keys.include?(:run)
-        { library: Ont::Library.includes_hash(:flowcell) }
+        [ library: Ont::Library.includes_args(:flowcell) ]
       elsif except_keys.include?(:library)
-        { run: Ont::Run.includes_hash(:flowcells) }
+        [ run: Ont::Run.includes_args(:flowcells) ]
       else
-        { library: Ont::Library.includes_hash(:flowcell),
-          run: Ont::Run.includes_hash(:flowcells) }
+        [ library: Ont::Library.includes_args(:flowcell), run: Ont::Run.includes_args(:flowcells) ]
       end
     end
   end

@@ -33,14 +33,13 @@ module Ont
       self.class.resolved_query.find(id)
     end
 
-    def self.includes_hash(*except_keys)
+    def self.includes_args(*except_keys)
       if except_keys.include?(:requests)
-        { flowcell: Ont::Flowcell.includes_hash(:library) }
+        [ flowcell: Ont::Flowcell.includes_args(:library) ]
       elsif except_keys.include?(:flowcell)
-        { requests: { tags: :tag_set } }
+        [ requests: { tags: :tag_set } ]
       else
-        { flowcell: Ont::Flowcell.includes_hash(:library),
-          requests: { tags: :tag_set } }
+        [ flowcell: Ont::Flowcell.includes_args(:library), requests: { tags: :tag_set } ]
       end
     end
 
@@ -53,7 +52,7 @@ module Ont
     end
 
     def self.resolved_query
-      Ont::Library.includes(includes_hash)
+      Ont::Library.includes(*includes_args)
     end
   end
 end

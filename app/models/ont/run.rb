@@ -27,10 +27,10 @@ module Ont
       self.class.resolved_query.find(id)
     end
 
-    def self.includes_hash(*except_keys)
-      return {} if except_keys.include?(:flowcells)
+    def self.includes_args(*except_keys)
+      return [] if except_keys.include?(:flowcells)
 
-      { flowcells: Ont::Flowcell.includes_hash(:run) }
+      [ flowcells: Ont::Flowcell.includes_args(:run) ]
     end
 
     def self.resolved_run(id:)
@@ -42,7 +42,7 @@ module Ont
     end
 
     def self.resolved_query
-      Ont::Run.includes(includes_hash)
+      Ont::Run.includes(*includes_args)
     end
   end
 end
