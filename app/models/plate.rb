@@ -26,7 +26,7 @@ class Plate < ApplicationRecord
     self.class.resolved_query.find(id)
   end
 
-  def self.includes_args(except: except)
+  def self.includes_args(except = nil)
     return [] if except == :wells
 
     [wells: { container_materials: :material }]

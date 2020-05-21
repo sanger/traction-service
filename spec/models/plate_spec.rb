@@ -40,7 +40,7 @@ RSpec.describe Plate, type: :model do
       end
 
       it 'removes keys from includes_args' do
-        expect(Plate.includes_args(except: :wells)).to be_empty
+        expect(Plate.includes_args(:wells)).to be_empty
       end
 
       it 'returns a single plate' do
