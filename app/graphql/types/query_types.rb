@@ -46,9 +46,9 @@ module Types
 
     def ont_libraries(unassigned_to_flowcells: false)
       if unassigned_to_flowcells
-        Ont::Library.left_outer_joins(:flowcell).where(ont_flowcells: { id: nil })
+        Ont::Library.includes(Ont::Library.includes_hash).left_outer_joins(:flowcell).where(ont_flowcells: { id: nil })
       else
-        Ont::Library.all
+        Ont::Library.all_resolved_libraries
       end
     end
 
