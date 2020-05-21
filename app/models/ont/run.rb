@@ -38,7 +38,7 @@ module Ont
     private
 
     def self.resolved_query
-      Ont::Run.includes(flowcells: { library: { requests: { tags: :tag_set } } })
+      Ont::Run.includes(flowcells: Ont::Flowcell.includes_hash)
     end
   end
 end
