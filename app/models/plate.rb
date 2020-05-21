@@ -27,17 +27,10 @@ class Plate < ApplicationRecord
   end
 
   def self.includes_args(except = nil)
-    return [] if except == :wells
+    args = []
+    args << { wells: Well.includes_args(:plate) } unless except == :wells
 
-    [wells: Well.includes_args(:plate)]
-  end
-
-  def self.resolved_plate(id:)
-    resolved_query.find(id)
-  end
-
-  def self.all_resolved_plates
-    resolved_query.all
+    args
   end
 
   def self.resolved_query

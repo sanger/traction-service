@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Ont::Library, type: :model do
@@ -25,9 +27,10 @@ RSpec.describe Ont::Library, type: :model do
     library = create(:ont_library)
     new_library = build(:ont_library, name: library.name)
     expect(new_library).to_not be_valid
-    expect(new_library.errors.full_messages).to contain_exactly('Name must be unique: a pool already exists for this plate')
+    expect(new_library.errors.full_messages)
+      .to contain_exactly('Name must be unique: a pool already exists for this plate')
   end
-  
+
   it 'does not delete associated requests on destroy' do
     library = create(:ont_library)
     num_requests = 3
@@ -47,20 +50,20 @@ RSpec.describe Ont::Library, type: :model do
     end
 
     it 'returns nil with nil pool' do
-      name = Ont::Library.library_name("PLATE-1234", nil)
+      name = Ont::Library.library_name('PLATE-1234', nil)
       expect(name).to be_nil
     end
 
     it 'returns expected name' do
-      name = Ont::Library.library_name("PLATE-1234", 2)
-      expect(name).to eq("PLATE-1234-2")
+      name = Ont::Library.library_name('PLATE-1234', 2)
+      expect(name).to eq('PLATE-1234-2')
     end
   end
 
   context 'plate barcode' do
     it 'returns expected plate barcode' do
       library = create(:ont_library)
-      expect(library.plate_barcode).to eq("PLATE-1-123456")
+      expect(library.plate_barcode).to eq('PLATE-1-123456')
     end
   end
 
@@ -94,28 +97,15 @@ RSpec.describe Ont::Library, type: :model do
 
     context 'class' do
       it 'returns expected includes_args' do
-        expect(Ont::Library.includes_args).to eq([
-          flowcell: Ont::Flowcell.includes_args(:library),
-          requests: Ont::Request.includes_args(:library)
-        ])
+        expect(Ont::Library.includes_args.flat_map(&:keys)).to contain_exactly(:flowcell, :requests)
       end
 
       it 'removes requests from includes_args' do
-        expect(Ont::Library.includes_args(:requests)).to eq([flowcell: Ont::Flowcell.includes_args(:library)])
+        expect(Ont::Library.includes_args(:requests).flat_map(&:keys)).to_not include(:requests)
       end
-  
+
       it 'removes flowcell from includes_args' do
-        expect(Ont::Library.includes_args(:flowcell)).to eq([requests: Ont::Request.includes_args(:library)])
-      end
-
-      it 'returns a single library' do
-        library = create(:ont_library_with_requests)
-        expect(Ont::Library.resolved_library(id: library.id)).to eq(library)
-      end
-
-      it 'returns all libraries' do
-        libraries = create_list(:ont_library_with_requests, 3)
-        expect(Ont::Library.all_resolved_libraries).to match_array(libraries)
+        expect(Ont::Library.includes_args(:flowcell).flat_map(&:keys)).to_not include(:flowcell)
       end
     end
   end

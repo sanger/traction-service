@@ -34,22 +34,11 @@ module Ont
     end
 
     def self.includes_args(except = nil)
-      if except == :requests
-        [flowcell: Ont::Flowcell.includes_args(:library)]
-      elsif except == :flowcell
-        [requests: Ont::Request.includes_args(:library)]
-      else
-        [flowcell: Ont::Flowcell.includes_args(:library),
-         requests: Ont::Request.includes_args(:library)]
-      end
-    end
+      args = []
+      args << { flowcell: Ont::Flowcell.includes_args(:library) } unless except == :flowcell
+      args << { requests: Ont::Request.includes_args(:library) } unless except == :requests
 
-    def self.resolved_library(id:)
-      resolved_query.find(id)
-    end
-
-    def self.all_resolved_libraries
-      resolved_query.all
+      args
     end
 
     def self.resolved_query

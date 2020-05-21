@@ -48,18 +48,15 @@ RSpec.describe Ont::Flowcell, type: :model, ont: true do
 
   context 'resolve' do
     it 'returns expected includes_args' do
-      expect(Ont::Flowcell.includes_args).to eq([
-        library: Ont::Library.includes_args(:flowcell),
-        run: Ont::Run.includes_args(:flowcells)
-      ])
+      expect(Ont::Flowcell.includes_args.flat_map(&:keys)).to contain_exactly(:library, :run)
     end
 
     it 'removes run from includes_args' do
-      expect(Ont::Flowcell.includes_args(:run)).to eq([library: Ont::Library.includes_args(:flowcell)])
+      expect(Ont::Flowcell.includes_args(:run).flat_map(&:keys)).to_not include(:run)
     end
 
     it 'removes library from includes_args' do
-      expect(Ont::Flowcell.includes_args(:library)).to eq([run: Ont::Run.includes_args(:flowcells)])
+      expect(Ont::Flowcell.includes_args(:library).flat_map(&:keys)).to_not include(:library)
     end
   end
 end

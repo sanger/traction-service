@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe ContainerMaterial, type: :model do
@@ -11,15 +13,15 @@ RSpec.describe ContainerMaterial, type: :model do
 
   context 'resolve' do
     it 'returns expected includes_args' do
-      expect(ContainerMaterial.includes_args).to eq([:container, :material])
+      expect(ContainerMaterial.includes_args).to contain_exactly(:container, :material)
     end
 
     it 'removes container from includes_args' do
-      expect(ContainerMaterial.includes_args(:container)).to eq([:material])
+      expect(ContainerMaterial.includes_args(:container)).to_not include(:container)
     end
 
     it 'removes run from includes_args' do
-      expect(ContainerMaterial.includes_args(:material)).to eq([:container])
+      expect(ContainerMaterial.includes_args(:material)).to_not include(:material)
     end
   end
 end

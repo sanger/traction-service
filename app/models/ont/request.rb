@@ -11,18 +11,15 @@ module Ont
     validates :name, :external_id, presence: true
 
     def self.includes_args(except = nil)
-      if except == :container_material
-        [library: Ont::Library.includes_args(:requests), tags: Tag.includes_args]
-      elsif except == :library
-        [container_material: ContainerMaterial.includes_args(:material), tags: Tag.includes_args]
-      elsif except == :tags
-        [container_material: ContainerMaterial.includes_args(:material),
-         library: Ont::Library.includes_args(:requests)]
-      else
-        [container_material: ContainerMaterial.includes_args(:material),
-         library: Ont::Library.includes_args(:requests),
-         tags: Tag.includes_args]
+      args = []
+      args << { tags: Tag.includes_args } unless except == :tags
+      args << { library: Ont::Library.includes_args(:requests) } unless except == :library
+
+      unless except == :container_material
+        args << { container_material: ContainerMaterial.includes_args(:material) }
       end
+
+      args
     end
   end
 end

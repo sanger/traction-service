@@ -6,7 +6,7 @@ module Mutations
     protected
 
     def send_messages(run:)
-      Messages.publish(run.resolved_run, Pipelines.ont.message)
+      Messages.publish(Ont::Run.resolved_query.find_by(id: run.id), Pipelines.ont.message)
     end
   end
 end

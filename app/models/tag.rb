@@ -18,6 +18,6 @@ class Tag < ApplicationRecord
                                      case_sensitive: false }
 
   def self.includes_args
-    [:tag_set]
+    :tag_set
   end
 end

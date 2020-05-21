@@ -1,9 +1,10 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 RSpec.describe Tag, type: :model do
-
   it 'is valid with all params' do
-    expect(create(:tag, oligo: "CGATCGAATAT", group_id: "1")).to be_valid
+    expect(create(:tag, oligo: 'CGATCGAATAT', group_id: '1')).to be_valid
   end
 
   it 'is not valid without an oligo' do
@@ -58,7 +59,7 @@ RSpec.describe Tag, type: :model do
 
   context 'resolve' do
     it 'returns expected includes_args' do
-      expect(Tag.includes_args).to eq([:tag_set])
+      expect(Tag.includes_args).to eq(:tag_set)
     end
   end
 end
