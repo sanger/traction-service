@@ -23,22 +23,11 @@ module Ont
       "ONTRUN-#{id}"
     end
 
-    def resolved_run
-      self.class.resolved_query.find(id)
-    end
-
     def self.includes_args(except = nil)
-      return [] if except == :flowcells
+      args = []
+      args << { flowcells: Ont::Flowcell.includes_args(:run) } unless except == :flowcells
 
-      [flowcells: Ont::Flowcell.includes_args(:run)]
-    end
-
-    def self.resolved_run(id:)
-      resolved_query.find(id)
-    end
-
-    def self.all_resolved_runs
-      resolved_query.all
+      args
     end
 
     def self.resolved_query

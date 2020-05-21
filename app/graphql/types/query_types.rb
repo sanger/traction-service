@@ -10,9 +10,7 @@ module Types
     end
 
     def well(id:)
-      return nil unless Well.exists?(id)
-
-      Well.resolved_well(id: id)
+      Well.resolved_query.find_by(id: id)
     end
 
     field :wells, [Types::Outputs::WellType], 'Find all Wells.', null: false do
@@ -21,9 +19,9 @@ module Types
 
     def wells(plate_id: nil)
       if plate_id.nil?
-        Well.all_resolved_wells
+        Well.resolved_query.all
       else
-        Well.includes(Well.includes_args).where(plate_id: plate_id)
+        Well.resolved_query.where(plate_id: plate_id)
       end
     end
 
@@ -32,7 +30,7 @@ module Types
     field :plates, [Types::Outputs::PlateType], 'Find all Plates.', null: false
 
     def plates
-      Plate.all_resolved_plates
+      Plate.resolved_query.all
     end
 
     # Ont::Libraries
@@ -46,10 +44,9 @@ module Types
 
     def ont_libraries(unassigned_to_flowcells: false)
       if unassigned_to_flowcells
-        Ont::Library.includes(Ont::Library.includes_args)
-                    .left_outer_joins(:flowcell).where(ont_flowcells: { id: nil })
+        Ont::Library.resolved_query.left_outer_joins(:flowcell).where(ont_flowcells: { id: nil })
       else
-        Ont::Library.all_resolved_libraries
+        Ont::Library.resolved_query.all
       end
     end
 
@@ -62,13 +59,13 @@ module Types
     def ont_run(id:)
       return nil unless Ont::Run.exists?(id)
 
-      Ont::Run.resolved_run(id: id)
+      Ont::Run.resolved_query.find_by(id: id)
     end
 
     field :ont_runs, [Types::Outputs::Ont::RunType], 'Find all Ont Runs.', null: false
 
     def ont_runs
-      Ont::Run.all_resolved_runs
+      Ont::Run.resolved_query.all
     end
   end
 end

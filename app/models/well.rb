@@ -21,21 +21,14 @@ class Well < ApplicationRecord
   end
 
   def self.includes_args(except = nil)
-    if except == :plate
-      [container_materials: ContainerMaterial.includes_args(:container)]
-    elsif except == :container_materials
-      [plate: Plate.includes_args(:wells)]
-    else
-      [container_materials: :material, plate: Plate.includes_args(:wells)]
+    args = []
+    args << { plate: Plate.includes_args(:wells) } unless except == :plate
+
+    unless except == :container_materials
+      args << { container_materials: ContainerMaterial.includes_args(:container) }
     end
-  end
 
-  def self.resolved_well(id:)
-    resolved_query.find(id)
-  end
-
-  def self.all_resolved_wells
-    resolved_query.all
+    args
   end
 
   def self.resolved_query

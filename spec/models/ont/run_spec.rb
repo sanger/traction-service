@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Ont::Run, type: :model, ont: true do
-
   context 'on creation' do
     it 'state is pending' do
       run = create(:ont_run)
@@ -83,30 +84,13 @@ RSpec.describe Ont::Run, type: :model, ont: true do
   end
 
   context 'resolved' do
-    context 'instance' do
-      it 'returns a single run' do
-        run = create(:ont_run)
-        expect(run.resolved_run).to eq(run)
-      end
-    end
-
     context 'class' do
       it 'returns expected includes_args' do
-        expect(Ont::Run.includes_args).to eq([flowcells: Ont::Flowcell.includes_args(:run)])
+        expect(Ont::Run.includes_args.flat_map(&:keys)).to contain_exactly(:flowcells)
       end
 
       it 'removes keys from includes_args' do
-        expect(Ont::Run.includes_args(:flowcells)).to be_empty
-      end
-
-      it 'returns a single run' do
-        run = create(:ont_run)
-        expect(Ont::Run.resolved_run(id: run.id)).to eq(run)
-      end
-
-      it 'returns all runs' do
-        runs = create_list(:ont_run, 3)
-        expect(Ont::Run.all_resolved_runs).to match_array(runs)
+        expect(Ont::Run.includes_args(:flowcells).flat_map(&:keys)).to_not include(:flowcells)
       end
     end
   end

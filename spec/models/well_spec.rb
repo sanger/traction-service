@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Well, type: :model do
   it_behaves_like 'container'
-  
+
   it 'must have plate' do
     expect(build(:well, plate: nil)).to_not be_valid
   end
@@ -36,28 +38,16 @@ RSpec.describe Well, type: :model do
 
     context 'class' do
       it 'returns expected includes_args' do
-        expect(Well.includes_args).to eq([
-          container_materials: :material,
-          plate: Plate.includes_args(:wells)
-        ])
+        expect(Well.includes_args.flat_map(&:keys)).to contain_exactly(:container_materials, :plate)
       end
 
       it 'removes plate from includes_args' do
-        expect(Well.includes_args(:plate)).to eq([container_materials: ContainerMaterial.includes_args(:container)])
+        expect(Well.includes_args(:plate).flat_map(&:keys)).to_not include(:plate)
       end
-  
+
       it 'removes container_materials from includes_args' do
-        expect(Well.includes_args(:container_materials)).to eq([plate: Plate.includes_args(:wells)])
-      end
-
-      it 'returns a single well' do
-        well = create(:well_with_tagged_ont_requests)
-        expect(Well.resolved_well(id: well.id)).to eq(well)
-      end
-
-      it 'returns all wells' do
-        wells = create_list(:well_with_tagged_ont_requests, 3)
-        expect(Well.all_resolved_wells).to match_array(wells)
+        expect(Well.includes_args(:container_materials).flat_map(&:keys))
+          .to_not include(:container_materials)
       end
     end
   end

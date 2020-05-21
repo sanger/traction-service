@@ -15,13 +15,11 @@ module Ont
                             message: 'should only appear once within run' }
 
     def self.includes_args(except = nil)
-      if except == :run
-        [library: Ont::Library.includes_args(:flowcell)]
-      elsif except == :library
-        [run: Ont::Run.includes_args(:flowcells)]
-      else
-        [library: Ont::Library.includes_args(:flowcell), run: Ont::Run.includes_args(:flowcells)]
-      end
+      args = []
+      args << { library: Ont::Library.includes_args(:flowcell) } unless except == :library
+      args << { run: Ont::Run.includes_args(:flowcells) } unless except == :run
+
+      args
     end
   end
 end
