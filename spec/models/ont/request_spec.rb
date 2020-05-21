@@ -24,7 +24,7 @@ RSpec.describe Ont::Request, type: :model, ont: true do
   context 'resolve' do
     it 'returns expected includes_args' do
       expect(Ont::Request.includes_args).to eq([
-        container_material: :container,
+        container_material: ContainerMaterial.includes_args(:material),
         library: Ont::Library.includes_args(:requests),
         tags: :tag_set ])
     end
@@ -37,12 +37,15 @@ RSpec.describe Ont::Request, type: :model, ont: true do
     end
 
     it 'removes library from includes_args' do
-      expect(Ont::Request.includes_args(:library)).to eq([container_material: :container, tags: :tag_set])
+      expect(Ont::Request.includes_args(:library)).to eq([
+        container_material: ContainerMaterial.includes_args(:material),
+        tags: :tag_set
+      ])
     end
 
     it 'removes tags from includes_args' do
       expect(Ont::Request.includes_args(:tags)).to eq([
-        container_material: :container,
+        container_material: ContainerMaterial.includes_args(:material),
         library: Ont::Library.includes_args(:requests)
       ])
     end
