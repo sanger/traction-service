@@ -93,19 +93,19 @@ RSpec.describe Ont::Library, type: :model do
     end
 
     context 'class' do
-      it 'returns expected includes_hash' do
-        expect(Ont::Library.includes_hash).to eq({
-          flowcell: Ont::Flowcell.includes_hash(:library),
+      it 'returns expected includes_args' do
+        expect(Ont::Library.includes_args).to eq([
+          flowcell: Ont::Flowcell.includes_args(:library),
           requests: { tags: :tag_set }
-        })
+        ])
       end
 
-      it 'removes requests from includes_hash' do
-        expect(Ont::Library.includes_hash(:requests)).to eq({ flowcell: Ont::Flowcell.includes_hash(:library) })
+      it 'removes requests from includes_args' do
+        expect(Ont::Library.includes_args(:requests)).to eq([flowcell: Ont::Flowcell.includes_args(:library)])
       end
   
-      it 'removes flowcell from includes_hash' do
-        expect(Ont::Library.includes_hash(:flowcell)).to eq({ requests: { tags: :tag_set } })
+      it 'removes flowcell from includes_args' do
+        expect(Ont::Library.includes_args(:flowcell)).to eq([requests: { tags: :tag_set }])
       end
 
       it 'returns a single library' do
