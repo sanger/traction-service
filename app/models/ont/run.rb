@@ -41,8 +41,6 @@ module Ont
       resolved_query.all
     end
 
-    private
-
     def self.resolved_query
       Ont::Run.includes(includes_hash)
     end
