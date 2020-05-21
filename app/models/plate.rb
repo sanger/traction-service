@@ -29,7 +29,7 @@ class Plate < ApplicationRecord
   def self.includes_args(except = nil)
     return [] if except == :wells
 
-    [wells: { container_materials: :material }]
+    [wells: Well.includes_args(:plate)]
   end
 
   def self.resolved_plate(id:)

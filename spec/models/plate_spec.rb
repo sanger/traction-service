@@ -36,7 +36,7 @@ RSpec.describe Plate, type: :model do
 
     context 'class' do
       it 'returns expected includes_args' do
-        expect(Plate.includes_args).to eq([wells: { container_materials: :material }])
+        expect(Plate.includes_args).to eq([wells: Well.includes_args(:plate)])
       end
 
       it 'removes keys from includes_args' do
