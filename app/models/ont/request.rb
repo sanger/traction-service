@@ -16,7 +16,8 @@ module Ont
       elsif except == :library
         [container_material: ContainerMaterial.includes_args(:material), tags: Tag.includes_args]
       elsif except == :tags
-        [container_material: ContainerMaterial.includes_args(:material), library: Ont::Library.includes_args(:requests)]
+        [container_material: ContainerMaterial.includes_args(:material),
+         library: Ont::Library.includes_args(:requests)]
       else
         [container_material: ContainerMaterial.includes_args(:material),
          library: Ont::Library.includes_args(:requests),
