@@ -33,13 +33,13 @@ module Ont
       self.class.resolved_query.find(id)
     end
 
-    def self.includes_args(except: except)
+    def self.includes_args(except = nil)
       if except == :requests
-        [ flowcell: Ont::Flowcell.includes_args(except: :library) ]
+        [ flowcell: Ont::Flowcell.includes_args(:library) ]
       elsif except == :flowcell
-        [ requests: Ont::Request.includes_args(except: :library) ]
+        [ requests: Ont::Request.includes_args(:library) ]
       else
-        [ flowcell: Ont::Flowcell.includes_args(except: :library), requests: Ont::Request.includes_args(except: :library) ]
+        [ flowcell: Ont::Flowcell.includes_args(:library), requests: Ont::Request.includes_args(:library) ]
       end
     end
 
