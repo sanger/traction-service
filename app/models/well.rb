@@ -22,7 +22,7 @@ class Well < ApplicationRecord
 
   def self.includes_args(except = nil)
     if except == :plate
-      [container_materials: :material]
+      [container_materials: ContainerMaterial.includes_args(:container)]
     elsif except == :container_materials
       [plate: Plate.includes_args(:wells)]
     else
