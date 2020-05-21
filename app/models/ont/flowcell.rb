@@ -16,11 +16,11 @@ module Ont
 
     def self.includes_args(except = nil)
       if except == :run
-        [ library: Ont::Library.includes_args(:flowcell) ]
+        [library: Ont::Library.includes_args(:flowcell)]
       elsif except == :library
-        [ run: Ont::Run.includes_args(:flowcells) ]
+        [run: Ont::Run.includes_args(:flowcells)]
       else
-        [ library: Ont::Library.includes_args(:flowcell), run: Ont::Run.includes_args(:flowcells) ]
+        [library: Ont::Library.includes_args(:flowcell), run: Ont::Run.includes_args(:flowcells)]
       end
     end
   end
