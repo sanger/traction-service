@@ -6,7 +6,9 @@ module Mutations
     protected
 
     def send_messages(run:)
-      Messages.publish(run, Pipelines.ont.message)
+      resolved_run = Ont::Run.includes(flowcells: { library: { requests: { tags: :tag_set } } })
+                             .find_by(id: run.id)
+      Messages.publish(resolved_run, Pipelines.ont.message)
     end
   end
 end
