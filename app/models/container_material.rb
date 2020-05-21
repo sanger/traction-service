@@ -14,7 +14,7 @@ class ContainerMaterial < ApplicationRecord
     elsif except == :material
       [:container]
     else
-      [:container, :material]
+      %i[container material]
     end
   end
 end
