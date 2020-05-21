@@ -12,7 +12,7 @@ module Types
     def well(id:)
       return nil unless Well.exists?(id)
 
-      Well.find(id)
+      Well.resolved_well(id: id)
     end
 
     field :wells, [Types::Outputs::WellType], 'Find all Wells.', null: false do
@@ -21,9 +21,9 @@ module Types
 
     def wells(plate_id: nil)
       if plate_id.nil?
-        Well.all
+        Well.all_resolved_wells
       else
-        Well.where(plate_id: plate_id)
+        Well.includes(Well.includes_args).where(plate_id: plate_id)
       end
     end
 
