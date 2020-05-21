@@ -43,7 +43,7 @@ RSpec.describe Well, type: :model do
       end
 
       it 'removes plate from includes_args' do
-        expect(Well.includes_args(:plate)).to eq([container_materials: :material])
+        expect(Well.includes_args(:plate)).to eq([container_materials: ContainerMaterial.includes_args(:container)])
       end
   
       it 'removes container_materials from includes_args' do
