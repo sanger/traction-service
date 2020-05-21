@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Mutations
-  # Mutation to update a COVID run.
-  class UpdateCovidRunMutation < BaseCovidRunMutation
+  # Mutation to update an ONT run.
+  class UpdateOntRunMutation < BaseOntRunMutation
     argument :id, ID, 'The ID of the Ont Run to update.', required: true
     argument :properties, Types::Inputs::Ont::RunInputType, 'The properties to update on the run.',
              required: true

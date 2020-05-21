@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Mutations
-  # Mutation base class for COVID run mutations.
-  class BaseCovidRunMutation < BaseMutation
+  # Mutation base class for ONT run mutations.
+  class BaseOntRunMutation < BaseMutation
     protected
 
     def send_messages(run:)
