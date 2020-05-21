@@ -181,7 +181,7 @@ default: &default
           value: request.sample_name
           populate_on_row_type: :sample
   ont:
-    message: &ont_covid_message
+    message:
       lims: *lims
       key: oseq_flowcell_run
       fields:
