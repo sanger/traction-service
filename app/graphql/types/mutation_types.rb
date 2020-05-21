@@ -3,7 +3,7 @@
 module Types
   # Mutations.
   class MutationTypes < BaseObject
-    # Ont::Plates
+    # Plates
     field :create_plate_with_samples,
           'Create a plate with a single sample per well.',
           mutation: Mutations::CreatePlateWithSamplesMutation

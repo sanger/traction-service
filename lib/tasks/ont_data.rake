@@ -50,7 +50,7 @@ def submit_create_plate_query(plate_no:, barcode:, wells:)
   puts "-> Creating plate number #{plate_no}"
   result = TractionGraphQL::Client.query(OntPlates::CreatePlate, variables: { barcode: barcode, wells: wells })
 
-  errors_array = result.original_hash['data']['createPlateWithCovidSamples']['errors']
+  errors_array = result.original_hash['data']['createPlateWithSamples']['errors']
   show_errors ["-> Failed to create plate number #{plate_no}: #{errors_array}"] if errors_array.any?
 
   puts "-> Succesfully created plate number #{plate_no}"
@@ -93,7 +93,7 @@ def submit_create_library_query(plate_barcode:)
   puts "-> Creating library for plate with barcode #{plate_barcode}"
   result = TractionGraphQL::Client.query(OntLibraries::CreateLibraries, variables: { plate_barcode: plate_barcode })
 
-  errors_array = result.original_hash['data']['createCovidLibraries']['errors']
+  errors_array = result.original_hash['data']['createOntLibraries']['errors']
   if errors_array.any?
     show_errors ["-> Failed to create library for plate with barcode #{plate_barcode}: #{errors_array}"]
   end
@@ -121,7 +121,7 @@ def submit_create_run_query(variables:, library_names:)
   puts "-> Creating run for libraries with names: #{joined_library_names}"
   result = TractionGraphQL::Client.query(OntRuns::CreateRun, variables: { flowcells: flowcells })
 
-  errors_array = result.original_hash['data']['createCovidRun']['errors']
+  errors_array = result.original_hash['data']['createOntRun']['errors']
   if errors_array.any?
     show_errors ["-> Failed to create run for libraries with names #{joined_library_names}: #{errors_array}"]
   end
