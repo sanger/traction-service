@@ -25,4 +25,33 @@ RSpec.describe Plate, type: :model do
     sorted_positions = plate.wells_by_row_then_column.map { |row| row.position }
     expect(sorted_positions).to eq(expected_positions)
   end
+
+  context 'resolved' do
+    context 'instance' do
+      it 'returns a single plate' do
+        plate = create(:plate_with_tagged_ont_requests)
+        expect(plate.resolved_plate).to eq(plate)
+      end
+    end
+
+    context 'class' do
+      it 'returns expected includes_args' do
+        expect(Plate.includes_args).to eq([wells: { container_materials: :material }])
+      end
+
+      it 'removes keys from includes_args' do
+        expect(Plate.includes_args(except: :wells)).to be_empty
+      end
+
+      it 'returns a single plate' do
+        plate = create(:plate_with_tagged_ont_requests)
+        expect(Plate.resolved_plate(id: plate.id)).to eq(plate)
+      end
+
+      it 'returns all plates' do
+        plates = create_list(:plate_with_tagged_ont_requests, 3)
+        expect(Plate.all_resolved_plates).to match_array(plates)
+      end
+    end
+  end
 end

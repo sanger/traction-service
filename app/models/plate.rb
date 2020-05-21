@@ -21,4 +21,26 @@ class Plate < ApplicationRecord
   def wells_by_row_then_column
     wells.sort { |a, b| a.row == b.row ? a.column <=> b.column : a.row <=> b.row }
   end
+
+  def resolved_plate
+    self.class.resolved_query.find(id)
+  end
+
+  def self.includes_args(except: except)
+    return [] if except == :wells
+
+    [wells: { container_materials: :material }]
+  end
+
+  def self.resolved_plate(id:)
+    resolved_query.find(id)
+  end
+
+  def self.all_resolved_plates
+    resolved_query.all
+  end
+
+  def self.resolved_query
+    Plate.includes(*includes_args)
+  end
 end

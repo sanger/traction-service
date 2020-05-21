@@ -32,7 +32,7 @@ module Types
     field :plates, [Types::Outputs::PlateType], 'Find all Plates.', null: false
 
     def plates
-      Plate.all
+      Plate.all_resolved_plates
     end
 
     # Ont::Libraries
