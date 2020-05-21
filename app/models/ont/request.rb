@@ -9,5 +9,17 @@ module Ont
     belongs_to :library, foreign_key: :ont_library_id, inverse_of: :requests,
                          dependent: :destroy, optional: true
     validates :name, :external_id, presence: true
+
+    def self.includes_args(except: except)
+      if except == :container_material
+        [ library: Ont::Library.includes_args(except: :requests), tags: :tag_set ]
+      elsif except == :library
+        [ container_material: :container, tags: :tag_set ]
+      elsif except == :tags
+        [ container_material: :container, library: Ont::Library.includes_args(except: :requests) ]
+      else
+        [ container_material: :container, library: Ont::Library.includes_args(except: :requests), tags: :tag_set ]
+      end
+    end
   end
 end

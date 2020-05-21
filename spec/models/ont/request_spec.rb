@@ -20,4 +20,31 @@ RSpec.describe Ont::Request, type: :model, ont: true do
     request = build(:ont_request, external_id: nil)
     expect(request).not_to be_valid
   end
+
+  context 'resolve' do
+    it 'returns expected includes_args' do
+      expect(Ont::Request.includes_args).to eq([
+        container_material: :container,
+        library: Ont::Library.includes_args(except: :requests),
+        tags: :tag_set ])
+    end
+
+    it 'removes container from includes_args' do
+      expect(Ont::Request.includes_args(except: :container_material)).to eq([
+        library: Ont::Library.includes_args(except: :requests),
+        tags: :tag_set
+      ])
+    end
+
+    it 'removes library from includes_args' do
+      expect(Ont::Request.includes_args(except: :library)).to eq([container_material: :container, tags: :tag_set])
+    end
+
+    it 'removes tags from includes_args' do
+      expect(Ont::Request.includes_args(except: :tags)).to eq([
+        container_material: :container,
+        library: Ont::Library.includes_args(except: :requests)
+      ])
+    end
+  end
 end
