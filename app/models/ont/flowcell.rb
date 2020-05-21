@@ -14,8 +14,15 @@ module Ont
               uniqueness: { scope: :ont_run_id,
                             message: 'should only appear once within run' }
 
-    def self.includes_hash
-      { library: { requests: { tags: :tag_set } } }
+    def self.includes_hash(*except_keys)
+      if except_keys.include?(:run)
+        { library: Ont::Library.includes_hash(:flowcell) }
+      elsif except_keys.include?(:library)
+        { run: Ont::Run.includes_hash(:flowcells) }
+      else
+        { library: Ont::Library.includes_hash(:flowcell),
+          run: Ont::Run.includes_hash(:flowcells) }
+      end
     end
   end
 end

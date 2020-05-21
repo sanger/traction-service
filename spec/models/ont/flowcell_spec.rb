@@ -48,7 +48,18 @@ RSpec.describe Ont::Flowcell, type: :model, ont: true do
 
   context 'resolve' do
     it 'returns expected includes_hash' do
-      expect(Ont::Flowcell.includes_hash).to eq({ library: { requests: { tags: :tag_set } } })
+      expect(Ont::Flowcell.includes_hash).to eq({
+        library: Ont::Library.includes_hash(:flowcell),
+        run: Ont::Run.includes_hash(:flowcells)
+      })
+    end
+
+    it 'removes run from includes_hash' do
+      expect(Ont::Flowcell.includes_hash(:run)).to eq({ library: Ont::Library.includes_hash(:flowcell) })
+    end
+
+    it 'removes library from includes_hash' do
+      expect(Ont::Flowcell.includes_hash(:library)).to eq({ run: Ont::Run.includes_hash(:flowcells) })
     end
   end
 end
