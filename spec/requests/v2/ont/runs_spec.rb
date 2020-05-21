@@ -77,7 +77,7 @@ RSpec.describe 'GraphQL', type: :request do
     def valid_query
       <<~GQL
         mutation {
-          createCovidRun( input: { flowcells: [] })
+          createOntRun( input: { flowcells: [] })
           { run { id state flowcells { position library { name } } } errors }
         }
       GQL
@@ -91,7 +91,7 @@ RSpec.describe 'GraphQL', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      mutation_json = json['data']['createCovidRun']
+      mutation_json = json['data']['createOntRun']
       run_json = mutation_json['run']
       expect(run_json['id']).to eq(run.id.to_s)
       expect(run_json['state']).to eq(run.state.upcase)
@@ -128,13 +128,13 @@ RSpec.describe 'GraphQL', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      mutation_json = json['data']['createCovidRun']
+      mutation_json = json['data']['createOntRun']
       expect(mutation_json['run']).to be_nil
       expect(mutation_json['errors']).to contain_exactly('test error')
     end
 
     def missing_required_fields_query
-      'mutation { createCovidRun(input: { flowcells: { bogus: "data" } } ) { run { id } } }'
+      'mutation { createOntRun(input: { flowcells: { bogus: "data" } } ) { run { id } } }'
     end
 
     it 'provides an error when missing required fields' do
@@ -152,7 +152,7 @@ RSpec.describe 'GraphQL', type: :request do
     def valid_query
       <<~GQL
         mutation ($id: ID!, $state: RunStateEnum, $flowcells: [FlowcellInput!]) {
-          updateCovidRun( input: { id: $id properties: { state: $state, flowcells: $flowcells } } )
+          updateOntRun( input: { id: $id properties: { state: $state, flowcells: $flowcells } } )
           { run { id state flowcells { position library { name } } } errors }
         }
       GQL
@@ -170,7 +170,7 @@ RSpec.describe 'GraphQL', type: :request do
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
 
-        mutation_json = json['data']['updateCovidRun']
+        mutation_json = json['data']['updateOntRun']
         expect(mutation_json['run']).to be_nil
       end
 
@@ -179,7 +179,7 @@ RSpec.describe 'GraphQL', type: :request do
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
 
-        mutation_json = json['data']['updateCovidRun']
+        mutation_json = json['data']['updateOntRun']
         expect(mutation_json['errors'].count).to be(1)
       end
 
@@ -202,7 +202,7 @@ RSpec.describe 'GraphQL', type: :request do
 
         run.reload # Must reload to see the updated values
 
-        mutation_json = json['data']['updateCovidRun']
+        mutation_json = json['data']['updateOntRun']
         expect(mutation_json['errors']).to be_empty
         run_json = mutation_json['run']
 
@@ -232,7 +232,7 @@ RSpec.describe 'GraphQL', type: :request do
 
         run.reload # Must reload to see the updated values
 
-        mutation_json = json['data']['updateCovidRun']
+        mutation_json = json['data']['updateOntRun']
         expect(mutation_json['errors']).to be_empty
         run_json = mutation_json['run']
 
@@ -265,7 +265,7 @@ RSpec.describe 'GraphQL', type: :request do
           expect(response).to have_http_status(:success)
           json = ActiveSupport::JSON.decode(response.body)
 
-          mutation_json = json['data']['updateCovidRun']
+          mutation_json = json['data']['updateOntRun']
           expect(mutation_json['errors']).to be_empty
           expect(mutation_json['run']).to be
         end
@@ -282,7 +282,7 @@ RSpec.describe 'GraphQL', type: :request do
           expect(response).to have_http_status(:success)
           json = ActiveSupport::JSON.decode(response.body)
 
-          mutation_json = json['data']['updateCovidRun']
+          mutation_json = json['data']['updateOntRun']
           expect(mutation_json['errors'].count).to be(1)
           expect(mutation_json['run']).to be_nil
         end
@@ -312,7 +312,7 @@ RSpec.describe 'GraphQL', type: :request do
             expect(response).to have_http_status(:success)
             json = ActiveSupport::JSON.decode(response.body)
 
-            mutation_json = json['data']['updateCovidRun']
+            mutation_json = json['data']['updateOntRun']
             expect(mutation_json['errors']).to be_empty
             expect(mutation_json['run']).to be
 
@@ -350,7 +350,7 @@ RSpec.describe 'GraphQL', type: :request do
             expect(response).to have_http_status(:success)
             json = ActiveSupport::JSON.decode(response.body)
 
-            mutation_json = json['data']['updateCovidRun']
+            mutation_json = json['data']['updateOntRun']
             expect(mutation_json['errors']).to contain_exactly('test error')
             expect(mutation_json['run']).to be_nil
           end

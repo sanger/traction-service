@@ -17,12 +17,12 @@ module Types
           mutation: Mutations::DeleteCovidLibraryMutation
 
     # Ont::Runs
-    field :create_covid_run,
-          'Create a GridION run containing up to five flow cells loaded with Covid libraries.',
-          mutation: Mutations::CreateCovidRunMutation
+    field :create_ont_run,
+          'Create a GridION run containing up to five flow cells loaded with ONT libraries.',
+          mutation: Mutations::CreateOntRunMutation
 
-    field :update_covid_run,
+    field :update_ont_run,
           'Update an existing GridION run with new properties.',
-          mutation: Mutations::UpdateCovidRunMutation
+          mutation: Mutations::UpdateOntRunMutation
   end
 end
