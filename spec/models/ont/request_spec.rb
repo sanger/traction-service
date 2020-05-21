@@ -26,20 +26,20 @@ RSpec.describe Ont::Request, type: :model, ont: true do
       expect(Ont::Request.includes_args).to eq([
         container_material: ContainerMaterial.includes_args(:material),
         library: Ont::Library.includes_args(:requests),
-        tags: :tag_set ])
+        tags: Tag.includes_args ])
     end
 
     it 'removes container from includes_args' do
       expect(Ont::Request.includes_args(:container_material)).to eq([
         library: Ont::Library.includes_args(:requests),
-        tags: :tag_set
+        tags: Tag.includes_args
       ])
     end
 
     it 'removes library from includes_args' do
       expect(Ont::Request.includes_args(:library)).to eq([
         container_material: ContainerMaterial.includes_args(:material),
-        tags: :tag_set
+        tags: Tag.includes_args
       ])
     end
 
