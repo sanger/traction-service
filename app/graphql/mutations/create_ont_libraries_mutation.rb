@@ -2,7 +2,7 @@
 
 module Mutations
   # Mutation to create ONT libraries from a plate.
-  class CreateCovidLibrariesMutation < BaseMutation
+  class CreateOntLibrariesMutation < BaseMutation
     argument :arguments, Types::Inputs::Ont::LibraryCreationArgumentsInputType,
              'Arguments describing the source for libraries to be created.', required: true
 
