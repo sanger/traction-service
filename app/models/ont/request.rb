@@ -14,11 +14,11 @@ module Ont
       if except == :container_material
         [library: Ont::Library.includes_args(:requests), tags: :tag_set]
       elsif except == :library
-        [container_material: :container, tags: :tag_set]
+        [container_material: ContainerMaterial.includes_args(:material), tags: :tag_set]
       elsif except == :tags
-        [container_material: :container, library: Ont::Library.includes_args(:requests)]
+        [container_material: ContainerMaterial.includes_args(:material), library: Ont::Library.includes_args(:requests)]
       else
-        [container_material: :container,
+        [container_material: ContainerMaterial.includes_args(:material),
          library: Ont::Library.includes_args(:requests),
          tags: :tag_set]
       end
