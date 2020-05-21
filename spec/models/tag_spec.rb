@@ -55,4 +55,10 @@ RSpec.describe Tag, type: :model do
     expect(TagTaggable.all.count).to eq(0)
     expect(Ont::Request.all.count).to eq(num_taggables)
   end
+
+  context 'resolve' do
+    it 'returns expected includes_args' do
+      expect(Tag.includes_args).to eq([:tag_set])
+    end
+  end
 end
