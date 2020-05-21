@@ -12,13 +12,15 @@ module Ont
 
     def self.includes_args(except = nil)
       if except == :container_material
-        [ library: Ont::Library.includes_args(:requests), tags: :tag_set ]
+        [library: Ont::Library.includes_args(:requests), tags: :tag_set]
       elsif except == :library
-        [ container_material: :container, tags: :tag_set ]
+        [container_material: :container, tags: :tag_set]
       elsif except == :tags
-        [ container_material: :container, library: Ont::Library.includes_args(:requests) ]
+        [container_material: :container, library: Ont::Library.includes_args(:requests)]
       else
-        [ container_material: :container, library: Ont::Library.includes_args(:requests), tags: :tag_set ]
+        [container_material: :container,
+         library: Ont::Library.includes_args(:requests),
+         tags: :tag_set]
       end
     end
   end

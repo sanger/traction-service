@@ -35,11 +35,12 @@ module Ont
 
     def self.includes_args(except = nil)
       if except == :requests
-        [ flowcell: Ont::Flowcell.includes_args(:library) ]
+        [flowcell: Ont::Flowcell.includes_args(:library)]
       elsif except == :flowcell
-        [ requests: Ont::Request.includes_args(:library) ]
+        [requests: Ont::Request.includes_args(:library)]
       else
-        [ flowcell: Ont::Flowcell.includes_args(:library), requests: Ont::Request.includes_args(:library) ]
+        [flowcell: Ont::Flowcell.includes_args(:library),
+         requests: Ont::Request.includes_args(:library)]
       end
     end
 
