@@ -91,6 +91,14 @@ RSpec.describe Ont::Run, type: :model, ont: true do
     end
 
     context 'class' do
+      it 'returns expected includes_hash' do
+        expect(Ont::Run.includes_hash).to eq({ flowcells: Ont::Flowcell.includes_hash(:run) })
+      end
+
+      it 'removes keys from includes_hash' do
+        expect(Ont::Run.includes_hash(:flowcells)).to eq({})
+      end
+
       it 'returns a single run' do
         run = create(:ont_run)
         expect(Ont::Run.resolved_run(id: run.id)).to eq(run)
