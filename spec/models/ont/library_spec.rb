@@ -96,7 +96,7 @@ RSpec.describe Ont::Library, type: :model do
       it 'returns expected includes_args' do
         expect(Ont::Library.includes_args).to eq([
           flowcell: Ont::Flowcell.includes_args(except: :library),
-          requests: { tags: :tag_set }
+          requests: Ont::Request.includes_args(except: :library)
         ])
       end
 
@@ -105,7 +105,7 @@ RSpec.describe Ont::Library, type: :model do
       end
   
       it 'removes flowcell from includes_args' do
-        expect(Ont::Library.includes_args(except: :flowcell)).to eq([requests: { tags: :tag_set }])
+        expect(Ont::Library.includes_args(except: :flowcell)).to eq([requests: Ont::Request.includes_args(except: :library)])
       end
 
       it 'returns a single library' do

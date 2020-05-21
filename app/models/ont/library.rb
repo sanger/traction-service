@@ -37,9 +37,9 @@ module Ont
       if except == :requests
         [ flowcell: Ont::Flowcell.includes_args(except: :library) ]
       elsif except == :flowcell
-        [ requests: { tags: :tag_set } ]
+        [ requests: Ont::Request.includes_args(except: :library) ]
       else
-        [ flowcell: Ont::Flowcell.includes_args(except: :library), requests: { tags: :tag_set } ]
+        [ flowcell: Ont::Flowcell.includes_args(except: :library), requests: Ont::Request.includes_args(except: :library) ]
       end
     end
 
