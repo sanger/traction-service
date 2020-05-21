@@ -71,7 +71,7 @@ RSpec.describe 'GraphQL', type: :request do
 
     before do
       allow(Ont::RunFactory).to receive(:new).and_return(run_factory)
-      allow(Pipelines).to receive_message_chain(:ont, :covid, :message).and_return(message)
+      allow(Pipelines).to receive_message_chain(:ont, :message).and_return(message)
     end
 
     def valid_query
@@ -105,11 +105,8 @@ RSpec.describe 'GraphQL', type: :request do
         .to match_array(run.flowcells.map { |fc| fc.library.name })
     end
 
-    it 'sends a message to the warehouse for each request' do
-      run.flowcells.each do |flowcell|
-        expect(Messages).to receive(:publish)
-          .with(flowcell.library.requests, message).exactly(:once)
-      end
+    it 'sends a single message to the warehouse' do
+      expect(Messages).to receive(:publish).with(run, message).exactly(:once)
 
       allow(run_factory).to receive(:save).and_return(true)
       allow(run_factory).to receive(:run).and_return(run)
@@ -162,7 +159,7 @@ RSpec.describe 'GraphQL', type: :request do
     end
 
     before do
-      allow(Pipelines).to receive_message_chain(:ont, :covid, :message).and_return(message)
+      allow(Pipelines).to receive_message_chain(:ont, :message).and_return(message)
     end
 
     context 'invalid id' do
@@ -245,10 +242,7 @@ RSpec.describe 'GraphQL', type: :request do
       end
 
       it 'sends a message to the warehouse for each request' do
-        run.flowcells.each do |flowcell|
-          expect(Messages).to receive(:publish)
-            .with(flowcell.library.requests, message).exactly(:once)
-        end
+        expect(Messages).to receive(:publish).with(run, message).exactly(:once)
 
         allow(run_factory).to receive(:save).and_return(true)
         allow(run_factory).to receive(:run).and_return(run)
@@ -326,10 +320,7 @@ RSpec.describe 'GraphQL', type: :request do
           end
 
           it 'sends a message to the warehouse for each request' do
-            run.flowcells.each do |flowcell|
-              expect(Messages).to receive(:publish)
-                .with(flowcell.library.requests, message).exactly(:once)
-            end
+            expect(Messages).to receive(:publish).with(run, message).exactly(:once)
 
             allow(run_factory).to receive(:save).and_return(true)
             allow(run_factory).to receive(:run).and_return(run)

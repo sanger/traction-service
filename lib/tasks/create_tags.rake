@@ -56,8 +56,8 @@ namespace :tags do
 
     puts
     puts '-> Creating ONT tag set for 96 sample wells'
-    constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
-    tag_set = TagSet.create!(name: constants_accessor.pcr_tag_set_name, uuid: SecureRandom.uuid)
+    tag_set_name = Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name
+    tag_set = TagSet.create!(name: tag_set_name, uuid: SecureRandom.uuid)
     puts '-> Tag Set successfully created'
     oligo = +'ACGTACGTACGTACGT'
     (1..96).each do |tag_index|
@@ -72,10 +72,10 @@ namespace :tags do
 
   desc 'Fetch tags and tag sets from sequencescape. Used to seed ONT Covid tags'
   task fetch: :environment do
-    constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
-    tag_group_name = constants_accessor.pcr_tag_set_name
+    tag_group_name = Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name
+    tag_group_hostname = Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_hostname
     puts "-> Fetching tag set '#{tag_group_name}' from sequencescape"
-    uri = URI("http://#{constants_accessor.pcr_tag_set_hostname}/api/v2/tag_groups?filter[name]=#{tag_group_name}")
+    uri = URI("http://#{tag_group_hostname}/api/v2/tag_groups?filter[name]=#{tag_group_name}")
     res = Net::HTTP.get_response(uri)
     if res.is_a?(Net::HTTPSuccess)
       json_res = JSON.parse(res.body)

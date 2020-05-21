@@ -73,19 +73,19 @@ end
 
 def create_number_of_plates(count, plate_no)
   variables = OntPlates::Variables.new
-  constants_accessor = Pipelines::ConstantsAccessor.new(Pipelines.ont.covid)
+  tag_set_name = Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name
 
   plate_no.upto(plate_no + count - 1).collect do |i|
-    create_plate(i, variables, constants_accessor)
+    create_plate(i, variables, tag_set_name)
   end
 end
 
-def create_plate(plate_no, variables, constants_accessor)
+def create_plate(plate_no, variables, tag_set_name)
   barcode = "DEMO-PLATE-#{plate_no}"
   submit_create_plate_query(plate_no: plate_no,
                             barcode: barcode,
                             wells: variables.wells(sample_name: "for Demo Plate #{plate_no}",
-                                                   constants_accessor: constants_accessor))
+                                                   tag_set_name: tag_set_name))
   barcode
 end
 

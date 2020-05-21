@@ -49,11 +49,11 @@ module OntPlates
 
   # Methods to create variable objects for GraphQL
   class Variables
-    def wells(sample_name:, constants_accessor:)
+    def wells(sample_name:, tag_set_name:)
       well_positions = ((1..12).to_a.product %w[A B C D E F G H]).map do |pair|
         "#{pair[1]}#{pair[0]}"
       end
-      tags = TagSet.find_by(name: constants_accessor.pcr_tag_set_name).tags
+      tags = TagSet.find_by(name: tag_set_name).tags
 
       well_positions.each_with_index.map do |position, index|
         well position: position, sample_name: sample_name, tag_oligo: tags[index].oligo
