@@ -81,4 +81,25 @@ RSpec.describe Ont::Run, type: :model, ont: true do
       end
     end
   end
+
+  context 'resolved' do
+    context 'instance' do
+      it 'returns a single run' do
+        run = create(:ont_run)
+        expect(run.resolved_run).to eq(run)
+      end
+    end
+
+    context 'class' do
+      it 'returns a single run' do
+        run = create(:ont_run)
+        expect(Ont::Run.resolved_run(id: run.id)).to eq(run)
+      end
+
+      it 'returns all runs' do
+        runs = create_list(:ont_run, 3)
+        expect(Ont::Run.all_resolved_runs).to match_array(runs)
+      end
+    end
+  end
 end
