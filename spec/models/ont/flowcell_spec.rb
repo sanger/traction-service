@@ -29,6 +29,11 @@ RSpec.describe Ont::Flowcell, type: :model, ont: true do
     expect(new_flowcell).to_not be_valid
   end
 
+  it 'returns library requests' do
+    flowcell = create(:ont_flowcell)
+    expect(flowcell.requests).to eq(flowcell.library.requests)
+  end
+
   context 'on #destroy' do
     let(:flowcell) { create(:ont_flowcell) }
 

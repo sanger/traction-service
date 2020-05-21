@@ -4,12 +4,10 @@ require 'rails_helper'
 
 RSpec.describe 'Ont', type: :model, ont: true do
   let(:config)            { Pipelines.configure(Pipelines.load_yaml) }
-  let(:pipeline_config)   { config.ont.covid }
-  let(:request) do
-    create(:ont_request_with_tags, tags_count: 1, library: create(:ont_flowcell).library)
-  end
+  let(:pipeline_config)   { config.ont.message }
+  let(:run)               { create(:ont_run_with_flowcells) }
   let(:message) do
-    Messages::Message.new(object: request, configuration: pipeline_config.message)
+    Messages::Message.new(object: run, configuration: pipeline_config.message)
   end
 
   it 'should have a lims' do
@@ -33,28 +31,12 @@ RSpec.describe 'Ont', type: :model, ont: true do
       expect(key[:last_updated]).to eq(timestamp)
     end
 
-    it 'must have an id_flowcell_lims' do
-      expect(key[:id_flowcell_lims]).to eq(request.library.flowcell.id)
-    end
-
-    it 'must have a sample_uuid' do
-      expect(key[:sample_uuid]).to eq(request.external_id)
-    end
-
-    it 'must have a study_uuid' do
-      expect(key[:study_uuid]).to eq('test study id')
-    end
-
     it 'must have an experiment_name' do
-      expect(key[:experiment_name]).to eq(request.library.flowcell.run.id)
+      expect(key[:experiment_name]).to eq(run.experiment_name)
     end
 
     it 'must have an instrument_name' do
       expect(key[:instrument_name]).to eq('GXB02004')
-    end
-
-    it 'must have an instrument_slot' do
-      expect(key[:instrument_slot]).to eq(request.library.flowcell.position)
     end
 
     it 'passes pipeline_id_lims as nil' do
@@ -65,36 +47,76 @@ RSpec.describe 'Ont', type: :model, ont: true do
       expect(key[:requested_data_type]).to be_nil
     end
 
-    it 'must have a tag_identifier' do
-      expect(key[:tag_identifier]).to eq(request.tags.first.id)
-    end
+    context 'flowcells' do
+      let(:flowcell) { run.flowcells.first }
+      let(:message_flowcell) { key[:flowcells].first }
 
-    it 'must have a tag_sequence' do
-      expect(key[:tag_sequence]).to eq(request.tags.first.oligo)
-    end
+      it 'will have the correct number' do
+        expect(key[:flowcells].length).to eq(run.flowcells.count)
+      end
 
-    it 'must have a tag_set_id_lims' do
-      expect(key[:tag_set_id_lims]).to eq(request.tags.first.tag_set.id)
-    end
+      context 'each' do
+        it 'must have an id_flowcell_lims' do
+          expect(message_flowcell[:id_flowcell_lims]).to eq(flowcell.uuid)
+        end
 
-    it 'must have a tag_set_id_lims' do
-      expect(key[:tag_set_name]).to eq(request.tags.first.tag_set.name)
-    end
+        it 'must have an instrument_slot' do
+          expect(message_flowcell[:instrument_slot]).to eq(flowcell.position)
+        end
+      end
 
-    it 'passes tag2_identifier as nil' do
-      expect(key[:tag2_identifier]).to be_nil
-    end
+      context 'samples' do
+        let(:requests) { flowcell.requests }
 
-    it 'passes tag2_sequence as nil' do
-      expect(key[:tag2_sequence]).to be_nil
-    end
+        it 'will have the correct number' do
+          expect(message_flowcell[:samples].length).to eq(requests.length)
+        end
 
-    it 'passes tag2_set_id_lims as nil' do
-      expect(key[:tag2_set_id_lims]).to be_nil
-    end
+        context 'each' do
+          let(:message_sample) { message_flowcell[:samples].first }
+          let(:request) { requests.first }
 
-    it 'passes tag2_set_name as nil' do
-      expect(key[:tag2_set_name]).to be_nil
+          it 'must have a sample_uuid' do
+            expect(message_sample[:sample_uuid]).to eq(request.external_id)
+          end
+
+          it 'must have a study_uuid' do
+            expect(message_sample[:study_uuid]).to be_present
+          end
+
+          it 'must have a tag_identifier' do
+            expect(message_sample[:tag_identifier]).to eq(request.tags.first.id)
+          end
+
+          it 'must have a tag_sequence' do
+            expect(message_sample[:tag_sequence]).to eq(request.tags.first.oligo)
+          end
+
+          it 'must have a tag_set_id_lims' do
+            expect(message_sample[:tag_set_id_lims]).to eq(request.tags.first.tag_set.id)
+          end
+
+          it 'must have a tag_set_id_lims' do
+            expect(message_sample[:tag_set_name]).to eq(request.tags.first.tag_set.name)
+          end
+
+          it 'passes tag2_identifier as nil' do
+            expect(message_sample[:tag2_identifier]).to be_nil
+          end
+
+          it 'passes tag2_sequence as nil' do
+            expect(message_sample[:tag2_sequence]).to be_nil
+          end
+
+          it 'passes tag2_set_id_lims as nil' do
+            expect(message_sample[:tag2_set_id_lims]).to be_nil
+          end
+
+          it 'passes tag2_set_name as nil' do
+            expect(message_sample[:tag2_set_name]).to be_nil
+          end
+        end
+      end
     end
   end
 end

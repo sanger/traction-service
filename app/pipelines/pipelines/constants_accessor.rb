@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
 module Pipelines
-  # An accessor for constant values in the pipeline for configuration options
+  # An accessor for environment constants
   class ConstantsAccessor
-    def initialize(base)
-      @constants_base = base
+    def self.ont_covid_pcr_tag_set_name
+      Rails.configuration.env_constants[:ont][:covid][:pcr_tag_set][:name]
     end
 
-    def pcr_tag_set_name
-      @constants_base.pcr_tag_set.name
+    def self.ont_covid_pcr_tag_set_hostname
+      Rails.configuration.env_constants[:ont][:covid][:pcr_tag_set][:hostname]
     end
 
-    def pcr_tag_set_hostname
-      @constants_base.pcr_tag_set.hostname
+    def self.ont_covid_study_uuid
+      Rails.configuration.env_constants[:ont][:covid][:study_uuid]
     end
   end
 end

@@ -1,33 +1,42 @@
 # frozen_string_literal: true
 
-require "rails_helper"
+require 'rails_helper'
 
 RSpec.describe Pipelines::ConstantsAccessor, type: :model do
   context 'when base constants are defined' do
-    let(:constants_accessor) {
-      Pipelines::ConstantsAccessor.new(
-        Class.new do
-          def pcr_tag_set
-            Class.new do
-              def name
-                'test tag set name'
-              end
+    let!(:mock_rails_config) do
+      Class.new do
+        def env_constants
+          {
+            ont: {
+              covid: {
+                pcr_tag_set: {
+                  name: 'test tag set name',
+                  hostname: 'test tag set host name'
+                },
+                study_uuid: 'test study uuid'
+              }
+            }
+          }
+        end
+      end.new
+    end
 
-              def hostname
-                'test hostname'
-              end
-            end.new
-          end
-        end.new
-      )
-    }
+    before do
+      allow(Rails).to receive(:configuration).and_return(mock_rails_config)
+    end
 
     it 'will return the pcr tag set name' do
-      expect(constants_accessor.pcr_tag_set_name).to eq('test tag set name')
+      expect(Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name).to eq('test tag set name')
     end
 
     it 'will return the pcr tag set hostname' do
-      expect(constants_accessor.pcr_tag_set_hostname).to eq('test hostname')
+      expect(Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_hostname)
+        .to eq('test tag set host name')
+    end
+
+    it 'will return the study id' do
+      expect(Pipelines::ConstantsAccessor.ont_covid_study_uuid).to eq('test study uuid')
     end
   end
 end

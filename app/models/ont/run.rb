@@ -18,5 +18,9 @@ module Ont
 
       update(deactivated_at: DateTime.current)
     end
+
+    def experiment_name
+      "ONTRUN-#{id}"
+    end
   end
 end

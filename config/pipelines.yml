@@ -181,77 +181,51 @@ default: &default
           value: request.sample_name
           populate_on_row_type: :sample
   ont:
-    covid:
-      pcr_tag_set_name: &pcr_tag_set_name
-        'ONT_EXP-PBC096'
-      message: &ont_covid_message
-        lims: *lims
-        key: oseq_flowcell
-        fields:
-          last_updated: *timestamp
-          id_flowcell_lims:
-            type: :model
-            value: library.flowcell.id
-          sample_uuid:
-            type: :model
-            value: external_id
-          study_uuid:
-            type: :string
-            value: "test study id"
-          experiment_name:
-            type: :model
-            value: library.flowcell.run.id
-          instrument_name:
-            type: :string
-            value: GXB02004
-          instrument_slot:
-            type: :model
-            value: library.flowcell.position
-          tag_identifier:
-            type: :model
-            value: tags.first.id
-          tag_sequence:
-            type: :model
-            value: tags.first.oligo
-          tag_set_id_lims:
-            type: :model
-            value: tags.first.tag_set.id
-          tag_set_name:
-            type: :model
-            value: tags.first.tag_set.name
+    message: &ont_covid_message
+      lims: *lims
+      key: oseq_flowcell_run
+      fields:
+        last_updated: *timestamp
+        experiment_name:
+          type: :model
+          value: experiment_name
+        instrument_name:
+          type: :string
+          value: GXB02004
+        flowcells:
+          type: :array
+          value: flowcells
+          children:
+            id_flowcell_lims:
+              type: :model
+              value: uuid
+            instrument_slot:
+              type: :model
+              value: position
+            samples:
+              type: :array
+              value: requests
+              children:
+                sample_uuid:
+                  type: :model
+                  value: external_id
+                study_uuid:
+                  type: :constant
+                  value: Pipelines::ConstantsAccessor.ont_covid_study_uuid
+                tag_identifier:
+                  type: :model
+                  value: tags.first.id
+                tag_sequence:
+                  type: :model
+                  value: tags.first.oligo
+                tag_set_id_lims:
+                  type: :model
+                  value: tags.first.tag_set.id
+                tag_set_name:
+                  type: :model
+                  value: tags.first.tag_set.name
 
-development:
-  <<: *default
-  ont:
-    covid:
-      pcr_tag_set:
-        name: *pcr_tag_set_name
-        hostname: 'localhost:3000'
-      message: *ont_covid_message
-
-test:
-  <<: *default
-  ont:
-    covid:
-      pcr_tag_set:
-        name: *pcr_tag_set_name
-        hostname: 'localhost:3000'
-      message: *ont_covid_message
-
-uat:
-  <<: *default
-  ont:
-    covid:
-      pcr_tag_set:
-        name: *pcr_tag_set_name
-        hostname: 'uat.sequencescape.psd.sanger.ac.uk'
-      message: *ont_covid_message
-
-production:
-  <<: *default
-  ont:
-    covid:
-      pcr_tag_set:
-        name: *pcr_tag_set_name
-        hostname: 'sequencescape.psd.sanger.ac.uk'
-      message: *ont_covid_message
+development: *default
+test: *default
+uat: *default
+production: *default
