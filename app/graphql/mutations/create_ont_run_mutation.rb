@@ -17,8 +17,9 @@ module Mutations
       factory = Ont::RunFactory.new(flowcells.to_a)
 
       if factory.save
-        send_messages(run: factory.run)
-        { run: factory.run, errors: [] }
+        resolved_run = Ont::Run.resolved_query.find_by(id: factory.run.id)
+        send_messages(resolved_run: resolved_run)
+        { run: resolved_run, errors: [] }
       else
         { run: nil, errors: factory.errors.full_messages }
       end

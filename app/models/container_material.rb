@@ -7,4 +7,12 @@
 class ContainerMaterial < ApplicationRecord
   belongs_to :container, polymorphic: true
   belongs_to :material, polymorphic: true
+
+  def self.includes_args(except = nil)
+    args = []
+    args << :material unless except == :material
+    args << :container unless except == :container
+
+    args
+  end
 end

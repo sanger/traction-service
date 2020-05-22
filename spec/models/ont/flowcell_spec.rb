@@ -45,4 +45,18 @@ RSpec.describe Ont::Flowcell, type: :model, ont: true do
       expect(run.flowcells.count).to be(initial_flowcell_count - 1)
     end
   end
+
+  context 'resolve' do
+    it 'returns expected includes_args' do
+      expect(Ont::Flowcell.includes_args.flat_map(&:keys)).to contain_exactly(:library, :run)
+    end
+
+    it 'removes run from includes_args' do
+      expect(Ont::Flowcell.includes_args(:run).flat_map(&:keys)).to_not include(:run)
+    end
+
+    it 'removes library from includes_args' do
+      expect(Ont::Flowcell.includes_args(:library).flat_map(&:keys)).to_not include(:library)
+    end
+  end
 end
