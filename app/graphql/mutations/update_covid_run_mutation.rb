@@ -24,8 +24,9 @@ module Mutations
       if errors&.any?
         { run: nil, errors: errors }
       else
-        send_messages(run: run) if run_was_updated
-        { run: run, errors: [] }
+        resolved_run = Ont::Run.resolved_query.find_by(id: run.id)
+        send_messages(resolved_run: resolved_run) if run_was_updated
+        { run: resolved_run, errors: [] }
       end
     end
 
