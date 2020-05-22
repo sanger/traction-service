@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="description" content="scalar GraphQL documentation">
+    <meta name="description" content="updateOntRun GraphQL documentation">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>scalar</title>
+    <title>updateOntRun</title>
     <link rel="stylesheet" href="/v2/docs/assets/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
     <script>
@@ -434,9 +434,35 @@
       <div id="content">
 
         <h1>
-<a id="scalars" class="anchor" href="#scalars" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Scalars</h1>
-<p>Scalars are primitive values such as <code>Int</code> or <code>String</code>.</p>
-<p>For more information, see <a href="https://facebook.github.io/graphql/#sec-Scalars">the GraphQL spec</a>.</p>
+<a id="updateontrun" class="anchor" href="#updateontrun" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>updateOntRun</h1>
+<p>Update an existing GridION run with new properties.</p>
+<h2>
+<a id="input-fields" class="anchor" href="#input-fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Input fields</h2>
+<div class="field-entry ">
+  <span id="input" class="field-name anchored">input (<code><a href="/v2/docs/input_object/updateontrunmutationinput">UpdateOntRunMutationInput!</a></code>)</span>
+  <div class="description-wrapper">
+  </div>
+</div>
+<h2>
+<a id="return-fields" class="anchor" href="#return-fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Return fields</h2>
+<div class="field-entry ">
+  <span id="clientmutationid" class="field-name anchored">clientMutationId (<code><a href="/v2/docs/scalar/string">String</a></code>)</span>
+  <div class="description-wrapper">
+   <p>A unique identifier for the client performing the mutation.</p>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="errors" class="field-name anchored">errors (<code><a href="/v2/docs/scalar/string">[String!]!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>An array of error messages thrown while updating the run.</p>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="run" class="field-name anchored">run (<code><a href="/v2/docs/object/run">Run</a></code>)</span>
+  <div class="description-wrapper">
+   <p>The updated Run, or null if errors were thrown.</p>
+  </div>
+</div>
 
       </div>
 
