@@ -29,26 +29,17 @@ RSpec.describe Well, type: :model do
   end
 
   context 'resolved' do
-    context 'instance' do
-      it 'returns a single well' do
-        well = create(:well_with_tagged_ont_requests)
-        expect(well.resolved_well).to eq(well)
-      end
+    it 'returns expected includes_args' do
+      expect(Well.includes_args.flat_map(&:keys)).to contain_exactly(:container_materials, :plate)
     end
 
-    context 'class' do
-      it 'returns expected includes_args' do
-        expect(Well.includes_args.flat_map(&:keys)).to contain_exactly(:container_materials, :plate)
-      end
+    it 'removes plate from includes_args' do
+      expect(Well.includes_args(:plate).flat_map(&:keys)).to_not include(:plate)
+    end
 
-      it 'removes plate from includes_args' do
-        expect(Well.includes_args(:plate).flat_map(&:keys)).to_not include(:plate)
-      end
-
-      it 'removes container_materials from includes_args' do
-        expect(Well.includes_args(:container_materials).flat_map(&:keys))
-          .to_not include(:container_materials)
-      end
+    it 'removes container_materials from includes_args' do
+      expect(Well.includes_args(:container_materials).flat_map(&:keys))
+        .to_not include(:container_materials)
     end
   end
 end

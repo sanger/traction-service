@@ -88,25 +88,16 @@ RSpec.describe Ont::Library, type: :model do
   end
 
   context 'resolved' do
-    context 'instance' do
-      it 'returns a single library' do
-        library = create(:ont_library_with_requests)
-        expect(library.resolved_library).to eq(library)
-      end
+    it 'returns expected includes_args' do
+      expect(Ont::Library.includes_args.flat_map(&:keys)).to contain_exactly(:flowcell, :requests)
     end
 
-    context 'class' do
-      it 'returns expected includes_args' do
-        expect(Ont::Library.includes_args.flat_map(&:keys)).to contain_exactly(:flowcell, :requests)
-      end
+    it 'removes requests from includes_args' do
+      expect(Ont::Library.includes_args(:requests).flat_map(&:keys)).to_not include(:requests)
+    end
 
-      it 'removes requests from includes_args' do
-        expect(Ont::Library.includes_args(:requests).flat_map(&:keys)).to_not include(:requests)
-      end
-
-      it 'removes flowcell from includes_args' do
-        expect(Ont::Library.includes_args(:flowcell).flat_map(&:keys)).to_not include(:flowcell)
-      end
+    it 'removes flowcell from includes_args' do
+      expect(Ont::Library.includes_args(:flowcell).flat_map(&:keys)).to_not include(:flowcell)
     end
   end
 end

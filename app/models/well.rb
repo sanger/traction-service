@@ -16,10 +16,6 @@ class Well < ApplicationRecord
     position[1..-1].to_i
   end
 
-  def resolved_well
-    self.class.resolved_query.find(id)
-  end
-
   def self.includes_args(except = nil)
     args = []
     args << { plate: Plate.includes_args(:wells) } unless except == :plate

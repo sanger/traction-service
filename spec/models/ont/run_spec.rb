@@ -84,14 +84,12 @@ RSpec.describe Ont::Run, type: :model, ont: true do
   end
 
   context 'resolved' do
-    context 'class' do
-      it 'returns expected includes_args' do
-        expect(Ont::Run.includes_args.flat_map(&:keys)).to contain_exactly(:flowcells)
-      end
+    it 'returns expected includes_args' do
+      expect(Ont::Run.includes_args.flat_map(&:keys)).to contain_exactly(:flowcells)
+    end
 
-      it 'removes keys from includes_args' do
-        expect(Ont::Run.includes_args(:flowcells).flat_map(&:keys)).to_not include(:flowcells)
-      end
+    it 'removes keys from includes_args' do
+      expect(Ont::Run.includes_args(:flowcells).flat_map(&:keys)).to_not include(:flowcells)
     end
   end
 end

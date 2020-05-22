@@ -22,10 +22,6 @@ class Plate < ApplicationRecord
     wells.sort { |a, b| a.row == b.row ? a.column <=> b.column : a.row <=> b.row }
   end
 
-  def resolved_plate
-    self.class.resolved_query.find(id)
-  end
-
   def self.includes_args(except = nil)
     args = []
     args << { wells: Well.includes_args(:plate) } unless except == :wells
