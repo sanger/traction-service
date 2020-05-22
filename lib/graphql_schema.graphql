@@ -53,7 +53,7 @@ input CreateOntRunMutationInput {
   flowcells: [FlowcellInput!]!
 
   """
-  The study type for the run (not currently used)
+  The study type for the run (not currently used).
   """
   studyType: StudyTypeEnum
 }
@@ -93,7 +93,7 @@ input CreatePlateWithSamplesMutationInput {
   clientMutationId: String
 
   """
-  The study type for the samples (not currently used)
+  The study type for the samples (not currently used).
   """
   studyType: StudyTypeEnum
 }

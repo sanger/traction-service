@@ -137,7 +137,7 @@
           "inputFields": [
             {
               "name": "studyType",
-              "description": "The study type for the run (not currently used)",
+              "description": "The study type for the run (not currently used).",
               "type": {
                 "kind": "ENUM",
                 "name": "StudyTypeEnum",
@@ -257,7 +257,7 @@
           "inputFields": [
             {
               "name": "studyType",
-              "description": "The study type for the samples (not currently used)",
+              "description": "The study type for the samples (not currently used).",
               "type": {
                 "kind": "ENUM",
                 "name": "StudyTypeEnum",
