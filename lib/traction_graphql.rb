@@ -36,7 +36,7 @@ end
 module OntPlates
   CreatePlate = TractionGraphQL::Client.parse <<~GRAPHQL
     mutation($barcode: String!, $wells: [WellWithSampleInput!]!) {
-      createPlateWithCovidSamples(
+      createPlateWithSamples(
         input: {
           arguments: {
             barcode: $barcode
@@ -79,7 +79,7 @@ end
 module OntLibraries
   CreateLibraries = TractionGraphQL::Client.parse <<~GRAPHQL
     mutation($plate_barcode: String!) {
-      createCovidLibraries( input: { arguments: { plateBarcode: $plate_barcode } } )
+      createOntLibraries( input: { arguments: { plateBarcode: $plate_barcode } } )
       { errors }
     }
   GRAPHQL
@@ -89,7 +89,7 @@ end
 module OntRuns
   CreateRun = TractionGraphQL::Client.parse <<~GRAPHQL
     mutation($flowcells: [FlowcellInput!]!) {
-      createCovidRun( input: { flowcells: $flowcells } )
+      createOntRun( input: { flowcells: $flowcells } )
       { errors }
     }
   GRAPHQL

@@ -56,7 +56,7 @@ RSpec.describe 'GraphQL', type: :request do
     def valid_query
       <<~GQL
         mutation {
-          createCovidLibraries(
+          createOntLibraries(
             input: {
               arguments: {
                 plateBarcode: "PLATE-1234"
@@ -81,7 +81,7 @@ RSpec.describe 'GraphQL', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      mutation_json = json['data']['createCovidLibraries']
+      mutation_json = json['data']['createOntLibraries']
       tubes_json = mutation_json['tubes']
 
       expect(tubes_json[0]['barcode']).to be_present
@@ -103,7 +103,7 @@ RSpec.describe 'GraphQL', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      mutation_json = json['data']['createCovidLibraries']
+      mutation_json = json['data']['createOntLibraries']
       expect(mutation_json['tubes']).to be_nil
       expect(mutation_json['errors']).to contain_exactly(
         'Libraries {:message=>"This is a test error"}'
@@ -111,7 +111,7 @@ RSpec.describe 'GraphQL', type: :request do
     end
 
     def missing_required_fields_query
-      'mutation { createCovidLibraries(input: { arguments: { bogus: "data" } } ) }'
+      'mutation { createOntLibraries(input: { arguments: { bogus: "data" } } ) }'
     end
 
     it 'provides an error when missing required fields' do
@@ -125,9 +125,9 @@ RSpec.describe 'GraphQL', type: :request do
   context 'delete library' do
     def valid_query(library_name)
       <<~GQL
-      mutation {
-        deleteCovidLibrary( input: { libraryName: "#{library_name}" } ) { success errors }
-      }
+        mutation {
+          deleteOntLibrary( input: { libraryName: "#{library_name}" } ) { success errors }
+        }
       GQL
     end
 
@@ -139,7 +139,7 @@ RSpec.describe 'GraphQL', type: :request do
       post v2_path, params: { query: valid_query('library does not exist') }
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
-      mutation_json = json['data']['deleteCovidLibrary']
+      mutation_json = json['data']['deleteOntLibrary']
       expect(mutation_json['success']).to be_falsey
       expect(mutation_json['errors']).not_to be_empty
     end
@@ -157,7 +157,7 @@ RSpec.describe 'GraphQL', type: :request do
         post v2_path, params: { query: valid_query(flowcell.library.name) }
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
-        mutation_json = json['data']['deleteCovidLibrary']
+        mutation_json = json['data']['deleteOntLibrary']
         expect(mutation_json['success']).to be_falsey
         expect(mutation_json['errors']).not_to be_empty
       end
@@ -192,34 +192,34 @@ RSpec.describe 'GraphQL', type: :request do
           post v2_path, params: { query: valid_query(library.name) }
           expect(response).to have_http_status(:success)
           json = ActiveSupport::JSON.decode(response.body)
-          mutation_json = json['data']['deleteCovidLibrary']
+          mutation_json = json['data']['deleteOntLibrary']
           expect(mutation_json['success']).to be_truthy
           expect(mutation_json['errors']).to be_empty
         end
-  
+
         it 'deletes library on success' do
           library = create(:ont_library)
           # sanity check
           expect(Ont::Library.count).to eq(1)
-  
+
           # post and test
           post v2_path, params: { query: valid_query(library.name) }
           expect(response).to have_http_status(:success)
           expect(Ont::Library.count).to eq(0)
         end
-  
+
         it 'returns false with errors if library deletion fails' do
           # mock error destroying library
           library = create(:ont_library)
           error_message = 'this is a test error'
           error = ActiveRecord::RecordNotDestroyed.new(error_message, library)
           allow_any_instance_of(Ont::Library).to receive(:destroy!).and_raise(error)
-  
+
           # post and test
           post v2_path, params: { query: valid_query(library.name) }
           expect(response).to have_http_status(:success)
           json = ActiveSupport::JSON.decode(response.body)
-          mutation_json = json['data']['deleteCovidLibrary']
+          mutation_json = json['data']['deleteOntLibrary']
           expect(mutation_json['success']).to be_falsey
           expect(mutation_json['errors']).to contain_exactly(error_message)
         end
@@ -231,51 +231,51 @@ RSpec.describe 'GraphQL', type: :request do
           post v2_path, params: { query: valid_query(library.name) }
           expect(response).to have_http_status(:success)
           json = ActiveSupport::JSON.decode(response.body)
-          mutation_json = json['data']['deleteCovidLibrary']
+          mutation_json = json['data']['deleteOntLibrary']
           expect(mutation_json['success']).to be_truthy
           expect(mutation_json['errors']).to be_empty
         end
-  
+
         it 'deletes library on success' do
           library = create(:ont_library_in_tube)
           # sanity check
           expect(Ont::Library.count).to eq(1)
-  
+
           # post and test
           post v2_path, params: { query: valid_query(library.name) }
           expect(response).to have_http_status(:success)
           expect(Ont::Library.count).to eq(0)
         end
-  
+
         it 'deletes tube on success' do
           library = create(:ont_library_in_tube)
           # sanity check
           expect(Tube.count).to eq(1)
           expect(ContainerMaterial.count).to eq(1)
-  
+
           # post and test
           post v2_path, params: { query: valid_query(library.name) }
           expect(response).to have_http_status(:success)
           expect(Tube.count).to eq(0)
           expect(ContainerMaterial.count).to eq(0)
         end
-  
+
         it 'returns false with errors if library deletion fails' do
           # mock error destroying library
           library = create(:ont_library_in_tube)
           error_message = 'this is a test error'
           error = ActiveRecord::RecordNotDestroyed.new(error_message, library)
           allow_any_instance_of(Ont::Library).to receive(:destroy!).and_raise(error)
-  
+
           # post and test
           post v2_path, params: { query: valid_query(library.name) }
           expect(response).to have_http_status(:success)
           json = ActiveSupport::JSON.decode(response.body)
-          mutation_json = json['data']['deleteCovidLibrary']
+          mutation_json = json['data']['deleteOntLibrary']
           expect(mutation_json['success']).to be_falsey
           expect(mutation_json['errors']).to contain_exactly(error_message)
         end
-  
+
         it 'does not delete tube if library deletion fails' do
           # mock error destroying library
           library = create(:ont_library_in_tube)
@@ -286,30 +286,30 @@ RSpec.describe 'GraphQL', type: :request do
           # sanity check
           expect(Tube.count).to eq(1)
           expect(ContainerMaterial.count).to eq(1)
-  
+
           # post and test
           post v2_path, params: { query: valid_query(library.name) }
           expect(response).to have_http_status(:success)
           expect(Tube.count).to eq(1)
           expect(ContainerMaterial.count).to eq(1)
         end
-  
+
         it 'returns false with errors if tube deletion fails' do
           # mock error destroying tube
           library = create(:ont_library_in_tube)
           error_message = 'this is a test error'
           error = ActiveRecord::RecordNotDestroyed.new(error_message, library.container)
           allow_any_instance_of(Tube).to receive(:destroy!).and_raise(error)
-  
+
           # post and test
           post v2_path, params: { query: valid_query(library.name) }
           expect(response).to have_http_status(:success)
           json = ActiveSupport::JSON.decode(response.body)
-          mutation_json = json['data']['deleteCovidLibrary']
+          mutation_json = json['data']['deleteOntLibrary']
           expect(mutation_json['success']).to be_falsey
           expect(mutation_json['errors']).to contain_exactly(error_message)
         end
-  
+
         it 'does not delete library if tube deletion fails' do
           # mock error destroying tube
           library = create(:ont_library_in_tube)
