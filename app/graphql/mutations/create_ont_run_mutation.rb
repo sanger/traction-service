@@ -4,7 +4,7 @@ module Mutations
   # Mutation to create an ONT run.
   class CreateOntRunMutation < BaseOntRunMutation
     argument :study_type, Types::Enums::Ont::StudyTypeEnum,
-             'The study type for the run (not currently used)', required: false
+             'The study type for the run (not currently used).', required: false
     argument :flowcells, [Types::Inputs::Ont::FlowcellInputType],
              'An array of flowcells to include in the run.', required: true
 
