@@ -31,21 +31,12 @@ RSpec.describe Plate, type: :model do
   end
 
   context 'resolved' do
-    context 'instance' do
-      it 'returns a single plate' do
-        plate = create(:plate_with_tagged_ont_requests)
-        expect(plate.resolved_plate).to eq(plate)
-      end
+    it 'returns expected includes_args' do
+      expect(Plate.includes_args.flat_map(&:keys)).to contain_exactly(:wells)
     end
 
-    context 'class' do
-      it 'returns expected includes_args' do
-        expect(Plate.includes_args.flat_map(&:keys)).to contain_exactly(:wells)
-      end
-
-      it 'removes keys from includes_args' do
-        expect(Plate.includes_args(:wells).flat_map(&:keys)).to_not include(:wells)
-      end
+    it 'removes keys from includes_args' do
+      expect(Plate.includes_args(:wells).flat_map(&:keys)).to_not include(:wells)
     end
   end
 end

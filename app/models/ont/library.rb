@@ -29,10 +29,6 @@ module Ont
       container_material.container.barcode
     end
 
-    def resolved_library
-      self.class.resolved_query.find(id)
-    end
-
     def self.includes_args(except = nil)
       args = []
       args << { flowcell: Ont::Flowcell.includes_args(:library) } unless except == :flowcell
