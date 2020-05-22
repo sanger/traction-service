@@ -15,12 +15,13 @@ RSpec.describe 'GraphQL', type: :request do
 
       it 'returns the run with valid ID' do
         post v2_path, params: { query:
-          "{ ontRun(id: #{run.id}) { id state deactivatedAt flowcells { id } } }" }
+          "{ ontRun(id: #{run.id}) { id state deactivatedAt experimentName flowcells { id } } }" }
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data']['ontRun']).to include(
           'id' => run.id.to_s, 'state' => run.state.to_s.upcase,
           'deactivatedAt' => run.deactivated_at,
+          'experimentName' => run.experiment_name,
           'flowcells' => run.flowcells.map { |fc| { 'id' => fc.id.to_s } }
         )
       end
