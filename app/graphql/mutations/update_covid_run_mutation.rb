@@ -21,12 +21,11 @@ module Mutations
       errors = update_run_flowcells(run, properties.flowcells)
       run_was_updated ||= errors.nil?
 
-      if errors&.any?
-        { run: nil, errors: errors }
-      else
-        send_messages(run: run) if run_was_updated
-        { run: run, errors: [] }
-      end
+      return { run: nil, errors: errors } if errors&.any?
+
+      resolved_run = Ont::Run.resolved_query.find_by(id: run.id)
+      send_messages(resolved_run: resolved_run) if run_was_updated
+      { run: resolved_run, errors: [] }
     end
 
     private

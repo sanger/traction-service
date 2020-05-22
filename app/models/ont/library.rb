@@ -28,5 +28,17 @@ module Ont
 
       container_material.container.barcode
     end
+
+    def self.includes_args(except = nil)
+      args = []
+      args << { flowcell: Ont::Flowcell.includes_args(:library) } unless except == :flowcell
+      args << { requests: Ont::Request.includes_args(:library) } unless except == :requests
+
+      args
+    end
+
+    def self.resolved_query
+      Ont::Library.includes(*includes_args)
+    end
   end
 end
