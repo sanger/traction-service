@@ -18,7 +18,8 @@ module Mutations
       factory = Ont::PlateFactory.new(arguments.to_h)
 
       if factory.save
-        { plate: factory.plate, errors: [] }
+        resolved_plate = Plate.resolved_query.find_by(id: factory.plate.id)
+        { plate: resolved_plate, errors: [] }
       else
         { plate: nil, errors: factory.errors.full_messages }
       end

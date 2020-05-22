@@ -16,7 +16,8 @@ module Mutations
       factory = Ont::LibraryFactory.new(arguments.to_h)
 
       if factory.save
-        { tubes: [factory.tube], errors: [] }
+        resolved_tube = Tube.resolved_query.find_by(id: factory.tube.id)
+        { tubes: [resolved_tube], errors: [] }
       else
         { tubes: nil, errors: factory.errors.full_messages }
       end

@@ -12,4 +12,17 @@ class Tube < ApplicationRecord
             'container_materials.material_type LIKE ?', "#{pipeline.capitalize}::%"
           )
         }
+
+  def self.includes_args(except = nil)
+    args = []
+    unless except == :container_materials
+      args << { container_materials: ContainerMaterial.includes_args(:container) }
+    end
+
+    args
+  end
+
+  def self.resolved_query
+    Tube.includes(*includes_args)
+  end
 end

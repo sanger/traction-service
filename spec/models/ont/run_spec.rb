@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Ont::Run, type: :model, ont: true do
-
   context 'on creation' do
     it 'state is pending' do
       run = create(:ont_run)
@@ -79,6 +80,16 @@ RSpec.describe Ont::Run, type: :model, ont: true do
         create(:ont_run, deactivated_at: DateTime.now)
         expect(Ont::Run.active.length).to eq 2
       end
+    end
+  end
+
+  context 'resolved' do
+    it 'returns expected includes_args' do
+      expect(Ont::Run.includes_args.flat_map(&:keys)).to contain_exactly(:flowcells)
+    end
+
+    it 'removes keys from includes_args' do
+      expect(Ont::Run.includes_args(:flowcells).flat_map(&:keys)).to_not include(:flowcells)
     end
   end
 end
