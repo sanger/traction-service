@@ -44,6 +44,16 @@ RSpec.describe Tube, type: :model do
         expect(Tube.by_pipeline(:pacbio).length).to eq 3
       end
     end
+  end
 
+  context 'resolved' do
+    it 'returns expected includes_args' do
+      expect(Tube.includes_args.flat_map(&:keys)).to contain_exactly(:container_materials)
+    end
+
+    it 'removes container_materials from includes_args' do
+      expect(Tube.includes_args(:container_materials).flat_map(&:keys))
+        .to_not include(:container_materials)
+    end
   end
 end
