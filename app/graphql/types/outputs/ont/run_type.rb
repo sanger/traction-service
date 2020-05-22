@@ -8,6 +8,7 @@ module Types
         field :state, Types::Enums::Ont::RunStateEnum, 'The state of this run.', null: false
         field :deactivated_at, String, 'The date this run was deactivated.', null: true
         field :flowcells, [FlowcellType], 'An array of flowcells in this run.', null: false
+        field :experiment_name, String, 'The experiment name of this run.', null: false
       end
     end
   end
