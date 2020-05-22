@@ -4,7 +4,7 @@ module Mutations
   # Mutation to create a plate with samples in wells.
   class CreatePlateWithSamplesMutation < BaseMutation
     argument :study_type, Types::Enums::Ont::StudyTypeEnum,
-             'The study type for the samples (not currently used)', required: false
+             'The study type for the samples (not currently used).', required: false
     argument :arguments, Types::Inputs::Ont::PlateWithSamplesInputType,
              'Arguments describing the plate, wells and samples to create a plate for.',
              required: true
