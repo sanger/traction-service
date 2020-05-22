@@ -5,8 +5,8 @@ module Mutations
   class BaseCovidRunMutation < BaseMutation
     protected
 
-    def send_messages(run:)
-      Messages.publish(Ont::Run.resolved_query.find_by(id: run.id), Pipelines.ont.message)
+    def send_messages(resolved_run:)
+      Messages.publish(resolved_run, Pipelines.ont.message)
     end
   end
 end
