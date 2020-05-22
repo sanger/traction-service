@@ -1466,6 +1466,24 @@
               "deprecationReason": null
             },
             {
+              "name": "experimentName",
+              "description": "The experiment name of this run.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "flowcells",
               "description": "An array of flowcells in this run.",
               "args": [

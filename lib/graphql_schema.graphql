@@ -405,6 +405,11 @@ type Run {
   deactivatedAt: String
 
   """
+  The experiment name of this run.
+  """
+  experimentName: String!
+
+  """
   An array of flowcells in this run.
   """
   flowcells: [Flowcell!]!
