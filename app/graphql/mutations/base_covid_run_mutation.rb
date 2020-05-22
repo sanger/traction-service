@@ -5,9 +5,7 @@ module Mutations
   class BaseCovidRunMutation < BaseMutation
     protected
 
-    def send_messages(run:)
-      resolved_run = Ont::Run.includes(flowcells: { library: { requests: { tags: :tag_set } } })
-                             .find_by(id: run.id)
+    def send_messages(resolved_run:)
       Messages.publish(resolved_run, Pipelines.ont.message)
     end
   end
