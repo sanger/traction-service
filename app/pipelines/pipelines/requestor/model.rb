@@ -12,7 +12,7 @@ module Pipelines
     module Model
       extend ActiveSupport::Concern
 
-      include Material
+      include TubeMaterial
 
       included do
         has_one :request, class_name: '::Request', as: :requestable, dependent: :nullify

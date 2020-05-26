@@ -10,7 +10,53 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_05_113809) do
+ActiveRecord::Schema.define(version: 2020_05_11_095257) do
+
+  create_table "container_materials", force: :cascade do |t|
+    t.string "container_type"
+    t.integer "container_id"
+    t.string "material_type"
+    t.integer "material_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["container_type", "container_id"], name: "index_container_materials_on_container_type_and_container_id"
+    t.index ["material_type", "material_id"], name: "index_container_materials_on_material_type_and_material_id"
+  end
+
+  create_table "ont_flowcells", force: :cascade do |t|
+    t.integer "position"
+    t.string "uuid"
+    t.integer "ont_run_id"
+    t.integer "ont_library_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["ont_library_id"], name: "index_ont_flowcells_on_ont_library_id"
+    t.index ["ont_run_id"], name: "index_ont_flowcells_on_ont_run_id"
+  end
+
+  create_table "ont_libraries", force: :cascade do |t|
+    t.string "name"
+    t.integer "pool"
+    t.integer "pool_size"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "ont_requests", force: :cascade do |t|
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "ont_library_id"
+    t.string "name"
+    t.string "external_id"
+    t.index ["ont_library_id"], name: "index_ont_requests_on_ont_library_id"
+  end
+
+  create_table "ont_runs", force: :cascade do |t|
+    t.integer "state", default: 0
+    t.datetime "deactivated_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
@@ -37,7 +83,9 @@ ActiveRecord::Schema.define(version: 2020_03_05_113809) do
     t.integer "pacbio_library_id"
     t.integer "tag_id"
     t.index ["pacbio_library_id"], name: "index_pacbio_request_libraries_on_pacbio_library_id"
+    t.index ["pacbio_request_id", "pacbio_library_id"], name: "index_rl_request_library"
     t.index ["pacbio_request_id"], name: "index_pacbio_request_libraries_on_pacbio_request_id"
+    t.index ["tag_id", "pacbio_library_id"], name: "index_rl_tag_library"
     t.index ["tag_id"], name: "index_pacbio_request_libraries_on_tag_id"
   end
 
@@ -65,6 +113,7 @@ ActiveRecord::Schema.define(version: 2020_03_05_113809) do
     t.datetime "updated_at", null: false
     t.integer "state", default: 0
     t.datetime "deactivated_at"
+    t.index ["name"], name: "index_pacbio_runs_on_name", unique: true
   end
 
   create_table "pacbio_well_libraries", force: :cascade do |t|
@@ -89,6 +138,12 @@ ActiveRecord::Schema.define(version: 2020_03_05_113809) do
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
 
+  create_table "plates", force: :cascade do |t|
+    t.string "barcode"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "requests", force: :cascade do |t|
     t.integer "sample_id"
     t.string "requestable_type"
@@ -106,6 +161,8 @@ ActiveRecord::Schema.define(version: 2020_03_05_113809) do
     t.string "species"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name", "external_id", "species"], name: "index_samples_on_name_and_external_id_and_species"
+    t.index ["name"], name: "index_samples_on_name", unique: true
   end
 
   create_table "saphyr_chips", force: :cascade do |t|
@@ -121,6 +178,7 @@ ActiveRecord::Schema.define(version: 2020_03_05_113809) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_saphyr_enzymes_on_name", unique: true
   end
 
   create_table "saphyr_flowcells", force: :cascade do |t|
@@ -165,22 +223,39 @@ ActiveRecord::Schema.define(version: 2020_03_05_113809) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "tag_taggables", force: :cascade do |t|
+    t.string "taggable_type"
+    t.integer "taggable_id"
+    t.integer "tag_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["tag_id"], name: "index_tag_taggables_on_tag_id"
+    t.index ["taggable_type", "taggable_id"], name: "index_tag_taggables_on_taggable_type_and_taggable_id"
+  end
+
   create_table "tags", force: :cascade do |t|
     t.string "oligo"
     t.string "group_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "tag_set_id"
+    t.index ["group_id", "tag_set_id"], name: "index_tags_on_group_id_and_tag_set_id", unique: true
+    t.index ["oligo", "tag_set_id"], name: "index_tags_on_oligo_and_tag_set_id", unique: true
     t.index ["tag_set_id"], name: "index_tags_on_tag_set_id"
   end
 
   create_table "tubes", force: :cascade do |t|
     t.string "barcode"
-    t.string "material_type"
-    t.integer "material_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["material_type", "material_id"], name: "index_tubes_on_material_type_and_material_id"
+  end
+
+  create_table "wells", force: :cascade do |t|
+    t.string "position"
+    t.integer "plate_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["plate_id"], name: "index_wells_on_plate_id"
   end
 
 end

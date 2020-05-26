@@ -7,7 +7,7 @@ module V1
       def create
         @library_factory = ::Pacbio::LibraryFactory.new(params_names)
         if @library_factory.save
-          @resources = @library_factory.libraries.map { |lib| LibraryResource.new(lib, nil) }
+          @resources = LibraryResource.new(@library_factory.library, nil)
           body = JSONAPI::ResourceSerializer.new(LibraryResource).serialize_to_hash(@resources)
           render json: body, status: :created
         else
@@ -38,9 +38,11 @@ module V1
 
       # TODO: abtsract behaviour for params names into separate library.
       def params_names
-        params.require(:data).require(:attributes)[:libraries].map do |param|
-          library_params_names(param)
-        end.flatten
+        params.require(:data)['attributes']
+              .permit(:volume, :concentration, :library_kit_barcode, :fragment_size, :relationships)
+              .to_h.tap do |library|
+          library[:requests] = request_param_names(params[:data][:attributes])
+        end
       end
 
       # necessary so only certain library params can be updated without
@@ -48,13 +50,6 @@ module V1
       def library_update_params
         params.require(:data).require(:attributes)
               .permit(:volume, :concentration, :library_kit_barcode, :fragment_size)
-      end
-
-      def library_params_names(params)
-        params.permit(:volume, :concentration, :library_kit_barcode, :fragment_size, :relationships)
-              .to_h.tap do |library|
-          library[:requests] = request_param_names(params)
-        end
       end
 
       def request_param_names(params)

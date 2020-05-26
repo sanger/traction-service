@@ -4,14 +4,14 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
   let!(:request) { create(:pacbio_request) }
   let!(:tag) { create(:tag) }
+  let!(:request2) { create(:pacbio_request) }
+  let!(:tag2) { create(:tag) }
 
   context '#get' do
-    let!(:library1)         { create(:pacbio_library) }
+    let!(:library1)         { create(:pacbio_library_in_tube) }
     let!(:request_library1)  { create(:pacbio_request_library, library: library1, request: request, tag: tag)}
-    let!(:library2)         { create(:pacbio_library) }
+    let!(:library2)         { create(:pacbio_library_in_tube) }
     let!(:request_library2)  { create(:pacbio_request_library, library: library2, request: request, tag: tag)}
-    let!(:tube1) { create(:tube, material: library1)}
-    let!(:tube2) { create(:tube, material: library2)}
 
     it 'returns a list of libraries' do
       get v1_pacbio_libraries_path, headers: json_api_headers
@@ -81,40 +81,35 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
   end
 
   context '#create' do
-    context 'when creating a single library' do
-
+    context 'when creating a singleplex library' do
       context 'on success' do
         let(:body) do
           {
             data: {
               type: 'libraries',
               attributes: {
-                libraries: [
-                   { 
-                      volume: 1.11,
-                      concentration: 2.22,
-                      library_kit_barcode: 'LK1234567',
-                      fragment_size: 100,
-                      relationships: {
-                        requests: {
-                          data: [
-                            { 
-                              type: 'requests', 
-                              id: request.id, 
-                              relationships: {
-                                tag: {
-                                  data: {
-                                    type: 'tags',
-                                    id: tag.id
-                                  }
-                                }
-                              }
+                volume: 1.11,
+                concentration: 2.22,
+                library_kit_barcode: 'LK1234567',
+                fragment_size: 100,
+                relationships: {
+                  requests: {
+                    data: [
+                      {
+                        type: 'requests',
+                        id: request.id,
+                        relationships: {
+                          tag: {
+                            data: {
+                              type: 'tags',
+                              id: tag.id
                             }
-                          ]
+                          }
                         }
                       }
+                    ]
                   }
-                ]
+                }
               }
             }
           }.to_json
@@ -129,222 +124,263 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
           expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to change { Pacbio::Library.count }.by(1)
         end
 
-        it 'creates a relationship between the request and tag' do
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          request_library = Pacbio::RequestLibrary.first
-          expect(request_library.library).to eq(Pacbio::Library.first) 
-          expect(request_library.request).to eq(request) 
-          expect(request_library.tag).to eq(tag) 
+        it 'creates a request library' do
+          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to change { Pacbio::RequestLibrary.count }.by(1)
         end
 
+        it 'associates the request, library request and tag' do
+          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          request_library = Pacbio::RequestLibrary.first
+          expect(request_library.library).to eq(Pacbio::Library.first)
+          expect(request_library.request).to eq(request)
+          expect(request_library.tag).to eq(tag)
+        end
       end
 
       context 'on failure' do
-        let(:body) do
-          {
-            data: {
-              type: 'libraries',
-              attributes: {
-                libraries: [
-                   { 
-                      concentration: 2.22,
-                      library_kit_barcode: 'LK1234567',
-                      fragment_size: 100,
-                      relationships: {
-                        requests: {
-                          data: [
-                            { 
-                              type: 'requests', 
-                              id: request.id, 
-                              relationships: {
-                                tag: {
-                                  data: {
-                                    type: 'tags',
-                                    id: tag.id
-                                  }
-                                }
+        context 'when library is invalid' do
+          let(:body) do
+            {
+              data: {
+                type: 'libraries',
+                attributes: {
+                  concentration: 2.22,
+                  library_kit_barcode: 'LK1234567',
+                  fragment_size: 100,
+                  relationships: {
+                    requests: {
+                      data: [
+                        {
+                          type: 'requests',
+                          id: request.id,
+                          relationships: {
+                            tag: {
+                              data: {
+                                type: 'tags',
+                                id: tag.id
                               }
                             }
-                          ]
+                          }
                         }
-                      }
+                      ]
+                    }
                   }
-                ]
+                }
               }
-            }
-          }.to_json
+            }.to_json
+          end
+
+          it 'returns unprocessable entity status' do
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it 'cannot create a library' do
+            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
+          end
+
+          it 'cannot create a request library' do
+            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::RequestLibrary, :count)
+          end
+
+          it 'has an error message' do
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(JSON.parse(response.body)["data"]).to include("errors" => {"volume"=>["can't be blank"]})
+          end
         end
 
-        it 'returns unprocessable entity status' do
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
+        context 'when the request is invalid' do
+          let(:request_empty_cost_code) { create(:pacbio_request, cost_code: "")}
 
-        it 'cannot create a library' do
-          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
-        end
+          let(:body) do
+            {
+              data: {
+                type: 'libraries',
+                attributes: {
+                  volume: 1.11,
+                  concentration: 2.22,
+                  library_kit_barcode: 'LK1234567',
+                  fragment_size: 100,
+                  relationships: {
+                    requests: {
+                      data: [
+                        {
+                          type: 'requests',
+                          id: request_empty_cost_code.id,
+                          relationships: {
+                            tag: {
+                              data: {
+                                type: 'tags',
+                                id: tag.id
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }.to_json
+          end
 
-        it 'has an error message' do
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          expect(JSON.parse(response.body)["data"]).to include("errors" => {"volume"=>["can't be blank"]})
-        end
+          it 'returns unprocessable entity status' do
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
 
+          it 'cannot create a library' do
+            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
+          end
+
+          it 'cannot create a request library' do
+            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::RequestLibrary, :count)
+          end
+
+          it 'has an error message' do
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(JSON.parse(response.body)["data"]).to include("errors" => {"cost code"=>["must be present"]})
+          end
+
+        end
       end
     end
- 
-    context 'when creating multiple libraries' do
 
+    context 'when creating a multiplex library' do
       context 'on success' do
-
         let(:body) do
         {
           data: {
             type: 'libraries',
             attributes: {
-              libraries: [
-                { 
-                    volume: 1.11,
-                    concentration: 2.22,
-                    library_kit_barcode: 'LK1234567',
-                    fragment_size: 100,
-                    relationships: {
-                      requests: {
-                        data: [
-                          { 
-                            type: 'requests', 
-                            id: request.id, 
-                            relationships: {
-                              tag: {
-                                data: {
-                                  type: 'tags',
-                                  id: tag.id
-                                }
-                              }
-                            }
-                          },
-                          { 
-                            type: 'requests', 
-                            id: request.id, 
-                            relationships: {
-                              tag: {
-                                data: {
-                                  type: 'tags',
-                                  id: tag.id
-                                }
-                              }
-                            }
+              volume: 1.11,
+              concentration: 2.22,
+              library_kit_barcode: 'LK1234567',
+              fragment_size: 100,
+              relationships: {
+                requests: {
+                  data: [
+                    {
+                      type: 'requests',
+                      id: request.id,
+                      relationships: {
+                        tag: {
+                          data: {
+                            type: 'tags',
+                            id: tag.id
                           }
-                        ]
+                        }
+                      }
+                    },
+                    {
+                      type: 'requests',
+                      id: request2.id,
+                      relationships: {
+                        tag: {
+                          data: {
+                            type: 'tags',
+                            id: tag2.id
+                          }
+                        }
                       }
                     }
-                },
-                { 
-                    volume: 1.11,
-                    concentration: 2.22,
-                    library_kit_barcode: 'LK1234567',
-                    fragment_size: 100,
-                    relationships: {
-                      requests: {
-                        data: [
-                          { 
-                            type: 'requests', 
-                            id: request.id, 
-                            relationships: {
-                              tag: {
-                                data: {
-                                  type: 'tags',
-                                  id: tag.id
-                                }
-                              }
-                            }
-                          }
-                        ]
-                      }
-                    }
+                  ]
                 }
-              ]
+              }
             }
           }
         }.to_json
         end
 
-        it 'can create libraries' do
+        it 'returns created  status' do
           post v1_pacbio_libraries_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:created)
-          expect(Pacbio::Library.count).to eq(2)
-          expect(Pacbio::Library.first.requests.count).to eq(2)
+        end
+
+        it 'creates a library' do
+          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to change(Pacbio::Library, :count).by(1)
+        end
+
+        it 'creates a request library' do
+          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to change(Pacbio::RequestLibrary, :count).by(2)
+        end
+
+        it 'associates the request, library request and tag' do
+          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          request_library1 = Pacbio::RequestLibrary.first
+          expect(request_library1.library).to eq(Pacbio::Library.first)
+          expect(request_library1.request).to eq(request)
+          expect(request_library1.tag).to eq(tag)
+          request_library2 = Pacbio::RequestLibrary.last
+          expect(request_library2.library).to eq(Pacbio::Library.first)
+          expect(request_library2.request).to eq(request2)
+          expect(request_library2.tag).to eq(tag2)
         end
       end
 
       context 'on failure' do
-
-         let(:body) do
-          {
-            data: {
-              type: 'libraries',
-              attributes: {
-                libraries: [
-                  { 
-                      volume: 1.11,
-                      concentration: 2.22,
-                      library_kit_barcode: 'LK1234567',
-                      fragment_size: 100,
-                      relationships: {
-                        requests: {
-                          data: [
-                            { 
-                              type: 'requests', 
-                              id: request.id, 
-                              relationships: {
-                                tag: {
-                                  data: {
-                                    type: 'tags',
-                                    id: tag.id
-                                  }
-                                }
+        context 'when two library requests are invalid' do
+          let(:body) do
+            {
+              data: {
+                type: 'libraries',
+                attributes: {
+                  volume: 1.11,
+                  concentration: 2.22,
+                  library_kit_barcode: 'LK1234567',
+                  fragment_size: 100,
+                  relationships: {
+                    requests: {
+                      data: [
+                        {
+                          type: 'requests',
+                          id: request.id,
+                          relationships: {
+                            tag: {
+                              data: {
+                                type: 'tags',
+                                id: tag.id
                               }
                             }
-                          ]
-                        }
-                      }
-                  },
-                  { 
-                      concentration: 2.22,
-                      library_kit_barcode: 'LK1234567',
-                      fragment_size: 100,
-                      relationships: {
-                        requests: {
-                          data: [
-                            { 
-                              type: 'requests', 
-                              id: request.id, 
-                              relationships: {
-                                tag: {
-                                  data: {
-                                    type: 'tags',
-                                    id: tag.id
-                                  }
-                                }
+                          }
+                        },
+                        {
+                          type: 'requests',
+                          id: request2.id,
+                          relationships: {
+                            tag: {
+                              data: {
+                                type: 'tags',
+                                id: tag.id
                               }
                             }
-                          ]
+                          }
                         }
-                      }
+                      ]
+                    }
                   }
-                ]
+                }
               }
-            }
-          }.to_json
-        end
+            }.to_json
+          end
 
-        it 'cannot create libraries' do
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
+          it 'returns unprocessable entity status' do
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
 
-        it 'has an error message' do
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          expect(JSON.parse(response.body)["data"]).to include("errors" => {"volume"=>["can't be blank"]})
+          it 'cannot create a library' do
+            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
+          end
+
+          it 'cannot create a request library' do
+            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::RequestLibrary, :count)
+          end
+
+          it 'has an error message' do
+            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+            expect(JSON.parse(response.body)["data"]).to include("errors" => {"tag"=>["is used more than once"]})
+          end
         end
       end
     end
@@ -354,6 +390,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
   context '#destroy' do
     context 'on success' do
       let!(:library) { create(:pacbio_library) }
+      let!(:request_library)        { create(:pacbio_request_library_with_tag, library: library) }
 
       it 'returns the correct status' do
         delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
@@ -364,10 +401,13 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
         expect { delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers }.to change { Pacbio::Library.count }.by(-1)
       end
 
+      it 'destroys the libraries request libraries' do
+        expect { delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers }.to change { Pacbio::RequestLibrary.count }.by(-1)
+      end
+
     end
 
     context 'on failure' do
-
       it 'does not delete the library' do
         delete "/v1/pacbio/libraries/dodgyid", headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)

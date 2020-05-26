@@ -3,6 +3,9 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
+  post '/v2', to: 'graphql#execute'
+  get '/v2/docs(/*path(.:format))', to: 'graphql#show_docs'
+
   namespace :v1 do
     jsonapi_resources :samples, only: %i[index create]
     jsonapi_resources :tags,    only: %i[index create update destroy]

@@ -1,39 +1,17 @@
 require "rails_helper"
 
 RSpec.describe Tube, type: :model do
+  it_behaves_like 'container'
+
+  context 'labware' do
+    let(:labware_model) { :tube_with_saphyr_request }
+    it_behaves_like 'labware'
+  end
+
   context 'on creation' do
     it 'should have a barcode' do
       tube = create(:tube_with_saphyr_request)
-      expect(tube.barcode).to eq "TRAC-#{tube.id}"
-    end
-  end
-
-  context 'polymorphic behavior' do
-    context 'schema' do
-      it { is_expected.to have_db_column(:material_id).of_type(:integer) }
-      it { is_expected.to have_db_column(:material_type).of_type(:string) }
-    end
-
-    context 'material' do
-      it { is_expected.to belong_to(:material) }
-
-      it 'must have material of either type sample or library' do
-        expect(build(:tube, material: nil)).not_to be_valid
-      end
-
-      it 'can have a request as its material' do
-        request = create(:saphyr_request)
-        tube_with_request = create(:tube, material: request)
-        expect(tube_with_request).to be_valid
-        expect(tube_with_request.material).to eq request
-      end
-
-      it 'can have a library as its material' do
-        library = create(:saphyr_library)
-        tube_with_library = create(:tube, material: library)
-        expect(tube_with_library).to be_valid
-        expect(tube_with_library.material).to eq library
-      end
+      expect(tube.barcode).to eq "TRAC-2-#{tube.id}"
     end
   end
 
@@ -66,6 +44,16 @@ RSpec.describe Tube, type: :model do
         expect(Tube.by_pipeline(:pacbio).length).to eq 3
       end
     end
+  end
 
+  context 'resolved' do
+    it 'returns expected includes_args' do
+      expect(Tube.includes_args.flat_map(&:keys)).to contain_exactly(:container_materials)
+    end
+
+    it 'removes container_materials from includes_args' do
+      expect(Tube.includes_args(:container_materials).flat_map(&:keys))
+        .to_not include(:container_materials)
+    end
   end
 end

@@ -8,6 +8,9 @@ ruby '2.6.3'
 gem 'bootsnap', '>= 1.1.0', require: false # Reduces boot times through caching
 gem 'bunny'
 gem 'exception_notification'
+gem 'graphql'
+gem 'graphql-client'
+gem 'graphql-docs'
 gem 'jsonapi-resources', '~> 0.9.10'
 gem 'mysql2'
 gem 'puma', '~> 3.11' # Use Puma as the app server
