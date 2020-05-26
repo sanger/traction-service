@@ -2,24 +2,31 @@ require 'rails_helper'
 
 RSpec.describe Pacbio::Run, type: :model, pacbio: true do
 
-  it 'must have a template prep kit box barcode' do
-    expect(build(:pacbio_run, template_prep_kit_box_barcode: nil)).to_not be_valid
+  context 'uuidable' do
+    let(:uuidable_model) { :pacbio_run }
+    it_behaves_like 'uuidable'
   end
 
-  it 'must have a binding kit box barcode' do
-    expect(build(:pacbio_run, binding_kit_box_barcode: nil)).to_not be_valid
-  end
+  context 'validation' do
+    it 'must have a template prep kit box barcode' do
+      expect(build(:pacbio_run, template_prep_kit_box_barcode: nil)).to_not be_valid
+    end
 
-  it 'must have a sequencing kit box barcode' do
-    expect(build(:pacbio_run, sequencing_kit_box_barcode: nil)).to_not be_valid
-  end
+    it 'must have a binding kit box barcode' do
+      expect(build(:pacbio_run, binding_kit_box_barcode: nil)).to_not be_valid
+    end
 
-  it 'must have a DNA control complex kit box barcode' do
-    expect(build(:pacbio_run, dna_control_complex_box_barcode: nil)).to_not be_valid
-  end
+    it 'must have a sequencing kit box barcode' do
+      expect(build(:pacbio_run, sequencing_kit_box_barcode: nil)).to_not be_valid
+    end
 
-  it 'will have a uuid after creation' do
-    expect(create(:pacbio_run).uuid).to be_present
+    it 'must have a DNA control complex kit box barcode' do
+      expect(build(:pacbio_run, dna_control_complex_box_barcode: nil)).to_not be_valid
+    end
+
+    it 'must have a template prep kit box barcode' do
+      expect(build(:pacbio_run, system_name: nil)).to_not be_valid
+    end
   end
 
   it 'must have a system_name default' do
@@ -137,7 +144,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
       expect(run.name).to eq('run1')
     end
 
-    it 'should be unique' do
+    it 'must be unique' do
       run = create(:pacbio_run, name: 'run1')
       expect(build(:pacbio_run, name: run.name)).to_not be_valid
     end

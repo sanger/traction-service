@@ -2,16 +2,27 @@
 
 # Tube
 class Tube < ApplicationRecord
-  belongs_to :material, inverse_of: :tube, polymorphic: true
-
-  after_create :generate_barcode
+  include Labware
+  include Container
 
   scope :by_barcode, ->(*barcodes) { where(barcode: barcodes) }
-  scope :by_pipeline, ->(pipeline) { where('material_type LIKE ?', "#{pipeline.capitalize}::%") }
+  scope :by_pipeline,
+        lambda { |pipeline|
+          joins(:container_materials).where(
+            'container_materials.material_type LIKE ?', "#{pipeline.capitalize}::%"
+          )
+        }
 
-  private
+  def self.includes_args(except = nil)
+    args = []
+    unless except == :container_materials
+      args << { container_materials: ContainerMaterial.includes_args(:container) }
+    end
 
-  def generate_barcode
-    update(barcode: "TRAC-#{id}")
+    args
+  end
+
+  def self.resolved_query
+    Tube.includes(*includes_args)
   end
 end

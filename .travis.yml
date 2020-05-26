@@ -21,6 +21,7 @@ before_script:
   - cp config/database.yml.travis config/database.yml
   - cp config/mailer.yml.example config/mailer.yml
   - cp config/bunny.yml.example config/bunny.yml
+  - cp config/env_constants.yml.example config/env_constants.yml
   - bundle exec rake db:reset
 
 script:

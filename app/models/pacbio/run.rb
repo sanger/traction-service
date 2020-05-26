@@ -6,8 +6,7 @@ module Pacbio
     NAME_PREFIX = 'TRACTION-RUN-'
 
     include Uuidable
-
-    enum state: { pending: 0, started: 1, completed: 2, cancelled: 3 }
+    include Stateful
 
     enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1 }
 
@@ -22,7 +21,7 @@ module Pacbio
               :sequencing_kit_box_barcode, :dna_control_complex_box_barcode,
               :system_name, presence: true
 
-    validates :name, uniqueness: true
+    validates :name, uniqueness: { case_sensitive: false }
 
     scope :active, -> { where(deactivated_at: nil) }
 

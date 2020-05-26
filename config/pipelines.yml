@@ -180,16 +180,52 @@ default: &default
           type: :model
           value: request.sample_name
           populate_on_row_type: :sample
+  ont:
+    message:
+      lims: *lims
+      key: oseq_flowcell_run
+      fields:
+        last_updated: *timestamp
+        experiment_name:
+          type: :model
+          value: experiment_name
+        instrument_name:
+          type: :string
+          value: GXB02004
+        flowcells:
+          type: :array
+          value: flowcells
+          children:
+            id_flowcell_lims:
+              type: :model
+              value: uuid
+            instrument_slot:
+              type: :model
+              value: position
+            samples:
+              type: :array
+              value: requests
+              children:
+                sample_uuid:
+                  type: :model
+                  value: external_id
+                study_uuid:
+                  type: :constant
+                  value: Pipelines::ConstantsAccessor.ont_covid_study_uuid
+                tag_identifier:
+                  type: :model
+                  value: tags.first.id
+                tag_sequence:
+                  type: :model
+                  value: tags.first.oligo
+                tag_set_id_lims:
+                  type: :model
+                  value: tags.first.tag_set.id
+                tag_set_name:
+                  type: :model
+                  value: tags.first.tag_set.name
 
-
-development:
-  <<: *default
-
-test:
-  <<: *default
-
-uat:
-  <<: *default
-
-production:
-  <<: *default
+development: *default
+test: *default
+uat: *default
+production: *default

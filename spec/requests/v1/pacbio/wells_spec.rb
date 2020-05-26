@@ -3,11 +3,8 @@ require "rails_helper"
 RSpec.describe 'WellsController', type: :request do
 
   context '#get' do
-    let!(:library1) { create(:pacbio_library) }
-    let!(:library2) { create(:pacbio_library) }
-
-    let!(:tube_with_library1) { create(:tube, material: library1) }
-    let!(:tube_with_library2) { create(:tube, material: library2) }
+    let!(:library1) { create(:pacbio_library_in_tube) }
+    let!(:library2) { create(:pacbio_library_in_tube) }
 
     let!(:well1) { create(:pacbio_well) }
     let!(:well2) { create(:pacbio_well, libraries: [library1, library2]) }
@@ -235,7 +232,7 @@ RSpec.describe 'WellsController', type: :request do
         end
 
         it 'has the correct data errors' do
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers          
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['data']['errors']
           expect(errors['tags'][0]).to include "are not unique within the libraries for well"
