@@ -21,10 +21,13 @@ module Ont
       return false unless options[:validate] == false || valid?
 
       # No need to validate any lower level objects since validation above has already checked them
-
+      request_data = []
+      unless request_factory.nil?
+        request_data = [request_factory.bulk_insert_serialise(plate_bulk_inserter, validate: false)]
+      end
       {
         well: plate_bulk_inserter.serialise_well(well),
-        request_data: request_factory.nil? ? [] : [request_factory.bulk_insert_serialise(plate_bulk_inserter, validate: false)]
+        request_data: request_data
       }
     end
 
