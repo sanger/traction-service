@@ -11,35 +11,32 @@ module Ont
     validate :check_well, :check_request_factory
 
     def initialize(attributes = {})
-      @raised_exceptions = []
       return unless attributes.key?(:well_attributes)
 
       @plate = attributes[:plate]
       build_well(attributes[:well_attributes])
     end
 
-    attr_reader :well
-
-    def save(**options)
+    def bulk_insert_serialise(plate_bulk_inserter, **options)
       return false unless options[:validate] == false || valid?
 
       # No need to validate any lower level objects since validation above has already checked them
-      ActiveRecord::Base.transaction do
-        well.save(validate: false)
-        request_factory&.save(validate: false)
-      end
-      true
+
+      {
+        well: plate_bulk_inserter.serialise_well(well),
+        request_data: request_factory.nil? ? [] : [request_factory.bulk_insert_serialise(plate_bulk_inserter, validate: false)]
+      }
     end
 
     private
 
-    attr_reader :request_factory
+    attr_reader :plate, :well, :request_factory
 
     def build_well(attributes)
       @well = ::Well.new(position: attributes[:position], plate: @plate)
       return unless attributes.key?(:sample)
 
-      @request_factory = RequestFactory.new(well: well, request_attributes: attributes[:sample])
+      @request_factory = RequestFactory.new(attributes[:sample])
     end
 
     def check_well
