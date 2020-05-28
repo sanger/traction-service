@@ -1123,7 +1123,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
-                      "name": "WellWithSampleInput",
+                      "name": "WellWithSamplesInput",
                       "ofType": null
                     }
                   }
@@ -2063,7 +2063,7 @@
         },
         {
           "kind": "INPUT_OBJECT",
-          "name": "WellWithSampleInput",
+          "name": "WellWithSamplesInput",
           "description": null,
           "fields": null,
           "inputFields": [
@@ -2078,12 +2078,20 @@
               "defaultValue": null
             },
             {
-              "name": "sample",
-              "description": "The sample contained in the well.",
+              "name": "samples",
+              "description": "Samples contained in the well.",
               "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "SampleInput",
-                "ofType": null
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "SampleInput",
+                    "ofType": null
+                  }
+                }
               },
               "defaultValue": null
             }
