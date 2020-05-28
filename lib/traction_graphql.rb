@@ -35,7 +35,7 @@ end
 # A set of GraphQL queries for creating ONT plates
 module OntPlates
   CreatePlate = TractionGraphQL::Client.parse <<~GRAPHQL
-    mutation($barcode: String!, $wells: [WellWithSampleInput!]!) {
+    mutation($barcode: String!, $wells: [WellWithSamplesInput!]!) {
       createPlateWithSamples(
         input: {
           arguments: {
@@ -65,11 +65,11 @@ module OntPlates
     def well(position:, sample_name:, tag_oligo:)
       {
         'position' => position,
-        'sample' => {
+        'samples' => [{
           'name' => "Sample #{sample_name} in #{position}",
           'externalId' => "#{position}-ExtId",
           'tagOligo' => tag_oligo
-        }
+        }]
       }
     end
   end
