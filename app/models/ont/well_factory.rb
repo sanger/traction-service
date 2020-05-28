@@ -8,7 +8,7 @@ module Ont
   class WellFactory
     include ActiveModel::Model
 
-    validate :check_well, :check_request_factory
+    validate :check_well, :check_request_factories
 
     def initialize(attributes = {})
       return unless attributes.key?(:well_attributes)
@@ -22,9 +22,10 @@ module Ont
 
       # No need to validate any lower level objects since validation above has already checked them
       request_data = []
-      unless request_factory.nil?
-        request_data = [request_factory.bulk_insert_serialise(bulk_insert_serialiser,
-                                                              validate: false)]
+      unless request_factories.nil?
+        request_data = request_factories.map do |request_factory|
+          request_factory.bulk_insert_serialise(bulk_insert_serialiser, validate: false)
+        end
       end
 
       bulk_insert_serialiser.well_data(well, request_data)
@@ -32,13 +33,15 @@ module Ont
 
     private
 
-    attr_reader :plate, :well, :request_factory
+    attr_reader :plate, :well, :request_factories
 
     def build_well(attributes)
       @well = ::Well.new(position: attributes[:position], plate: @plate)
-      return unless attributes.key?(:sample)
+      return unless attributes.key?(:samples)
 
-      @request_factory = RequestFactory.new(attributes[:sample])
+      @request_factories = attributes[:samples].map do |sample|
+        RequestFactory.new(sample)
+      end
     end
 
     def check_well
@@ -54,11 +57,15 @@ module Ont
       end
     end
 
-    def check_request_factory
-      return if request_factory.nil? || request_factory.valid?
+    def check_request_factories
+      return if request_factories.nil?
 
-      request_factory.errors.each do |k, v|
-        errors.add(k, v)
+      request_factories.each do |request_factory|
+        next if request_factory.valid?
+
+        request_factory.errors.each do |k, v|
+          errors.add(k, v)
+        end
       end
     end
   end

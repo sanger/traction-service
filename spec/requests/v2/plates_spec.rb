@@ -69,8 +69,8 @@ RSpec.describe 'GraphQL', type: :request do
               arguments: {
                 barcode: "PLATE-1234"
                 wells: [
-                  { position: "A1" sample: { name: "Sample for A1" externalId: "ExtIdA1-1" } }
-                  { position: "E7" sample: { name: "Sample for E7" externalId: "ExtIdE7" } }
+                  { position: "A1" samples: [ { name: "Sample for A1" externalId: "ExtIdA1-1" } ] }
+                  { position: "E7" samples: [ { name: "Sample for E7" externalId: "ExtIdE7" } ] }
                 ]
               }
             }

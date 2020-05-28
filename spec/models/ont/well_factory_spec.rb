@@ -41,7 +41,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
 
     it 'produces error messages if the request factory is not valid' do
       mock_invalid_request_factories
-      attributes = { plate: plate, well_attributes: { position: 'A1', sample: { name: 'sample 1' } } }
+      attributes = { plate: plate, well_attributes: { position: 'A1', samples: [ { name: 'sample 1' } ] } }
       factory = Ont::WellFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages.length).to eq(1)
@@ -54,7 +54,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
 
     context 'valid build' do
       let(:well_with_no_sample) { { plate: plate, well_attributes: { position: 'A1' } } }
-      let(:well_with_one_sample) { { plate: plate, well_attributes: { position: 'A1', sample: { name: 'sample 1' } } } }
+      let(:well_with_one_sample) { { plate: plate, well_attributes: { position: 'A1', samples: [ { name: 'sample 1' } ] } } }
       let(:response) { 'well data' }
 
       before do
