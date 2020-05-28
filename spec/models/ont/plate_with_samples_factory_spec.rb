@@ -77,13 +77,18 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
 
     context 'ont_request_data' do
       let(:request) { create(:ont_request) }
+      let(:uuid) { 'test uuid' }
       let(:tag_id) { 'test tag id' }
+
+      before do
+        allow(SecureRandom).to receive(:uuid).and_return(uuid)
+      end
   
       it 'returns expected serialisation' do
         ont_request_data = factory.ont_request_data(request, tag_id)
         expect(ont_request_data).to eq({
           ont_request: {
-            uuid: request.uuid,
+            uuid: uuid,
             external_id: request.external_id,
             name: request.name,
             created_at: time,
