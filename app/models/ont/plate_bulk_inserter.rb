@@ -5,6 +5,11 @@ module Ont
   # PlateBulkInserter
   # A service for bulk inserting a plate and all of its dependents
   class PlateBulkInserter
+    def initialize
+      time = DateTime.now
+      @timestamps = { created_at: time, updated_at: time }
+    end
+
     def ont_request_data(ont_request, tag_id)
       {
         ont_request: serialise_ont_request(ont_request),
@@ -28,6 +33,8 @@ module Ont
 
     private
 
+    attr_reader :timestamps
+
     def serialise_ont_request(ont_request)
       {
         uuid: ont_request.uuid,
@@ -42,11 +49,6 @@ module Ont
 
     def serialise_plate(plate)
       { barcode: plate.barcode }.merge(timestamps)
-    end
-
-    def timestamps
-      time = DateTime.now
-      { created_at: time, updated_at: time }
     end
   end
 end
