@@ -3,20 +3,48 @@ require 'rails_helper'
 RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
   let(:time) { DateTime.now }
   let(:timestamp) { { created_at: time, updated_at: time } }
-  let(:serialised_well_data) do
+  let(:tags) { create_list(:tag, 3) }
+  let(:serialised_request_data_1) do
     [
       {
-        well: { position: 'A1' }.merge(timestamp),
-        request_data: []
+        ont_request: { uuid: '1', name: 'request A1-1', external_id: 'ExtIdA1-1' }.merge(timestamp),
+        tag_id: tags[0].id
       },
       {
-        well: { position: 'A2' }.merge(timestamp),
-        request_data: []
+        ont_request: { uuid: '2', name: 'request A1-2', external_id: 'ExtIdA1-2' }.merge(timestamp),
+        tag_id: tags[1].id
       },
       {
-        well: { position: 'B2' }.merge(timestamp),
-        request_data: []
+        ont_request: { uuid: '3', name: 'request A1-3', external_id: 'ExtIdA1-3' }.merge(timestamp),
+        tag_id: tags[2].id
       }
+    ]
+  end
+  let(:serialised_request_data_2) do
+    [
+      {
+        ont_request: { uuid: '4', name: 'request A2-1', external_id: 'ExtIdA2-1' }.merge(timestamp),
+        tag_id: tags[0].id
+      }
+    ]
+  end
+  let(:serialised_request_data_3) do
+    [
+      {
+        ont_request: { uuid: '5', name: 'request B2-1', external_id: 'ExtIdB2-1' }.merge(timestamp),
+        tag_id: tags[0].id
+      },
+      {
+        ont_request: { uuid: '6', name: 'request B2-2', external_id: 'ExtIdB2-2' }.merge(timestamp),
+        tag_id: tags[1].id
+      }
+    ]
+  end
+  let(:serialised_well_data) do
+    [
+      { well: { position: 'A1' }.merge(timestamp), request_data: serialised_request_data_1 },
+      { well: { position: 'A2' }.merge(timestamp), request_data: serialised_request_data_2 },
+      { well: { position: 'B2' }.merge(timestamp), request_data: serialised_request_data_3 }
     ]
   end
   let(:serialised_plate_data) do
@@ -133,6 +161,7 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
   context 'save' do
     context 'valid build' do
       context 'successful transaction' do
+        let(:all_serialised_requests) { serialised_request_data_1 + serialised_request_data_2 + serialised_request_data_3 }
         factory = nil
         save = false
 
@@ -163,15 +192,35 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
         end
 
         it 'inserts expected requests' do
-          # TODO: (28/05/2020) - implement
+          expect(Ont::Request.count).to eq(all_serialised_requests.count)
+          all_serialised_requests.each do |request_data|
+            requests = Ont::Request.where(uuid: request_data[:ont_request][:uuid])
+            expect(requests.count).to eq(1)
+            expect(requests.first.name).to eq(request_data[:ont_request][:name])
+            expect(requests.first.external_id).to eq(request_data[:ont_request][:external_id])
+          end
         end
 
         it 'inserts expected container_materials' do
-          # TODO: (28/05/2020) - implement
+          expect(ContainerMaterial.count).to eq(all_serialised_requests.count)
+          serialised_well_data.each do |well_data|
+            well = Well.find_by(position: well_data[:well][:position])
+            well_data[:request_data].each do |request_data|
+              request = Ont::Request.find_by(uuid: request_data[:ont_request][:uuid])
+              expect(ContainerMaterial.where(container: well, material: request).count).to eq(1)
+            end
+          end
         end
 
         it 'inserts expected tag_taggables' do
-          # TODO: (28/05/2020) - implement
+          expect(TagTaggable.count).to eq(all_serialised_requests.count)
+          serialised_well_data.each do |well_data|
+            well_data[:request_data].each do |request_data|
+              request = Ont::Request.find_by(uuid: request_data[:ont_request][:uuid])
+              tag = Tag.find(request_data[:tag_id])
+              expect(TagTaggable.where(tag: tag, taggable: request).count).to eq(1)
+            end
+          end
         end
       end
 
