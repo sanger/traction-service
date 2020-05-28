@@ -40,7 +40,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
   end
 
   context '#bulk_insert_serialise' do
-    let(:plate_bulk_inserter) { double() }
+    let(:bulk_insert_serialiser) { double() }
     let(:attributes) { { barcode: 'abc123', wells: [ { position: 'A1' }, { position: "A2" } ] } }
 
     context 'valid build' do
@@ -49,7 +49,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
 
       before do
         mock_valid_well_factories
-        allow(plate_bulk_inserter).to receive(:plate_data).with(an_instance_of(Plate), an_instance_of(Array)).and_return(response)
+        allow(bulk_insert_serialiser).to receive(:plate_data).with(an_instance_of(Plate), an_instance_of(Array)).and_return(response)
       end
 
       it 'is valid with given attributes' do
@@ -57,25 +57,25 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
       end
 
       it 'has expected response' do
-        expect(factory.bulk_insert_serialise(plate_bulk_inserter)).to eq(response)
+        expect(factory.bulk_insert_serialise(bulk_insert_serialiser)).to eq(response)
       end
 
       it 'creates a well factory for each given well' do
         expect(Ont::WellFactory).to receive(:new).exactly(2).and_call_original
-        factory.bulk_insert_serialise(plate_bulk_inserter)
+        factory.bulk_insert_serialise(bulk_insert_serialiser)
       end
 
       it 'validates the plate only once by default' do
         validation_count = 0
         allow_any_instance_of(Plate).to receive(:valid?) { |_| validation_count += 1 }
-        factory.bulk_insert_serialise(plate_bulk_inserter)
+        factory.bulk_insert_serialise(bulk_insert_serialiser)
         expect(validation_count).to eq(1)
       end
 
       it 'validates the well factories only once each by default' do
         validation_count = 0
         allow_any_instance_of(Ont::WellFactory).to receive(:valid?) { |_| validation_count += 1 }
-        factory.bulk_insert_serialise(plate_bulk_inserter)
+        factory.bulk_insert_serialise(bulk_insert_serialiser)
         expect(validation_count).to eq(2)
       end
 
@@ -83,7 +83,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
         validation_count = 0
         allow_any_instance_of(Plate).to receive(:valid?) { |_| validation_count += 1 }
         allow_any_instance_of(Ont::WellFactory).to receive(:valid?) { |_| validation_count += 1 }
-        factory.bulk_insert_serialise(plate_bulk_inserter, validate: false)
+        factory.bulk_insert_serialise(bulk_insert_serialiser, validate: false)
         expect(validation_count).to eq(0)
       end
     end
@@ -100,7 +100,7 @@ RSpec.describe Ont::PlateFactory, type: :model, ont: true do
 
       it 'returns false on save' do
         factory = Ont::PlateFactory.new(attributes)
-        expect(factory.bulk_insert_serialise(plate_bulk_inserter)).to be_falsey
+        expect(factory.bulk_insert_serialise(bulk_insert_serialiser)).to be_falsey
       end
     end
   end

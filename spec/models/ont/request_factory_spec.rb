@@ -55,7 +55,7 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
   end
 
   context '#bulk_insert_serialise' do
-    let(:plate_bulk_inserter) { double() }
+    let(:bulk_insert_serialiser) { double() }
 
     context 'valid build' do
       let(:attributes) do {
@@ -68,7 +68,7 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
       let(:response) { 'ont request data' }
 
       before do
-        allow(plate_bulk_inserter).to receive(:ont_request_data).with(an_instance_of(Ont::Request), tag_set.tags.first.id).and_return(response)
+        allow(bulk_insert_serialiser).to receive(:ont_request_data).with(an_instance_of(Ont::Request), tag_set.tags.first.id).and_return(response)
       end
 
       it 'is valid with given attributes' do
@@ -76,13 +76,13 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
       end
 
       it 'has expected response' do
-        expect(factory.bulk_insert_serialise(plate_bulk_inserter)).to eq(response)
+        expect(factory.bulk_insert_serialise(bulk_insert_serialiser)).to eq(response)
       end
 
       it 'validates the ONT request only once by default' do
         validation_count = 0
         allow_any_instance_of(Ont::Request).to receive(:valid?) { |_| validation_count += 1 }
-        factory.bulk_insert_serialise(plate_bulk_inserter)
+        factory.bulk_insert_serialise(bulk_insert_serialiser)
         expect(validation_count).to be >= 1
         expect(validation_count).to eq(1)
       end
@@ -90,7 +90,7 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
       it 'validates no children when (validate: false) is passed' do
         validation_count = 0
         allow_any_instance_of(Ont::Request).to receive(:valid?) { |_| validation_count += 1 }
-        factory.bulk_insert_serialise(plate_bulk_inserter, validate: false)
+        factory.bulk_insert_serialise(bulk_insert_serialiser, validate: false)
         expect(validation_count).to eq(0)
       end
     end
@@ -103,7 +103,7 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
       end
 
       it 'returns false' do
-        invalid_response = factory.bulk_insert_serialise(plate_bulk_inserter)
+        invalid_response = factory.bulk_insert_serialise(bulk_insert_serialiser)
         expect(invalid_response).to be_falsey
       end
     end

@@ -14,10 +14,10 @@ module Ont
       build_request(attributes)
     end
 
-    def bulk_insert_serialise(plate_bulk_inserter, **options)
+    def bulk_insert_serialise(bulk_insert_serialiser, **options)
       return false unless options[:validate] == false || valid?
 
-      plate_bulk_inserter.ont_request_data(ont_request, tag_id)
+      bulk_insert_serialiser.ont_request_data(ont_request, tag_id)
     end
 
     private

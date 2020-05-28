@@ -16,13 +16,13 @@ module Ont
 
     attr_reader :plate
 
-    def bulk_insert_serialise(plate_bulk_inserter, **options)
+    def bulk_insert_serialise(bulk_insert_serialiser, **options)
       return false unless options[:validate] == false || valid?
 
       well_data = well_factories.map do |well_factory|
-        well_factory.bulk_insert_serialise(plate_bulk_inserter, validate: false)
+        well_factory.bulk_insert_serialise(bulk_insert_serialiser, validate: false)
       end
-      plate_bulk_inserter.plate_data(plate, well_data)
+      bulk_insert_serialiser.plate_data(plate, well_data)
     end
 
     private
