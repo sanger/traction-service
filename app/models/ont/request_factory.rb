@@ -17,10 +17,7 @@ module Ont
     def bulk_insert_serialise(plate_bulk_inserter, **options)
       return false unless options[:validate] == false || valid?
 
-      {
-        request: plate_bulk_inserter.serialise_request(ont_request),
-        tag_id: tag_id
-      }
+      plate_bulk_inserter.ont_request_data(ont_request, tag_id)
     end
 
     private

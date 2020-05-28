@@ -25,10 +25,8 @@ module Ont
       unless request_factory.nil?
         request_data = [request_factory.bulk_insert_serialise(plate_bulk_inserter, validate: false)]
       end
-      {
-        well: plate_bulk_inserter.serialise_well(well),
-        request_data: request_data
-      }
+
+      plate_bulk_inserter.well_data(well, request_data)
     end
 
     private

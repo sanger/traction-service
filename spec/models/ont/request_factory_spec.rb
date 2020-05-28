@@ -55,33 +55,28 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
   end
 
   context '#bulk_insert_serialise' do
-    let(:plate_bulk_inserter) {
-      Class.new do
-        def serialise_request(_request)
-          { example: 'serialisation' }
-        end
-      end.new
-    }
+    let(:plate_bulk_inserter) { double() }
+
     context 'valid build' do
-      let(:attributes) do
-        {
+      let(:attributes) do {
           name: 'sample 1',
           external_id: '1',
           tag_oligo: tag_set.tags.first.oligo
         }
       end
       let(:factory) { Ont::RequestFactory.new(attributes) }
+      let(:response) { 'ont request data' }
+
+      before do
+        allow(plate_bulk_inserter).to receive(:ont_request_data).with(an_instance_of(Ont::Request), tag_set.tags.first.id).and_return(response)
+      end
 
       it 'is valid with given attributes' do
         expect(factory).to be_valid
       end
 
       it 'has expected response' do
-        response = factory.bulk_insert_serialise(plate_bulk_inserter)
-        expect(response).to eq({
-          request: { example: 'serialisation' },
-          tag_id: tag_set.tags.first.id
-        })
+        expect(factory.bulk_insert_serialise(plate_bulk_inserter)).to eq(response)
       end
 
       it 'validates the ONT request only once by default' do
@@ -108,8 +103,8 @@ RSpec.describe Ont::RequestFactory, type: :model, ont: true do
       end
 
       it 'returns false' do
-        response = factory.bulk_insert_serialise(plate_bulk_inserter)
-        expect(response).to be_falsey
+        invalid_response = factory.bulk_insert_serialise(plate_bulk_inserter)
+        expect(invalid_response).to be_falsey
       end
     end
   end

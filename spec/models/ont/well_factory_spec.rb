@@ -5,7 +5,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
 
   def mock_valid_request_factories
     allow_any_instance_of(Ont::RequestFactory).to receive(:valid?).and_return(true)
-    allow_any_instance_of(Ont::RequestFactory).to receive(:bulk_insert_serialise).and_return({ example: 'serialised request' })
+    allow_any_instance_of(Ont::RequestFactory).to receive(:bulk_insert_serialise).and_return('request data')
   end
 
   def mock_invalid_request_factories
@@ -49,20 +49,17 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
     end
   end
 
-  context '#save' do
-    let(:plate_bulk_inserter) {
-      Class.new do
-        def serialise_well(_well)
-          { example: 'serialised well' }
-        end
-      end.new
-    }
+  context '#bulk_insert_serialise' do
+    let(:plate_bulk_inserter) { double() }
+
     context 'valid build' do
       let(:well_with_no_sample) { { plate: plate, well_attributes: { position: 'A1' } } }
       let(:well_with_one_sample) { { plate: plate, well_attributes: { position: 'A1', sample: { name: 'sample 1' } } } }
+      let(:response) { 'well data' }
 
       before do
         mock_valid_request_factories
+        allow(plate_bulk_inserter).to receive(:well_data).with(an_instance_of(Well), an_instance_of(Array)).and_return(response)
       end
 
       it 'is valid' do
@@ -72,20 +69,12 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
 
       it 'has expected response with no samples' do
         factory = Ont::WellFactory.new(well_with_no_sample)
-        response = factory.bulk_insert_serialise(plate_bulk_inserter)
-        expect(response).to eq({
-          well: { example: 'serialised well' },
-          request_data: []
-        })
+        expect(factory.bulk_insert_serialise(plate_bulk_inserter)).to eq(response)
       end
 
       it 'has expected response with one sample' do
         factory = Ont::WellFactory.new(well_with_one_sample)
-        response = factory.bulk_insert_serialise(plate_bulk_inserter)
-        expect(response).to eq({
-          well: { example: 'serialised well' },
-          request_data: [ { example: 'serialised request' } ]
-        })
+        expect(factory.bulk_insert_serialise(plate_bulk_inserter)).to eq(response)
       end
 
       it 'does not create or call any request factories if given no samples' do
