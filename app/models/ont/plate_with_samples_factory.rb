@@ -117,7 +117,7 @@ module Ont
       serialised_plate_data[:well_data].each do |well_data|
         well = get_well(wells, well_data)
         well_data[:request_data].each do |request_data|
-          request = get_requests(requests, request_data)
+          request = get_request(requests, request_data)
           container_materials << container_material(well.id, request.id)
           tag_taggables << tag_taggagble(request.id, request_data[:tag_id])
         end
