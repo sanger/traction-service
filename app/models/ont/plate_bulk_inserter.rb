@@ -29,15 +29,24 @@ module Ont
     private
 
     def serialise_ont_request(ont_request)
-      # TODO: (2/05/2020) - implement
+      {
+        uuid: ont_request.uuid,
+        external_id: ont_request.external_id,
+        name: ont_request.name
+      }.merge(timestamps)
     end
 
     def serialise_well(well)
-      # TODO: (28/05/2020) - implement
+      { position: well.position }.merge(timestamps)
     end
 
     def serialise_plate(plate)
-      # TODO: (28/05/2020) - implement
+      { barcode: plate.barcode }.merge(timestamps)
+    end
+
+    def timestamps
+      time = DateTime.now
+      { created_at: time, updated_at: time }
     end
   end
 end
