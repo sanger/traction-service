@@ -1,10 +1,11 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 RSpec.describe 'PacBio', type: :model, pacbio: true do
-
   let(:config)        { Pipelines.configure(Pipelines.load_yaml) }
   let(:pacbio_config) { config.pacbio }
-  let(:plate)         { create(:pacbio_plate_with_wells)}
+  let(:plate)         { create(:pacbio_plate_with_wells) }
   let(:message)       { Messages::Message.new(object: plate, configuration: pacbio_config.message) }
 
   it 'should have a lims' do
@@ -16,17 +17,16 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
   end
 
   describe 'key' do
-
     let(:key) { message.content[pacbio_config.key] }
 
-    let(:timestamp) { Time.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
+    let(:timestamp) { Time.zone.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
 
     before(:each) do
       allow(Time).to receive(:current).and_return timestamp
     end
 
     it 'must have a id_pac_bio_run_lims' do
-      expect(key[:id_pac_bio_run_lims]).to eq(plate.run.id)
+      expect(key[:id_pac_bio_run_lims]).to eq(plate.run.traction_id)
     end
 
     it 'must have a pac_bio_run_uuid' do
@@ -46,8 +46,7 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
     end
 
     context 'wells' do
-
-      let(:plate_well)  { plate.wells.first }
+      let(:plate_well) { plate.wells.first }
       let(:message_well) { key[:wells].first }
 
       it 'will have the correct number' do
@@ -55,7 +54,6 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
       end
 
       context 'each' do
-
         it 'must have a well label' do
           expect(message_well[:well_label]).to eq(plate_well.position)
         end
@@ -63,12 +61,10 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
         it 'must have a well uuid lims' do
           expect(message_well[:well_uuid_lims]).to eq(plate_well.uuid)
         end
-
       end
 
       context 'samples' do
-
-        let(:request_libraries)   { create_list(:pacbio_request_library, 5, tag: create(:tag)) }
+        let(:request_libraries) { create_list(:pacbio_request_library, 5, tag: create(:tag)) }
 
         before(:each) do
           plate_well.libraries << request_libraries.collect(&:library)
@@ -79,8 +75,7 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
         end
 
         context 'each' do
-
-          let(:message_sample)  { message_well[:samples].first }
+          let(:message_sample) { message_well[:samples].first }
           let(:request_library) { request_libraries.first }
 
           it 'must have a cost code' do
@@ -118,12 +113,8 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
           it 'can have a tag set name' do
             expect(message_sample[:tag_set_name]).to eq(request_library.tag_set_name)
           end
-
         end
-
       end
     end
-
   end
-
 end
