@@ -36,6 +36,10 @@ module Pacbio
       csv.generate_sample_sheet
     end
 
+    def traction_id
+      "TRACTION-#{id}"
+    end
+
     private
 
     def pacbio_run_sample_sheet_config
