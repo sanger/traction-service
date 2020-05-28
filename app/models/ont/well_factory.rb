@@ -23,7 +23,8 @@ module Ont
       # No need to validate any lower level objects since validation above has already checked them
       request_data = []
       unless request_factory.nil?
-        request_data = [request_factory.bulk_insert_serialise(bulk_insert_serialiser, validate: false)]
+        request_data = [request_factory.bulk_insert_serialise(bulk_insert_serialiser,
+                                                              validate: false)]
       end
 
       bulk_insert_serialiser.well_data(well, request_data)
