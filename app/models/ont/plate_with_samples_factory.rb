@@ -4,6 +4,8 @@
 module Ont
   # PlateWithSamplesFactory
   # A factory for bulk inserting a plate and all of its dependents
+
+  # rubocop:disable Metrics/ClassLength
   class PlateWithSamplesFactory
     include ActiveModel::Model
 
@@ -40,7 +42,7 @@ module Ont
 
     private
 
-    attr_reader :attributes, :plate_factory, :timestamps, :serialised_plate_data
+    attr_reader :attributes, :plate_factory, :serialised_plate_data
 
     def timestamps
       time = DateTime.now
@@ -78,7 +80,8 @@ module Ont
       ActiveRecord::Base.transaction do
         plate = insert_plate
         request_uuids = insert_wells_and_ont_requests(plate.id)
-        insert_joins(plate.wells, request_uuids)
+        requests = get_requests(request_uuids)
+        insert_joins(plate.wells, requests)
       end
       plate
     rescue StandardError => e
@@ -103,20 +106,33 @@ module Ont
       requests_data.map { |req_data| req_data[:uuid] }
     end
 
-    def insert_joins(wells, request_uuids)
+    def get_requests(request_uuids)
+      Ont::Request.where(uuid: request_uuids).select(:id, :uuid)
+    end
+
+    # rubocop:disable Metrics/AbcSize
+    def insert_joins(wells, requests)
       container_materials = []
-      tag_taggagbles = []
-      requests = Ont::Request.where(uuid: request_uuids).select(:id, :uuid)
+      tag_taggables = []
       serialised_plate_data[:well_data].each do |well_data|
-        well = wells.find { |well| well.position == well_data[:well][:position] }
+        well = get_well(wells, well_data)
         well_data[:request_data].each do |request_data|
-          request = requests.find { |request| request.uuid == request_data[:ont_request][:uuid] }
+          request = get_requests(requests, request_data)
           container_materials << container_material(well.id, request.id)
-          tag_taggagbles << tag_taggagble(request.id, request_data[:tag_id])
+          tag_taggables << tag_taggagble(request.id, request_data[:tag_id])
         end
       end
       ContainerMaterial.insert_all!(container_materials)
-      TagTaggable.insert_all!(tag_taggagbles)
+      TagTaggable.insert_all!(tag_taggables)
+    end
+    # rubocop:enable Metrics/AbcSize
+
+    def get_well(wells, well_data)
+      wells.find { |w| w.position == well_data[:well][:position] }
+    end
+
+    def get_request(requests, request_data)
+      requests.find { |req| req.uuid == request_data[:ont_request][:uuid] }
     end
 
     def container_material(container_id, material_id)
@@ -136,4 +152,5 @@ module Ont
       }.merge(timestamps)
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end
