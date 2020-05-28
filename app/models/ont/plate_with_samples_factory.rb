@@ -49,7 +49,7 @@ module Ont
 
     def serialise_ont_request(ont_request)
       {
-        uuid: ont_request.uuid,
+        uuid: SecureRandom.uuid,
         external_id: ont_request.external_id,
         name: ont_request.name
       }.merge(timestamps)

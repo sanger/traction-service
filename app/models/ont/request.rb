@@ -5,7 +5,6 @@ module Ont
   class Request < ApplicationRecord
     include Material
     include Taggable
-    include Uuidable
 
     belongs_to :library, foreign_key: :ont_library_id, inverse_of: :requests,
                          dependent: :destroy, optional: true
