@@ -24,6 +24,8 @@ module Ont
       bulk_insert
     end
 
+    # Serialisation
+
     def ont_request_data(ont_request, tag_id)
       { ont_request: serialise_ont_request(ont_request), tag_id: tag_id }
     end
@@ -60,6 +62,8 @@ module Ont
     def serialise_plate(plate)
       { barcode: plate.barcode }.merge(timestamps)
     end
+
+    # Saving and Validation
 
     def check_plate_factory
       return if plate_factory.valid?

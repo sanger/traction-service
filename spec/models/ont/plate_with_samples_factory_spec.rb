@@ -1,15 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
-  let(:factory) { Ont::PlateWithSamplesFactory.new }
-
-  context 'bulk insert helper' do
+  context 'serialisation' do
+    let(:factory) { Ont::PlateWithSamplesFactory.new }
     let(:time) { DateTime.now }
 
     before do
       allow(DateTime).to receive(:now).and_return(time)
     end
-    
+
     context 'ont_request_data' do
       let(:request) { create(:ont_request) }
       let(:tag_id) { 'test tag id' }
@@ -61,6 +60,16 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
           well_data: well_data
         })
       end
+    end
+  end
+
+  context 'process' do
+    let(:attributes) { 'some test attributes' }
+    let(:factory) { Ont::PlateWithSamplesFactory.new(attributes) }
+
+    it 'initialises a new plate factory' do
+      expect(Ont::PlateFactory).to receive(:new).with(attributes)
+      factory.process
     end
   end
 end
