@@ -27,7 +27,7 @@ module Types
 
     # Plates
 
-    field :plates, [Types::Outputs::PlateType], 'Find all Plates.', null: false
+    field :plates, Connections::PaginatedPlatesConnection, 'Find all Plates by page.', null: false
 
     def plates
       Plate.resolved_query.all
