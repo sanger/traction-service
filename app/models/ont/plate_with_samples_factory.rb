@@ -40,7 +40,7 @@ module Ont
 
     private
 
-    attr_reader :attributes, :timestamps, :serialised_plate_data
+    attr_reader :attributes, :plate_factory, :timestamps, :serialised_plate_data
 
     def timestamps
       time = DateTime.now
@@ -75,13 +75,18 @@ module Ont
 
     def bulk_insert
       # return the plate on success; otherwise false. Unsuccessful inserts should also generate errors
+      plate = false
       ActiveRecord::Base.transaction do
+        Plate.insert_all!([serialised_plate_data[:plate]])
+        plate = Plate.find_by!(barcode: serialised_plate_data[:plate][:barcode])
         # insert plate (save)
         # update wells with plate id
         # insert wells
         # other things
-        plate
       end
+      plate
+    rescue StandardError => e
+      errors.add('import was not successful:', e.message)
       false
     end
   end
