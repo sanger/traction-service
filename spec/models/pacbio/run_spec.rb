@@ -1,8 +1,7 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe Pacbio::Run, type: :model, pacbio: true do
+
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_run }
     it_behaves_like 'uuidable'
@@ -49,7 +48,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
 
   it 'can have run comments ' do
     run = create(:pacbio_run)
-    expect(run.comments).to eq('A Run Comment')
+    expect(run.comments).to eq("A Run Comment")
   end
 
   it 'can have the wells summary when no run comments exist' do
@@ -60,7 +59,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
   end
 
   context '#generate_sample_sheet' do
-    after(:all) { File.delete('sample_sheet.csv') if File.exist?('sample_sheet.csv') }
+    after(:all) { File.delete('sample_sheet.csv') if File.exists?('sample_sheet.csv') }
 
     it 'must call CsvGenerator' do
       well1 = create(:pacbio_well_with_libraries, sequencing_mode: 'CCS')
@@ -127,7 +126,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     context 'active' do
       it 'should return only active runs' do
         create_list(:pacbio_run, 2)
-        create(:pacbio_run, deactivated_at: DateTime.now)
+        run = create(:pacbio_run, deactivated_at: DateTime.now)
         expect(Pacbio::Run.active.length).to eq 2
       end
     end
@@ -155,12 +154,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
       run.update(name: 'run1')
       expect(run.name).to eq('run1')
     end
+
   end
 
-  context 'traction_id' do
-    it 'should combine TRACTION- with the run id' do
-      runs = create_list(:pacbio_run, 3)
-      expect(runs.map(&:traction_id)).to match_array(runs.map { |r| "TRACTION-#{r.id}" })
-    end
-  end
 end
