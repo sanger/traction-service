@@ -6,6 +6,11 @@ class Plate < ApplicationRecord
 
   has_many :wells, inverse_of: :plate, dependent: :destroy
 
+  scope :from_page,
+        lambda { |page_num, page_size|
+          offset((page_num - 1) * page_size).limit(page_size).order(updated_at: :desc)
+        }
+
   # Plates are assumed to have wells with layout
   # A1 A2 A3 ...
   # B1 B2 ...
