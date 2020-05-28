@@ -2,9 +2,9 @@
 
 # Ont namespace
 module Ont
-  # PlateBulkInserter
-  # A service for bulk inserting a plate and all of its dependents
-  class PlateBulkInserter
+  # PlateWithSamplesFactory
+  # A factory for bulk inserting a plate and all of its dependents
+  class PlateWithSamplesFactory
     def initialize
       time = DateTime.now
       @timestamps = { created_at: time, updated_at: time }
@@ -29,6 +29,13 @@ module Ont
         plate: serialise_plate(plate),
         well_data: well_data
       }
+    end
+
+    def bulk_insert(plate_data)
+      # insert plate (save)
+      # update wells with plate id
+      # insert wells
+      # other things
     end
 
     private

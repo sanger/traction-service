@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe Ont::PlateBulkInserter, type: :model, ont: true do
-  let(:plate_bulk_inserter) { Ont::PlateBulkInserter.new }
+RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
+  let(:factory) { Ont::PlateWithSamplesFactory.new }
   let(:time) { DateTime.now }
 
   before do
@@ -13,7 +13,7 @@ RSpec.describe Ont::PlateBulkInserter, type: :model, ont: true do
     let(:tag_id) { 'test tag id' }
 
     it 'returns expected serialisation' do
-      ont_request_data = plate_bulk_inserter.ont_request_data(request, tag_id)
+      ont_request_data = factory.ont_request_data(request, tag_id)
       expect(ont_request_data).to eq({
         ont_request: {
           uuid: request.uuid,
@@ -32,7 +32,7 @@ RSpec.describe Ont::PlateBulkInserter, type: :model, ont: true do
     let(:request_data) { 'test request data' }
 
     it 'returns expected serialisation' do
-      well_data = plate_bulk_inserter.well_data(well, request_data)
+      well_data = factory.well_data(well, request_data)
       expect(well_data).to eq({
         well: {
           position: well.position,
@@ -49,7 +49,7 @@ RSpec.describe Ont::PlateBulkInserter, type: :model, ont: true do
     let(:well_data) { 'test well data' }
 
     it 'returns expected serialisation' do
-      plate_data = plate_bulk_inserter.plate_data(plate, well_data)
+      plate_data = factory.plate_data(plate, well_data)
       expect(plate_data).to eq({
         plate: {
           barcode: plate.barcode,
