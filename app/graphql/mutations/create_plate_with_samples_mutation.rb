@@ -16,8 +16,9 @@ module Mutations
 
     def resolve(arguments:)
       factory = Ont::PlateWithSamplesFactory.new(arguments.to_h)
+      factory.process
       plate = factory.save
-      
+
       if plate
         resolved_plate = Plate.resolved_query.find_by(id: plate.id)
         { plate: resolved_plate, errors: [] }
