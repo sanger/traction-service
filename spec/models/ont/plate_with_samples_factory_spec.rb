@@ -1,6 +1,22 @@
 require 'rails_helper'
 
 RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
+  let(:time) { DateTime.now }
+  let(:serialised_plate_data) { { plate: { barcode: 'abc123', created_at: time, updated_at: time } } }
+
+  def mock_valid_plate_factory
+    allow_any_instance_of(Ont::PlateFactory).to receive(:valid?).and_return(true)
+    allow_any_instance_of(Ont::PlateFactory).to receive(:bulk_insert_serialise).and_return(serialised_plate_data)
+  end
+
+  def mock_invalid_plate_factory
+    errors = ActiveModel::Errors.new(Ont::PlateFactory.new)
+    errors.add('plate factory', message: 'This is a test error')
+
+    allow_any_instance_of(Ont::PlateFactory).to receive(:valid?).and_return(false)
+    allow_any_instance_of(Ont::PlateFactory).to receive(:errors).and_return(errors)
+  end
+
   context 'serialisation' do
     let(:factory) { Ont::PlateWithSamplesFactory.new }
     let(:time) { DateTime.now }
@@ -70,6 +86,139 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
     it 'initialises a new plate factory' do
       expect(Ont::PlateFactory).to receive(:new).with(attributes)
       factory.process
+    end
+  end
+
+  context 'valid' do
+    let(:attributes) { { barcode: 'test barcode' } }
+    let(:factory) { Ont::PlateWithSamplesFactory.new(attributes) }
+
+    it 'is false if plate factory is not valid' do
+      mock_invalid_plate_factory
+      factory.process
+      expect(factory.valid?).to be_falsey
+      expect(factory.errors.full_messages.length).to eq(1)
+      expect(factory.errors.full_messages).to contain_exactly('Plate factory {:message=>"This is a test error"}')
+    end
+
+    it 'is true if plate factory is valid' do
+      mock_valid_plate_factory
+      factory.process
+      expect(factory.valid?).to be_truthy
+    end
+  end
+
+  context 'save' do
+    context 'valid build' do
+      context 'successful transaction' do
+        save = false
+
+        before do
+          mock_valid_plate_factory
+          factory = Ont::PlateWithSamplesFactory.new
+          factory.process
+          save = factory.save
+        end
+
+        it 'returns created plate with no errors' do
+          expect(save).to eq(Plate.first)
+        end
+
+        # returns plate
+        # has no errors
+        # inserts expected entities
+      end
+
+      context 'fails' do
+        before do
+          mock_valid_plate_factory
+        end
+
+        it 'with failed plate insert' do
+          allow(Plate).to receive(:insert_all!).and_raise('this is an error')
+          factory = Ont::PlateWithSamplesFactory.new
+          factory.process
+          expect(factory.save).to be_falsey
+          expect(factory.errors.full_messages.count).to eq(1)
+          expect(factory.errors.full_messages).to contain_exactly('Import was not successful: this is an error')
+        end
+
+        it 'with failed well insert' do
+
+        end
+
+        # with failed request insert
+        # with failed container_material insert
+        # with failed tag_taggable insert
+      end
+
+      context 'failed transaction' do
+        before do
+          mock_valid_plate_factory
+          allow(Plate).to receive(:insert_all!).and_raise('this is an error')
+          factory = Ont::PlateWithSamplesFactory.new
+          factory.process
+          factory.save
+        end
+  
+        it 'does not insert any plates' do
+          expect(Plate.all.count).to eq(0)
+        end
+  
+        it 'does not insert any wells' do
+          expect(Well.all.count).to eq(0)
+        end
+  
+        it 'does not insert any container_materials' do
+          expect(ContainerMaterial.all.count).to eq(0)
+        end
+  
+        it 'does not insert any ont_requests' do
+          expect(Ont::Request.all.count).to eq(0)
+        end
+  
+        it 'does not insert any tag_taggables' do
+          expect(TagTaggable.all.count).to eq(0)
+        end
+      end
+    end
+
+    context 'invalid build' do
+      factory = nil
+      save = true
+
+      before do
+        mock_invalid_plate_factory
+        factory = Ont::PlateWithSamplesFactory.new
+        factory.process
+        save = factory.save
+      end
+
+      it 'returns false with errors' do
+        expect(save).to be_falsey
+        expect(factory.errors.full_messages.count).to eq(1)
+        expect(factory.errors.full_messages).to contain_exactly('Plate factory {:message=>"This is a test error"}')
+      end
+
+      it 'does not insert any plates' do
+        expect(Plate.all.count).to eq(0)
+      end
+
+      it 'does not insert any wells' do
+        expect(Well.all.count).to eq(0)
+      end
+
+      it 'does not insert any container_materials' do
+        expect(ContainerMaterial.all.count).to eq(0)
+      end
+
+      it 'does not insert any ont_requests' do
+        expect(Ont::Request.all.count).to eq(0)
+      end
+
+      it 'does not insert any tag_taggables' do
+        expect(TagTaggable.all.count).to eq(0)
+      end
     end
   end
 end
