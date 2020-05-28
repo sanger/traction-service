@@ -27,14 +27,18 @@ module Types
 
     # Plates
 
-    field :plates, Connections::PaginatedPlatesConnection, 'Find all Plates by page.',
+    field :plates, Types::Outputs::PlateType.connection_type, 'Find all Plates by page.',
           null: false do
       argument :page_num, Int, 'The page number to return plates for.', required: false
       argument :page_size, Int, 'The number of plates to return per page.', required: false
     end
 
     def plates(page_num: 1, page_size: 10)
-      Plate.resolved_query.from_page(page_num, page_size)
+      pagination = Connections::PaginatedConnection.new(Plate.resolved_query)
+      pagination.page_num = page_num
+      pagination.page_size = page_size
+      pagination.entity_count = Plate.all.count
+      pagination
     end
 
     # Ont::Libraries
