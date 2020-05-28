@@ -89,8 +89,7 @@ RSpec.describe 'GraphQL', type: :request do
         { position: 'E7', requests: [{ name: 'Sample for E7', external_id: 'ExtIdE7' }] }
       ])
 
-      allow_any_instance_of(Ont::PlateFactory).to receive(:save).and_return(true)
-      allow_any_instance_of(Ont::PlateFactory).to receive(:plate).and_return(plate)
+      allow_any_instance_of(Ont::PlateWithSamplesFactory).to receive(:save).and_return(plate)
 
       post v2_path, params: { query: valid_query }
       expect(response).to have_http_status(:success)
@@ -110,11 +109,11 @@ RSpec.describe 'GraphQL', type: :request do
     end
 
     it 'responds with errors provided by the request factory' do
-      errors = ActiveModel::Errors.new(Ont::PlateFactory.new)
+      errors = ActiveModel::Errors.new(Ont::PlateWithSamplesFactory.new)
       errors.add('wells', message: 'This is a test error')
 
-      allow_any_instance_of(Ont::PlateFactory).to receive(:save).and_return(false)
-      allow_any_instance_of(Ont::PlateFactory).to receive(:errors).and_return(errors)
+      allow_any_instance_of(Ont::PlateWithSamplesFactory).to receive(:save).and_return(false)
+      allow_any_instance_of(Ont::PlateWithSamplesFactory).to receive(:errors).and_return(errors)
 
       post v2_path, params: { query: valid_query }
       expect(response).to have_http_status(:success)

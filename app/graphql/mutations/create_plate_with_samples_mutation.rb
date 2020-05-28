@@ -15,10 +15,11 @@ module Mutations
           null: false
 
     def resolve(arguments:)
-      factory = Ont::PlateFactory.new(arguments.to_h)
-
-      if factory.save
-        resolved_plate = Plate.resolved_query.find_by(id: factory.plate.id)
+      factory = Ont::PlateWithSamplesFactory.new(arguments.to_h)
+      plate = factory.save
+      
+      if plate
+        resolved_plate = Plate.resolved_query.find_by(id: plate.id)
         { plate: resolved_plate, errors: [] }
       else
         { plate: nil, errors: factory.errors.full_messages }
