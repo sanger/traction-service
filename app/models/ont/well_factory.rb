@@ -17,16 +17,16 @@ module Ont
       build_well(attributes[:well_attributes])
     end
 
-    def bulk_insert_serialise(plate_bulk_inserter, **options)
+    def bulk_insert_serialise(bulk_insert_serialiser, **options)
       return false unless options[:validate] == false || valid?
 
       # No need to validate any lower level objects since validation above has already checked them
       request_data = []
       unless request_factory.nil?
-        request_data = [request_factory.bulk_insert_serialise(plate_bulk_inserter, validate: false)]
+        request_data = [request_factory.bulk_insert_serialise(bulk_insert_serialiser, validate: false)]
       end
 
-      plate_bulk_inserter.well_data(well, request_data)
+      bulk_insert_serialiser.well_data(well, request_data)
     end
 
     private
