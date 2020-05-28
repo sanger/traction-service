@@ -19,14 +19,25 @@ module Ont
       }
     end
 
+    def plate_data(plate, well_data)
+      {
+        plate: serialise_plate(plate),
+        well_data: well_data
+      }
+    end
+
     private
 
     def serialise_ont_request(ont_request)
-      # TODO: (27/05/2020) - implement
+      # TODO: (2/05/2020) - implement
     end
 
     def serialise_well(well)
-      # TODO: (27/05/2020) - implement
+      # TODO: (28/05/2020) - implement
+    end
+
+    def serialise_plate(plate)
+      # TODO: (28/05/2020) - implement
     end
   end
 end

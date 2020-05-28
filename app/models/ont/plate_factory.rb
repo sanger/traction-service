@@ -16,13 +16,13 @@ module Ont
 
     attr_reader :plate
 
-    def save(**options)
+    def bulk_insert_serialise(plate_bulk_inserter, **options)
       return false unless options[:validate] == false || valid?
 
-      # No need to validate any lower level objects since validation above has already checked them
-      plate.save(validate: false)
-      well_factories.map { |well_factory| well_factory.save(validate: false) }
-      true
+      well_data = well_factories.map do |well_factory|
+        well_factory.bulk_insert_serialise(plate_bulk_inserter, validate: false)
+      end
+      plate_bulk_inserter.plate_data(plate, well_data)
     end
 
     private
