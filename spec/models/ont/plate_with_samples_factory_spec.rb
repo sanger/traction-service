@@ -111,6 +111,7 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
   context 'save' do
     context 'valid build' do
       context 'successful transaction' do
+        factory = nil
         save = false
 
         before do
@@ -122,11 +123,29 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
 
         it 'returns created plate with no errors' do
           expect(save).to eq(Plate.first)
+          expect(factory.errors).to be_empty
         end
 
-        # returns plate
-        # has no errors
-        # inserts expected entities
+        it 'inserts a single plate' do
+          expect(Plate.count).to eq(1)
+          expect(Plate.first.barcode).to eq(serialised_plate_data[:plate][:barcode])
+        end
+
+        it 'inserts expected wells' do
+          # TODO: (28/05/2020) - implement
+        end
+
+        it 'inserts expected requests' do
+          # TODO: (28/05/2020) - implement
+        end
+
+        it 'inserts expected container_materials' do
+          # TODO: (28/05/2020) - implement
+        end
+
+        it 'inserts expected tag_taggables' do
+          # TODO: (28/05/2020) - implement
+        end
       end
 
       context 'fails' do
@@ -135,21 +154,54 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
         end
 
         it 'with failed plate insert' do
-          allow(Plate).to receive(:insert_all!).and_raise('this is an error')
+          message = 'this is a plate error'
+          allow(Plate).to receive(:insert_all!).and_raise(message)
           factory = Ont::PlateWithSamplesFactory.new
           factory.process
           expect(factory.save).to be_falsey
           expect(factory.errors.full_messages.count).to eq(1)
-          expect(factory.errors.full_messages).to contain_exactly('Import was not successful: this is an error')
+          expect(factory.errors.full_messages).to contain_exactly("Import was not successful: #{message}")
         end
 
         it 'with failed well insert' do
-
+          message = 'this is a well error'
+          allow(Well).to receive(:insert_all!).and_raise(message)
+          factory = Ont::PlateWithSamplesFactory.new
+          factory.process
+          expect(factory.save).to be_falsey
+          expect(factory.errors.full_messages.count).to eq(1)
+          expect(factory.errors.full_messages).to contain_exactly("Import was not successful: #{message}")
         end
 
-        # with failed request insert
-        # with failed container_material insert
-        # with failed tag_taggable insert
+        it 'with failed request insert' do
+          message = 'this is a request error'
+          allow(Ont::Request).to receive(:insert_all!).and_raise(message)
+          factory = Ont::PlateWithSamplesFactory.new
+          factory.process
+          expect(factory.save).to be_falsey
+          expect(factory.errors.full_messages.count).to eq(1)
+          expect(factory.errors.full_messages).to contain_exactly("Import was not successful: #{message}")
+        end
+
+        it 'with failed container_material insert' do
+          message = 'this is a container_material error'
+          allow(ContainerMaterial).to receive(:insert_all!).and_raise(message)
+          factory = Ont::PlateWithSamplesFactory.new
+          factory.process
+          expect(factory.save).to be_falsey
+          expect(factory.errors.full_messages.count).to eq(1)
+          expect(factory.errors.full_messages).to contain_exactly("Import was not successful: #{message}")
+        end
+
+        it 'with failed tag_taggable insert' do
+          message = 'this is a tag_taggable error'
+          allow(TagTaggable).to receive(:insert_all!).and_raise(message)
+          factory = Ont::PlateWithSamplesFactory.new
+          factory.process
+          expect(factory.save).to be_falsey
+          expect(factory.errors.full_messages.count).to eq(1)
+          expect(factory.errors.full_messages).to contain_exactly("Import was not successful: #{message}")
+        end
       end
 
       context 'failed transaction' do
