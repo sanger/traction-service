@@ -2,7 +2,29 @@ require 'rails_helper'
 
 RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
   let(:time) { DateTime.now }
-  let(:serialised_plate_data) { { plate: { barcode: 'abc123', created_at: time, updated_at: time } } }
+  let(:timestamp) { { created_at: time, updated_at: time } }
+  let(:serialised_well_data) do
+    [
+      {
+        well: { position: 'A1' }.merge(timestamp),
+        request_data: []
+      },
+      {
+        well: { position: 'A2' }.merge(timestamp),
+        request_data: []
+      },
+      {
+        well: { position: 'B2' }.merge(timestamp),
+        request_data: []
+      }
+    ]
+  end
+  let(:serialised_plate_data) do
+    {
+      plate: { barcode: 'abc123' }.merge(timestamp),
+      well_data: serialised_well_data
+    }
+  end
 
   def mock_valid_plate_factory
     allow_any_instance_of(Ont::PlateFactory).to receive(:valid?).and_return(true)
@@ -132,7 +154,12 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
         end
 
         it 'inserts expected wells' do
-          # TODO: (28/05/2020) - implement
+          expect(Well.count).to eq(serialised_well_data.count)
+          serialised_well_data.each do |well_data|
+            wells = Well.where(position: well_data[:well][:position])
+            expect(wells.count).to eq(1)
+            expect(wells.first.plate).to eq(Plate.first)
+          end
         end
 
         it 'inserts expected requests' do

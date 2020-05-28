@@ -77,9 +77,8 @@ module Ont
       # return the plate on success; otherwise false. Unsuccessful inserts should also generate errors
       plate = false
       ActiveRecord::Base.transaction do
-        Plate.insert_all!([serialised_plate_data[:plate]])
-        plate = Plate.find_by!(barcode: serialised_plate_data[:plate][:barcode])
-        # insert plate (save)
+        plate = insert_plate
+        insert_wells(plate.id)
         # update wells with plate id
         # insert wells
         # other things
@@ -88,6 +87,19 @@ module Ont
     rescue StandardError => e
       errors.add('import was not successful:', e.message)
       false
+    end
+
+    def insert_plate
+      plate_data = serialised_plate_data[:plate]
+      Plate.insert_all!([plate_data])
+      Plate.find_by!(barcode: plate_data[:barcode])
+    end
+
+    def insert_wells(plate_id)
+      wells_data = serialised_plate_data[:well_data].map do |well_data|
+        well_data[:well].merge!({ plate_id: plate_id })
+      end
+      Well.insert_all!(wells_data)
     end
   end
 end
