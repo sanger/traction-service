@@ -100,7 +100,7 @@ module Ont
       requests_data = []
       wells_data = serialised_plate_data[:well_data].map do |well_data|
         requests_data.concat(well_data[:request_data].map { |req_data| req_data[:ont_request] })
-        well_data[:well].merge!({ plate_id: plate_id })
+        well_data[:well].merge({ plate_id: plate_id })
       end
       Well.insert_all!(wells_data)
       Ont::Request.insert_all!(requests_data)
@@ -108,19 +108,11 @@ module Ont
     end
 
     def get_request_ids_by_uuid(request_uuids)
-      request_ids_by_uuid = {}
-      Ont::Request.where(uuid: request_uuids).find_each do |req|
-        request_ids_by_uuid[req.uuid] = req.id
-      end
-      request_ids_by_uuid
+      Ont::Request.where(uuid: request_uuids).map { |req| [req.uuid, req.id] }.to_h
     end
 
     def get_well_ids_by_position(wells)
-      well_ids_by_position = {}
-      wells.each do |well|
-        well_ids_by_position[well.position] = well.id
-      end
-      well_ids_by_position
+      wells.map { |well| [well.position, well.id] }.to_h
     end
 
     # rubocop:disable Metrics/AbcSize
