@@ -2,6 +2,16 @@ require 'rails_helper'
 
 RSpec.describe Ont::WellFactory, type: :model, ont: true do
   let(:plate) { create(:plate) }
+  let(:tag_set_name) { 'OntWell96Samples' }
+  let(:tag_set_service) { double(TagSetService) }
+
+  before do
+    allow(Pipelines::ConstantsAccessor)
+      .to receive(:ont_covid_pcr_tag_set_name)
+      .and_return(tag_set_name)
+    allow(tag_set_service).to receive(:load_tag_set)
+    allow(tag_set_service).to receive(:loaded_tag_sets).and_return({ tag_set_name => Hash.new })
+  end
 
   def mock_valid_request_factories
     allow_any_instance_of(Ont::RequestFactory).to receive(:valid?).and_return(true)
@@ -18,14 +28,21 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
 
   context '#initialise' do
     it 'produces error messages if given no plate' do
-      attributes = { well_attributes: { position: 'A1' } }
+      attributes = { well_attributes: { position: 'A1' }, tag_set_service: tag_set_service }
       factory = Ont::WellFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages).to_not be_empty
     end
 
     it 'produces error messages if given no well attributes' do
-      attributes = { plate: plate }
+      attributes = { plate: plate, tag_set_service: tag_set_service }
+      factory = Ont::WellFactory.new(attributes)
+      expect(factory).to_not be_valid
+      expect(factory.errors.full_messages).to_not be_empty
+    end
+
+    it 'produces error messages if given no tag set service' do
+      attributes = { plate: plate, well_attributes: { position: 'A1' } }
       factory = Ont::WellFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages).to_not be_empty
@@ -33,7 +50,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
 
     it 'produces error messages if generated well is not valid' do
       # well should have a position
-      attributes = { plate: plate, well_attributes: {} }
+      attributes = { plate: plate, well_attributes: {}, tag_set_service: tag_set_service }
       factory = Ont::WellFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages).to_not be_empty
@@ -41,7 +58,11 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
 
     it 'produces error messages if the request factory is not valid' do
       mock_invalid_request_factories
-      attributes = { plate: plate, well_attributes: { position: 'A1', samples: [ { name: 'sample 1' } ] } }
+      attributes = {
+        plate: plate,
+        well_attributes: { position: 'A1', samples: [ { name: 'sample 1' } ] },
+        tag_set_service: tag_set_service
+      }
       factory = Ont::WellFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages.length).to eq(1)
@@ -53,8 +74,20 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
     let(:bulk_insert_serialiser) { double() }
 
     context 'valid build' do
-      let(:well_with_no_sample) { { plate: plate, well_attributes: { position: 'A1' } } }
-      let(:well_with_one_sample) { { plate: plate, well_attributes: { position: 'A1', samples: [ { name: 'sample 1' } ] } } }
+      let(:well_with_no_sample) do
+        {
+          plate: plate,
+          well_attributes: { position: 'A1' },
+          tag_set_service: tag_set_service
+        }
+      end
+      let(:well_with_one_sample) do
+        {
+          plate: plate,
+          well_attributes: { position: 'A1', samples: [ { name: 'sample 1' } ] },
+          tag_set_service: tag_set_service
+        }
+      end
       let(:response) { 'well data' }
 
       before do

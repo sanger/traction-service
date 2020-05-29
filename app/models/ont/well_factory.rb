@@ -11,9 +11,10 @@ module Ont
     validate :check_well, :check_request_factories
 
     def initialize(attributes = {})
-      return unless attributes.key?(:well_attributes)
+      return unless attributes.key?(:well_attributes) && attributes.key?(:tag_set_service)
 
       @plate = attributes[:plate]
+      @tag_set_service = attributes[:tag_set_service]
       build_well(attributes[:well_attributes])
     end
 
@@ -33,14 +34,16 @@ module Ont
 
     private
 
-    attr_reader :plate, :well, :request_factories
+    attr_reader :plate, :tag_set_service, :well, :request_factories
 
     def build_well(attributes)
       @well = ::Well.new(position: attributes[:position], plate: @plate)
       return unless attributes.key?(:samples)
 
+      tag_set_name = Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name
+      tag_set_service.load_tag_set(tag_set_name)
       @request_factories = attributes[:samples].map do |sample|
-        RequestFactory.new(sample)
+        RequestFactory.new(sample_attributes: sample, tag_ids_by_oligo: tag_set_service.loaded_tag_sets[tag_set_name])
       end
     end
 
