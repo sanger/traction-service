@@ -9,6 +9,7 @@ abort('The Rails environment is running in production mode!') if Rails.env.produ
 require 'rspec/rails'
 Dir["./spec/support/**/*.rb"].each {|f| require f}
 # Add additional requires below this line. Rails is not loaded until this point!
+require 'rspec-benchmark'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -64,6 +65,7 @@ RSpec.configure do |config|
 
   config.include FactoryBot::Syntax::Methods
   config.include RequestHeaders, type: :request
+  config.include RSpec::Benchmark::Matchers
 end
 
 Shoulda::Matchers.configure do |config|
