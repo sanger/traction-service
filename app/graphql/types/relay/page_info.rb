@@ -8,10 +8,12 @@ module Types
       description 'Information about pagination in a connection.'
 
       field :has_next_page, Boolean,
-            null: false, description: 'When paginating forwards, are there more items?'
+            method: :next_page?, null: false,
+            description: 'When paginating forwards, are there more items?'
 
       field :has_previous_page, Boolean,
-            null: false, description: 'When paginating backwards, are there more items?'
+            method: :previous_page?, null: false,
+            description: 'When paginating backwards, are there more items?'
 
       field :page_count, Integer,
             null: false, description: 'The number of pages available at the current page size.'

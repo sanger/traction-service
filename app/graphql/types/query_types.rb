@@ -34,11 +34,10 @@ module Types
     end
 
     def plates(page_num: 1, page_size: 10)
-      pagination = Connections::PaginatedConnectionWrapper.new(Plate.resolved_query)
-      pagination.page_num = page_num
-      pagination.page_size = page_size
-      pagination.total_item_count = Plate.all.count
-      pagination
+      Connections::PaginatedConnectionWrapper.new(Plate.resolved_query,
+                                                  page_num: page_num,
+                                                  page_size: page_size,
+                                                  total_item_count: Plate.all.count)
     end
 
     # Ont::Libraries
