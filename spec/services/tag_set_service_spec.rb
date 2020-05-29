@@ -23,4 +23,11 @@ RSpec.describe TagSetService, type: :model do
       expect(tag_set_service.loaded_tag_sets[tag_set.name][tag.oligo]).to eq(tag.id)
     end
   end
+
+  it 'does not load same tag set more than once' do
+    expect(TagSet).to receive(:find_by).exactly(1).and_call_original
+    tag_set_service = TagSetService.new
+    tag_set_service.load_tag_set(tag_set.name)
+    tag_set_service.load_tag_set(tag_set.name)
+  end
 end
