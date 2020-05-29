@@ -4,9 +4,15 @@ module Types
   module Connections
     # A connection definition to paginate plates with.
     class PaginatedConnectionWrapper < GraphQL::Pagination::Connection
-      attr_accessor :page_num
-      attr_accessor :page_size
-      attr_accessor :total_item_count
+      attr_reader :page_num, :page_size, :total_item_count
+
+      def initialize(items, page_num:, page_size:, total_item_count:, max_page_size: :not_given)
+        super(items, max_page_size: max_page_size)
+
+        @page_num = page_num
+        @page_size = page_size
+        @total_item_count = total_item_count
+      end
 
       def nodes
         @items.offset(start_item_index).limit(page_size).order(updated_at: :desc)
@@ -16,16 +22,13 @@ module Types
         encode(item.id.to_s)
       end
 
-      # rubocop:disable Naming/PredicateName
-      # Justification: We don't get a choice in these names -- they're part of the GraphQL-Ruby
-      def has_next_page
+      def next_page?
         end_item_index < total_item_count
       end
 
-      def has_previous_page
+      def previous_page?
         page_num > 1
       end
-      # rubocop:enable Naming/PredicateName
 
       def page_count
         (total_item_count.to_f / page_size).ceil
