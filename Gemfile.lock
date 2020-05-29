@@ -58,6 +58,9 @@ GEM
       zeitwerk (~> 2.2)
     amq-protocol (2.3.1)
     ast (2.4.0)
+    benchmark-malloc (0.2.0)
+    benchmark-perf (0.6.0)
+    benchmark-trend (0.4.0)
     bootsnap (1.4.6)
       msgpack (~> 1.0)
     builder (3.2.4)
@@ -176,6 +179,15 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     rexml (3.2.4)
+    rspec (3.9.0)
+      rspec-core (~> 3.9.0)
+      rspec-expectations (~> 3.9.0)
+      rspec-mocks (~> 3.9.0)
+    rspec-benchmark (0.6.0)
+      benchmark-malloc (~> 0.2)
+      benchmark-perf (~> 0.6)
+      benchmark-trend (~> 0.4)
+      rspec (>= 3.0)
     rspec-core (3.9.1)
       rspec-support (~> 3.9.1)
     rspec-expectations (3.9.1)
@@ -259,6 +271,7 @@ DEPENDENCIES
   rack-cors
   rails (~> 6.0.2.1)
   rails-erd
+  rspec-benchmark
   rspec-rails
   rubocop
   rubocop-rails

@@ -37,4 +37,5 @@ group :development, :test do
   gem 'rubocop', require: false
   gem 'shoulda-matchers'
   gem 'sqlite3'
+  gem 'rspec-benchmark'
 end
