@@ -18,11 +18,6 @@ module Ont
     end
 
     def process
-      tag_set = TagSet.find_by!(name: Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name)
-      @tag_ids_by_oligo = Hash.new
-      tag_set.tags.each do |tag|
-        tag_ids_by_oligo[tag.oligo] = tag.id
-      end
       @plate_factory = Ont::PlateFactory.new(attributes)
     end
 
@@ -35,10 +30,10 @@ module Ont
 
     # Serialisation
 
-    def ont_request_data(ont_request, tag_oligo)
+    def ont_request_data(ont_request, tag_id)
       {
         ont_request: serialise_ont_request(ont_request),
-        tag_id: tag_ids_by_oligo[tag_oligo]
+        tag_id: tag_id
       }
     end
 
@@ -52,7 +47,7 @@ module Ont
 
     private
 
-    attr_reader :attributes, :timestamps, :plate_factory, :tag_ids_by_oligo, :serialised_plate_data
+    attr_reader :attributes, :timestamps, :plate_factory, :serialised_plate_data
 
     def serialise_ont_request(ont_request)
       {

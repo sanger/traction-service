@@ -11,23 +11,24 @@ module Ont
     validate :check_ont_request, :check_tag_exists
 
     def initialize(attributes = {})
-      build_request(attributes)
+      return unless attributes.key?(:sample_attributes) && attributes.key?(:tag_ids_by_oligo)
+
+      @tag_ids_by_oligo = attributes[:tag_ids_by_oligo]
+      build_request(attributes[:sample_attributes])
     end
 
     def bulk_insert_serialise(bulk_insert_serialiser, **options)
       return false unless options[:validate] == false || valid?
 
-      bulk_insert_serialiser.ont_request_data(ont_request, tag_oligo)
+      bulk_insert_serialiser.ont_request_data(ont_request, tag_id)
     end
 
     private
 
-    attr_reader :ont_request, :tag_oligo
+    attr_reader :tag_ids_by_oligo, :ont_request, :tag_id
 
     def build_request(request_attributes)
-      # tag_set_id = TagSet.find_by!(name: Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name).id
-      # @tag_id = Tag.find_by(tag_set_id: tag_set_id, oligo: request_attributes[:tag_oligo])&.id
-      @tag_oligo = request_attributes[:tag_oligo]
+      @tag_id = tag_ids_by_oligo[request_attributes[:tag_oligo]]
       @ont_request = Ont::Request.new(external_id: request_attributes[:external_id],
                                       name: request_attributes[:name])
     end
@@ -46,7 +47,7 @@ module Ont
     end
 
     def check_tag_exists
-      errors.add('tag', 'does not exist') if tag_oligo.nil?
+      errors.add('tag', 'does not exist') if tag_id.nil?
     end
   end
 end
