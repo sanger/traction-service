@@ -13,9 +13,16 @@ module Ont
 
     def initialize(attributes = {})
       @attributes = attributes
+      time = DateTime.now
+      @timestamps = { created_at: time, updated_at: time }
     end
 
     def process
+      tag_set = TagSet.find_by!(name: Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name)
+      @tag_ids_by_oligo = Hash.new
+      tag_set.tags.each do |tag|
+        tag_ids_by_oligo[tag.oligo] = tag.id
+      end
       @plate_factory = Ont::PlateFactory.new(attributes)
     end
 
@@ -28,8 +35,11 @@ module Ont
 
     # Serialisation
 
-    def ont_request_data(ont_request, tag_id)
-      { ont_request: serialise_ont_request(ont_request), tag_id: tag_id }
+    def ont_request_data(ont_request, tag_oligo)
+      {
+        ont_request: serialise_ont_request(ont_request),
+        tag_id: tag_ids_by_oligo[tag_oligo]
+      }
     end
 
     def well_data(well, request_data)
@@ -42,12 +52,7 @@ module Ont
 
     private
 
-    attr_reader :attributes, :plate_factory, :serialised_plate_data
-
-    def timestamps
-      time = DateTime.now
-      @timestamps ||= { created_at: time, updated_at: time }
-    end
+    attr_reader :attributes, :timestamps, :plate_factory, :tag_ids_by_oligo, :serialised_plate_data
 
     def serialise_ont_request(ont_request)
       {
@@ -80,8 +85,9 @@ module Ont
       ActiveRecord::Base.transaction do
         plate = insert_plate
         request_uuids = insert_wells_and_ont_requests(plate.id)
-        requests = get_requests(request_uuids)
-        insert_joins(plate.wells, requests)
+        request_ids_by_uuid = get_request_ids_by_uuid(request_uuids)
+        well_ids_by_position = get_well_ids_by_position(plate.wells)
+        insert_joins(well_ids_by_position, request_ids_by_uuid)
       end
       plate
     rescue StandardError => e
@@ -106,34 +112,38 @@ module Ont
       requests_data.map { |req_data| req_data[:uuid] }
     end
 
-    def get_requests(request_uuids)
-      Ont::Request.where(uuid: request_uuids).select(:id, :uuid)
+    def get_request_ids_by_uuid(request_uuids)
+      request_ids_by_uuid = Hash.new
+      Ont::Request.where(uuid: request_uuids).each do |req|
+        request_ids_by_uuid[req.uuid] = req.id
+      end
+      request_ids_by_uuid
+    end
+
+    def get_well_ids_by_position(wells)
+      well_ids_by_position = Hash.new
+      wells.each do |well|
+        well_ids_by_position[well.position] = well.id
+      end
+      well_ids_by_position
     end
 
     # rubocop:disable Metrics/AbcSize
-    def insert_joins(wells, requests)
+    def insert_joins(well_ids_by_position, request_ids_by_uuid)
       container_materials = []
       tag_taggables = []
       serialised_plate_data[:well_data].each do |well_data|
-        well = get_well(wells, well_data)
+        well_id = well_ids_by_position[well_data[:well][:position]]
         well_data[:request_data].each do |request_data|
-          request = get_request(requests, request_data)
-          container_materials << container_material(well.id, request.id)
-          tag_taggables << tag_taggagble(request.id, request_data[:tag_id])
+          request_id = request_ids_by_uuid[request_data[:ont_request][:uuid]]
+          container_materials << container_material(well_id, request_id)
+          tag_taggables << tag_taggagble(request_id, request_data[:tag_id])
         end
       end
       ContainerMaterial.insert_all!(container_materials)
       TagTaggable.insert_all!(tag_taggables)
     end
     # rubocop:enable Metrics/AbcSize
-
-    def get_well(wells, well_data)
-      wells.find { |w| w.position == well_data[:well][:position] }
-    end
-
-    def get_request(requests, request_data)
-      requests.find { |req| req.uuid == request_data[:ont_request][:uuid] }
-    end
 
     def container_material(container_id, material_id)
       {

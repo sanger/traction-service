@@ -17,16 +17,17 @@ module Ont
     def bulk_insert_serialise(bulk_insert_serialiser, **options)
       return false unless options[:validate] == false || valid?
 
-      bulk_insert_serialiser.ont_request_data(ont_request, tag_id)
+      bulk_insert_serialiser.ont_request_data(ont_request, tag_oligo)
     end
 
     private
 
-    attr_reader :ont_request, :tag_id
+    attr_reader :ont_request, :tag_oligo
 
     def build_request(request_attributes)
-      tag_set_id = TagSet.find_by(name: Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name)
-      @tag_id = Tag.find_by(tag_set_id: tag_set_id, oligo: request_attributes[:tag_oligo])&.id
+      # tag_set_id = TagSet.find_by!(name: Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name).id
+      # @tag_id = Tag.find_by(tag_set_id: tag_set_id, oligo: request_attributes[:tag_oligo])&.id
+      @tag_oligo = request_attributes[:tag_oligo]
       @ont_request = Ont::Request.new(external_id: request_attributes[:external_id],
                                       name: request_attributes[:name])
     end
@@ -45,7 +46,7 @@ module Ont
     end
 
     def check_tag_exists
-      errors.add('tag', 'does not exist') if tag_id.nil?
+      errors.add('tag', 'does not exist') if tag_oligo.nil?
     end
   end
 end
