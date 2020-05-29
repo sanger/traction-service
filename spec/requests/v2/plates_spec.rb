@@ -6,21 +6,104 @@ RSpec.describe 'GraphQL', type: :request do
   context 'get plates' do
     context 'when no plates' do
       it 'returns empty plates' do
-        post v2_path, params: { query: '{ plates { id } }' }
+        post v2_path, params: { query: '{ plates { nodes { id } } }' }
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['plates'].length).to eq(0)
+        expect(json['data']['plates']['nodes'].length).to eq(0)
       end
     end
 
-    context 'when some plates' do
-      let!(:plates) { create_list(:plate, 3) }
+    context 'when 15 plates' do
+      let!(:plates) { create_list(:plate, 15) }
 
-      it 'returns all plates' do
-        post v2_path, params: { query: '{ plates { id } }' }
-        expect(response).to have_http_status(:success)
-        json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['plates'].length).to eq(3)
+      def expected_ids(drop, take)
+        plates.sort { |a, b| b.updated_at <=> a.updated_at }
+              .drop(drop)
+              .take(take)
+              .map { |plate| plate.id.to_s }
+      end
+
+      context 'no pagination variables' do
+        let(:query) do
+          '{ plates { nodes { id } pageInfo { hasNextPage hasPreviousPage pageCount } } }'
+        end
+
+        it 'returns 10 plates in reverse updated at order' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          nodes_json = json['data']['plates']['nodes']
+          expect(nodes_json.length).to eq(10)
+          expect(nodes_json.map { |n| n['id'] }).to eq(expected_ids(0, 10))
+        end
+
+        it 'gives correct page info' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          page_info_json = json['data']['plates']['pageInfo']
+          expect(page_info_json['hasNextPage']).to be_truthy
+          expect(page_info_json['hasPreviousPage']).to be_falsey
+          expect(page_info_json['pageCount']).to eq(2)
+        end
+      end
+
+      context 'with pageNum variable' do
+        let(:query) do
+          '{ plates(pageNum: 2) { nodes { id } ' \
+          'pageInfo { hasNextPage hasPreviousPage pageCount } } }'
+        end
+
+        it 'returns the final 5 plates in reverse updated at order' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          nodes_json = json['data']['plates']['nodes']
+          expect(nodes_json.length).to eq(5)
+          expect(nodes_json.map { |n| n['id'] }).to eq(expected_ids(10, 10))
+        end
+
+        it 'gives correct page info' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          page_info_json = json['data']['plates']['pageInfo']
+          expect(page_info_json['hasNextPage']).to be_falsey
+          expect(page_info_json['hasPreviousPage']).to be_truthy
+          expect(page_info_json['pageCount']).to eq(2)
+        end
+      end
+
+      context 'with pageNum and pageSize variables' do
+        let(:query) do
+          '{ plates(pageNum: 2, pageSize: 4) { nodes { id } ' \
+          'pageInfo { hasNextPage hasPreviousPage pageCount } } }'
+        end
+
+        it 'returns plates 5 through 8 in reverse updated at order' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          nodes_json = json['data']['plates']['nodes']
+          expect(nodes_json.length).to eq(4)
+          expect(nodes_json.map { |n| n['id'] }).to eq(expected_ids(4, 4))
+        end
+
+        it 'gives correct page info' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          page_info_json = json['data']['plates']['pageInfo']
+          expect(page_info_json['hasNextPage']).to be_truthy
+          expect(page_info_json['hasPreviousPage']).to be_truthy
+          expect(page_info_json['pageCount']).to eq(4)
+        end
       end
     end
 
@@ -36,12 +119,13 @@ RSpec.describe 'GraphQL', type: :request do
       end
 
       it 'returns plate with nested sample' do
-        post v2_path,
-             params: { query: '{ plates { wells { materials { ... on Request { name } } } } }' }
+        post v2_path, params:
+          { query: '{ plates { nodes { wells { materials { ... on Request { name } } } } } }' }
         expect(response).to have_http_status(:success)
+
         json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['plates'].length).to eq(1)
-        expect(json['data']['plates'].first).to include(
+        expect(json['data']['plates']['nodes'].length).to eq(1)
+        expect(json['data']['plates']['nodes'].first).to include(
           'wells' => [
             {
               'materials' => [
