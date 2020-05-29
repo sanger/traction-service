@@ -275,6 +275,26 @@ type MutationTypes {
   updateOntRun(input: UpdateOntRunMutationInput!): UpdateOntRunMutationPayload
 }
 
+"""
+Information about pagination in a connection.
+"""
+type PageInfo {
+  """
+  When paginating forwards, are there more items?
+  """
+  hasNextPage: Boolean!
+
+  """
+  When paginating backwards, are there more items?
+  """
+  hasPreviousPage: Boolean!
+
+  """
+  The number of pages available at the current page size.
+  """
+  pageCount: Int!
+}
+
 type Plate {
   """
   The barcode of this plate.
@@ -300,6 +320,41 @@ type Plate {
   An array of wells that exist on this plate.
   """
   wells: [Well!]!
+}
+
+"""
+The connection type for Plate.
+"""
+type PlateConnection {
+  """
+  A list of edges.
+  """
+  edges: [PlateEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [Plate]
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+}
+
+"""
+An edge in a connection.
+"""
+type PlateEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge.
+  """
+  node: Plate
 }
 
 input PlateWithSamplesInput {
@@ -341,9 +396,39 @@ type QueryTypes {
   ontRuns: [Run!]!
 
   """
-  Find all Plates.
+  Find all Plates by page.
   """
-  plates: [Plate!]!
+  plates(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+
+    """
+    The page number to return plates for.
+    """
+    pageNum: Int
+
+    """
+    The number of plates to return per page.
+    """
+    pageSize: Int
+  ): PlateConnection!
 
   """
   Find a Well by ID.
