@@ -43,7 +43,8 @@ module Ont
       tag_set_name = Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name
       tag_set_service.load_tag_set(tag_set_name)
       @request_factories = attributes[:samples].map do |sample|
-        RequestFactory.new(sample_attributes: sample, tag_ids_by_oligo: tag_set_service.loaded_tag_sets[tag_set_name])
+        RequestFactory.new(sample_attributes: sample,
+                           tag_ids_by_oligo: tag_set_service.loaded_tag_sets[tag_set_name])
       end
     end
 

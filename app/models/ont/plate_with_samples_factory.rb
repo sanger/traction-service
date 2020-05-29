@@ -108,15 +108,15 @@ module Ont
     end
 
     def get_request_ids_by_uuid(request_uuids)
-      request_ids_by_uuid = Hash.new
-      Ont::Request.where(uuid: request_uuids).each do |req|
+      request_ids_by_uuid = {}
+      Ont::Request.where(uuid: request_uuids).find_each do |req|
         request_ids_by_uuid[req.uuid] = req.id
       end
       request_ids_by_uuid
     end
 
     def get_well_ids_by_position(wells)
-      well_ids_by_position = Hash.new
+      well_ids_by_position = {}
       wells.each do |well|
         well_ids_by_position[well.position] = well.id
       end

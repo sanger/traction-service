@@ -34,7 +34,9 @@ module Ont
       build_plate(attributes)
       tag_set_service = TagSetService.new
       @well_factories = (wells_attributes[:wells] || []).map do |well_attributes|
-        WellFactory.new(plate: plate, well_attributes: well_attributes, tag_set_service: tag_set_service)
+        WellFactory.new(plate: plate,
+                        well_attributes: well_attributes,
+                        tag_set_service: tag_set_service)
       end
     end
 
