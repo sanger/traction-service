@@ -15,14 +15,6 @@ module Connections
       encode(item.id.to_s)
     end
 
-    def start_item_index
-      (page_num - 1) * page_size
-    end
-
-    def end_item_index
-      start_item_index + nodes.count
-    end
-
     # rubocop:disable Naming/PredicateName
     # Justification: We don't get a choice in these names -- they're part of the GraphQL-Ruby
     def has_next_page
@@ -33,5 +25,15 @@ module Connections
       page_num > 1
     end
     # rubocop:enable Naming/PredicateName
+
+    private
+
+    def start_item_index
+      (page_num - 1) * page_size
+    end
+
+    def end_item_index
+      start_item_index + nodes.count
+    end
   end
 end
