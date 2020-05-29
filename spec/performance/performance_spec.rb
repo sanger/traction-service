@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe "Performance testing" do
-  include RSpec::Benchmark::Matchers
-
   context 'creating ont plate' do
     def plate_with_ont_samples(num_wells, samples_per_well, tag_oligo)
       {
