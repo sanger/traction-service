@@ -69,7 +69,7 @@ module Types
       Ont::Run.resolved_query.find_by(id: id)
     end
 
-    field :ont_runs, Types::Outputs::Ont::RunType.connection_type, 'Find all Ont Runs.',
+    field :ont_runs, Types::Outputs::Ont::RunType.connection_type, 'Find all Ont Runs by page.',
           null: false do
       argument :page_num, Int, 'The page number to return Ont Runs for.', required: false
       argument :page_size, Int, 'The number of Ont Runs to return per page.', required: false
