@@ -123,18 +123,21 @@ module Ont
 
     # rubocop:disable Metrics/AbcSize
     def insert_joins(well_ids_by_position, request_ids_by_uuid)
-      container_materials = []
-      tag_taggables = []
-      serialised_plate_data[:well_data].each do |well_data|
+      parsed_data = serialised_plate_data[:well_data].map do |well_data|
         well_id = well_ids_by_position[well_data[:well][:position]]
-        well_data[:request_data].each do |request_data|
+
+        well_data[:request_data].map do |request_data|
           request_id = request_ids_by_uuid[request_data[:ont_request][:uuid]]
-          container_materials << container_material(well_id, request_id)
-          tag_taggables << tag_taggagble(request_id, request_data[:tag_id])
+
+          [
+            container_material(well_id, request_id),
+            tag_taggable(request_id, request_data[:tag_id])
+          ]
         end
       end
-      ContainerMaterial.insert_all!(container_materials)
-      TagTaggable.insert_all!(tag_taggables)
+
+      ContainerMaterial.insert_all!(parsed_data.flat_map { |pd| pd.map(&:first) })
+      TagTaggable.insert_all!(parsed_data.flat_map { |pd| pd.map(&:last) })
     end
     # rubocop:enable Metrics/AbcSize
 
@@ -147,7 +150,7 @@ module Ont
       }.merge(timestamps)
     end
 
-    def tag_taggagble(taggable_id, tag_id)
+    def tag_taggable(taggable_id, tag_id)
       {
         taggable_type: 'Ont::Request',
         taggable_id: taggable_id,
