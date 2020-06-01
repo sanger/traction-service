@@ -29,6 +29,8 @@ module Types
 
     field :plates, Types::Outputs::PlateType.connection_type, 'Find all Plates by page.',
           null: false do
+      # Built in classes add some confusing arguments we don't want to appear in the GraphQL docs
+      arguments.reject! { |k, _| %w[first last before after].include? k }
       argument :page_num, Int, 'The page number to return plates for.', required: false
       argument :page_size, Int, 'The number of plates to return per page.', required: false
     end
@@ -46,6 +48,8 @@ module Types
           'Find all Ont Libraries.', null: false do
       desc = "Whether to only include libraries that haven't been loaded into flowcells yet.  " \
              'Default: false.'
+      # Built in classes add some confusing arguments we don't want to appear in the GraphQL docs
+      arguments.reject! { |k, _| %w[first last before after].include? k }
       argument :unassigned_to_flowcells, Boolean, desc, required: false
       argument :page_num, Int, 'The page number to return Ont Runs for.', required: false
       argument :page_size, Int, 'The number of Ont Runs to return per page.', required: false
@@ -78,6 +82,8 @@ module Types
 
     field :ont_runs, Types::Outputs::Ont::RunType.connection_type, 'Find all Ont Runs by page.',
           null: false do
+      # Built in classes add some confusing arguments we don't want to appear in the GraphQL docs
+      arguments.reject! { |k, _| %w[first last before after].include? k }
       argument :page_num, Int, 'The page number to return Ont Runs for.', required: false
       argument :page_size, Int, 'The number of Ont Runs to return per page.', required: false
     end
