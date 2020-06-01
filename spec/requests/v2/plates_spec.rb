@@ -29,7 +29,7 @@ RSpec.describe 'GraphQL', type: :request do
           'pageInfo { hasNextPage hasPreviousPage pageCount currentPage entitiesCount } } }'
         end
 
-        it 'returns 10 plates in reverse updated at order' do
+        it 'returns first 10 plates in reverse updated at order' do
           post v2_path, params: { query: query }
           expect(response).to have_http_status(:success)
 

@@ -45,13 +45,104 @@ RSpec.describe 'GraphQL', type: :request do
       end
     end
 
-    context 'when 3 runs' do
-      it 'returns all runs when many exist' do
-        create_list(:ont_run, 3)
-        post v2_path, params: { query: '{ ontRuns { nodes { id } } }' }
-        expect(response).to have_http_status(:success)
-        json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['ontRuns']['nodes'].length).to eq(3)
+    context 'when 15 runs' do
+      let!(:runs) { create_list(:ont_run, 15) }
+
+      def expected_ids(drop, take)
+        runs.sort { |a, b| b.updated_at <=> a.updated_at }
+            .drop(drop)
+            .take(take)
+            .map { |run| run.id.to_s }
+      end
+
+      context 'no pagination variables' do
+        let(:query) do
+          '{ ontRuns { nodes { id } ' \
+          'pageInfo { hasNextPage hasPreviousPage pageCount currentPage entitiesCount } } }'
+        end
+
+        it 'returns first 10 runs in reverse updated at order' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          nodes_json = json['data']['ontRuns']['nodes']
+          expect(nodes_json.length).to eq(10)
+          expect(nodes_json.map { |n| n['id'] }).to eq(expected_ids(0, 10))
+        end
+
+        it 'gives correct page info' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          page_info_json = json['data']['ontRuns']['pageInfo']
+          expect(page_info_json['hasNextPage']).to be_truthy
+          expect(page_info_json['hasPreviousPage']).to be_falsey
+          expect(page_info_json['pageCount']).to eq(2)
+          expect(page_info_json['currentPage']).to eq(1)
+          expect(page_info_json['entitiesCount']).to eq(15)
+        end
+      end
+
+      context 'with pageNum variable' do
+        let(:query) do
+          '{ ontRuns(pageNum: 2) { nodes { id } ' \
+          'pageInfo { hasNextPage hasPreviousPage pageCount currentPage entitiesCount } } }'
+        end
+
+        it 'returns the final 5 runs in reverse updated at order' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          nodes_json = json['data']['ontRuns']['nodes']
+          expect(nodes_json.length).to eq(5)
+          expect(nodes_json.map { |n| n['id'] }).to eq(expected_ids(10, 10))
+        end
+
+        it 'gives correct page info' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          page_info_json = json['data']['ontRuns']['pageInfo']
+          expect(page_info_json['hasNextPage']).to be_falsey
+          expect(page_info_json['hasPreviousPage']).to be_truthy
+          expect(page_info_json['pageCount']).to eq(2)
+          expect(page_info_json['currentPage']).to eq(2)
+          expect(page_info_json['entitiesCount']).to eq(15)
+        end
+      end
+
+      context 'with pageNum and pageSize variables' do
+        let(:query) do
+          '{ ontRuns(pageNum: 2, pageSize: 4) { nodes { id } ' \
+          'pageInfo { hasNextPage hasPreviousPage pageCount currentPage entitiesCount } } }'
+        end
+
+        it 'returns runs 5 through 8 in reverse updated at order' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          nodes_json = json['data']['ontRuns']['nodes']
+          expect(nodes_json.length).to eq(4)
+          expect(nodes_json.map { |n| n['id'] }).to eq(expected_ids(4, 4))
+        end
+
+        it 'gives correct page info' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          page_info_json = json['data']['ontRuns']['pageInfo']
+          expect(page_info_json['hasNextPage']).to be_truthy
+          expect(page_info_json['hasPreviousPage']).to be_truthy
+          expect(page_info_json['pageCount']).to eq(4)
+          expect(page_info_json['currentPage']).to eq(2)
+          expect(page_info_json['entitiesCount']).to eq(15)
+        end
       end
     end
 
