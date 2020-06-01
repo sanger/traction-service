@@ -11,6 +11,7 @@ module Types
 
         @total_item_count = total_item_count
         @page_size = clamp_integer(page_size, min_value: 0)
+        @page_size = 10 if @page_size == 0
         @page_num = clamp_integer(page_num, min_value: 1, max_value: [page_count, 1].max)
       end
 

@@ -109,5 +109,99 @@ RSpec.shared_examples 'paginated_query' do
         expect(page_info_json['entitiesCount']).to eq(15)
       end
     end
+
+    context 'with invalid pageNum variable' do
+      context 'page number less than 1' do
+        let(:query) do
+          "{ #{graphql_method}(pageNum: 0) { nodes { id } " \
+          'pageInfo { hasNextPage hasPreviousPage pageCount currentPage entitiesCount } } }'
+        end
+
+        it 'returns entities from the first page in reverse updated at order' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          nodes_json = json['data'][graphql_method]['nodes']
+          expect(nodes_json.length).to eq(10)
+          expect(nodes_json.map { |n| n['id'] }).to eq(expected_ids(0, 10))
+        end
+
+        it 'gives correct page info' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          page_info_json = json['data'][graphql_method]['pageInfo']
+          expect(page_info_json['hasNextPage']).to be_truthy
+          expect(page_info_json['hasPreviousPage']).to be_falsey
+          expect(page_info_json['pageCount']).to eq(2)
+          expect(page_info_json['currentPage']).to eq(1)
+          expect(page_info_json['entitiesCount']).to eq(15)
+        end
+      end
+
+      context 'page number greater than the number of pages' do
+        let(:query) do
+          "{ #{graphql_method}(pageNum: 3) { nodes { id } " \
+          'pageInfo { hasNextPage hasPreviousPage pageCount currentPage entitiesCount } } }'
+        end
+
+        it 'returns entities from the last page in reverse updated at order' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          nodes_json = json['data'][graphql_method]['nodes']
+          expect(nodes_json.length).to eq(5)
+          expect(nodes_json.map { |n| n['id'] }).to eq(expected_ids(10, 10))
+        end
+
+        it 'gives correct page info' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          page_info_json = json['data'][graphql_method]['pageInfo']
+          expect(page_info_json['hasNextPage']).to be_falsey
+          expect(page_info_json['hasPreviousPage']).to be_truthy
+          expect(page_info_json['pageCount']).to eq(2)
+          expect(page_info_json['currentPage']).to eq(2)
+          expect(page_info_json['entitiesCount']).to eq(15)
+        end
+      end
+    end
+
+    context 'with invalid pageSize variable' do
+      context 'page size less than 1' do
+        let(:query) do
+          "{ #{graphql_method}(pageNum: 1, pageSize: 0) { nodes { id } " \
+          'pageInfo { hasNextPage hasPreviousPage pageCount currentPage entitiesCount } } }'
+        end
+
+        it 'returns 10 entities in reverse updated at order' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          nodes_json = json['data'][graphql_method]['nodes']
+          expect(nodes_json.length).to eq(10)
+          expect(nodes_json.map { |n| n['id'] }).to eq(expected_ids(0, 10))
+        end
+
+        it 'gives correct page info' do
+          post v2_path, params: { query: query }
+          expect(response).to have_http_status(:success)
+
+          json = ActiveSupport::JSON.decode(response.body)
+          page_info_json = json['data'][graphql_method]['pageInfo']
+          expect(page_info_json['hasNextPage']).to be_truthy
+          expect(page_info_json['hasPreviousPage']).to be_falsey
+          expect(page_info_json['pageCount']).to eq(2)
+          expect(page_info_json['currentPage']).to eq(1)
+          expect(page_info_json['entitiesCount']).to eq(15)
+        end
+      end
+    end
   end
 end
