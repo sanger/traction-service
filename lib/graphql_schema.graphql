@@ -280,6 +280,16 @@ Information about pagination in a connection.
 """
 type PageInfo {
   """
+  The currently returned page of results.
+  """
+  currentPage: Int!
+
+  """
+  The total number of entities in the database.
+  """
+  entitiesCount: Int!
+
+  """
   When paginating forwards, are there more items?
   """
   hasNextPage: Boolean!
@@ -391,9 +401,39 @@ type QueryTypes {
   ): Run
 
   """
-  Find all Ont Runs.
+  Find all Ont Runs by page.
   """
-  ontRuns: [Run!]!
+  ontRuns(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+
+    """
+    The page number to return Ont Runs for.
+    """
+    pageNum: Int
+
+    """
+    The number of Ont Runs to return per page.
+    """
+    pageSize: Int
+  ): RunConnection!
 
   """
   Find all Plates by page.
@@ -513,6 +553,41 @@ type Run {
   The time this object was last updated.
   """
   updatedAt: String!
+}
+
+"""
+The connection type for Run.
+"""
+type RunConnection {
+  """
+  A list of edges.
+  """
+  edges: [RunEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [Run]
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+}
+
+"""
+An edge in a connection.
+"""
+type RunEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge.
+  """
+  node: Run
 }
 
 input RunInput {
