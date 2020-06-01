@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
@@ -56,7 +58,8 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
 
   def mock_valid_plate_factory
     allow_any_instance_of(Ont::PlateFactory).to receive(:valid?).and_return(true)
-    allow_any_instance_of(Ont::PlateFactory).to receive(:bulk_insert_serialise).and_return(serialised_plate_data)
+    allow_any_instance_of(Ont::PlateFactory).to receive(:bulk_insert_serialise)
+      .and_return(serialised_plate_data)
   end
 
   def mock_invalid_plate_factory
@@ -86,16 +89,18 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
 
       it 'returns expected serialisation' do
         ont_request_data = factory.ont_request_data(request, tag_id)
-        expect(ont_request_data).to eq({
-          ont_request: {
-            uuid: uuid,
-            external_id: request.external_id,
-            name: request.name,
-            created_at: time,
-            updated_at: time
-          },
-          tag_id: tag_id
-        })
+        expect(ont_request_data).to eq(
+          {
+            ont_request: {
+              uuid: uuid,
+              external_id: request.external_id,
+              name: request.name,
+              created_at: time,
+              updated_at: time
+            },
+            tag_id: tag_id
+          }
+        )
       end
     end
 
@@ -105,14 +110,16 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
 
       it 'returns expected serialisation' do
         well_data = factory.well_data(well, request_data)
-        expect(well_data).to eq({
-          well: {
-            position: well.position,
-            created_at: time,
-            updated_at: time
-          },
-          request_data: request_data
-        })
+        expect(well_data).to eq(
+          {
+            well: {
+              position: well.position,
+              created_at: time,
+              updated_at: time
+            },
+            request_data: request_data
+          }
+        )
       end
     end
 
@@ -122,14 +129,16 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
 
       it 'returns expected serialisation' do
         plate_data = factory.plate_data(plate, well_data)
-        expect(plate_data).to eq({
-          plate: {
-            barcode: plate.barcode,
-            created_at: time,
-            updated_at: time
-          },
-          well_data: well_data
-        })
+        expect(plate_data).to eq(
+          {
+            plate: {
+              barcode: plate.barcode,
+              created_at: time,
+              updated_at: time
+            },
+            well_data: well_data
+          }
+        )
       end
     end
   end
@@ -153,7 +162,8 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
       factory.process
       expect(factory.valid?).to be_falsey
       expect(factory.errors.full_messages.length).to eq(1)
-      expect(factory.errors.full_messages).to contain_exactly('Plate factory {:message=>"This is a test error"}')
+      expect(factory.errors.full_messages)
+        .to contain_exactly('Plate factory {:message=>"This is a test error"}')
     end
 
     it 'is true if plate factory is valid' do
@@ -166,7 +176,9 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
   context 'save' do
     context 'valid build' do
       context 'successful transaction' do
-        let(:all_serialised_requests) { serialised_request_data_1 + serialised_request_data_2 + serialised_request_data_3 }
+        let(:all_serialised_requests) do
+          serialised_request_data_1 + serialised_request_data_2 + serialised_request_data_3
+        end
         factory = nil
         save = false
 
@@ -241,7 +253,8 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
           factory.process
           expect(factory.save).to be_falsey
           expect(factory.errors.full_messages.count).to eq(1)
-          expect(factory.errors.full_messages).to contain_exactly("Import was not successful: #{message}")
+          expect(factory.errors.full_messages)
+            .to contain_exactly("Import was not successful: #{message}")
         end
 
         it 'with failed well insert' do
@@ -251,7 +264,8 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
           factory.process
           expect(factory.save).to be_falsey
           expect(factory.errors.full_messages.count).to eq(1)
-          expect(factory.errors.full_messages).to contain_exactly("Import was not successful: #{message}")
+          expect(factory.errors.full_messages)
+            .to contain_exactly("Import was not successful: #{message}")
         end
 
         it 'with failed request insert' do
@@ -261,7 +275,8 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
           factory.process
           expect(factory.save).to be_falsey
           expect(factory.errors.full_messages.count).to eq(1)
-          expect(factory.errors.full_messages).to contain_exactly("Import was not successful: #{message}")
+          expect(factory.errors.full_messages)
+            .to contain_exactly("Import was not successful: #{message}")
         end
 
         it 'with failed container_material insert' do
@@ -271,7 +286,8 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
           factory.process
           expect(factory.save).to be_falsey
           expect(factory.errors.full_messages.count).to eq(1)
-          expect(factory.errors.full_messages).to contain_exactly("Import was not successful: #{message}")
+          expect(factory.errors.full_messages)
+            .to contain_exactly("Import was not successful: #{message}")
         end
 
         it 'with failed tag_taggable insert' do
@@ -281,7 +297,8 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
           factory.process
           expect(factory.save).to be_falsey
           expect(factory.errors.full_messages.count).to eq(1)
-          expect(factory.errors.full_messages).to contain_exactly("Import was not successful: #{message}")
+          expect(factory.errors.full_messages)
+            .to contain_exactly("Import was not successful: #{message}")
         end
       end
 
@@ -365,7 +382,8 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
       it 'returns false with errors' do
         expect(save).to be_falsey
         expect(factory.errors.full_messages.count).to eq(1)
-        expect(factory.errors.full_messages).to contain_exactly('Plate factory {:message=>"This is a test error"}')
+        expect(factory.errors.full_messages)
+          .to contain_exactly('Plate factory {:message=>"This is a test error"}')
       end
 
       it 'does not insert any plates' do
