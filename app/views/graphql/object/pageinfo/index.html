@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="description" content="Plate GraphQL documentation">
+    <meta name="description" content="PageInfo GraphQL documentation">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Plate</title>
+    <title>PageInfo</title>
     <link rel="stylesheet" href="/v2/docs/assets/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
     <script>
@@ -483,37 +483,38 @@
       <div id="content">
 
         <h1>
-<a id="plate" class="anchor" href="#plate" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Plate</h1>
+<a id="pageinfo" class="anchor" href="#pageinfo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PageInfo</h1>
+<p>Information about pagination in a connection.</p>
 <h2>
 <a id="fields" class="anchor" href="#fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fields</h2>
 <div class="field-entry ">
-  <span id="barcode" class="field-name anchored">barcode (<code><a href="/v2/docs/scalar/string">String!</a></code>)</span>
+  <span id="currentpage" class="field-name anchored">currentPage (<code><a href="/v2/docs/scalar/int">Int!</a></code>)</span>
   <div class="description-wrapper">
-   <p>The barcode of this plate.</p>
+   <p>The currently returned page of results.</p>
   </div>
 </div>
 <div class="field-entry ">
-  <span id="createdat" class="field-name anchored">createdAt (<code><a href="/v2/docs/scalar/string">String!</a></code>)</span>
+  <span id="entitiescount" class="field-name anchored">entitiesCount (<code><a href="/v2/docs/scalar/int">Int!</a></code>)</span>
   <div class="description-wrapper">
-   <p>The time this object was created.</p>
+   <p>The total number of entities in the database.</p>
   </div>
 </div>
 <div class="field-entry ">
-  <span id="id" class="field-name anchored">id (<code><a href="/v2/docs/scalar/id">ID!</a></code>)</span>
+  <span id="hasnextpage" class="field-name anchored">hasNextPage (<code><a href="/v2/docs/scalar/boolean">Boolean!</a></code>)</span>
   <div class="description-wrapper">
-   <p>The unique database ID of this object.</p>
+   <p>When paginating forwards, are there more items?</p>
   </div>
 </div>
 <div class="field-entry ">
-  <span id="updatedat" class="field-name anchored">updatedAt (<code><a href="/v2/docs/scalar/string">String!</a></code>)</span>
+  <span id="haspreviouspage" class="field-name anchored">hasPreviousPage (<code><a href="/v2/docs/scalar/boolean">Boolean!</a></code>)</span>
   <div class="description-wrapper">
-   <p>The time this object was last updated.</p>
+   <p>When paginating backwards, are there more items?</p>
   </div>
 </div>
 <div class="field-entry ">
-  <span id="wells" class="field-name anchored">wells (<code><a href="/v2/docs/object/well">[Well!]!</a></code>)</span>
+  <span id="pagecount" class="field-name anchored">pageCount (<code><a href="/v2/docs/scalar/int">Int!</a></code>)</span>
   <div class="description-wrapper">
-   <p>An array of wells that exist on this plate.</p>
+   <p>The number of pages available at the current page size.</p>
   </div>
 </div>
 
