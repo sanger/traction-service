@@ -18,6 +18,9 @@ module Types
       field :page_count, Integer,
             null: false, description: 'The number of pages available at the current page size.'
 
+      field :current_page, Integer,
+            null: false, description: 'The currently returned page of results.'
+
       field :entities_count, Integer,
             null: false, description: 'The total number of entities in the database.'
     end

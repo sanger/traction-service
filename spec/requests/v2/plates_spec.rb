@@ -25,7 +25,8 @@ RSpec.describe 'GraphQL', type: :request do
 
       context 'no pagination variables' do
         let(:query) do
-          '{ plates { nodes { id } pageInfo { hasNextPage hasPreviousPage pageCount } } }'
+          '{ plates { nodes { id } ' \
+          'pageInfo { hasNextPage hasPreviousPage pageCount currentPage entitiesCount } } }'
         end
 
         it 'returns 10 plates in reverse updated at order' do
@@ -47,13 +48,15 @@ RSpec.describe 'GraphQL', type: :request do
           expect(page_info_json['hasNextPage']).to be_truthy
           expect(page_info_json['hasPreviousPage']).to be_falsey
           expect(page_info_json['pageCount']).to eq(2)
+          expect(page_info_json['currentPage']).to eq(1)
+          expect(page_info_json['entitiesCount']).to eq(15)
         end
       end
 
       context 'with pageNum variable' do
         let(:query) do
           '{ plates(pageNum: 2) { nodes { id } ' \
-          'pageInfo { hasNextPage hasPreviousPage pageCount } } }'
+          'pageInfo { hasNextPage hasPreviousPage pageCount currentPage entitiesCount } } }'
         end
 
         it 'returns the final 5 plates in reverse updated at order' do
@@ -75,13 +78,15 @@ RSpec.describe 'GraphQL', type: :request do
           expect(page_info_json['hasNextPage']).to be_falsey
           expect(page_info_json['hasPreviousPage']).to be_truthy
           expect(page_info_json['pageCount']).to eq(2)
+          expect(page_info_json['currentPage']).to eq(2)
+          expect(page_info_json['entitiesCount']).to eq(15)
         end
       end
 
       context 'with pageNum and pageSize variables' do
         let(:query) do
           '{ plates(pageNum: 2, pageSize: 4) { nodes { id } ' \
-          'pageInfo { hasNextPage hasPreviousPage pageCount } } }'
+          'pageInfo { hasNextPage hasPreviousPage pageCount currentPage entitiesCount } } }'
         end
 
         it 'returns plates 5 through 8 in reverse updated at order' do
@@ -103,6 +108,8 @@ RSpec.describe 'GraphQL', type: :request do
           expect(page_info_json['hasNextPage']).to be_truthy
           expect(page_info_json['hasPreviousPage']).to be_truthy
           expect(page_info_json['pageCount']).to eq(4)
+          expect(page_info_json['currentPage']).to eq(2)
+          expect(page_info_json['entitiesCount']).to eq(15)
         end
       end
     end
