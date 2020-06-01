@@ -97,13 +97,19 @@ module Ont
     end
 
     def insert_wells_and_ont_requests(plate_id)
-      requests_data = []
-      wells_data = serialised_plate_data[:well_data].map do |well_data|
-        requests_data.concat(well_data[:request_data].map { |req_data| req_data[:ont_request] })
-        well_data[:well].merge({ plate_id: plate_id })
+      parsed_data = serialised_plate_data[:well_data].map do |well_data|
+        [
+          well_data[:well].merge({ plate_id: plate_id }),
+          well_data[:request_data].map { |req_data| req_data[:ont_request] }
+        ]
       end
+
+      wells_data = parsed_data.map(&:first)
       Well.insert_all!(wells_data)
+
+      requests_data = parsed_data.flat_map(&:last)
       Ont::Request.insert_all!(requests_data)
+
       requests_data.map { |req_data| req_data[:uuid] }
     end
 
