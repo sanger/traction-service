@@ -83,7 +83,7 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
       before do
         allow(SecureRandom).to receive(:uuid).and_return(uuid)
       end
-  
+
       it 'returns expected serialisation' do
         ont_request_data = factory.ont_request_data(request, tag_id)
         expect(ont_request_data).to eq({
@@ -98,11 +98,11 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
         })
       end
     end
-  
+
     context 'well_data' do
       let(:well) { create(:well) }
       let(:request_data) { 'test request data' }
-  
+
       it 'returns expected serialisation' do
         well_data = factory.well_data(well, request_data)
         expect(well_data).to eq({
@@ -115,11 +115,11 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
         })
       end
     end
-  
+
     context 'plate_data' do
       let(:plate) { create(:plate) }
       let(:well_data) { 'test well data' }
-  
+
       it 'returns expected serialisation' do
         plate_data = factory.plate_data(plate, well_data)
         expect(plate_data).to eq({
@@ -286,32 +286,67 @@ RSpec.describe Ont::PlateWithSamplesFactory, type: :model, ont: true do
       end
 
       context 'failed transaction' do
-        before do
+        def create_failing_mock(failing_insert_type)
           mock_valid_plate_factory
-          allow(Plate).to receive(:insert_all!).and_raise('this is an error')
+          allow(failing_insert_type).to receive(:insert_all!).and_raise('this is an error')
           factory = Ont::PlateWithSamplesFactory.new
           factory.process
           factory.save
         end
-  
-        it 'does not insert any plates' do
-          expect(Plate.all.count).to eq(0)
+
+        context 'failing Plate insert' do
+          it 'does not insert any objects' do
+            create_failing_mock(Plate)
+            expect(Plate.all.count).to eq(0)
+            expect(Well.all.count).to eq(0)
+            expect(ContainerMaterial.all.count).to eq(0)
+            expect(Ont::Request.all.count).to eq(0)
+            expect(TagTaggable.all.count).to eq(0)
+          end
         end
-  
-        it 'does not insert any wells' do
-          expect(Well.all.count).to eq(0)
+
+        context 'failing Well insert' do
+          it 'does not insert any objects' do
+            create_failing_mock(Well)
+            expect(Plate.all.count).to eq(0)
+            expect(Well.all.count).to eq(0)
+            expect(ContainerMaterial.all.count).to eq(0)
+            expect(Ont::Request.all.count).to eq(0)
+            expect(TagTaggable.all.count).to eq(0)
+          end
         end
-  
-        it 'does not insert any container_materials' do
-          expect(ContainerMaterial.all.count).to eq(0)
+
+        context 'failing ContainerMaterial insert' do
+          it 'does not insert any objects' do
+            create_failing_mock(ContainerMaterial)
+            expect(Plate.all.count).to eq(0)
+            expect(Well.all.count).to eq(0)
+            expect(ContainerMaterial.all.count).to eq(0)
+            expect(Ont::Request.all.count).to eq(0)
+            expect(TagTaggable.all.count).to eq(0)
+          end
         end
-  
-        it 'does not insert any ont_requests' do
-          expect(Ont::Request.all.count).to eq(0)
+
+        context 'failing Ont::Request insert' do
+          it 'does not insert any objects' do
+            create_failing_mock(Ont::Request)
+            expect(Plate.all.count).to eq(0)
+            expect(Well.all.count).to eq(0)
+            expect(ContainerMaterial.all.count).to eq(0)
+            expect(Ont::Request.all.count).to eq(0)
+            expect(TagTaggable.all.count).to eq(0)
+          end
         end
-  
-        it 'does not insert any tag_taggables' do
-          expect(TagTaggable.all.count).to eq(0)
+
+        context 'failing TagTaggable insert' do
+          it 'does not insert any objects' do
+            create_failing_mock(TagTaggable)
+            expect(Plate.all.count).to eq(0)
+            expect(Well.all.count).to eq(0)
+            expect(ContainerMaterial.all.count).to eq(0)
+            expect(Ont::Request.all.count).to eq(0)
+            expect(TagTaggable.all.count).to eq(0)
+          end
         end
       end
     end
