@@ -34,6 +34,10 @@ module Types
         (total_item_count.to_f / page_size).ceil
       end
 
+      def entities_count
+        total_item_count
+      end
+
       private
 
       def start_item_index
