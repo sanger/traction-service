@@ -91,6 +91,3 @@ Layout/SpaceAroundMethodCallOperator:
 
 Style/ExponentialNotation:
   Enabled: true
-
-Rails/UniqueValidationWithoutIndex:
-  Enabled: false
