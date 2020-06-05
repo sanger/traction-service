@@ -9,9 +9,10 @@ module Types
       def initialize(items, page_num:, page_size:, total_item_count:, max_page_size: :not_given)
         super(items, max_page_size: max_page_size)
 
-        @page_num = page_num
-        @page_size = page_size
         @total_item_count = total_item_count
+        @page_size = clamp_integer(page_size, min_value: 0)
+        @page_size = 10 if @page_size == 0
+        @page_num = clamp_integer(page_num, min_value: 1, max_value: [page_count, 1].max)
       end
 
       def nodes
@@ -34,11 +35,25 @@ module Types
         (total_item_count.to_f / page_size).ceil
       end
 
+      def current_page
+        page_num
+      end
+
       def entities_count
         total_item_count
       end
 
       private
+
+      def clamp_integer(value, min_value: nil, max_value: nil)
+        return value if value.nil?
+
+        clamped_value = value.round
+        clamped_value = [clamped_value, min_value].max unless min_value.nil?
+        clamped_value = [clamped_value, max_value].min unless max_value.nil?
+
+        clamped_value.to_i
+      end
 
       def start_item_index
         (page_num - 1) * page_size
