@@ -239,46 +239,11 @@ type Library {
   updatedAt: String!
 }
 
-"""
-The connection type for Library.
-"""
-type LibraryConnection {
-  """
-  A list of edges.
-  """
-  edges: [LibraryEdge]
-
-  """
-  A list of nodes.
-  """
-  nodes: [Library]
-
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-}
-
 input LibraryCreationArgumentsInput {
   """
   The barcode of the plate to create libraries from.
   """
   plateBarcode: String
-}
-
-"""
-An edge in a connection.
-"""
-type LibraryEdge {
-  """
-  A cursor for use in pagination.
-  """
-  cursor: String!
-
-  """
-  The item at the end of the edge.
-  """
-  node: Library
 }
 
 union MaterialUnion = Library | Request
@@ -310,41 +275,6 @@ type MutationTypes {
   updateOntRun(input: UpdateOntRunMutationInput!): UpdateOntRunMutationPayload
 }
 
-"""
-Information about pagination in a connection.
-"""
-type PageInfo {
-  """
-  The currently returned page of results.
-  """
-  currentPage: Int!
-
-  """
-  The total number of entities in the database.
-  """
-  entitiesCount: Int!
-
-  """
-  When paginating forwards, are there more items?
-  """
-  hasNextPage: Boolean!
-
-  """
-  When paginating backwards, are there more items?
-  """
-  hasPreviousPage: Boolean!
-
-  """
-  The number of pages available at the current page size.
-  """
-  pageCount: Int!
-
-  """
-  The total number of entities available.
-  """
-  entitiesCount: Int!
-}
-
 type Plate {
   """
   The barcode of this plate.
@@ -372,41 +302,6 @@ type Plate {
   wells: [Well!]!
 }
 
-"""
-The connection type for Plate.
-"""
-type PlateConnection {
-  """
-  A list of edges.
-  """
-  edges: [PlateEdge]
-
-  """
-  A list of nodes.
-  """
-  nodes: [Plate]
-
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-}
-
-"""
-An edge in a connection.
-"""
-type PlateEdge {
-  """
-  A cursor for use in pagination.
-  """
-  cursor: String!
-
-  """
-  The item at the end of the edge.
-  """
-  node: Plate
-}
-
 input PlateWithSamplesInput {
   """
   The barcode of the plate.  If not specified, a barcode will be generated.
@@ -425,40 +320,10 @@ type QueryTypes {
   """
   ontLibraries(
     """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: String
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: String
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-
-    """
-    The page number to return Ont Runs for.
-    """
-    pageNum: Int
-
-    """
-    The number of Ont Runs to return per page.
-    """
-    pageSize: Int
-
-    """
     Whether to only include libraries that haven't been loaded into flowcells yet.  Default: false.
     """
     unassignedToFlowcells: Boolean
-  ): LibraryConnection!
+  ): [Library!]!
 
   """
   Find an Ont Run by ID.
@@ -471,74 +336,14 @@ type QueryTypes {
   ): Run
 
   """
-  Find all Ont Runs by page.
+  Find all Ont Runs.
   """
-  ontRuns(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: String
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: String
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-
-    """
-    The page number to return Ont Runs for.
-    """
-    pageNum: Int
-
-    """
-    The number of Ont Runs to return per page.
-    """
-    pageSize: Int
-  ): RunConnection!
+  ontRuns: [Run!]!
 
   """
-  Find all Plates by page.
+  Find all Plates.
   """
-  plates(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: String
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: String
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-
-    """
-    The page number to return plates for.
-    """
-    pageNum: Int
-
-    """
-    The number of plates to return per page.
-    """
-    pageSize: Int
-  ): PlateConnection!
+  plates: [Plate!]!
 
   """
   Find a Well by ID.
@@ -623,41 +428,6 @@ type Run {
   The time this object was last updated.
   """
   updatedAt: String!
-}
-
-"""
-The connection type for Run.
-"""
-type RunConnection {
-  """
-  A list of edges.
-  """
-  edges: [RunEdge]
-
-  """
-  A list of nodes.
-  """
-  nodes: [Run]
-
-  """
-  Information to aid in pagination.
-  """
-  pageInfo: PageInfo!
-}
-
-"""
-An edge in a connection.
-"""
-type RunEdge {
-  """
-  A cursor for use in pagination.
-  """
-  cursor: String!
-
-  """
-  The item at the end of the edge.
-  """
-  node: Run
 }
 
 input RunInput {
