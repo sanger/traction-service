@@ -303,6 +303,11 @@ type PageInfo {
   The number of pages available at the current page size.
   """
   pageCount: Int!
+
+  """
+  The total number of entities available.
+  """
+  entitiesCount: Int!
 }
 
 type Plate {
