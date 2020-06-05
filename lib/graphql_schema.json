@@ -1188,6 +1188,24 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
+            },
+            {
+              "name": "entitiesCount",
+              "description": "The total number of entities available.",
+              "args": [
+                
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
             }
           ],
           "inputFields": null,
