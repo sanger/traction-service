@@ -35,8 +35,8 @@ RSpec.describe 'GraphQL', type: :request do
     end
   end
 
-  describe 'get runs' do
-    describe 'paginated graphql query' do
+  context 'get runs' do
+    context 'paginated graphql query' do
       let(:paginated_model) { :ont_run }
       let(:graphql_method) { 'ontRuns' }
       it_behaves_like 'paginated_query'

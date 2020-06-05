@@ -3,58 +3,52 @@
 require 'rails_helper'
 
 RSpec.describe 'GraphQL', type: :request do
-  describe 'get libraries' do
-    describe 'paginated graphql query' do
-      let(:paginated_model) { :ont_library }
-      let(:graphql_method) { 'ontLibraries' }
-      it_behaves_like 'paginated_query'
+  context 'get libraries' do
+    it 'returns empty array when no libraries exist' do
+      post v2_path, params: { query: '{ ontLibraries { id } }' }
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data']['ontLibraries']).to be_empty
     end
 
-    context 'when single library' do
-      let!(:library) { create(:ont_library) }
-
-      it 'returns the library' do
-        allow_any_instance_of(Ont::Library).to receive(:tube_barcode)
-          .and_return('test tube barcode')
-        post v2_path, params: {
-          query: '{ ontLibraries { nodes { name plateBarcode pool poolSize tubeBarcode } } }'
-        }
-
-        expect(response).to have_http_status(:success)
-        json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['ontLibraries']['nodes']).to contain_exactly(
-          { 'name' => library.name, 'plateBarcode' => library.plate_barcode, 'pool' => library.pool,
-            'poolSize' => 24, 'tubeBarcode' => 'test tube barcode' }
-        )
-      end
+    it 'returns single library when one exists' do
+      library = create(:ont_library)
+      allow_any_instance_of(Ont::Library).to receive(:tube_barcode).and_return('test tube barcode')
+      post v2_path, params: { query:
+        '{ ontLibraries { name plateBarcode pool poolSize tubeBarcode } }' }
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data']['ontLibraries']).to contain_exactly(
+        { 'name' => library.name, 'plateBarcode' => library.plate_barcode, 'pool' => library.pool,
+          'poolSize' => 24, 'tubeBarcode' => 'test tube barcode' }
+      )
     end
 
-    describe 'many libraries with some loaded in a flowcell' do
-      let!(:libraries) { create_list(:ont_library, 3) }
-      let!(:run) { create(:ont_run_with_flowcells) }
+    it 'returns all libraries when many exist' do
+      create_list(:ont_library, 3)
+      post v2_path, params: { query: '{ ontLibraries { id } }' }
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data']['ontLibraries'].length).to eq(3)
+    end
 
-      describe 'unassigned boolean not specified' do
-        it 'returns all libraries by default' do
-          post v2_path, params: { query: '{ ontLibraries { nodes { id } } }' }
+    it 'returns all libraries when many exist and some are loaded in a flowcell' do
+      create_list(:ont_library, 3)
+      run = create(:ont_run)
+      post v2_path, params: { query: '{ ontLibraries { id } }' }
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data']['ontLibraries'].length).to eq(3 + run.flowcells.count)
+    end
 
-          expect(response).to have_http_status(:success)
-          json = ActiveSupport::JSON.decode(response.body)
-          expect(json['data']['ontLibraries']['nodes'].length).to eq(3 + run.flowcells.count)
-        end
-      end
-
-      describe 'unassigned boolean set to true' do
-        it 'returns only unassigned libraries' do
-          post v2_path, params: {
-            query: '{ ontLibraries(unassignedToFlowcells: true) { nodes { id } } }'
-          }
-
-          expect(response).to have_http_status(:success)
-          json = ActiveSupport::JSON.decode(response.body)
-          expect(run.flowcells.count).to be > 0
-          expect(json['data']['ontLibraries']['nodes'].length).to eq(3)
-        end
-      end
+    it 'returns only unassigned libraries when many exist and some are loaded in a flowcell' do
+      create_list(:ont_library, 3)
+      run = create(:ont_run_with_flowcells)
+      post v2_path, params: { query: '{ ontLibraries(unassignedToFlowcells: true) { id } }' }
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(run.flowcells.count).to be > 0
+      expect(json['data']['ontLibraries'].length).to eq(3)
     end
   end
 

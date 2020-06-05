@@ -42,26 +42,19 @@ module Types
 
     # Ont::Libraries
 
-    field :ont_libraries, Types::Outputs::Ont::LibraryType.connection_type,
-          'Find all Ont Libraries.', null: false do
+    field :ont_libraries, [Types::Outputs::Ont::LibraryType], 'Find all Ont Libraries.',
+          null: false do
       desc = "Whether to only include libraries that haven't been loaded into flowcells yet.  " \
              'Default: false.'
       argument :unassigned_to_flowcells, Boolean, desc, required: false
-      argument :page_num, Int, 'The page number to return Ont Runs for.', required: false
-      argument :page_size, Int, 'The number of Ont Runs to return per page.', required: false
     end
 
-    def ont_libraries(unassigned_to_flowcells: false, page_num: 1, page_size: 10)
-      base_query = Ont::Library.resolved_query
-
+    def ont_libraries(unassigned_to_flowcells: false)
       if unassigned_to_flowcells
-        base_query = base_query.left_outer_joins(:flowcell).where(ont_flowcells: { id: nil })
+        Ont::Library.resolved_query.left_outer_joins(:flowcell).where(ont_flowcells: { id: nil })
+      else
+        Ont::Library.resolved_query.all
       end
-
-      Connections::PaginatedConnectionWrapper.new(base_query,
-                                                  page_num: page_num,
-                                                  page_size: page_size,
-                                                  total_item_count: base_query.all.count)
     end
 
     # Ont::Runs

@@ -3,8 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe 'GraphQL', type: :request do
-  describe 'get plates' do
-    describe 'paginated graphql query' do
+  context 'get plates' do
+    context 'paginated graphql query' do
       let(:paginated_model) { :plate }
       let(:graphql_method) { 'plates' }
       it_behaves_like 'paginated_query'
