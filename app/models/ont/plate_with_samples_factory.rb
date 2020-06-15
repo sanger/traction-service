@@ -5,9 +5,61 @@ module Ont
   # PlateWithSamplesFactory
   # A factory for bulk inserting a plate and all of its dependents
 
-  # rubocop:disable Metrics/ClassLength
+  # serializations for platw with samples
+  module Serializations
+    def serialise_ont_request(ont_request)
+      {
+        uuid: SecureRandom.uuid,
+        external_id: ont_request.external_id,
+        name: ont_request.name
+      }.merge(timestamps)
+    end
+
+    def ont_request_data(ont_request, tag_id)
+      {
+        ont_request: serialise_ont_request(ont_request),
+        tag_id: tag_id
+      }
+    end
+
+    def well_data(well, request_data)
+      { well: serialise_well(well), request_data: request_data }
+    end
+
+    def plate_data(plate, well_data)
+      { plate: serialise_plate(plate), well_data: well_data }
+    end
+
+    def serialise_well(well)
+      { position: well.position }.merge(timestamps)
+    end
+
+    def serialise_plate(plate)
+      { barcode: plate.barcode }.merge(timestamps)
+    end
+
+    def container_material(container_id, material_id)
+      {
+        container_type: 'Well',
+        container_id: container_id,
+        material_type: 'Ont::Request',
+        material_id: material_id
+      }.merge(timestamps)
+    end
+
+    def tag_taggable(taggable_id, tag_id)
+      {
+        taggable_type: 'Ont::Request',
+        taggable_id: taggable_id,
+        tag_id: tag_id
+      }.merge(timestamps)
+    end
+  end
+
+  # plate with samples factory
   class PlateWithSamplesFactory
     include ActiveModel::Model
+    include Serializations
 
     validate :check_plate_factory
 
@@ -28,42 +80,9 @@ module Ont
       bulk_insert
     end
 
-    # Serialisation
-
-    def ont_request_data(ont_request, tag_id)
-      {
-        ont_request: serialise_ont_request(ont_request),
-        tag_id: tag_id
-      }
-    end
-
-    def well_data(well, request_data)
-      { well: serialise_well(well), request_data: request_data }
-    end
-
-    def plate_data(plate, well_data)
-      { plate: serialise_plate(plate), well_data: well_data }
-    end
-
     private
 
     attr_reader :attributes, :timestamps, :plate_factory, :serialised_plate_data
-
-    def serialise_ont_request(ont_request)
-      {
-        uuid: SecureRandom.uuid,
-        external_id: ont_request.external_id,
-        name: ont_request.name
-      }.merge(timestamps)
-    end
-
-    def serialise_well(well)
-      { position: well.position }.merge(timestamps)
-    end
-
-    def serialise_plate(plate)
-      { barcode: plate.barcode }.merge(timestamps)
-    end
 
     # Saving and Validation
 
@@ -121,9 +140,14 @@ module Ont
       wells.map { |well| [well.position, well.id] }.to_h
     end
 
-    # rubocop:disable Metrics/AbcSize
     def insert_joins(well_ids_by_position, request_ids_by_uuid)
-      parsed_data = serialised_plate_data[:well_data].map do |well_data|
+      parsed_data = parsed_plate_data(well_ids_by_position, request_ids_by_uuid)
+      ContainerMaterial.insert_all!(parsed_data.flat_map { |pd| pd.map(&:first) })
+      TagTaggable.insert_all!(parsed_data.flat_map { |pd| pd.map(&:last) })
+    end
+
+    def parsed_plate_data(well_ids_by_position, request_ids_by_uuid)
+      serialised_plate_data[:well_data].map do |well_data|
         well_id = well_ids_by_position[well_data[:well][:position]]
 
         well_data[:request_data].map do |request_data|
@@ -135,28 +159,6 @@ module Ont
           ]
         end
       end
-
-      ContainerMaterial.insert_all!(parsed_data.flat_map { |pd| pd.map(&:first) })
-      TagTaggable.insert_all!(parsed_data.flat_map { |pd| pd.map(&:last) })
-    end
-    # rubocop:enable Metrics/AbcSize
-
-    def container_material(container_id, material_id)
-      {
-        container_type: 'Well',
-        container_id: container_id,
-        material_type: 'Ont::Request',
-        material_id: material_id
-      }.merge(timestamps)
-    end
-
-    def tag_taggable(taggable_id, tag_id)
-      {
-        taggable_type: 'Ont::Request',
-        taggable_id: taggable_id,
-        tag_id: tag_id
-      }.merge(timestamps)
     end
   end
-  # rubocop:enable Metrics/ClassLength
 end
