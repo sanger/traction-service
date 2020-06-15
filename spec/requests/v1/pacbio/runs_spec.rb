@@ -30,6 +30,7 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][0]['attributes']['created_at']).to eq(run1.created_at.to_s(:us))
       expect(json['data'][0]['attributes']['state']).to eq(run1.state)
       expect(json['data'][0]['attributes']['comments']).to eq(run1.comments)
+      expect(json['data'][0]['attributes']['all_wells_have_libraries']).to eq(run1.all_wells_have_libraries?)
 
       run = json['data'][1]['attributes']
       expect(run['name']).to eq(run2.name)
