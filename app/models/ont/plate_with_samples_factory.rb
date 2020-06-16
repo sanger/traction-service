@@ -6,36 +6,30 @@ module Ont
   # A factory for bulk inserting a plate and all of its dependents
 
   # serializations for platw with samples
-  module Serializations
-    def serialise_ont_request(ont_request)
-      {
-        uuid: SecureRandom.uuid,
-        external_id: ont_request.external_id,
-        name: ont_request.name
-      }.merge(timestamps)
-    end
-
+  module Serializers
     def ont_request_data(ont_request, tag_id)
       {
-        ont_request: serialise_ont_request(ont_request),
+        ont_request: {
+          uuid: SecureRandom.uuid,
+          external_id: ont_request.external_id,
+          name: ont_request.name
+        }.merge(timestamps),
         tag_id: tag_id
       }
     end
 
     def well_data(well, request_data)
-      { well: serialise_well(well), request_data: request_data }
+      { 
+        well: { position: well.position }.merge(timestamps), 
+        request_data: request_data 
+      }
     end
 
     def plate_data(plate, well_data)
-      { plate: serialise_plate(plate), well_data: well_data }
-    end
-
-    def serialise_well(well)
-      { position: well.position }.merge(timestamps)
-    end
-
-    def serialise_plate(plate)
-      { barcode: plate.barcode }.merge(timestamps)
+      {
+        plate: { barcode: plate.barcode }.merge(timestamps),
+        well_data: well_data
+      }
     end
 
     def container_material(container_id, material_id)
@@ -59,14 +53,16 @@ module Ont
   # plate with samples factory
   class PlateWithSamplesFactory
     include ActiveModel::Model
-    include Serializations
+    include Serializers
 
     validate :check_plate_factory
 
     def initialize(attributes = {})
       @attributes = attributes
-      time = DateTime.now
-      @timestamps = { created_at: time, updated_at: time }
+    end
+
+    def timestamps
+      @timestamps ||= create_timestamps
     end
 
     def process
@@ -82,7 +78,12 @@ module Ont
 
     private
 
-    attr_reader :attributes, :timestamps, :plate_factory, :serialised_plate_data
+    attr_reader :attributes, :plate_factory, :serialised_plate_data
+
+    def create_timestamps
+      time = DateTime.now
+      { created_at: time, updated_at: time }
+    end
 
     # Saving and Validation
 
