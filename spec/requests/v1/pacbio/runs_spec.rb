@@ -140,7 +140,6 @@ RSpec.describe 'RunsController', type: :request do
             type: "runs",
             id: @run.id,
             attributes: {
-              name: "an updated name",
               state: "started"
             }
           }
@@ -155,7 +154,6 @@ RSpec.describe 'RunsController', type: :request do
       it 'updates a run' do
         patch v1_pacbio_run_path(@run), params: body, headers: json_api_headers
         @run.reload
-        expect(@run.name).to eq "an updated name"
         expect(@run.state).to eq "started"
       end
 
@@ -174,7 +172,6 @@ RSpec.describe 'RunsController', type: :request do
             type: "runs",
             id: 123,
             attributes: {
-              name: "an updated name",
               state: "started"
             }
           }
