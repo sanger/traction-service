@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_16_104801) do
+ActiveRecord::Schema.define(version: 2020_06_16_121739) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -85,9 +85,9 @@ ActiveRecord::Schema.define(version: 2020_06_16_104801) do
     t.integer "pacbio_library_id"
     t.integer "tag_id"
     t.index ["pacbio_library_id"], name: "index_pacbio_request_libraries_on_pacbio_library_id"
-    t.index ["pacbio_request_id", "pacbio_library_id"], name: "index_rl_request_library"
+    t.index ["pacbio_request_id", "pacbio_library_id"], name: "index_rl_request_library", unique: true
     t.index ["pacbio_request_id"], name: "index_pacbio_request_libraries_on_pacbio_request_id"
-    t.index ["tag_id", "pacbio_library_id"], name: "index_rl_tag_library"
+    t.index ["tag_id", "pacbio_library_id"], name: "index_rl_tag_library", unique: true
     t.index ["tag_id"], name: "index_pacbio_request_libraries_on_tag_id"
   end
 
