@@ -19,9 +19,9 @@ module Ont
     end
 
     def well_data(well, request_data)
-      { 
-        well: { position: well.position }.merge(timestamps), 
-        request_data: request_data 
+      {
+        well: { position: well.position }.merge(timestamps),
+        request_data: request_data
       }
     end
 
