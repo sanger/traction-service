@@ -35,33 +35,27 @@ RSpec.describe 'GraphQL', type: :request do
     end
   end
 
-  context 'get runs' do
-    it 'returns empty array when no runs exist' do
-      post v2_path, params: { query: '{ ontRuns { id } }' }
-      expect(response).to have_http_status(:success)
-      json = ActiveSupport::JSON.decode(response.body)
-      expect(json['data']['ontRuns']).to be_empty
+  describe 'get runs' do
+    describe 'paginated graphql query' do
+      let(:paginated_model) { :ont_run }
+      let(:graphql_method) { 'ontRuns' }
+      it_behaves_like 'paginated_query'
     end
 
-    it 'returns single run when one exists' do
-      run = create(:ont_run)
-      post v2_path, params: { query:
-        '{ ontRuns { id state deactivatedAt flowcells { id } } }' }
-      expect(response).to have_http_status(:success)
-      json = ActiveSupport::JSON.decode(response.body)
-      expect(json['data']['ontRuns']).to contain_exactly(
-        { 'id' => run.id.to_s, 'state' => run.state.to_s.upcase,
-          'deactivatedAt' => run.deactivated_at,
-          'flowcells' => run.flowcells.map { |fc| { 'id' => fc.id.to_s } } }
-      )
-    end
+    context 'when single run with flowcells' do
+      let!(:run) { create(:ont_run) }
 
-    it 'returns all runs when many exist' do
-      create_list(:ont_run, 3)
-      post v2_path, params: { query: '{ ontRuns { id } }' }
-      expect(response).to have_http_status(:success)
-      json = ActiveSupport::JSON.decode(response.body)
-      expect(json['data']['ontRuns'].length).to eq(3)
+      it 'returns single run with flowcell ids' do
+        post v2_path, params: { query:
+          '{ ontRuns { nodes { id state deactivatedAt flowcells { id } } } }' }
+        expect(response).to have_http_status(:success)
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data']['ontRuns']['nodes']).to contain_exactly(
+          { 'id' => run.id.to_s, 'state' => run.state.to_s.upcase,
+            'deactivatedAt' => run.deactivated_at,
+            'flowcells' => run.flowcells.map { |fc| { 'id' => fc.id.to_s } } }
+        )
+      end
     end
   end
 
