@@ -17,14 +17,14 @@ RSpec.describe 'GraphQL', type: :request do
         allow_any_instance_of(Ont::Library).to receive(:tube_barcode)
           .and_return('test tube barcode')
         post v2_path, params: {
-          query: '{ ontLibraries { nodes { name plateBarcode pool poolSize tubeBarcode } } }'
+          query: '{ ontLibraries { nodes { name plateBarcode pool poolSize tubeBarcode assignedToFlowcell } } }'
         }
 
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data']['ontLibraries']['nodes']).to contain_exactly(
           { 'name' => library.name, 'plateBarcode' => library.plate_barcode, 'pool' => library.pool,
-            'poolSize' => 24, 'tubeBarcode' => 'test tube barcode' }
+            'poolSize' => 24, 'tubeBarcode' => 'test tube barcode', 'assignedToFlowcell' => library.assigned_to_flowcell }
         )
       end
     end
@@ -35,11 +35,12 @@ RSpec.describe 'GraphQL', type: :request do
 
       describe 'unassigned boolean not specified' do
         it 'returns all libraries by default' do
-          post v2_path, params: { query: '{ ontLibraries { nodes { id } } }' }
+          post v2_path, params: { query: '{ ontLibraries { nodes { id assignedToFlowcell } } }' }
 
           expect(response).to have_http_status(:success)
           json = ActiveSupport::JSON.decode(response.body)
           expect(json['data']['ontLibraries']['nodes'].length).to eq(3 + run.flowcells.count)
+          expect(json['data']['ontLibraries']['nodes'].select { |node| !!node['assignedToFlowcell'] }.length).to eq(run.flowcells.map(&:library).length)
         end
       end
 

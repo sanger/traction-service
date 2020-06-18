@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="description" content="Plate GraphQL documentation">
+    <meta name="description" content="LibraryEdge GraphQL documentation">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Plate</title>
+    <title>LibraryEdge</title>
     <link rel="stylesheet" href="/v2/docs/assets/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
     <script>
@@ -483,37 +483,20 @@
       <div id="content">
 
         <h1>
-<a id="plate" class="anchor" href="#plate" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Plate</h1>
+<a id="libraryedge" class="anchor" href="#libraryedge" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>LibraryEdge</h1>
+<p>An edge in a connection.</p>
 <h2>
 <a id="fields" class="anchor" href="#fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fields</h2>
 <div class="field-entry ">
-  <span id="barcode" class="field-name anchored">barcode (<code><a href="/v2/docs/scalar/string">String!</a></code>)</span>
+  <span id="cursor" class="field-name anchored">cursor (<code><a href="/v2/docs/scalar/string">String!</a></code>)</span>
   <div class="description-wrapper">
-   <p>The barcode of this plate.</p>
+   <p>A cursor for use in pagination.</p>
   </div>
 </div>
 <div class="field-entry ">
-  <span id="createdat" class="field-name anchored">createdAt (<code><a href="/v2/docs/scalar/string">String!</a></code>)</span>
+  <span id="node" class="field-name anchored">node (<code><a href="/v2/docs/object/library">Library</a></code>)</span>
   <div class="description-wrapper">
-   <p>The time this object was created.</p>
-  </div>
-</div>
-<div class="field-entry ">
-  <span id="id" class="field-name anchored">id (<code><a href="/v2/docs/scalar/id">ID!</a></code>)</span>
-  <div class="description-wrapper">
-   <p>The unique database ID of this object.</p>
-  </div>
-</div>
-<div class="field-entry ">
-  <span id="updatedat" class="field-name anchored">updatedAt (<code><a href="/v2/docs/scalar/string">String!</a></code>)</span>
-  <div class="description-wrapper">
-   <p>The time this object was last updated.</p>
-  </div>
-</div>
-<div class="field-entry ">
-  <span id="wells" class="field-name anchored">wells (<code><a href="/v2/docs/object/well">[Well!]!</a></code>)</span>
-  <div class="description-wrapper">
-   <p>An array of wells that exist on this plate.</p>
+   <p>The item at the end of the edge.</p>
   </div>
 </div>
 
