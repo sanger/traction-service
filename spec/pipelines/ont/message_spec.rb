@@ -85,7 +85,7 @@ RSpec.describe 'Ont', type: :model, ont: true do
           end
 
           it 'must have a tag_identifier' do
-            expect(message_sample[:tag_identifier]).to eq(request.tags.first.id)
+            expect(message_sample[:tag_identifier]).to eq(request.tags.first.group_id)
           end
 
           it 'must have a tag_sequence' do
