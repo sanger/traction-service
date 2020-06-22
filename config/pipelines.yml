@@ -214,7 +214,7 @@ default: &default
                   value: Pipelines::ConstantsAccessor.ont_covid_study_uuid
                 tag_identifier:
                   type: :model
-                  value: tags.first.id
+                  value: tags.first.group_id
                 tag_sequence:
                   type: :model
                   value: tags.first.oligo
