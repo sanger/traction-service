@@ -52,5 +52,9 @@ module Pacbio
     def tags
       request_libraries.collect(&:tag_id)
     end
+
+    def libraries?
+      libraries.present?
+    end
   end
 end
