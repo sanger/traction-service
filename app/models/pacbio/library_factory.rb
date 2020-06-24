@@ -135,7 +135,7 @@ module Pacbio
         request_libraries.each do |rl|
           id = rl.pacbio_request_id
           request = Pacbio::Request.find(id)
-          errors.add('cost code', 'must be present') if ( request.cost_code.nil? || request.cost_code.empty? )
+          errors.add('cost code', 'must be present') if request.cost_code.blank?
         end
       end
 
