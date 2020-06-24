@@ -5,7 +5,7 @@ module Ont
   # PlateWithSamplesFactory
   # A factory for bulk inserting a plate and all of its dependents
 
-  # serializations for platw with samples
+  # serializations for plate with samples
   module Serializers
     def ont_request_data(ont_request, tag_id)
       {
@@ -51,6 +51,9 @@ module Ont
   end
 
   # plate with samples factory
+  # TODO: the code is linear using things like array first and last
+  # and I find it difficult to understand. Add docs and use more OO
+  # Thankfully it works well and is encapsulated.
   class PlateWithSamplesFactory
     include ActiveModel::Model
     include Serializers
@@ -143,22 +146,21 @@ module Ont
 
     def insert_joins(well_ids_by_position, request_ids_by_uuid)
       parsed_data = parsed_plate_data(well_ids_by_position, request_ids_by_uuid)
-      ContainerMaterial.insert_all!(parsed_data.flat_map { |pd| pd.map(&:first) })
-      TagTaggable.insert_all!(parsed_data.flat_map { |pd| pd.map(&:last) })
+      ContainerMaterial.insert_all!(parsed_data[:container_materials])
+      TagTaggable.insert_all!(parsed_data[:tag_taggables])
     end
 
     def parsed_plate_data(well_ids_by_position, request_ids_by_uuid)
-      serialised_plate_data[:well_data].map do |well_data|
+     
+      serialised_plate_data[:well_data].inject({container_materials: [], tag_taggables: []}) do |result, well_data|
         well_id = well_ids_by_position[well_data[:well][:position]]
-
         well_data[:request_data].map do |request_data|
           request_id = request_ids_by_uuid[request_data[:ont_request][:uuid]]
 
-          [
-            container_material(well_id, request_id),
-            tag_taggable(request_id, request_data[:tag_id])
-          ]
+          result[:container_materials] << container_material(well_id, request_id)
+          result[:tag_taggables] <<  tag_taggable(request_id, request_data[:tag_id])
         end
+        result
       end
     end
   end
