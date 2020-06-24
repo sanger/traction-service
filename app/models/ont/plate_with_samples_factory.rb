@@ -151,16 +151,19 @@ module Ont
     end
 
     def parsed_plate_data(well_ids_by_position, request_ids_by_uuid)
-     
-      serialised_plate_data[:well_data].inject({container_materials: [], tag_taggables: []}) do |result, well_data|
+      serialised_plate_data[:well_data]
+        .each_with_object({ container_materials: [], tag_taggables: [] }) do |well_data, result|
         well_id = well_ids_by_position[well_data[:well][:position]]
-        well_data[:request_data].map do |request_data|
-          request_id = request_ids_by_uuid[request_data[:ont_request][:uuid]]
+        parse_well_data(result, well_data, well_id, request_ids_by_uuid)
+      end
+    end
 
-          result[:container_materials] << container_material(well_id, request_id)
-          result[:tag_taggables] <<  tag_taggable(request_id, request_data[:tag_id])
-        end
-        result
+    def parse_well_data(result, well_data, well_id, request_ids_by_uuid)
+      well_data[:request_data].map do |request_data|
+        request_id = request_ids_by_uuid[request_data[:ont_request][:uuid]]
+
+        result[:container_materials] << container_material(well_id, request_id)
+        result[:tag_taggables] << tag_taggable(request_id, request_data[:tag_id])
       end
     end
   end
