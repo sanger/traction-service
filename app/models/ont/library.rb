@@ -29,6 +29,10 @@ module Ont
       container_material.container.barcode
     end
 
+    def assigned_to_flowcell
+      !!flowcell
+    end
+
     def self.includes_args(except = nil)
       args = []
       args << { flowcell: Ont::Flowcell.includes_args(:library) } unless except == :flowcell

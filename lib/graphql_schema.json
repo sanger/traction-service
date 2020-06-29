@@ -645,6 +645,24 @@
           "description": null,
           "fields": [
             {
+              "name": "assignedToFlowcell",
+              "description": "The value of whether this library is being used in a run.",
+              "args": [
+
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "createdAt",
               "description": "The time this object was created.",
               "args": [
@@ -1176,24 +1194,6 @@
               "description": "The number of pages available at the current page size.",
               "args": [
 
-              ],
-              "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "entitiesCount",
-              "description": "The total number of entities available.",
-              "args": [
-                
               ],
               "type": {
                 "kind": "NON_NULL",

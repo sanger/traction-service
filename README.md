@@ -25,6 +25,8 @@ To create a set of enzymes (needed for saphyr dummy runs): `bundle exec rails en
 
 To create the first set of tags (needed for pacbio and ont dummy runs): `bundle exec rails tags:create`
 
+To fetch tags from SS: `bundle exec rails tags:fetch`
+
 To create pacbio dummy runs: `bundle exec rails pacbio_runs:create`
 
 To create saphyr dummy runs: `bundle exec rails saphyr_runs:create`
