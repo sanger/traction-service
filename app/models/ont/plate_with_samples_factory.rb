@@ -5,16 +5,67 @@ module Ont
   # PlateWithSamplesFactory
   # A factory for bulk inserting a plate and all of its dependents
 
-  # rubocop:disable Metrics/ClassLength
+  # serializations for plate with samples
+  module Serializers
+    def ont_request_data(ont_request, tag_id)
+      {
+        ont_request: {
+          uuid: SecureRandom.uuid,
+          external_id: ont_request.external_id,
+          name: ont_request.name
+        }.merge(timestamps),
+        tag_id: tag_id
+      }
+    end
+
+    def well_data(well, request_data)
+      {
+        well: { position: well.position }.merge(timestamps),
+        request_data: request_data
+      }
+    end
+
+    def plate_data(plate, well_data)
+      {
+        plate: { barcode: plate.barcode }.merge(timestamps),
+        well_data: well_data
+      }
+    end
+
+    def container_material(container_id, material_id)
+      {
+        container_type: 'Well',
+        container_id: container_id,
+        material_type: 'Ont::Request',
+        material_id: material_id
+      }.merge(timestamps)
+    end
+
+    def tag_taggable(taggable_id, tag_id)
+      {
+        taggable_type: 'Ont::Request',
+        taggable_id: taggable_id,
+        tag_id: tag_id
+      }.merge(timestamps)
+    end
+  end
+
+  # plate with samples factory
+  # TODO: the code is linear using things like array first and last
+  # and I find it difficult to understand. Add docs and use more OO
+  # Thankfully it works well and is encapsulated.
   class PlateWithSamplesFactory
     include ActiveModel::Model
+    include Serializers
 
     validate :check_plate_factory
 
     def initialize(attributes = {})
       @attributes = attributes
-      time = DateTime.now
-      @timestamps = { created_at: time, updated_at: time }
+    end
+
+    def timestamps
+      @timestamps ||= create_timestamps
     end
 
     def process
@@ -28,41 +79,13 @@ module Ont
       bulk_insert
     end
 
-    # Serialisation
-
-    def ont_request_data(ont_request, tag_id)
-      {
-        ont_request: serialise_ont_request(ont_request),
-        tag_id: tag_id
-      }
-    end
-
-    def well_data(well, request_data)
-      { well: serialise_well(well), request_data: request_data }
-    end
-
-    def plate_data(plate, well_data)
-      { plate: serialise_plate(plate), well_data: well_data }
-    end
-
     private
 
-    attr_reader :attributes, :timestamps, :plate_factory, :serialised_plate_data
+    attr_reader :attributes, :plate_factory, :serialised_plate_data
 
-    def serialise_ont_request(ont_request)
-      {
-        uuid: SecureRandom.uuid,
-        external_id: ont_request.external_id,
-        name: ont_request.name
-      }.merge(timestamps)
-    end
-
-    def serialise_well(well)
-      { position: well.position }.merge(timestamps)
-    end
-
-    def serialise_plate(plate)
-      { barcode: plate.barcode }.merge(timestamps)
+    def create_timestamps
+      time = DateTime.now
+      { created_at: time, updated_at: time }
     end
 
     # Saving and Validation
@@ -97,13 +120,19 @@ module Ont
     end
 
     def insert_wells_and_ont_requests(plate_id)
-      requests_data = []
-      wells_data = serialised_plate_data[:well_data].map do |well_data|
-        requests_data.concat(well_data[:request_data].map { |req_data| req_data[:ont_request] })
-        well_data[:well].merge({ plate_id: plate_id })
+      parsed_data = serialised_plate_data[:well_data].map do |well_data|
+        [
+          well_data[:well].merge({ plate_id: plate_id }),
+          well_data[:request_data].map { |req_data| req_data[:ont_request] }
+        ]
       end
+
+      wells_data = parsed_data.map(&:first)
       Well.insert_all!(wells_data)
+
+      requests_data = parsed_data.flat_map(&:last)
       Ont::Request.insert_all!(requests_data)
+
       requests_data.map { |req_data| req_data[:uuid] }
     end
 
@@ -115,39 +144,27 @@ module Ont
       wells.map { |well| [well.position, well.id] }.to_h
     end
 
-    # rubocop:disable Metrics/AbcSize
     def insert_joins(well_ids_by_position, request_ids_by_uuid)
-      container_materials = []
-      tag_taggables = []
-      serialised_plate_data[:well_data].each do |well_data|
+      parsed_data = parsed_plate_data(well_ids_by_position, request_ids_by_uuid)
+      ContainerMaterial.insert_all!(parsed_data[:container_materials])
+      TagTaggable.insert_all!(parsed_data[:tag_taggables])
+    end
+
+    def parsed_plate_data(well_ids_by_position, request_ids_by_uuid)
+      serialised_plate_data[:well_data]
+        .each_with_object({ container_materials: [], tag_taggables: [] }) do |well_data, result|
         well_id = well_ids_by_position[well_data[:well][:position]]
-        well_data[:request_data].each do |request_data|
-          request_id = request_ids_by_uuid[request_data[:ont_request][:uuid]]
-          container_materials << container_material(well_id, request_id)
-          tag_taggables << tag_taggagble(request_id, request_data[:tag_id])
-        end
+        parse_well_data(result, well_data, well_id, request_ids_by_uuid)
       end
-      ContainerMaterial.insert_all!(container_materials)
-      TagTaggable.insert_all!(tag_taggables)
-    end
-    # rubocop:enable Metrics/AbcSize
-
-    def container_material(container_id, material_id)
-      {
-        container_type: 'Well',
-        container_id: container_id,
-        material_type: 'Ont::Request',
-        material_id: material_id
-      }.merge(timestamps)
     end
 
-    def tag_taggagble(taggable_id, tag_id)
-      {
-        taggable_type: 'Ont::Request',
-        taggable_id: taggable_id,
-        tag_id: tag_id
-      }.merge(timestamps)
+    def parse_well_data(result, well_data, well_id, request_ids_by_uuid)
+      well_data[:request_data].map do |request_data|
+        request_id = request_ids_by_uuid[request_data[:ont_request][:uuid]]
+
+        result[:container_materials] << container_material(well_id, request_id)
+        result[:tag_taggables] << tag_taggable(request_id, request_data[:tag_id])
+      end
     end
   end
-  # rubocop:enable Metrics/ClassLength
 end
