@@ -311,7 +311,7 @@ input PlateWithSamplesInput {
   """
   An array of wells on the plate.
   """
-  wells: [WellWithSampleInput!]!
+  wells: [WellWithSamplesInput!]!
 }
 
 type QueryTypes {
@@ -587,14 +587,14 @@ type Well {
   updatedAt: String!
 }
 
-input WellWithSampleInput {
+input WellWithSamplesInput {
   """
   The description of the position of the well.  Typically A1 through to H12.
   """
   position: String
 
   """
-  The sample contained in the well.
+  Samples contained in the well.
   """
-  sample: SampleInput
+  samples: [SampleInput!]
 }
