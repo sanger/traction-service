@@ -16,13 +16,13 @@ module Ont
 
     attr_reader :plate
 
-    def save(**options)
+    def bulk_insert_serialise(bulk_insert_serialiser, **options)
       return false unless options[:validate] == false || valid?
 
-      # No need to validate any lower level objects since validation above has already checked them
-      plate.save(validate: false)
-      well_factories.map { |well_factory| well_factory.save(validate: false) }
-      true
+      well_data = well_factories.map do |well_factory|
+        well_factory.bulk_insert_serialise(bulk_insert_serialiser, validate: false)
+      end
+      bulk_insert_serialiser.plate_data(plate, well_data)
     end
 
     private
@@ -32,8 +32,11 @@ module Ont
     def build_requests(attributes)
       wells_attributes = attributes.extract!(:wells)
       build_plate(attributes)
+      tag_set_service = TagSetService.new
       @well_factories = (wells_attributes[:wells] || []).map do |well_attributes|
-        WellFactory.new(plate: plate, well_attributes: well_attributes)
+        WellFactory.new(plate: plate,
+                        well_attributes: well_attributes,
+                        tag_set_service: tag_set_service)
       end
     end
 

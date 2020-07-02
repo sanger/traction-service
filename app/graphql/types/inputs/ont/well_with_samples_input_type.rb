@@ -4,8 +4,8 @@ module Types
   module Inputs
     module Ont
       # The input arguments for a Well containing Samples.
-      class WellWithSampleInputType < WellInputType
-        argument :sample, SampleInputType, 'The sample contained in the well.', required: false
+      class WellWithSamplesInputType < WellInputType
+        argument :samples, [SampleInputType], 'Samples contained in the well.', required: false
       end
     end
   end
