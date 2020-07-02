@@ -30,6 +30,7 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][0]['attributes']['created_at']).to eq(run1.created_at.to_s(:us))
       expect(json['data'][0]['attributes']['state']).to eq(run1.state)
       expect(json['data'][0]['attributes']['comments']).to eq(run1.comments)
+      expect(json['data'][0]['attributes']['all_wells_have_libraries']).to eq(run1.all_wells_have_libraries?)
 
       run = json['data'][1]['attributes']
       expect(run['name']).to eq(run2.name)
@@ -140,7 +141,6 @@ RSpec.describe 'RunsController', type: :request do
             type: "runs",
             id: @run.id,
             attributes: {
-              name: "an updated name",
               state: "started"
             }
           }
@@ -155,7 +155,6 @@ RSpec.describe 'RunsController', type: :request do
       it 'updates a run' do
         patch v1_pacbio_run_path(@run), params: body, headers: json_api_headers
         @run.reload
-        expect(@run.name).to eq "an updated name"
         expect(@run.state).to eq "started"
       end
 
@@ -174,7 +173,6 @@ RSpec.describe 'RunsController', type: :request do
             type: "runs",
             id: 123,
             attributes: {
-              name: "an updated name",
               state: "started"
             }
           }
