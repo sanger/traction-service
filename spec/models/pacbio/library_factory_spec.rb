@@ -99,6 +99,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
 
         context 'when the request libraries are invalid' do
           let(:request_empty_cost_code) { create(:pacbio_request, cost_code: "")}
+          let(:request_nil_cost_code) { create(:pacbio_request, cost_code: nil)}
 
           it 'produces an error if there is more than one request and a tag is missing' do
             invalid_request_attributes = [{id: requests[0].id, type: 'requests'}, {id: requests[1].id, type: 'requests', tag: { id: tags[0].id, type: 'tags'}}]
@@ -121,6 +122,15 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
 
           it 'produces an error if any request contains an empty cost code' do
             invalid_request_attributes = [{id: request_empty_cost_code.id, type: 'requests', tag: { id: tags[0].id, type: 'tags'} }]
+            library_attributes = attributes_for(:pacbio_library).merge(requests: invalid_request_attributes)
+
+            factory = Pacbio::LibraryFactory.new(library_attributes)
+            expect(factory.valid?).to be_falsy
+            expect(factory.errors.full_messages).to eq(['Cost code must be present'])
+          end
+
+          it 'produces an error if any request contains a nil cost code' do
+            invalid_request_attributes = [{id: request_nil_cost_code.id, type: 'requests', tag: { id: tags[0].id, type: 'tags'} }]
             library_attributes = attributes_for(:pacbio_library).merge(requests: invalid_request_attributes)
 
             factory = Pacbio::LibraryFactory.new(library_attributes)
