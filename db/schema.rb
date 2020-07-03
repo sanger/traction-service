@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_11_095257) do
+ActiveRecord::Schema.define(version: 2020_05_27_120715) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(version: 2020_05_11_095257) do
     t.integer "ont_library_id"
     t.string "name"
     t.string "external_id"
+    t.string "uuid"
     t.index ["ont_library_id"], name: "index_ont_requests_on_ont_library_id"
   end
 
