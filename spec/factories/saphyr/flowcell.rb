@@ -7,5 +7,9 @@ FactoryBot.define do
     factory :saphyr_flowcell_with_library do
       library { create(:saphyr_library) }
     end
+
+    factory :saphyr_flowcell_with_library_in_tube do
+      library { create(:saphyr_library_in_tube) }
+    end
   end
 end
