@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_27_120715) do
+ActiveRecord::Schema.define(version: 2020_06_16_121739) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 2020_05_27_120715) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["ont_library_id"], name: "index_ont_flowcells_on_ont_library_id"
     t.index ["ont_run_id"], name: "index_ont_flowcells_on_ont_run_id"
+    t.index ["position", "ont_run_id"], name: "index_ont_flowcells_on_position_and_ont_run_id", unique: true
   end
 
   create_table "ont_libraries", force: :cascade do |t|
@@ -40,6 +41,7 @@ ActiveRecord::Schema.define(version: 2020_05_27_120715) do
     t.integer "pool_size"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_ont_libraries_on_name", unique: true
   end
 
   create_table "ont_requests", force: :cascade do |t|
@@ -84,9 +86,9 @@ ActiveRecord::Schema.define(version: 2020_05_27_120715) do
     t.integer "pacbio_library_id"
     t.integer "tag_id"
     t.index ["pacbio_library_id"], name: "index_pacbio_request_libraries_on_pacbio_library_id"
-    t.index ["pacbio_request_id", "pacbio_library_id"], name: "index_rl_request_library"
+    t.index ["pacbio_request_id", "pacbio_library_id"], name: "index_rl_request_library", unique: true
     t.index ["pacbio_request_id"], name: "index_pacbio_request_libraries_on_pacbio_request_id"
-    t.index ["tag_id", "pacbio_library_id"], name: "index_rl_tag_library"
+    t.index ["tag_id", "pacbio_library_id"], name: "index_rl_tag_library", unique: true
     t.index ["tag_id"], name: "index_pacbio_request_libraries_on_tag_id"
   end
 
