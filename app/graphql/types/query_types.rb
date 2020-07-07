@@ -27,27 +27,45 @@ module Types
 
     # Plates
 
-    field :plates, [Types::Outputs::PlateType], 'Find all Plates.', null: false
+    field :plates, Types::Outputs::PlateType.connection_type, 'Find all Plates by page.',
+          null: false do
+      # Built in classes add some confusing arguments we don't want to appear in the GraphQL docs
+      arguments.reject! { |k, _| %w[first last before after].include? k }
+      argument :page_num, Int, 'The page number to return plates for.', required: false
+      argument :page_size, Int, 'The number of plates to return per page.', required: false
+    end
 
-    def plates
-      Plate.resolved_query.all
+    def plates(page_num: 1, page_size: 10)
+      Connections::PaginatedConnectionWrapper.new(Plate.resolved_query,
+                                                  page_num: page_num,
+                                                  page_size: page_size,
+                                                  total_item_count: Plate.all.count)
     end
 
     # Ont::Libraries
 
-    field :ont_libraries, [Types::Outputs::Ont::LibraryType], 'Find all Ont Libraries.',
-          null: false do
+    field :ont_libraries, Types::Outputs::Ont::LibraryType.connection_type,
+          'Find all Ont Libraries.', null: false do
       desc = "Whether to only include libraries that haven't been loaded into flowcells yet.  " \
              'Default: false.'
+      # Built in classes add some confusing arguments we don't want to appear in the GraphQL docs
+      arguments.reject! { |k, _| %w[first last before after].include? k }
       argument :unassigned_to_flowcells, Boolean, desc, required: false
+      argument :page_num, Int, 'The page number to return Ont Runs for.', required: false
+      argument :page_size, Int, 'The number of Ont Runs to return per page.', required: false
     end
 
-    def ont_libraries(unassigned_to_flowcells: false)
+    def ont_libraries(unassigned_to_flowcells: false, page_num: 1, page_size: 10)
+      base_query = Ont::Library.resolved_query
+
       if unassigned_to_flowcells
-        Ont::Library.resolved_query.left_outer_joins(:flowcell).where(ont_flowcells: { id: nil })
-      else
-        Ont::Library.resolved_query.all
+        base_query = base_query.left_outer_joins(:flowcell).where(ont_flowcells: { id: nil })
       end
+
+      Connections::PaginatedConnectionWrapper.new(base_query,
+                                                  page_num: page_num,
+                                                  page_size: page_size,
+                                                  total_item_count: base_query.all.count)
     end
 
     # Ont::Runs
@@ -62,10 +80,19 @@ module Types
       Ont::Run.resolved_query.find_by(id: id)
     end
 
-    field :ont_runs, [Types::Outputs::Ont::RunType], 'Find all Ont Runs.', null: false
+    field :ont_runs, Types::Outputs::Ont::RunType.connection_type, 'Find all Ont Runs by page.',
+          null: false do
+      # Built in classes add some confusing arguments we don't want to appear in the GraphQL docs
+      arguments.reject! { |k, _| %w[first last before after].include? k }
+      argument :page_num, Int, 'The page number to return Ont Runs for.', required: false
+      argument :page_size, Int, 'The number of Ont Runs to return per page.', required: false
+    end
 
-    def ont_runs
-      Ont::Run.resolved_query.all
+    def ont_runs(page_num: 1, page_size: 10)
+      Connections::PaginatedConnectionWrapper.new(Ont::Run.resolved_query,
+                                                  page_num: page_num,
+                                                  page_size: page_size,
+                                                  total_item_count: Ont::Run.all.count)
     end
   end
 end

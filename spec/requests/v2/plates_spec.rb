@@ -3,25 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe 'GraphQL', type: :request do
-  context 'get plates' do
-    context 'when no plates' do
-      it 'returns empty plates' do
-        post v2_path, params: { query: '{ plates { id } }' }
-        expect(response).to have_http_status(:success)
-        json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['plates'].length).to eq(0)
-      end
-    end
-
-    context 'when some plates' do
-      let!(:plates) { create_list(:plate, 3) }
-
-      it 'returns all plates' do
-        post v2_path, params: { query: '{ plates { id } }' }
-        expect(response).to have_http_status(:success)
-        json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['plates'].length).to eq(3)
-      end
+  describe 'get plates' do
+    describe 'paginated graphql query' do
+      let(:paginated_model) { :plate }
+      let(:graphql_method) { 'plates' }
+      it_behaves_like 'paginated_query'
     end
 
     context 'when there is a plate with samples' do
@@ -36,12 +22,13 @@ RSpec.describe 'GraphQL', type: :request do
       end
 
       it 'returns plate with nested sample' do
-        post v2_path,
-             params: { query: '{ plates { wells { materials { ... on Request { name } } } } }' }
+        post v2_path, params:
+          { query: '{ plates { nodes { wells { materials { ... on Request { name } } } } } }' }
         expect(response).to have_http_status(:success)
+
         json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['plates'].length).to eq(1)
-        expect(json['data']['plates'].first).to include(
+        expect(json['data']['plates']['nodes'].length).to eq(1)
+        expect(json['data']['plates']['nodes'].first).to include(
           'wells' => [
             {
               'materials' => [
