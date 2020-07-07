@@ -2,10 +2,20 @@ require 'rails_helper'
 
 RSpec.describe Ont::WellFactory, type: :model, ont: true do
   let(:plate) { create(:plate) }
+  let(:tag_set_name) { 'OntWell96Samples' }
+  let(:tag_set_service) { double(TagSetService) }
+
+  before do
+    allow(Pipelines::ConstantsAccessor)
+      .to receive(:ont_covid_pcr_tag_set_name)
+      .and_return(tag_set_name)
+    allow(tag_set_service).to receive(:load_tag_set)
+    allow(tag_set_service).to receive(:loaded_tag_sets).and_return({ tag_set_name => Hash.new })
+  end
 
   def mock_valid_request_factories
     allow_any_instance_of(Ont::RequestFactory).to receive(:valid?).and_return(true)
-    allow_any_instance_of(Ont::RequestFactory).to receive(:save).and_return(true)
+    allow_any_instance_of(Ont::RequestFactory).to receive(:bulk_insert_serialise).and_return('request data')
   end
 
   def mock_invalid_request_factories
@@ -18,14 +28,21 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
 
   context '#initialise' do
     it 'produces error messages if given no plate' do
-      attributes = { well_attributes: { position: 'A1' } }
+      attributes = { well_attributes: { position: 'A1' }, tag_set_service: tag_set_service }
       factory = Ont::WellFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages).to_not be_empty
     end
 
     it 'produces error messages if given no well attributes' do
-      attributes = { plate: plate }
+      attributes = { plate: plate, tag_set_service: tag_set_service }
+      factory = Ont::WellFactory.new(attributes)
+      expect(factory).to_not be_valid
+      expect(factory.errors.full_messages).to_not be_empty
+    end
+
+    it 'produces error messages if given no tag set service' do
+      attributes = { plate: plate, well_attributes: { position: 'A1' } }
       factory = Ont::WellFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages).to_not be_empty
@@ -33,7 +50,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
 
     it 'produces error messages if generated well is not valid' do
       # well should have a position
-      attributes = { plate: plate, well_attributes: {} }
+      attributes = { plate: plate, well_attributes: {}, tag_set_service: tag_set_service }
       factory = Ont::WellFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages).to_not be_empty
@@ -41,7 +58,11 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
 
     it 'produces error messages if the request factory is not valid' do
       mock_invalid_request_factories
-      attributes = { plate: plate, well_attributes: { position: 'A1', sample: { name: 'sample 1' } } }
+      attributes = {
+        plate: plate,
+        well_attributes: { position: 'A1', samples: [ { name: 'sample 1' } ] },
+        tag_set_service: tag_set_service
+      }
       factory = Ont::WellFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages.length).to eq(1)
@@ -49,13 +70,29 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
     end
   end
 
-  context '#save' do
+  context '#bulk_insert_serialise' do
+    let(:bulk_insert_serialiser) { double() }
+
     context 'valid build' do
-      let(:well_with_no_sample) { { plate: plate, well_attributes: { position: 'A1' } } }
-      let(:well_with_one_sample) { { plate: plate, well_attributes: { position: 'A1', sample: { name: 'sample 1' } } } }
+      let(:well_with_no_sample) do
+        {
+          plate: plate,
+          well_attributes: { position: 'A1' },
+          tag_set_service: tag_set_service
+        }
+      end
+      let(:well_with_one_sample) do
+        {
+          plate: plate,
+          well_attributes: { position: 'A1', samples: [ { name: 'sample 1' } ] },
+          tag_set_service: tag_set_service
+        }
+      end
+      let(:response) { 'well data' }
 
       before do
         mock_valid_request_factories
+        allow(bulk_insert_serialiser).to receive(:well_data).with(an_instance_of(Well), an_instance_of(Array)).and_return(response)
       end
 
       it 'is valid' do
@@ -63,33 +100,35 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
         expect(factory).to be_valid
       end
 
-      it 'creates a well' do
+      it 'has expected response with no samples' do
         factory = Ont::WellFactory.new(well_with_no_sample)
-        expect(factory.save).to be_truthy
-        expect(::Well.all.count).to eq(1)
-        expect(::Well.all.first.plate).to eq(::Plate.first)
-        expect(::Well.first.position).to eq('A1')
+        expect(factory.bulk_insert_serialise(bulk_insert_serialiser)).to eq(response)
       end
 
-      it 'does not create or save any request factories if given no samples' do
-        expect(Ont::RequestFactory).to_not receive(:new)
-        expect_any_instance_of(Ont::RequestFactory).to_not receive(:save)
-        factory = Ont::WellFactory.new(well_with_no_sample)
-        expect(factory.save).to be_truthy
-      end
-
-      it 'creates and saves a single request factory if given one sample' do
-        expect(Ont::RequestFactory).to receive(:new).exactly(1).and_call_original
-        expect_any_instance_of(Ont::RequestFactory).to receive(:save)
+      it 'has expected response with one sample' do
         factory = Ont::WellFactory.new(well_with_one_sample)
-        expect(factory.save).to be_truthy
+        expect(factory.bulk_insert_serialise(bulk_insert_serialiser)).to eq(response)
+      end
+
+      it 'does not create or call any request factories if given no samples' do
+        expect(Ont::RequestFactory).to_not receive(:new)
+        expect_any_instance_of(Ont::RequestFactory).to_not receive(:bulk_insert_serialise)
+        factory = Ont::WellFactory.new(well_with_no_sample)
+        expect(factory.bulk_insert_serialise(bulk_insert_serialiser)).to be_truthy
+      end
+
+      it 'creates and calls a single request factory if given one sample' do
+        expect(Ont::RequestFactory).to receive(:new).exactly(1).and_call_original
+        expect_any_instance_of(Ont::RequestFactory).to receive(:bulk_insert_serialise)
+        factory = Ont::WellFactory.new(well_with_one_sample)
+        expect(factory.bulk_insert_serialise(bulk_insert_serialiser)).to be_truthy
       end
 
       it 'validates the well only once by default' do
         validation_count = 0
         allow_any_instance_of(Well).to receive(:valid?) { |_| validation_count += 1 }
         factory = Ont::WellFactory.new(well_with_one_sample)
-        factory.save
+        factory.bulk_insert_serialise(bulk_insert_serialiser)
         expect(validation_count).to eq(1)
       end
 
@@ -97,7 +136,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
         validation_count = 0
         allow_any_instance_of(Ont::RequestFactory).to receive(:valid?) { |_| validation_count += 1 }
         factory = Ont::WellFactory.new(well_with_one_sample)
-        factory.save
+        factory.bulk_insert_serialise(bulk_insert_serialiser)
         expect(validation_count).to eq(1)
       end
 
@@ -106,7 +145,7 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
         allow_any_instance_of(Well).to receive(:valid?) { |_| validation_count += 1 }
         allow_any_instance_of(Ont::RequestFactory).to receive(:valid?) { |_| validation_count += 1 }
         factory = Ont::WellFactory.new(well_with_one_sample)
-        factory.save(validate: false)
+        factory.bulk_insert_serialise(bulk_insert_serialiser, validate: false)
         expect(validation_count).to eq(0)
       end
     end
@@ -114,24 +153,13 @@ RSpec.describe Ont::WellFactory, type: :model, ont: true do
     context 'invalid build' do
       let(:factory) { Ont::WellFactory.new({}) }
 
-      before do
-        factory.save
-      end
-
       it 'is invalid' do
         expect(factory).to_not be_valid
       end
 
-      it 'returns false on save' do
-        expect(factory.save).to be_falsey
-      end
-
-      it 'does not create a well' do
-        expect(::Well.all.count).to eq(0)
-      end
-
-      it 'does not save any request factories' do
-        expect_any_instance_of(Ont::RequestFactory).to_not receive(:save)
+      it 'returns false' do
+        response = factory.bulk_insert_serialise(bulk_insert_serialiser)
+        expect(response).to be_falsey
       end
     end
   end

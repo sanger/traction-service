@@ -9,5 +9,11 @@ module Pacbio
                      inverse_of: :plate
     has_many :wells, class_name: 'Pacbio::Well', foreign_key: :pacbio_plate_id,
                      inverse_of: :plate, dependent: :destroy
+
+    def all_wells_have_libraries?
+      return false if wells.empty?
+
+      wells.all?(&:libraries?)
+    end
   end
 end

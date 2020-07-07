@@ -50,6 +50,7 @@ ActiveRecord::Schema.define(version: 2020_06_16_121739) do
     t.integer "ont_library_id"
     t.string "name"
     t.string "external_id"
+    t.string "uuid"
     t.index ["ont_library_id"], name: "index_ont_requests_on_ont_library_id"
   end
 

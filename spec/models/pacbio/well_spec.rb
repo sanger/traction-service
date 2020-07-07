@@ -72,6 +72,16 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     expect(well.summary).to eq("#{well.sample_names},#{well.comment}")
   end
 
+  context '#libraries?' do
+    it 'with libraries' do
+      expect(create(:pacbio_well_with_libraries).libraries?).to be_truthy
+    end
+
+    it 'no libraries' do
+      expect(create(:pacbio_well).libraries?).to_not be_truthy
+    end
+  end
+
   context 'sequencing mode' do
     it 'must be present' do
       expect(build(:pacbio_well, sequencing_mode: nil)).to_not be_valid
