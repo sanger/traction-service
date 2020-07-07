@@ -16,7 +16,7 @@ module Pacbio
     belongs_to :library, class_name: 'Pacbio::Library', foreign_key: :pacbio_library_id,
                          inverse_of: :request_libraries
     # TODO: make this taggable
-    belongs_to :tag, class_name: '::Tag', foreign_key: :tag_id, inverse_of: false, optional: true
+    belongs_to :tag, class_name: '::Tag', inverse_of: false, optional: true
 
     delegate :sample_name, to: :request
     delegate :oligo, :group_id, :id, to: :tag, prefix: :tag, allow_nil: true
