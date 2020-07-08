@@ -12,7 +12,7 @@ module Pacbio
     include Uuidable
     include Librarian
 
-    validates :volume, :concentration, :library_kit_barcode, :fragment_size, presence: true
+    validates :volume, :concentration, :template_prep_kit_box_barcode, :fragment_size, presence: true
 
     has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_library_id,
                               dependent: :nullify, inverse_of: :library
