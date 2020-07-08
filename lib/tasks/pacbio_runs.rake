@@ -11,7 +11,7 @@ namespace :pacbio_runs do
     factory.save
 
     Pacbio::Request.all.each_with_index do |request, i|
-      library = Pacbio::Library.create!(volume: 1, concentration: 1, library_kit_barcode: 'LK12345', fragment_size: 100)
+      library = Pacbio::Library.create!(volume: 1, concentration: 1, template_prep_kit_box_barcode: 'LK12345', fragment_size: 100)
       ContainerMaterial.create(container: Tube.create, material: library)
       Pacbio::RequestLibrary.create!(library: library, request: request, tag: Tag.find(rand(1..16)))
       run = Pacbio::Run.create!(name: "Run#{i}", template_prep_kit_box_barcode: "TPK#{i}", binding_kit_box_barcode: "BKB#{i}",

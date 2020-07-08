@@ -7,7 +7,7 @@ module V1
       model_name 'ContainerMaterial'
 
       # Library attributes
-      attributes :state, :fragment_size, :volume, :concentration, :library_kit_barcode,
+      attributes :state, :fragment_size, :volume, :concentration, :template_prep_kit_box_barcode,
                  :deactivated_at, :sample_names
 
       # Request attributes
@@ -19,7 +19,7 @@ module V1
 
       def fetchable_fields
         if @model.material.is_a?(::Pacbio::Library)
-          %i[state barcode volume concentration library_kit_barcode fragment_size created_at
+          %i[state barcode volume concentration template_prep_kit_box_barcode fragment_size created_at
              deactivated_at sample_names material_type]
         elsif @model.material.is_a?(::Pacbio::Request)
           %i[library_type estimate_of_gb_required number_of_smrt_cells cost_code external_study_id
@@ -87,8 +87,8 @@ module V1
         @model.material.concentration
       end
 
-      def library_kit_barcode
-        @model.material.library_kit_barcode
+      def template_prep_kit_box_barcode
+        @model.material.template_prep_kit_box_barcode
       end
 
       def fragment_size

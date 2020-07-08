@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_16_121739) do
+ActiveRecord::Schema.define(version: 2020_07_08_115923) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -64,7 +64,7 @@ ActiveRecord::Schema.define(version: 2020_06_16_121739) do
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
-    t.string "library_kit_barcode"
+    t.string "template_prep_kit_box_barcode"
     t.integer "fragment_size"
     t.string "uuid"
     t.datetime "created_at", null: false

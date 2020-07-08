@@ -16,7 +16,7 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
   end
 
   it 'must have a library kit barcode' do
-    expect(build(:pacbio_library, library_kit_barcode: nil)).to_not be_valid
+    expect(build(:pacbio_library, template_prep_kit_box_barcode: nil)).to_not be_valid
   end
 
   it 'must have a fragment size' do
