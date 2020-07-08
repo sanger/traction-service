@@ -8,10 +8,6 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
   end
 
   context 'validation' do
-    it 'must have a template prep kit box barcode' do
-      expect(build(:pacbio_run, template_prep_kit_box_barcode: nil)).to_not be_valid
-    end
-
     it 'must have a binding kit box barcode' do
       expect(build(:pacbio_run, binding_kit_box_barcode: nil)).to_not be_valid
     end
