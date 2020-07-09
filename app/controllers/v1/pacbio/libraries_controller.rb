@@ -39,7 +39,8 @@ module V1
       # TODO: abtsract behaviour for params names into separate library.
       def params_names
         params.require(:data)['attributes']
-              .permit(:volume, :concentration, :template_prep_kit_box_barcode, :fragment_size, :relationships)
+              .permit(:volume, :concentration, :template_prep_kit_box_barcode,
+                      :fragment_size, :relationships)
               .to_h.tap do |library|
           library[:requests] = request_param_names(params[:data][:attributes])
         end
