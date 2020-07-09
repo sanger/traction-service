@@ -51,12 +51,9 @@ class CsvGenerator
       next is_well_header_row if column_name == 'Is Collection'
       next sample_names if column_name == 'Sample Name'
 
-      if column_name == "Template Prep Kit Box Barcode"
-        barcodes = well_libraries.map {|library| library.template_prep_kit_box_barcode}
-        if barcodes.uniq.length > 1
-          next "Lxxxxx100938900123199"
-        end
-        next barcodes[0]
+      if column_name == 'Template Prep Kit Box Barcode'
+        barcode = check_template_prep_kit_box_barcode(well_libraries)
+        next barcode
       end
 
       if should_populate_column(column_options[:populate_on_row_type], is_well_header_row)
@@ -65,6 +62,13 @@ class CsvGenerator
         ''
       end
     end
+  end
+
+  def check_template_prep_kit_box_barcode(well_libraries)
+    barcodes = well_libraries.map(&:template_prep_kit_box_barcode)
+    return 'Lxxxxx100938900123199' if barcodes.uniq.length > 1
+
+    barcodes[0]
   end
 
   def should_populate_column(populate_on_row_type, is_well_header_row)
