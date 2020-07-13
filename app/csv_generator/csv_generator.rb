@@ -17,7 +17,7 @@ class CsvGenerator
 
       run.plate.wells.each do |well|
         # add well header row
-        csv << csv_data(well, true, well.sample_names, well.libraries)
+        csv << csv_data(well, true, well.sample_names)
 
         next unless well.all_libraries_tagged
 
@@ -37,13 +37,13 @@ class CsvGenerator
   def csv_sample_rows(well)
     well.request_libraries.map do |request_library|
       # add row under well header for each sample in the well
-      csv_data(request_library, false, well.sample_names, well.libraries)
+      csv_data(request_library, false, well.sample_names)
     end
   end
 
   # Use configuration :type and :value to retrieve well data
   # eg ["Sequel II", "run4"]
-  def csv_data(obj, is_well_header_row, sample_names, well_libraries)
+  def csv_data(obj, is_well_header_row, sample_names)
     configuration.columns.map do |x|
       column_name = x[0]
       column_options = x[1]
@@ -51,24 +51,12 @@ class CsvGenerator
       next is_well_header_row if column_name == 'Is Collection'
       next sample_names if column_name == 'Sample Name'
 
-      if column_name == 'Template Prep Kit Box Barcode'
-        barcode = check_template_prep_kit_box_barcode(well_libraries)
-        next barcode
-      end
-
       if should_populate_column(column_options[:populate_on_row_type], is_well_header_row)
         instance_value(obj, column_options)
       else
         ''
       end
     end
-  end
-
-  def check_template_prep_kit_box_barcode(well_libraries)
-    barcodes = well_libraries.map(&:template_prep_kit_box_barcode)
-    return 'Lxxxxx100938900123199' if barcodes.uniq.length > 1
-
-    barcodes[0]
   end
 
   def should_populate_column(populate_on_row_type, is_well_header_row)
