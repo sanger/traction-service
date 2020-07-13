@@ -129,7 +129,9 @@ default: &default
           value: insert_size
           populate_on_row_type: :well
         Template Prep Kit Box Barcode:
-          # placeholder column, populated directly in csv_generator
+          type: :model
+          value: template_prep_kit_box_barcode
+          populate_on_row_type: :well
         Binding Kit Box Barcode:
           type: :model
           value: plate.run.binding_kit_box_barcode
