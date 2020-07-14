@@ -247,7 +247,7 @@ RSpec.describe CsvGenerator, type: :model do
         well1.sample_names,
         well1.movie_time.to_s,
         well1.insert_size.to_s,
-        'Lxxxxx100938900123199', #default barcode
+        'Lxxxxx100938900123199', #default pacbio barcode
         well1.plate.run.binding_kit_box_barcode,
         well1.plate.run.sequencing_kit_box_barcode,
         well1.sequencing_mode,
