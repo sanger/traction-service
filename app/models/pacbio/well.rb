@@ -58,7 +58,7 @@ module Pacbio
     end
 
     def template_prep_kit_box_barcode
-      barcodes = libraries.map(&:template_prep_kit_box_barcode)
+      barcodes = libraries.pluck(:template_prep_kit_box_barcode)
       return 'Lxxxxx100938900123199' if barcodes.uniq.length > 1
 
       barcodes[0]

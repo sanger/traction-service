@@ -143,4 +143,17 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
+  context 'template prep kit box barcode' do 
+    let(:well)   { create(:pacbio_well_with_request_libraries) }
+
+    it 'returns the well libraries template_prep_kit_box_barcode' do
+      expect(well.template_prep_kit_box_barcode).to eq 'LK1234567'
+    end
+
+    it 'returns default pacbio code when template_prep_kit_box_barcodes are different' do
+      well.libraries[1].template_prep_kit_box_barcode = "unique"
+      expect(well.template_prep_kit_box_barcode).to eq 'Lxxxxx100938900123199'
+    end
+  end
+
 end
