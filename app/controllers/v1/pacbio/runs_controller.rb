@@ -45,8 +45,7 @@ module V1
       end
 
       def params_names
-        params.require(:data)['attributes'].permit(:template_prep_kit_box_barcode,
-                                                   :binding_kit_box_barcode,
+        params.require(:data)['attributes'].permit(:binding_kit_box_barcode,
                                                    :sequencing_kit_box_barcode,
                                                    :dna_control_complex_box_barcode,
                                                    :system_name,
