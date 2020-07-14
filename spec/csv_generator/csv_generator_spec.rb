@@ -44,7 +44,7 @@ RSpec.describe CsvGenerator, type: :model do
         well1.sample_names,
         well1.movie_time.to_s,
         well1.insert_size.to_s,
-        well1.plate.run.template_prep_kit_box_barcode,
+        well1.template_prep_kit_box_barcode,
         well1.plate.run.binding_kit_box_barcode,
         well1.plate.run.sequencing_kit_box_barcode,
         well1.sequencing_mode,
@@ -67,7 +67,7 @@ RSpec.describe CsvGenerator, type: :model do
         well2.sample_names,
         well2.movie_time.to_s,
         well2.insert_size.to_s,
-        well2.plate.run.template_prep_kit_box_barcode,
+        well2.template_prep_kit_box_barcode,
         well2.plate.run.binding_kit_box_barcode,
         well2.plate.run.sequencing_kit_box_barcode,
         well2.sequencing_mode,
@@ -179,7 +179,7 @@ RSpec.describe CsvGenerator, type: :model do
         well1.sample_names,
         well1.movie_time.to_s,
         well1.insert_size.to_s,
-        well1.plate.run.template_prep_kit_box_barcode,
+        well1.template_prep_kit_box_barcode,
         well1.plate.run.binding_kit_box_barcode,
         well1.plate.run.sequencing_kit_box_barcode,
         well1.sequencing_mode,
@@ -202,7 +202,7 @@ RSpec.describe CsvGenerator, type: :model do
         well2.sample_names,
         well2.movie_time.to_s,
         well2.insert_size.to_s,
-        well2.plate.run.template_prep_kit_box_barcode,
+        well2.template_prep_kit_box_barcode,
         well2.plate.run.binding_kit_box_barcode,
         well2.plate.run.sequencing_kit_box_barcode,
         well2.sequencing_mode,
@@ -223,6 +223,74 @@ RSpec.describe CsvGenerator, type: :model do
       array_of_rows = CSV.parse(csv_string)
 
       expect(array_of_rows.size).to eq 3
+    end
+  end
+
+  context '#generate_sample_sheet_different_template_barcode' do
+    let(:well1)   { create(:pacbio_well_with_request_libraries, sequencing_mode: 'CCS') }
+    let(:plate)   { create(:pacbio_plate, wells: [well1]) }
+    let(:run)     { create(:pacbio_run, plate: plate) }
+    let(:csv)     { ::CsvGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet) }
+
+    it 'shows a default template prep kit box barcode if they are not all equal' do
+      well1.libraries[1].template_prep_kit_box_barcode = "random"
+      csv_string = csv.generate_sample_sheet
+      array_of_rows = CSV.parse(csv_string)
+
+      well_data_1 = array_of_rows[1]
+
+      expect(well_data_1).to eq([
+        well1.plate.run.system_name,
+        well1.plate.run.name,
+        'true',
+        well1.position,
+        well1.sample_names,
+        well1.movie_time.to_s,
+        well1.insert_size.to_s,
+        'Lxxxxx100938900123199', #default pacbio barcode
+        well1.plate.run.binding_kit_box_barcode,
+        well1.plate.run.sequencing_kit_box_barcode,
+        well1.sequencing_mode,
+        well1.on_plate_loading_concentration.to_s,
+        well1.plate.run.dna_control_complex_box_barcode,
+        well1.generate_ccs_data.to_s,
+        well1.plate.run.comments,
+        well1.all_libraries_tagged.to_s,
+        '',
+        well1.barcode_set,
+        well1.same_barcodes_on_both_ends_of_sequence.to_s,
+        ''
+      ])
+    end
+
+    it 'shows the libraries template prep kit box barcode if they are all equal' do
+      csv_string = csv.generate_sample_sheet
+      array_of_rows = CSV.parse(csv_string)
+
+      well_data_1 = array_of_rows[1]
+
+      expect(well_data_1).to eq([
+        well1.plate.run.system_name,
+        well1.plate.run.name,
+        'true',
+        well1.position,
+        well1.sample_names,
+        well1.movie_time.to_s,
+        well1.insert_size.to_s,
+        well1.template_prep_kit_box_barcode,
+        well1.plate.run.binding_kit_box_barcode,
+        well1.plate.run.sequencing_kit_box_barcode,
+        well1.sequencing_mode,
+        well1.on_plate_loading_concentration.to_s,
+        well1.plate.run.dna_control_complex_box_barcode,
+        well1.generate_ccs_data.to_s,
+        well1.plate.run.comments,
+        well1.all_libraries_tagged.to_s,
+        '',
+        well1.barcode_set,
+        well1.same_barcodes_on_both_ends_of_sequence.to_s,
+        ''
+      ])
     end
   end
 
