@@ -97,6 +97,26 @@ namespace :tags do
     end
   end
 
+  desc 'reorder ONT tags by column rather than row.'
+  task :reorder_tags, [:barcodes] => :environment do |_t, args|
+    tags = TagSet.find_by(name: 'ONT_EXP-PBC096').tags.order(:group_id)
+    plate_map = {1=>"A1", 2=>"B1", 3=>"C1", 4=>"D1", 5=>"E1", 6=>"F1", 7=>"G1", 8=>"H1", 9=>"A2", 10=>"B2", 11=>"C2", 12=>"D2", 13=>"E2", 14=>"F2", 15=>"G2", 16=>"H2", 17=>"A3", 18=>"B3", 19=>"C3", 20=>"D3", 21=>"E3", 22=>"F3", 23=>"G3", 24=>"H3", 25=>"A4", 26=>"B4", 27=>"C4", 28=>"D4", 29=>"E4", 30=>"F4", 31=>"G4", 32=>"H4", 33=>"A5", 34=>"B5", 35=>"C5", 36=>"D5", 37=>"E5", 38=>"F5", 39=>"G5", 40=>"H5", 41=>"A6", 42=>"B6", 43=>"C6", 44=>"D6", 45=>"E6", 46=>"F6", 47=>"G6", 48=>"H6", 49=>"A7", 50=>"B7", 51=>"C7", 52=>"D7", 53=>"E7", 54=>"F7", 55=>"G7", 56=>"H7", 57=>"A8", 58=>"B8", 59=>"C8", 60=>"D8", 61=>"E8", 62=>"F8", 63=>"G8", 64=>"H8", 65=>"A9", 66=>"B9", 67=>"C9", 68=>"D9", 69=>"E9", 70=>"F9", 71=>"G9", 72=>"H9", 73=>"A10", 74=>"B10", 75=>"C10", 76=>"D10", 77=>"E10", 78=>"F10", 79=>"G10", 80=>"H10", 81=>"A11", 82=>"B11", 83=>"C11", 84=>"D11", 85=>"E11", 86=>"F11", 87=>"G11", 88=>"H11", 89=>"A12", 90=>"B12", 91=>"C12", 92=>"D12", 93=>"E12", 94=>"F12", 95=>"G12", 96=>"H12"}
+    args[:barcodes].split(',').each do |barcode|
+      tags.each_with_index do |tag, index|
+        plate = Plate.find_by(barcode: barcode)
+        well = plate.wells.find_by(position: plate_map[index+1])
+        next if well.nil?
+        next if well.container_materials.empty?
+        material = well.container_materials.first.material
+        material_tag = material.tags.first
+        material_tag = tag
+        puts material_tag.oligo
+        puts tag.oligo
+        material_tag.save!
+      end 
+    end
+  end
+
   task destroy: :environment do
     Tag.destroy_all
     puts '-> Tags successfully deleted'
