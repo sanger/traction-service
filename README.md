@@ -27,6 +27,8 @@ To create the first set of tags (needed for pacbio and ont dummy runs): `bundle 
 
 To fetch tags from SS: `bundle exec rails tags:fetch`
 
+To update tags for an ONT plate which has tags wrongly assigned by row rather than column: `BARCODES=barcode1,barcode2... bundle exec rails tags:reorder`
+
 To create pacbio dummy runs: `bundle exec rails pacbio_runs:create`
 
 To create saphyr dummy runs: `bundle exec rails saphyr_runs:create`
