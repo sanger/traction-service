@@ -105,7 +105,9 @@ namespace :tags do
       ENV['BARCODES'].split(',').each do |barcode|
         puts "Reordering tags for plate #{barcode}"
         plate = Plate.find_by(barcode: barcode)
-        Ont::AddTags.new(plate: plate, tag_set: tag_set, order: 'column').run!
+        Ont::AddTags.run!(plate: plate, tag_set: tag_set, order: 'column')
+        library = Ont::Library.where("name like '%#{plate.barcode}%'").first
+        Messages.publish(library.flowcell.run, Pipelines.ont.message)
       end
     rescue StandardError => e
       puts e
