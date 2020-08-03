@@ -3,25 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe 'GraphQL', type: :request do
-  context 'get plates' do
-    context 'when no plates' do
-      it 'returns empty plates' do
-        post v2_path, params: { query: '{ plates { id } }' }
-        expect(response).to have_http_status(:success)
-        json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['plates'].length).to eq(0)
-      end
-    end
-
-    context 'when some plates' do
-      let!(:plates) { create_list(:plate, 3) }
-
-      it 'returns all plates' do
-        post v2_path, params: { query: '{ plates { id } }' }
-        expect(response).to have_http_status(:success)
-        json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['plates'].length).to eq(3)
-      end
+  describe 'get plates' do
+    describe 'paginated graphql query' do
+      let(:paginated_model) { :plate }
+      let(:graphql_method) { 'plates' }
+      it_behaves_like 'paginated_query'
     end
 
     context 'when there is a plate with samples' do
@@ -36,12 +22,13 @@ RSpec.describe 'GraphQL', type: :request do
       end
 
       it 'returns plate with nested sample' do
-        post v2_path,
-             params: { query: '{ plates { wells { materials { ... on Request { name } } } } }' }
+        post v2_path, params:
+          { query: '{ plates { nodes { wells { materials { ... on Request { name } } } } } }' }
         expect(response).to have_http_status(:success)
+
         json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['plates'].length).to eq(1)
-        expect(json['data']['plates'].first).to include(
+        expect(json['data']['plates']['nodes'].length).to eq(1)
+        expect(json['data']['plates']['nodes'].first).to include(
           'wells' => [
             {
               'materials' => [
@@ -69,8 +56,8 @@ RSpec.describe 'GraphQL', type: :request do
               arguments: {
                 barcode: "PLATE-1234"
                 wells: [
-                  { position: "A1" sample: { name: "Sample for A1" externalId: "ExtIdA1-1" } }
-                  { position: "E7" sample: { name: "Sample for E7" externalId: "ExtIdE7" } }
+                  { position: "A1" samples: [ { name: "Sample for A1" externalId: "ExtIdA1-1" } ] }
+                  { position: "E7" samples: [ { name: "Sample for E7" externalId: "ExtIdE7" } ] }
                 ]
               }
             }
@@ -89,8 +76,8 @@ RSpec.describe 'GraphQL', type: :request do
         { position: 'E7', requests: [{ name: 'Sample for E7', external_id: 'ExtIdE7' }] }
       ])
 
-      allow_any_instance_of(Ont::PlateFactory).to receive(:save).and_return(true)
-      allow_any_instance_of(Ont::PlateFactory).to receive(:plate).and_return(plate)
+      expect_any_instance_of(Ont::PlateWithSamplesFactory).to receive(:process)
+      allow_any_instance_of(Ont::PlateWithSamplesFactory).to receive(:save).and_return(plate)
 
       post v2_path, params: { query: valid_query }
       expect(response).to have_http_status(:success)
@@ -110,11 +97,12 @@ RSpec.describe 'GraphQL', type: :request do
     end
 
     it 'responds with errors provided by the request factory' do
-      errors = ActiveModel::Errors.new(Ont::PlateFactory.new)
+      errors = ActiveModel::Errors.new(Ont::PlateWithSamplesFactory.new)
       errors.add('wells', message: 'This is a test error')
 
-      allow_any_instance_of(Ont::PlateFactory).to receive(:save).and_return(false)
-      allow_any_instance_of(Ont::PlateFactory).to receive(:errors).and_return(errors)
+      expect_any_instance_of(Ont::PlateWithSamplesFactory).to receive(:process)
+      allow_any_instance_of(Ont::PlateWithSamplesFactory).to receive(:save).and_return(false)
+      allow_any_instance_of(Ont::PlateWithSamplesFactory).to receive(:errors).and_return(errors)
 
       post v2_path, params: { query: valid_query }
       expect(response).to have_http_status(:success)

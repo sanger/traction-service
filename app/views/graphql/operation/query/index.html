@@ -99,8 +99,43 @@
       
         
       <li>
+        <a href="/v2/docs/object/libraryconnection/" class="sidebar-link">
+          LibraryConnection
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/libraryedge/" class="sidebar-link">
+          LibraryEdge
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/pageinfo/" class="sidebar-link">
+          PageInfo
+        </a>
+      </li>
+      
+        
+      <li>
         <a href="/v2/docs/object/plate/" class="sidebar-link">
           Plate
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/plateconnection/" class="sidebar-link">
+          PlateConnection
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/plateedge/" class="sidebar-link">
+          PlateEdge
         </a>
       </li>
       
@@ -115,6 +150,20 @@
       <li>
         <a href="/v2/docs/object/run/" class="sidebar-link">
           Run
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/runconnection/" class="sidebar-link">
+          RunConnection
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/runedge/" class="sidebar-link">
+          RunEdge
         </a>
       </li>
       
@@ -358,8 +407,8 @@
       
       
       <li>
-        <a href="/v2/docs/input_object/wellwithsampleinput/" class="sidebar-link">
-          WellWithSampleInput
+        <a href="/v2/docs/input_object/wellwithsamplesinput/" class="sidebar-link">
+          WellWithSamplesInput
         </a>
       </li>
       
@@ -437,9 +486,9 @@
 <a id="querytypes" class="anchor" href="#querytypes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>QueryTypes</h1>
 <p>Every GraphQL schema has a root type for both queries and mutations. The <a href="https://facebook.github.io/graphql/#sec-Type-System">query type</a> defines GraphQL operations that retrieve data from the server.</p>
 <h2>
-<a id="fields" class="anchor" href="#fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fields</h2>
+<a id="connections" class="anchor" href="#connections" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Connections</h2>
 <div class="field-entry ">
-  <span id="ontlibraries" class="field-name anchored">ontLibraries (<code><a href="/v2/docs/object/library">[Library!]!</a></code>)</span>
+  <span id="ontlibraries" class="field-name connection-name anchored">ontLibraries (<code><a href="/v2/docs/object/libraryconnection">LibraryConnection!</a></code>)</span>
   <div class="description-wrapper">
    <p>Find all Ont Libraries.</p>
      <table class="arguments">
@@ -451,6 +500,60 @@
   </tr>
   </thead>
   <tbody>
+  <tr>
+  <td><code class="anchored">after</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/string">String</a></code>
+  </td>
+  <td>
+    <p>Returns the elements in the list that come after the specified cursor.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">before</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/string">String</a></code>
+  </td>
+  <td>
+    <p>Returns the elements in the list that come before the specified cursor.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">first</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>Returns the first <em>n</em> elements from the list.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">last</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>Returns the last <em>n</em> elements from the list.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">pageNum</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>The page number to return Ont Runs for.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">pageSize</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>The number of Ont Runs to return per page.</p>
+   </td>
+  </tr>
   <tr>
   <td><code class="anchored">unassignedToFlowcells</code></td>
   <td>
@@ -464,6 +567,150 @@
 </table>
   </div>
 </div>
+<div class="field-entry ">
+  <span id="ontruns" class="field-name connection-name anchored">ontRuns (<code><a href="/v2/docs/object/runconnection">RunConnection!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>Find all Ont Runs by page.</p>
+     <table class="arguments">
+  <thead>
+  <tr>
+    <th>Argument</th>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+  <td><code class="anchored">after</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/string">String</a></code>
+  </td>
+  <td>
+    <p>Returns the elements in the list that come after the specified cursor.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">before</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/string">String</a></code>
+  </td>
+  <td>
+    <p>Returns the elements in the list that come before the specified cursor.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">first</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>Returns the first <em>n</em> elements from the list.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">last</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>Returns the last <em>n</em> elements from the list.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">pageNum</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>The page number to return Ont Runs for.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">pageSize</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>The number of Ont Runs to return per page.</p>
+   </td>
+  </tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="plates" class="field-name connection-name anchored">plates (<code><a href="/v2/docs/object/plateconnection">PlateConnection!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>Find all Plates by page.</p>
+     <table class="arguments">
+  <thead>
+  <tr>
+    <th>Argument</th>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+  <td><code class="anchored">after</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/string">String</a></code>
+  </td>
+  <td>
+    <p>Returns the elements in the list that come after the specified cursor.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">before</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/string">String</a></code>
+  </td>
+  <td>
+    <p>Returns the elements in the list that come before the specified cursor.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">first</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>Returns the first <em>n</em> elements from the list.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">last</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>Returns the last <em>n</em> elements from the list.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">pageNum</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>The page number to return plates for.</p>
+   </td>
+  </tr>
+  <tr>
+  <td><code class="anchored">pageSize</code></td>
+  <td>
+    <code><a href="/v2/docs/scalar/int">Int</a></code>
+  </td>
+  <td>
+    <p>The number of plates to return per page.</p>
+   </td>
+  </tr>
+  </tbody>
+</table>
+  </div>
+</div>
+<h2>
+<a id="fields" class="anchor" href="#fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fields</h2>
 <div class="field-entry ">
   <span id="ontrun" class="field-name anchored">ontRun (<code><a href="/v2/docs/object/run">Run</a></code>)</span>
   <div class="description-wrapper">
@@ -488,18 +735,6 @@
   </tr>
   </tbody>
 </table>
-  </div>
-</div>
-<div class="field-entry ">
-  <span id="ontruns" class="field-name anchored">ontRuns (<code><a href="/v2/docs/object/run">[Run!]!</a></code>)</span>
-  <div class="description-wrapper">
-   <p>Find all Ont Runs.</p>
-  </div>
-</div>
-<div class="field-entry ">
-  <span id="plates" class="field-name anchored">plates (<code><a href="/v2/docs/object/plate">[Plate!]!</a></code>)</span>
-  <div class="description-wrapper">
-   <p>Find all Plates.</p>
   </div>
 </div>
 <div class="field-entry ">
