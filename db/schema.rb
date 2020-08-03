@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_11_095257) do
+ActiveRecord::Schema.define(version: 2020_07_08_132746) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 2020_05_11_095257) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["ont_library_id"], name: "index_ont_flowcells_on_ont_library_id"
     t.index ["ont_run_id"], name: "index_ont_flowcells_on_ont_run_id"
+    t.index ["position", "ont_run_id"], name: "index_ont_flowcells_on_position_and_ont_run_id", unique: true
   end
 
   create_table "ont_libraries", force: :cascade do |t|
@@ -40,6 +41,7 @@ ActiveRecord::Schema.define(version: 2020_05_11_095257) do
     t.integer "pool_size"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_ont_libraries_on_name", unique: true
   end
 
   create_table "ont_requests", force: :cascade do |t|
@@ -48,6 +50,7 @@ ActiveRecord::Schema.define(version: 2020_05_11_095257) do
     t.integer "ont_library_id"
     t.string "name"
     t.string "external_id"
+    t.string "uuid"
     t.index ["ont_library_id"], name: "index_ont_requests_on_ont_library_id"
   end
 
@@ -61,7 +64,7 @@ ActiveRecord::Schema.define(version: 2020_05_11_095257) do
   create_table "pacbio_libraries", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
-    t.string "library_kit_barcode"
+    t.string "template_prep_kit_box_barcode"
     t.integer "fragment_size"
     t.string "uuid"
     t.datetime "created_at", null: false
@@ -83,9 +86,9 @@ ActiveRecord::Schema.define(version: 2020_05_11_095257) do
     t.integer "pacbio_library_id"
     t.integer "tag_id"
     t.index ["pacbio_library_id"], name: "index_pacbio_request_libraries_on_pacbio_library_id"
-    t.index ["pacbio_request_id", "pacbio_library_id"], name: "index_rl_request_library"
+    t.index ["pacbio_request_id", "pacbio_library_id"], name: "index_rl_request_library", unique: true
     t.index ["pacbio_request_id"], name: "index_pacbio_request_libraries_on_pacbio_request_id"
-    t.index ["tag_id", "pacbio_library_id"], name: "index_rl_tag_library"
+    t.index ["tag_id", "pacbio_library_id"], name: "index_rl_tag_library", unique: true
     t.index ["tag_id"], name: "index_pacbio_request_libraries_on_tag_id"
   end
 
@@ -102,7 +105,6 @@ ActiveRecord::Schema.define(version: 2020_05_11_095257) do
 
   create_table "pacbio_runs", force: :cascade do |t|
     t.string "name"
-    t.string "template_prep_kit_box_barcode"
     t.string "binding_kit_box_barcode"
     t.string "sequencing_kit_box_barcode"
     t.string "dna_control_complex_box_barcode"

@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="description" content="WellWithSampleInput GraphQL documentation">
+    <meta name="description" content="PageInfo GraphQL documentation">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>WellWithSampleInput</title>
+    <title>PageInfo</title>
     <link rel="stylesheet" href="/v2/docs/assets/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.2.2/anchor.min.js"></script>
     <script>
@@ -99,8 +99,43 @@
       
         
       <li>
+        <a href="/v2/docs/object/libraryconnection/" class="sidebar-link">
+          LibraryConnection
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/libraryedge/" class="sidebar-link">
+          LibraryEdge
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/pageinfo/" class="sidebar-link">
+          PageInfo
+        </a>
+      </li>
+      
+        
+      <li>
         <a href="/v2/docs/object/plate/" class="sidebar-link">
           Plate
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/plateconnection/" class="sidebar-link">
+          PlateConnection
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/plateedge/" class="sidebar-link">
+          PlateEdge
         </a>
       </li>
       
@@ -115,6 +150,20 @@
       <li>
         <a href="/v2/docs/object/run/" class="sidebar-link">
           Run
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/runconnection/" class="sidebar-link">
+          RunConnection
+        </a>
+      </li>
+      
+        
+      <li>
+        <a href="/v2/docs/object/runedge/" class="sidebar-link">
+          RunEdge
         </a>
       </li>
       
@@ -434,19 +483,38 @@
       <div id="content">
 
         <h1>
-<a id="wellwithsampleinput" class="anchor" href="#wellwithsampleinput" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>WellWithSampleInput</h1>
+<a id="pageinfo" class="anchor" href="#pageinfo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PageInfo</h1>
+<p>Information about pagination in a connection.</p>
 <h2>
-<a id="input-fields" class="anchor" href="#input-fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Input Fields</h2>
+<a id="fields" class="anchor" href="#fields" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fields</h2>
 <div class="field-entry ">
-  <span id="position" class="field-name anchored">position (<code><a href="/v2/docs/scalar/string">String</a></code>)</span>
+  <span id="currentpage" class="field-name anchored">currentPage (<code><a href="/v2/docs/scalar/int">Int!</a></code>)</span>
   <div class="description-wrapper">
-   <p>The description of the position of the well.  Typically A1 through to H12.</p>
+   <p>The currently returned page of results.</p>
   </div>
 </div>
 <div class="field-entry ">
-  <span id="sample" class="field-name anchored">sample (<code><a href="/v2/docs/input_object/sampleinput">SampleInput</a></code>)</span>
+  <span id="entitiescount" class="field-name anchored">entitiesCount (<code><a href="/v2/docs/scalar/int">Int!</a></code>)</span>
   <div class="description-wrapper">
-   <p>The sample contained in the well.</p>
+   <p>The total number of entities in the database.</p>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="hasnextpage" class="field-name anchored">hasNextPage (<code><a href="/v2/docs/scalar/boolean">Boolean!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>When paginating forwards, are there more items?</p>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="haspreviouspage" class="field-name anchored">hasPreviousPage (<code><a href="/v2/docs/scalar/boolean">Boolean!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>When paginating backwards, are there more items?</p>
+  </div>
+</div>
+<div class="field-entry ">
+  <span id="pagecount" class="field-name anchored">pageCount (<code><a href="/v2/docs/scalar/int">Int!</a></code>)</span>
+  <div class="description-wrapper">
+   <p>The number of pages available at the current page size.</p>
   </div>
 </div>
 

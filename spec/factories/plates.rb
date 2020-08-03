@@ -14,6 +14,15 @@ FactoryBot.define do
           end
         end
       end
+
+      factory :plate_with_wells_and_requests do
+
+        after :create do |plate|
+          plate.wells.each do |well|
+            create(:container_material, container: well, material: create(:ont_request))
+          end
+        end
+      end
     end
 
     factory :plate_with_ont_requests do

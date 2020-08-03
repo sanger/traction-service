@@ -14,6 +14,9 @@ module Types
         field :pool_size, Integer, 'The number of samples contained in this library.', null: false
         field :tube_barcode, String, 'The barcode of the tube this library is contained in.',
               null: true
+        field :assigned_to_flowcell, Boolean,
+              'The value of whether this library is being used in a run.',
+              null: false
       end
     end
   end

@@ -17,8 +17,8 @@ module Pacbio
     has_one :plate, foreign_key: :pacbio_run_id,
                     dependent: :destroy, inverse_of: :run
 
-    validates :template_prep_kit_box_barcode, :binding_kit_box_barcode,
-              :sequencing_kit_box_barcode, :dna_control_complex_box_barcode,
+    validates :binding_kit_box_barcode, :sequencing_kit_box_barcode,
+              :dna_control_complex_box_barcode,
               :system_name, presence: true
 
     validates :name, uniqueness: { case_sensitive: false }
