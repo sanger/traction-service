@@ -180,6 +180,10 @@ default: &default
           type: :model
           value: request.sample_name
           populate_on_row_type: :sample
+        Automation Parameters:
+          type: :model
+          value: automation_parameters
+          populate_on_row_type: :well
   ont:
     message:
       lims: *lims
