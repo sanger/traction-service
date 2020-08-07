@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Pacbio::Well, type: :model, pacbio: true do
-
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_well }
     it_behaves_like 'uuidable'
@@ -92,6 +91,17 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
+  context 'pre-extension time' do
+    it 'is not required' do
+      expect(build(:pacbio_well).pre_extension_time).to be_nil
+    end
+
+    it 'can be set' do
+      well = build(:pacbio_well, pre_extension_time: 2 )
+      expect(well.pre_extension_time).to eq(2)
+    end
+  end
+
   context '#generate_ccs_data' do
     it 'returns true if sequencing_mode is CCS' do
       expect(create(:pacbio_well, sequencing_mode: 'CCS').generate_ccs_data).to eq true
@@ -116,7 +126,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     let(:request_libraries)   { create_list(:pacbio_request_library, 2) }
 
     before(:each) do
-      well.libraries << request_libraries.collect(&:library) 
+      well.libraries << request_libraries.collect(&:library)
     end
 
     it 'can have one or more' do
@@ -143,7 +153,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
-  context 'template prep kit box barcode' do 
+  context 'template prep kit box barcode' do
     let(:well)   { create(:pacbio_well_with_request_libraries) }
 
     it 'returns the well libraries template_prep_kit_box_barcode' do
@@ -155,5 +165,4 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
       expect(well.template_prep_kit_box_barcode).to eq 'Lxxxxx100938900123199'
     end
   end
-
 end
