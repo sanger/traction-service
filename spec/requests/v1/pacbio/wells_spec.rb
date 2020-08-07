@@ -6,7 +6,7 @@ RSpec.describe 'WellsController', type: :request do
     let!(:library1) { create(:pacbio_library_in_tube) }
     let!(:library2) { create(:pacbio_library_in_tube) }
 
-    let!(:well1) { create(:pacbio_well) }
+    let!(:well1) { create(:pacbio_well, pre_extension_time: 2) }
     let!(:well2) { create(:pacbio_well, libraries: [library1, library2]) }
 
     it 'returns a list of wells' do
@@ -32,6 +32,7 @@ RSpec.describe 'WellsController', type: :request do
       expect(json['data'][0]['attributes']['pacbio_plate_id']).to eq(well1.pacbio_plate_id)
       expect(json['data'][0]['attributes']['comment']).to eq(well1.comment)
       expect(json['data'][0]['attributes']['sequencing_mode']).to eq(well1.sequencing_mode)
+      expect(json['data'][0]['attributes']['pre_extension_time']).to eq(well1.pre_extension_time)
 
       well = json['data'][1]['attributes']
       expect(well['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
@@ -43,6 +44,7 @@ RSpec.describe 'WellsController', type: :request do
       expect(well['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
       expect(well['comment']).to eq(well2.comment)
       expect(well['sequencing_mode']).to eq(well2.sequencing_mode)
+      expect(well['pre_extension_time']).to eq(well2.pre_extension_time)
 
       libraries = json['included']
       expect(libraries.length).to eq(2)
@@ -127,7 +129,42 @@ RSpec.describe 'WellsController', type: :request do
           expect(Messages).to receive(:publish)
           post v1_pacbio_wells_path, params: body, headers: json_api_headers
         end
+      end
 
+      context 'on ccs mode with pre-extension success' do
+        let(:body) do
+          {
+            data: {
+              type: "wells",
+              attributes: {
+                wells: [
+                  { row: 'A',
+                    column: '1',
+                    movie_time: 8,
+                    insert_size: 8000,
+                    on_plate_loading_concentration: 8.36,
+                    sequencing_mode: 'CCS',
+                    pre_extension_time: 2,
+                    relationships: {
+                      plate: {
+                        data: {
+                          type: 'plate',
+                          id: plate.id
+                        }
+                      }
+                    }
+                  }
+                ],
+              }
+            }
+          }.to_json
+        end
+
+        it 'creates a well with pre-extension time set' do
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          created_well_id = response.parsed_body['data'][0]['id']
+          expect(Pacbio::Well.find(created_well_id).pre_extension_time).to eq(2)
+        end
       end
 
       context 'on failure' do
@@ -252,6 +289,7 @@ RSpec.describe 'WellsController', type: :request do
     let(:insert_size) { 123 }
     let(:on_plate_loading_concentration) { 12 }
     let(:sequencing_mode) { "CLR" }
+    let(:pre_extension_time) { 4 }
 
     context 'when only updating the wells attributes' do
       let(:body) do
@@ -265,7 +303,8 @@ RSpec.describe 'WellsController', type: :request do
               movie_time: movie_time,
               insert_size: insert_size,
               on_plate_loading_concentration: on_plate_loading_concentration,
-              sequencing_mode: sequencing_mode
+              sequencing_mode: sequencing_mode,
+              pre_extension_time: pre_extension_time
             },
             relationships: {
               libraries: {
@@ -291,6 +330,7 @@ RSpec.describe 'WellsController', type: :request do
         expect(well.insert_size.to_i).to eq insert_size.to_i
         expect(well.on_plate_loading_concentration).to eq on_plate_loading_concentration
         expect(well.sequencing_mode).to eq sequencing_mode
+        expect(well.pre_extension_time).to eq pre_extension_time
       end
 
       it 'does not update a wells libraries' do
