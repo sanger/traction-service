@@ -21,7 +21,7 @@ module Pacbio
     validates :movie_time,
               numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 }
     validates :insert_size, numericality: { greater_than_or_equal_to: 10 }
-    validates :pre_extension_time, numericality: { only_integer: true }
+    validates :pre_extension_time, numericality: { only_integer: true }, :allow_blank => true
 
     def position
       "#{row}#{column}"
