@@ -42,7 +42,7 @@ module SampleSheet
   end
 
   def automation_parameters
-    return nil unless pre_extension_time
+    return unless pre_extension_time
 
     "ExtensionTime=double:#{pre_extension_time}|ExtendFirst=boolean:True"
   end
