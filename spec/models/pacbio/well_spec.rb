@@ -152,7 +152,15 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
     it 'returns default pacbio code when template_prep_kit_box_barcodes are different' do
       well.libraries[1].template_prep_kit_box_barcode = "unique"
-      expect(well.template_prep_kit_box_barcode).to eq 'Lxxxxx100938900123199'
+      expect(well.template_prep_kit_box_barcode).to eq Pacbio::Well::GENERIC_KIT_BARCODE
+    end
+  end
+
+  context 'collection?' do
+    let(:well)                { create(:pacbio_well) }
+
+    it 'will always be false' do
+      expect(well).to be_collection
     end
   end
 

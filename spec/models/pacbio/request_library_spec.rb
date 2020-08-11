@@ -44,4 +44,12 @@ RSpec.describe Pacbio::RequestLibrary, type: :model, pacbio: true do
     end
   end
 
+  context 'collection?' do
+    let(:well)                { create(:pacbio_well) }
+
+    it 'will always be true' do
+      expect(well).to be_collection
+    end
+  end
+
 end

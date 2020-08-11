@@ -107,79 +107,146 @@ default: &default
         System Name:
           type: :model
           value: plate.run.system_name
-          populate_on_row_type: :well
+          populate:
+            for: 
+              - :well
+            with: :well
         Run Name:
           type: :model
           value: plate.run.name
-          populate_on_row_type: :well
+          populate:
+            for: 
+              - :well
+            with: :well
         Is Collection:
-          # placeholder column, populated directly in csv_generator
+          type: :model
+          value: collection?
+          populate:
+            for: 
+              - :well
+              - :sample
+            with: :row_type
         Sample Well:
           type: :model
           value: position_leading_zero
-          populate_on_row_type: :well
+          populate:
+            for: 
+              - :well
+              - :sample
+            with: :well
         Sample Name:
-          # placeholder column, populated directly in csv_generator
+          type: :model
+          value: sample_names
+          populate:
+            for: 
+              - :well
+            with: :well
         Movie Time per SMRT Cell (hours):
           type: :model
           value: movie_time
-          populate_on_row_type: :well
+          populate:
+            for: 
+              - :well
+            with: :well
         Insert Size (bp):
           type: :model
           value: insert_size
-          populate_on_row_type: :well
+          populate:
+            for: 
+              - :well
+            with: :well
         Template Prep Kit Box Barcode:
           type: :model
           value: template_prep_kit_box_barcode
-          populate_on_row_type: :well
+          populate:
+            for: 
+              - :well
+            with: :well
         Binding Kit Box Barcode:
           type: :model
           value: plate.run.binding_kit_box_barcode
+          populate:
+            for: 
+              - :well
+            with: :well
           populate_on_row_type: :well
         Sequencing Kit Box Barcode:
           type: :model
           value: plate.run.sequencing_kit_box_barcode
-          populate_on_row_type: :well
+          populate:
+            for: 
+              - :well
+            with: :well
         Sequencing Mode:
           type: :model
           value: sequencing_mode
-          populate_on_row_type: :well
+          populate:
+            for: 
+              - :well
+            with: :well
         On-Plate Loading Concentration (pM):
           type: :model
           value: on_plate_loading_concentration
-          populate_on_row_type: :well
+          populate:
+            for: 
+              - :well
+            with: :well
         DNA Control Complex Box Barcode:
           type: :model
           value: plate.run.dna_control_complex_box_barcode
-          populate_on_row_type: :well
+          populate:
+            for: 
+              - :well
+            with: :well
         Generate CCS Data:
           type: :model
           value: generate_ccs_data
-          populate_on_row_type: :well
+          populate:
+            for: 
+              - :well
+            with: :well
         Run Comments:
           type: :model
           value: plate.run.comments
-          populate_on_row_type: :well
+          populate:
+            for: 
+              - :well
+            with: :well
         Sample is Barcoded:
           type: :model
           value: all_libraries_tagged
-          populate_on_row_type: :well
+          populate:
+            for: 
+              - :well
+            with: :well
         Barcode Name:
           type: :model
           value: barcode_name
-          populate_on_row_type: :sample
+          populate:
+            for: 
+              - :sample
+            with: :sample
         Barcode Set:
           type: :model
           value: barcode_set
-          populate_on_row_type: :well
+          populate:
+            for: 
+              - :well
+            with: :well
         Same Barcodes on Both Ends of Sequence:
           type: :model
           value: same_barcodes_on_both_ends_of_sequence
-          populate_on_row_type: :well
+          populate:
+            for: 
+              - :well
+            with: :well
         Bio Sample Name:
           type: :model
           value: request.sample_name
-          populate_on_row_type: :sample
+          populate:
+            for: 
+              - :sample
+            with: :sample
   ont:
     message:
       lims: *lims
