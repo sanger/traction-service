@@ -17,7 +17,7 @@ class CsvGenerator
 
       run.plate.wells.each do |well|
         # add well header row
-        csv << csv_data(well, true, well.sample_names)
+        csv << csv_data(well: well, row_type: :well)
 
         next unless well.all_libraries_tagged
 
@@ -37,32 +37,55 @@ class CsvGenerator
   def csv_sample_rows(well)
     well.request_libraries.map do |request_library|
       # add row under well header for each sample in the well
-      csv_data(request_library, false, well.sample_names)
+      csv_data(sample: request_library, well: well, row_type: :sample)
     end
   end
 
   # Use configuration :type and :value to retrieve well data
   # eg ["Sequel II", "run4"]
-  def csv_data(obj, is_well_header_row, sample_names)
-    configuration.columns.map do |x|
-      column_name = x[0]
-      column_options = x[1]
-
-      next is_well_header_row if column_name == 'Is Collection'
-      next sample_names if column_name == 'Sample Name'
-
-      if should_populate_column(column_options[:populate_on_row_type], is_well_header_row)
-        instance_value(obj, column_options)
-      else
-        ''
-      end
+  def csv_data(options = {})
+    configuration.columns.map do |column|
+      populate_column(options.merge(column_options: column[1]))
     end
   end
 
-  def should_populate_column(populate_on_row_type, is_well_header_row)
-    populate_on_row_type == :all ||
-      populate_on_row_type == :well && is_well_header_row ||
-      populate_on_row_type == :sample && !is_well_header_row
+  # if the column does not need to be populated for the row_type return empty string
+  # if the column does need to be populated then return the value from the object
+  # populating on row_type means that we need to populate it with the object
+  # pertaining to the row type
+  # otherwise just populate with the populate with value.
+  # some columns need populating for both types with the same method (polymorphism).
+  # well position is different. It would be really difficult to get that from sample.
+  # populate[:for] is either sample or well
+  # populate[:with] is either row_type (sample or well), sample or well
+  # Examples:
+  # +Is Collection:
+  # type: :model
+  # value: collection?
+  # populate:
+  #   for:
+  #     - :well
+  #     - :sample
+  #   with: :row_type+
+  # means that is collection needs to be populated for samples and wells
+  # but needs to use the method from sample or well as the answers are different
+  # +Sample Well:
+  # type: :model
+  # value: position_leading_zero
+  # populate:
+  #   for:
+  #     - :well
+  #     - :sample
+  #   with: :well+
+  # means that sample well needs to be populated for both samples and wells
+  # but needs to use the well method
+  # hopefully that is enough of an explanation!
+  def populate_column(options = {})
+    populate = options[:column_options][:populate]
+    return '' unless populate[:for].include?(options[:row_type])
+
+    obj = populate[:with] == :row_type ? options[options[:row_type]] : options[populate[:with]]
+    instance_value(obj, options[:column_options])
   end
 
   # TODO: refactor duplication with messages/message.rb

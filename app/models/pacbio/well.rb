@@ -4,6 +4,8 @@ module Pacbio
   # Pacbio::Well
   # A well can have many libraries
   class Well < ApplicationRecord
+    GENERIC_KIT_BARCODE = 'Lxxxxx100938900123199'
+
     include Uuidable
     include SampleSheet
 
@@ -59,9 +61,13 @@ module Pacbio
 
     def template_prep_kit_box_barcode
       barcodes = libraries.pluck(:template_prep_kit_box_barcode)
-      return 'Lxxxxx100938900123199' if barcodes.uniq.length > 1
+      return GENERIC_KIT_BARCODE if barcodes.uniq.length > 1
 
       barcodes[0]
+    end
+
+    def collection?
+      true
     end
   end
 end
