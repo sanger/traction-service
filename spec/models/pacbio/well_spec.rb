@@ -139,6 +139,12 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
       expect(sample_names.first).to eq(request_libraries.first.request.sample_name)
     end
 
+    it 'can return a list of sample names joined by colon' do
+      sample_names = well.sample_names_colon.split(':')
+      expect(sample_names.length).to eq(2)
+      expect(sample_names.first).to eq(request_libraries.first.request.sample_name)
+    end
+
     it 'can return a list of tags' do
       expect(well.tags).to eq(request_libraries.collect(&:tag_id))
     end
