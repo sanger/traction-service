@@ -80,7 +80,11 @@ class CsvGenerator
   # means that sample well needs to be populated for both samples and wells
   # but needs to use the well method
   # hopefully that is enough of an explanation!
-  def populate_column(options = {well: nil, sample: nil, column_options: nil})
+  # @param [hash] options can include:
+  #  - well: the well data that is being added to the row
+  #  - sample: the sample data that is being added to the row
+  #  - column_options: from configuration
+  def populate_column(options = { well: nil, sample: nil, column_options: nil })
     populate = options[:column_options][:populate]
     return '' unless populate[:for].include?(options[:row_type])
 
