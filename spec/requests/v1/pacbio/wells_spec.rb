@@ -131,7 +131,7 @@ RSpec.describe 'WellsController', type: :request do
         end
       end
 
-      context 'on ccs mode with pre-extension success' do
+      context 'with pre-extension time set' do
         let(:body) do
           {
             data: {
@@ -153,6 +153,22 @@ RSpec.describe 'WellsController', type: :request do
                         }
                       }
                     }
+                  },
+                  { row: 'B',
+                    column: '3',
+                    movie_time: 4,
+                    insert_size: 7000,
+                    on_plate_loading_concentration: 8.83,
+                    sequencing_mode: 'CLR',
+                    pre_extension_time: 1,
+                    relationships: {
+                      plate: {
+                        data: {
+                          type: 'plate',
+                          id: plate.id
+                        }
+                      }
+                    }
                   }
                 ],
               }
@@ -160,10 +176,12 @@ RSpec.describe 'WellsController', type: :request do
           }.to_json
         end
 
-        it 'creates a well with pre-extension time set' do
+        it 'creates wells with pre-extension time set' do
           post v1_pacbio_wells_path, params: body, headers: json_api_headers
           created_well_id = response.parsed_body['data'][0]['id']
+          created_well_2_id = response.parsed_body['data'][1]['id']
           expect(Pacbio::Well.find(created_well_id).pre_extension_time).to eq(2)
+          expect(Pacbio::Well.find(created_well_2_id).pre_extension_time).to eq(1)
         end
       end
 
