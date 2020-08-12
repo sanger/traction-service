@@ -43,9 +43,13 @@ module Pacbio
 
     # a collection of all the sample names for a particular well
     # useful for comments
-    # also used in the sample sheet
     def sample_names
       request_libraries.collect(&:request).collect(&:sample_name).join(',')
+    end
+
+    # Used in the sample sheet. Can't be joined by commas as character is not allowed.
+    def sample_names_colon
+      request_libraries.collect(&:request).collect(&:sample_name).join(':')
     end
 
     # a collection of all the tags for a well
