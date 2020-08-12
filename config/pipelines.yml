@@ -247,6 +247,13 @@ default: &default
             for: 
               - :sample
             with: :sample
+        Automation Parameters:
+          type: :model
+          value: automation_parameters
+          populate:
+            for: 
+              - :well
+            with: :well
   ont:
     message:
       lims: *lims

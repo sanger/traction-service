@@ -74,5 +74,18 @@ RSpec.describe SampleSheet do
       end
     end
 
+    context 'with pre-extension time' do
+      let(:well) { create(:pacbio_well, pre_extension_time: 3) }
+
+      it 'automation parameters is formatted properly' do
+        expect(well.automation_parameters).to eq("ExtensionTime=double:3|ExtendFirst=boolean:True")
+      end
+    end
+
+    context 'without pre-extension time' do
+      it 'automation parameters is blank' do
+        expect(well.automation_parameters).to be_nil
+      end
+    end
   end
 end
