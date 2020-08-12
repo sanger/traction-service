@@ -93,7 +93,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
   context 'pre-extension time' do
     it 'is not required' do
-      expect(build(:pacbio_well).pre_extension_time).to be_nil
+      expect(create(:pacbio_well, pre_extension_time: nil)).to be_valid
     end
 
     it 'can be set' do
