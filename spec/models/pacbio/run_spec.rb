@@ -51,7 +51,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     wells = create_list(:pacbio_well_with_libraries, 2)
     plate = create(:pacbio_plate, wells: wells)
     run = create(:pacbio_run, plate: plate, comments: nil)
-    expect(run.comments).to eq("#{wells.first.summary},#{wells[1].summary}")
+    expect(run.comments).to eq("#{wells.first.summary}:#{wells[1].summary}")
   end
 
   context '#generate_sample_sheet' do
