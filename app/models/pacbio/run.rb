@@ -26,7 +26,7 @@ module Pacbio
     scope :active, -> { where(deactivated_at: nil) }
 
     def comments
-      super || wells.collect(&:summary).join(',')
+      super || wells.collect(&:summary).join(':')
     end
 
     # returns sample sheet csv for a Pacbio::Run

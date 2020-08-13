@@ -27,5 +27,9 @@ module Pacbio
 
     validates :request, uniqueness: { scope: :library,
                                       message: 'need to be unique within a library' }
+
+    def collection?
+      false
+    end
   end
 end

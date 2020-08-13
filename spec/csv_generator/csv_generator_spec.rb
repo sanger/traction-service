@@ -4,7 +4,7 @@ RSpec.describe CsvGenerator, type: :model do
   after(:each) { File.delete('sample_sheet.csv') if File.exists?('sample_sheet.csv') }
 
   context '#generate_sample_sheet' do
-    let(:well1)   { create(:pacbio_well_with_request_libraries, sequencing_mode: 'CCS') }
+    let(:well1)   { create(:pacbio_well_with_request_libraries, sequencing_mode: 'CCS', pre_extension_time: 2) }
     let(:well2)   { create(:pacbio_well_with_request_libraries, sequencing_mode: 'CLR') }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_run, plate: plate) }
@@ -56,7 +56,8 @@ RSpec.describe CsvGenerator, type: :model do
         '',
         well1.barcode_set,
         well1.same_barcodes_on_both_ends_of_sequence.to_s,
-        ''
+        '',
+        well1.automation_parameters
       ])
 
       expect(well_data_2).to eq([
@@ -79,7 +80,8 @@ RSpec.describe CsvGenerator, type: :model do
         '',
         well2.barcode_set,
         well2.same_barcodes_on_both_ends_of_sequence.to_s,
-        ''
+        '',
+        well2.automation_parameters
       ])
     end
 
@@ -94,8 +96,8 @@ RSpec.describe CsvGenerator, type: :model do
         '',
         '',
         'false',
+        well1.position,
         '',
-        well1.sample_names,
         '',
         '',
         '',
@@ -110,15 +112,16 @@ RSpec.describe CsvGenerator, type: :model do
         well1.libraries.first.request_libraries.first.barcode_name,
         '',
         '',
-        well1.libraries.first.request_libraries.first.request.sample_name
+        well1.libraries.first.request_libraries.first.request.sample_name,
+        ''
       ])
 
       expect(sample_data_2).to eq([
         '',
         '',
         'false',
+        well2.position,
         '',
-        well2.sample_names,
         '',
         '',
         '',
@@ -133,13 +136,14 @@ RSpec.describe CsvGenerator, type: :model do
         well2.libraries.first.request_libraries.first.barcode_name,
         '',
         '',
-        well2.libraries.first.request_libraries.first.request.sample_name
+        well2.libraries.first.request_libraries.first.request.sample_name,
+        ''
       ])
     end
   end
 
   context '#generate_sample_sheet no tags' do
-    let(:well1)   { create(:pacbio_well_with_request_libraries_no_tag, sequencing_mode: 'CCS') }
+    let(:well1)   { create(:pacbio_well_with_request_libraries_no_tag, sequencing_mode: 'CCS', pre_extension_time: 2) }
     let(:well2)   { create(:pacbio_well_with_request_libraries_no_tag, sequencing_mode: 'CLR') }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_run, plate: plate) }
@@ -191,7 +195,8 @@ RSpec.describe CsvGenerator, type: :model do
         '',
         well1.barcode_set,
         well1.same_barcodes_on_both_ends_of_sequence.to_s,
-        ''
+        '',
+        well1.automation_parameters
       ])
 
       expect(well_data_2).to eq([
@@ -214,7 +219,8 @@ RSpec.describe CsvGenerator, type: :model do
         '',
         well2.barcode_set,
         well2.same_barcodes_on_both_ends_of_sequence.to_s,
-        ''
+        '',
+        well2.automation_parameters
       ])
     end
 
@@ -247,7 +253,7 @@ RSpec.describe CsvGenerator, type: :model do
         well1.sample_names,
         well1.movie_time.to_s,
         well1.insert_size.to_s,
-        'Lxxxxx100938900123199', #default pacbio barcode
+        Pacbio::Well::GENERIC_KIT_BARCODE,
         well1.plate.run.binding_kit_box_barcode,
         well1.plate.run.sequencing_kit_box_barcode,
         well1.sequencing_mode,
@@ -259,7 +265,8 @@ RSpec.describe CsvGenerator, type: :model do
         '',
         well1.barcode_set,
         well1.same_barcodes_on_both_ends_of_sequence.to_s,
-        ''
+        '',
+        well1.automation_parameters
       ])
     end
 
@@ -289,7 +296,8 @@ RSpec.describe CsvGenerator, type: :model do
         '',
         well1.barcode_set,
         well1.same_barcodes_on_both_ends_of_sequence.to_s,
-        ''
+        '',
+        well1.automation_parameters
       ])
     end
   end
