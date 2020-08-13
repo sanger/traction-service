@@ -30,7 +30,7 @@ module Pacbio
     end
 
     def summary
-      "#{sample_names(',')},#{comment}"
+      "#{sample_names} #{comment}".strip
     end
 
     def generate_ccs_data
