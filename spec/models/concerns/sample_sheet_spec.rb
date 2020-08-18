@@ -88,8 +88,8 @@ RSpec.describe SampleSheet do
       end
     end
 
-    context 'pre-extension time 0 and sequencing mode CLR' do
-      let(:well) { create(:pacbio_well, pre_extension_time: 0, sequencing_mode: 'CLR') }
+    context 'pre-extension time 0' do
+      let(:well) { create(:pacbio_well, pre_extension_time: 0) }
 
       it 'automation parameters is blank' do
         expect(well.automation_parameters).to be_nil
