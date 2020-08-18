@@ -87,5 +87,13 @@ RSpec.describe SampleSheet do
         expect(well.automation_parameters).to be_nil
       end
     end
+
+    context 'pre-extension time 0' do
+      let(:well) { create(:pacbio_well, pre_extension_time: 0) }
+
+      it 'automation parameters is blank' do
+        expect(well.automation_parameters).to be_nil
+      end
+    end
   end
 end
