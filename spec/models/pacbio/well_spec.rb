@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Pacbio::Well, type: :model, pacbio: true do
-
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_well }
     it_behaves_like 'uuidable'
@@ -69,7 +68,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
   it 'can have a summary' do
     well = create(:pacbio_well_with_libraries)
-    expect(well.summary).to eq("#{well.sample_names},#{well.comment}")
+    expect(well.summary).to eq("#{well.sample_names}#{well.comment}")
   end
 
   context '#libraries?' do
@@ -89,6 +88,17 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
     it 'must include the correct options' do
       expect(Pacbio::Well.sequencing_modes.keys).to eq(['CLR', 'CCS'])
+    end
+  end
+
+  context 'pre-extension time' do
+    it 'is not required' do
+      expect(create(:pacbio_well, pre_extension_time: nil)).to be_valid
+    end
+
+    it 'can be set' do
+      well = build(:pacbio_well, pre_extension_time: 2 )
+      expect(well.pre_extension_time).to eq(2)
     end
   end
 
@@ -116,7 +126,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     let(:request_libraries)   { create_list(:pacbio_request_library, 2) }
 
     before(:each) do
-      well.libraries << request_libraries.collect(&:library) 
+      well.libraries << request_libraries.collect(&:library)
     end
 
     it 'can have one or more' do
@@ -124,7 +134,11 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
 
     it 'can return a list of sample names' do
-      sample_names = well.sample_names.split(',')
+      sample_names = well.sample_names.split(':')
+      expect(sample_names.length).to eq(2)
+      expect(sample_names.first).to eq(request_libraries.first.request.sample_name)
+
+      sample_names = well.sample_names(',').split(',')
       expect(sample_names.length).to eq(2)
       expect(sample_names.first).to eq(request_libraries.first.request.sample_name)
     end
@@ -143,7 +157,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
-  context 'template prep kit box barcode' do 
+  context 'template prep kit box barcode' do
     let(:well)   { create(:pacbio_well_with_request_libraries) }
 
     it 'returns the well libraries template_prep_kit_box_barcode' do
@@ -152,8 +166,15 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
     it 'returns default pacbio code when template_prep_kit_box_barcodes are different' do
       well.libraries[1].template_prep_kit_box_barcode = "unique"
-      expect(well.template_prep_kit_box_barcode).to eq 'Lxxxxx100938900123199'
+      expect(well.template_prep_kit_box_barcode).to eq Pacbio::Well::GENERIC_KIT_BARCODE
     end
   end
 
+  context 'collection?' do
+    let(:well)                { create(:pacbio_well) }
+
+    it 'will always be true' do
+      expect(well).to be_collection
+    end
+  end
 end

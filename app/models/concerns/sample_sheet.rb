@@ -40,4 +40,11 @@ module SampleSheet
     # Always true at the time of writing
     true
   end
+
+  def automation_parameters
+    return if pre_extension_time == 0
+    return unless pre_extension_time
+
+    "ExtensionTime=double:#{pre_extension_time}|ExtendFirst=boolean:True"
+  end
 end

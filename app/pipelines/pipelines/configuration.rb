@@ -20,6 +20,8 @@ module Pipelines
     end
 
     # Configuration::Item
+    # TODO: this needs fixing. It is being used in slightly different ways and
+    # we should be able to iterate rather than map.
     class Item
       include Enumerable
       include InstanceMethodCreator
