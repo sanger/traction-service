@@ -19,6 +19,7 @@ module Pacbio
     belongs_to :tag, class_name: '::Tag', inverse_of: false, optional: true
 
     delegate :sample_name, to: :request
+    delegate :sample_id, to: :request
     delegate :oligo, :group_id, :id, to: :tag, prefix: :tag, allow_nil: true
     delegate :tag_set_name, to: :tag, allow_nil: true
 
