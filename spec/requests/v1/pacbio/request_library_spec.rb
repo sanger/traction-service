@@ -9,13 +9,13 @@ RSpec.describe 'RequestLibraryController', type: :request do
         context 'on success' do
             let(:body) do
                 {
-                data: {
-                    type: "tags",
-                    id: request_library.id,
-                    attributes: {
-                    tag_id: tag.id
+                    data: {
+                        type: "tags",
+                        id: request_library.id,
+                        attributes: {
+                            tag_id: tag.id
+                        }
                     }
-                }
                 }.to_json
             end
 
@@ -31,7 +31,22 @@ RSpec.describe 'RequestLibraryController', type: :request do
             end
         end
 
-        #context 'on failure' cannot happen since there is no validation as you cannot send a requestLibrary without a tag_id
+        context 'on failure' do
+            let(:body) do
+                {
+                    data: {
+                        type: "tags",
+                        id: request_library.id,
+                        attributes: {}
+                    }
+                }.to_json
+            end
+
+            it 'fails when tag_id is missing' do
+                patch v1_pacbio_request_library_path(request_library), params: body, headers: json_api_headers
+                expect(response).to have_http_status(:unprocessable_entity)
+            end
+        end
     end
 
 end
