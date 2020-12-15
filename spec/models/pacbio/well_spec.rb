@@ -81,6 +81,11 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
+  context 'generate_hifi' do
+    it 'must have a Generate_hifi' do
+      expect(build(:pacbio_well, generate_hifi: nil)).to_not be_valid
+    end
+  end
 
   context 'pre-extension time' do
     it 'is not required' do
