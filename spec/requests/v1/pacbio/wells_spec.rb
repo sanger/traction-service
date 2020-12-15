@@ -31,7 +31,7 @@ RSpec.describe 'WellsController', type: :request do
       expect(json['data'][0]['attributes']['pacbio_plate_id']).to eq(well1.pacbio_plate_id)
       expect(json['data'][0]['attributes']['comment']).to eq(well1.comment)
       expect(json['data'][0]['attributes']['pre_extension_time']).to eq(well1.pre_extension_time)
-      # expect(json['data'][0]['attributes']['generate_hifi']).to eq(well1.generate_hifi)
+      expect(json['data'][0]['attributes']['generate_hifi']).to eq(well1.generate_hifi)
 
       well = json['data'][1]['attributes']
       expect(well['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
@@ -43,7 +43,7 @@ RSpec.describe 'WellsController', type: :request do
       expect(well['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
       expect(well['comment']).to eq(well2.comment)
       expect(well['pre_extension_time']).to eq(well2.pre_extension_time)
-      # expect(well['generate_hifi']).to eq(well2.generate_hifi)
+      expect(well['generate_hifi']).to eq(well2.generate_hifi)
 
       libraries = json['included']
       expect(libraries.length).to eq(2)
@@ -97,62 +97,6 @@ RSpec.describe 'WellsController', type: :request do
                         ]
                       }
                     }
-                  }
-                ],
-              }
-            }
-          }.to_json
-        end
-
-        it 'has a created status' do
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:created)
-        end
-
-        it 'creates a well' do
-          expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
-        end
-
-        it 'creates a plate' do
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers
-          expect(Pacbio::Well.first.plate).to eq(plate)
-        end
-
-        it 'creates libraries' do
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers
-          expect(Pacbio::Well.first.libraries.length).to eq(2)
-          expect(Pacbio::Well.first.libraries[0]).to eq(request_library1.library)
-          expect(Pacbio::Well.first.libraries[1]).to eq(request_library2.library)
-        end
-
-        it 'sends a message to the warehouse' do
-          expect(Messages).to receive(:publish)
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers
-        end
-      end
-
-      context 'with pre-extension time set' do
-        let(:body) do
-          {
-            data: {
-              type: "wells",
-              attributes: {
-                wells: [
-                  { row: 'A',
-                    column: '1',
-                    movie_time: 8,
-                    insert_size: 8000,
-                    on_plate_loading_concentration: 8.36,
-                    pre_extension_time: 2,
-                    generate_hifi: 'In SMRT Link',
-                    relationships: {
-                      plate: {
-                        data: {
-                          type: 'plate',
-                          id: plate.id
-                        }
-                      }
-                    }
                   },
                   { row: 'B',
                     column: '3',
@@ -176,12 +120,40 @@ RSpec.describe 'WellsController', type: :request do
           }.to_json
         end
 
-        it 'creates wells with pre-extension time set' do
+        it 'has a created status' do
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:created)
+        end
+
+        it 'creates a well' do
+          expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(2)
+        end
+
+        it 'creates wells with the correct attributes' do
           post v1_pacbio_wells_path, params: body, headers: json_api_headers
           created_well_id = response.parsed_body['data'][0]['id']
           created_well_2_id = response.parsed_body['data'][1]['id']
           expect(Pacbio::Well.find(created_well_id).pre_extension_time).to eq(2)
           expect(Pacbio::Well.find(created_well_2_id).pre_extension_time).to eq(1)
+          expect(Pacbio::Well.find(created_well_id).generate_hifi).to eq("In SMRT Link")
+          expect(Pacbio::Well.find(created_well_2_id).generate_hifi).to eq("In SMRT Link")
+        end
+
+        it 'creates a plate' do
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          expect(Pacbio::Well.first.plate).to eq(plate)
+        end
+
+        it 'creates libraries' do
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          expect(Pacbio::Well.first.libraries.length).to eq(2)
+          expect(Pacbio::Well.first.libraries[0]).to eq(request_library1.library)
+          expect(Pacbio::Well.first.libraries[1]).to eq(request_library2.library)
+        end
+
+        it 'sends a message to the warehouse' do
+          expect(Messages).to receive(:publish)
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
         end
       end
 
@@ -307,7 +279,7 @@ RSpec.describe 'WellsController', type: :request do
     let(:insert_size) { 123 }
     let(:on_plate_loading_concentration) { 12 }
     let(:pre_extension_time) { 4 }
-    let(:generate_hifi) { "In SMRT Link" }
+    let(:generate_hifi) { 'Do Not Generate' }
 
     context 'when only updating the wells attributes' do
       let(:body) do
@@ -367,7 +339,7 @@ RSpec.describe 'WellsController', type: :request do
         expect(response['attributes']['row']).to eq row
         expect(response['attributes']['column']).to eq column
         expect(response['attributes']['on_plate_loading_concentration']).to eq on_plate_loading_concentration
-        # expect(response['attributes']['generate_hifi']).to eq generate_hifi
+        expect(response['attributes']['generate_hifi']).to eq generate_hifi
       end
 
       it 'sends a message to the warehouse' do

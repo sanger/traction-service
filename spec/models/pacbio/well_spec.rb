@@ -81,9 +81,22 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
-  context 'generate_hifi' do
-    it 'must have a Generate_hifi' do
+  context 'Generate HiFi' do
+    it 'must have a generate_hifi' do
       expect(build(:pacbio_well, generate_hifi: nil)).to_not be_valid
+    end
+
+    it 'must include the correct options' do
+      expect(Pacbio::Well.generate_hifis.keys).to eq(["In SMRT Link", "On Instrument", "Do Not Generate"])
+    end
+
+    it 'must have a Generate_hifi' do
+      expect(create(:pacbio_well, generate_hifi: 0).generate_hifi).to eq "In SMRT Link"
+      expect(create(:pacbio_well, generate_hifi: "In SMRT Link").generate_hifi).to eq "In SMRT Link"
+      expect(create(:pacbio_well, generate_hifi: 1).generate_hifi).to eq "On Instrument"
+      expect(create(:pacbio_well, generate_hifi: "On Instrument").generate_hifi).to eq "On Instrument"
+      expect(create(:pacbio_well, generate_hifi: 2).generate_hifi).to eq "Do Not Generate"
+      expect(create(:pacbio_well, generate_hifi: "Do Not Generate").generate_hifi).to eq "Do Not Generate"
     end
   end
 
