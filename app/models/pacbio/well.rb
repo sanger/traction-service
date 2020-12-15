@@ -15,6 +15,9 @@ module Pacbio
     # then we need this to translate the integer to a value
     enum sequencing_mode: { 'CLR' => 0, 'CCS' => 1 }
 
+    # TODO: change generate_hifi to be an enum
+    # enum generate_hifi: { 'In SMRT Link' => 0, 'On Instrument' => 1, 'Do Not Generate' => 2 }
+
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
                        inverse_of: :wells
 
