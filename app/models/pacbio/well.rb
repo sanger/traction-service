@@ -19,7 +19,7 @@ module Pacbio
     has_many :libraries, class_name: 'Pacbio::Library', through: :well_libraries, autosave: true
 
     validates :movie_time, :insert_size, :on_plate_loading_concentration,
-              :row, :column, :sequencing_mode, presence: true
+              :row, :column, :sequencing_mode, :generate_hifi, presence: true
     validates :movie_time,
               numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 }
     validates :insert_size, numericality: { greater_than_or_equal_to: 10 }
@@ -31,10 +31,6 @@ module Pacbio
 
     def summary
       "#{sample_names} #{comment}".strip
-    end
-
-    def generate_ccs_data
-      sequencing_mode == 'CCS'
     end
 
     # collection of all of the requests for a library

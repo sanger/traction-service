@@ -177,13 +177,6 @@ default: &default
             for: 
               - :well
             with: :well
-        Sequencing Mode:
-          type: :model
-          value: sequencing_mode
-          populate:
-            for: 
-              - :well
-            with: :well
         On-Plate Loading Concentration (pM):
           type: :model
           value: on_plate_loading_concentration
@@ -194,13 +187,6 @@ default: &default
         DNA Control Complex Box Barcode:
           type: :model
           value: plate.run.dna_control_complex_box_barcode
-          populate:
-            for: 
-              - :well
-            with: :well
-        Generate CCS Data:
-          type: :model
-          value: generate_ccs_data
           populate:
             for: 
               - :well
@@ -250,6 +236,13 @@ default: &default
         Automation Parameters:
           type: :model
           value: automation_parameters
+          populate:
+            for: 
+              - :well
+            with: :well
+        Generate HiFi Reads:
+          type: :model
+          value: generate_hifi
           populate:
             for: 
               - :well

@@ -4,8 +4,8 @@ RSpec.describe CsvGenerator, type: :model do
   after(:each) { File.delete('sample_sheet.csv') if File.exists?('sample_sheet.csv') }
 
   context '#generate_sample_sheet' do
-    let(:well1)   { create(:pacbio_well_with_request_libraries, sequencing_mode: 'CCS', pre_extension_time: 2) }
-    let(:well2)   { create(:pacbio_well_with_request_libraries, sequencing_mode: 'CLR') }
+    let(:well1)   { create(:pacbio_well_with_request_libraries, pre_extension_time: 2) }
+    let(:well2)   { create(:pacbio_well_with_request_libraries) }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_run, plate: plate) }
     let(:csv)     { ::CsvGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet) }
@@ -47,17 +47,16 @@ RSpec.describe CsvGenerator, type: :model do
         well1.template_prep_kit_box_barcode,
         well1.plate.run.binding_kit_box_barcode,
         well1.plate.run.sequencing_kit_box_barcode,
-        well1.sequencing_mode,
         well1.on_plate_loading_concentration.to_s,
         well1.plate.run.dna_control_complex_box_barcode,
-        well1.generate_ccs_data.to_s,
         well1.plate.run.comments,
         well1.all_libraries_tagged.to_s,
         '',
         well1.barcode_set,
         well1.same_barcodes_on_both_ends_of_sequence.to_s,
         '',
-        well1.automation_parameters
+        well1.automation_parameters,
+        well1.generate_hifi
       ])
 
       expect(well_data_2).to eq([
@@ -71,17 +70,16 @@ RSpec.describe CsvGenerator, type: :model do
         well2.template_prep_kit_box_barcode,
         well2.plate.run.binding_kit_box_barcode,
         well2.plate.run.sequencing_kit_box_barcode,
-        well2.sequencing_mode,
         well2.on_plate_loading_concentration.to_s,
         well2.plate.run.dna_control_complex_box_barcode,
-        well2.generate_ccs_data.to_s,
         well2.plate.run.comments,
         well2.all_libraries_tagged.to_s,
         '',
         well2.barcode_set,
         well2.same_barcodes_on_both_ends_of_sequence.to_s,
         '',
-        well2.automation_parameters
+        well2.automation_parameters,
+        well2.generate_hifi
       ])
     end
 
@@ -107,12 +105,11 @@ RSpec.describe CsvGenerator, type: :model do
         '',
         '',
         '',
-        '',
-        '',
         well1.libraries.first.request_libraries.first.barcode_name,
         '',
         '',
         well1.libraries.first.request_libraries.first.request.sample_name,
+        '',
         ''
       ])
 
@@ -131,20 +128,19 @@ RSpec.describe CsvGenerator, type: :model do
         '',
         '',
         '',
-        '',
-        '',
         well2.libraries.first.request_libraries.first.barcode_name,
         '',
         '',
         well2.libraries.first.request_libraries.first.request.sample_name,
+        '',
         ''
       ])
     end
   end
 
   context '#generate_sample_sheet no tags' do
-    let(:well1)   { create(:pacbio_well_with_request_libraries_no_tag, sequencing_mode: 'CCS', pre_extension_time: 2) }
-    let(:well2)   { create(:pacbio_well_with_request_libraries_no_tag, sequencing_mode: 'CLR') }
+    let(:well1)   { create(:pacbio_well_with_request_libraries_no_tag, pre_extension_time: 2) }
+    let(:well2)   { create(:pacbio_well_with_request_libraries_no_tag) }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_run, plate: plate) }
     let(:csv)     { ::CsvGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet) }
@@ -186,17 +182,16 @@ RSpec.describe CsvGenerator, type: :model do
         well1.template_prep_kit_box_barcode,
         well1.plate.run.binding_kit_box_barcode,
         well1.plate.run.sequencing_kit_box_barcode,
-        well1.sequencing_mode,
         well1.on_plate_loading_concentration.to_s,
         well1.plate.run.dna_control_complex_box_barcode,
-        well1.generate_ccs_data.to_s,
         well1.plate.run.comments,
         well1.all_libraries_tagged.to_s,
         '',
         well1.barcode_set,
         well1.same_barcodes_on_both_ends_of_sequence.to_s,
         '',
-        well1.automation_parameters
+        well1.automation_parameters,
+        well1.generate_hifi
       ])
 
       expect(well_data_2).to eq([
@@ -210,17 +205,16 @@ RSpec.describe CsvGenerator, type: :model do
         well2.template_prep_kit_box_barcode,
         well2.plate.run.binding_kit_box_barcode,
         well2.plate.run.sequencing_kit_box_barcode,
-        well2.sequencing_mode,
         well2.on_plate_loading_concentration.to_s,
         well2.plate.run.dna_control_complex_box_barcode,
-        well2.generate_ccs_data.to_s,
         well2.plate.run.comments,
         well2.all_libraries_tagged.to_s,
         '',
         well2.barcode_set,
         well2.same_barcodes_on_both_ends_of_sequence.to_s,
         '',
-        well2.automation_parameters
+        well2.automation_parameters,
+        well2.generate_hifi
       ])
     end
 
@@ -233,7 +227,7 @@ RSpec.describe CsvGenerator, type: :model do
   end
 
   context '#generate_sample_sheet_different_template_barcode' do
-    let(:well1)   { create(:pacbio_well_with_request_libraries, sequencing_mode: 'CCS') }
+    let(:well1)   { create(:pacbio_well_with_request_libraries) }
     let(:plate)   { create(:pacbio_plate, wells: [well1]) }
     let(:run)     { create(:pacbio_run, plate: plate) }
     let(:csv)     { ::CsvGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet) }
@@ -256,17 +250,16 @@ RSpec.describe CsvGenerator, type: :model do
         Pacbio::Well::GENERIC_KIT_BARCODE,
         well1.plate.run.binding_kit_box_barcode,
         well1.plate.run.sequencing_kit_box_barcode,
-        well1.sequencing_mode,
         well1.on_plate_loading_concentration.to_s,
         well1.plate.run.dna_control_complex_box_barcode,
-        well1.generate_ccs_data.to_s,
         well1.plate.run.comments,
         well1.all_libraries_tagged.to_s,
         '',
         well1.barcode_set,
         well1.same_barcodes_on_both_ends_of_sequence.to_s,
         '',
-        well1.automation_parameters
+        well1.automation_parameters,
+        well1.generate_hifi
       ])
     end
 
@@ -287,17 +280,16 @@ RSpec.describe CsvGenerator, type: :model do
         well1.template_prep_kit_box_barcode,
         well1.plate.run.binding_kit_box_barcode,
         well1.plate.run.sequencing_kit_box_barcode,
-        well1.sequencing_mode,
         well1.on_plate_loading_concentration.to_s,
         well1.plate.run.dna_control_complex_box_barcode,
-        well1.generate_ccs_data.to_s,
         well1.plate.run.comments,
         well1.all_libraries_tagged.to_s,
         '',
         well1.barcode_set,
         well1.same_barcodes_on_both_ends_of_sequence.to_s,
         '',
-        well1.automation_parameters
+        well1.automation_parameters,
+        well1.generate_hifi
       ])
     end
   end
