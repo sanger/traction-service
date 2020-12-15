@@ -21,8 +21,6 @@ RSpec.describe 'WellsController', type: :request do
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
-      puts v1_pacbio_wells_path
-      puts json['data'][0]['attributes']
       expect(json['data'][0]['attributes']['pacbio_plate_id']).to eq(well1.pacbio_plate_id)
       expect(json['data'][0]['attributes']['row']).to eq(well1.row)
       expect(json['data'][0]['attributes']['column']).to eq(well1.column)
@@ -32,9 +30,8 @@ RSpec.describe 'WellsController', type: :request do
       expect(json['data'][0]['attributes']['on_plate_loading_concentration']).to eq(well1.on_plate_loading_concentration)
       expect(json['data'][0]['attributes']['pacbio_plate_id']).to eq(well1.pacbio_plate_id)
       expect(json['data'][0]['attributes']['comment']).to eq(well1.comment)
-      expect(json['data'][0]['attributes']['sequencing_mode']).to eq(well1.sequencing_mode)
       expect(json['data'][0]['attributes']['pre_extension_time']).to eq(well1.pre_extension_time)
-      expect(json['data'][0]['attributes']['generate_hifi']).to eq(well1.generate_hifi)
+      # expect(json['data'][0]['attributes']['generate_hifi']).to eq(well1.generate_hifi)
 
       well = json['data'][1]['attributes']
       expect(well['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
@@ -45,9 +42,8 @@ RSpec.describe 'WellsController', type: :request do
       expect(well['on_plate_loading_concentration']).to eq(well2.on_plate_loading_concentration)
       expect(well['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
       expect(well['comment']).to eq(well2.comment)
-      expect(well['sequencing_mode']).to eq(well2.sequencing_mode)
       expect(well['pre_extension_time']).to eq(well2.pre_extension_time)
-      expect(well['generate_hifi']).to eq(well2.generate_hifi)
+      # expect(well['generate_hifi']).to eq(well2.generate_hifi)
 
       libraries = json['included']
       expect(libraries.length).to eq(2)
@@ -79,7 +75,6 @@ RSpec.describe 'WellsController', type: :request do
                     movie_time: 8,
                     insert_size: 8000,
                     on_plate_loading_concentration: 8.35,
-                    sequencing_mode: 'CLR',
                     pre_extension_time: '2',
                     generate_hifi: 'In SMRT Link',
                     relationships: {
@@ -148,7 +143,6 @@ RSpec.describe 'WellsController', type: :request do
                     movie_time: 8,
                     insert_size: 8000,
                     on_plate_loading_concentration: 8.36,
-                    sequencing_mode: 'CCS',
                     pre_extension_time: 2,
                     generate_hifi: 'In SMRT Link',
                     relationships: {
@@ -165,7 +159,6 @@ RSpec.describe 'WellsController', type: :request do
                     movie_time: 4,
                     insert_size: 7000,
                     on_plate_loading_concentration: 8.83,
-                    sequencing_mode: 'CLR',
                     pre_extension_time: 1,
                     generate_hifi: 'In SMRT Link',
                     relationships: {
@@ -203,7 +196,6 @@ RSpec.describe 'WellsController', type: :request do
                   column: '1',
                   insert_size: 8000,
                   on_plate_loading_concentration: 8.35,
-                  sequencing_mode: 'CLR',
                   generate_hifi: 'In SMRT Link',
                 ]
               }
@@ -261,7 +253,6 @@ RSpec.describe 'WellsController', type: :request do
                     movie_time: 8,
                     insert_size: 8000,
                     on_plate_loading_concentration: 8.35,
-                    sequencing_mode: 'CLR',
                     generate_hifi: 'In SMRT Link',
                     relationships: {
                       plate: {
@@ -315,7 +306,6 @@ RSpec.describe 'WellsController', type: :request do
     let(:movie_time) { "15.0" }
     let(:insert_size) { 123 }
     let(:on_plate_loading_concentration) { 12 }
-    let(:sequencing_mode) { "CLR" }
     let(:pre_extension_time) { 4 }
     let(:generate_hifi) { "In SMRT Link" }
 
@@ -331,7 +321,6 @@ RSpec.describe 'WellsController', type: :request do
               movie_time: movie_time,
               insert_size: insert_size,
               on_plate_loading_concentration: on_plate_loading_concentration,
-              sequencing_mode: sequencing_mode,
               pre_extension_time: pre_extension_time,
               generate_hifi: generate_hifi,
             },
@@ -358,7 +347,6 @@ RSpec.describe 'WellsController', type: :request do
         expect(well.movie_time.to_i).to eq movie_time.to_i
         expect(well.insert_size.to_i).to eq insert_size.to_i
         expect(well.on_plate_loading_concentration).to eq on_plate_loading_concentration
-        expect(well.sequencing_mode).to eq sequencing_mode
         expect(well.pre_extension_time).to eq pre_extension_time
         expect(well.generate_hifi).to eq generate_hifi
       end
@@ -379,8 +367,7 @@ RSpec.describe 'WellsController', type: :request do
         expect(response['attributes']['row']).to eq row
         expect(response['attributes']['column']).to eq column
         expect(response['attributes']['on_plate_loading_concentration']).to eq on_plate_loading_concentration
-        expect(response['attributes']['sequencing_mode']).to eq sequencing_mode
-        expect(response['attributes']['generate_hifi']).to eq generate_hifi
+        # expect(response['attributes']['generate_hifi']).to eq generate_hifi
       end
 
       it 'sends a message to the warehouse' do

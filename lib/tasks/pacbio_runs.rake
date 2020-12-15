@@ -18,7 +18,7 @@ namespace :pacbio_runs do
                                 sequencing_kit_box_barcode: "SKB#{i}", dna_control_complex_box_barcode: "DCCB#{i}")
       plate = Pacbio::Plate.create!(run: run)
       Pacbio::Well.create!(plate: plate, libraries: [library], movie_time: 20, insert_size: 10, on_plate_loading_concentration: 1,
-                           row: 'A', column: i + 1, sequencing_mode: 'CLR')
+                           row: 'A', column: i + 1)
     end
     puts '-> Pacbio runs successfully created'
   end
