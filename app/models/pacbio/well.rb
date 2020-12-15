@@ -9,6 +9,10 @@ module Pacbio
     include Uuidable
     include SampleSheet
 
+    # We should get rid of the below enum,
+    # as we are not supporting sequencing_mode in SMRTLink v10
+    # but if we keep the field in the database
+    # then we need this to translate the integer to a value
     enum sequencing_mode: { 'CLR' => 0, 'CCS' => 1 }
 
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
@@ -19,7 +23,7 @@ module Pacbio
     has_many :libraries, class_name: 'Pacbio::Library', through: :well_libraries, autosave: true
 
     validates :movie_time, :insert_size, :on_plate_loading_concentration,
-              :row, :column, :sequencing_mode, :generate_hifi, presence: true
+              :row, :column, :generate_hifi, presence: true
     validates :movie_time,
               numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 }
     validates :insert_size, numericality: { greater_than_or_equal_to: 10 }
