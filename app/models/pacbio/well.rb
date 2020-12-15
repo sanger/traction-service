@@ -11,7 +11,7 @@ module Pacbio
 
     # We should get rid of the below enum,
     # as we are not supporting sequencing_mode in SMRTLink v10
-    # but if we keep the field in the database
+    # but if we keep the field in the database, for auditing,
     # then we need this to translate the integer to a value
     enum sequencing_mode: { 'CLR' => 0, 'CCS' => 1 }
 
