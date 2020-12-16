@@ -55,7 +55,8 @@ module V1
                    .merge(id: params.require(:data)[:id])
                    .permit(
                      :movie_time, :insert_size, :row, :on_plate_loading_concentration,
-                     :column, :comment, :id, :pre_extension_time, :generate_hifi
+                     :column, :comment, :id, :pre_extension_time, :generate_hifi,
+                     :ccs_analysis_output
                    )
 
         well_param_names(p1)
@@ -78,7 +79,8 @@ module V1
         params.permit(:movie_time, :insert_size, :row,
                       :on_plate_loading_concentration, :column,
                       :comment, :relationships,
-                      :pre_extension_time, :generate_hifi).to_h.tap do |well|
+                      :pre_extension_time, :generate_hifi,
+                      :ccs_analysis_output).to_h.tap do |well|
           if params[:relationships].present?
             well[:plate] = plate_params_names(params)
             well[:libraries] = library_param_names(params) unless

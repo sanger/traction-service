@@ -100,6 +100,14 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
+  context 'ccs_analysis_output' do
+    it 'may have ccs_analysis_output' do
+      expect(create(:pacbio_well, ccs_analysis_output: 'Yes')).to be_valid
+      expect(create(:pacbio_well, ccs_analysis_output: 'No')).to be_valid
+      expect(create(:pacbio_well, ccs_analysis_output: '')).to be_valid
+    end
+  end
+
   context 'pre-extension time' do
     it 'is not required' do
       expect(create(:pacbio_well, pre_extension_time: nil)).to be_valid

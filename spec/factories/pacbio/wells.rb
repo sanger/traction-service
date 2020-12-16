@@ -8,6 +8,7 @@ FactoryBot.define do
     plate { create(:pacbio_plate) }
     sequence(:comment) { |n| "comment#{n}" }
     generate_hifi { 'In SMRT Link' }
+    ccs_analysis_output { '' }
 
     factory :pacbio_well_with_libraries do
       after(:create) do |well|
