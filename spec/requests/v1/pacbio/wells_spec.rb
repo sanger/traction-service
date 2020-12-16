@@ -32,6 +32,7 @@ RSpec.describe 'WellsController', type: :request do
       expect(json['data'][0]['attributes']['comment']).to eq(well1.comment)
       expect(json['data'][0]['attributes']['pre_extension_time']).to eq(well1.pre_extension_time)
       expect(json['data'][0]['attributes']['generate_hifi']).to eq(well1.generate_hifi)
+      expect(json['data'][0]['attributes']['ccs_analysis_output']).to eq(well1.ccs_analysis_output)
 
       well = json['data'][1]['attributes']
       expect(well['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
@@ -44,6 +45,7 @@ RSpec.describe 'WellsController', type: :request do
       expect(well['comment']).to eq(well2.comment)
       expect(well['pre_extension_time']).to eq(well2.pre_extension_time)
       expect(well['generate_hifi']).to eq(well2.generate_hifi)
+      expect(well['ccs_analysis_output']).to eq(well2.ccs_analysis_output)
 
       libraries = json['included']
       expect(libraries.length).to eq(2)
@@ -77,6 +79,7 @@ RSpec.describe 'WellsController', type: :request do
                     on_plate_loading_concentration: 8.35,
                     pre_extension_time: '2',
                     generate_hifi: 'In SMRT Link',
+                    ccs_analysis_output: 'Yes',
                     relationships: {
                       plate: {
                         data: {
@@ -105,6 +108,7 @@ RSpec.describe 'WellsController', type: :request do
                     on_plate_loading_concentration: 8.83,
                     pre_extension_time: 1,
                     generate_hifi: 'In SMRT Link',
+                    ccs_analysis_output: 'Yes',
                     relationships: {
                       plate: {
                         data: {
@@ -136,7 +140,9 @@ RSpec.describe 'WellsController', type: :request do
           expect(Pacbio::Well.find(created_well_id).pre_extension_time).to eq(2)
           expect(Pacbio::Well.find(created_well_2_id).pre_extension_time).to eq(1)
           expect(Pacbio::Well.find(created_well_id).generate_hifi).to eq("In SMRT Link")
+          expect(Pacbio::Well.find(created_well_id).ccs_analysis_output).to eq("Yes")
           expect(Pacbio::Well.find(created_well_2_id).generate_hifi).to eq("In SMRT Link")
+          expect(Pacbio::Well.find(created_well_2_id).ccs_analysis_output).to eq("Yes")
         end
 
         it 'creates a plate' do
@@ -169,6 +175,7 @@ RSpec.describe 'WellsController', type: :request do
                   insert_size: 8000,
                   on_plate_loading_concentration: 8.35,
                   generate_hifi: 'In SMRT Link',
+                  ccs_analysis_output: 'Yes',
                 ]
               }
             }
@@ -226,6 +233,7 @@ RSpec.describe 'WellsController', type: :request do
                     insert_size: 8000,
                     on_plate_loading_concentration: 8.35,
                     generate_hifi: 'In SMRT Link',
+                    ccs_analysis_output: 'Yes',
                     relationships: {
                       plate: {
                         data: {
@@ -280,6 +288,7 @@ RSpec.describe 'WellsController', type: :request do
     let(:on_plate_loading_concentration) { 12 }
     let(:pre_extension_time) { 4 }
     let(:generate_hifi) { 'Do Not Generate' }
+    let(:ccs_analysis_output) { 'No' }
 
     context 'when only updating the wells attributes' do
       let(:body) do
@@ -295,6 +304,7 @@ RSpec.describe 'WellsController', type: :request do
               on_plate_loading_concentration: on_plate_loading_concentration,
               pre_extension_time: pre_extension_time,
               generate_hifi: generate_hifi,
+              ccs_analysis_output: ccs_analysis_output,
             },
             relationships: {
               libraries: {
@@ -321,6 +331,7 @@ RSpec.describe 'WellsController', type: :request do
         expect(well.on_plate_loading_concentration).to eq on_plate_loading_concentration
         expect(well.pre_extension_time).to eq pre_extension_time
         expect(well.generate_hifi).to eq generate_hifi
+        expect(well.ccs_analysis_output).to eq ccs_analysis_output
       end
 
       it 'does not update a wells libraries' do
@@ -340,6 +351,7 @@ RSpec.describe 'WellsController', type: :request do
         expect(response['attributes']['column']).to eq column
         expect(response['attributes']['on_plate_loading_concentration']).to eq on_plate_loading_concentration
         expect(response['attributes']['generate_hifi']).to eq generate_hifi
+        expect(response['attributes']['ccs_analysis_output']).to eq ccs_analysis_output
       end
 
       it 'sends a message to the warehouse' do

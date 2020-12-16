@@ -139,6 +139,7 @@ ActiveRecord::Schema.define(version: 2020_12_11_135304) do
     t.datetime "updated_at", null: false
     t.integer "pre_extension_time"
     t.integer "generate_hifi"
+    t.string "ccs_analysis_output"
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
 
