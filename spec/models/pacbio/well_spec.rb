@@ -106,6 +106,16 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
       expect(create(:pacbio_well, ccs_analysis_output: 'No')).to be_valid
       expect(create(:pacbio_well, ccs_analysis_output: '')).to be_valid
     end
+
+    it 'sets ccs_analysis_output to "No" if blank' do
+      well = create(:pacbio_well, ccs_analysis_output: '')
+      expect(well.ccs_analysis_output).to eq("No")
+    end
+
+    it 'ccs_analysis_output stays "Yes" if set to yes' do
+      well = create(:pacbio_well, ccs_analysis_output: 'Yes')
+      expect(well.ccs_analysis_output).to eq("Yes")
+    end
   end
 
   context 'pre-extension time' do
