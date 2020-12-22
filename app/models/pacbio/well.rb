@@ -61,6 +61,10 @@ module Pacbio
       libraries.present?
     end
 
+    def ccs_analysis_output=(value)
+      self[:ccs_analysis_output] = value.presence || 'No'
+    end
+
     def template_prep_kit_box_barcode
       barcodes = libraries.pluck(:template_prep_kit_box_barcode)
       return GENERIC_KIT_BARCODE if barcodes.uniq.length > 1
