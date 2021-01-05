@@ -21,7 +21,6 @@ RSpec.describe 'WellsController', type: :request do
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
-
       expect(json['data'][0]['attributes']['pacbio_plate_id']).to eq(well1.pacbio_plate_id)
       expect(json['data'][0]['attributes']['row']).to eq(well1.row)
       expect(json['data'][0]['attributes']['column']).to eq(well1.column)
@@ -31,8 +30,9 @@ RSpec.describe 'WellsController', type: :request do
       expect(json['data'][0]['attributes']['on_plate_loading_concentration']).to eq(well1.on_plate_loading_concentration)
       expect(json['data'][0]['attributes']['pacbio_plate_id']).to eq(well1.pacbio_plate_id)
       expect(json['data'][0]['attributes']['comment']).to eq(well1.comment)
-      expect(json['data'][0]['attributes']['sequencing_mode']).to eq(well1.sequencing_mode)
       expect(json['data'][0]['attributes']['pre_extension_time']).to eq(well1.pre_extension_time)
+      expect(json['data'][0]['attributes']['generate_hifi']).to eq(well1.generate_hifi)
+      expect(json['data'][0]['attributes']['ccs_analysis_output']).to eq(well1.ccs_analysis_output)
 
       well = json['data'][1]['attributes']
       expect(well['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
@@ -43,8 +43,9 @@ RSpec.describe 'WellsController', type: :request do
       expect(well['on_plate_loading_concentration']).to eq(well2.on_plate_loading_concentration)
       expect(well['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
       expect(well['comment']).to eq(well2.comment)
-      expect(well['sequencing_mode']).to eq(well2.sequencing_mode)
       expect(well['pre_extension_time']).to eq(well2.pre_extension_time)
+      expect(well['generate_hifi']).to eq(well2.generate_hifi)
+      expect(well['ccs_analysis_output']).to eq(well2.ccs_analysis_output)
 
       libraries = json['included']
       expect(libraries.length).to eq(2)
@@ -76,7 +77,9 @@ RSpec.describe 'WellsController', type: :request do
                     movie_time: 8,
                     insert_size: 8000,
                     on_plate_loading_concentration: 8.35,
-                    sequencing_mode: 'CLR',
+                    pre_extension_time: '2',
+                    generate_hifi: 'In SMRT Link',
+                    ccs_analysis_output: 'Yes',
                     relationships: {
                       plate: {
                         data: {
@@ -97,6 +100,23 @@ RSpec.describe 'WellsController', type: :request do
                         ]
                       }
                     }
+                  },
+                  { row: 'B',
+                    column: '3',
+                    movie_time: 4,
+                    insert_size: 7000,
+                    on_plate_loading_concentration: 8.83,
+                    pre_extension_time: 1,
+                    generate_hifi: 'In SMRT Link',
+                    ccs_analysis_output: 'Yes',
+                    relationships: {
+                      plate: {
+                        data: {
+                          type: 'plate',
+                          id: plate.id
+                        }
+                      }
+                    }
                   }
                 ],
               }
@@ -110,7 +130,19 @@ RSpec.describe 'WellsController', type: :request do
         end
 
         it 'creates a well' do
-          expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
+          expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(2)
+        end
+
+        it 'creates wells with the correct attributes' do
+          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          created_well_id = response.parsed_body['data'][0]['id']
+          created_well_2_id = response.parsed_body['data'][1]['id']
+          expect(Pacbio::Well.find(created_well_id).pre_extension_time).to eq(2)
+          expect(Pacbio::Well.find(created_well_2_id).pre_extension_time).to eq(1)
+          expect(Pacbio::Well.find(created_well_id).generate_hifi).to eq("In SMRT Link")
+          expect(Pacbio::Well.find(created_well_id).ccs_analysis_output).to eq("Yes")
+          expect(Pacbio::Well.find(created_well_2_id).generate_hifi).to eq("In SMRT Link")
+          expect(Pacbio::Well.find(created_well_2_id).ccs_analysis_output).to eq("Yes")
         end
 
         it 'creates a plate' do
@@ -131,60 +163,6 @@ RSpec.describe 'WellsController', type: :request do
         end
       end
 
-      context 'with pre-extension time set' do
-        let(:body) do
-          {
-            data: {
-              type: "wells",
-              attributes: {
-                wells: [
-                  { row: 'A',
-                    column: '1',
-                    movie_time: 8,
-                    insert_size: 8000,
-                    on_plate_loading_concentration: 8.36,
-                    sequencing_mode: 'CCS',
-                    pre_extension_time: 2,
-                    relationships: {
-                      plate: {
-                        data: {
-                          type: 'plate',
-                          id: plate.id
-                        }
-                      }
-                    }
-                  },
-                  { row: 'B',
-                    column: '3',
-                    movie_time: 4,
-                    insert_size: 7000,
-                    on_plate_loading_concentration: 8.83,
-                    sequencing_mode: 'CLR',
-                    pre_extension_time: 1,
-                    relationships: {
-                      plate: {
-                        data: {
-                          type: 'plate',
-                          id: plate.id
-                        }
-                      }
-                    }
-                  }
-                ],
-              }
-            }
-          }.to_json
-        end
-
-        it 'creates wells with pre-extension time set' do
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers
-          created_well_id = response.parsed_body['data'][0]['id']
-          created_well_2_id = response.parsed_body['data'][1]['id']
-          expect(Pacbio::Well.find(created_well_id).pre_extension_time).to eq(2)
-          expect(Pacbio::Well.find(created_well_2_id).pre_extension_time).to eq(1)
-        end
-      end
-
       context 'on failure' do
         let(:body) do
           {
@@ -196,7 +174,8 @@ RSpec.describe 'WellsController', type: :request do
                   column: '1',
                   insert_size: 8000,
                   on_plate_loading_concentration: 8.35,
-                  sequencing_mode: 'CLR'
+                  generate_hifi: 'In SMRT Link',
+                  ccs_analysis_output: 'Yes',
                 ]
               }
             }
@@ -253,7 +232,8 @@ RSpec.describe 'WellsController', type: :request do
                     movie_time: 8,
                     insert_size: 8000,
                     on_plate_loading_concentration: 8.35,
-                    sequencing_mode: 'CLR',
+                    generate_hifi: 'In SMRT Link',
+                    ccs_analysis_output: 'Yes',
                     relationships: {
                       plate: {
                         data: {
@@ -306,8 +286,9 @@ RSpec.describe 'WellsController', type: :request do
     let(:movie_time) { "15.0" }
     let(:insert_size) { 123 }
     let(:on_plate_loading_concentration) { 12 }
-    let(:sequencing_mode) { "CLR" }
     let(:pre_extension_time) { 4 }
+    let(:generate_hifi) { 'Do Not Generate' }
+    let(:ccs_analysis_output) { 'No' }
 
     context 'when only updating the wells attributes' do
       let(:body) do
@@ -321,8 +302,9 @@ RSpec.describe 'WellsController', type: :request do
               movie_time: movie_time,
               insert_size: insert_size,
               on_plate_loading_concentration: on_plate_loading_concentration,
-              sequencing_mode: sequencing_mode,
-              pre_extension_time: pre_extension_time
+              pre_extension_time: pre_extension_time,
+              generate_hifi: generate_hifi,
+              ccs_analysis_output: ccs_analysis_output,
             },
             relationships: {
               libraries: {
@@ -347,8 +329,9 @@ RSpec.describe 'WellsController', type: :request do
         expect(well.movie_time.to_i).to eq movie_time.to_i
         expect(well.insert_size.to_i).to eq insert_size.to_i
         expect(well.on_plate_loading_concentration).to eq on_plate_loading_concentration
-        expect(well.sequencing_mode).to eq sequencing_mode
         expect(well.pre_extension_time).to eq pre_extension_time
+        expect(well.generate_hifi).to eq generate_hifi
+        expect(well.ccs_analysis_output).to eq ccs_analysis_output
       end
 
       it 'does not update a wells libraries' do
@@ -367,7 +350,8 @@ RSpec.describe 'WellsController', type: :request do
         expect(response['attributes']['row']).to eq row
         expect(response['attributes']['column']).to eq column
         expect(response['attributes']['on_plate_loading_concentration']).to eq on_plate_loading_concentration
-        expect(response['attributes']['sequencing_mode']).to eq sequencing_mode
+        expect(response['attributes']['generate_hifi']).to eq generate_hifi
+        expect(response['attributes']['ccs_analysis_output']).to eq ccs_analysis_output
       end
 
       it 'sends a message to the warehouse' do

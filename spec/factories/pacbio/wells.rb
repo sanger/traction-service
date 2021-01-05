@@ -7,7 +7,8 @@ FactoryBot.define do
     sequence(:column) { |n| "0#{n}"}
     plate { create(:pacbio_plate) }
     sequence(:comment) { |n| "comment#{n}" }
-    sequencing_mode { 0 }
+    generate_hifi { 'In SMRT Link' }
+    ccs_analysis_output { '' }
 
     factory :pacbio_well_with_libraries do
       after(:create) do |well|

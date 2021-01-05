@@ -81,13 +81,40 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
-  context 'sequencing mode' do
-    it 'must be present' do
-      expect(build(:pacbio_well, sequencing_mode: nil)).to_not be_valid
+  context 'Generate HiFi' do
+    it 'must have a generate_hifi' do
+      expect(build(:pacbio_well, generate_hifi: nil)).to_not be_valid
     end
 
     it 'must include the correct options' do
-      expect(Pacbio::Well.sequencing_modes.keys).to eq(['CLR', 'CCS'])
+      expect(Pacbio::Well.generate_hifis.keys).to eq(["In SMRT Link", "On Instrument", "Do Not Generate"])
+    end
+
+    it 'must have a Generate_hifi' do
+      expect(create(:pacbio_well, generate_hifi: 0).generate_hifi).to eq "In SMRT Link"
+      expect(create(:pacbio_well, generate_hifi: "In SMRT Link").generate_hifi).to eq "In SMRT Link"
+      expect(create(:pacbio_well, generate_hifi: 1).generate_hifi).to eq "On Instrument"
+      expect(create(:pacbio_well, generate_hifi: "On Instrument").generate_hifi).to eq "On Instrument"
+      expect(create(:pacbio_well, generate_hifi: 2).generate_hifi).to eq "Do Not Generate"
+      expect(create(:pacbio_well, generate_hifi: "Do Not Generate").generate_hifi).to eq "Do Not Generate"
+    end
+  end
+
+  context 'ccs_analysis_output' do
+    it 'may have ccs_analysis_output' do
+      expect(create(:pacbio_well, ccs_analysis_output: 'Yes')).to be_valid
+      expect(create(:pacbio_well, ccs_analysis_output: 'No')).to be_valid
+      expect(create(:pacbio_well, ccs_analysis_output: '')).to be_valid
+    end
+
+    it 'sets ccs_analysis_output to "No" if blank' do
+      well = create(:pacbio_well, ccs_analysis_output: '')
+      expect(well.ccs_analysis_output).to eq("No")
+    end
+
+    it 'ccs_analysis_output stays "Yes" if set to yes' do
+      well = create(:pacbio_well, ccs_analysis_output: 'Yes')
+      expect(well.ccs_analysis_output).to eq("Yes")
     end
   end
 
@@ -99,16 +126,6 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     it 'can be set' do
       well = build(:pacbio_well, pre_extension_time: 2 )
       expect(well.pre_extension_time).to eq(2)
-    end
-  end
-
-  context '#generate_ccs_data' do
-    it 'returns true if sequencing_mode is CCS' do
-      expect(create(:pacbio_well, sequencing_mode: 'CCS').generate_ccs_data).to eq true
-    end
-
-    it 'returns false if sequencing_mode is CLR' do
-      expect(create(:pacbio_well, sequencing_mode: 'CLR').generate_ccs_data).to eq false
     end
   end
 
