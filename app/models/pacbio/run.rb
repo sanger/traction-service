@@ -8,7 +8,7 @@ module Pacbio
     include Uuidable
     include Stateful
 
-    enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1 }
+    enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2 }
 
     delegate :wells, :all_wells_have_libraries?, to: :plate, allow_nil: true
 
