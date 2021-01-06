@@ -25,6 +25,22 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     end
   end
 
+  context 'System Name' do
+    it 'must include the correct options' do
+      expect(Pacbio::Run.system_names.keys).to eq(["Sequel II", "Sequel I", "Sequel IIe"])
+    end
+
+    it 'must have a System Name' do
+      expect(create(:pacbio_run, system_name: 0).system_name).to eq "Sequel II"
+      expect(create(:pacbio_run, system_name: "Sequel II").system_name).to eq "Sequel II"
+      expect(create(:pacbio_run, system_name: 1).system_name).to eq "Sequel I"
+      expect(create(:pacbio_run, system_name: "Sequel I").system_name).to eq "Sequel I"
+      expect(create(:pacbio_run, system_name: 2).system_name).to eq "Sequel IIe"
+      expect(create(:pacbio_run, system_name: "Sequel IIe").system_name).to eq "Sequel IIe"
+    end
+  end
+
+
   it 'must have a system_name default' do
     expect(create(:pacbio_run).system_name).to eq 'Sequel II'
   end
@@ -58,8 +74,8 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     after(:all) { File.delete('sample_sheet.csv') if File.exists?('sample_sheet.csv') }
 
     it 'must call CsvGenerator' do
-      well1 = create(:pacbio_well_with_libraries, sequencing_mode: 'CCS')
-      well2 = create(:pacbio_well_with_libraries, sequencing_mode: 'CLR')
+      well1 = create(:pacbio_well_with_libraries)
+      well2 = create(:pacbio_well_with_libraries)
 
       plate = create(:pacbio_plate, wells: [well1, well2])
       run = create(:pacbio_run, plate: plate)
@@ -69,8 +85,8 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     end
 
     it 'must return a String' do
-      well1 = create(:pacbio_well_with_request_libraries, sequencing_mode: 'CCS')
-      well2 = create(:pacbio_well_with_request_libraries, sequencing_mode: 'CLR')
+      well1 = create(:pacbio_well_with_request_libraries)
+      well2 = create(:pacbio_well_with_request_libraries)
 
       plate = create(:pacbio_plate, wells: [well1, well2])
       run = create(:pacbio_run, plate: plate)

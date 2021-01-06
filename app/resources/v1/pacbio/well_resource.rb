@@ -7,8 +7,8 @@ module V1
       model_name 'Pacbio::Well'
 
       attributes :movie_time, :insert_size, :on_plate_loading_concentration,
-                 :row, :column, :pacbio_plate_id, :comment, :sequencing_mode,
-                 :position, :pre_extension_time
+                 :row, :column, :pacbio_plate_id, :comment, :generate_hifi,
+                 :position, :pre_extension_time, :ccs_analysis_output
 
       has_many :libraries, class_name: 'WellLibrary'
     end
