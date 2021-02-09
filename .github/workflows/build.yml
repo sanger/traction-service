@@ -18,9 +18,7 @@ jobs:
                             # example if you need more control over bundler.
 
     - name: Set release tag
-      run: |
-        echo "RELEASE_TAG=$([ ${GITHUB_REF##*/} = "develop" ] && echo "${GITHUB_REF##*/}/$(date +'%Y-%m-%d/%H%M%S')" || printf '%s\n' $(cat .release-version))" >> $GITHUB_ENV
-        echo "${{ env.RELEASE_TAG }}"
+      run: echo "RELEASE_TAG=$([ ${GITHUB_REF##*/} = "develop" ] && echo "${GITHUB_REF##*/}/$(date +'%Y-%m-%d/%H%M%S')" || printf '%s\n' $(cat .release-version))" >> $GITHUB_ENV
 
     - name: Create Release
       id: create_release
