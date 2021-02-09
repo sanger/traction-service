@@ -17,17 +17,20 @@ jobs:
         bundler-cache: true # Runs bundle install and caches gems. See the ruby_test.yml
                             # example if you need more control over bundler.
 
+    - name: Set release tag
+      run: echo "::set-env name={RELEASE_TAG}::{([ ${GITHUB_REF##*/} = "develop" ] && echo "${GITHUB_REF##*/}/$(date +'%Y-%m-%d/%H%M%S')" || printf '%s\n' $(cat .release-version))}"
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        RELEASE_TAG: $([ ${GITHUB_REF##*/} = "develop" ] && echo "${GITHUB_REF##*/}/$(date +'%Y-%m-%d/%H%M%S')" || printf '%s\n' $(cat .release-version))
       with:
-        tag_name: $RELEASE_TAG
-        release_name: $RELEASE_TAG
+        tag_name: env.RELEASE_TAG
+        release_name: env.RELEASE_TAG
         draft: false
         prerelease: false
+      run: echo "env.RELEASE_TAG"
 
     - name: Set up environment
       run: |
