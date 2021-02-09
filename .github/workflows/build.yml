@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ ([ ${GITHUB_REF##*/} = "develop" ] && echo "${GITHUB_REF##*/}/$(date +'%Y-%m-%d/%H%M%S')" || printf '%s\n' $(cat .release-version)) }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Ruby
@@ -22,10 +24,9 @@ jobs:
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        RELEASE_TAG: $([ ${GITHUB_REF##*/} = "develop" ] && echo "${GITHUB_REF##*/}/$(date +'%Y-%m-%d/%H%M%S')" || printf '%s\n' $(cat .release-version))
       with:
-        tag_name: $RELEASE_TAG
-        release_name: $RELEASE_TAG
+        tag_name: env.RELEASE_TAG
+        release_name: env.RELEASE_TAG
         draft: false
         prerelease: false
 
