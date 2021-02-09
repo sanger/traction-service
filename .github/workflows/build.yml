@@ -30,7 +30,6 @@ jobs:
         release_name: env.RELEASE_TAG
         draft: false
         prerelease: false
-      run: echo "env.RELEASE_TAG"
 
     - name: Set up environment
       run: |
