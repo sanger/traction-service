@@ -32,7 +32,7 @@ jobs:
         tag_name: ${{ env.RELEASE_TAG }}
         release_name: ${{ env.RELEASE_TAG }}
         draft: false
-        prerelease: false
+        prerelease: ${{ !(github.ref == 'refs/heads/master') }}
 
     - name: Set up environment
       run: |
