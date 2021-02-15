@@ -1,0 +1,40 @@
+# Triggers on *manual* release creation only. Automated releases
+# handle asset creation in automated_release_and_build.yml.
+
+name: Build Manual Release
+
+on:
+  release:
+    types: published
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true # Runs bundle install and caches gems. See the ruby_test.yml
+                            # example if you need more control over bundler.
+
+    - name: Set up environment
+      run: |
+        cp config/database.yml.example config/database.yml
+        cp config/mailer.yml.example config/mailer.yml
+        cp config/bunny.yml.example config/bunny.yml
+        cp config/env_constants.yml.example config/env_constants.yml
+
+    - name: Compile Build
+      run: ./compile-build
+
+    - name: Upload release.gz
+      id: upload-release-gz
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }} # Pull the URL from the release step
+        asset_path: ./release.tar.gz
+        asset_name: release.tar.gz
+        asset_content_type: application/gzip 
