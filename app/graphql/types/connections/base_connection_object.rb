@@ -33,7 +33,7 @@ module Types
           @edge_type = edge_type_class
           @edge_class = edge_class
 
-          field :edges, [edge_type_class, null: true],
+          field :edges, [edge_type_class, { null: true }],
                 null: true, description: 'A list of edges.', edge_class: edge_class
 
           define_nodes_field if nodes_field
@@ -60,7 +60,7 @@ module Types
         private
 
         def define_nodes_field
-          field :nodes, [@node_type, null: true], null: true, description: 'A list of nodes.'
+          field :nodes, [@node_type, { null: true }], null: true, description: 'A list of nodes.'
         end
       end
 
