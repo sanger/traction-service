@@ -1,0 +1,56 @@
+# Automatically generate a release on develop and master
+# Note: This does *not* trigger the `release: published` action so will not
+# cause the build.yml action to fire.
+name: Automated release and build of project
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true # Runs bundle install and caches gems. See the ruby_test.yml
+                            # example if you need more control over bundler.
+
+    - name: Set release tag
+      run: echo "RELEASE_TAG=$([ ${GITHUB_REF##*/} = "develop" ] && echo "${GITHUB_REF##*/}/$(date +'%Y-%m-%d/%H%M%S')" || printf '%s\n' $(cat .release-version))" >> $GITHUB_ENV
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      with:
+        tag_name: ${{ env.RELEASE_TAG }}
+        release_name: ${{ env.RELEASE_TAG }}
+        draft: false
+        prerelease: ${{ !(github.ref == 'refs/heads/master') }}
+
+    - name: Set up environment
+      run: |
+        cp config/database.yml.example config/database.yml
+        cp config/mailer.yml.example config/mailer.yml
+        cp config/bunny.yml.example config/bunny.yml
+        cp config/env_constants.yml.example config/env_constants.yml
+
+    - name: Compile Build
+      run: ./compile-build
+
+    - name: Upload release.gz
+      id: upload-release-gz
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # Pull the upload url from previous events
+        asset_path: ./release.tar.gz
+        asset_name: release.tar.gz
+        asset_content_type: application/gzip 
