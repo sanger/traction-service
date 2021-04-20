@@ -7,9 +7,10 @@ module Types
       possible_types Types::Outputs::Ont::RequestType, Types::Outputs::Ont::LibraryType
 
       def self.resolve_type(object, _context)
-        if object.is_a?(::Ont::Request)
+        case object
+        when ::Ont::Request
           Types::Outputs::Ont::RequestType
-        elsif object.is_a?(::Ont::Library)
+        when ::Ont::Library
           Types::Outputs::Ont::LibraryType
         else
           raise "Can't determine GraphQL type for: #{object.inspect}"
