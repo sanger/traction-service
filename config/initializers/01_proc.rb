@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # www.mattsears.com/articles/2011/11/27ruby-blocks-as-dynamic-callbacks
-# rubocop:disable Style/CaseEquality, Style/MethodMissingSuper
+# rubocop:disable Style/CaseEquality
 class Proc
   def callback(callable, *args)
     self === Class.new do
@@ -18,4 +18,4 @@ class Proc
     end.new
   end
 end
-# rubocop:enable Style/CaseEquality, Style/MethodMissingSuper
+# rubocop:enable Style/CaseEquality
