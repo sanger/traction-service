@@ -170,13 +170,13 @@ module Pacbio
         def check_tags_uniq
           return if all_tags.length == all_tags.uniq.length
 
-          errors.add(:tags, 'are not unique within the libraries for well ' + well.position)
+          errors.add(:tags, "are not unique within the libraries for well #{well.position}")
         end
 
         def check_libraries_max
           return if libraries.length <= 16
 
-          errors.add(:libraries, 'There are more than 16 libraries in well ' + well.position)
+          errors.add(:libraries, "There are more than 16 libraries in well #{well.position}")
         end
 
         def multiple_libraries
