@@ -13,7 +13,7 @@ class Well < ApplicationRecord
   end
 
   def column
-    position[1..-1].to_i
+    position[1..].to_i
   end
 
   def self.includes_args(except = nil)
