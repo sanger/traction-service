@@ -174,11 +174,7 @@ GEM
     rb-fsevent (0.10.3)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
-<<<<<<< HEAD
     regexp_parser (2.0.0)
-=======
-    regexp_parser (1.8.2)
->>>>>>> develop
     rexml (3.2.4)
     rspec-core (3.9.2)
       rspec-support (~> 3.9.3)
@@ -197,7 +193,6 @@ GEM
       rspec-mocks (~> 3.9)
       rspec-support (~> 3.9)
     rspec-support (3.9.3)
-<<<<<<< HEAD
     rubocop (1.6.1)
       parallel (~> 1.10)
       parser (>= 2.7.1.5)
@@ -210,20 +205,6 @@ GEM
     rubocop-ast (1.3.0)
       parser (>= 2.7.1.5)
     rubocop-rails (2.9.1)
-=======
-    rubocop (0.93.1)
-      parallel (~> 1.10)
-      parser (>= 2.7.1.5)
-      rainbow (>= 2.2.2, < 4.0)
-      regexp_parser (>= 1.8)
-      rexml
-      rubocop-ast (>= 0.6.0)
-      ruby-progressbar (~> 1.7)
-      unicode-display_width (>= 1.4.0, < 2.0)
-    rubocop-ast (0.8.0)
-      parser (>= 2.7.1.5)
-    rubocop-rails (2.6.0)
->>>>>>> develop
       activesupport (>= 4.2.0)
       rack (>= 1.1)
       rubocop (>= 0.90.0, < 2.0)
