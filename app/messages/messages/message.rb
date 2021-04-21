@@ -60,7 +60,7 @@ module Messages
         evaluate_method_chain(object, field[:value].split('.'))
       when :constant
         evaluate_method_chain(field[:value].split('.').first.constantize,
-                              field[:value].split('.')[1..-1])
+                              field[:value].split('.')[1..])
       when :array
         build_children(object, field)
       end
