@@ -123,7 +123,7 @@ module Ont
       parsed_data = serialised_plate_data[:well_data].map do |well_data|
         [
           well_data[:well].merge({ plate_id: plate_id }),
-          well_data[:request_data].map { |req_data| req_data[:ont_request] }
+          well_data[:request_data].pluck(:ont_request)
         ]
       end
 
@@ -133,7 +133,7 @@ module Ont
       requests_data = parsed_data.flat_map(&:last)
       Ont::Request.insert_all!(requests_data)
 
-      requests_data.map { |req_data| req_data[:uuid] }
+      requests_data.pluck(:uuid)
     end
 
     def get_request_ids_by_uuid(request_uuids)
