@@ -18,10 +18,11 @@ module V1
       attributes :barcode, :created_at, :material_type
 
       def fetchable_fields
-        if @model.material.is_a?(::Pacbio::Library)
+        case @model.material
+        when ::Pacbio::Library
           %i[state barcode volume concentration template_prep_kit_box_barcode fragment_size
              created_at deactivated_at sample_names material_type]
-        elsif @model.material.is_a?(::Pacbio::Request)
+        when ::Pacbio::Request
           %i[library_type estimate_of_gb_required number_of_smrt_cells cost_code external_study_id
              source_barcode sample_name barcode sample_species created_at material_type]
         else
