@@ -9,6 +9,7 @@ module Broker
     # Create an "empty" class definition when bunny is disabled
     Handle = Messages::Broker.new(Rails.configuration.bunny).tap do |obj|
       obj.instance_eval do
+        # empty block
       end
     end
   end
