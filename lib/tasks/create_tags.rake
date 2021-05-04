@@ -100,19 +100,17 @@ namespace :tags do
   # to run this use bundle exec rake BARCODES=barcode1,barcode2 tags:reorder
   desc 'reorder ONT tags by column rather than row.'
   task reorder: :environment do
-    begin
-      tag_set = TagSet.find_by(name: Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name)
-      ENV['BARCODES'].split(',').each do |barcode|
-        puts "Reordering tags for plate #{barcode}"
-        plate = Plate.find_by(barcode: barcode)
-        Ont::AddTags.run!(plate: plate, tag_set: tag_set, order: 'column')
-        library = Ont::Library.where("name like '%#{plate.barcode}%'").first
-        Messages.publish(library.flowcell.run, Pipelines.ont.message)
-      end
-    rescue StandardError => e
-      puts e
-      puts 'Something went wrong. It was probably your fault!'
+    tag_set = TagSet.find_by(name: Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name)
+    ENV['BARCODES'].split(',').each do |barcode|
+      puts "Reordering tags for plate #{barcode}"
+      plate = Plate.find_by(barcode: barcode)
+      Ont::AddTags.run!(plate: plate, tag_set: tag_set, order: 'column')
+      library = Ont::Library.where("name like '%#{plate.barcode}%'").first
+      Messages.publish(library.flowcell.run, Pipelines.ont.message)
     end
+  rescue StandardError => e
+    puts e
+    puts 'Something went wrong. It was probably your fault!'
   end
 
   task destroy: :environment do
