@@ -3,7 +3,7 @@
 module Types
   module Relay
     # The return type of a connection's `pageInfo` field
-    class PageInfo < GraphQL::Types::Relay::BaseObject
+    class PageInfo < GraphQL::Types::Relay::PageInfo
       default_relay true
       description 'Information about pagination in a connection.'
 
