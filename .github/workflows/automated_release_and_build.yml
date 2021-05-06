@@ -1,6 +1,5 @@
 # Automatically generate a release on develop and master
-# Note: This does *not* trigger the `release: published` action so will not
-# cause the build.yml action to fire.
+.
 name: Automated release and build of project
 
 on:
@@ -20,19 +19,8 @@ jobs:
         bundler-cache: true # Runs bundle install and caches gems. See the ruby_test.yml
                             # example if you need more control over bundler.
 
-    - name: Set release tag
-      run: echo "RELEASE_TAG=$([ ${GITHUB_REF##*/} = "develop" ] && echo "${GITHUB_REF##*/}/$(date +'%Y-%m-%d/%H%M%S')" || printf '%s\n' $(cat .release-version))" >> $GITHUB_ENV
-
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-      with:
-        tag_name: ${{ env.RELEASE_TAG }}
-        release_name: ${{ env.RELEASE_TAG }}
-        draft: false
-        prerelease: ${{ !(github.ref == 'refs/heads/master') }}
+    - name: Set release version
+       run: echo "RELEASE_VERSION=$([ ${GITHUB_REF##*/} = "develop" ] && printf '%s\n' $(cat .release-version)-develop || printf '%s\n' $(cat .release-version))" >> $GITHUB_ENV
 
     - name: Set up environment
       run: |
@@ -44,13 +32,13 @@ jobs:
     - name: Compile Build
       run: ./compile-build
 
-    - name: Upload release.gz
-      id: upload-release-gz
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # Pull the upload url from previous events
-        asset_path: ./release.tar.gz
-        asset_name: release.tar.gz
-        asset_content_type: application/gzip 
+   - name: Create release and upload release.tar.gz
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ env.RELEASE_VERSION }}
+          tag_name: v${{ env.RELEASE_VERSION }}
+          prerelease: ${{ !(github.ref == 'refs/heads/master') }}
+          files: release.tar.gz
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
