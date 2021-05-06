@@ -32,12 +32,12 @@ jobs:
       run: ./compile-build
 
     - name: Create release and upload release.tar.gz
-        uses: softprops/action-gh-release@v1
-        with:
-          name: ${{ github.event.inputs.release_name }}
-          tag_name: v${{ github.event.inputs.release_name }}
-          prerelease: true
-          files: release.tar.gz
-          fail_on_unmatched_files: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v1
+      with:
+        name: ${{ github.event.inputs.release_name }}
+        tag_name: v${{ github.event.inputs.release_name }}
+        prerelease: true
+        files: release.tar.gz
+        fail_on_unmatched_files: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
