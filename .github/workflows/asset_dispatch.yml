@@ -1,11 +1,14 @@
-# Triggers on *manual* release creation only. Automated releases
-# handle asset creation in automated_release_and_build.yml.
+# Triggered on dispatching the action
+# Create a release and build
 
-name: Build Manual Release
-
+name: Asset - on dispatch; build release and publish
 on:
-  release:
-    types: published
+  workflow_dispatch:
+    inputs:
+      release_name:
+        description: Release/Asset name
+        required: true
+        default: x.y.z-uat.1
 
 jobs:
   build:
@@ -28,13 +31,13 @@ jobs:
     - name: Compile Build
       run: ./compile-build
 
-    - name: Upload release.gz
-      id: upload-release-gz
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }} # Pull the URL from the release step
-        asset_path: ./release.tar.gz
-        asset_name: release.tar.gz
-        asset_content_type: application/gzip 
+    - name: Create release and upload release.tar.gz
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ github.event.inputs.release_name }}
+          tag_name: v${{ github.event.inputs.release_name }}
+          prerelease: true
+          files: release.tar.gz
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
