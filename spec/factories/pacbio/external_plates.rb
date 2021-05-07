@@ -1,9 +1,9 @@
-# SequencescapePlates
+# MockPlates
 # a factory which builds a plate in the image of what would be sent from the front end
 # will be constructed with rows and columns with each space being a hash of a well
 # each well will be either empty or will have a sample (in an array) depending on the 
 # number of samples that have been passed
-class SequencescapePlate
+class ExternalPlate
 
   attr_reader :barcode
 
@@ -48,15 +48,12 @@ class SequencescapePlate
 end
 
 FactoryBot.define do
-  factory :sequencescape_plate, class: SequencescapePlate do
+  factory :external_plate, class: ExternalPlate do
 
     sequence(:barcode) { |n| "DN#{n}" }
     rows { ['A','B','C','D','E','F','G','H'] }
     columns { 12 }
-    samples do
-      (1..48).collect { |i| attributes_for(:sample).merge(attributes_for(:pacbio_request)) }
-    end
-    # samples { build_list(:sample, 48) }
+    samples { build_list(:external_sample, 48) }
 
     initialize_with { new(**attributes).to_h.with_indifferent_access }
 
