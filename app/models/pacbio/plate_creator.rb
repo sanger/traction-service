@@ -9,34 +9,42 @@ module Pacbio
   #  *the plate will probably have an external barcode to map to the LIMS it has originated from
   #  *if no barcode then a TRAC one is generated
   #  *the plate will have one or more wells
-  #  *each well will have a sample but it is not required
+  #  *each well can have a sample but it is not required
   class PlateCreator
     include ActiveModel::Model
 
-    attr_reader :plates
+    attr_reader :plate_wrappers
 
     validate :check_plates
 
-    def plates=(plates)
-      @plates = plates.collect { |plate| PlateWrapper.new(plate) }
+    def initialize(plates: nil)
+      @plate_wrappers = plates.try(:collect) { |plate| PlateWrapper.new(plate) }
     end
 
-    def save
-      return false unless valid?
+    def save!
+      ActiveRecord::Base.transaction do
+        raise ActiveRecord::RecordInvalid if plate_wrappers.nil? || plate_wrappers.try(:empty?)
 
-      plates.collect(&:save)
+        plate_wrappers.collect(&:save!)
+        true
+      end
+    rescue ActiveRecord::RecordInvalid
+      # we need to cascade the errors up to the current error object
+      # otherwise it will look like there are no errors
+      check_plates
+      false
     end
 
     def check_plates
-      if plates.empty?
+      if plate_wrappers.empty?
         errors.add(:plates, 'should be present')
         return
       end
 
-      plates.each do |plate|
-        next if plate.valid?
+      plate_wrappers.each do |plate_wrapper|
+        next if plate_wrapper.valid?
 
-        plate.errors.each do |k, v|
+        plate_wrapper.errors.each do |k, v|
           errors.add(k, v)
         end
       end
@@ -51,36 +59,42 @@ module Pacbio
     class PlateWrapper
       include ActiveModel::Model
 
-      attr_reader :wells, :plate
+      attr_reader :well_wrappers, :plate
 
       delegate :barcode, to: :plate
 
       validate :check_wells
 
+      # @param attributes [Hash] hash of attributes
+      # this will contain:
+      #  * barcode
+      #  * array of wells
       def initialize(attributes = {})
         @plate = ::Plate.new(attributes.except(:wells))
-        @wells = attributes[:wells].try(:collect) do |well|
+        @well_wrappers = attributes[:wells].try(:collect) do |well|
           WellWrapper.new(well.merge(plate: plate))
         end
       end
 
-      def save
-        plate.save(validate: false)
-        wells.collect(&:save)
+      def save!
+        plate.save!
+        raise ActiveRecord::RecordInvalid if well_wrappers.nil? || well_wrappers.try(:empty?)
+
+        well_wrappers.collect(&:save!)
       end
 
       private
 
       def check_wells
-        if wells.blank?
+        if well_wrappers.blank?
           errors.add(:wells, 'should be present')
           return
         end
 
-        wells.each do |well|
-          next if well.valid?
+        well_wrappers.each do |well_wrapper|
+          next if well_wrapper.valid?
 
-          well.errors.each do |k, v|
+          well_wrapper.errors.each do |k, v|
             errors.add(k, v)
           end
         end
@@ -100,24 +114,28 @@ module Pacbio
     class WellWrapper
       include ActiveModel::Model
 
-      attr_reader :samples, :well
+      attr_reader :sample_wrappers, :well
 
       delegate :position, :plate, to: :well
 
       validate :check_well, :check_samples
 
+      # @param attributes [Hash] hash of attributes
+      # this will contain:
+      #  * position
+      #  * array of samples
       def initialize(attributes = {})
         @well = ::Well.new(attributes.except(:samples))
-        @samples = attributes[:samples].try(:collect) do |sample|
+        @sample_wrappers = attributes[:samples].try(:collect) do |sample|
           SampleWrapper.new(sample.merge(well: well))
         end
       end
 
-      def save
-        well.save(validate: false)
-        return if samples.blank?
+      def save!
+        well.save!
+        return if sample_wrappers.blank?
 
-        samples.collect(&:save)
+        sample_wrappers.collect(&:save!)
       end
 
       private
@@ -126,14 +144,14 @@ module Pacbio
         return if well.valid?
 
         well.errors.each do |k, v|
-          errors.add(k, v)
+          errors.add("Well #{k}", v)
         end
       end
 
       def check_samples
-        return if samples.blank?
+        return if sample_wrappers.blank?
 
-        samples.each do |sample|
+        sample_wrappers.each do |sample|
           next if sample.valid?
 
           sample.errors.each do |k, v|
@@ -178,6 +196,7 @@ module Pacbio
 
       validate :check_models
 
+      # @param attributes [Hash] hash of attributes (see SAMPLE_ATTRIBUTES or REQUEST_ATTRIBUTES)
       def initialize(attributes = {})
         @well = attributes[:well]
         @sample = ::Sample.find_or_initialize_by(attributes.slice(*SAMPLE_ATTRIBUTES))
@@ -186,10 +205,10 @@ module Pacbio
         @container_material = ContainerMaterial.new(container: well, material: pacbio_request)
       end
 
-      def save
-        sample.save(validate: false)
-        pacbio_request.save(validate: false)
-        container_material.save(validate: false)
+      def save!
+        sample.save!
+        pacbio_request.save!
+        container_material.save!
       end
 
       private
@@ -199,7 +218,7 @@ module Pacbio
           next if model.valid?
 
           model.errors.each do |k, v|
-            errors.add(k, v)
+            errors.add("Sample #{k}", v)
           end
         end
       end
