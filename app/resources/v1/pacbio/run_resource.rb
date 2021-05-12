@@ -10,7 +10,8 @@ module V1
                  :sequencing_kit_box_barcode, :dna_control_complex_box_barcode,
                  :system_name, :created_at, :state, :comments, :all_wells_have_libraries
 
-      has_one :plate, foreign_key_on: :related, foreign_key: 'pacbio_run_id'
+      has_one :plate, foreign_key_on: :related, foreign_key: 'pacbio_run_id',
+                      class_name: 'Runs::Plate'
 
       def created_at
         @model.created_at.to_s(:us)
