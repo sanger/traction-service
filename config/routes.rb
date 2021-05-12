@@ -22,17 +22,25 @@ Rails.application.routes.draw do
     end
 
     namespace :pacbio do
-      jsonapi_resources :runs do
+
+      # This seems the best way to do this for now.
+      # because we also have a namespace without the constraint
+      # it will treat runs/plates or runs/wells as part of the resource
+      # limiting it to numbers will cause plates and wells
+      # to be redirected to the namespace
+      jsonapi_resources :runs, constraints: { id: /[0-9]+/} do
         %i[index create update destroy]
         get 'sample_sheet', to: 'runs#sample_sheet'
       end
-      jsonapi_resources :plates,        only: %i[index create update destroy]
-      jsonapi_resources :wells,         only: %i[index create update destroy] do
+
+      namespace :runs do
+        jsonapi_resources :plates,        only: %i[index create update destroy]
+        jsonapi_resources :wells,         only: %i[index create update destroy]
       end
+    
       jsonapi_resources :libraries,       only: %i[index create update destroy]
       jsonapi_resources :request_library, only: %i[index update]
       jsonapi_resources :requests,        only: %i[index create update destroy]
-      jsonapi_resources :wells,           only: %i[index create update destroy]
       jsonapi_resources :tubes,           only: %i[index]
     end
   end
