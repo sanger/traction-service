@@ -17,10 +17,15 @@ module Pacbio
 
     validate :check_plates
 
-    def initialize(plates: nil)
-      @plate_wrappers = plates.try(:collect) { |plate| PlateWrapper.new(plate) }
+    def initialize(attributes = {})
+      @plate_wrappers = attributes[:plates].try(:collect) { |plate| PlateWrapper.new(plate) }
     end
 
+    # Previously checking validity and then saving but this causes problems because
+    # things are validated several times so it is inefficient
+    # So do save bang and if anything is not valid it will raise an error
+    # We can then collect those errors on rescue
+    # @return [Boolean] was everything saved correctly
     def save!
       ActiveRecord::Base.transaction do
         raise ActiveRecord::RecordInvalid if plate_wrappers.nil? || plate_wrappers.try(:empty?)
@@ -33,6 +38,11 @@ module Pacbio
       # otherwise it will look like there are no errors
       check_plates
       false
+    end
+
+    # useful for returning in an api response
+    def plates
+      @plates ||= plate_wrappers.collect(&:plate)
     end
 
     def check_plates
