@@ -23,7 +23,7 @@ Rails.application.routes.draw do
 
     namespace :pacbio do
 
-      jsonapi_resources :plates,        only: %i[index create update destroy]
+      jsonapi_resources :plates,        only: %i[index create]
 
       # This seems the best way to do this for now.
       # because we also have a namespace without the constraint
