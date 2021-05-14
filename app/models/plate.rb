@@ -6,6 +6,13 @@ class Plate < ApplicationRecord
 
   has_many :wells, inverse_of: :plate, dependent: :destroy
 
+  scope :by_pipeline,
+        lambda { |pipeline|
+          joins(wells: :container_materials).where(
+            'container_materials.material_type LIKE ?', "#{pipeline.capitalize}::%"
+          ).distinct
+        }
+
   # Plates are assumed to have wells with layout
   # A1 A2 A3 ...
   # B1 B2 ...

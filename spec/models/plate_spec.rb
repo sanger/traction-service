@@ -39,4 +39,15 @@ RSpec.describe Plate, type: :model do
       expect(Plate.includes_args(:wells).flat_map(&:keys)).to_not include(:wells)
     end
   end
+
+  context 'by pipeline' do
+
+    let!(:pacbio_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'pacbio')}
+    let!(:ont_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'ont')}
+    
+    it 'returns the correct plates' do
+      expect(Plate.by_pipeline(:pacbio).length).to eq(5)
+      expect(Plate.by_pipeline(:ont).length).to eq(5)
+    end
+  end
 end
