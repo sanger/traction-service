@@ -124,4 +124,7 @@ Style/CaseEquality:
 Rails/SkipsModelValidations:
   Exclude:
     - 'app/models/ont/plate_with_samples_factory.rb'
+
+Rails/EnvironmentVariableAccess:
+  AllowReads: true
     
