@@ -1,0 +1,43 @@
+# Triggered on dispatching the action
+# Create a release and build
+
+name: Asset - on dispatch; build release and publish
+on:
+  workflow_dispatch:
+    inputs:
+      release_name:
+        description: Release/Asset name
+        required: true
+        default: x.y.z-uat.1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true # Runs bundle install and caches gems. See the ruby_test.yml
+                            # example if you need more control over bundler.
+
+    - name: Set up environment
+      run: |
+        cp config/database.yml.example config/database.yml
+        cp config/mailer.yml.example config/mailer.yml
+        cp config/bunny.yml.example config/bunny.yml
+        cp config/env_constants.yml.example config/env_constants.yml
+
+    - name: Compile Build
+      run: ./compile-build
+
+    - name: Create release and upload release.tar.gz
+      uses: softprops/action-gh-release@v1
+      with:
+        name: ${{ github.event.inputs.release_name }}
+        tag_name: v${{ github.event.inputs.release_name }}
+        prerelease: true
+        files: release.tar.gz
+        fail_on_unmatched_files: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

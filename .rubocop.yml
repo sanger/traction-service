@@ -1,7 +1,8 @@
 require: rubocop-rails
 
 AllCops:
-  TargetRubyVersion: 2.4
+  NewCops: enable
+  TargetRubyVersion: 2.6
   Exclude:
     - db/schema.rb
     - db/seeds.rb
@@ -49,11 +50,13 @@ Layout/LineLength:
   Max: 100
   Exclude:
     - 'lib/tasks/*'
+    
 
 Metrics/MethodLength:
   Max: 12
   Exclude:
     - 'db/migrate/*'
+    - 'config/initializers/01_proc.rb'
 
 Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
@@ -112,3 +115,13 @@ Style/SlicingWithRange:
 
 Style/RedundantFetchBlock:
   Enabled: true
+
+Style/CaseEquality:
+  Exclude:
+    - 'db/migrate/*'
+    - 'config/initializers/01_proc.rb'
+
+Rails/SkipsModelValidations:
+  Exclude:
+    - 'app/models/ont/plate_with_samples_factory.rb'
+    
