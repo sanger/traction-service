@@ -3,16 +3,13 @@
 module Types
   module Connections
     # The base connection object type.
-    class BaseConnectionObject < GraphQL::Types::Relay::BaseObject
+    class BaseConnectionObject < BaseObject
       extend Forwardable
       def_delegators :@object, :cursor_from_node, :parent
 
       class << self
         # @return [Class]
         attr_reader :node_type
-
-        # @return [Class]
-        attr_reader :edge_class
 
         # Configure this connection to return `edges` and `nodes` based on `edge_type_class`.
         #
@@ -24,17 +21,17 @@ module Types
         # It's called when you subclass this base connection, trying to use the
         # class name to set defaults. You can call it again in the class definition
         # to override the default (or provide a value, if the default lookup failed).
-        def edge_type(edge_type_class, edge_class: GraphQL::Relay::Edge,
+
+        def edge_type(edge_type_class,
                       node_type: edge_type_class.node_type, nodes_field: true)
           # Set this connection's graphql name
           node_type_name = node_type.graphql_name
 
           @node_type = node_type
           @edge_type = edge_type_class
-          @edge_class = edge_class
 
-          field :edges, [edge_type_class, null: true],
-                null: true, description: 'A list of edges.', edge_class: edge_class
+          field :edges, [edge_type_class, { null: true }],
+                null: true, description: 'A list of edges.'
 
           define_nodes_field if nodes_field
 
@@ -60,7 +57,7 @@ module Types
         private
 
         def define_nodes_field
-          field :nodes, [@node_type, null: true], null: true, description: 'A list of nodes.'
+          field :nodes, [@node_type, { null: true }], null: true, description: 'A list of nodes.'
         end
       end
 

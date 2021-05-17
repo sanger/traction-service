@@ -110,7 +110,7 @@ class CsvGenerator
       evaluate_method_chain(obj, field[:value].split('.'))
     when :constant
       evaluate_method_chain(field[:value].split('.').first.constantize,
-                            field[:value].split('.')[1..-1])
+                            field[:value].split('.')[1..])
     end
   end
 
