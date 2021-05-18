@@ -10,6 +10,9 @@ module V1
 
       has_many :wells
 
+      # Filters
+      filter :barcode, apply: ->(records, value, _options) { records.by_barcode(value) }
+
       def self.records(_options = {})
         ::Plate.by_pipeline(:pacbio)
       end

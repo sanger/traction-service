@@ -50,4 +50,13 @@ RSpec.describe Plate, type: :model do
       expect(Plate.by_pipeline(:ont).length).to eq(5)
     end
   end
+
+  context 'by barcode' do
+    let!(:plates) { create_list(:plate, 5)}
+
+    it 'returns the correct plates' do
+      barcodes = plates.pluck(:barcode)[0..1]
+      expect(Plate.by_barcode(barcodes).length).to eq(2)
+    end
+  end
 end
