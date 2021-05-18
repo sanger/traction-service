@@ -52,6 +52,16 @@ RSpec.describe 'PlatesController', type: :request do
       expect(material['attributes']['material_type']).to eq('request')
     end
 
+    it 'filtering by barcodes' do
+      barcodes = pacbio_plates.pluck(:barcode)[0..1]
+      get "#{v1_pacbio_plates_path}?filter[barcode]=#{barcodes.join(',')}", headers: json_api_headers
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['data'].length).to eq(barcodes.length)
+      expect(json['data'][0]["attributes"]["barcode"]).to eq barcodes[0]
+      expect(json['data'][1]["attributes"]["barcode"]).to eq barcodes[1]
+    end
+
   end
 
   context '#create' do

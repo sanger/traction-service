@@ -13,6 +13,8 @@ class Plate < ApplicationRecord
           ).distinct
         }
 
+  scope :by_barcode, ->(*barcodes) { where(barcode: barcodes) }
+
   # Plates are assumed to have wells with layout
   # A1 A2 A3 ...
   # B1 B2 ...

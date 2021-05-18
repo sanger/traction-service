@@ -28,7 +28,7 @@ module Pacbio
     # @return [Boolean] was everything saved correctly
     def save!
       ActiveRecord::Base.transaction do
-        raise ActiveRecord::RecordInvalid if plate_wrappers.nil? || plate_wrappers.try(:empty?)
+        raise ActiveRecord::RecordInvalid if plate_wrappers.blank?
 
         plate_wrappers.collect(&:save!)
         true
@@ -88,7 +88,7 @@ module Pacbio
 
       def save!
         plate.save!
-        raise ActiveRecord::RecordInvalid if well_wrappers.nil? || well_wrappers.try(:empty?)
+        raise ActiveRecord::RecordInvalid if well_wrappers.blank?
 
         well_wrappers.collect(&:save!)
       end
