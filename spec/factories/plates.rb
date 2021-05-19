@@ -17,9 +17,13 @@ FactoryBot.define do
 
       factory :plate_with_wells_and_requests do
 
-        after :create do |plate|
+        transient do
+          pipeline { 'ont' }
+        end
+
+        after :create do |plate, options|
           plate.wells.each do |well|
-            create(:container_material, container: well, material: create(:ont_request))
+            create(:container_material, container: well, material: create("#{options.pipeline}_request".to_sym))
           end
         end
       end

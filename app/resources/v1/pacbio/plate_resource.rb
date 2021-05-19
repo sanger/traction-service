@@ -4,11 +4,18 @@ module V1
   module Pacbio
     # PlateResource
     class PlateResource < JSONAPI::Resource
-      model_name 'Pacbio::Plate'
+      model_name '::Plate'
 
-      attributes :pacbio_run_id
+      attributes :barcode
 
-      has_many :wells, class_name: 'Well'
+      has_many :wells
+
+      # Filters
+      filter :barcode, apply: ->(records, value, _options) { records.by_barcode(value) }
+
+      def self.records(_options = {})
+        ::Plate.by_pipeline(:pacbio)
+      end
     end
   end
 end
