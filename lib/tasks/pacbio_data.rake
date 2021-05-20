@@ -41,6 +41,8 @@ namespace :pacbio_data do
     end
     [Pacbio::Request, Pacbio::Library, Pacbio::Run, Pacbio::Plate, Pacbio::Well,
      Pacbio::WellLibrary, Pacbio::RequestLibrary].each(&:delete_all)
+    Plate.by_pipeline('Pacbio').destroy_all
+
     puts '-> Pacbio data successfully deleted'
   end
 end
