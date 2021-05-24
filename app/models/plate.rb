@@ -39,6 +39,7 @@ class Plate < ApplicationRecord
   end
 
   def self.resolved_query
-    Plate.includes(*includes_args)
+    # graphql query returns only ONT plates
+    Plate.by_pipeline('Ont').includes(*includes_args)
   end
 end
