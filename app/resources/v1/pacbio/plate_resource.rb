@@ -6,7 +6,7 @@ module V1
     class PlateResource < JSONAPI::Resource
       model_name '::Plate'
 
-      attributes :barcode
+      attributes :barcode, :created_at
 
       has_many :wells
 
@@ -15,6 +15,10 @@ module V1
 
       def self.records(_options = {})
         ::Plate.by_pipeline(:pacbio)
+      end
+
+      def created_at
+        @model.created_at.to_s(:us)
       end
     end
   end
