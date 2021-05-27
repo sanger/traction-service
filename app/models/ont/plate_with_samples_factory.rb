@@ -144,11 +144,11 @@ module Ont
     end
 
     def get_request_ids_by_uuid(request_uuids)
-      Ont::Request.where(uuid: request_uuids).map { |req| [req.uuid, req.id] }.to_h
+      Ont::Request.where(uuid: request_uuids).pluck(:uuid, :id).to_h
     end
 
     def get_well_ids_by_position(wells)
-      wells.map { |well| [well.position, well.id] }.to_h
+      wells.pluck(:position, :id).to_h
     end
 
     def insert_joins(well_ids_by_position, request_ids_by_uuid)
