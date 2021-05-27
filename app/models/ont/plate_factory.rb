@@ -10,6 +10,16 @@ module Ont
 
     validate :check_plate, :check_well_factories
 
+
+    #
+    # Create a new PlateFactory ready to generate the nested information. Will
+    # generate a plate, its wells and requests. In contrast to the PlateWithSamplesFactory
+    # (which calls this) this will not actually perform the bulk insert
+    #
+    # @param attributes [Hash] Attributes hash
+    # @option attributes [String] :barcode The barcode of the plate to generate
+    # @option attributes [Array<Hash>] :wells Array of well attributes to use to generate wells
+    #
     def initialize(attributes = {})
       build_requests(attributes)
     end

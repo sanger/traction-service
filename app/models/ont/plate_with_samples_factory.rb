@@ -60,6 +60,13 @@ module Ont
 
     validate :check_plate_factory
 
+    #
+    # Create a new PlateWithSamplesFactory ready to generate the nested information
+    #
+    # @param attributes [Hash] Attributes hash
+    # @option attributes [String] :barcode The barcode of the plate to generate
+    # @option attributes [Array<Hash>] :wells Array of well attributes to use to generate wells
+    #
     def initialize(attributes = {})
       @attributes = attributes
     end
