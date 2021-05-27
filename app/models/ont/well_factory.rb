@@ -39,7 +39,11 @@ module Ont
 
     private
 
-    attr_reader :plate, :tag_set_service, :well, :request_factories
+    attr_reader :plate, :tag_set_service, :well
+
+    def request_factories
+      @request_factories || []
+    end
 
     def build_well(attributes)
       @well = ::Well.new(position: attributes[:position], plate: @plate)
@@ -67,8 +71,6 @@ module Ont
     end
 
     def check_request_factories
-      return if request_factories.nil?
-
       request_factories.each do |request_factory|
         next if request_factory.valid?
 
