@@ -28,7 +28,7 @@ module Pacbio
     # after that is defined
     include PlateSourcedLibrary
 
-    delegate :barcode, to: :tube
+    delegate :barcode, to: :tube, allow_nil: true
 
     def sample_names
       return '' if requests.blank?

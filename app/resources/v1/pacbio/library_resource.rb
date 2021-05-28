@@ -7,13 +7,15 @@ module V1
       model_name 'Pacbio::Library'
 
       attributes :state, :barcode, :volume, :concentration, :template_prep_kit_box_barcode,
-                 :fragment_size, :created_at, :deactivated_at, :sample_names
+                 :fragment_size, :created_at, :deactivated_at, :sample_names, :source_identifier
 
       has_many :requests, class_name: 'RequestLibrary', relation_name: :request_libraries
       has_one :tube
 
-      def barcode
-        @model.tube&.barcode
+      def self.records(*_args)
+        super.preload(source_wells: :plate,
+                      container_material: { container: :barcode },
+                      requests: :sample)
       end
 
       def created_at
