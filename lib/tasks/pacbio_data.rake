@@ -1,7 +1,19 @@
 # frozen_string_literal: true
 
-namespace :pacbio_runs do
+require 'factory_bot'
+
+namespace :pacbio_data do
   task create: :environment do
+    include FactoryBot::Syntax::Methods
+    FactoryBot.factories.clear
+    FactoryBot.find_definitions
+
+    puts '-> Creating pacbio plates...'
+    external_plates = build_list(:external_plate, 5)
+    external_plates.each { |plate| Pacbio::PlateCreator.new({ plates: [plate] }).save! }
+    puts '-> Pacbio plates successfully created'
+
+    puts '-> Creating pacbio runs...'
     attributes = (6..10).collect do |i|
       { name: "Sample#{i}", external_id: 'DEA103A3484', external_study_id: 4086,
         library_type: "LibraryType#{i}", estimate_of_gb_required: 10, number_of_smrt_cells: 3, cost_code: 'PSD12345', source_barcode: "ABC#{i}", species: "Species#{i}" }
@@ -29,6 +41,8 @@ namespace :pacbio_runs do
     end
     [Pacbio::Request, Pacbio::Library, Pacbio::Run, Pacbio::Plate, Pacbio::Well,
      Pacbio::WellLibrary, Pacbio::RequestLibrary].each(&:delete_all)
-    puts '-> Pacbio runs successfully deleted'
+    Plate.by_pipeline('Pacbio').destroy_all
+
+    puts '-> Pacbio data successfully deleted'
   end
 end

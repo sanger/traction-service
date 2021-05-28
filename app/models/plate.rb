@@ -6,6 +6,15 @@ class Plate < ApplicationRecord
 
   has_many :wells, inverse_of: :plate, dependent: :destroy
 
+  scope :by_pipeline,
+        lambda { |pipeline|
+          joins(wells: :container_materials).where(
+            'container_materials.material_type LIKE ?', "#{pipeline.capitalize}::%"
+          ).distinct
+        }
+
+  scope :by_barcode, ->(*barcodes) { where(barcode: barcodes) }
+
   # Plates are assumed to have wells with layout
   # A1 A2 A3 ...
   # B1 B2 ...
@@ -30,6 +39,7 @@ class Plate < ApplicationRecord
   end
 
   def self.resolved_query
-    Plate.includes(*includes_args)
+    # graphql query returns only ONT plates
+    Plate.by_pipeline('Ont').includes(*includes_args)
   end
 end
