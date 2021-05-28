@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'GraphQL', type: :request do
   describe 'get plates' do
     describe 'paginated graphql query' do
-      let(:paginated_model) { :plate }
+      let(:paginated_model) { :plate_with_wells_and_requests } # needs wells and requests to determine its pipeline
       let(:graphql_method) { 'plates' }
       it_behaves_like 'paginated_query'
     end
