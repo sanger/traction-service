@@ -10,14 +10,14 @@ RSpec.describe 'WellsController', type: :request do
     let!(:well2) { create(:pacbio_well, libraries: [library1, library2]) }
 
     it 'returns a list of wells' do
-      get v1_pacbio_wells_path, headers: json_api_headers
+      get v1_pacbio_runs_wells_path, headers: json_api_headers
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'].length).to eq(2)
     end
 
     it 'returns the correct attributes' do
-      get "#{v1_pacbio_wells_path}?include=libraries", headers: json_api_headers
+      get "#{v1_pacbio_runs_wells_path}?include=libraries", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -125,16 +125,16 @@ RSpec.describe 'WellsController', type: :request do
         end
 
         it 'has a created status' do
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:created)
         end
 
         it 'creates a well' do
-          expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(2)
+          expect { post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(2)
         end
 
         it 'creates wells with the correct attributes' do
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
           created_well_id = response.parsed_body['data'][0]['id']
           created_well_2_id = response.parsed_body['data'][1]['id']
           expect(Pacbio::Well.find(created_well_id).pre_extension_time).to eq(2)
@@ -146,12 +146,12 @@ RSpec.describe 'WellsController', type: :request do
         end
 
         it 'creates a plate' do
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
           expect(Pacbio::Well.first.plate).to eq(plate)
         end
 
         it 'creates libraries' do
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
           expect(Pacbio::Well.first.libraries.length).to eq(2)
           expect(Pacbio::Well.first.libraries[0]).to eq(request_library1.library)
           expect(Pacbio::Well.first.libraries[1]).to eq(request_library2.library)
@@ -159,7 +159,7 @@ RSpec.describe 'WellsController', type: :request do
 
         it 'sends a message to the warehouse' do
           expect(Messages).to receive(:publish)
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
         end
       end
 
@@ -183,20 +183,20 @@ RSpec.describe 'WellsController', type: :request do
         end
 
         it 'has a unprocessable_entity' do
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
         end
 
         it 'does not create a well' do
-          expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Well, :count)
+          expect { post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Well, :count)
         end
 
         it 'does not create libraries' do
-          expect { post v1_pacbio_wells_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
+          expect { post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
         end
 
         it 'has the correct error messages' do
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['data']['errors']
 
@@ -208,12 +208,12 @@ RSpec.describe 'WellsController', type: :request do
 
         it 'does not send a message to the warehouse' do
           expect(Messages).to_not receive(:publish)
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
         end
 
         it 'when no wells exist' do
           body = { data: { type: 'wells', attributes: { wells: [] }}}.to_json
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['data']['errors']
           expect(errors['wells'][0]).to include "there are no wells"
@@ -262,12 +262,12 @@ RSpec.describe 'WellsController', type: :request do
         end
 
         it 'has a ok unprocessable_entity' do
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
         end
 
         it 'has the correct data errors' do
-          post v1_pacbio_wells_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['data']['errors']
           expect(errors['tags'][0]).to include "are not unique within the libraries for well"
@@ -316,12 +316,12 @@ RSpec.describe 'WellsController', type: :request do
       end
 
       it 'has a ok status' do
-        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
         expect(response).to have_http_status(:ok)
       end
 
       it 'updates a wells attributes' do
-        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
         well.reload
 
         expect(well.row).to eq row
@@ -335,13 +335,13 @@ RSpec.describe 'WellsController', type: :request do
       end
 
       it 'does not update a wells libraries' do
-        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
         well.reload
         expect(well.libraries.length).to eq existing_libraries_data.length
       end
 
       it 'returns the correct attributes' do
-        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         response = json['data'].first
         expect(response['id'].to_i).to eq well.id
@@ -356,7 +356,7 @@ RSpec.describe 'WellsController', type: :request do
 
       it 'sends a message to the warehouse' do
         expect(Messages).to receive(:publish)
-        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
       end
     end
 
@@ -384,12 +384,12 @@ RSpec.describe 'WellsController', type: :request do
       end
 
       it 'has a ok status' do
-        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
         expect(response).to have_http_status(:ok)
       end
 
       it 'updates the wells libraries' do
-        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
         well.reload
         expect(well.libraries.length).to eq updated_libraries_data.length
       end
@@ -426,12 +426,12 @@ RSpec.describe 'WellsController', type: :request do
       end
 
       it 'has a ok status' do
-        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
         expect(response).to have_http_status(:ok)
       end
 
       it 'updates the wells libraries' do
-        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
         well.reload
         expect(well.libraries.length).to eq 2
       end
@@ -458,12 +458,12 @@ RSpec.describe 'WellsController', type: :request do
       end
 
       it 'has a ok status' do
-        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
         expect(response).to have_http_status(:ok)
       end
 
       it 'updates the wells libraries' do
-        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
         well.reload
         expect(well.libraries.length).to eq updated_libraries_data.length
       end
@@ -490,12 +490,12 @@ RSpec.describe 'WellsController', type: :request do
       end
 
       it 'has a ok status' do
-        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
         expect(response).to have_http_status(:ok)
       end
 
       it 'updates the wells libraries' do
-        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
         well.reload
         expect(well.libraries.length).to eq 0
       end
@@ -515,18 +515,18 @@ RSpec.describe 'WellsController', type: :request do
       end
 
       it 'has a ok unprocessable_entity' do
-        patch v1_pacbio_well_path(123), params: body, headers: json_api_headers
+        patch v1_pacbio_runs_well_path(123), params: body, headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'has an error message' do
-        patch v1_pacbio_well_path(123), params: body, headers: json_api_headers
+        patch v1_pacbio_runs_well_path(123), params: body, headers: json_api_headers
         expect(JSON.parse(response.body)["data"]).to include("errors" => "Couldn't find Pacbio::Well with 'id'=123")
       end
 
       it 'does not send a message to the warehouse' do
         expect(Messages).to_not receive(:publish)
-        patch v1_pacbio_well_path(well), params: body, headers: json_api_headers
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
       end
     end
   end
@@ -537,32 +537,32 @@ RSpec.describe 'WellsController', type: :request do
 
     context 'on success' do
       it 'has a status of no content' do
-        delete v1_pacbio_well_path(well), headers: json_api_headers
+        delete v1_pacbio_runs_well_path(well), headers: json_api_headers
         expect(response).to have_http_status(:no_content)
       end
 
       it 'deletes the well' do
-        expect { delete v1_pacbio_well_path(well), headers: json_api_headers }.to change { Pacbio::Well.count }.by(-1)
+        expect { delete v1_pacbio_runs_well_path(well), headers: json_api_headers }.to change { Pacbio::Well.count }.by(-1)
       end
 
       it 'deletes the well library' do
-        expect { delete v1_pacbio_well_path(well), headers: json_api_headers }.to change { Pacbio::WellLibrary.count }.by(-1)
+        expect { delete v1_pacbio_runs_well_path(well), headers: json_api_headers }.to change { Pacbio::WellLibrary.count }.by(-1)
       end
 
       it 'does not delete the library' do
-        expect { delete v1_pacbio_well_path(well), headers: json_api_headers }.to change { Pacbio::Library.count }.by(0)
+        expect { delete v1_pacbio_runs_well_path(well), headers: json_api_headers }.to change { Pacbio::Library.count }.by(0)
       end
     end
 
     context 'on failure' do
 
       it 'does not delete the well' do
-        delete "/v1/pacbio/wells/123", headers: json_api_headers
+        delete "/v1/pacbio/runs/wells/123", headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'has an error message' do
-        delete "/v1/pacbio/wells/123", headers: json_api_headers
+        delete "/v1/pacbio/runs/wells/123", headers: json_api_headers
         data = JSON.parse(response.body)['data']
         expect(data['errors']).to be_present
       end

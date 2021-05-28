@@ -39,7 +39,7 @@ module Types
       Connections::PaginatedConnectionWrapper.new(Plate.resolved_query,
                                                   page_num: page_num,
                                                   page_size: page_size,
-                                                  total_item_count: Plate.all.count)
+                                                  total_item_count: Plate.by_pipeline('Ont').count)
     end
 
     # Ont::Libraries

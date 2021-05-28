@@ -3,6 +3,9 @@
 module V1
   module Pacbio
     # ContainerMaterialResource
+    # TODO: probably via code review
+    # I think this needs to be split based on whether the material is a request or a library
+    # It also needs to be split on whether the container is a tube or well
     class ContainerMaterialResource < JSONAPI::Resource
       model_name 'ContainerMaterial'
 
@@ -36,7 +39,7 @@ module V1
 
       # Delegations to Container
       def barcode
-        @model.container.barcode
+        @model.container.try(:barcode)
       end
 
       # Delegations to Material
