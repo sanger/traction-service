@@ -24,32 +24,16 @@ module Pacbio
 
     has_many :requests, class_name: 'Pacbio::Request', through: :request_libraries
 
+    # This is dependent on the requests association, so needs to be included
+    # after that is defined
+    include PlateSourcedLibrary
+
     delegate :barcode, to: :tube
 
     def sample_names
       return '' if requests.blank?
 
       requests.collect(&:sample_name).join(',')
-    end
-
-    # Identifies the plate and wells from which the library was created
-    # Typically in the format: DN123:A1-D1
-    # @note Assumes 96 well plates. formatted_range can take a second argument
-    # of plate_size if this ever changes.
-    def source_identifier
-      wells_grouped_by_container.map do |plate_barcode, well_positions|
-        well_range = WellSorterService.formatted_range(well_positions)
-        "#{plate_barcode}:#{well_range}"
-      end.join(',')
-    end
-
-    private
-
-    def wells_grouped_by_container
-      requests.each_with_object({}) do |request, store|
-        store[request.container.plate.barcode] ||= []
-        store[request.container.plate.barcode] << request.container.position
-      end
     end
   end
 end
