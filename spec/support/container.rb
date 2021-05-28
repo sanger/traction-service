@@ -13,4 +13,5 @@ RSpec.shared_examples "container" do
     expect(container.materials.count).to eq(num_materials)
     expect(container.materials).to eq(container_materials.map { |con_mat| con_mat.material })
   end
+
 end

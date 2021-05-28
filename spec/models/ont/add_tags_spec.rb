@@ -11,7 +11,7 @@ RSpec.describe Ont::AddTags, type: :model, ont: true do
 
   describe 'when there are no existing tags' do
 
-    let(:plate) { create(:plate_with_wells_and_requests, column_count: 12, row_count: 8)}
+    let(:plate) { create(:plate_with_wells_and_requests, pipeline: 'ont', column_count: 12, row_count: 8)}
 
     describe 'by column' do
       before(:each) do
