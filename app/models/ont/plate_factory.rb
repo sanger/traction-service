@@ -10,7 +10,6 @@ module Ont
 
     validate :check_plate, :check_well_factories
 
-
     #
     # Create a new PlateFactory ready to generate the nested information. Will
     # generate a plate, its wells and requests. In contrast to the PlateWithSamplesFactory
