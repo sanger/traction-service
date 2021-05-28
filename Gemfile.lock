@@ -92,7 +92,7 @@ GEM
     gemoji (3.0.1)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
-    graphql (1.12.9)
+    graphql (1.12.10)
     graphql-client (0.16.0)
       activesupport (>= 3.0)
       graphql (~> 1.8)
@@ -136,7 +136,8 @@ GEM
     parallel (1.20.1)
     parser (3.0.1.1)
       ast (~> 2.4.1)
-    puma (3.12.6)
+    puma (4.3.8)
+      nio4r (~> 2.0)
     racc (1.5.2)
     rack (2.2.3)
     rack-cors (1.1.1)
@@ -198,7 +199,7 @@ GEM
       rspec-mocks (~> 3.10)
       rspec-support (~> 3.10)
     rspec-support (3.10.2)
-    rubocop (1.14.0)
+    rubocop (1.15.0)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
@@ -265,7 +266,7 @@ DEPENDENCIES
   jsonapi-resources (~> 0.9.10)
   listen (>= 3.0.5, < 3.2)
   mysql2
-  puma (~> 3.11)
+  puma (~> 4.3)
   rack-cors
   rails (~> 6.0.3.1)
   rails-erd
