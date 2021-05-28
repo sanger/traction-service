@@ -5,44 +5,25 @@ module V1
     # PlatesController
     class PlatesController < ApplicationController
       def create
-        @plate = ::Pacbio::Plate.new(params_names)
-        if @plate.save
-          render_json(:created)
+        @plate_creator = ::Pacbio::PlateCreator.new(plates_params)
+        if @plate_creator.save!
+          @plates = @plate_creator.plates.map { |plate| PlateResource.new(plate, nil) }
+          body = JSONAPI::ResourceSerializer.new(PlateResource).serialize_to_hash(@plates)
+          render json: body, status: :created
         else
-          render json: { data: { errors: @plate.errors.messages } },
+          render json: { data: { errors: @plate_creator.errors.messages } },
                  status: :unprocessable_entity
         end
       end
 
-      def update
-        plate.update(params_names)
-        render_json(:ok)
-      rescue StandardError => e
-        render json: { data: { errors: e.message } }, status: :unprocessable_entity
-      end
-
-      def destroy
-        plate.destroy
-        head :no_content
-      rescue StandardError => e
-        render json: { data: { errors: e.message } }, status: :unprocessable_entity
-      end
-
       private
 
-      def params_names
-        params.require(:data)['attributes'].permit(:pacbio_run_id)
-      end
-
-      def plate
-        @plate ||= ::Pacbio::Plate.find(params[:id])
-      end
-
-      def render_json(status)
-        render json:
-           JSONAPI::ResourceSerializer.new(PlateResource)
-                                      .serialize_to_hash(PlateResource.new(@plate, nil)),
-               status: status
+      def plates_params
+        params.require(:data)['attributes'].permit(
+          plates: [:barcode, { wells: [:position, { samples:
+              %i[name external_id species library_type estimate_of_gb_required
+                 number_of_smrt_cells cost_code external_study_id] }] }]
+        ).to_h
       end
     end
   end
