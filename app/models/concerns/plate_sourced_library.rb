@@ -7,10 +7,11 @@ module PlateSourcedLibrary
 
   included do
     has_many :container_materials, through: :requests
-    # Because its a polymorphic association, we need to be explicit about what we'll get back.
-    # This means we need to specify both source_type and class_name. We specify both, as
-    # otherwise rails struggles to work out if we want '::Well' or '<Namespace>::Well' and either ends
-    # up using the wrong table, or expects to see '::Well' in the container_type column
+    # Because its a polymorphic association, we need to be explicit about what
+    # we'll get back. This means we need to specify both source_type and
+    # class_name. We specify both, as otherwise rails struggles to work out if
+    # we want '::Well' or '<Namespace>::Well' and either ends up using the wrong
+    # table, or expects to see '::Well' in the container_type column
     has_many :source_wells, through: :container_materials, source: :container,
                             source_type: 'Well', class_name: '::Well'
   end
