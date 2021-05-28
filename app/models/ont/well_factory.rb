@@ -16,7 +16,8 @@ module Ont
     # @param attributes [Hash] Hash describing the wells to create
     # @option attributes [Plate] :plate The Plate to associate with the wells
     # @option attributes [Hash] :well_attributes Hash describing the well to create
-    # @option attributes [TagSetService] :tag_set_service Pre-loaded set of tags for applying to the wells
+    # @option attributes [TagSetService] :tag_set_service Pre-loaded set of tags
+    #                                    for applying to the wells
     #
     def initialize(attributes = {})
       return unless attributes.key?(:well_attributes) && attributes.key?(:tag_set_service)

@@ -14,24 +14,25 @@ module Mutations
     field :errors, [String], 'An array of error messages thrown when creating the plate.',
           null: false
 
-    #
-    # Constructs the plate, wells, samples and requests
-    # Below is plant UML describing the key sequence flow, it is not
-    # intended to be exhaustive.
-    #
-    # PNG version in create_plate_with_samples_mutation.png
-    #
-    # Plant UML:
-    # https://plantuml.com/
-    # VSCode extension: https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml
-    #
-    # A lot of the complexity below is to generate bulk inserts for performance.
-    # We have a few passes:
-    # - Initial pass builds the factories and record objects
-    # - We then have a validation pass
-    # - Followed by serializing everything, the passes back to PlateWithSamplesFactory
-    #   here help maintain shared timestamps
-    #
+#
+# Constructs the plate, wells, samples and requests
+# Below is plant UML describing the key sequence flow, it is not
+# intended to be exhaustive.
+#
+# PNG version in create_plate_with_samples_mutation.png
+#
+# Plant UML:
+# https://plantuml.com/
+# VSCode extension: https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml
+#
+# A lot of the complexity below is to generate bulk inserts for performance.
+# We have a few passes:
+# - Initial pass builds the factories and record objects
+# - We then have a validation pass
+# - Followed by serializing everything, the passes back to PlateWithSamplesFactory
+#   here help maintain shared timestamps
+#
+# rubocop:disable Style/BlockComments
 =begin
     @startuml Sequence Flow
     CreatePlateWithSamplesMutation -> "Ont::PlateWithSamplesFactory" : process
@@ -110,6 +111,7 @@ module Mutations
     "Ont::PlateWithSamplesFactory" <- TagTaggable
     @enduml
 =end
+    # rubocop:enable Style/BlockComments
     #
     # @param arguments [Types::Inputs::Ont::PlateWithSamplesInputType]
     #

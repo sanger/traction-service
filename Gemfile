@@ -33,9 +33,9 @@ end
 
 group :development, :test do
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
+  gem 'pry-rails'
   gem 'rspec-rails'
   gem 'rubocop', require: false
   gem 'shoulda-matchers'
   gem 'sqlite3'
-  gem 'pry-rails'
 end
