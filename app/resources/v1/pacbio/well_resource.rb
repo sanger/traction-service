@@ -2,15 +2,18 @@
 
 module V1
   module Pacbio
-    # WellResource
     class WellResource < JSONAPI::Resource
-      model_name 'Pacbio::Well'
+      model_name '::Well'
 
-      attributes :movie_time, :insert_size, :on_plate_loading_concentration,
-                 :row, :column, :pacbio_plate_id, :comment, :generate_hifi,
-                 :position, :pre_extension_time, :ccs_analysis_output
+      attributes :position
 
-      has_many :libraries, class_name: 'WellLibrary'
+      # TODO: to fit in with what is currently here we are returning materials which could either
+      # be request or library
+      # also the container material could have a container which is a tube
+      # this means we are returning attributes which don't make sense e.g. barcode
+      # We really want to be returning them as samples
+      has_many :materials, class_name: 'ContainerMaterial', relation_name: :container_materials,
+                           foreign_key_on: :related
     end
   end
 end
