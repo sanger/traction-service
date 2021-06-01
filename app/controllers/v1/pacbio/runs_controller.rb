@@ -54,9 +54,7 @@ module V1
       end
 
       def render_json(status)
-        render json:
-         JSONAPI::ResourceSerializer.new(RunResource)
-                                    .serialize_to_hash(RunResource.new(@run, nil)), status: status
+        render json: serialize_resource(RunResource.new(@run, nil)), status: status
       end
     end
   end

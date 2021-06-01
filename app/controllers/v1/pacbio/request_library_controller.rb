@@ -23,10 +23,8 @@ module V1
       end
 
       def render_json(status)
-        render json:
-            JSONAPI::ResourceSerializer.new(RequestLibraryResource)
-                                       .serialize_to_hash(RequestLibraryResource
-                                       .new(@request_library, nil)), status: status
+        resource = RequestLibraryResource.new(@request_library, nil)
+        render json: serialize_resource(resource), status: status
       end
     end
   end
