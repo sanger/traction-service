@@ -13,7 +13,8 @@ module V1
       has_one :tube
 
       def self.records_for_populate(*_args)
-        super.preload(source_wells: :plate, requests: :sample, container_material: { container: :barcode })
+        super.preload(source_wells: :plate, requests: :sample,
+                      container_material: { container: :barcode })
       end
 
       def created_at
