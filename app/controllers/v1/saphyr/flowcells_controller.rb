@@ -10,9 +10,7 @@ module V1
         @flowcell = ::Saphyr::Flowcell.new(params_names)
         if @flowcell.save
           Messages.publish(@flowcell, Pipelines.saphyr.message)
-          render json:
-            JSONAPI::ResourceSerializer.new(FlowcellResource)
-                                       .serialize_to_hash(FlowcellResource.new(flowcell, nil)),
+          render json: serialize_resource(FlowcellResource.new(flowcell, nil)),
                  status: :created
         else
           render json: { data: { errors: @flowcell.errors.messages } },
@@ -23,9 +21,7 @@ module V1
       def update
         flowcell.update(library: library)
         Messages.publish(flowcell, Pipelines.saphyr.message)
-        render json:
-          JSONAPI::ResourceSerializer.new(FlowcellResource)
-                                     .serialize_to_hash(FlowcellResource.new(flowcell, nil)),
+        render json: serialize_resource(FlowcellResource.new(flowcell, nil)),
                status: :ok
       rescue StandardError => e
         render json: { data: { errors: e.message } }, status: :unprocessable_entity
