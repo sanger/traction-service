@@ -12,10 +12,8 @@ module V1
       has_many :requests, class_name: 'RequestLibrary', relation_name: :request_libraries
       has_one :tube
 
-      def self.records(*_args)
-        super.preload(source_wells: :plate,
-                      container_material: { container: :barcode },
-                      requests: :sample)
+      def self.records_for_populate(*_args)
+        super.preload(source_wells: :plate, requests: :sample, container_material: { container: :barcode })
       end
 
       def created_at
