@@ -43,9 +43,9 @@ RSpec.describe 'PlatesController', type: :request do
       materials = materials.index_by { |mat| mat['id'].to_i }
 
       pacbio_plates.flat_map(&:wells).flat_map(&:materials).each do |request|
-        material = materials.fetch(request.id)
+        material = materials.fetch(request.container_material.id)
 
-        expect(material['id']).to eq(request.id.to_s)
+        expect(material['id']).to eq(request.container_material.id.to_s)
         expect(material['attributes']['library_type']).to eq(request.library_type)
         expect(material['attributes']['estimate_of_gb_required']).to eq(request.estimate_of_gb_required)
         expect(material['attributes']['number_of_smrt_cells']).to eq(request.number_of_smrt_cells)
