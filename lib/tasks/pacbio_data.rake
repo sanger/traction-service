@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'factory_bot'
-
 namespace :pacbio_data do
   task create: :environment do
+    require 'factory_bot'
+
     include FactoryBot::Syntax::Methods
     FactoryBot.factories.clear
     FactoryBot.find_definitions
