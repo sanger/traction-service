@@ -11,7 +11,11 @@ gem 'exception_notification'
 gem 'graphql'
 gem 'graphql-client'
 gem 'graphql-docs'
-gem 'jsonapi-resources', '~> 0.10.0'
+# Pinned to 0.10.4 pending fix of
+# https://github.com/cerebris/jsonapi-resources/issues/1369
+# Results in MySQL syntax error on several tests when run against a MySQL
+# (Not SQL lite) database
+gem 'jsonapi-resources', '= 0.10.4'
 gem 'mysql2'
 gem 'puma', '~> 4.3' # Use Puma as the app server
 gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX possible
