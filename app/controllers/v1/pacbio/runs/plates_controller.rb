@@ -40,9 +40,7 @@ module V1
         end
 
         def render_json(status)
-          render json:
-             JSONAPI::ResourceSerializer.new(PlateResource)
-                                        .serialize_to_hash(PlateResource.new(@plate, nil)),
+          render json: serialize_resource(PlateResource.new(@plate, nil)),
                  status: status
         end
       end

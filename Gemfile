@@ -11,7 +11,7 @@ gem 'exception_notification'
 gem 'graphql'
 gem 'graphql-client'
 gem 'graphql-docs'
-gem 'jsonapi-resources', '~> 0.9.10'
+gem 'jsonapi-resources', '~> 0.10.0'
 gem 'mysql2'
 gem 'puma', '~> 4.3' # Use Puma as the app server
 gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX possible
@@ -33,6 +33,7 @@ end
 
 group :development, :test do
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
+  gem 'pry-rails'
   gem 'rspec-rails'
   gem 'rubocop', require: false
   gem 'shoulda-matchers'
