@@ -21,18 +21,19 @@ RSpec.describe 'WellsController', type: :request do
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
-      expect(json['data'][0]['attributes']['pacbio_plate_id']).to eq(well1.pacbio_plate_id)
-      expect(json['data'][0]['attributes']['row']).to eq(well1.row)
-      expect(json['data'][0]['attributes']['column']).to eq(well1.column)
+      well_attributes = json['data'][0]['attributes']
+      expect(well_attributes['pacbio_plate_id']).to eq(well1.pacbio_plate_id)
+      expect(well_attributes['row']).to eq(well1.row)
+      expect(well_attributes['column']).to eq(well1.column)
       # TODO: fix movie time column
-      expect(json['data'][0]['attributes']['movie_time'].to_s).to eq(well1.movie_time.to_s)
-      expect(json['data'][0]['attributes']['insert_size']).to eq(well1.insert_size)
-      expect(json['data'][0]['attributes']['on_plate_loading_concentration']).to eq(well1.on_plate_loading_concentration)
-      expect(json['data'][0]['attributes']['pacbio_plate_id']).to eq(well1.pacbio_plate_id)
-      expect(json['data'][0]['attributes']['comment']).to eq(well1.comment)
-      expect(json['data'][0]['attributes']['pre_extension_time']).to eq(well1.pre_extension_time)
-      expect(json['data'][0]['attributes']['generate_hifi']).to eq(well1.generate_hifi)
-      expect(json['data'][0]['attributes']['ccs_analysis_output']).to eq(well1.ccs_analysis_output)
+      expect(well_attributes['movie_time'].to_s).to eq(well1.movie_time.to_s)
+      expect(well_attributes['insert_size']).to eq(well1.insert_size)
+      expect(well_attributes['on_plate_loading_concentration']).to eq(well1.on_plate_loading_concentration)
+      expect(well_attributes['pacbio_plate_id']).to eq(well1.pacbio_plate_id)
+      expect(well_attributes['comment']).to eq(well1.comment)
+      expect(well_attributes['pre_extension_time']).to eq(well1.pre_extension_time)
+      expect(well_attributes['generate_hifi']).to eq(well1.generate_hifi)
+      expect(well_attributes['ccs_analysis_output']).to eq(well1.ccs_analysis_output)
 
       well = json['data'][1]['attributes']
       expect(well['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
