@@ -20,6 +20,22 @@ module V1
       def all_wells_have_libraries
         @model.all_wells_have_libraries?
       end
+
+      # JSON API Resources builds up a representation of the relationships on
+      # a give resource. Whilst doing to it asks the associated resource for
+      # its type, before using this method on the parent resource to attempt
+      # to look up the model. Unfortunately this results in V1::Pacbio::PlateResource
+      # by default.
+      # We should probably consider renaming Runs::Plate to something like Runs::PacBioPlate
+      # thereby updating the type. However this will also need updates to routes,
+      # and the front end.
+      def self.resource_klass_for(type)
+        if type == 'plates'
+          super('runs/plates')
+        else
+          super
+        end
+      end
     end
   end
 end

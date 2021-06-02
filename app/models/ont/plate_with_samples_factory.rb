@@ -60,6 +60,13 @@ module Ont
 
     validate :check_plate_factory
 
+    #
+    # Create a new PlateWithSamplesFactory ready to generate the nested information
+    #
+    # @param attributes [Hash] Attributes hash
+    # @option attributes [String] :barcode The barcode of the plate to generate
+    # @option attributes [Array<Hash>] :wells Array of well attributes to use to generate wells
+    #
     def initialize(attributes = {})
       @attributes = attributes
     end
@@ -137,11 +144,11 @@ module Ont
     end
 
     def get_request_ids_by_uuid(request_uuids)
-      Ont::Request.where(uuid: request_uuids).map { |req| [req.uuid, req.id] }.to_h
+      Ont::Request.where(uuid: request_uuids).pluck(:uuid, :id).to_h
     end
 
     def get_well_ids_by_position(wells)
-      wells.map { |well| [well.position, well.id] }.to_h
+      wells.pluck(:position, :id).to_h
     end
 
     def insert_joins(well_ids_by_position, request_ids_by_uuid)

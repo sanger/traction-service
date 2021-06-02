@@ -9,6 +9,10 @@ module Ont
                         inverse_of: :library, dependent: :nullify
     has_one :flowcell, foreign_key: :ont_library_id, inverse_of: :library, dependent: :destroy
 
+    # This is dependent on the requests association, so needs to be included
+    # after that is defined
+    include PlateSourcedLibrary
+
     validates :name, :pool, :pool_size, presence: true
     validates :name, uniqueness: { case_sensitive: false,
                                    message: 'must be unique: a pool already exists for this plate' }

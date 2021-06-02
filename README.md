@@ -14,12 +14,18 @@ Rails app which exposes a RESTful API.
 
 ## Installation
 
-1. Install using: `bundle install`
-1. Remove the `.example` from the config files in `config` folder
+1. Run `bin/setup`
+
+This will:
+
+- Run bundle install
+- Create copies of any .example files
+- Create the database
 
 ## Database setup
 
-To create the database for a fresh install: `bundle exec rails db:setup`
+The database should have been generated as part of the installation step above.
+If you need to create the database afresh: `bundle exec rails db:setup`.
 
 To create a set of enzymes (needed for saphyr dummy runs): `bundle exec rails enzymes:create`
 
@@ -29,7 +35,7 @@ To fetch tags from SS: `bundle exec rails tags:fetch`
 
 To update tags for an ONT plate which has tags wrongly assigned by row rather than column: `BARCODES=barcode1,barcode2... bundle exec rails tags:reorder`
 
-To create pacbio dummy runs: `bundle exec rails pacbio_runs:create`
+To create pacbio dummy runs: `bundle exec rails pacbio_data:create`
 
 To create saphyr dummy runs: `bundle exec rails saphyr_runs:create`
 
@@ -98,6 +104,6 @@ This documentation can be updated by running the following commands:
 On merging a pull request into develop, a release will be created with the tag/name `<branch>/<timestamp>`
 
 #### PROD
-Update `.release-version` with major/minor/patch. On merging a pull request into master, a release will be created with the release version as the tag/name 
+Update `.release-version` with major/minor/patch. On merging a pull request into master, a release will be created with the release version as the tag/name
 
 See Confluence for further information

@@ -42,9 +42,10 @@ RSpec.describe 'RunsController', type: :request do
       expect(run['comments']).to eq(run2.comments)
     end
 
-    it 'returns the correct relationships' do
+    it 'returns the correct relationships', aggregate_failures: true do
       get "#{v1_pacbio_runs_path}?include=plate", headers: json_api_headers
-      expect(response).to have_http_status(:success)
+
+      expect(response).to have_http_status(:success), response.body
       json = ActiveSupport::JSON.decode(response.body)
 
       expect(json['data'][0]['relationships']['plate']).to be_present

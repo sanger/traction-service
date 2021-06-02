@@ -10,6 +10,15 @@ module Ont
 
     validate :check_well, :check_request_factories
 
+    #
+    # Build a well factory
+    #
+    # @param attributes [Hash] Hash describing the wells to create
+    # @option attributes [Plate] :plate The Plate to associate with the wells
+    # @option attributes [Hash] :well_attributes Hash describing the well to create
+    # @option attributes [TagSetService] :tag_set_service Pre-loaded set of tags
+    #                                    for applying to the wells
+    #
     def initialize(attributes = {})
       return unless attributes.key?(:well_attributes) && attributes.key?(:tag_set_service)
 
@@ -22,11 +31,8 @@ module Ont
       return false unless options[:validate] == false || valid?
 
       # No need to validate any lower level objects since validation above has already checked them
-      request_data = []
-      unless request_factories.nil?
-        request_data = request_factories.map do |request_factory|
-          request_factory.bulk_insert_serialise(bulk_insert_serialiser, validate: false)
-        end
+      request_data = request_factories.map do |request_factory|
+        request_factory.bulk_insert_serialise(bulk_insert_serialiser, validate: false)
       end
 
       bulk_insert_serialiser.well_data(well, request_data)
@@ -34,7 +40,11 @@ module Ont
 
     private
 
-    attr_reader :plate, :tag_set_service, :well, :request_factories
+    attr_reader :plate, :tag_set_service, :well
+
+    def request_factories
+      @request_factories || []
+    end
 
     def build_well(attributes)
       @well = ::Well.new(position: attributes[:position], plate: @plate)
@@ -62,8 +72,6 @@ module Ont
     end
 
     def check_request_factories
-      return if request_factories.nil?
-
       request_factories.each do |request_factory|
         next if request_factory.valid?
 
