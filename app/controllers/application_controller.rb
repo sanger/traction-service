@@ -7,6 +7,10 @@ class ApplicationController < ActionController::Base
 
   on_server_error :send_exception_notification
 
+  def self.send_exception_notification(exception)
+    ExceptionNotifier.notify_exception(exception)
+  end
+
   private
 
   # Caution: Using this approach for a 'create' action is not strictly JSON API
@@ -23,9 +27,5 @@ class ApplicationController < ActionController::Base
   # they will correctly ensure parameters such as include are properly processed
   def serialize_resource(resource)
     { data: JSONAPI::ResourceSerializer.new(resource.class).object_hash(resource, {}) }
-  end
-
-  def self.send_exception_notification(exception)
-    ExceptionNotifier.notify_exception(exception)
   end
 end
