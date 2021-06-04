@@ -5,6 +5,14 @@ class ApplicationController < ActionController::Base
   include JSONAPI::ActsAsResourceController
   skip_before_action :verify_authenticity_token
 
+  on_server_error :send_exception_notification
+
+  def self.send_exception_notification(exception)
+    ExceptionNotifier.notify_exception(exception)
+  end
+
+  private
+
   # Caution: Using this approach for a 'create' action is not strictly JSON API
   # compliant.
   def serialize_array(array)

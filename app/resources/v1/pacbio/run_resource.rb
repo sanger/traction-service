@@ -13,6 +13,16 @@ module V1
       has_one :plate, foreign_key_on: :related, foreign_key: 'pacbio_run_id',
                       class_name: 'Runs::Plate'
 
+      def self.records_for_populate(*_args)
+        super.preload(plate: {
+                        wells: {
+                          libraries: {
+                            request_libraries: { request: :sample }
+                          }
+                        }
+                      })
+      end
+
       def created_at
         @model.created_at.to_s(:us)
       end
