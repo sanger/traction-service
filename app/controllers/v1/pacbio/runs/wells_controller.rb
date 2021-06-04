@@ -44,7 +44,7 @@ module V1
           resources = @well_factory.wells.map do |well_factory|
             WellResource.new(::Pacbio::Well.find(well_factory.id), nil)
           end
-          JSONAPI::ResourceSerializer.new(WellResource).serialize_to_hash(resources)
+          serialize_array(resources)
         end
 
         def publish_message
@@ -105,9 +105,7 @@ module V1
         end
 
         def render_json(status)
-          render json:
-           JSONAPI::ResourceSerializer.new(WellResource)
-                                      .serialize_to_hash(WellResource.new(@well, nil)),
+          render json: serialize_resource(WellResource.new(@well, nil)),
                  status: status
         end
       end
