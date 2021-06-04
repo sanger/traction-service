@@ -3,6 +3,7 @@
 require_relative '../traction_graphql'
 
 namespace :ont_data do
+  desc 'Populate the database with ont plates and runs'
   task :create, [:num] => :environment do |_t, args|
     puts '-> Creating ONT data using GraphQL'
 
