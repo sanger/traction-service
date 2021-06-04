@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '2.6.3'
+ruby '2.7.3'
 
 gem 'bootsnap', '>= 1.1.0', require: false # Reduces boot times through caching
 gem 'bunny'
@@ -11,9 +11,13 @@ gem 'exception_notification'
 gem 'graphql'
 gem 'graphql-client'
 gem 'graphql-docs'
-gem 'jsonapi-resources', '~> 0.9.10'
+# Pinned to 0.10.4 pending fix of
+# https://github.com/cerebris/jsonapi-resources/issues/1369
+# Results in MySQL syntax error on several tests when run against a MySQL
+# (Not SQL lite) database
+gem 'jsonapi-resources', '= 0.10.4'
 gem 'mysql2'
-gem 'puma', '~> 3.11' # Use Puma as the app server
+gem 'puma', '~> 4.3' # Use Puma as the app server
 gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX possible
 gem 'rails', '~> 6.0.3.1'
 gem 'rubocop-rails'
@@ -33,6 +37,7 @@ end
 
 group :development, :test do
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
+  gem 'pry-rails'
   gem 'rspec-rails'
   gem 'rubocop', require: false
   gem 'shoulda-matchers'

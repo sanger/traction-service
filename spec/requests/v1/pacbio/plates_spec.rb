@@ -37,20 +37,24 @@ RSpec.describe 'PlatesController', type: :request do
       expect(well['id']).to eq(pacbio_plates.first.wells.first.id.to_s)
       expect(well['attributes']['position']).to eq(pacbio_plates.first.wells.first.position)
 
-      material = json['included'].find { |well| well['type'] == "container_materials" }
+      materials = json['included'].select { |resource| resource['type'] == 'container_materials' }
 
-      expect(material['type']).to eq("container_materials")
+      expect(materials.length).to eq(15)
+      materials = materials.index_by { |mat| mat['id'].to_i }
 
-      request = pacbio_plates.first.wells.first.materials.first
-      expect(material['id']).to eq(request.id.to_s)
-      expect(material['attributes']['library_type']).to eq(request.library_type)
-      expect(material['attributes']['estimate_of_gb_required']).to eq(request.estimate_of_gb_required)
-      expect(material['attributes']['number_of_smrt_cells']).to eq(request.number_of_smrt_cells)
-      expect(material['attributes']['cost_code']).to eq(request.cost_code)
-      expect(material['attributes']['external_study_id']).to eq(request.external_study_id)
-      expect(material['attributes']['sample_name']).to eq(request.sample_name)
-      expect(material['attributes']['sample_species']).to eq(request.sample_species)
-      expect(material['attributes']['material_type']).to eq('request')
+      pacbio_plates.flat_map(&:wells).flat_map(&:materials).each do |request|
+        material = materials.fetch(request.container_material.id)
+
+        expect(material['id']).to eq(request.container_material.id.to_s)
+        expect(material['attributes']['library_type']).to eq(request.library_type)
+        expect(material['attributes']['estimate_of_gb_required']).to eq(request.estimate_of_gb_required)
+        expect(material['attributes']['number_of_smrt_cells']).to eq(request.number_of_smrt_cells)
+        expect(material['attributes']['cost_code']).to eq(request.cost_code)
+        expect(material['attributes']['external_study_id']).to eq(request.external_study_id)
+        expect(material['attributes']['sample_name']).to eq(request.sample_name)
+        expect(material['attributes']['sample_species']).to eq(request.sample_species)
+        expect(material['attributes']['material_type']).to eq('request')
+      end
     end
 
     it 'filtering by barcodes' do

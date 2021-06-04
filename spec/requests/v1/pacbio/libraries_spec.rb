@@ -20,48 +20,52 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       expect(json['data'].length).to eq(2)
     end
 
-    it 'returns the correct attributes' do
+    it 'returns the correct attributes', aggregate_failures: true do
       get "#{v1_pacbio_libraries_path}?include=requests", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      expect(json['data'][0]['attributes']['volume']).to eq(library1.volume)
-      expect(json['data'][0]['attributes']['concentration']).to eq(library1.concentration)
-      expect(json['data'][0]['attributes']['template_prep_kit_box_barcode']).to eq(library1.template_prep_kit_box_barcode)
-      expect(json['data'][0]['attributes']['fragment_size']).to eq(library1.fragment_size)
-      expect(json['data'][0]['attributes']['sample_names']).to eq(library1.sample_names)
-      expect(json['data'][0]['attributes']['state']).to eq(library1.state)
-      expect(json['data'][0]['attributes']['barcode']).to eq(library1.tube.barcode)
-      expect(json['data'][0]["attributes"]["created_at"]).to eq(library1.created_at.to_s(:us))
-      expect(json['data'][0]["attributes"]["deactivated_at"]).to eq(nil)
+      library_1_attributes = json['data'][0]['attributes']
+      expect(library_1_attributes['volume']).to eq(library1.volume)
+      expect(library_1_attributes['concentration']).to eq(library1.concentration)
+      expect(library_1_attributes['template_prep_kit_box_barcode']).to eq(library1.template_prep_kit_box_barcode)
+      expect(library_1_attributes['fragment_size']).to eq(library1.fragment_size)
+      expect(library_1_attributes['sample_names']).to eq(library1.sample_names)
+      expect(library_1_attributes['state']).to eq(library1.state)
+      expect(library_1_attributes['barcode']).to eq(library1.tube.barcode)
+      expect(library_1_attributes["created_at"]).to eq(library1.created_at.to_s(:us))
+      expect(library_1_attributes["deactivated_at"]).to eq(nil)
+      expect(library_1_attributes['source_identifier']).to eq(library1.source_identifier)
 
-      expect(json['data'][1]['attributes']['volume']).to eq(library2.volume)
-      expect(json['data'][1]['attributes']['concentration']).to eq(library2.concentration)
-      expect(json['data'][1]['attributes']['template_prep_kit_box_barcode']).to eq(library2.template_prep_kit_box_barcode)
-      expect(json['data'][1]['attributes']['fragment_size']).to eq(library2.fragment_size)
-      expect(json['data'][1]['attributes']['sample_names']).to eq(library2.sample_names)
-      expect(json['data'][1]['attributes']['state']).to eq(library2.state)
-      expect(json['data'][1]['attributes']['barcode']).to eq(library2.tube.barcode)
-      expect(json['data'][1]["attributes"]["created_at"]).to eq(library2.created_at.to_s(:us))
-      expect(json['data'][1]["attributes"]["deactivated_at"]).to eq(nil)
+      library_2_attributes = json['data'][1]['attributes']
+      expect(library_2_attributes['volume']).to eq(library2.volume)
+      expect(library_2_attributes['concentration']).to eq(library2.concentration)
+      expect(library_2_attributes['template_prep_kit_box_barcode']).to eq(library2.template_prep_kit_box_barcode)
+      expect(library_2_attributes['fragment_size']).to eq(library2.fragment_size)
+      expect(library_2_attributes['sample_names']).to eq(library2.sample_names)
+      expect(library_2_attributes['state']).to eq(library2.state)
+      expect(library_2_attributes['barcode']).to eq(library2.tube.barcode)
+      expect(library_2_attributes["created_at"]).to eq(library2.created_at.to_s(:us))
+      expect(library_2_attributes["deactivated_at"]).to eq(nil)
+      expect(library_2_attributes['source_identifier']).to eq(library2.source_identifier)
     end
 
-    it 'returns the correct relationships and included data' do
+    it 'returns the correct relationships and included data', aggregate_failures: true do
       get "#{v1_pacbio_libraries_path}?include=requests", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      library1Requests = json['data'][0]['relationships']['requests']
-      expect(library1Requests['data'].length).to eq(1)
-      expect(library1Requests['data'][0]['id'].to_s).to eq(request_library1.id.to_s)
-      expect(library1Requests['data'][0]['type'].to_s).to eq('request_libraries')
+      library_1_requests = json['data'][0]['relationships']['requests']
+      expect(library_1_requests['data'].length).to eq(1)
+      expect(library_1_requests['data'][0]['id'].to_s).to eq(request_library1.id.to_s)
+      expect(library_1_requests['data'][0]['type'].to_s).to eq('request_libraries')
 
-      library2Requests = json['data'][1]['relationships']['requests']
-      expect(library2Requests['data'].length).to eq(1)
-      expect(library2Requests['data'][0]['id'].to_s).to eq(request_library2.id.to_s)
-      expect(library2Requests['data'][0]['type'].to_s).to eq('request_libraries')
+      library_2_requests = json['data'][1]['relationships']['requests']
+      expect(library_2_requests['data'].length).to eq(1)
+      expect(library_2_requests['data'][0]['id'].to_s).to eq(request_library2.id.to_s)
+      expect(library_2_requests['data'][0]['type'].to_s).to eq('request_libraries')
 
       request1 = json['included'][0]['attributes']
       expect(request1['sample_name']).to eq(request_library1.sample_name)

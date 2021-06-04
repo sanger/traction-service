@@ -17,4 +17,10 @@ RSpec.describe Pacbio::WellLibrary, type: :model, pacbio: true do
     expect(well_library.barcode).to be_present
   end
 
+  it 'if the well is nil the barcode will be nil' do
+    well_library = build(:pacbio_well_library, library: nil)
+    expect(well_library.barcode).to be_nil
+
+  end
+
 end

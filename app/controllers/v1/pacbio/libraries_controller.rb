@@ -8,8 +8,7 @@ module V1
         @library_factory = ::Pacbio::LibraryFactory.new(params_names)
         if @library_factory.save
           @resources = LibraryResource.new(@library_factory.library, nil)
-          body = JSONAPI::ResourceSerializer.new(LibraryResource).serialize_to_hash(@resources)
-          render json: body, status: :created
+          render json: serialize_resource(@resources), status: :created
         else
           render json: { data: { errors: @library_factory.errors.messages } },
                  status: :unprocessable_entity
@@ -66,9 +65,7 @@ module V1
       end
 
       def render_json(status)
-        render json:
-           JSONAPI::ResourceSerializer.new(LibraryResource)
-                                      .serialize_to_hash(LibraryResource.new(@library, nil)),
+        render json: serialize_resource(LibraryResource.new(@library, nil)),
                status: status
       end
     end
