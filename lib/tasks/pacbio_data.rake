@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 namespace :pacbio_data do
+  desc 'Populate the database with pacbio plates and runs'
   task create: :environment do
     require 'factory_bot'
 
