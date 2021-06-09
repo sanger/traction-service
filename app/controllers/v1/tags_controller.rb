@@ -38,9 +38,7 @@ module V1
     end
 
     def render_json(status)
-      render json:
-       JSONAPI::ResourceSerializer.new(TagResource)
-                                  .serialize_to_hash(TagResource.new(@tag, nil)), status: status
+      render json: serialize_resource(TagResource.new(@tag, nil)), status: status
     end
   end
 end

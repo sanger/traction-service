@@ -1,4 +1,3 @@
-#TODO: abstact out behaviour for request factories for each pipeline
 FactoryBot.define do
   factory :pacbio_request, class: Pacbio::Request do
     library_type { 'library_type_1' }

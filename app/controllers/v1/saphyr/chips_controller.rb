@@ -41,10 +41,7 @@ module V1
       end
 
       def render_json(status)
-        render json:
-           JSONAPI::ResourceSerializer.new(ChipResource)
-                                      .serialize_to_hash(ChipResource.new(chip, nil)),
-               status: status
+        render json: serialize_resource(ChipResource.new(chip, nil)), status: status
       end
     end
   end
