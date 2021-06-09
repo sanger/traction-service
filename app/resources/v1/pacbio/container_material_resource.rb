@@ -33,80 +33,36 @@ module V1
         end
       end
 
+      def self.records_for_populate(*_args)
+        super.preload(:container, material: %i[material_type sample])
+      end
+
       def material_type
         @model.material_type.demodulize.downcase
       end
 
-      # Delegations to Container
+      delegate :container, :material, to: :@model
+
+      # Delegations to container
       def barcode
         @model.container.try(:barcode)
       end
 
-      # Delegations to Material
-      def library_type
-        @model.material.library_type
-      end
-
-      def estimate_of_gb_required
-        @model.material.estimate_of_gb_required
-      end
-
-      def number_of_smrt_cells
-        @model.material.number_of_smrt_cells
-      end
-
-      def cost_code
-        @model.material.cost_code
-      end
-
-      def external_study_id
-        @model.material.external_study_id
-      end
-
-      def source_barcode
-        @model.material.source_barcode
-      end
-
-      def sample_name
-        @model.material.sample_name
-      end
-
-      def sample_species
-        @model.material.sample_species
-      end
+      # Delegations to material
+      delegate :library_type, :estimate_of_gb_required, :number_of_smrt_cells,
+               :cost_code, :external_study_id, :source_barcode,
+               :sample_name, :sample_species, :state, :volume,
+               :concentration, :template_prep_kit_box_barcode,
+               :fragment_size, :sample_names, to: :material
 
       def created_at
         @model.material.created_at.strftime('%Y/%m/%d %H:%M')
-      end
-
-      def state
-        @model.material.state
-      end
-
-      def volume
-        @model.material.volume
-      end
-
-      def concentration
-        @model.material.concentration
-      end
-
-      def template_prep_kit_box_barcode
-        @model.material.template_prep_kit_box_barcode
-      end
-
-      def fragment_size
-        @model.material.fragment_size
       end
 
       def deactivated_at
         return nil if @model.material.deactivated_at.nil?
 
         @model.material.deactivated_at.strftime('%Y/%m/%d %H:%M')
-      end
-
-      def sample_names
-        @model.material.sample_names
       end
     end
   end
