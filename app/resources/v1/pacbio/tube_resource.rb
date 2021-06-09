@@ -7,7 +7,7 @@ module V1
       model_name 'Tube'
       attributes :barcode
       has_many :materials, class_name: 'ContainerMaterial', relation_name: :container_materials,
-                           foreign_key_on: :related, always_include_linkage_data: true
+                           foreign_key_on: :related
 
       # Filters
       filter :barcode, apply: ->(records, value, _options) { records.by_barcode(value) }

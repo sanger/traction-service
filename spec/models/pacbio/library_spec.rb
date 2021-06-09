@@ -22,7 +22,7 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
   it 'must have a fragment size' do
     expect(build(:pacbio_library, fragment_size: nil)).to_not be_valid
   end
-  
+
   it 'can have sample names' do
     expect(create(:pacbio_library).sample_names).to be_truthy
   end
@@ -44,7 +44,7 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
 
   context 'requests' do
 
-    let!(:library) { create(:pacbio_library)}
+    let!(:library) { create(:pacbio_library) }
 
     before(:each) do
       (1..5).each do |i|
@@ -65,13 +65,12 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
     it 'will delete the library requests when the library is deleted' do
       expect { library.destroy }.to change(Pacbio::RequestLibrary, :count).by(-5)
     end
-
   end
 
   context 'library' do
 
     let(:library_factory) { :pacbio_library }
-    let(:library_model) { Pacbio::Library}
+    let(:library_model) { Pacbio::Library }
 
     it_behaves_like 'library'
   end
@@ -81,4 +80,20 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
     it_behaves_like "tube_material"
   end
 
+  describe '#source_identifier' do
+    let(:library) { create(:pacbio_library) }
+    let(:requests) do
+      create_list(:pacbio_request_library, 5, :tagged, library: library).map(&:request)
+    end
+
+    before do
+      create(:plate_with_wells_and_requests, pipeline: 'pacbio',
+             row_count: 5, column_count: 1, barcode: 'BC12',
+             requests: requests)
+    end
+
+    it 'returns the plate barcode and wells' do
+      expect(library.source_identifier).to eq('BC12:A1-E1')
+    end
+  end
 end

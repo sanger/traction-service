@@ -70,9 +70,7 @@ module Pipelines
 
       # @return [Hash] the body of the response; serialized resources
       def body
-        @body ||= JSONAPI::ResourceSerializer.new(
-          self.class.resource_model
-        ).serialize_to_hash(resources)
+        @body ||= serialize_array(resources)
       end
 
       # destroy action for the pipeline request
