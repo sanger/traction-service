@@ -4,6 +4,8 @@
 class Plate < ApplicationRecord
   include Labware
 
+  DEFAULT_SIZE = 96
+
   has_many :wells, inverse_of: :plate, dependent: :destroy
 
   scope :by_pipeline,
@@ -29,6 +31,19 @@ class Plate < ApplicationRecord
   # sorts as: A1 A2 A3 ... B1 B2 ...
   def wells_by_row_then_column
     wells.sort { |a, b| a.row == b.row ? a.column <=> b.column : a.row <=> b.row }
+  end
+
+  #
+  # Compacts the provided well range into an easy to read summary.
+  # e.g.. formatted_range(['A1', 'B1', 'C1','A2','A5','B5']) => 'A1-C1,A2,A5-B5'
+  # Mostly this will just be start_well-end_well
+  #
+  # @param [Array<String>] wells Array of well names to format
+  #
+  # @return [String] A name describing the range
+  #
+  def formatted_range(wells)
+    WellSorterService.formatted_range(wells, DEFAULT_SIZE)
   end
 
   def self.includes_args(except = nil)

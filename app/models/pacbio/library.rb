@@ -24,7 +24,11 @@ module Pacbio
 
     has_many :requests, class_name: 'Pacbio::Request', through: :request_libraries
 
-    delegate :barcode, to: :tube
+    # This is dependent on the requests association, so needs to be included
+    # after that is defined
+    include PlateSourcedLibrary
+
+    delegate :barcode, to: :tube, allow_nil: true
 
     def sample_names
       return '' if requests.blank?
