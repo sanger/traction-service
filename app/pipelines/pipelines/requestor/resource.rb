@@ -32,7 +32,7 @@ module Pipelines
         model_name request_model, add_model_hint: false
 
         attributes(*pipeline_const.request_attributes, :sample_name, :barcode,
-                   :sample_species, :created_at)
+                   :sample_species, :created_at, :source_identifier)
 
         def barcode
           @model&.tube&.barcode

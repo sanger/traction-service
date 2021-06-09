@@ -1,4 +1,4 @@
-require "rails_helper"
+require 'rails_helper'
 
 shared_examples_for 'requestor controller' do
 
@@ -96,7 +96,7 @@ shared_examples_for 'requestor controller' do
       end
 
       context 'when creating multiple requests' do
-  
+
         context 'on success' do
           context 'when the sample does exist' do
 
@@ -159,5 +159,5 @@ shared_examples_for 'requestor controller' do
       end
     end
   end
- 
+
 end

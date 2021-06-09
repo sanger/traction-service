@@ -23,6 +23,10 @@ module Pipelines
 
         validates(*to_s.deconstantize.constantize.required_request_attributes, presence: true)
       end
+
+      def source_identifier
+        container&.identifier
+      end
     end
   end
 end
