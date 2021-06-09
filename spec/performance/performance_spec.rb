@@ -26,6 +26,21 @@ RSpec.describe 'Performance testing' do
       end
     end
 
+    #
+    # Records the time taken to execute the block in seconds. Uses Process::CLOCK_MONOTONIC
+    # so is not affected by updates to the system-clock.
+    # @see https://blog.dnsimple.com/2018/03/elapsed-time-with-ruby-the-right-way/
+    # Also @see https://www.rubydoc.info/stdlib/core/Process:clock_gettime
+    #
+    # @return [Integer,Float] Time elapsed in unit
+    #
+    def benchmark(unit: :millisecond)
+      start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, unit)
+      yield
+      end_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, unit)
+      end_time - start_time
+    end
+
     context 'with 96 wells' do
       let(:num_wells) { 96 }
       let(:tag_set) { create(:tag_set_with_tags, number_of_tags: num_wells) }
@@ -41,12 +56,11 @@ RSpec.describe 'Performance testing' do
         it 'is performant' do
           attributes = plate_with_ont_samples(num_wells, num_samples, tag_set.tags.first.oligo)
 
-          start_time = DateTime.now
-          factory = Ont::PlateWithSamplesFactory.new(attributes)
-          factory.process
-          expect(factory.save).to be_truthy
-          end_time = DateTime.now
-          time_taken_milli = ((end_time - start_time) * 24 * 60 * 60 * 1000).to_i
+          time_taken_milli = benchmark do
+            factory = Ont::PlateWithSamplesFactory.new(attributes)
+            factory.process
+            expect(factory.save).to be_truthy
+          end
           expect(time_taken_milli).to be < 500
         end
       end
@@ -57,12 +71,12 @@ RSpec.describe 'Performance testing' do
         it 'is performant' do
           attributes = plate_with_ont_samples(num_wells, num_samples, tag_set.tags.first.oligo)
 
-          start_time = DateTime.now
-          factory = Ont::PlateWithSamplesFactory.new(attributes)
-          factory.process
-          expect(factory.save).to be_truthy
-          end_time = DateTime.now
-          time_taken_milli = ((end_time - start_time) * 24 * 60 * 60 * 1000).to_i
+          time_taken_milli = benchmark do
+            factory = Ont::PlateWithSamplesFactory.new(attributes)
+            factory.process
+            expect(factory.save).to be_truthy
+          end
+
           expect(time_taken_milli).to be < 5000
         end
       end
@@ -73,12 +87,12 @@ RSpec.describe 'Performance testing' do
         it 'is performant' do
           attributes = plate_with_ont_samples(num_wells, num_samples, tag_set.tags.first.oligo)
 
-          start_time = DateTime.now
-          factory = Ont::PlateWithSamplesFactory.new(attributes)
-          factory.process
-          expect(factory.save).to be_truthy
-          end_time = DateTime.now
-          time_taken_milli = ((end_time - start_time) * 24 * 60 * 60 * 1000).to_i
+          time_taken_milli = benchmark do
+            factory = Ont::PlateWithSamplesFactory.new(attributes)
+            factory.process
+            expect(factory.save).to be_truthy
+          end
+
           expect(time_taken_milli).to be < 20000
         end
       end

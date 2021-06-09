@@ -25,24 +25,20 @@ shared_examples_for 'tubes' do
       let!(:other_pipeline_tube_request)   { create(other_pipeline_tube_request_factory)}
       let!(:pipeline_tube_requests)        { create_list(pipeline_tube_request_factory, 2)}
 
-      it 'returns the correct attributes' do
+      it 'returns the correct attributes', aggregate_failures: true do
         get send(tubes_path), headers: json_api_headers
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
 
-        tube = pipeline_tube_requests.first
-        expect(json['data'][0]['attributes']['barcode']).to eq(tube.barcode)
-        expect(json['data'][0]['relationships']['materials']).to be_present
-        expect(json['data'][0]['relationships']['materials']['data'].count).to eq(1)
-        expect(json['data'][0]['relationships']['materials']['data'].first['type']).to be_present
-        expect(json['data'][0]['relationships']['materials']['data'].first['id']).to eq(tube.container_materials.first.id.to_s)
+        tube0 = pipeline_tube_requests.first
+        tube0_data = json['data'][0]
+        expect(tube0_data['attributes']['barcode']).to eq(tube0.barcode)
+        expect(tube0_data['relationships']['materials']).to be_present
 
-        tube = pipeline_tube_requests.last
-        expect(json['data'][1]['attributes']['barcode']).to eq(tube.barcode)
-        expect(json['data'][1]['relationships']['materials']).to be_present
-        expect(json['data'][1]['relationships']['materials']['data'].count).to eq(1)
-        expect(json['data'][1]['relationships']['materials']['data'].first['type']).to be_present
-        expect(json['data'][1]['relationships']['materials']['data'].first['id']).to eq(tube.container_materials.first.id.to_s)
+        tube1 = pipeline_tube_requests.last
+        tube1_data = json['data'][1]
+        expect(tube1_data['attributes']['barcode']).to eq(tube1.barcode)
+        expect(tube1_data['relationships']['materials']).to be_present
 
       end
     end
@@ -59,16 +55,10 @@ shared_examples_for 'tubes' do
         tube = pipeline_tube_libraries.first
         expect(json['data'][0]['attributes']['barcode']).to eq(tube.barcode)
         expect(json['data'][0]['relationships']['materials']).to be_present
-        expect(json['data'][0]['relationships']['materials']['data'].count).to eq(1)
-        expect(json['data'][0]['relationships']['materials']['data'].first['type']).to be_present
-        expect(json['data'][0]['relationships']['materials']['data'].first['id']).to eq(tube.container_materials.first.id.to_s)
 
         tube = pipeline_tube_libraries.last
         expect(json['data'][1]['attributes']['barcode']).to eq(tube.barcode)
         expect(json['data'][1]['relationships']['materials']).to be_present
-        expect(json['data'][1]['relationships']['materials']['data'].count).to eq(1)
-        expect(json['data'][1]['relationships']['materials']['data'].first['type']).to be_present
-        expect(json['data'][1]['relationships']['materials']['data'].first['id']).to eq(tube.container_materials.first.id.to_s)
       end
     end
 
