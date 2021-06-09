@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 namespace :saphyr_runs do
+  desc 'Populate the database with saphyr tubes and runs'
   task create: :environment do
     attributes = (1..5).collect { |i| { name: "Sample#{i}", external_id: i, external_study_id: i, species: "Species#{i}" } }
 
