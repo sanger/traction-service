@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -60,4 +59,10 @@ Rails.application.configure do
     end
   end
 
+  config.middleware.use ExceptionNotification::Rack
+
+  # We don't want to send emails in development mode, but its useful to see
+  # when the notifier has been triggered.
+  ExceptionNotifier.add_notifier :console_notifier,
+    ->(exception, _) { puts "📧 Exception logged: #{exception.message}"}
 end
