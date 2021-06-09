@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_11_135304) do
+ActiveRecord::Schema.define(version: 2021_06_09_142331) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -79,6 +79,9 @@ ActiveRecord::Schema.define(version: 2020_12_11_135304) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["pacbio_run_id"], name: "index_pacbio_plates_on_pacbio_run_id"
+  end
+
+  create_table "pacbio_pools", force: :cascade do |t|
   end
 
   create_table "pacbio_request_libraries", force: :cascade do |t|
