@@ -27,6 +27,21 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
     expect(create(:pacbio_library).sample_names).to be_truthy
   end
 
+  it 'can have a request' do
+    request = create(:pacbio_request)
+    expect(build(:pacbio_library, request: request).request).to eq(request)
+  end
+
+  it 'can have a tag' do
+    tag = create(:tag)
+    expect(build(:pacbio_library, tag: tag).tag).to eq(tag)
+  end
+
+  it 'can have a pool' do
+    pool = create(:pacbio_pool)
+    expect(build(:pacbio_library, pool: pool).pool).to eq(pool) 
+  end
+
   it 'can have a barcode through tube delegation' do
     library = create(:pacbio_library)
     tube = create(:tube)

@@ -30,6 +30,10 @@ module Pacbio
 
     delegate :barcode, to: :tube, allow_nil: true
 
+    belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id, optional: true
+    belongs_to :tag, optional: true
+    belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :pacbio_pool_id, optional: true
+
     def sample_names
       return '' if requests.blank?
 
