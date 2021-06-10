@@ -15,7 +15,7 @@ module V1
 
       # Request attributes
       attributes :library_type, :estimate_of_gb_required, :number_of_smrt_cells, :cost_code,
-                 :external_study_id, :source_barcode, :sample_name, :sample_species
+                 :external_study_id, :sample_name, :sample_species
 
       # Shared attributes
       attributes :barcode, :created_at, :material_type
@@ -27,7 +27,7 @@ module V1
              created_at deactivated_at sample_names material_type]
         when ::Pacbio::Request
           %i[library_type estimate_of_gb_required number_of_smrt_cells cost_code external_study_id
-             source_barcode sample_name barcode sample_species created_at material_type]
+             sample_name barcode sample_species created_at material_type]
         else
           super
         end
@@ -50,7 +50,7 @@ module V1
 
       # Delegations to material
       delegate :library_type, :estimate_of_gb_required, :number_of_smrt_cells,
-               :cost_code, :external_study_id, :source_barcode,
+               :cost_code, :external_study_id,
                :sample_name, :sample_species, :state, :volume,
                :concentration, :template_prep_kit_box_barcode,
                :fragment_size, :sample_names, to: :material
