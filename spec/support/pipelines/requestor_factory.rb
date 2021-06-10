@@ -27,13 +27,33 @@ shared_examples_for 'requestor factory' do
       expect(described_class.request_model.first.tube).to be_present
     end
 
+    it 'sets the barcode on the tube if it is provided' do
+      expected_barcodes = attributes.pluck(:barcode)
+      next unless expected_barcodes.all?(&:present?)
+
+      factory = described_class.new(attributes)
+      expect(factory.save).to be_truthy
+      tube_barcodes = described_class.request_model.all.map { |r| r.tube.barcode }
+      expect(tube_barcodes).to contain_exactly(*expected_barcodes)
+    end
+
+    it 'generates the barcode on the tube if it is not provided' do
+      expected_barcodes = attributes.pluck(:barcode)
+      next if expected_barcodes.all?(&:present?)
+
+      factory = described_class.new(attributes)
+      expect(factory.save).to be_truthy
+      tube_barcodes = described_class.request_model.all.map { |r| r.tube.barcode }
+      expect(tube_barcodes).to all be_present
+    end
+
     it 'has some requestables' do
       factory = Pacbio::RequestFactory.new(attributes)
       factory.save
       expect(factory.requestables.count).to eq(3)
     end
 
-    it 'doesnt create a sample if it already exists' do
+    it 'doesn\'t create a sample if it already exists' do
       sample = create(:sample)
       attributes << sample.attributes.extract!('name', 'species', 'external_id').with_indifferent_access.merge(attributes_for(request_model))
       factory = described_class.new(attributes)

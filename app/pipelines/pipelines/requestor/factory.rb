@@ -55,8 +55,8 @@ module Pipelines
       def save
         return false unless valid?
 
-        requests.collect(&:save)
-        container_materials.collect(&:save)
+        requests.each(&:save)
+        container_materials.each(&:save)
         true
       end
 
@@ -76,8 +76,9 @@ module Pipelines
       # TODO: needs to be refactored.
       def build_request(request_attributes)
         sample_attributes = request_attributes.extract!(:name, :external_id, :species)
+        container_attributes = request_attributes.extract!(:barcode)
         add_request(request_attributes, sample_attributes)
-        add_container_material
+        add_container_material(container_attributes)
       end
 
       def add_request(request_attributes, sample_attributes)
@@ -85,8 +86,8 @@ module Pipelines
                                   sample: Sample.find_or_initialize_by(sample_attributes))
       end
 
-      def add_container_material
-        container_materials << ContainerMaterial.new(container: Tube.new,
+      def add_container_material(container_attributes)
+        container_materials << ContainerMaterial.new(container: Tube.new(container_attributes),
                                                      material: requests.last.requestable)
       end
 
