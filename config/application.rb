@@ -60,5 +60,8 @@ module TractionService
     config.bunny = config_for(:bunny)
 
     config.autoload_paths += %W{#{Rails.root}/app}
+
+    # Pacbio default request cost code
+    config.pacbio_request_cost_code = 'S4773'
   end
 end

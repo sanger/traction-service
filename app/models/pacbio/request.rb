@@ -7,6 +7,7 @@ module Pacbio
   # A request can have many libraries
   class Request < ApplicationRecord
     include Pipelines::Requestor::Model
+    attribute :cost_code, default: Rails.application.config.pacbio_request_cost_code
 
     has_many :request_libraries, class_name: 'Pacbio::RequestLibrary',
                                  foreign_key: :pacbio_request_id, dependent: :nullify,
