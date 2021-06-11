@@ -137,31 +137,31 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
-  context 'request libraries' do
+  context 'libraries' do
 
     let(:well)                { create(:pacbio_well) }
-    let(:request_libraries)   { create_list(:pacbio_request_library, 2) }
+    let(:libraries)   { create_list(:pacbio_library, 2) }
 
     before(:each) do
-      well.libraries << request_libraries.collect(&:library)
+      well.libraries << libraries
     end
 
     it 'can have one or more' do
-      expect(well.request_libraries.length).to eq(2)
+      expect(well.libraries.length).to eq(2)
     end
 
     it 'can return a list of sample names' do
       sample_names = well.sample_names.split(':')
       expect(sample_names.length).to eq(2)
-      expect(sample_names.first).to eq(request_libraries.first.request.sample_name)
+      expect(sample_names.first).to eq(libraries.first.request.sample_name)
 
       sample_names = well.sample_names(',').split(',')
       expect(sample_names.length).to eq(2)
-      expect(sample_names.first).to eq(request_libraries.first.request.sample_name)
+      expect(sample_names.first).to eq(libraries.first.request.sample_name)
     end
 
     it 'can return a list of tags' do
-      expect(well.tags).to eq(request_libraries.collect(&:tag_id))
+      expect(well.tags).to eq(libraries.collect(&:tag_id))
     end
 
   end

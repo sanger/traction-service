@@ -11,6 +11,7 @@ module Pacbio
     include TubeMaterial
     include Uuidable
     include Librarian
+    include SampleSheet
 
     validates :volume, :concentration, :template_prep_kit_box_barcode,
               :fragment_size, presence: true
@@ -30,12 +31,9 @@ module Pacbio
 
     delegate :barcode, to: :tube, allow_nil: true
 
-    # TODO: This needs an inverse_of but we can't create one until we have changed the
-    # between pacbio request and libraries
-    # rubocop:disable Rails/InverseOf
+
     belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id,
-                         optional: true
-    # rubocop:enable Rails/InverseOf
+                         optional: true, inverse_of: :libraries
     belongs_to :tag, optional: true
     belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :pacbio_pool_id, optional: true,
                       inverse_of: :libraries
@@ -44,6 +42,10 @@ module Pacbio
       return '' if requests.blank?
 
       requests.collect(&:sample_name).join(',')
+    end
+
+    def collection?
+      false
     end
   end
 end

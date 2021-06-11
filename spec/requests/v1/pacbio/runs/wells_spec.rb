@@ -61,9 +61,9 @@ RSpec.describe 'WellsController', type: :request do
   context '#create' do
 
     let(:plate)   { create(:pacbio_plate) }
-    let(:request_library1) { create(:pacbio_request_library_with_tag) }
-    let(:request_library2) { create(:pacbio_request_library_with_tag) }
-    let(:request_library_invalid) { create(:pacbio_request_library_with_tag, tag: request_library1.tag) }
+    let(:library1) { create(:pacbio_library_with_tag) }
+    let(:library2) { create(:pacbio_library_with_tag) }
+    let(:library_invalid) { create(:pacbio_library_with_tag, tag: library1.tag) }
 
     context 'when creating a single well' do
       context 'on success' do
@@ -92,11 +92,11 @@ RSpec.describe 'WellsController', type: :request do
                         data: [
                           {
                             type: 'libraries',
-                            id: request_library1.library.id
+                            id: library1.id
                           },
                           {
                             type: 'libraries',
-                            id: request_library2.library.id
+                            id: library2.id
                           }
                         ]
                       }
@@ -154,8 +154,8 @@ RSpec.describe 'WellsController', type: :request do
         it 'creates libraries' do
           post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
           expect(Pacbio::Well.first.libraries.length).to eq(2)
-          expect(Pacbio::Well.first.libraries[0]).to eq(request_library1.library)
-          expect(Pacbio::Well.first.libraries[1]).to eq(request_library2.library)
+          expect(Pacbio::Well.first.libraries[0]).to eq(library1)
+          expect(Pacbio::Well.first.libraries[1]).to eq(library2)
         end
 
         it 'sends a message to the warehouse' do
@@ -246,11 +246,11 @@ RSpec.describe 'WellsController', type: :request do
                         data: [
                           {
                             type: 'libraries',
-                            id: request_library1.library.id
+                            id: library1.id
                           },
                           {
                             type: 'libraries',
-                            id: request_library_invalid.library.id
+                            id: library_invalid.id
                           }
                         ]
                       }
@@ -364,8 +364,8 @@ RSpec.describe 'WellsController', type: :request do
     context 'when successfully adding a new library' do
       let(:tag_set) { create(:tag_set) }
       let(:uniq_tag) { create(:tag, tag_set: tag_set) }
-      let(:request_library1) { create(:pacbio_request_library, tag: uniq_tag) }
-      let(:updated_libraries_data) { existing_libraries_data.push({ type: "libraries", id: request_library1.library.id }) }
+      let(:library1) { create(:pacbio_library, tag: uniq_tag) }
+      let(:updated_libraries_data) { existing_libraries_data.push({ type: "libraries", id: library1.id }) }
 
       let(:body) do
         {
@@ -397,8 +397,8 @@ RSpec.describe 'WellsController', type: :request do
     end
 
     context 'when successfully replacing all libraries' do
-      let(:request_library1) { create(:pacbio_request_library_with_tag) }
-      let(:request_library2) { create(:pacbio_request_library_with_tag) }
+      let(:library1) { create(:pacbio_library_with_tag) }
+      let(:library2) { create(:pacbio_library_with_tag) }
 
       let(:body) do
         {
@@ -413,11 +413,11 @@ RSpec.describe 'WellsController', type: :request do
                 data: [
                     {
                       type: "libraries",
-                      id: request_library1.library.id
+                      id: library1.id
                     },
                     {
                       type: "libraries",
-                      id: request_library2.library.id
+                      id: library2.id
                     }
                 ]
               }
