@@ -196,7 +196,7 @@ module Pacbio
       SAMPLE_ATTRIBUTES = %i[external_id name species].freeze
       REQUEST_ATTRIBUTES = %i[
         library_type estimate_of_gb_required number_of_smrt_cells cost_code
-        external_study_id source_barcode
+        external_study_id
       ].freeze
 
       attr_reader :sample, :well, :pacbio_request, :request, :container_material
