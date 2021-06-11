@@ -5,6 +5,5 @@ module V1
     # PoolResource
     class PoolResource < JSONAPI::Resource
     end
-
   end
 end

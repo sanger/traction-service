@@ -5,7 +5,7 @@ fileignoreconfig:
   checksum: 79e2c36d919f99d0c92c31b9a932232e07190aae4939b6cb35fe409afdd7d424
 - filename: db/schema.rb
   checksum: 77aac3fdbaa33fe65661be8c1ee31a89c7f70a530dbc2ec490fdd4ee3627ab20
-- filename: app/models/pacbio/library.rb
-  checksum: 2d2fe12a89affe2d97b69ee703a6e2077dfcee8827f4bb62eae2d5faab668087
 - filename: app/models/pacbio/pool.rb
-  checksum: 69052bd01c85c1ffa69cf2372fe78e564ecbc0eca61355094438e49b86c4f68f
+  checksum: c66b53b48743406fdc51b75868af126f3cf99d2d6a07ebf6e5f51549e87ab3c0
+- filename: app/models/pacbio/library.rb
+  checksum: c0e727dfe3a9a41f029dbebc499bc0280a3226cb0cf02c3e82a65c47865b4150

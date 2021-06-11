@@ -92,13 +92,13 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
             data: {
               type: 'pools',
               attributes: {
-                template_prep_kit_box_barcode: 'LK1234567',
                 libraries: [
                   {
+                    template_prep_kit_box_barcode: 'LK1234567',
                     volume: 1.11,
                     concentration: 2.22,
                     fragment_size: 100,
-                    request_id: request.id,
+                    pacbio_request_id: request.id,
                     tag_id: tag.id
                   }
                 ]
@@ -116,20 +116,6 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
           expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to change { Pacbio::Pool.count }.by(1)
         end
 
-        it 'creates a request library' do
-          expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to change { Pacbio::RequestLibrary.count }.by(1)
-        end
-
-        it 'associates the pool, request, library request, tag and tube', aggregate_failures: true do
-          post v1_pacbio_pools_path, params: body, headers: json_api_headers
-          pool = Pacbio::Pool.first
-
-          library = Pacbio::Library.first
-          expect(pool.libaries.first).to eq(library)
-          expect(pool.tube).to be_defined
-          expect(library.tag).to eq(tag)
-          expect(library.request).to eq(request)
-        end
       end
 
       context 'on failure' do
@@ -139,12 +125,12 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
               data: {
                 type: 'pools',
                 attributes: {
-                  template_prep_kit_box_barcode: 'LK1234567',
                   libraries: [
                     {
+                      template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
                       concentration: 2.22,
-                      request_id: request.id,
+                      pacbio_request_id: request.id,
                       tag_id: tag.id
                     }
                   ]
@@ -162,14 +148,6 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
             expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Pool, :count)
           end
 
-          it 'cannot create a library' do
-            expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
-          end
-
-          it 'has an error message' do
-            post v1_pacbio_pools_path, params: body, headers: json_api_headers
-            expect(JSON.parse(response.body)["data"]["errors"]).to_not be_empty
-          end
         end
 
       end
@@ -182,20 +160,21 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
             data: {
               type: 'pools',
               attributes: {
-                template_prep_kit_box_barcode: 'LK1234567',
                 libraries: [
                   {
+                    template_prep_kit_box_barcode: 'LK1234567',
                     volume: 1.11,
                     concentration: 2.22,
                     fragment_size: 100,
-                    request_id: request.id,
+                    pacbio_request_id: request.id,
                     tag_id: tag.id
                   },
                   {
+                    template_prep_kit_box_barcode: 'LK1234567',
                     volume: 1.11,
                     concentration: 2.22,
                     fragment_size: 100,
-                    request_id: request2.id,
+                    pacbio_request_id: request2.id,
                     tag_id: tag2.id
                   }
                 ]
@@ -213,26 +192,6 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
           expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to change(Pacbio::Pool, :count).by(1)
         end
 
-        it 'creates a library' do
-          expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to change(Pacbio::Library, :count).by(1)
-        end
-
-        it 'creates a request library' do
-          expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to change(Pacbio::RequestLibrary, :count).by(2)
-        end
-
-        it 'associates the request, library request and tag' do
-          post v1_pacbio_pools_path, params: body, headers: json_api_headers
-          pool = Pacbio::Pool.first
-          expect(pool.tube).to be_defined
-          expect(pool.libraries.count).to eq(2)
-          library = pool.libraries.first
-          expect(library.request).to eq(request)
-          expect(library.tag).to eq(tag)
-          library2 = pool.libraries.last
-          expect(library2.request).to eq(request2)
-          expect(library2.tag).to eq(tag2)
-        end
       end
 
       context 'on failure' do
@@ -242,20 +201,21 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
               data: {
                 type: 'pools',
                 attributes: {
-                  template_prep_kit_box_barcode: 'LK1234567',
                   libraries: [
                     {
+                      template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
                       concentration: 2.22,
                       fragment_size: 100,
-                      request_id: request.id,
+                      pacbio_request_id: request.id,
                       tag_id: tag.id
                     },
                     {
+                      template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
                       concentration: 2.22,
                       fragment_size: 100,
-                      request_id: request2.id,
+                      pacbio_request_id: request2.id,
                       tag_id: tag.id
                     }
                   ]
@@ -273,14 +233,6 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
             expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Pool, :count)
           end
 
-          it 'cannot create a library' do
-            expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
-          end
-
-          it 'has an error message' do
-            post v1_pacbio_pools_path, params: body, headers: json_api_headers
-            expect(JSON.parse(response.body)["data"]["errors"]).to_not be_empty
-          end
         end
       end
     end
