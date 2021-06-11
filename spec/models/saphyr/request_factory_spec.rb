@@ -3,9 +3,13 @@
 require 'rails_helper'
 
 RSpec.describe Saphyr::RequestFactory, type: :model, saphyr: true do
-  let(:attributes) { [attributes_for(:sample).merge(attributes_for(:saphyr_request)), 
-                      attributes_for(:sample).merge(attributes_for(:saphyr_request)),
-                      attributes_for(:sample).merge(attributes_for(:saphyr_request))] }
+  let(:attributes) do
+    [
+      { sample: attributes_for(:sample), request: attributes_for(:saphyr_request) },
+      { sample: attributes_for(:sample), request: attributes_for(:saphyr_request) },
+      { sample: attributes_for(:sample), request: attributes_for(:saphyr_request) }
+    ]
+  end
 
   it_behaves_like 'requestor factory'
 
