@@ -8,10 +8,7 @@ module TubeMaterial
   include Material
 
   included do
-    def tube
-      return nil unless container.is_a?(Tube)
-
-      container
-    end
+    has_one :tube, through: :container_material, source: :container,
+                   source_type: 'Tube', class_name: '::Tube'
   end
 end
