@@ -14,7 +14,7 @@ module V1
       filter :barcode, apply: ->(records, value, _options) { records.by_barcode(value) }
 
       def self.records(_options = {})
-        ::Plate.by_pipeline(:pacbio)
+        super.by_pipeline(:pacbio)
       end
 
       def created_at
