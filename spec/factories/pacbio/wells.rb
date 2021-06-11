@@ -18,13 +18,13 @@ FactoryBot.define do
 
     factory :pacbio_well_with_request_libraries do
       after(:create) do |well|
-        well.libraries = create_list(:pacbio_request_library_with_tag, 5).collect(&:library)
+        well.libraries = create_list(:pacbio_library, 5)
       end
     end
 
     factory :pacbio_well_with_request_libraries_no_tag do
       after(:create) do |well|
-        well.libraries = create_list(:pacbio_request_library, 5).collect(&:library)
+        well.libraries = create_list(:pacbio_library, 5, tag: nil)
       end
     end
   end
