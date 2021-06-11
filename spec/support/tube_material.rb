@@ -6,7 +6,7 @@ RSpec.shared_examples "tube_material" do
   it 'accesses the correct tube' do
     material = create(material_model)
     tube = create(:tube)
-    container_material = create(:container_material, container: tube, material: material)
+    create(:container_material, container: tube, material: material)
 
     # Sanity check using .container
     expect(material.container).to eq(tube)

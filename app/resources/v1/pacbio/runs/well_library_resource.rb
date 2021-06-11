@@ -8,6 +8,10 @@ module V1
         model_name 'Pacbio::WellLibrary'
 
         attributes :barcode
+
+        def self.records_for_populate(*_args)
+          super.preload(library: :tube)
+        end
       end
     end
   end
