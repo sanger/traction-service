@@ -26,6 +26,10 @@ module Pipelines
         def request_model
           @request_model ||= "#{pipeline}::Request"
         end
+
+        def records_for_populate(*_args)
+          super.preload(:sample, :tube)
+        end
       end
 
       included do
@@ -33,14 +37,14 @@ module Pipelines
 
         attributes(*pipeline_const.request_attributes, :sample_name, :barcode,
                    :sample_species, :created_at, :source_identifier)
+      end
 
-        def barcode
-          @model&.tube&.barcode
-        end
+      def barcode
+        @model&.tube&.barcode
+      end
 
-        def created_at
-          @model.created_at.to_s(:us)
-        end
+      def created_at
+        @model.created_at.to_s(:us)
       end
     end
   end

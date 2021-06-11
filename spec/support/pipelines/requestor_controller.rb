@@ -44,7 +44,11 @@ shared_examples_for 'requestor controller' do
               type: 'requests',
               attributes: {
                 requests: [
-                  attributes_for(request_factory).merge(attributes_for(:sample))
+                  {
+                    request: attributes_for(request_factory),
+                    sample: attributes_for(:sample),
+                    tube: { barcode: 'custom' }
+                  }
                 ]
               }
             }
@@ -73,7 +77,11 @@ shared_examples_for 'requestor controller' do
             data: {
               attributes: {
                 requests: [
-                  attributes_for(request_factory).merge(attributes_for(:sample).except(:name))
+                  {
+                    request: attributes_for(request_factory),
+                    sample: attributes_for(:sample).except(:name),
+                    tube: { barcode: 'custom' }
+                  }
                 ]
               }
             }
@@ -105,8 +113,8 @@ shared_examples_for 'requestor controller' do
                 data: {
                   attributes: {
                     requests: [
-                      attributes_for(request_factory).merge(attributes_for(:sample)),
-                      attributes_for(request_factory).merge(attributes_for(:sample))
+                      { request: attributes_for(request_factory), sample: attributes_for(:sample) },
+                      { request: attributes_for(request_factory), sample: attributes_for(:sample) }
                     ]
                   }
                 }

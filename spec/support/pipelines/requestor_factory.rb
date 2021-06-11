@@ -38,7 +38,7 @@ shared_examples_for 'requestor factory' do
     end
 
     it 'generates the barcode on the tube if it is not provided' do
-      expected_barcodes = attributes.pluck(:barcode)
+      expected_barcodes = attributes.map { |attribute| attribute.dig(:library, :barcode) }
       next if expected_barcodes.all?(&:present?)
 
       factory = described_class.new(attributes)
@@ -54,15 +54,19 @@ shared_examples_for 'requestor factory' do
     end
 
     it 'doesn\'t create a sample if it already exists' do
-      sample = create(:sample)
-      attributes << sample.attributes.extract!('name', 'species', 'external_id').with_indifferent_access.merge(attributes_for(request_model))
+      existing_sample = attributes_for(:sample)
+      create(:sample, existing_sample)
+
+      attributes << { sample: existing_sample, request: attributes_for(request_model) }
       factory = described_class.new(attributes)
-      factory.save
-      expect(Sample.count).to eq(4)
+      expect { factory.save }.to change(Sample, :count).by(3)
     end
 
     it 'does not create any samples if attributes are not valid' do
-      attributes << attributes_for(:sample).except(:name).merge(attributes_for(request_model))
+      attributes << {
+        request: attributes_for(request_model),
+        sample: attributes_for(:sample).except(:name)
+      }
       factory = described_class.new(attributes)
       expect(factory).not_to be_valid
       expect(factory.save).to be_falsey

@@ -38,16 +38,12 @@ module Pipelines
 
       # @return [Array of ActiveRecord Requests] for the chosen pipeline
       def requests
-        @requests ||= []
-      end
-
-      def container_materials
-        @container_materials ||= []
+        @request_wrappers.collect(&:request)
       end
 
       # @return [Array of ActiveRecord Requestables] for the chosen pipeline
       def requestables
-        requests.collect(&:requestable)
+        @request_wrappers.collect(&:requestable)
       end
 
       # checks if the factory is valid, if so will save all of the requests
@@ -55,9 +51,7 @@ module Pipelines
       def save
         return false unless valid?
 
-        requests.each(&:save)
-        container_materials.each(&:save)
-        true
+        @request_wrappers.all?(&:save)
       end
 
       # Takes each set of request attributes:
@@ -68,27 +62,46 @@ module Pipelines
       # @param attributes [Array of ActionController::Parameters] list of request parameters
       # @return [Array of ActiveRecord Requests] for the chosen pipeline
       def build_requests(attributes)
-        attributes.each do |request_attributes|
-          build_request(request_attributes)
+        @request_wrappers = attributes.map do |request_attributes|
+          RequestWrapper.new(request_model: self.class.request_model, **request_attributes)
         end
       end
 
-      # TODO: needs to be refactored.
-      def build_request(request_attributes)
-        sample_attributes = request_attributes.extract!(:name, :external_id, :species)
-        container_attributes = request_attributes.extract!(:barcode)
-        add_request(request_attributes, sample_attributes)
-        add_container_material(container_attributes)
-      end
+      # Handles the creation of the request, containers and samples for each request
+      # passed to the factory
+      class RequestWrapper
+        include ActiveModel::Model
 
-      def add_request(request_attributes, sample_attributes)
-        requests << ::Request.new(requestable: self.class.request_model.new(request_attributes),
-                                  sample: Sample.find_or_initialize_by(sample_attributes))
-      end
+        attr_reader :sample, :requestable
+        attr_accessor :request_model
 
-      def add_container_material(container_attributes)
-        container_materials << ContainerMaterial.new(container: Tube.new(container_attributes),
-                                                     material: requests.last.requestable)
+        def tube
+          @tube ||= Tube.new
+        end
+
+        def request
+          @request ||= ::Request.new(requestable: requestable, sample: sample)
+        end
+
+        def container_material
+          @container_material ||= ContainerMaterial.new(container: tube, material: requestable)
+        end
+
+        def save
+          request.save && container_material.save
+        end
+
+        def sample=(sample_attributes)
+          @sample = Sample.find_or_initialize_by(sample_attributes)
+        end
+
+        def request=(request_attributes)
+          @requestable = request_model.new(request_attributes)
+        end
+
+        def tube=(tube_attributes)
+          @tube = Tube.new(tube_attributes)
+        end
       end
 
       # Validates the requests:

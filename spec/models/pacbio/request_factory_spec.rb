@@ -5,9 +5,15 @@ require 'rails_helper'
 RSpec.describe Pacbio::RequestFactory, type: :model, pacbio: true do
   let(:attributes) do
     [
-      attributes_for(:sample).merge(attributes_for(:pacbio_request, barcode: 'SE108532I')),
-      attributes_for(:sample).merge(attributes_for(:pacbio_request, barcode: 'SE108533J')),
-      attributes_for(:sample).merge(attributes_for(:pacbio_request, barcode: 'SE108534K'))
+      { sample: attributes_for(:sample),
+        request: attributes_for(:pacbio_request),
+        tube: { barcode: 'SE108532I' } },
+      { sample: attributes_for(:sample),
+        request: attributes_for(:pacbio_request),
+        tube: { barcode: 'SE108533J' } },
+      { sample: attributes_for(:sample),
+        request: attributes_for(:pacbio_request),
+        tube: { barcode: 'SE108534K' } }
     ]
   end
 
