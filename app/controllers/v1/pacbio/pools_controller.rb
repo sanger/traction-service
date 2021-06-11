@@ -7,7 +7,7 @@ module V1
       def create
         @pool_factory = ::Pacbio::PoolFactory.new(pool_params)
         if @pool_factory.save!
-          head :created
+          render json: PlateResource.new(@pool_factory.pool, nil), status: :created
         else
           render json: { data: { errors: @pool_factory.errors.messages } },
                  status: :unprocessable_entity
