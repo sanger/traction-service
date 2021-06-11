@@ -28,7 +28,7 @@ module Pipelines
         end
 
         def records_for_populate(*_args)
-          super.preload(:sample, :tube)
+          super.preload(:sample, :tube, well: :plate)
         end
       end
 
