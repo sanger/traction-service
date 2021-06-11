@@ -16,6 +16,10 @@ class Well < ApplicationRecord
     position[1..].to_i
   end
 
+  def identifier
+    "#{plate&.barcode}:#{position}"
+  end
+
   def self.includes_args(except = nil)
     args = []
     args << { plate: Plate.includes_args(:wells) } unless except == :plate
