@@ -1,6 +1,6 @@
 # # frozen_string_literal: true
 
-# require 'csv'
+require 'csv'
 
 # # Initially tubes imported from sample extraction had the original barcodes
 # # stored in 'source_barcode' on request, and new traction barcodes generated.
