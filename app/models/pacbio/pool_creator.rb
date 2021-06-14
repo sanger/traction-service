@@ -30,6 +30,5 @@ module Pacbio
     rescue ActiveRecord::RecordInvalid
       false
     end
-
   end
 end
