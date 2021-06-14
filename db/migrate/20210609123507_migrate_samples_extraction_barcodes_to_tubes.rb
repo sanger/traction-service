@@ -1,12 +1,12 @@
-# frozen_string_literal: true
+# # frozen_string_literal: true
 
-require 'csv'
+# require 'csv'
 
-# Initially tubes imported from sample extraction had the original barcodes
-# stored in 'source_barcode' on request, and new traction barcodes generated.
-# This behaviour is changing, and this migration replaces the historic
-# traction barcodes with their sample extraction equivalent.
-# TRAC barcodes were not printed off or exported for these tubes.
+# # Initially tubes imported from sample extraction had the original barcodes
+# # stored in 'source_barcode' on request, and new traction barcodes generated.
+# # This behaviour is changing, and this migration replaces the historic
+# # traction barcodes with their sample extraction equivalent.
+# # TRAC barcodes were not printed off or exported for these tubes.
 class MigrateSamplesExtractionBarcodesToTubes < ActiveRecord::Migration[6.0]
   # We don't use the associations, as otherwise the migration becomes coupled to
   # the underlying model, and can fail if the associations are changed.
