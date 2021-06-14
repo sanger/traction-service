@@ -9,3 +9,5 @@ fileignoreconfig:
   checksum: c66b53b48743406fdc51b75868af126f3cf99d2d6a07ebf6e5f51549e87ab3c0
 - filename: app/models/pacbio/library.rb
   checksum: c0e727dfe3a9a41f029dbebc499bc0280a3226cb0cf02c3e82a65c47865b4150
+- filename: config/database.yml.example
+  checksum: 59694e60b5b1125923463a276f90d2be1c8f5ce429bc344e29202c588022c503
