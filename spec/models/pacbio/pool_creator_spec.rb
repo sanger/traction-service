@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Pacbio::PoolFactory, type: :model, pacbio: true do
+RSpec.describe Pacbio::PoolCreator, type: :model, pacbio: true do
 
   let(:libraries)           { build_list(:pacbio_library, 5)}
   let(:libraries_attributes)  { libraries.collect(&:attributes) }
@@ -8,15 +8,15 @@ RSpec.describe Pacbio::PoolFactory, type: :model, pacbio: true do
 
   context '#initialize' do
 
-    let(:pool_factory) { Pacbio::PoolFactory.new(libraries: libraries_attributes)}
+    let(:pool_creator) { Pacbio::PoolCreator.new(libraries: libraries_attributes)}
 
     it 'will have a pool' do
-      expect(pool_factory.pool).to be_present
+      expect(pool_creator.pool).to be_present
     end
 
     context 'pool' do
 
-      let(:pool) { pool_factory.pool }
+      let(:pool) { pool_creator.pool }
       
       it 'will have a tube' do
         expect(pool.tube).to be_present
@@ -29,7 +29,7 @@ RSpec.describe Pacbio::PoolFactory, type: :model, pacbio: true do
 
     context 'a library' do
       
-      let(:library) { pool_factory.pool.libraries.first }
+      let(:library) { pool_creator.pool.libraries.first }
 
       it 'will have a volume' do
         expect(library.volume).to eq(libraries.first.volume)
@@ -62,13 +62,13 @@ RSpec.describe Pacbio::PoolFactory, type: :model, pacbio: true do
   context '#valid' do
 
     it 'will not be valid unless there are some libraries' do
-      pool_factory =  Pacbio::PoolFactory.new
-      expect(pool_factory).to_not be_valid
+      pool_creator =  Pacbio::PoolCreator.new
+      expect(pool_creator).to_not be_valid
     end
 
     it 'will not be valid unless the libraries are valid' do
-      pool_factory =  Pacbio::PoolFactory.new(libraries: libraries_attributes + [invalid_library.attributes])
-      expect(pool_factory).to_not be_valid
+      pool_creator =  Pacbio::PoolCreator.new(libraries: libraries_attributes + [invalid_library.attributes])
+      expect(pool_creator).to_not be_valid
     end
   end
 
@@ -76,32 +76,32 @@ RSpec.describe Pacbio::PoolFactory, type: :model, pacbio: true do
     
     context 'valid' do
 
-      let(:pool_factory) { Pacbio::PoolFactory.new(libraries: libraries_attributes)}
+      let(:pool_creator) { Pacbio::PoolCreator.new(libraries: libraries_attributes)}
 
       it 'will create a pool' do
-        expect(pool_factory.save!).to be_truthy
-        expect(pool_factory.pool).to be_persisted
+        expect(pool_creator.save!).to be_truthy
+        expect(pool_creator.pool).to be_persisted
       end
   
       it 'will create the libraries' do
-        expect(pool_factory.save!).to be_truthy
-        expect(pool_factory.pool.libraries.all?(&:persisted?)).to be_truthy
+        expect(pool_creator.save!).to be_truthy
+        expect(pool_creator.pool.libraries.all?(&:persisted?)).to be_truthy
       end
     end
 
     context 'invalid' do
 
-      let(:pool_factory) { Pacbio::PoolFactory.new(libraries: libraries_attributes + [invalid_library.attributes]) }
+      let(:pool_creator) { Pacbio::PoolCreator.new(libraries: libraries_attributes + [invalid_library.attributes]) }
 
       # I know this is arbitrary!
       it 'will not save anything' do
-        expect(pool_factory.save!).to be_falsey
-        expect(pool_factory.pool).to_not be_persisted
+        expect(pool_creator.save!).to be_falsey
+        expect(pool_creator.pool).to_not be_persisted
       end
 
       it 'will create some errors' do
-        expect(pool_factory.save!).to be_falsey
-        expect(pool_factory.errors).to_not be_empty
+        expect(pool_creator.save!).to be_falsey
+        expect(pool_creator.errors).to_not be_empty
       end
       
     end
