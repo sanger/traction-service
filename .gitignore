@@ -41,6 +41,3 @@ doc/
 
 # Ignore GraphQL documentation build artefacts
 .sass-cache/
-
-# talisman
-.talismanrc
