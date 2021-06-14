@@ -88,12 +88,18 @@ module Pipelines
       end
 
       # Permitted parameters for create and edit actions
-      # @return [ActionController::Parameters] - whitelisted
+      # @return [Hash] - hash of whitelisted parameters
       def params_names
-        params.require(:data).require(:attributes)[:requests].map do |param|
-          param.permit(*self.class.pipeline_const.request_attributes,
-                       :name, :external_id, :species).to_h
-        end
+        params.require(:data).require(:attributes)
+              .permit(
+                requests: [
+                  {
+                    request: self.class.pipeline_const.request_attributes,
+                    sample: %i[name external_id species],
+                    tube: :barcode
+                  }
+                ]
+              ).to_h[:requests]
       end
     end
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_11_135304) do
+ActiveRecord::Schema.define(version: 2021_06_09_123507) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
