@@ -1,18 +1,12 @@
 default: &default
-  adapter: mysql2
-  username: <%= ENV.fetch('DBUSERNAME','root') %>
-  password: <%= ENV['DBPASSWORD'] %>
-  encoding: utf8
-  properties:
-    characterSetResults: utf8
-  pool: 5
+  adapter: sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
-  reaping_frequency: 600
 
 development:
   <<: *default
-  database: traction_service_dev
+  database: db/development.sqlite3
 
 test:
   <<: *default
-  database: traction_service_test
+  database: db/test.sqlite3
