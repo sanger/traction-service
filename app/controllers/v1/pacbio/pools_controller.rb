@@ -5,11 +5,11 @@ module V1
     # PoolsController
     class PoolsController < ApplicationController
       def create
-        @pool_factory = ::Pacbio::PoolFactory.new(pool_params)
-        if @pool_factory.save!
-          render json: PlateResource.new(@pool_factory.pool, nil), status: :created
+        @pool_creator = ::Pacbio::PoolCreator.new(pool_params)
+        if @pool_creator.save!
+          render json: PlateResource.new(@pool_creator.pool, nil), status: :created
         else
-          render json: { data: { errors: @pool_factory.errors.messages } },
+          render json: { data: { errors: @pool_creator.errors.messages } },
                  status: :unprocessable_entity
         end
       end
