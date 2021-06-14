@@ -35,9 +35,9 @@ class CsvGenerator
   end
 
   def csv_sample_rows(well)
-    well.request_libraries.map do |request_library|
+    well.libraries.map do |library|
       # add row under well header for each sample in the well
-      csv_data(sample: request_library, well: well, row_type: :sample)
+      csv_data(sample: library, well: well, row_type: :sample)
     end
   end
 

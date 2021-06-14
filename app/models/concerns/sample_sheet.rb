@@ -3,6 +3,7 @@
 # SampleSheet module
 # provides the group of methods
 # used to generate a pacbio run's sample sheet csv
+# TODO: This is included in a couple of places, but only some of the methods work in each.
 module SampleSheet
   # include ActiveSupport::Concern
 
@@ -24,15 +25,16 @@ module SampleSheet
     # Assuming each request libraries tag has the same set name
     return unless all_libraries_tagged
 
-    request_libraries.first.tag.tag_set.uuid
+    libraries.first.tag.tag_set.uuid
   end
 
   # Sample is Barcoded field
   def all_libraries_tagged
-    number_of_request_libraries = request_libraries.length
+    # TODO: This can probably become libraries.all?(:tag?) but first priority is going green
+    number_of_libraries = libraries.length
     number_of_tags = tags.compact.length
 
-    number_of_request_libraries == number_of_tags
+    number_of_libraries == number_of_tags
   end
 
   # Same Barcodes on Both Ends of Sequence field

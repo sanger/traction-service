@@ -48,13 +48,13 @@ module Pacbio
     # a collection of all the sample names for a particular well
     # useful for comments
     def sample_names(separator = ':')
-      request_libraries.collect(&:request).collect(&:sample_name).join(separator)
+      libraries.collect(&:request).collect(&:sample_name).join(separator)
     end
 
     # a collection of all the tags for a well
     # useful to check whether they are unique
     def tags
-      request_libraries.collect(&:tag_id)
+      libraries.collect(&:tag_id)
     end
 
     def libraries?

@@ -85,11 +85,12 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
       end
 
       context 'when the error is the in WellFactory:Well:Libraries' do
-        let(:request_library)             { create(:pacbio_request_library_with_tag) }
-        let(:libraries_attributes_dupl_tags)  { [
-                                                { type: 'libraries', id: request_library.library.id },
-                                                { type: 'libraries', id: request_library.library.id }
-                                              ] }
+        let(:library) { create(:pacbio_library_with_tag) }
+
+        let(:libraries_attributes_dupl_tags) do
+          [{ type: 'libraries', id: library.id }, { type: 'libraries', id: library.id }]
+        end
+
         let(:wells_attributes_libraries_error)  {
                                                   [ attributes_for(:pacbio_well).merge(
                                                     plate: { type: 'plate', id: plate.id },
@@ -107,11 +108,11 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
   end
 
   context 'WellFactory::Well' do
-    let(:request_library_1)             { create(:pacbio_request_library_with_tag) }
-    let(:request_library_2)             { create(:pacbio_request_library_with_tag) }
+    let(:library1)             { create(:pacbio_library_with_tag) }
+    let(:library2)             { create(:pacbio_library_with_tag) }
     let(:library_attributes)            { [
-                                          { type: 'libraries', id: request_library_1.library.id },
-                                          { type: 'libraries', id: request_library_2.library.id }
+                                          { type: 'libraries', id: library1.id },
+                                          { type: 'libraries', id: library2.id }
                                         ] }
     let(:well_attributes)               { attributes_for(:pacbio_well).except(:plate).merge(
                                           plate: { type: 'plate', id: plate.id },
@@ -229,23 +230,21 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
 
   context 'WellFactory::Well::Libraries' do
     let(:well)                          { create(:pacbio_well) }
-    let(:request_library_1)             { create(:pacbio_request_library_with_tag) }
-    let(:request_library_2)             { create(:pacbio_request_library_with_tag) }
-    let(:request_library_invalid)       { create(:pacbio_request_library, tag: request_library_1.tag)}
+    let(:library1)                      { create(:pacbio_library_with_tag) }
+    let(:library2)                      { create(:pacbio_library_with_tag) }
+    let(:library_invalid)               { create(:pacbio_library, tag: library1.tag) }
     let(:library_attributes)            { [
-                                          { type: 'libraries', id: request_library_1.library.id },
-                                          { type: 'libraries', id: request_library_2.library.id }
+                                          { type: 'libraries', id: library1.id },
+                                          { type: 'libraries', id: library2.id }
                                         ] }
     let(:libraries_attributes_no_tags)  { [
-                                          { type: 'libraries', id: libraries[0].id},
-                                          { type: 'libraries', id: libraries[1].id }
+                                          { type: 'libraries', id: create(:pacbio_library_without_tag).id},
+                                          { type: 'libraries', id: create(:pacbio_library_with_tag).id }
                                         ] }
     let(:library_attributes_dupl_tags)  { library_attributes.push(
-                                          { type: 'libraries', id: request_library_invalid.library.id }
+                                          { type: 'libraries', id: library_invalid.id }
                                         ) }
-    let(:library_attributes_17)         { create_list(:pacbio_library, 17, request_libraries: [
-                                          create(:pacbio_request_library_with_tag)
-                                        ]) }
+    let(:library_attributes_17)         { create_list(:pacbio_library, 17) }
     let(:library_attributes_fake)       { [ { type: 'libraries', id: 123 } ] }
 
     context '#initialize' do
