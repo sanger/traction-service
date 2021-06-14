@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_09_142331) do
+ActiveRecord::Schema.define(version: 2021_06_10_080121) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -71,6 +71,12 @@ ActiveRecord::Schema.define(version: 2021_06_09_142331) do
     t.datetime "updated_at", null: false
     t.string "state"
     t.datetime "deactivated_at"
+    t.integer "pacbio_request_id"
+    t.integer "tag_id"
+    t.integer "pacbio_pool_id"
+    t.index ["pacbio_pool_id"], name: "index_pacbio_libraries_on_pacbio_pool_id"
+    t.index ["pacbio_request_id"], name: "index_pacbio_libraries_on_pacbio_request_id"
+    t.index ["tag_id"], name: "index_pacbio_libraries_on_tag_id"
   end
 
   create_table "pacbio_plates", force: :cascade do |t|
