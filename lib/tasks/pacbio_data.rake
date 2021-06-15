@@ -58,7 +58,7 @@ namespace :pacbio_data do
       sample.destroy if sample.requests[0].requestable_type == 'Pacbio::Request'
     end
     [Pacbio::Request, Pacbio::Library, Pacbio::Run, Pacbio::Plate, Pacbio::Well,
-     Pacbio::WellLibrary, Pacbio::RequestLibrary].each(&:delete_all)
+     Pacbio::WellLibrary].each(&:delete_all)
     Plate.by_pipeline('Pacbio').destroy_all
 
     puts '-> Pacbio data successfully deleted'

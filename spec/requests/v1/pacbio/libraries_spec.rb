@@ -177,8 +177,8 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
             expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
           end
 
-          it 'cannot create a request library' do
-            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::RequestLibrary, :count)
+          it 'cannot create a request' do
+            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Request, :count)
           end
 
           it 'has an error message' do
@@ -231,8 +231,9 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
             expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
           end
 
-          it 'cannot create a request library' do
-            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::RequestLibrary, :count)
+          it 'cannot create a request' do
+            cache_body = body
+            expect { post v1_pacbio_libraries_path, params: cache_body, headers: json_api_headers }.to_not change(Pacbio::Request, :count)
           end
 
           it 'has an error message' do

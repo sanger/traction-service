@@ -9,6 +9,11 @@ class MigrateExistingPacbioRequestData < ActiveRecord::Migration[6.0]
   # the underlying model, and can fail if the associations are changed.
   JOINS = "LEFT OUTER JOIN #{JOIN_TABLE} ON #{JOIN_TABLE}.pacbio_library_id = pacbio_libraries.id"
 
+  # Basic class to support down migration after class removal.
+  class Pacbio::RequestLibrary < ActiveRecord::Base
+    self.table_name = 'pacbio_request_libraries'
+  end
+
   def up
     sanity_check
     say 'Migrating data'
