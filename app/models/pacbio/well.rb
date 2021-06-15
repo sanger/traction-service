@@ -42,7 +42,7 @@ module Pacbio
     # collection of all of the requests for a library
     # useful for messaging
     def request_libraries
-      libraries.collect(&:request_libraries).flatten
+      raise StandardError, 'Unsupported, fix this'
     end
 
     # a collection of all the sample names for a particular well

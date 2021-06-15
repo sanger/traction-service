@@ -9,29 +9,28 @@ module Pacbio
   # The tag and sample information is shown as first class
   # information by delegation
   class RequestLibrary < ApplicationRecord
-    include SampleSheet
+    #   include SampleSheet
 
-    # TODO: remove these relationships totallt.
-    # rubocop:disable Rails/InverseOf
-    belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id
-    belongs_to :library, class_name: 'Pacbio::Library', foreign_key: :pacbio_library_id
-    # rubocop:enable Rails/InverseOf
+    #   # TODO: remove these relationships totallt.
+    #
+    #   belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id
+    #   belongs_to :library, class_name: 'Pacbio::Library', foreign_key: :pacbio_library_id
+    #       #   # TODO: make this taggable
+    #   belongs_to :tag, class_name: '::Tag', inverse_of: false, optional: true
 
-    # TODO: make this taggable
-    belongs_to :tag, class_name: '::Tag', inverse_of: false, optional: true
+    #   delegate :sample_name, to: :request
+    #   delegate :oligo, :group_id, :id, to: :tag, prefix: :tag, allow_nil: true
+    #   delegate :tag_set_name, to: :tag, allow_nil: true
 
-    delegate :sample_name, to: :request
-    delegate :oligo, :group_id, :id, to: :tag, prefix: :tag, allow_nil: true
-    delegate :tag_set_name, to: :tag, allow_nil: true
+    #   validates :tag, uniqueness: { scope: :library,
+    #                                 message: 'need to be unique within a library' }
 
-    validates :tag, uniqueness: { scope: :library,
-                                  message: 'need to be unique within a library' }
+    #   validates :request, uniqueness: { scope: :library,
+    #                                     message: 'need to be unique within a library' }
 
-    validates :request, uniqueness: { scope: :library,
-                                      message: 'need to be unique within a library' }
-
-    def collection?
-      false
-    end
+    #   def collection?
+    #     false
+    #   end
+    # end
   end
 end

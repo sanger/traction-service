@@ -14,7 +14,7 @@ module V1
       has_one :tag
 
       def self.records_for_populate(*_args)
-        super.preload(source_wells: :plate, request: :sample,
+        super.preload(source_well: :plate, request: :sample,
                       tag: :tag_set,
                       container_material: { container: :barcode })
       end
