@@ -39,7 +39,6 @@ namespace :pacbio_data do
       library = Pacbio::Library.create!(volume: 1, concentration: 1, template_prep_kit_box_barcode: 'LK12345', fragment_size: 100, request: request, tag: Tag.find(rand(1..16)))
 
       ContainerMaterial.create(container: Tube.create, material: library)
-      # Pacbio::RequestLibrary.create!(library: library, request: request, tag: Tag.find(rand(1..16)))
     end
     puts '-> Pacbio libraries successfully created'
 
