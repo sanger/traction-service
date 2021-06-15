@@ -13,6 +13,10 @@ class Tube < ApplicationRecord
           )
         }
 
+  def identifier
+    barcode
+  end
+
   def self.includes_args(except = nil)
     args = []
     unless except == :container_materials
