@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
 
   let(:plate)           { create(:pacbio_plate) }
-  let(:libraries)       { create_list(:pacbio_library, 3) }
+  let(:libraries)       { create_list(:pacbio_library_without_tag, 3) }
   let(:wells_attributes) {
                           [
                             attributes_for(:pacbio_well).except(:plate).merge( plate: {type: 'plate', id: plate.id}, libraries: [{type: 'libraries', id: libraries.first.id}]),
@@ -284,7 +284,7 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         factory = Pacbio::WellFactory::Well::Libraries.new(well, libraries_attributes_no_tags)
         expect(factory).not_to be_valid
         expect(factory.save).not_to be_truthy
-        expect(factory.errors.messages[:tags]).to eq ["are missing from the libraries"]
+        expect(factory.errors.messages[:tags]).to include 'are missing from the libraries'
       end
 
       it 'does not update the well libaries, if libraries are invalid - check_tags_uniq' do

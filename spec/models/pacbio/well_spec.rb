@@ -139,12 +139,8 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
   context 'libraries' do
 
-    let(:well)                { create(:pacbio_well) }
+    let(:well) { create(:pacbio_well, libraries: libraries) }
     let(:libraries)   { create_list(:pacbio_library, 2) }
-
-    before(:each) do
-      well.libraries << libraries
-    end
 
     it 'can have one or more' do
       expect(well.libraries.length).to eq(2)
