@@ -48,7 +48,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      
+
 
       request = libraries.first.request
       request_relationship = json['data'][0]['relationships']['request']
@@ -123,16 +123,15 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
           expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to change { Pacbio::Library.count }.by(1)
         end
 
-        it 'creates a request library' do
-          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to change { Pacbio::RequestLibrary.count }.by(1)
+        it 'doe not create a request' do
+          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.not_to change { Pacbio::Request.count }
         end
 
         it 'associates the request, library request and tag' do
           post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          request_library = Pacbio::RequestLibrary.first
-          expect(request_library.library).to eq(Pacbio::Library.first)
-          expect(request_library.request).to eq(request)
-          expect(request_library.tag).to eq(tag)
+          library = Pacbio::Library.first
+          expect(library.request).to eq(request)
+          expect(library.tag).to eq(tag)
         end
       end
 
@@ -238,157 +237,18 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
           it 'has an error message' do
             post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-            expect(JSON.parse(response.body)["data"]).to include("errors" => {"cost code"=>["must be present"]})
+            expect(JSON.parse(response.body)["data"]).to include("errors" => {"cost_code"=>["must be present"]})
           end
 
         end
       end
     end
-
-    context 'when creating a multiplex library' do
-      context 'on success' do
-        let(:body) do
-        {
-          data: {
-            type: 'libraries',
-            attributes: {
-              volume: 1.11,
-              concentration: 2.22,
-              template_prep_kit_box_barcode: 'LK1234567',
-              fragment_size: 100,
-              relationships: {
-                requests: {
-                  data: [
-                    {
-                      type: 'requests',
-                      id: request.id,
-                      relationships: {
-                        tag: {
-                          data: {
-                            type: 'tags',
-                            id: tag.id
-                          }
-                        }
-                      }
-                    },
-                    {
-                      type: 'requests',
-                      id: request2.id,
-                      relationships: {
-                        tag: {
-                          data: {
-                            type: 'tags',
-                            id: tag2.id
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }.to_json
-        end
-
-        it 'returns created  status' do
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:created)
-        end
-
-        it 'creates a library' do
-          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to change(Pacbio::Library, :count).by(1)
-        end
-
-        it 'creates a request library' do
-          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to change(Pacbio::RequestLibrary, :count).by(2)
-        end
-
-        it 'associates the request, library request and tag' do
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          request_library1 = Pacbio::RequestLibrary.first
-          expect(request_library1.library).to eq(Pacbio::Library.first)
-          expect(request_library1.request).to eq(request)
-          expect(request_library1.tag).to eq(tag)
-          request_library2 = Pacbio::RequestLibrary.last
-          expect(request_library2.library).to eq(Pacbio::Library.first)
-          expect(request_library2.request).to eq(request2)
-          expect(request_library2.tag).to eq(tag2)
-        end
-      end
-
-      context 'on failure' do
-        context 'when two library requests are invalid' do
-          let(:body) do
-            {
-              data: {
-                type: 'libraries',
-                attributes: {
-                  volume: 1.11,
-                  concentration: 2.22,
-                  template_prep_kit_box_barcode: 'LK1234567',
-                  fragment_size: 100,
-                  relationships: {
-                    requests: {
-                      data: [
-                        {
-                          type: 'requests',
-                          id: request.id,
-                          relationships: {
-                            tag: {
-                              data: {
-                                type: 'tags',
-                                id: tag.id
-                              }
-                            }
-                          }
-                        },
-                        {
-                          type: 'requests',
-                          id: request2.id,
-                          relationships: {
-                            tag: {
-                              data: {
-                                type: 'tags',
-                                id: tag.id
-                              }
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }.to_json
-          end
-
-          it 'returns unprocessable entity status' do
-            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
-
-          it 'cannot create a library' do
-            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
-          end
-
-          it 'cannot create a request library' do
-            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::RequestLibrary, :count)
-          end
-
-          it 'has an error message' do
-            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-            expect(JSON.parse(response.body)["data"]).to include("errors" => {"tag"=>["is used more than once"]})
-          end
-        end
-      end
-    end
-
   end
 
   context '#destroy' do
     context 'on success' do
       let!(:library) { create(:pacbio_library) }
+      let!(:request) { library.request }
 
       it 'returns the correct status' do
         delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
@@ -398,6 +258,11 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       it 'destroys the library' do
         expect { delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers }.to change { Pacbio::Library.count }.by(-1)
       end
+
+      it 'does not destroy the requests' do
+        expect { delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers }.not_to change { Pacbio::Request.count }
+      end
+
     end
 
     context 'on failure' do

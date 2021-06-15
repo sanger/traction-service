@@ -19,17 +19,6 @@ module Pacbio
     has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_library_id,
                               dependent: :nullify, inverse_of: :library
     has_many :wells, class_name: 'Pacbio::Well', through: :well_libraries
-    has_many :request_libraries, class_name: 'Pacbio::RequestLibrary',
-                                 foreign_key: :pacbio_library_id, dependent: :destroy,
-                                 inverse_of: :library, autosave: true
-
-    has_many :requests, class_name: 'Pacbio::Request', through: :request_libraries
-
-    # This is dependent on the requests association, so needs to be included
-    # after that is defined
-    include PlateSourcedLibrary
-
-    delegate :barcode, to: :tube, allow_nil: true
 
     belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id,
                          optional: true, inverse_of: :libraries
@@ -37,11 +26,13 @@ module Pacbio
     belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :pacbio_pool_id, optional: true,
                       inverse_of: :libraries
 
-    def sample_names
-      return '' if requests.blank?
+    has_one :sample, through: :request
 
-      requests.collect(&:sample_name).join(',')
-    end
+    # # This is dependent on the request association, so needs to be included
+    # # after that is defined
+    include WellSourcedLibrary
+
+    delegate :barcode, to: :tube, allow_nil: true
 
     def collection?
       false

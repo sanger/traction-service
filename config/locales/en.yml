@@ -31,3 +31,7 @@
 
 en:
   hello: "Hello world"
+  errors:
+    attributes:
+      cost_code:
+        blank: must be present

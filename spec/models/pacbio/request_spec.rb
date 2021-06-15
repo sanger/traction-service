@@ -30,5 +30,4 @@ RSpec.describe Pacbio::Request, type: :model, pacbio: true do
       expect(request.libraries.count).to eq(5)
     end
   end
-
 end
