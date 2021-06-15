@@ -119,8 +119,8 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
             expect { @factory.save }.not_to change(Pacbio::Library, :count)
           end
 
-          it 'doesnt create the request libraries' do
-            expect { @factory.save }.not_to change(Pacbio::RequestLibrary, :count)
+          it 'doesnt create the requests' do
+            expect { @factory.save }.not_to change(Pacbio::Request, :count)
           end
         end
       end

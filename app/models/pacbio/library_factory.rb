@@ -28,7 +28,7 @@ module Pacbio
     delegate :cost_code, to: :request
 
     def save
-      # Validate the Pacbio::Library and its Pacbio::RequestLibrary(s)
+      # Validate the Pacbio::Library
       return false unless valid?
 
       library.save && @container_material.save
