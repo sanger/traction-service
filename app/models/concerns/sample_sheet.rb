@@ -30,11 +30,7 @@ module SampleSheet
 
   # Sample is Barcoded field
   def all_libraries_tagged
-    # TODO: This can probably become libraries.all?(:tag?) but first priority is going green
-    number_of_libraries = libraries.length
-    number_of_tags = tags.compact.length
-
-    number_of_libraries == number_of_tags
+    libraries.all?(&:tag_id?)
   end
 
   # Same Barcodes on Both Ends of Sequence field

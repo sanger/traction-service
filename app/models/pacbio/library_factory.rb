@@ -37,17 +37,7 @@ module Pacbio
     private
 
     def create_library(library_attributes)
-      # NOTE: Temporary placeholder fix for backwards compatibility.
-      if library_attributes[:requests]
-        library_attributes_without_requests = library_attributes.except(:requests)
-        extracted_attributes = {
-          pacbio_request_id: library_attributes.dig(:requests, 0, :id),
-          tag_id: library_attributes.dig(:requests, 0, :tag, :id)
-        }
-        Pacbio::Library.new(library_attributes_without_requests.merge(extracted_attributes))
-      else
-        Pacbio::Library.new(library_attributes)
-      end
+      Pacbio::Library.new(library_attributes)
     end
 
     def validate_library
