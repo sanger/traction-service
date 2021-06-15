@@ -8,7 +8,6 @@ module Pacbio
   # nested_attributes_for which creates complexity
   # I also suspect that this will get more complicated
   class PoolCreator
-
     delegate :errors, :valid?, to: :pool
 
     def initialize(attributes = {})
