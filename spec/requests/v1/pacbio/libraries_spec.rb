@@ -8,11 +8,6 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
   let!(:tag2) { create(:tag) }
 
   context '#get' do
-    # let!(:library1)         { create(:pacbio_library_in_tube) }
-    # let!(:request_library1)  { create(:pacbio_request_library, library: library1, request: request, tag: tag)}
-    # let!(:library2)         { create(:pacbio_library_in_tube) }
-    # let!(:request_library2)  { create(:pacbio_request_library, library: library2, request: request, tag: tag)}
-
     let!(:libraries) { create_list(:pacbio_library_in_tube, 5, :tagged)}
 
     it 'returns a list of libraries' do
@@ -90,25 +85,11 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                 volume: 1.11,
                 concentration: 2.22,
                 template_prep_kit_box_barcode: 'LK1234567',
-                fragment_size: 100,
-                relationships: {
-                  requests: {
-                    data: [
-                      {
-                        type: 'requests',
-                        id: request.id,
-                        relationships: {
-                          tag: {
-                            data: {
-                              type: 'tags',
-                              id: tag.id
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  }
-                }
+                fragment_size: 100
+              },
+              relationships: {
+                request: { data: { type: 'requests', id: request.id } },
+                tag: { data: { type: 'tags', id: tag.id } }
               }
             }
           }.to_json
@@ -144,25 +125,11 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                 attributes: {
                   concentration: 2.22,
                   template_prep_kit_box_barcode: 'LK1234567',
-                  fragment_size: 100,
-                  relationships: {
-                    requests: {
-                      data: [
-                        {
-                          type: 'requests',
-                          id: request.id,
-                          relationships: {
-                            tag: {
-                              data: {
-                                type: 'tags',
-                                id: tag.id
-                              }
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
+                  fragment_size: 100
+                },
+                relationships: {
+                  request: { data: { type: 'requests', id: request.id } },
+                  tag: { data: { type: 'tags', id: tag.id } }
                 }
               }
             }.to_json
@@ -198,25 +165,11 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                   volume: 1.11,
                   concentration: 2.22,
                   template_prep_kit_box_barcode: 'LK1234567',
-                  fragment_size: 100,
-                  relationships: {
-                    requests: {
-                      data: [
-                        {
-                          type: 'requests',
-                          id: request_empty_cost_code.id,
-                          relationships: {
-                            tag: {
-                              data: {
-                                type: 'tags',
-                                id: tag.id
-                              }
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
+                  fragment_size: 100
+                },
+                relationships: {
+                  request: { data: { type: 'requests', id: request_empty_cost_code.id } },
+                  tag: { data: { type: 'tags', id: tag.id } }
                 }
               }
             }.to_json

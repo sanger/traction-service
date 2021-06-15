@@ -9,8 +9,11 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
   let(:request_attributes)      do
     [{id: requests[0].id, type: 'requests', tag: { id: tags[0].id, type: 'tags'}}]
   end
-  # TODO: This payload should be updated to reflect the single request nature of a library
-  let(:libraries_attributes)    { attributes_for(:pacbio_library).except(:request, :tag).merge(requests: request_attributes) }
+
+  let(:libraries_attributes) do
+    attributes_for(:pacbio_library).except(:request, :tag)
+                                   .merge(pacbio_request_id: requests[0].id, tag_id: tags[0].id)
+  end
 
   context 'LibraryFactory' do
     context '#initialize' do
@@ -75,7 +78,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
       context 'when invalid' do
         context 'when the library is invalid' do
           it 'produces error messages if the library is missing a required attribute' do
-            invalid_library_attributes = attributes_for(:pacbio_library).except(:volume).merge(requests: request_attributes)
+            invalid_library_attributes = libraries_attributes.except(:volume)
             factory = Pacbio::LibraryFactory.new(invalid_library_attributes)
             expect(factory.save).to be_falsy
             expect(factory.errors.full_messages).to include "Volume can't be blank"
@@ -87,8 +90,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
           let(:request_nil_cost_code) { create(:pacbio_request, cost_code: nil)}
 
           it 'produces an error if any request contains an empty cost code' do
-            invalid_request_attributes = [{id: request_empty_cost_code.id, type: 'requests', tag: { id: tags[0].id, type: 'tags'} }]
-            library_attributes = attributes_for(:pacbio_library).merge(requests: invalid_request_attributes)
+            library_attributes = attributes_for(:pacbio_library).merge(pacbio_request_id: request_empty_cost_code.id)
 
             factory = Pacbio::LibraryFactory.new(library_attributes)
             expect(factory.valid?).to be_falsy
@@ -96,8 +98,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
           end
 
           it 'produces an error if any request contains a nil cost code' do
-            invalid_request_attributes = [{id: request_nil_cost_code.id, type: 'requests', tag: { id: tags[0].id, type: 'tags'} }]
-            library_attributes = attributes_for(:pacbio_library).merge(requests: invalid_request_attributes)
+            library_attributes = attributes_for(:pacbio_library).merge(pacbio_request_id: request_nil_cost_code.id)
 
             factory = Pacbio::LibraryFactory.new(library_attributes)
             expect(factory.valid?).to be_falsy
@@ -113,7 +114,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
         end
 
         context 'when the library fails to save' do
-          let(:attributes) { attributes_for(:pacbio_library).except(:volume).merge(requests: request_attributes)}
+          let(:attributes) { attributes_for(:pacbio_library).except(:volume) }
 
           it 'doesnt create a library' do
             expect { @factory.save }.not_to change(Pacbio::Library, :count)
