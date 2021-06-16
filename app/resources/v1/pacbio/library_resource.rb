@@ -26,6 +26,7 @@ module V1
       def deactivated_at
         @model&.deactivated_at&.to_s(:us)
       end
+
     end
   end
 end
