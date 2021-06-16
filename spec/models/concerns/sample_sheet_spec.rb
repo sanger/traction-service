@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe SampleSheet do
   context 'sample sheet methods' do
-    let(:well_with_request_libraries) { create(:pacbio_well_with_request_libraries) }
+    let(:well_with_request_libraries) { create(:pacbio_well_with_libraries) }
     let(:well) { create(:pacbio_well) }
 
     context 'barcode_name' do

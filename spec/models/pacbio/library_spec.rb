@@ -38,11 +38,11 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
     expect(build(:pacbio_library, pool: pool).pool).to eq(pool)
   end
 
-  it 'can have a barcode through tube delegation' do
+  it 'can have a tube' do
     library = create(:pacbio_library)
     tube = create(:tube)
     create(:container_material, container: tube, material: library)
-    expect(library.barcode).to eq tube.barcode
+    expect(library.tube).to eq tube
   end
 
   context 'wells' do

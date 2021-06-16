@@ -17,7 +17,7 @@ module V1
         super.preload(plate: {
                         wells: {
                           libraries: {
-                            request_libraries: { request: :sample }
+                            request: :sample
                           }
                         }
                       })

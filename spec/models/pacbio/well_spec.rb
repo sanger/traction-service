@@ -171,7 +171,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
   end
 
   context 'template prep kit box barcode' do
-    let(:well)   { create(:pacbio_well_with_request_libraries) }
+    let(:well)   { create(:pacbio_well_with_libraries) }
 
     it 'returns the well libraries template_prep_kit_box_barcode' do
       expect(well.template_prep_kit_box_barcode).to eq 'LK1234567'

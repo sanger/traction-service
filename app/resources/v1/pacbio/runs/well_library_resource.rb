@@ -7,7 +7,7 @@ module V1
       class WellLibraryResource < JSONAPI::Resource
         model_name 'Pacbio::WellLibrary'
 
-        attributes :barcode
+        has_one :tube
 
         def self.records_for_populate(*_args)
           super.preload(library: :tube)

@@ -9,7 +9,6 @@ module Pacbio
                       inverse_of: :well_libraries
     belongs_to :library, class_name: 'Pacbio::Library', foreign_key: :pacbio_library_id,
                          inverse_of: :well_libraries
-
-    delegate :barcode, to: :library, allow_nil: true
+    has_one :tube, through: :library
   end
 end
