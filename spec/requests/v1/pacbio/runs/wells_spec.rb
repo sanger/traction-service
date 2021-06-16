@@ -3,11 +3,6 @@ require "rails_helper"
 RSpec.describe 'WellsController', type: :request do
 
   context '#get' do
-    # let!(:library1) { create(:pacbio_library_in_tube) }
-    # let!(:library2) { create(:pacbio_library_in_tube) }
-
-    # let!(:well1) { create(:pacbio_well, pre_extension_time: 2) }
-    # let!(:well2) { create(:pacbio_well, libraries: [library1, library2]) }
 
     let!(:wells) { create_list(:pacbio_well_with_libraries_in_tubes, 2, library_count: 2)}
 
