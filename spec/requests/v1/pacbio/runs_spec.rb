@@ -283,8 +283,8 @@ RSpec.describe 'RunsController', type: :request do
   context '#sample_sheet' do
     after(:each) { File.delete('sample_sheet.csv') if File.exists?('sample_sheet.csv') }
 
-    let(:well1)   { create(:pacbio_well_with_request_libraries) }
-    let(:well2)   { create(:pacbio_well_with_request_libraries) }
+    let(:well1)   { create(:pacbio_well_with_libraries) }
+    let(:well2)   { create(:pacbio_well_with_libraries) }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_run, plate: plate) }
 

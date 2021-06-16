@@ -32,8 +32,6 @@ module Pacbio
     # # after that is defined
     include WellSourcedLibrary
 
-    delegate :barcode, to: :tube, allow_nil: true
-
     def collection?
       false
     end

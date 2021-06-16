@@ -6,7 +6,7 @@ module V1
     class LibraryResource < JSONAPI::Resource
       model_name 'Pacbio::Library'
 
-      attributes :state, :barcode, :volume, :concentration, :template_prep_kit_box_barcode,
+      attributes :state, :volume, :concentration, :template_prep_kit_box_barcode,
                  :fragment_size, :created_at, :deactivated_at, :source_identifier
 
       has_one :request

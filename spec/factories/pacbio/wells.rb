@@ -10,22 +10,27 @@ FactoryBot.define do
     generate_hifi { 'In SMRT Link' }
     ccs_analysis_output { '' }
 
+    transient do
+      library_count { 5 }
+    end
+
     factory :pacbio_well_with_libraries do
-      after(:create) do |well|
-        well.libraries = create_list(:pacbio_library, 5)
+      after(:create) do |well, evaluator|
+        well.libraries = create_list(:pacbio_library, evaluator.library_count)
       end
     end
 
-    factory :pacbio_well_with_request_libraries do
-      after(:create) do |well|
-        well.libraries = create_list(:pacbio_library, 5)
+    factory :pacbio_well_with_libraries_in_tubes do
+      after(:create) do |well, evaluator|
+        well.libraries = create_list(:pacbio_library_in_tube, evaluator.library_count)
       end
     end
 
-    factory :pacbio_well_with_request_libraries_no_tag do
-      after(:create) do |well|
-        well.libraries = create_list(:pacbio_library, 5, tag: nil)
+    factory :pacbio_well_with_libraries_untagged do
+      after(:create) do |well, evaluator|
+        well.libraries = create_list(:pacbio_library, evaluator.library_count, :untagged)
       end
     end
   end
+
 end

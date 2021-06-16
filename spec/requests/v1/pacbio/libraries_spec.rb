@@ -30,7 +30,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       expect(library_attributes['template_prep_kit_box_barcode']).to eq(library.template_prep_kit_box_barcode)
       expect(library_attributes['fragment_size']).to eq(library.fragment_size)
       expect(library_attributes['state']).to eq(library.state)
-      expect(library_attributes['barcode']).to eq(library.tube.barcode)
+      
       expect(library_attributes["created_at"]).to eq(library.created_at.to_s(:us))
       expect(library_attributes["deactivated_at"]).to eq(nil)
       expect(library_attributes['source_identifier']).to eq(library.source_identifier)
@@ -38,12 +38,10 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
     end
 
     it 'returns the correct relationships and included data', aggregate_failures: true do
-      get "#{v1_pacbio_libraries_path}?include=request,tag.tag_set", headers: json_api_headers
+      get "#{v1_pacbio_libraries_path}?include=request,tag.tag_set,tube", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
-
-
 
       request = libraries.first.request
       request_relationship = json['data'][0]['relationships']['request']
@@ -70,6 +68,14 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       tag_set_attributes = json['included'][10]['attributes']
       expect(tag_set_attributes['name']).to eq(tag_set.name)
       expect(tag_set_attributes['uuid']).to eq(tag_set.uuid)
+
+      tube = libraries.first.tube
+      tube_relationship = json['data'][0]['relationships']['tube']
+      expect(tube_relationship['data']['id'].to_s).to eq(tube.id.to_s)
+      expect(tube_relationship['data']['type'].to_s).to eq('tubes')
+
+      tube_attributes = json['included'][15]['attributes']
+      expect(tube_attributes['barcode']).to eq(tube.barcode)
     end
 
   end
