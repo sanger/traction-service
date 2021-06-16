@@ -8,9 +8,8 @@ module V1
 
       attributes :name, :uuid
 
-      #TODO: a tag set has many tags which we may need but this creates a circular reference
+      # TODO: a tag set has many tags which we may need but this creates a circular reference
       # when we are returning tags.
-
     end
   end
 end
