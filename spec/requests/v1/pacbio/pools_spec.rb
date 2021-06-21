@@ -196,38 +196,4 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
   end
 
-  # context '#destroy' do
-  #   context 'on success' do
-  #     let!(:library) { create(:pacbio_library) }
-  #     let!(:request_library)        { create(:pacbio_request_library_with_tag, library: library) }
-
-  #     it 'returns the correct status' do
-  #       delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
-  #       expect(response).to have_http_status(:no_content)
-  #     end
-
-  #     it 'destroys the library' do
-  #       expect { delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers }.to change { Pacbio::Library.count }.by(-1)
-  #     end
-
-  #     it 'destroys the libraries request libraries' do
-  #       expect { delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers }.to change { Pacbio::RequestLibrary.count }.by(-1)
-  #     end
-
-  #   end
-
-  #   context 'on failure' do
-  #     it 'does not delete the library' do
-  #       delete "/v1/pacbio/libraries/dodgyid", headers: json_api_headers
-  #       expect(response).to have_http_status(:unprocessable_entity)
-  #     end
-
-  #     it 'has an error message' do
-  #       delete "/v1/pacbio/libraries/dodgyid", headers: json_api_headers
-  #       data = JSON.parse(response.body)['data']
-  #       expect(data['errors']).to be_present
-  #     end
-  #   end
-  # end
-
 end
