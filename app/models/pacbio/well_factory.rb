@@ -185,7 +185,7 @@ module Pacbio
 
         def all_tags
           # This assumes each library has request_libraries
-          libraries.collect(&:request_libraries).flatten.collect(&:tag)
+          libraries.collect(&:tag)
         end
       end
     end

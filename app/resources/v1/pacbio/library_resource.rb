@@ -6,14 +6,16 @@ module V1
     class LibraryResource < JSONAPI::Resource
       model_name 'Pacbio::Library'
 
-      attributes :state, :barcode, :volume, :concentration, :template_prep_kit_box_barcode,
-                 :fragment_size, :created_at, :deactivated_at, :sample_names, :source_identifier
+      attributes :state, :volume, :concentration, :template_prep_kit_box_barcode,
+                 :fragment_size, :created_at, :deactivated_at, :source_identifier
 
-      has_many :requests, class_name: 'RequestLibrary', relation_name: :request_libraries
+      has_one :request
       has_one :tube
+      has_one :tag
 
       def self.records_for_populate(*_args)
-        super.preload(source_wells: :plate, requests: :sample,
+        super.preload(source_well: :plate, request: :sample,
+                      tag: :tag_set,
                       container_material: { container: :barcode })
       end
 

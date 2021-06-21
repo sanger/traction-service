@@ -4,8 +4,8 @@ RSpec.describe CsvGenerator, type: :model do
   after(:each) { File.delete('sample_sheet.csv') if File.exists?('sample_sheet.csv') }
 
   context '#generate_sample_sheet' do
-    let(:well1)   { create(:pacbio_well_with_request_libraries, pre_extension_time: 2, generate_hifi: 'In SMRT Link', ccs_analysis_output: 'Yes') }
-    let(:well2)   { create(:pacbio_well_with_request_libraries, pre_extension_time: 2, generate_hifi: 'In SMRT Link', ccs_analysis_output: 'No') }
+    let(:well1)   { create(:pacbio_well_with_libraries, pre_extension_time: 2, generate_hifi: 'In SMRT Link', ccs_analysis_output: 'Yes') }
+    let(:well2)   { create(:pacbio_well_with_libraries, pre_extension_time: 2, generate_hifi: 'In SMRT Link', ccs_analysis_output: 'No') }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_run, plate: plate) }
     let(:csv)     { ::CsvGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet) }
@@ -107,10 +107,10 @@ RSpec.describe CsvGenerator, type: :model do
         '',
         '',
         '',
-        well1.libraries.first.request_libraries.first.barcode_name,
+        well1.libraries.first.barcode_name,
         '',
         '',
-        well1.libraries.first.request_libraries.first.request.sample_name,
+        well1.libraries.first.request.sample_name,
         '',
         '',
         ''
@@ -131,10 +131,10 @@ RSpec.describe CsvGenerator, type: :model do
         '',
         '',
         '',
-        well2.libraries.first.request_libraries.first.barcode_name,
+        well2.libraries.first.barcode_name,
         '',
         '',
-        well2.libraries.first.request_libraries.first.request.sample_name,
+        well2.libraries.first.request.sample_name,
         '',
         '',
         ''
@@ -143,8 +143,8 @@ RSpec.describe CsvGenerator, type: :model do
   end
 
   context '#generate_sample_sheet no tags' do
-    let(:well1)   { create(:pacbio_well_with_request_libraries_no_tag, pre_extension_time: 2, generate_hifi: 'Do Not Generate', ccs_analysis_output: 'Yes') }
-    let(:well2)   { create(:pacbio_well_with_request_libraries_no_tag, generate_hifi: 'On Instrument', ccs_analysis_output: 'No') }
+    let(:well1)   { create(:pacbio_well_with_libraries_untagged, pre_extension_time: 2, generate_hifi: 'Do Not Generate', ccs_analysis_output: 'Yes') }
+    let(:well2)   { create(:pacbio_well_with_libraries_untagged, generate_hifi: 'On Instrument', ccs_analysis_output: 'No') }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_run, plate: plate) }
     let(:csv)     { ::CsvGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet) }
@@ -233,7 +233,7 @@ RSpec.describe CsvGenerator, type: :model do
   end
 
   context '#generate_sample_sheet_different_template_barcode' do
-    let(:well1)   { create(:pacbio_well_with_request_libraries, generate_hifi: 'On Instrument', ccs_analysis_output: 'No') }
+    let(:well1)   { create(:pacbio_well_with_libraries, generate_hifi: 'On Instrument', ccs_analysis_output: 'No') }
     let(:plate)   { create(:pacbio_plate, wells: [well1]) }
     let(:run)     { create(:pacbio_run, plate: plate) }
     let(:csv)     { ::CsvGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet) }
