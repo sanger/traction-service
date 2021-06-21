@@ -37,12 +37,22 @@ module V1
 
       # TODO: abtsract behaviour for params names into separate library.
       def params_names
-        params.require(:data)['attributes']
+        attributes.merge(relationships)
+      end
+
+      def attributes
+        params.require(:data).require(:attributes)
               .permit(:volume, :concentration, :template_prep_kit_box_barcode,
-                      :fragment_size, :relationships)
-              .to_h.tap do |library|
-          library[:requests] = request_param_names(params[:data][:attributes])
-        end
+                      :fragment_size, :relationships, :request_id, :tag_id)
+              .to_h
+      end
+
+      def relationships
+        relationships_data = params.require(:data).require(:relationships)
+        {
+          pacbio_request_id: relationships_data.dig(:request, :data, :id),
+          tag_id: relationships_data.dig(:tag, :data, :id)
+        }
       end
 
       # necessary so only certain library params can be updated without
@@ -50,18 +60,6 @@ module V1
       def library_update_params
         params.require(:data).require(:attributes)
               .permit(:volume, :concentration, :template_prep_kit_box_barcode, :fragment_size)
-      end
-
-      def request_param_names(params)
-        params.require(:relationships)[:requests].require(:data).map do |request|
-          request.permit(:id, :type).to_h.tap do |tag|
-            tag[:tag] = tag_param_names(request)
-          end
-        end.flatten
-      end
-
-      def tag_param_names(params)
-        params.require(:relationships)[:tag].require(:data).permit(:id, :type).to_h
       end
 
       def render_json(status)

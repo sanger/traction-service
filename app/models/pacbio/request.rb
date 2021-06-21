@@ -9,10 +9,7 @@ module Pacbio
     include Pipelines::Requestor::Model
     attribute :cost_code, default: Rails.application.config.pacbio_request_cost_code
 
-    has_many :request_libraries, class_name: 'Pacbio::RequestLibrary',
-                                 foreign_key: :pacbio_request_id, dependent: :nullify,
-                                 inverse_of: :request
-    has_many :libraries, class_name: 'Pacbio::Library', through: :request_libraries,
-                         dependent: :nullify
+    has_many :libraries, class_name: 'Pacbio::Library', dependent: :nullify,
+                         foreign_key: :pacbio_request_id, inverse_of: :request
   end
 end

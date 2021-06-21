@@ -23,15 +23,26 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
     expect(build(:pacbio_library, fragment_size: nil)).to_not be_valid
   end
 
-  it 'can have sample names' do
-    expect(create(:pacbio_library).sample_names).to be_truthy
+  it 'can have a request' do
+    request = create(:pacbio_request)
+    expect(build(:pacbio_library, request: request).request).to eq(request)
   end
 
-  it 'can have a barcode through tube delegation' do
+  it 'can have a tag' do
+    tag = create(:tag)
+    expect(build(:pacbio_library, tag: tag).tag).to eq(tag)
+  end
+
+  it 'can have a pool' do
+    pool = create(:pacbio_pool)
+    expect(build(:pacbio_library, pool: pool).pool).to eq(pool)
+  end
+
+  it 'can have a tube' do
     library = create(:pacbio_library)
     tube = create(:tube)
     create(:container_material, container: tube, material: library)
-    expect(library.barcode).to eq tube.barcode
+    expect(library.tube).to eq tube
   end
 
   context 'wells' do
@@ -42,28 +53,16 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
     end
   end
 
-  context 'requests' do
+  describe '#request' do
 
-    let!(:library) { create(:pacbio_library) }
+    let!(:library) { create(:pacbio_library, tag: create(:tag)) }
 
-    before(:each) do
-      (1..5).each do |i|
-        create(:pacbio_request_library, request: create(:pacbio_request), library: library, tag: create(:tag))
-      end
+    it 'can have one' do
+      expect(library.request).to be_present
     end
 
-    it 'can have one or more' do
-      expect(library.requests.count).to eq(5)
-    end
-
-    it 'will have some sample names' do
-      sample_names = library.sample_names.split(',')
-      expect(sample_names.length).to eq(5)
-      expect(sample_names.any?(&:blank?)).to be_falsey
-    end
-
-    it 'will delete the library requests when the library is deleted' do
-      expect { library.destroy }.to change(Pacbio::RequestLibrary, :count).by(-5)
+    it 'will not delete the requests when the library is deleted' do
+      expect { library.destroy }.not_to change(Pacbio::Request, :count)
     end
   end
 
@@ -81,19 +80,16 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
   end
 
   describe '#source_identifier' do
-    let(:library) { create(:pacbio_library) }
-    let(:requests) do
-      create_list(:pacbio_request_library, 5, :tagged, library: library).map(&:request)
-    end
+    let(:library) { create(:pacbio_library, :tagged) }
 
     before do
       create(:plate_with_wells_and_requests, pipeline: 'pacbio',
-             row_count: 5, column_count: 1, barcode: 'BC12',
-             requests: requests)
+             row_count: 1, column_count: 1, barcode: 'BC12',
+             requests: [library.request])
     end
 
-    it 'returns the plate barcode and wells' do
-      expect(library.source_identifier).to eq('BC12:A1-E1')
+    it 'returns the plate barcode and well' do
+      expect(library.source_identifier).to eq('BC12:A1')
     end
   end
 end

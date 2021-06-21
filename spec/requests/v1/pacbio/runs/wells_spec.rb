@@ -3,11 +3,8 @@ require "rails_helper"
 RSpec.describe 'WellsController', type: :request do
 
   context '#get' do
-    let!(:library1) { create(:pacbio_library_in_tube) }
-    let!(:library2) { create(:pacbio_library_in_tube) }
 
-    let!(:well1) { create(:pacbio_well, pre_extension_time: 2) }
-    let!(:well2) { create(:pacbio_well, libraries: [library1, library2]) }
+    let!(:wells) { create_list(:pacbio_well_with_libraries_in_tubes, 2, library_count: 2)}
 
     it 'returns a list of wells' do
       get v1_pacbio_runs_wells_path, headers: json_api_headers
@@ -17,53 +14,36 @@ RSpec.describe 'WellsController', type: :request do
     end
 
     it 'returns the correct attributes' do
-      get "#{v1_pacbio_runs_wells_path}?include=libraries", headers: json_api_headers
+      get "#{v1_pacbio_runs_wells_path}?include=libraries.tube", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
+      well = wells.first
       well_attributes = json['data'][0]['attributes']
-      expect(well_attributes['pacbio_plate_id']).to eq(well1.pacbio_plate_id)
-      expect(well_attributes['row']).to eq(well1.row)
-      expect(well_attributes['column']).to eq(well1.column)
+      expect(well_attributes['pacbio_plate_id']).to eq(well.pacbio_plate_id)
+      expect(well_attributes['row']).to eq(well.row)
+      expect(well_attributes['column']).to eq(well.column)
       # TODO: fix movie time column
-      expect(well_attributes['movie_time'].to_s).to eq(well1.movie_time.to_s)
-      expect(well_attributes['insert_size']).to eq(well1.insert_size)
-      expect(well_attributes['on_plate_loading_concentration']).to eq(well1.on_plate_loading_concentration)
-      expect(well_attributes['pacbio_plate_id']).to eq(well1.pacbio_plate_id)
-      expect(well_attributes['comment']).to eq(well1.comment)
-      expect(well_attributes['pre_extension_time']).to eq(well1.pre_extension_time)
-      expect(well_attributes['generate_hifi']).to eq(well1.generate_hifi)
-      expect(well_attributes['ccs_analysis_output']).to eq(well1.ccs_analysis_output)
+      expect(well_attributes['movie_time'].to_s).to eq(well.movie_time.to_s)
+      expect(well_attributes['insert_size']).to eq(well.insert_size)
+      expect(well_attributes['on_plate_loading_concentration']).to eq(well.on_plate_loading_concentration)
+      expect(well_attributes['pacbio_plate_id']).to eq(well.pacbio_plate_id)
+      expect(well_attributes['comment']).to eq(well.comment)
+      expect(well_attributes['pre_extension_time']).to eq(well.pre_extension_time)
+      expect(well_attributes['generate_hifi']).to eq(well.generate_hifi)
+      expect(well_attributes['ccs_analysis_output']).to eq(well.ccs_analysis_output)
 
-      well = json['data'][1]['attributes']
-      expect(well['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
-      expect(well['row']).to eq(well2.row)
-      expect(well['column']).to eq(well2.column)
-      expect(well['movie_time'].to_s).to eq(well2.movie_time.to_s)
-      expect(well['insert_size']).to eq(well2.insert_size)
-      expect(well['on_plate_loading_concentration']).to eq(well2.on_plate_loading_concentration)
-      expect(well['pacbio_plate_id']).to eq(well2.pacbio_plate_id)
-      expect(well['comment']).to eq(well2.comment)
-      expect(well['pre_extension_time']).to eq(well2.pre_extension_time)
-      expect(well['generate_hifi']).to eq(well2.generate_hifi)
-      expect(well['ccs_analysis_output']).to eq(well2.ccs_analysis_output)
-
-      libraries = json['included']
-      expect(libraries.length).to eq(2)
-
-      library = libraries[1]['attributes']
-      well_library = well2.libraries.last
-
-      expect(library['barcode']).to eq(well_library.barcode)
+      tube = json['included'][4]['attributes']
+      expect(tube['barcode']).to eq(well.libraries.first.tube.barcode)
     end
   end
 
   context '#create' do
 
     let(:plate)   { create(:pacbio_plate) }
-    let(:request_library1) { create(:pacbio_request_library_with_tag) }
-    let(:request_library2) { create(:pacbio_request_library_with_tag) }
-    let(:request_library_invalid) { create(:pacbio_request_library_with_tag, tag: request_library1.tag) }
+    let(:library1) { create(:pacbio_library_with_tag) }
+    let(:library2) { create(:pacbio_library_with_tag) }
+    let(:library_invalid) { create(:pacbio_library_with_tag, tag: library1.tag) }
 
     context 'when creating a single well' do
       context 'on success' do
@@ -92,11 +72,11 @@ RSpec.describe 'WellsController', type: :request do
                         data: [
                           {
                             type: 'libraries',
-                            id: request_library1.library.id
+                            id: library1.id
                           },
                           {
                             type: 'libraries',
-                            id: request_library2.library.id
+                            id: library2.id
                           }
                         ]
                       }
@@ -154,8 +134,8 @@ RSpec.describe 'WellsController', type: :request do
         it 'creates libraries' do
           post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
           expect(Pacbio::Well.first.libraries.length).to eq(2)
-          expect(Pacbio::Well.first.libraries[0]).to eq(request_library1.library)
-          expect(Pacbio::Well.first.libraries[1]).to eq(request_library2.library)
+          expect(Pacbio::Well.first.libraries[0]).to eq(library1)
+          expect(Pacbio::Well.first.libraries[1]).to eq(library2)
         end
 
         it 'sends a message to the warehouse' do
@@ -246,11 +226,11 @@ RSpec.describe 'WellsController', type: :request do
                         data: [
                           {
                             type: 'libraries',
-                            id: request_library1.library.id
+                            id: library1.id
                           },
                           {
                             type: 'libraries',
-                            id: request_library_invalid.library.id
+                            id: library_invalid.id
                           }
                         ]
                       }
@@ -279,7 +259,7 @@ RSpec.describe 'WellsController', type: :request do
   end
 
   context '#update' do
-    let(:well) { create(:pacbio_well_with_request_libraries) }
+    let(:well) { create(:pacbio_well_with_libraries) }
     let(:existing_libraries_data) { well.libraries.map { |l| { type: "libraries", id: l.id } } }
 
     let(:row) { "A" }
@@ -364,8 +344,8 @@ RSpec.describe 'WellsController', type: :request do
     context 'when successfully adding a new library' do
       let(:tag_set) { create(:tag_set) }
       let(:uniq_tag) { create(:tag, tag_set: tag_set) }
-      let(:request_library1) { create(:pacbio_request_library, tag: uniq_tag) }
-      let(:updated_libraries_data) { existing_libraries_data.push({ type: "libraries", id: request_library1.library.id }) }
+      let(:library1) { create(:pacbio_library, tag: uniq_tag) }
+      let(:updated_libraries_data) { existing_libraries_data.push({ type: "libraries", id: library1.id }) }
 
       let(:body) do
         {
@@ -397,8 +377,8 @@ RSpec.describe 'WellsController', type: :request do
     end
 
     context 'when successfully replacing all libraries' do
-      let(:request_library1) { create(:pacbio_request_library_with_tag) }
-      let(:request_library2) { create(:pacbio_request_library_with_tag) }
+      let(:library1) { create(:pacbio_library_with_tag) }
+      let(:library2) { create(:pacbio_library_with_tag) }
 
       let(:body) do
         {
@@ -413,11 +393,11 @@ RSpec.describe 'WellsController', type: :request do
                 data: [
                     {
                       type: "libraries",
-                      id: request_library1.library.id
+                      id: library1.id
                     },
                     {
                       type: "libraries",
-                      id: request_library2.library.id
+                      id: library2.id
                     }
                 ]
               }
