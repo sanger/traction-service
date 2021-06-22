@@ -4,50 +4,47 @@ require 'rails_helper'
 
 RSpec.describe SampleSheet do
   context 'sample sheet methods' do
-    let(:well_with_request_libraries) { create(:pacbio_well_with_request_libraries) }
+    let(:well_with_request_libraries) { create(:pacbio_well_with_libraries) }
     let(:well) { create(:pacbio_well) }
 
     context 'barcode_name' do
       it 'returns a string of library tags when the well has one library' do
-        request_library = create(:pacbio_request_library_with_tag)
-        well.libraries << request_library.library
-        tag_group_id = request_library.tag.group_id
+        library = create(:pacbio_library_with_tag)
+        well.libraries << library
+        tag_group_id = library.tag.group_id
         expected = "#{tag_group_id}--#{tag_group_id}"
-        expect(request_library.barcode_name).to eq expected
+        expect(library.barcode_name).to eq expected
       end
 
       it 'returns nothing if the libraries are not tagged' do
-        request_library = create(:pacbio_request_library)
-        well.libraries << request_library.library
-        expect(request_library.barcode_name).to be_nil
+        library = create(:pacbio_library_without_tag)
+        well.libraries << library
+        expect(library.barcode_name).to be_nil
       end
     end
 
     context 'barcode_set' do
       it 'returns the tag set uuid' do
-        request_library = create(:pacbio_request_library_with_tag)
-        well.libraries << request_library.library
-        expected_set_name = request_library.tag.tag_set.uuid
+        library = create(:pacbio_library_with_tag)
+        well.libraries << library
+        expected_set_name = library.tag.tag_set.uuid
         expect(well.barcode_set).to eq expected_set_name
       end
 
       it 'returns nothing if the libraries are not tagged' do
-        request_library = create(:pacbio_request_library)
-        well.libraries << request_library.library
+        well.libraries << create(:pacbio_library_without_tag)
         expect(well.barcode_set).to be_nil
       end
     end
 
     context 'all_libraries_tagged' do
       it 'returns false if there is one library with no tag' do
-        request_library = create(:pacbio_request_library)
-        well.libraries << request_library.library
+        well.libraries << create(:pacbio_library_without_tag)
         expect(well.all_libraries_tagged).to eq false
       end
 
       it 'returns true if there is one library with a tag' do
-        request_library = create(:pacbio_request_library_with_tag)
-        well.libraries << request_library.library
+        well.libraries << create(:pacbio_library_with_tag)
         expect(well.all_libraries_tagged).to eq true
       end
 
@@ -56,8 +53,7 @@ RSpec.describe SampleSheet do
       end
 
       it 'returns false if any of the well libraries are not tagged' do
-        request_library = create(:pacbio_request_library)
-        well_with_request_libraries.libraries << request_library.library
+        well_with_request_libraries.libraries << create(:pacbio_library_without_tag)
         expect(well_with_request_libraries.all_libraries_tagged).to eq false
       end
     end

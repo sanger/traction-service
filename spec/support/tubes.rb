@@ -127,7 +127,7 @@ shared_examples_for 'tubes' do
           tube = tubes_with_library[0]
           get "#{send(tubes_path)}?filter[barcode]=#{tube.barcode}&include=materials", headers: json_api_headers
 
-          expect(response).to have_http_status(:success)
+          expect(response).to have_http_status(:success), response.body
           json = ActiveSupport::JSON.decode(response.body)
 
           expect(json['data'].length).to eq(1)
