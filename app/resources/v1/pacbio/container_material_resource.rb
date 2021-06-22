@@ -55,6 +55,12 @@ module V1
                :concentration, :template_prep_kit_box_barcode,
                :fragment_size, :sample_names, to: :material
 
+      # TODO: Moved here as dropped it from library, but this should probably become sample name.
+      #      But overall, not really convinced this model should be exposed via the API.
+      def sample_names
+        material.sample.name
+      end
+
       def created_at
         @model.material.created_at.strftime('%Y/%m/%d %H:%M')
       end

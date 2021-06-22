@@ -70,17 +70,17 @@ default: &default
               value: uuid
             samples:
               type: :array
-              value: request_libraries
+              value: libraries
               children:
                 cost_code:
                   type: :model
                   value: request.cost_code
                 pac_bio_library_tube_id_lims:
                   type: :model
-                  value: library.id
+                  value: id
                 pac_bio_library_tube_uuid:
                   type: :model
-                  value: library.uuid
+                  value: uuid
                 pac_bio_library_tube_name:
                   type: :model
                   value: request.sample_name

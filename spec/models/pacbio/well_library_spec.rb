@@ -10,17 +10,11 @@ RSpec.describe Pacbio::WellLibrary, type: :model, pacbio: true do
     expect(build(:pacbio_well_library, library: nil)).to_not be_valid
   end
 
-  it 'will have some library attributes' do
+  it 'can have a tube' do
     library = create(:pacbio_library_in_tube)
     well_library = create(:pacbio_well_library, library: library)
-
-    expect(well_library.barcode).to be_present
-  end
-
-  it 'if the well is nil the barcode will be nil' do
-    well_library = build(:pacbio_well_library, library: nil)
-    expect(well_library.barcode).to be_nil
-
+    expect(well_library.tube).to eq(library.tube)
+    
   end
 
 end
