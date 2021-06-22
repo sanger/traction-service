@@ -18,10 +18,10 @@ class MigrateExistingPacbioRequestData < ActiveRecord::Migration[6.0]
     sanity_check
     say 'Migrating data'
     # rubocop:disable Rails/SkipsModelValidations
-    pacbio_libraries.update_all([
-      "pacbio_libraries.pacbio_request_id = #{JOIN_TABLE}.pacbio_request_id",
-      "pacbio_libraries.tag_id = #{JOIN_TABLE}.tag_id"
-    ])
+    pacbio_libraries.update_all(
+      "pacbio_libraries.pacbio_request_id = #{JOIN_TABLE}.pacbio_request_id,
+       pacbio_libraries.tag_id = #{JOIN_TABLE}.tag_id"
+    )
     # rubocop:enable Rails/SkipsModelValidations
   end
 
@@ -30,10 +30,9 @@ class MigrateExistingPacbioRequestData < ActiveRecord::Migration[6.0]
     pacbio_libraries.where([
       "pacbio_libraries.pacbio_request_id = #{JOIN_TABLE}.pacbio_request_id",
       "pacbio_libraries.tag_id = #{JOIN_TABLE}.tag_id"
-    ]).update_all([
-      'pacbio_libraries.pacbio_request_id = NULL',
-      'pacbio_libraries.tag_id = NULL'
-    ])
+    ]).update_all(
+      'pacbio_libraries.pacbio_request_id = NULL, pacbio_libraries.tag_id = NULL'
+    )
 
     say 'Checking for additional data'
     additional_data = pacbio_libraries.where("#{JOIN_TABLE}.id IS NULL")
