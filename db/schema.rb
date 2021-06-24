@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_11_121109) do
+ActiveRecord::Schema.define(version: 2021_06_22_151529) do
 
   create_table "container_materials", force: :cascade do |t|
     t.string "container_type"
@@ -237,6 +237,7 @@ ActiveRecord::Schema.define(version: 2021_06_11_121109) do
     t.string "uuid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "pipeline", null: false
   end
 
   create_table "tag_taggables", force: :cascade do |t|
