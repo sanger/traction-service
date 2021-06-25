@@ -33,7 +33,6 @@ end
 namespace :tags do
   desc 'Create tags and tag sets'
   namespace :create do
-
     desc 'Create pacbio sequel tags'
     task pacbio_sequel: :environment do
       puts '-> Creating Sequel_16_barcodes_v3 tag set and tags'
@@ -66,36 +65,35 @@ namespace :tags do
                   .find_or_create_by!(name: 'IsoSeq_v1', uuid: SecureRandom.uuid)
       puts '-> Tag Set successfully created'
 
-      Tag.find_or_create_by!(oligo: 'CACATATCAGAGTGCGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1001-F', tag_set_id: set.id)  	
-      Tag.find_or_create_by!(oligo: 'CACATATCAGAGTGCGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1001-R', tag_set_id: set.id)  	
-      Tag.find_or_create_by!(oligo: 'ACACACAGACTGTGAGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1002-F', tag_set_id: set.id)   	
-      Tag.find_or_create_by!(oligo: 'ACACACAGACTGTGAGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1002-R', tag_set_id: set.id)  	
-      Tag.find_or_create_by!(oligo: 'ACACATCTCGTGAGAGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1003-F', tag_set_id: set.id)  	
-      Tag.find_or_create_by!(oligo: 'ACACATCTCGTGAGAGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1003-R', tag_set_id: set.id)  	
-      Tag.find_or_create_by!(oligo: 'CACGCACACACGCGCGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1004-F', tag_set_id: set.id)  	
-      Tag.find_or_create_by!(oligo: 'CACGCACACACGCGCGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1004-R', tag_set_id: set.id)  	
-      Tag.find_or_create_by!(oligo: 'CACTCGACTCTCGCGTGCAATGAAGTCGCAGGGTTG', group_id: 'bc1005-F', tag_set_id: set.id)  	
-      Tag.find_or_create_by!(oligo: 'CACTCGACTCTCGCGTAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1005-R', tag_set_id: set.id)  	
-      Tag.find_or_create_by!(oligo: 'CATATATATCAGCTGTGCAATGAAGTCGCAGGGTTG', group_id: 'bc1006-F', tag_set_id: set.id)  	
-      Tag.find_or_create_by!(oligo: 'CATATATATCAGCTGTAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1006-R', tag_set_id: set.id)   	
-      Tag.find_or_create_by!(oligo: 'ACAGTCGAGCGCTGCGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1008-F', tag_set_id: set.id)   	
-      Tag.find_or_create_by!(oligo: 'ACAGTCGAGCGCTGCGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1008-R ', tag_set_id: set.id)  	
-      Tag.find_or_create_by!(oligo: 'ACACTAGATCGCGTGTGCAATGAAGTCGCAGGGTTG', group_id: 'bc1012-F', tag_set_id: set.id)   	
-      Tag.find_or_create_by!(oligo: 'ACACTAGATCGCGTGTAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1012-R', tag_set_id: set.id)   	
-      Tag.find_or_create_by!(oligo: 'TCACGTGCTCACTGTGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1018-F', tag_set_id: set.id)   	
-      Tag.find_or_create_by!(oligo: 'TCACGTGCTCACTGTGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1018-R', tag_set_id: set.id)   	
-      Tag.find_or_create_by!(oligo: 'ACACACTCTATCAGATGCAATGAAGTCGCAGGGTTG', group_id: 'bc1019-F', tag_set_id: set.id)   	
-      Tag.find_or_create_by!(oligo: 'ACACACTCTATCAGATAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1019-R', tag_set_id: set.id)   	
-      Tag.find_or_create_by!(oligo: 'CACGACACGACGATGTGCAATGAAGTCGCAGGGTTG', group_id: 'bc1020-F', tag_set_id: set.id)   	
-      Tag.find_or_create_by!(oligo: 'CACGACACGACGATGTAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1020-R', tag_set_id: set.id)   	
-      Tag.find_or_create_by!(oligo: 'CAGAGAGATATCTCTGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1023-F', tag_set_id: set.id)  	
+      Tag.find_or_create_by!(oligo: 'CACATATCAGAGTGCGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1001-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACATATCAGAGTGCGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1001-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACACAGACTGTGAGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1002-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACACAGACTGTGAGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1002-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACATCTCGTGAGAGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1003-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACATCTCGTGAGAGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1003-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACGCACACACGCGCGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1004-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACGCACACACGCGCGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1004-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACTCGACTCTCGCGTGCAATGAAGTCGCAGGGTTG', group_id: 'bc1005-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACTCGACTCTCGCGTAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1005-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CATATATATCAGCTGTGCAATGAAGTCGCAGGGTTG', group_id: 'bc1006-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CATATATATCAGCTGTAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1006-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACAGTCGAGCGCTGCGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1008-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACAGTCGAGCGCTGCGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1008-R ', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACTAGATCGCGTGTGCAATGAAGTCGCAGGGTTG', group_id: 'bc1012-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACTAGATCGCGTGTAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1012-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'TCACGTGCTCACTGTGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1018-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'TCACGTGCTCACTGTGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1018-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACACTCTATCAGATGCAATGAAGTCGCAGGGTTG', group_id: 'bc1019-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACACTCTATCAGATAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1019-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACGACACGACGATGTGCAATGAAGTCGCAGGGTTG', group_id: 'bc1020-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACGACACGACGATGTAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1020-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CAGAGAGATATCTCTGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1023-F', tag_set_id: set.id)
       Tag.find_or_create_by!(oligo: 'CAGAGAGATATCTCTGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1023-R', tag_set_id: set.id)
-      puts '-> Sequel_16_barcodes_v3 tags successfully created'	
+      puts '-> Sequel_16_barcodes_v3 tags successfully created'
     end
 
     desc 'Create ont tags for 96 samples (dummy not prod)'
     task ont_96: :environment do
-
       puts '-> Creating ONT tag set for 96 sample wells'
       tag_set_name = Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name
       tag_set = TagSet.ont_pipeline
@@ -110,7 +108,6 @@ namespace :tags do
         oligo.increment_oligo!
       end
       puts '-> ONT tag set for 96 sample wells successfully created'
-      
     end
   end
 
