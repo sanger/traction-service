@@ -2,7 +2,7 @@
 
 module V1
   module Pacbio
-     # TagSetsController
+    # TagSetsController
     class TagSetsController < ApplicationController
     end
   end
