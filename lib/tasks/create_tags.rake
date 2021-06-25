@@ -89,7 +89,7 @@ namespace :tags do
       Tag.find_or_create_by!(oligo: 'CACGACACGACGATGTAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1020-R', tag_set_id: set.id)
       Tag.find_or_create_by!(oligo: 'CAGAGAGATATCTCTGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1023-F', tag_set_id: set.id)
       Tag.find_or_create_by!(oligo: 'CAGAGAGATATCTCTGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1023-R', tag_set_id: set.id)
-      puts '-> Sequel_16_barcodes_v3 tags successfully created'
+      puts '-> IsoSeqw_v1 created'
     end
 
     desc 'Create ont tags for 96 samples (dummy not prod)'
