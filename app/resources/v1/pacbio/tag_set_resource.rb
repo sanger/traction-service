@@ -3,14 +3,14 @@
 module V1
   module Pacbio
     # TagSetResource
-    class TagSetResource < JSONAPI::Resource
-      model_name 'TagSet'
+    class TagSetResource < V1::TagSetResource
+      filter :pipeline, default: :pacbio
 
-      attributes :name, :uuid
-
-      # TODO: a tag set has many tags which we may need but this creates a circular reference
-      # when we are returning tags.
-      # has_many :tags
+      # Ensure that any tag sets created via this endpoint are scoped to the
+      # pacbio pipeline
+      def self.create_model
+        _model_class.pacbio_pipeline.new
+      end
     end
   end
 end

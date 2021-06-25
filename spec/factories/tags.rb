@@ -4,6 +4,10 @@ FactoryBot.define do
     sequence(:group_id) { |n| n }
     tag_set
 
+    factory :ont_tag do
+      association(:tag_set, factory: :ont_tag_set)
+    end
+
     factory :tag_with_taggables do
       transient do
         taggables_count { 3 }

@@ -7,9 +7,9 @@ Rails.application.routes.draw do
   get '/v2/docs(/*path(.:format))', to: 'graphql#show_docs'
 
   namespace :v1 do
-    jsonapi_resources :samples, only: %i[index create]
-    jsonapi_resources :tags,    only: %i[index create update destroy]
-    jsonapi_resources :tag_sets,    only: %i[index create update destroy]
+    jsonapi_resources :samples,  only: %i[index create]
+    jsonapi_resources :tags,     only: %i[index create update destroy]
+    jsonapi_resources :tag_sets, only: %i[index create update destroy]
 
     namespace :saphyr do
       jsonapi_resources :runs,          only: %i[index create show update destroy]
@@ -18,12 +18,13 @@ Rails.application.routes.draw do
       jsonapi_resources :libraries,     only: %i[index create show destroy]
       jsonapi_resources :enzymes,       only: %i[index]
       jsonapi_resources :requests,      only: %i[index create update destroy]
-      jsonapi_resources :tubes, only: %i[index]
+      jsonapi_resources :tubes,         only: %i[index]
     end
 
     namespace :pacbio do
 
       jsonapi_resources :plates,        only: %i[index create]
+      jsonapi_resources :tag_sets
 
       # This seems the best way to do this for now.
       # because we also have a namespace without the constraint
