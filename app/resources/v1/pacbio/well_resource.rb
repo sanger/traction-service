@@ -14,6 +14,8 @@ module V1
       # We really want to be returning them as samples
       has_many :materials, class_name: 'ContainerMaterial', relation_name: :container_materials,
                            foreign_key_on: :related
+
+      has_many :requests, relation_name: :pacbio_requests
     end
   end
 end
