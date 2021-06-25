@@ -57,14 +57,46 @@ RSpec.describe 'PlatesController', type: :request do
       end
     end
 
+    it 'returns the correct relationships with requests' do
+      get "#{v1_pacbio_plates_path}?include=wells.requests", headers: json_api_headers
+
+      expect(response).to have_http_status(:success), response.body
+      json = ActiveSupport::JSON.decode(response.body)
+
+      expect(json['data'][0]['relationships']['wells']).to be_present
+
+      well = json['included'].find { |well| well['type'] == "wells" }
+      expect(well['type']).to eq("wells")
+      expect(well['id']).to eq(pacbio_plates.first.wells.first.id.to_s)
+      expect(well['attributes']['position']).to eq(pacbio_plates.first.wells.first.position)
+
+      requests = json['included'].select { |resource| resource['type'] == 'requests' }
+
+      expect(requests.length).to eq(15)
+      requests = requests.index_by { |request| request['id'].to_i }
+
+      pacbio_plates.flat_map(&:wells).flat_map(&:pacbio_requests).each do |request|
+        request_data = requests.fetch(request.id)
+
+        expect(request_data['id']).to eq(request.id.to_s)
+        expect(request_data['attributes']['library_type']).to eq(request.library_type)
+        expect(request_data['attributes']['estimate_of_gb_required']).to eq(request.estimate_of_gb_required)
+        expect(request_data['attributes']['number_of_smrt_cells']).to eq(request.number_of_smrt_cells)
+        expect(request_data['attributes']['cost_code']).to eq(request.cost_code)
+        expect(request_data['attributes']['external_study_id']).to eq(request.external_study_id)
+        expect(request_data['attributes']['sample_name']).to eq(request.sample_name)
+        expect(request_data['attributes']['sample_species']).to eq(request.sample_species)
+      end
+    end
+
     it 'filtering by barcodes' do
       barcodes = pacbio_plates.pluck(:barcode)[0..1]
       get "#{v1_pacbio_plates_path}?filter[barcode]=#{barcodes.join(',')}", headers: json_api_headers
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'].length).to eq(barcodes.length)
-      expect(json['data'][0]["attributes"]["barcode"]).to eq barcodes[0]
-      expect(json['data'][1]["attributes"]["barcode"]).to eq barcodes[1]
+      expect(json['data'][0]['attributes']['barcode']).to eq barcodes[0]
+      expect(json['data'][1]['attributes']['barcode']).to eq barcodes[1]
     end
 
   end
