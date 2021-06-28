@@ -5,6 +5,8 @@ class Well < ApplicationRecord
   include Container
 
   belongs_to :plate, inverse_of: :wells
+  has_many :pacbio_requests, through: :container_materials, source: :material,
+                             source_type: 'Pacbio::Request', class_name: 'Pacbio::Request'
 
   validates :position, presence: true
 

@@ -32,42 +32,83 @@ end
 
 namespace :tags do
   desc 'Create tags and tag sets'
-  task create: :environment do
-    puts '-> Creating Sequel_16_barcodes_v3 tag set and tags'
-    set = TagSet.create!(name: 'Sequel_16_barcodes_v3', uuid: '4d87a8ab-4d16-f0b0-77e5-0f467dba442e')
-    puts '-> Tag Set successfully created'
-    Tag.create!(oligo: 'CACATATCAGAGTGCGT', group_id: 'bc1001_BAK8A_OA', tag_set_id: set.id)
-    Tag.create!(oligo: 'ACACACAGACTGTGAGT', group_id: 'bc1002_BAK8A_OA', tag_set_id: set.id)
-    Tag.create!(oligo: 'ACACATCTCGTGAGAGT', group_id: 'bc1003_BAK8A_OA', tag_set_id: set.id)
-    Tag.create!(oligo: 'ACAGTCGAGCGCTGCGT', group_id: 'bc1008_BAK8A_OA', tag_set_id: set.id)
-    Tag.create!(oligo: 'ACACACGCGAGACAGAT', group_id: 'bc1009_BAK8A_OA', tag_set_id: set.id)
-    Tag.create!(oligo: 'ACGCGCTATCTCAGAGT', group_id: 'bc1010_BAK8A_OA', tag_set_id: set.id)
-    Tag.create!(oligo: 'CTATACGTATATCTATT', group_id: 'bc1011_BAK8A_OA', tag_set_id: set.id)
-    Tag.create!(oligo: 'ACACTAGATCGCGTGTT', group_id: 'bc1012_BAK8A_OA', tag_set_id: set.id)
-    Tag.create!(oligo: 'CGCATGACACGTGTGTT', group_id: 'bc1015_BAK8B_OA', tag_set_id: set.id)
-    Tag.create!(oligo: 'CATAGAGAGATAGTATT', group_id: 'bc1016_BAK8B_OA', tag_set_id: set.id)
-    Tag.create!(oligo: 'CACACGCGCGCTATATT', group_id: 'bc1017_BAK8B_OA', tag_set_id: set.id)
-    Tag.create!(oligo: 'TCACGTGCTCACTGTGT', group_id: 'bc1018_BAK8B_OA', tag_set_id: set.id)
-    Tag.create!(oligo: 'ACACACTCTATCAGATT', group_id: 'bc1019_BAK8B_OA', tag_set_id: set.id)
-    Tag.create!(oligo: 'CACGACACGACGATGTT', group_id: 'bc1020_BAK8B_OA', tag_set_id: set.id)
-    Tag.create!(oligo: 'CTATACATAGTGATGTT', group_id: 'bc1021_BAK8B_OA', tag_set_id: set.id)
-    Tag.create!(oligo: 'CACTCACGTGTGATATT', group_id: 'bc1022_BAK8B_OA', tag_set_id: set.id)
-    puts '-> Sequel_16_barcodes_v3 tags successfully created'
-
-    puts
-    puts '-> Creating ONT tag set for 96 sample wells'
-    tag_set_name = Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name
-    tag_set = TagSet.create!(name: tag_set_name, uuid: SecureRandom.uuid)
-    puts '-> Tag Set successfully created'
-    oligo = +'ACGTACGTACGTACGT'
-    (1..96).each do |tag_index|
-      padded_tag_number = format('%<tag_number>02i', { tag_number: tag_index })
-      Tag.create!(oligo: oligo,
-                  group_id: "ont_96_tag_#{padded_tag_number}",
-                  tag_set_id: tag_set.id)
-      oligo.increment_oligo!
+  namespace :create do
+    desc 'Create pacbio sequel tags'
+    task pacbio_sequel: :environment do
+      puts '-> Creating Sequel_16_barcodes_v3 tag set and tags'
+      set = TagSet.pacbio_pipeline
+                  .find_or_create_by!(name: 'Sequel_16_barcodes_v3', uuid: '4d87a8ab-4d16-f0b0-77e5-0f467dba442e')
+      puts '-> Tag Set successfully created'
+      Tag.find_or_create_by!(oligo: 'CACATATCAGAGTGCGT', group_id: 'bc1001_BAK8A_OA', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACACAGACTGTGAGT', group_id: 'bc1002_BAK8A_OA', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACATCTCGTGAGAGT', group_id: 'bc1003_BAK8A_OA', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACAGTCGAGCGCTGCGT', group_id: 'bc1008_BAK8A_OA', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACACGCGAGACAGAT', group_id: 'bc1009_BAK8A_OA', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACGCGCTATCTCAGAGT', group_id: 'bc1010_BAK8A_OA', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CTATACGTATATCTATT', group_id: 'bc1011_BAK8A_OA', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACTAGATCGCGTGTT', group_id: 'bc1012_BAK8A_OA', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CGCATGACACGTGTGTT', group_id: 'bc1015_BAK8B_OA', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CATAGAGAGATAGTATT', group_id: 'bc1016_BAK8B_OA', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACACGCGCGCTATATT', group_id: 'bc1017_BAK8B_OA', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'TCACGTGCTCACTGTGT', group_id: 'bc1018_BAK8B_OA', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACACTCTATCAGATT', group_id: 'bc1019_BAK8B_OA', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACGACACGACGATGTT', group_id: 'bc1020_BAK8B_OA', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CTATACATAGTGATGTT', group_id: 'bc1021_BAK8B_OA', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACTCACGTGTGATATT', group_id: 'bc1022_BAK8B_OA', tag_set_id: set.id)
+      puts '-> Sequel_16_barcodes_v3 tags successfully created'
     end
-    puts '-> ONT tag set for 96 sample wells successfully created'
+
+    desc 'Create pacbio IsoSeq tags'
+    task pacbio_isoseq: :environment do
+      puts '-> Creating Pacbio IsoSeq tag set and tags'
+      set = TagSet.pacbio_pipeline
+                  .find_or_create_by!(name: 'IsoSeq_v1', uuid: SecureRandom.uuid)
+      puts '-> Tag Set successfully created'
+
+      Tag.find_or_create_by!(oligo: 'CACATATCAGAGTGCGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1001-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACATATCAGAGTGCGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1001-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACACAGACTGTGAGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1002-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACACAGACTGTGAGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1002-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACATCTCGTGAGAGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1003-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACATCTCGTGAGAGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1003-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACGCACACACGCGCGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1004-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACGCACACACGCGCGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1004-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACTCGACTCTCGCGTGCAATGAAGTCGCAGGGTTG', group_id: 'bc1005-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACTCGACTCTCGCGTAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1005-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CATATATATCAGCTGTGCAATGAAGTCGCAGGGTTG', group_id: 'bc1006-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CATATATATCAGCTGTAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1006-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACAGTCGAGCGCTGCGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1008-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACAGTCGAGCGCTGCGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1008-R ', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACTAGATCGCGTGTGCAATGAAGTCGCAGGGTTG', group_id: 'bc1012-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACTAGATCGCGTGTAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1012-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'TCACGTGCTCACTGTGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1018-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'TCACGTGCTCACTGTGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1018-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACACTCTATCAGATGCAATGAAGTCGCAGGGTTG', group_id: 'bc1019-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'ACACACTCTATCAGATAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1019-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACGACACGACGATGTGCAATGAAGTCGCAGGGTTG', group_id: 'bc1020-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CACGACACGACGATGTAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1020-R', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CAGAGAGATATCTCTGGCAATGAAGTCGCAGGGTTG', group_id: 'bc1023-F', tag_set_id: set.id)
+      Tag.find_or_create_by!(oligo: 'CAGAGAGATATCTCTGAAGCAGTGGTATCAACGCAGAGT', group_id: 'bc1023-R', tag_set_id: set.id)
+      puts '-> IsoSeqw_v1 created'
+    end
+
+    desc 'Create ont tags for 96 samples (dummy not prod)'
+    task ont_96: :environment do
+      puts '-> Creating ONT tag set for 96 sample wells'
+      tag_set_name = Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name
+      tag_set = TagSet.ont_pipeline
+                      .find_or_create_by!(name: tag_set_name, uuid: SecureRandom.uuid)
+      puts '-> Tag Set successfully created'
+      oligo = +'ACGTACGTACGTACGT'
+      (1..96).each do |tag_index|
+        padded_tag_number = format('%<tag_number>02i', { tag_number: tag_index })
+        Tag.find_or_create_by!(oligo: oligo,
+                               group_id: "ont_96_tag_#{padded_tag_number}",
+                               tag_set_id: tag_set.id)
+        oligo.increment_oligo!
+      end
+      puts '-> ONT tag set for 96 sample wells successfully created'
+    end
   end
 
   desc 'Fetch tags and tag sets from sequencescape. Used to seed ONT Covid tags'
@@ -85,13 +126,14 @@ namespace :tags do
       if tag_group['attributes']['name'] != tag_group_name
         show_errors ["-> Expected tag group with name '#{tag_group_name}'"]
       end
-      tag_set = TagSet.create!(name: tag_group_name, uuid: SecureRandom.uuid)
+      tag_set = TagSet.ont_pipeline
+                      .find_or_create_by!(name: tag_group_name, uuid: SecureRandom.uuid)
       puts "-> #{tag_group_name} successfully created"
       tag_group['attributes']['tags'].each_with_index do |tag, idx|
         padded_tag_number = format('%<tag_number>02i', { tag_number: idx + 1 })
-        Tag.create!(oligo: tag['oligo'],
-                    group_id: "#{tag_group_name}-#{padded_tag_number}",
-                    tag_set_id: tag_set.id)
+        Tag.find_or_create_by!(oligo: tag['oligo'],
+                               group_id: "#{tag_group_name}-#{padded_tag_number}",
+                               tag_set_id: tag_set.id)
       end
       puts "-> #{tag_group_name} tags successfully created"
     end
