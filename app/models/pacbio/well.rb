@@ -21,7 +21,7 @@ module Pacbio
                        inverse_of: :wells
 
     has_many :well_pools, class_name: 'Pacbio::WellPool', foreign_key: :pacbio_well_id,
-                       dependent: :destroy, inverse_of: :well
+                          dependent: :destroy, inverse_of: :well
     has_many :pools, class_name: 'Pacbio::Pool', through: :well_pools, autosave: true
 
     has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_well_id,

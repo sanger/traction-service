@@ -7,7 +7,7 @@ module Pacbio
     has_many :libraries, class_name: 'Pacbio::Library', foreign_key: :pacbio_pool_id,
                          dependent: :destroy, inverse_of: :pool
     has_many :well_pools, class_name: 'Pacbio::WellPool', foreign_key: :pacbio_pool_id,
-                         dependent: :nullify, inverse_of: :pool
+                          dependent: :nullify, inverse_of: :pool
     has_many :wells, class_name: 'Pacbio::Well', through: :well_pools
 
     validates :libraries, presence: true
