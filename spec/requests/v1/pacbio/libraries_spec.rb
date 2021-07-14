@@ -18,7 +18,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
     end
 
     it 'returns the correct attributes', aggregate_failures: true do
-      get "#{v1_pacbio_libraries_path}", headers: json_api_headers
+      get v1_pacbio_libraries_path, headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -81,7 +81,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
   end
 
   context '#create' do
-    context 'when creating a singleplex library' do
+    context 'when creating a library' do
       context 'on success' do
         let(:body) do
           {
@@ -107,11 +107,11 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
         end
 
         it 'creates a library' do
-          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to change { Pacbio::Library.count }.by(1)
+          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to change(Pacbio::Library,:count).by(1)
         end
 
         it 'doe not create a request' do
-          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.not_to change { Pacbio::Request.count }
+          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.not_to change(Pacbio::Request, :count)
         end
 
         it 'associates the request, library request and tag' do
@@ -119,6 +119,12 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
           library = Pacbio::Library.first
           expect(library.request).to eq(request)
           expect(library.tag).to eq(tag)
+        end
+
+        it 'generates a pool of a single library' do
+          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          library = Pacbio::Library.first
+          expect(library.pool).to be_a(Pacbio::Pool)
         end
       end
 
