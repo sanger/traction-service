@@ -117,6 +117,7 @@ module Pacbio
         true
       end
 
+      # rubocop:todo Metrics/AbcSize
       def validate_well
         unless well.valid?
           well.errors.each do |k, v|
@@ -130,6 +131,7 @@ module Pacbio
           errors.add(k, v)
         end
       end
+      # rubocop:enable Metrics/AbcSize
 
       # WellFactory::Well::Libraries
       class Libraries
