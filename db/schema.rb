@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_14_095335) do
+ActiveRecord::Schema.define(version: 2021_07_14_121514) do
 
   create_table "container_materials", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "container_type"
@@ -71,9 +71,9 @@ ActiveRecord::Schema.define(version: 2021_07_14_095335) do
     t.datetime "updated_at", null: false
     t.string "state"
     t.datetime "deactivated_at"
-    t.integer "pacbio_request_id"
-    t.integer "tag_id"
-    t.integer "pacbio_pool_id"
+    t.bigint "pacbio_request_id", null: false
+    t.bigint "tag_id"
+    t.bigint "pacbio_pool_id", null: false
     t.index ["pacbio_pool_id"], name: "index_pacbio_libraries_on_pacbio_pool_id"
     t.index ["pacbio_request_id"], name: "index_pacbio_libraries_on_pacbio_request_id"
     t.index ["tag_id"], name: "index_pacbio_libraries_on_tag_id"
@@ -282,4 +282,6 @@ ActiveRecord::Schema.define(version: 2021_07_14_095335) do
     t.index ["plate_id"], name: "index_wells_on_plate_id"
   end
 
+  add_foreign_key "pacbio_libraries", "pacbio_pools"
+  add_foreign_key "pacbio_libraries", "pacbio_requests"
 end
