@@ -20,6 +20,10 @@ module Pacbio
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
                        inverse_of: :wells
 
+    has_many :well_pools, class_name: 'Pacbio::WellPool', foreign_key: :pacbio_well_id,
+                       dependent: :destroy, inverse_of: :well
+    has_many :pools, class_name: 'Pacbio::Pool', through: :well_pools, autosave: true
+
     has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_well_id,
                               dependent: :destroy, inverse_of: :well, autosave: true
     has_many :libraries, class_name: 'Pacbio::Library', through: :well_libraries, autosave: true
@@ -59,6 +63,10 @@ module Pacbio
 
     def libraries?
       libraries.present?
+    end
+
+    def pools?
+      pools.present?
     end
 
     def ccs_analysis_output=(value)

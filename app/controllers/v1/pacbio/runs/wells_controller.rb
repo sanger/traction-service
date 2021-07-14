@@ -65,8 +65,10 @@ module V1
 
         def well_param_names(well_param)
           if params.require(:data)[:relationships].present?
-            well_param[:libraries] = library_param_names(params.require(:data))
+            well_param[:libraries] = library_param_names(params.require(:data)) unless params.require(:data).dig(:relationships, :libraries).nil?
+            well_param[:pools] = pool_param_names(params.require(:data)) unless params.require(:data).dig(:relationships, :pools).nil?
           end
+          puts well_param
           well_param.to_h
         end
 
@@ -84,8 +86,8 @@ module V1
                         :ccs_analysis_output).to_h.tap do |well|
             if params[:relationships].present?
               well[:plate] = plate_params_names(params)
-              well[:libraries] = library_param_names(params) unless
-              params.dig(:relationships, :libraries).nil?
+              well[:libraries] = library_param_names(params) unless params.dig(:relationships, :libraries).nil?
+              well[:pools] = pool_param_names(params) unless params.dig(:relationships, :pools).nil?
             end
           end
         end
@@ -97,6 +99,12 @@ module V1
         def library_param_names(params)
           params.require(:relationships)[:libraries][:data].map do |library|
             library.permit(:id, :type).to_h
+          end.flatten
+        end
+
+        def pool_param_names(params)
+          params.require(:relationships)[:pools][:data].map do |pool|
+            pool.permit(:id, :type).to_h
           end.flatten
         end
 

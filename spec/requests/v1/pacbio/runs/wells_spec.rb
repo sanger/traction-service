@@ -4,7 +4,7 @@ RSpec.describe 'WellsController', type: :request do
 
   context '#get' do
 
-    let!(:wells) { create_list(:pacbio_well_with_libraries_in_tubes, 2, library_count: 2)}
+    let!(:wells) { create_list(:pacbio_well_with_libraries_in_tubes_and_pools, 2, library_count: 2) }
 
     it 'returns a list of wells' do
       get v1_pacbio_runs_wells_path, headers: json_api_headers
@@ -43,6 +43,8 @@ RSpec.describe 'WellsController', type: :request do
     let(:plate)   { create(:pacbio_plate) }
     let(:library1) { create(:pacbio_library_with_tag) }
     let(:library2) { create(:pacbio_library_with_tag) }
+    let(:pool1)    { create(:pacbio_pool) }
+    let(:pool2)    { create(:pacbio_pool) }
     let(:library_invalid) { create(:pacbio_library_with_tag, tag: library1.tag) }
 
     context 'when creating a single well' do
@@ -77,6 +79,18 @@ RSpec.describe 'WellsController', type: :request do
                           {
                             type: 'libraries',
                             id: library2.id
+                          }
+                        ]
+                      },
+                      pools: {
+                        data: [
+                          {
+                            type: 'pools',
+                            id: pool1.id
+                          },
+                          {
+                            type: 'libraries',
+                            id: pool2.id
                           }
                         ]
                       }
@@ -138,6 +152,13 @@ RSpec.describe 'WellsController', type: :request do
           expect(Pacbio::Well.first.libraries[1]).to eq(library2)
         end
 
+        it 'creates pools' do
+          post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
+          expect(Pacbio::Well.first.pools.length).to eq(2)
+          expect(Pacbio::Well.first.pools[0]).to eq(pool1)
+          expect(Pacbio::Well.first.pools[1]).to eq(pool2)
+        end
+
         it 'sends a message to the warehouse' do
           expect(Messages).to receive(:publish)
           post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
@@ -174,6 +195,10 @@ RSpec.describe 'WellsController', type: :request do
 
         it 'does not create libraries' do
           expect { post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
+        end
+
+        it 'does not create pools' do
+          expect { post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Pool, :count)
         end
 
         it 'has the correct error messages' do
@@ -259,8 +284,9 @@ RSpec.describe 'WellsController', type: :request do
   end
 
   context '#update' do
-    let(:well) { create(:pacbio_well_with_libraries) }
+    let(:well) { create(:pacbio_well_with_libraries_and_pools) }
     let(:existing_libraries_data) { well.libraries.map { |l| { type: "libraries", id: l.id } } }
+    let(:existing_pools_data) { well.pools.map { |p| { type: "pools", id: p.id } } }
 
     let(:row) { "A" }
     let(:column) { "1" }
@@ -290,6 +316,9 @@ RSpec.describe 'WellsController', type: :request do
             relationships: {
               libraries: {
                 data: existing_libraries_data
+              },
+              pools: {
+                data: existing_pools_data
               }
             }
           }
@@ -319,6 +348,12 @@ RSpec.describe 'WellsController', type: :request do
         patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
         well.reload
         expect(well.libraries.length).to eq existing_libraries_data.length
+      end
+
+      it 'does not update a wells pools' do
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
+        well.reload
+        expect(well.pools.length).to eq existing_pools_data.length
       end
 
       it 'returns the correct attributes' do
@@ -482,6 +517,145 @@ RSpec.describe 'WellsController', type: :request do
       end
     end
 
+    context 'when successfully adding a new pool' do
+      let(:pool1) { create(:pacbio_pool) }
+      let(:updated_pools_data) { existing_pools_data.push({ type: "pools", id: pool1.id }) }
+
+      let(:body) do
+        {
+          data: {
+            id: well.id,
+            type: "wells",
+            attributes: {
+              movie_time: movie_time,
+            },
+            relationships: {
+              pools: {
+                data: updated_pools_data
+              }
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a ok status' do
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'updates the wells pools' do
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
+        well.reload
+        expect(well.pools.length).to eq updated_pools_data.length
+      end
+    end
+
+    context 'when successfully replacing all pools' do
+      let(:pool1) { create(:pacbio_pool) }
+      let(:pool2) { create(:pacbio_pool) }
+
+      let(:body) do
+        {
+          data: {
+            id: well.id,
+            type: "wells",
+            attributes: {
+              movie_time: movie_time,
+            },
+            relationships: {
+              pools: {
+                data: [
+                    {
+                      type: "pools",
+                      id: pool1.id
+                    },
+                    {
+                      type: "libraries",
+                      id: pool2.id
+                    }
+                ]
+              }
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a ok status' do
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'updates the wells pools' do
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
+        well.reload
+        expect(well.pools.length).to eq 2
+      end
+    end
+
+    context 'when successfully removing one pool' do
+      let(:updated_pools_data) { existing_pools_data.slice(1..-1) }
+
+      let(:body) do
+        {
+          data: {
+            id: well.id,
+            type: "wells",
+            attributes: {
+              movie_time: movie_time,
+            },
+            relationships: {
+              pools: {
+                data: updated_pools_data
+              }
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a ok status' do
+        puts existing_pools_data
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'updates the wells pools' do
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
+        well.reload
+        expect(well.pools.length).to eq updated_pools_data.length
+      end
+    end
+
+    context 'when successfully removing all pools' do
+
+      let(:body) do
+        {
+          data: {
+            id: well.id,
+            type: "wells",
+            attributes: {
+              movie_time: movie_time,
+            },
+            relationships: {
+              pools: {
+                data: []
+              }
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a ok status' do
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'updates the wells pools' do
+        patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
+        well.reload
+        expect(well.pools.length).to eq 0
+      end
+    end
+
     context 'on failure' do
       let(:body) do
         {
@@ -515,6 +689,7 @@ RSpec.describe 'WellsController', type: :request do
   context '#destroy' do
     let!(:well) { create(:pacbio_well) }
     let!(:pacbio_well_library) { create(:pacbio_well_library, well: well) }
+    let!(:pacbio_well_pool)    { create(:pacbio_well_pool, well: well) }
 
     context 'on success' do
       it 'has a status of no content' do
@@ -532,6 +707,14 @@ RSpec.describe 'WellsController', type: :request do
 
       it 'does not delete the library' do
         expect { delete v1_pacbio_runs_well_path(well), headers: json_api_headers }.to change { Pacbio::Library.count }.by(0)
+      end
+
+      it 'deletes the well pool' do
+        expect { delete v1_pacbio_runs_well_path(well), headers: json_api_headers }.to change { Pacbio::WellPool.count }.by(-1)
+      end
+
+      it 'does not delete the pool' do
+        expect { delete v1_pacbio_runs_well_path(well), headers: json_api_headers }.to change { Pacbio::Pool.count }.by(0)
       end
     end
 
