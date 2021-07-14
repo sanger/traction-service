@@ -21,9 +21,9 @@ module Pacbio
     has_many :wells, class_name: 'Pacbio::Well', through: :well_libraries
 
     belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id,
-                         optional: true, inverse_of: :libraries
+                         inverse_of: :libraries
     belongs_to :tag, optional: true
-    belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :pacbio_pool_id, optional: true,
+    belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :pacbio_pool_id,
                       inverse_of: :libraries
 
     has_one :sample, through: :request
