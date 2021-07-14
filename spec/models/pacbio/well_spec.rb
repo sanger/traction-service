@@ -81,6 +81,19 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
+  context '#pools?' do
+    let(:pools) { create_list(:pacbio_pool, 2) }
+    it 'with pools' do
+      well = create(:pacbio_well, pools: pools)
+      expect(well.pools?).to be_truthy
+    end
+
+    it 'no pools' do
+      well = create(:pacbio_well)
+      expect(well.pools?).to_not be_truthy
+    end
+  end
+
   context 'Generate HiFi' do
     it 'must have a generate_hifi' do
       expect(build(:pacbio_well, generate_hifi: nil)).to_not be_valid
@@ -158,6 +171,20 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
     it 'can return a list of tags' do
       expect(well.tags).to eq(libraries.collect(&:tag_id))
+    end
+
+  end
+
+  context 'pools' do
+    let(:pools) { create_list(:pacbio_pool, 2) }
+    let(:well) { create(:pacbio_well, pools: pools) }
+
+    it 'can have one or more' do
+      expect(well.pools.length).to eq(2)
+    end
+
+    it 'can return a list of libraries within a pool' do
+      expect(well.pools[0].libraries).to eq(pools[0].libraries)
     end
 
   end

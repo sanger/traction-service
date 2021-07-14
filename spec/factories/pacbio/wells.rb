@@ -20,9 +20,17 @@ FactoryBot.define do
       end
     end
 
-    factory :pacbio_well_with_libraries_in_tubes do
+    factory :pacbio_well_with_libraries_and_pools do
+      after(:create) do |well, evaluator|
+        well.libraries = create_list(:pacbio_library, evaluator.library_count)
+        well.pools = create_list(:pacbio_pool, evaluator.library_count)
+      end
+    end
+
+    factory :pacbio_well_with_libraries_in_tubes_and_pools do
       after(:create) do |well, evaluator|
         well.libraries = create_list(:pacbio_library_in_tube, evaluator.library_count)
+        well.pools = create_list(:pacbio_pool, evaluator.library_count)
       end
     end
 

@@ -77,18 +77,24 @@ module Pacbio
         @libraries ||= []
       end
 
+      # WellFactory::Well::Pools
+      def pools
+        @pools ||= []
+      end
+
       def build_well(well_attributes)
         @well = create_or_update_well(well_attributes)
         build_libraries(well, well_attributes[:libraries])
+        build_pools(well, well_attributes[:pools])
       end
 
       def create_or_update_well(well_attributes)
         if well_attributes[:id].present?
           well = Pacbio::Well.find(well_attributes[:id])
-          attributes_to_update = well_attributes.except(:id, :libraries)
+          attributes_to_update = well_attributes.except(:id, :libraries, :pools)
           well.update(attributes_to_update)
         else
-          well = Pacbio::Well.new(well_attributes.except(:plate, :libraries))
+          well = Pacbio::Well.new(well_attributes.except(:plate, :libraries, :pools))
           well.plate = Pacbio::Plate.find_by(id: well_attributes.dig(:plate, :id))
         end
         well
@@ -98,11 +104,15 @@ module Pacbio
         @libraries = Libraries.new(well, libraries_attributes)
       end
 
+      def build_pools(well, pool_attributes)
+        @pools = Pools.new(well, pool_attributes)
+      end
+
       def save
         return false unless valid?
 
         well.save
-        return false unless libraries.save
+        return false unless libraries.save && pools.save
 
         true
       end
@@ -114,7 +124,7 @@ module Pacbio
           end
         end
 
-        return if libraries.valid?
+        return if libraries.valid? && pools.valid?
 
         libraries.errors.each do |k, v|
           errors.add(k, v)
@@ -186,6 +196,43 @@ module Pacbio
         def all_tags
           # This assumes each library has request_libraries
           libraries.collect(&:tag)
+        end
+      end
+
+      # WellFactory::Well::Pools
+      class Pools
+        include ActiveModel::Model
+        attr_reader :well
+
+        def initialize(well, pool_attributes)
+          @well = well
+          build_pools(pool_attributes)
+        end
+
+        # Pacbio::Pool
+        def pools
+          @pools ||= []
+        end
+
+        def save
+          return false unless valid?
+
+          destroy_pools
+          well.pools << pools
+        end
+
+        private
+
+        def build_pools(pool_attributes)
+          return if pool_attributes.nil?
+
+          pool_attributes.each do |pool|
+            pools << Pacbio::Pool.find(pool[:id]) if Pacbio::Pool.exists?(pool[:id])
+          end
+        end
+
+        def destroy_pools
+          well.pools.destroy_all
         end
       end
     end
