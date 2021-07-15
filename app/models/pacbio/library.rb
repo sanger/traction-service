@@ -16,10 +16,6 @@ module Pacbio
     validates :volume, :concentration, :template_prep_kit_box_barcode,
               :fragment_size, presence: true
 
-    has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_library_id,
-                              dependent: :nullify, inverse_of: :library
-    has_many :wells, class_name: 'Pacbio::Well', through: :well_libraries
-
     belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id,
                          inverse_of: :libraries
     belongs_to :tag, optional: true
