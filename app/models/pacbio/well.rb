@@ -24,9 +24,7 @@ module Pacbio
                           dependent: :destroy, inverse_of: :well
     has_many :pools, class_name: 'Pacbio::Pool', through: :well_pools, autosave: true
 
-    has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_well_id,
-                              dependent: :destroy, inverse_of: :well, autosave: true
-    has_many :libraries, class_name: 'Pacbio::Library', through: :well_libraries, autosave: true
+    has_many :libraries, through: :pools
 
     validates :movie_time, :insert_size, :on_plate_loading_concentration,
               :row, :column, :generate_hifi, presence: true
@@ -59,10 +57,6 @@ module Pacbio
     # useful to check whether they are unique
     def tags
       libraries.collect(&:tag_id)
-    end
-
-    def libraries?
-      libraries.present?
     end
 
     def pools?

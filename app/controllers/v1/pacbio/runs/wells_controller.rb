@@ -63,22 +63,12 @@ module V1
           well_param_names(p1)
         end
 
-        # Todo added as I know this is already due to become simpler
-        # rubocop:todo Metrics/AbcSize
         def well_param_names(well_param)
           if params.require(:data)[:relationships].present?
-            unless params.require(:data).dig(:relationships, :libraries).nil?
-              well_param[:libraries] =
-                library_param_names(params.require(:data))
-            end
-            unless params.require(:data).dig(:relationships, :pools).nil?
-              well_param[:pools] =
-                pool_param_names(params.require(:data))
-            end
+            well_param[:pools] = pool_param_names(params.require(:data))
           end
           well_param.to_h
         end
-        # rubocop:enable Metrics/AbcSize
 
         def params_names
           params.require(:data).require(:attributes)[:wells].map do |param|
@@ -94,8 +84,6 @@ module V1
                         :ccs_analysis_output).to_h.tap do |well|
             if params[:relationships].present?
               well[:plate] = plate_params_names(params)
-              well[:libraries] = library_param_names(params) unless params.dig(:relationships,
-                                                                               :libraries).nil?
               well[:pools] = pool_param_names(params) unless params.dig(:relationships, :pools).nil?
             end
           end
@@ -103,12 +91,6 @@ module V1
 
         def plate_params_names(params)
           params.require(:relationships)[:plate].require(:data).permit(:id, :type).to_h
-        end
-
-        def library_param_names(params)
-          params.require(:relationships)[:libraries][:data].map do |library|
-            library.permit(:id, :type).to_h
-          end.flatten
         end
 
         def pool_param_names(params)
