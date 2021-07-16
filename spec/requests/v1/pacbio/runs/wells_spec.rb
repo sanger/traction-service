@@ -9,15 +9,13 @@ RSpec.describe 'WellsController', type: :request do
     it 'returns a list of wells' do
       get v1_pacbio_runs_wells_path, headers: json_api_headers
       expect(response).to have_http_status(:success)
-      json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'].length).to eq(2)
     end
 
     it 'returns the correct attributes' do
       get "#{v1_pacbio_runs_wells_path}?include=pools", headers: json_api_headers
 
-      expect(response).to have_http_status(:success)
-      json = ActiveSupport::JSON.decode(response.body)
+      expect(response).to have_http_status(:success), response.body
       well = wells.first
       well_attributes = json['data'][0]['attributes']
       expect(well_attributes['pacbio_plate_id']).to eq(well.pacbio_plate_id)

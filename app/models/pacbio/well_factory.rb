@@ -110,9 +110,8 @@ module Pacbio
         private
 
         def find_pools(pool_attributes)
-          pool_attributes.filter_map do |pool|
-            Pacbio::Pool.find_by(id: pool[:id])
-          end
+          ids = pool_attributes.pluck(:id)
+          Pacbio::Pool.where(id: ids)
         end
       end
       # keeping here so when we know the previous validations
