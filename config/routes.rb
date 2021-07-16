@@ -37,8 +37,8 @@ Rails.application.routes.draw do
       end
 
       namespace :runs do
-        jsonapi_resources :plates,        only: %i[index create update destroy]
-        jsonapi_resources :wells,         only: %i[index create update destroy]
+        jsonapi_resources(:plates,        only: %i[index create update destroy]) {}
+        jsonapi_resources(:wells,         only: %i[index create update destroy]) {}
       end
 
       jsonapi_resources :libraries,       only: %i[index create update destroy]
