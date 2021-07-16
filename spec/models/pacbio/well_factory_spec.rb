@@ -9,7 +9,7 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
   let(:wells_attributes) {
                           [
                             attributes_for(:pacbio_well).except(:plate).merge(
-                              plate: {type: 'plate', id: plate.id}, 
+                              plate: {type: 'plate', id: plate.id},
                               pools: [{type: 'pools', id: pools[0].id}]),
                             attributes_for(:pacbio_well).except(:plate).merge(
                               plate: {type: 'plate', id: plate.id},
@@ -150,8 +150,8 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         let(:well_with_pools)     { create(:pacbio_well_with_pools) }
         let(:pool1)               { create(:pacbio_pool) }
         let(:pool2)               { create(:pacbio_pool) }
-        let(:updated_well_attributes)  { { id: well_with_pools.id, insert_size: 123, on_plate_loading_concentration: 12, 
-                                           pools: [ { type: 'pools', id: pool1.id }, { type: 'pools', id: pool2.id } ] 
+        let(:updated_well_attributes)  { { id: well_with_pools.id, insert_size: 123, on_plate_loading_concentration: 12,
+                                           pools: [ { type: 'pools', id: pool1.id }, { type: 'pools', id: pool2.id } ]
                                        } }
 
         it 'updates the Pacbio::Well' do
