@@ -35,8 +35,10 @@ namespace :pacbio_data do
     factory = Pacbio::RequestFactory.new(attributes)
     factory.save
 
+    tag_ids = Tag.pluck(:id).sort
+
     Pacbio::Request.all.each_with_index do |request, _i|
-      library = Pacbio::Library.create!(volume: 1, concentration: 1, template_prep_kit_box_barcode: 'LK12345', fragment_size: 100, request: request, tag: Tag.find(rand(1..16)))
+      library = Pacbio::Library.create!(volume: 1, concentration: 1, template_prep_kit_box_barcode: 'LK12345', fragment_size: 100, request: request, tag: Tag.find(rand(tag_ids.first...tag_ids.last)))
 
       ContainerMaterial.create(container: Tube.create, material: library)
     end
