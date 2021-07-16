@@ -26,7 +26,7 @@ module Pacbio
 
     # # This is dependent on the request association, so needs to be included
     # # after that is defined
-    include WellSourcedLibrary
+    include DualSourcedLibrary
 
     def collection?
       false

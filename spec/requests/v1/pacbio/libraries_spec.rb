@@ -8,7 +8,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
   let!(:tag2) { create(:tag) }
 
   context '#get' do
-    let!(:libraries) { create_list(:pacbio_library_in_tube, 5, :tagged)}
+    let!(:libraries) { create_list(:pacbio_library_in_tube, 5, :tagged) }
 
     it 'returns a list of libraries' do
       get v1_pacbio_libraries_path, headers: json_api_headers
@@ -30,52 +30,61 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       expect(library_attributes['template_prep_kit_box_barcode']).to eq(library.template_prep_kit_box_barcode)
       expect(library_attributes['fragment_size']).to eq(library.fragment_size)
       expect(library_attributes['state']).to eq(library.state)
-
-      expect(library_attributes["created_at"]).to eq(library.created_at.to_s(:us))
-      expect(library_attributes["deactivated_at"]).to eq(nil)
+      expect(library_attributes['created_at']).to eq(library.created_at.to_s(:us))
+      expect(library_attributes['deactivated_at']).to eq(nil)
       expect(library_attributes['source_identifier']).to eq(library.source_identifier)
-
     end
 
     it 'returns the correct relationships and included data', aggregate_failures: true do
       get "#{v1_pacbio_libraries_path}?include=request,tag.tag_set,tube", headers: json_api_headers
 
       expect(response).to have_http_status(:success), response.body
-      json = ActiveSupport::JSON.decode(response.body)
 
-      request = libraries.first.request
-      request_relationship = json['data'][0]['relationships']['request']
-      expect(request_relationship['data']['id'].to_s).to eq(request.id.to_s)
-      expect(request_relationship['data']['type'].to_s).to eq('requests')
+      library = libraries.first
+      library_resource = find_resource(type: 'libraries', id: libraries.first.id)
+      library_relationships = library_resource.fetch('relationships')
 
-      request_attributes = json['included'][0]['attributes']
-      expect(request_attributes['sample_name']).to eq(request.sample_name)
+      request = library.request
+      request_relationship = library_relationships.dig('request', 'data')
+      expect(request_relationship['id']).to eq(request.id.to_s)
+      expect(request_relationship['type']).to eq('requests')
 
-      tag = libraries.first.tag
-      tag_relationship = json['data'][0]['relationships']['tag']
-      expect(tag_relationship['data']['id'].to_s).to eq(tag.id.to_s)
-      expect(tag_relationship['data']['type'].to_s).to eq('tags')
+      request_resource = find_included_resource(type: 'requests', id: request.id)
+      expect(request_resource.dig('attributes','sample_name')).to eq(request.sample_name)
 
-      tag_attributes = json['included'][5]['attributes']
-      expect(tag_attributes['oligo'].to_s).to eq(tag.oligo)
-      expect(tag_attributes['group_id'].to_s).to eq(tag.group_id)
+      tag = library.tag
+      tag_relationship = library_relationships['tag']
+      expect(tag_relationship['data']['id']).to eq(tag.id.to_s)
+      expect(tag_relationship['data']['type']).to eq('tags')
+
+      tag_resource = find_included_resource(type: 'tags', id: tag.id)
+      tag_attributes = tag_resource['attributes']
+      expect(tag_attributes['oligo']).to eq(tag.oligo)
+      expect(tag_attributes['group_id']).to eq(tag.group_id)
 
       tag_set = tag.tag_set
-      tag_set_relationship = json['included'][5]['relationships']['tag_set']
-      expect(tag_set_relationship['data']['id'].to_s).to eq(tag_set.id.to_s)
-      expect(tag_set_relationship['data']['type'].to_s).to eq('tag_sets')
+      tag_set_relationship = tag_resource['relationships']['tag_set']
+      expect(tag_set_relationship['data']['id']).to eq(tag_set.id.to_s)
+      expect(tag_set_relationship['data']['type']).to eq('tag_sets')
 
-      tag_set_attributes = json['included'][10]['attributes']
+      tag_set_resource = find_included_resource(type: 'tag_sets', id: tag_set.id)
+      tag_set_attributes = tag_set_resource['attributes']
       expect(tag_set_attributes['name']).to eq(tag_set.name)
       expect(tag_set_attributes['uuid']).to eq(tag_set.uuid)
 
-      tube = libraries.first.tube
-      tube_relationship = json['data'][0]['relationships']['tube']
-      expect(tube_relationship['data']['id'].to_s).to eq(tube.id.to_s)
-      expect(tube_relationship['data']['type'].to_s).to eq('tubes')
+      tube = library.tube
+      tube_relationship = library_relationships.fetch('tube')
+      expect(tube_relationship['data']['id']).to eq(tube.id.to_s)
+      expect(tube_relationship['data']['type']).to eq('tubes')
 
-      tube_attributes = json['included'][15]['attributes']
+      tube_resource = find_included_resource(type: 'tubes', id: tube.id)
+      tube_attributes = tube_resource['attributes']
       expect(tube_attributes['barcode']).to eq(tube.barcode)
+
+      pool = library.pool
+      pool_relationship = library_relationships.fetch('pool')
+      expect(pool_relationship['data']['id']).to eq(pool.id.to_s)
+      expect(pool_relationship['data']['type']).to eq('pools')
     end
 
   end
