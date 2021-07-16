@@ -67,18 +67,8 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
   end
 
   it 'can have a summary' do
-    well = create(:pacbio_well_with_libraries)
+    well = create(:pacbio_well_with_pools)
     expect(well.summary).to eq("#{well.sample_names} #{well.comment}")
-  end
-
-  context '#libraries?' do
-    it 'with libraries' do
-      expect(create(:pacbio_well_with_libraries).libraries?).to be_truthy
-    end
-
-    it 'no libraries' do
-      expect(create(:pacbio_well).libraries?).to_not be_truthy
-    end
   end
 
   context '#pools?' do
@@ -143,48 +133,36 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
   end
 
   context 'libraries' do
-    it 'can have one or more' do
-      well = create(:pacbio_well)
-      well.libraries << create_list(:pacbio_library, 5)
-      expect(well.libraries.count).to eq(5)
-    end
-  end
-
-  context 'libraries' do
-
-    let(:well) { create(:pacbio_well, libraries: libraries) }
-    let(:libraries)   { create_list(:pacbio_library, 2) }
+    let(:libraries) { create_list(:pacbio_library, 5, :tagged) }
+    let(:pools)     { create_list(:pacbio_pool, 2, libraries: libraries) }
+    let(:well)      { create(:pacbio_well, pools: pools) }
 
     it 'can have one or more' do
-      expect(well.libraries.length).to eq(2)
+      expect(well.libraries).to eq(libraries)
     end
-
-    it 'can return a list of sample names' do
-      sample_names = well.sample_names.split(':')
-      expect(sample_names.length).to eq(2)
-      expect(sample_names.first).to eq(libraries.first.request.sample_name)
-
-      sample_names = well.sample_names(',').split(',')
-      expect(sample_names.length).to eq(2)
-      expect(sample_names.first).to eq(libraries.first.request.sample_name)
-    end
-
-    it 'can return a list of tags' do
-      expect(well.tags).to eq(libraries.collect(&:tag_id))
-    end
-
   end
 
   context 'pools' do
     let(:pools) { create_list(:pacbio_pool, 2) }
-    let(:well) { create(:pacbio_well, pools: pools) }
+    let(:well)  { create(:pacbio_well, pools: pools) }
 
     it 'can have one or more' do
       expect(well.pools.length).to eq(2)
     end
 
-    it 'can return a list of libraries within a pool' do
-      expect(well.pools[0].libraries).to eq(pools[0].libraries)
+    it 'can return a list of sample names' do
+      sample_names = well.sample_names.split(':')
+      expect(sample_names.length).to eq(2)
+      expect(sample_names.first).to eq(well.libraries.first.request.sample_name)
+
+      sample_names = well.sample_names(',').split(',')
+      expect(sample_names.length).to eq(2)
+      expect(sample_names.first).to eq(well.libraries.first.request.sample_name)
+    end
+
+    it 'can return a list of tags' do
+      tag_ids = well.libraries.collect(&:tag_id)
+      expect(well.tags).to eq(tag_ids)
     end
 
   end
@@ -198,14 +176,14 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
   end
 
   context 'template prep kit box barcode' do
-    let(:well)   { create(:pacbio_well_with_libraries) }
+    let(:well)   { create(:pacbio_well_with_pools) }
 
-    it 'returns the well libraries template_prep_kit_box_barcode' do
+    it 'returns the well pools template_prep_kit_box_barcode' do
       expect(well.template_prep_kit_box_barcode).to eq 'LK1234567'
     end
 
     it 'returns default pacbio code when template_prep_kit_box_barcodes are different' do
-      well.libraries[1].template_prep_kit_box_barcode = "unique"
+      well.libraries[0].template_prep_kit_box_barcode = "unique"
       expect(well.template_prep_kit_box_barcode).to eq Pacbio::Well::GENERIC_KIT_BARCODE
     end
   end
