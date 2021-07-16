@@ -2,7 +2,7 @@
 
 namespace :pacbio_data do
   desc 'Populate the database with pacbio plates and runs'
-  task create: :environment do
+  task create: [:environment, 'tags:create:pacbio_sequel', 'tags:create:pacbio_isoseq'] do
     require 'factory_bot'
 
     include FactoryBot::Syntax::Methods
@@ -35,10 +35,22 @@ namespace :pacbio_data do
     factory = Pacbio::RequestFactory.new(attributes)
     factory.save
 
-    Pacbio::Request.all.each_with_index do |request, _i|
-      library = Pacbio::Library.create!(volume: 1, concentration: 1, template_prep_kit_box_barcode: 'LK12345', fragment_size: 100, request: request, tag: Tag.find(rand(1..16)))
+    tag_ids = Tag.ids
 
-      ContainerMaterial.create(container: Tube.create, material: library)
+    Pacbio::Request.all.each_with_index do |request, _i|
+      tube = Tube.create
+      library = Pacbio::Library.create!(
+        volume: 1,
+        concentration: 1,
+        template_prep_kit_box_barcode: 'LK12345',
+        fragment_size: 100,
+        request: request,
+        tag: Tag.find(tag_ids.sample)
+      ) do |lib|
+        lib.pool = Pacbio::Pool.new(tube: tube, libraries: [lib])
+      end
+
+      ContainerMaterial.create(container: tube, material: library)
     end
     puts '-> Pacbio libraries successfully created'
 
