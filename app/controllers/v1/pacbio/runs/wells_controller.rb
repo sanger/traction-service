@@ -6,7 +6,7 @@ module V1
       # WellsController
       class WellsController < ApplicationController
         def create
-          @well_factory = ::Pacbio::WellFactory.new(params_names)
+          @well_factory = ::Pacbio::WellFactory.new(create_params)
 
           if @well_factory.save
             publish_message
@@ -18,7 +18,7 @@ module V1
         end
 
         def update
-          @well_factory = ::Pacbio::WellFactory.new([param_names])
+          @well_factory = ::Pacbio::WellFactory.new([update_params])
 
           if @well_factory.save
             publish_message
@@ -51,64 +51,48 @@ module V1
           Messages.publish(@well_factory.plate, Pipelines.pacbio.message)
         end
 
-        def param_names
-          p1 = params.require(:data).require(:attributes)
-                     .merge(id: params.require(:data)[:id])
-                     .permit(
-                       :movie_time, :insert_size, :row, :on_plate_loading_concentration,
-                       :column, :comment, :id, :pre_extension_time, :generate_hifi,
-                       :ccs_analysis_output
-                     )
-
-          well_param_names(p1)
-        end
-
-        # Todo added as I know this is already due to become simpler
-        # rubocop:todo Metrics/AbcSize
-        def well_param_names(well_param)
-          if params.require(:data)[:relationships].present?
-            unless params.require(:data).dig(:relationships, :libraries).nil?
-              well_param[:libraries] =
-                library_param_names(params.require(:data))
-            end
-            unless params.require(:data).dig(:relationships, :pools).nil?
+        def update_params
+          permitted_update_params.to_h.tap do |well_param|
+            well_param[:id] = data_params[:id]
+            if data_params[:relationships].present?
               well_param[:pools] =
-                pool_param_names(params.require(:data))
+                pool_param_names(data_params)
             end
           end
-          well_param.to_h
         end
-        # rubocop:enable Metrics/AbcSize
 
-        def params_names
-          params.require(:data).require(:attributes)[:wells].map do |param|
+        def permitted_update_params
+          params.require(:data)
+                .require(:attributes)
+                .permit(
+                  :movie_time, :insert_size, :row, :on_plate_loading_concentration,
+                  :column, :comment, :id, :pre_extension_time, :generate_hifi,
+                  :ccs_analysis_output
+                )
+        end
+
+        def create_params
+          params.require(:data).require(:attributes).fetch(:wells, []).map do |param|
             well_params_names(param)
-          end.flatten
+          end
         end
 
-        def well_params_names(params)
-          params.permit(:movie_time, :insert_size, :row,
-                        :on_plate_loading_concentration, :column,
-                        :comment, :relationships,
-                        :pre_extension_time, :generate_hifi,
-                        :ccs_analysis_output).to_h.tap do |well|
-            if params[:relationships].present?
-              well[:plate] = plate_params_names(params)
-              well[:libraries] = library_param_names(params) unless params.dig(:relationships,
-                                                                               :libraries).nil?
-              well[:pools] = pool_param_names(params) unless params.dig(:relationships, :pools).nil?
+        def well_params_names(well_params)
+          well_params.permit(:movie_time, :insert_size, :row,
+                             :on_plate_loading_concentration, :column,
+                             :comment, :relationships,
+                             :pre_extension_time, :generate_hifi,
+                             :ccs_analysis_output).to_h.tap do |well|
+            if well_params[:relationships].present?
+              well[:plate] = plate_params_names(well_params)
+              well[:pools] = pool_param_names(well_params) unless well_params.dig(:relationships,
+                                                                                  :pools).nil?
             end
           end
         end
 
         def plate_params_names(params)
           params.require(:relationships)[:plate].require(:data).permit(:id, :type).to_h
-        end
-
-        def library_param_names(params)
-          params.require(:relationships)[:libraries][:data].map do |library|
-            library.permit(:id, :type).to_h
-          end.flatten
         end
 
         def pool_param_names(params)
@@ -124,6 +108,10 @@ module V1
         def render_json(status)
           render json: serialize_resource(WellResource.new(@well, nil)),
                  status: status
+        end
+
+        def data_params
+          params.require(:data)
         end
       end
     end

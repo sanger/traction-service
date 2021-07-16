@@ -4,16 +4,16 @@ RSpec.describe CsvGenerator, type: :model do
   after(:each) { File.delete('sample_sheet.csv') if File.exists?('sample_sheet.csv') }
 
   context '#generate_sample_sheet' do
-    let(:well1)   { create(:pacbio_well_with_libraries, pre_extension_time: 2, generate_hifi: 'In SMRT Link', ccs_analysis_output: 'Yes') }
-    let(:well2)   { create(:pacbio_well_with_libraries, pre_extension_time: 2, generate_hifi: 'In SMRT Link', ccs_analysis_output: 'No') }
+    let(:well1)   { create(:pacbio_well_with_pools, pre_extension_time: 2, generate_hifi: 'In SMRT Link', ccs_analysis_output: 'Yes') }
+    let(:well2)   { create(:pacbio_well_with_pools, pre_extension_time: 2, generate_hifi: 'In SMRT Link', ccs_analysis_output: 'No') }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_run, plate: plate) }
     let(:csv)     { ::CsvGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet) }
 
     it 'check validity' do
       well = create(:pacbio_well)
-      well.libraries = create_list(:pacbio_library, 5)
-      expect(true).to be_truthy
+      well.pools << create_list(:pacbio_pool, 5)
+      expect(well).to be_valid
     end
 
     it 'must return a csv string' do
@@ -143,16 +143,21 @@ RSpec.describe CsvGenerator, type: :model do
   end
 
   context '#generate_sample_sheet no tags' do
-    let(:well1)   { create(:pacbio_well_with_libraries_untagged, pre_extension_time: 2, generate_hifi: 'Do Not Generate', ccs_analysis_output: 'Yes') }
-    let(:well2)   { create(:pacbio_well_with_libraries_untagged, generate_hifi: 'On Instrument', ccs_analysis_output: 'No') }
+    let(:well1)   { create(:pacbio_well_with_pools, pre_extension_time: 2, generate_hifi: 'Do Not Generate', ccs_analysis_output: 'Yes') }
+    let(:well2)   { create(:pacbio_well_with_pools, generate_hifi: 'On Instrument', ccs_analysis_output: 'No') }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_run, plate: plate) }
     let(:csv)     { ::CsvGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet) }
 
+    before(:each) do
+      well1.pools.first.libraries = create_list(:pacbio_library, 2, :untagged)
+      well2.pools.first.libraries = create_list(:pacbio_library, 2, :untagged)
+    end
+
     it 'check validity' do
       well = create(:pacbio_well)
-      well.libraries = create_list(:pacbio_library, 5)
-      expect(true).to be_truthy
+      well.pools << create_list(:pacbio_pool, 5)
+      expect(well).to be_valid
     end
 
     it 'must return a csv string' do
@@ -233,13 +238,15 @@ RSpec.describe CsvGenerator, type: :model do
   end
 
   context '#generate_sample_sheet_different_template_barcode' do
-    let(:well1)   { create(:pacbio_well_with_libraries, generate_hifi: 'On Instrument', ccs_analysis_output: 'No') }
+    let(:well1)   { create(:pacbio_well_with_pools, generate_hifi: 'On Instrument', ccs_analysis_output: 'No') }
     let(:plate)   { create(:pacbio_plate, wells: [well1]) }
     let(:run)     { create(:pacbio_run, plate: plate) }
     let(:csv)     { ::CsvGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet) }
 
     it 'shows a default template prep kit box barcode if they are not all equal' do
-      well1.libraries[1].template_prep_kit_box_barcode = "random"
+      library_unique_temp = create(:pacbio_library, template_prep_kit_box_barcode: "random")
+      well1.pools.first.libraries = create_list(:pacbio_library, 5)
+      well1.pools.first.libraries << library_unique_temp
       csv_string = csv.generate_sample_sheet
       array_of_rows = CSV.parse(csv_string)
 
