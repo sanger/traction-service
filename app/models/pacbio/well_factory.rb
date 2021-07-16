@@ -95,6 +95,9 @@ module Pacbio
         include ActiveModel::Model
         attr_reader :well, :pools
 
+        validate :check_tags_present, if: :multiple_libraries
+        validate :check_tags_uniq, if: :multiple_libraries
+
         def initialize(well, pool_attributes)
           @well = well
           @pools = find_pools(pool_attributes || [])
@@ -109,29 +112,35 @@ module Pacbio
 
         private
 
+        def libraries
+          @pools.flat_map(&:libraries)
+        end
+
+        def check_tags_present
+          return unless all_tags.empty? || all_tags.any?(nil)
+
+          errors.add(:tags, 'are missing from the libraries')
+        end
+
+        def check_tags_uniq
+          return if all_tags.length == all_tags.uniq.length
+
+          errors.add(:tags, "are not unique within the libraries for well #{well.position}")
+        end
+
+        def multiple_libraries
+          libraries.many?
+        end
+
+        def all_tags
+          libraries.collect(&:tag)
+        end
+
         def find_pools(pool_attributes)
           ids = pool_attributes.pluck(:id)
-          Pacbio::Pool.where(id: ids)
+          Pacbio::Pool.includes(:libraries).where(id: ids)
         end
       end
-      # keeping here so when we know the previous validations
-      # def check_tags_present
-      #   return unless all_tags.empty? || all_tags.any?(nil)
-
-      #   errors.add(:tags, 'are missing from the libraries')
-      # end
-
-      # def check_tags_uniq
-      #   return if all_tags.length == all_tags.uniq.length
-
-      #   errors.add(:tags, "are not unique within the libraries for well #{well.position}")
-      # end
-
-      # def check_libraries_max
-      #   return if libraries.length <= 16
-
-      #   errors.add(:libraries, "There are more than 16 libraries in well #{well.position}")
-      # end
     end
   end
 end

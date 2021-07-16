@@ -256,6 +256,31 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         expect(well.pools[0].id).to eq pool_attributes[0][:id]
         expect(well.pools[1].id).to eq pool_attributes[1][:id]
       end
+
+      context 'if tags are missing' do
+        let(:pool1) { create(:pacbio_pool, libraries: create_list(:pacbio_library_without_tag, 1)) }
+        let(:pool2) { create(:pacbio_pool, libraries: create_list(:pacbio_library_without_tag, 1)) }
+
+        it 'does not update the well libaries, if pools are invalid - check_tags_present' do
+          factory = Pacbio::WellFactory::Well::Pools.new(well, pool_attributes)
+          expect(factory).not_to be_valid
+          expect(factory.save).not_to be_truthy
+          expect(factory.errors.messages[:tags]).to include 'are missing from the libraries'
+        end
+      end
+
+      context 'if tags are the same' do
+        let(:shared_tag) { create :tag }
+        let(:pool1) { create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, tag: shared_tag)) }
+        let(:pool2) { create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, tag: shared_tag)) }
+
+        it 'does not update the well libaries, if pools are invalid - check_tags_uniq' do
+          factory = Pacbio::WellFactory::Well::Pools.new(well, pool_attributes)
+          expect(factory).not_to be_valid
+          expect(factory.save).not_to be_truthy
+          expect(factory.errors.messages[:tags]).to include "are not unique within the libraries for well #{well.position}"
+        end
+      end
     end
   end
 end
