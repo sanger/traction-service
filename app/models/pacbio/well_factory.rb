@@ -8,8 +8,10 @@ module Pacbio
   # Each well can have multiple pools which must exist
   class WellFactory
     include ActiveModel::Model
+    extend NestedValidation
 
-    validate :validate_wells
+    validates_nested :wells
+    validates :wells, presence: { message: 'there are no wells' }
 
     def initialize(attributes = [])
       build_wells(attributes)
@@ -38,28 +40,12 @@ module Pacbio
       end
     end
 
-    def validate_wells
-      if wells.empty?
-        errors.add(:wells, 'there are no wells')
-        return
-      end
-
-      wells.each do |well|
-        next if well.valid?
-
-        well.errors.each do |k, v|
-          errors.add(k, v)
-        end
-      end
-
-      true
-    end
-
     # WellFactory::Well
     class Well
       include ActiveModel::Model
+      extend NestedValidation
 
-      validate :validate_well
+      validates_nested :well, :pools
 
       # Pacbio::Well
       attr_reader :well
@@ -101,60 +87,32 @@ module Pacbio
       def save
         return false unless valid?
 
-        well.save
-        return false unless pools.save
-
-        true
-      end
-
-      def validate_well
-        unless well.valid?
-          well.errors.each do |k, v|
-            errors.add(k, v)
-          end
-        end
-
-        return if pools.valid?
-
-        pools.errors.each do |k, v|
-          errors.add(k, v)
-        end
+        well.save && pools.save
       end
 
       # WellFactory::Well::Pools
       class Pools
         include ActiveModel::Model
-        attr_reader :well
+        attr_reader :well, :pools
 
         def initialize(well, pool_attributes)
           @well = well
-          build_pools(pool_attributes)
-        end
-
-        # Pacbio::Pool
-        def pools
-          @pools ||= []
+          @pools = find_pools(pool_attributes || [])
         end
 
         def save
           return false unless valid?
 
-          destroy_pools
-          well.pools << pools
+          well.pools = pools
+          true
         end
 
         private
 
-        def build_pools(pool_attributes)
-          return if pool_attributes.nil?
-
-          pool_attributes.each do |pool|
-            pools << Pacbio::Pool.find(pool[:id]) if Pacbio::Pool.exists?(pool[:id])
+        def find_pools(pool_attributes)
+          pool_attributes.filter_map do |pool|
+            Pacbio::Pool.find_by(id: pool[:id])
           end
-        end
-
-        def destroy_pools
-          well.pools.destroy_all
         end
       end
       # keeping here so when we know the previous validations
