@@ -81,21 +81,21 @@ RSpec.describe 'Performance testing' do
         end
       end
 
-      context 'each with 384 samples' do
-        let(:num_samples) { 384 }
+      # context 'each with 384 samples' do
+      #   let(:num_samples) { 384 }
 
-        it 'is performant' do
-          attributes = plate_with_ont_samples(num_wells, num_samples, tag_set.tags.first.oligo)
+      #   it 'is performant' do
+      #     attributes = plate_with_ont_samples(num_wells, num_samples, tag_set.tags.first.oligo)
 
-          time_taken_milli = benchmark do
-            factory = Ont::PlateWithSamplesFactory.new(attributes)
-            factory.process
-            expect(factory.save).to be_truthy
-          end
+      #     time_taken_milli = benchmark do
+      #       factory = Ont::PlateWithSamplesFactory.new(attributes)
+      #       factory.process
+      #       expect(factory.save).to be_truthy
+      #     end
 
-          expect(time_taken_milli).to be < 20000
-        end
-      end
+      #     expect(time_taken_milli).to be < 20000
+      #   end
+      # end
     end
   end
 end

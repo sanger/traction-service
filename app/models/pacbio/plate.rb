@@ -10,10 +10,10 @@ module Pacbio
     has_many :wells, class_name: 'Pacbio::Well', foreign_key: :pacbio_plate_id,
                      inverse_of: :plate, dependent: :destroy
 
-    def all_wells_have_libraries?
+    def all_wells_have_pools?
       return false if wells.empty?
 
-      wells.all?(&:libraries?)
+      wells.all?(&:pools?)
     end
   end
 end

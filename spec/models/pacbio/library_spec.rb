@@ -45,14 +45,6 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
     expect(library.tube).to eq tube
   end
 
-  context 'wells' do
-    it 'can have one or more' do
-      library = create(:pacbio_library)
-      library.wells << create_list(:pacbio_well, 5)
-      expect(library.wells.count).to eq(5)
-    end
-  end
-
   describe '#request' do
 
     let!(:library) { create(:pacbio_library, tag: create(:tag)) }
@@ -82,14 +74,26 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
   describe '#source_identifier' do
     let(:library) { create(:pacbio_library, :tagged) }
 
-    before do
-      create(:plate_with_wells_and_requests, pipeline: 'pacbio',
-             row_count: 1, column_count: 1, barcode: 'BC12',
-             requests: [library.request])
+    context 'from a well' do
+      before do
+        create(:plate_with_wells_and_requests, pipeline: 'pacbio',
+                                               row_count: 1, column_count: 1, barcode: 'BC12',
+                                               requests: [library.request])
+      end
+
+      it 'returns the plate barcode and well' do
+        expect(library.source_identifier).to eq('BC12:A1')
+      end
     end
 
-    it 'returns the plate barcode and well' do
-      expect(library.source_identifier).to eq('BC12:A1')
+    context 'from a tube' do
+      before do
+        create(:tube_with_pacbio_request, requests: [library.request], barcode: 'TRAC-2-757')
+      end
+
+      it 'returns the plate barcode and well' do
+        expect(library.source_identifier).to eq('TRAC-2-757')
+      end
     end
   end
 end

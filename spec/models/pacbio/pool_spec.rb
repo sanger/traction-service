@@ -42,7 +42,13 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
     end
 
   end
-
- 
+  
+  context 'wells' do
+    it 'can have one or more' do
+      pool = create(:pacbio_pool)
+      pool.wells << create_list(:pacbio_well, 5)
+      expect(pool.wells.count).to eq(5)
+    end
+  end
   
 end

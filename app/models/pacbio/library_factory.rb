@@ -20,8 +20,10 @@ module Pacbio
     attr_reader :library
 
     def initialize(library_attributes)
+      @tube = Tube.new
       @library = create_library(library_attributes)
-      @container_material = ContainerMaterial.new(container: Tube.new, material: library)
+      @pool = Pacbio::Pool.new(tube: @tube, libraries: [library])
+      @container_material = ContainerMaterial.new(container: @tube, material: library)
     end
 
     delegate :id, :request, to: :library

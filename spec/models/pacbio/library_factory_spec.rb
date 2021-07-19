@@ -22,7 +22,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
         @pacbio_library = @factory.library
       end
 
-      it 'creates a Pacbio::Library object' do
+      it 'creates a Pacbio::Library object', aggregate_failures: true do
         expect(@pacbio_library.volume).to be_present
         expect(@pacbio_library.concentration).to be_present
         expect(@pacbio_library.template_prep_kit_box_barcode).to be_present
@@ -31,7 +31,8 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
         expect(@pacbio_library.created_at).to be_nil
         expect(@pacbio_library.updated_at).to be_nil
         expect(@pacbio_library.state).to be_nil
-        expect(@pacbio_library.request).to be_present
+        expect(@pacbio_library.request).to be_a(Pacbio::Request)
+        expect(@pacbio_library.pool).to be_a(Pacbio::Pool)
       end
     end
 

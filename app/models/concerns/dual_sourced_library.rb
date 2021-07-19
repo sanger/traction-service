@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 # Include in a library record to provide a #source_identifier method
-# based on libraries with a single source well
-module WellSourcedLibrary
+# based on libraries with a single source well or tube
+module DualSourcedLibrary
   extend ActiveSupport::Concern
 
   included do
@@ -14,6 +14,8 @@ module WellSourcedLibrary
     # table, or expects to see '::Well' in the container_type column
     has_one :source_well, through: :source_container_material, source: :container,
                           source_type: 'Well', class_name: '::Well'
+    has_one :source_tube, through: :source_container_material, source: :container,
+                          source_type: 'Tube', class_name: '::Tube'
   end
 
   # Identifies the plate and well from which the library was created
@@ -22,6 +24,6 @@ module WellSourcedLibrary
   # @return [String] Identifies source plate and wells. eg. 'DN123:A1'
   #
   def source_identifier
-    source_well&.identifier
+    source_well&.identifier || source_tube&.identifier
   end
 end

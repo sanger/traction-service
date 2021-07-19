@@ -64,7 +64,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
   end
 
   it 'can have the wells summary when no run comments exist' do
-    wells = create_list(:pacbio_well_with_libraries, 2)
+    wells = create_list(:pacbio_well_with_pools, 2)
     plate = create(:pacbio_plate, wells: wells)
     run = create(:pacbio_run, plate: plate, comments: nil)
     expect(run.comments).to eq("#{wells.first.summary}:#{wells[1].summary}")
@@ -74,8 +74,8 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     after(:all) { File.delete('sample_sheet.csv') if File.exists?('sample_sheet.csv') }
 
     it 'must call CsvGenerator' do
-      well1 = create(:pacbio_well_with_libraries)
-      well2 = create(:pacbio_well_with_libraries)
+      well1 = create(:pacbio_well_with_pools)
+      well2 = create(:pacbio_well_with_pools)
 
       plate = create(:pacbio_plate, wells: [well1, well2])
       run = create(:pacbio_run, plate: plate)
@@ -85,8 +85,8 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     end
 
     it 'must return a String' do
-      well1 = create(:pacbio_well_with_libraries)
-      well2 = create(:pacbio_well_with_libraries)
+      well1 = create(:pacbio_well_with_pools)
+      well2 = create(:pacbio_well_with_pools)
 
       plate = create(:pacbio_plate, wells: [well1, well2])
       run = create(:pacbio_run, plate: plate)

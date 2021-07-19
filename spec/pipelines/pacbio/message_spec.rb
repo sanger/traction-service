@@ -65,10 +65,11 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
 
       context 'samples' do
         let(:libraries) { create_list(:pacbio_library, 5, :tagged) }
+        let(:pool) { create(:pacbio_pool, libraries: libraries) }
         let(:request) { library.request }
 
         before(:each) do
-          plate_well.libraries = libraries
+          plate_well.pools << pool
         end
 
         it 'will have the correct number' do

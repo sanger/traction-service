@@ -5,8 +5,13 @@ module V1
     module Runs
       # WellsController
       class WellsController < ApplicationController
+        PERMITTED_WELL_PARAMETERS = %i[
+          movie_time insert_size row on_plate_loading_concentration
+          column comment pre_extension_time generate_hifi ccs_analysis_output
+        ].freeze
+
         def create
-          @well_factory = ::Pacbio::WellFactory.new(params_names)
+          @well_factory = ::Pacbio::WellFactory.new(create_params)
 
           if @well_factory.save
             publish_message
@@ -18,7 +23,7 @@ module V1
         end
 
         def update
-          @well_factory = ::Pacbio::WellFactory.new([param_names])
+          @well_factory = ::Pacbio::WellFactory.new([update_params])
 
           if @well_factory.save
             publish_message
@@ -51,53 +56,45 @@ module V1
           Messages.publish(@well_factory.plate, Pipelines.pacbio.message)
         end
 
-        def param_names
-          p1 = params.require(:data).require(:attributes)
-                     .merge(id: params.require(:data)[:id])
-                     .permit(
-                       :movie_time, :insert_size, :row, :on_plate_loading_concentration,
-                       :column, :comment, :id, :pre_extension_time, :generate_hifi,
-                       :ccs_analysis_output
-                     )
-
-          well_param_names(p1)
+        def permitted_update_params
+          data_params.require(:attributes)
+                     .permit(*PERMITTED_WELL_PARAMETERS, :id)
         end
 
-        def well_param_names(well_param)
-          if params.require(:data)[:relationships].present?
-            well_param[:libraries] = library_param_names(params.require(:data))
+        def update_params
+          permitted_update_params.to_h.tap do |well|
+            well[:id] = data_params[:id]
+            well[:pools] = pool_param_names(data_params) if data_params.dig(:relationships, :pools)
           end
-          well_param.to_h
         end
 
-        def params_names
-          params.require(:data).require(:attributes)[:wells].map do |param|
+        def create_params
+          data_params.require(:attributes).fetch(:wells, []).map do |param|
             well_params_names(param)
-          end.flatten
+          end
         end
 
-        def well_params_names(params)
-          params.permit(:movie_time, :insert_size, :row,
-                        :on_plate_loading_concentration, :column,
-                        :comment, :relationships,
-                        :pre_extension_time, :generate_hifi,
-                        :ccs_analysis_output).to_h.tap do |well|
-            if params[:relationships].present?
-              well[:plate] = plate_params_names(params)
-              well[:libraries] = library_param_names(params) unless
-              params.dig(:relationships, :libraries).nil?
+        def well_params_names(well_params)
+          well_params.permit(*PERMITTED_WELL_PARAMETERS).to_h.tap do |well|
+            if well_params[:relationships].present?
+              well[:plate] = plate_params_names(well_params)
+              well[:pools] = pool_param_names(well_params) if well_params.dig(
+                :relationships, :pools
+              )
             end
           end
         end
 
         def plate_params_names(params)
-          params.require(:relationships)[:plate].require(:data).permit(:id, :type).to_h
+          params.require(:relationships)
+                .require(:plate)
+                .require(:data).permit(:id, :type).to_h
         end
 
-        def library_param_names(params)
-          params.require(:relationships)[:libraries][:data].map do |library|
-            library.permit(:id, :type).to_h
-          end.flatten
+        def pool_param_names(params)
+          params.require(:relationships)[:pools][:data].map do |pool|
+            pool.permit(:id, :type).to_h
+          end
         end
 
         def well
@@ -107,6 +104,10 @@ module V1
         def render_json(status)
           render json: serialize_resource(WellResource.new(@well, nil)),
                  status: status
+        end
+
+        def data_params
+          params.require(:data)
         end
       end
     end
