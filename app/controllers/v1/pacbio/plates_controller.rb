@@ -30,7 +30,7 @@ module V1
         params.require(:data)['attributes'].permit(
           plates: [:barcode, { wells: [:position, { samples:
               %i[name external_id species library_type estimate_of_gb_required
-                 number_of_smrt_cells cost_code external_study_id] }] }]
+                 number_of_smrt_cells cost_code external_study_id qc_status] }] }]
         ).to_h
       end
     end

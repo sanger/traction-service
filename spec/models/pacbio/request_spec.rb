@@ -23,6 +23,35 @@ RSpec.describe Pacbio::Request, type: :model, pacbio: true do
     end
   end
 
+  context 'qc_status' do
+    it 'has a default passed value' do
+      request = Pacbio::Request.create(library_type: 'library_type_1', 
+                                       estimate_of_gb_required: 10, 
+                                       number_of_smrt_cells: 1, 
+                                       external_study_id: 1 )
+      expect(request.qc_status).to eq('Passed')
+    end
+
+    it 'can be set to failed state' do
+      request = Pacbio::Request.create(library_type: 'library_type_1', 
+                                       estimate_of_gb_required: 10, 
+                                       number_of_smrt_cells: 1, 
+                                       external_study_id: 1,
+                                       qc_status: 'Failed' )
+      expect(request.qc_status).to eq('Failed')
+    end
+
+    it 'errors if state is changed to invalid value' do
+      expect {
+        Pacbio::Request.create(library_type: 'library_type_1', 
+                                       estimate_of_gb_required: 10, 
+                                       number_of_smrt_cells: 1, 
+                                       external_study_id: 1,
+                                       qc_status: 'Invalid')
+      }.to raise_error("'Invalid' is not a valid qc_status")
+    end
+  end
+
   context 'libraries' do
     it 'can have one or more' do
       request = create(:pacbio_request)
