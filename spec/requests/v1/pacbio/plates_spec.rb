@@ -53,6 +53,7 @@ RSpec.describe 'PlatesController', type: :request do
         expect(material['attributes']['external_study_id']).to eq(request.external_study_id)
         expect(material['attributes']['sample_name']).to eq(request.sample_name)
         expect(material['attributes']['sample_species']).to eq(request.sample_species)
+        expect(material['attributes']['qc_status']).to eq(request.qc_status)
         expect(material['attributes']['material_type']).to eq('request')
       end
     end
@@ -86,6 +87,7 @@ RSpec.describe 'PlatesController', type: :request do
         expect(request_data['attributes']['external_study_id']).to eq(request.external_study_id)
         expect(request_data['attributes']['sample_name']).to eq(request.sample_name)
         expect(request_data['attributes']['sample_species']).to eq(request.sample_species)
+        expect(request_data['attributes']['qc_status']).to eq(request.qc_status)
       end
     end
 

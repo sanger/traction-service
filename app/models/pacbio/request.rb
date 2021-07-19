@@ -8,6 +8,7 @@ module Pacbio
   class Request < ApplicationRecord
     include Pipelines::Requestor::Model
     attribute :cost_code, default: Rails.application.config.pacbio_request_cost_code
+    enum qc_status: { 'Passed' => 0, 'Failed' => 1 }
 
     has_many :libraries, class_name: 'Pacbio::Library', dependent: :nullify,
                          foreign_key: :pacbio_request_id, inverse_of: :request
