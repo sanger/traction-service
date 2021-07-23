@@ -88,7 +88,7 @@ module Pipelines
       end
 
       # Permitted parameters for create and edit actions
-      # @return [Hash] - hash of whitelisted parameters
+      # @return [Hash] - hash of permitted parameters
       def params_names
         params.require(:data).require(:attributes)
               .permit(
