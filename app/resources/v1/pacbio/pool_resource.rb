@@ -8,6 +8,8 @@ module V1
 
       has_one :tube
       has_many :libraries
+
+      attributes :source_identifier
     end
   end
 end
