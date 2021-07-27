@@ -10,7 +10,7 @@ module V1
       has_many :libraries
 
       attributes :volume, :concentration, :template_prep_kit_box_barcode,
-                 :fragment_size, :source_identifier
+                 :fragment_size, :source_identifier, :created_at, :updated_at
     end
   end
 end
