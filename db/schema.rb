@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_14_121514) do
+ActiveRecord::Schema.define(version: 2021_07_27_143210) do
 
   create_table "container_materials", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "container_type"
@@ -88,7 +88,13 @@ ActiveRecord::Schema.define(version: 2021_07_14_121514) do
   end
 
   create_table "pacbio_pools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "tube_id"
+    t.bigint "tube_id", null: false
+    t.float "volume"
+    t.float "concentration"
+    t.string "template_prep_kit_box_barcode"
+    t.integer "fragment_size"
+    t.datetime "created_at", precision: 6
+    t.datetime "updated_at", precision: 6
     t.index ["tube_id"], name: "index_pacbio_pools_on_tube_id"
   end
 
@@ -136,7 +142,7 @@ ActiveRecord::Schema.define(version: 2021_07_14_121514) do
     t.index ["pacbio_well_id"], name: "index_pacbio_well_libraries_on_pacbio_well_id"
   end
 
-  create_table "pacbio_well_pools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "pacbio_well_pools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "pacbio_well_id"
     t.bigint "pacbio_pool_id"
     t.index ["pacbio_pool_id"], name: "index_pacbio_well_pools_on_pacbio_pool_id"
@@ -284,4 +290,5 @@ ActiveRecord::Schema.define(version: 2021_07_14_121514) do
 
   add_foreign_key "pacbio_libraries", "pacbio_pools"
   add_foreign_key "pacbio_libraries", "pacbio_requests"
+  add_foreign_key "pacbio_pools", "tubes"
 end
