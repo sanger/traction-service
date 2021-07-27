@@ -22,7 +22,11 @@ module Pacbio
     def initialize(library_attributes)
       @tube = Tube.new
       @library = create_library(library_attributes)
-      @pool = Pacbio::Pool.new(tube: @tube, libraries: [library])
+      @pool = Pacbio::Pool.new(tube: @tube, libraries: [library],
+                               **library_attributes.slice(:volume,
+                                                          :concentration,
+                                                          :template_prep_kit_box_barcode,
+                                                          :fragment_size))
       @container_material = ContainerMaterial.new(container: @tube, material: library)
     end
 

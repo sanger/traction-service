@@ -34,6 +34,13 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
         expect(@pacbio_library.request).to be_a(Pacbio::Request)
         expect(@pacbio_library.pool).to be_a(Pacbio::Pool)
       end
+
+      it 'populates to pool object with the library information', aggregate_failures: true do
+        expect(@pacbio_library.pool.volume).to eq @pacbio_library.volume
+        expect(@pacbio_library.pool.concentration).to eq @pacbio_library.concentration
+        expect(@pacbio_library.pool.template_prep_kit_box_barcode).to eq @pacbio_library.template_prep_kit_box_barcode
+        expect(@pacbio_library.pool.fragment_size).to eq @pacbio_library.fragment_size
+      end
     end
 
     context '#save' do

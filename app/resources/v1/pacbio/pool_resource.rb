@@ -9,7 +9,8 @@ module V1
       has_one :tube
       has_many :libraries
 
-      attributes :source_identifier
+      attributes :volume, :concentration, :template_prep_kit_box_barcode,
+                 :fragment_size, :source_identifier
     end
   end
 end
