@@ -8,12 +8,12 @@ module Pacbio
   # nested_attributes_for which creates complexity
   # I also suspect that this will get more complicated
   class PoolCreator
-    delegate :errors, :valid?, to: :pool
+    delegate_missing_to :pool
 
-    def initialize(attributes = {})
-      pool.libraries = attributes[:libraries].try(:collect) do |library|
+    def libraries=(library_options)
+      pool.libraries = library_options.map do |library|
         Pacbio::Library.new(library)
-      end || []
+      end
     end
 
     def pool
