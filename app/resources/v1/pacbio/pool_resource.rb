@@ -11,6 +11,10 @@ module V1
 
       attributes :volume, :concentration, :template_prep_kit_box_barcode,
                  :fragment_size, :source_identifier, :created_at, :updated_at
+
+      def self.records_for_populate(*_args)
+        super.preload(:source_wells)
+      end
     end
   end
 end
