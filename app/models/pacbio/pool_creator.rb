@@ -10,6 +10,10 @@ module Pacbio
   class PoolCreator
     delegate_missing_to :pool
 
+    def initialize(libraries: [])
+      self.libraries = libraries
+    end
+
     def libraries=(library_options)
       pool.libraries = library_options.map do |library|
         Pacbio::Library.new(library)

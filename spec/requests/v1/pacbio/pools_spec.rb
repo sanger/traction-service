@@ -63,7 +63,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
                 volume: 1.11,
                 concentration: 2.22,
                 fragment_size: 100,
-                libraries: [
+                library_attributes: [
                   {
                     volume: 1.11,
                     template_prep_kit_box_barcode: 'LK1234567',
@@ -106,7 +106,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
               data: {
                 type: 'pools',
                 attributes: {
-                  libraries: [
+                  library_attributes: [
                     {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
@@ -141,7 +141,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
             data: {
               type: 'pools',
               attributes: {
-                libraries: [
+                library_attributes: [
                   {
                     template_prep_kit_box_barcode: 'LK1234567',
                     volume: 1.11,
@@ -182,7 +182,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
               data: {
                 type: 'pools',
                 attributes: {
-                  libraries: [
+                  library_attributes: [
                     {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
