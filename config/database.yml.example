@@ -1,12 +1,16 @@
 default: &default
-  adapter: sqlite3
+  adapter: mysql2
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: <%= ENV.fetch('DBUSERNAME','root') %>
+  password: <%= ENV['DBPASSWORD'] %>
+  host: 127.0.0.1
+  port: <%= ENV.fetch('DBPORT','3306') %>
   timeout: 5000
 
 development:
   <<: *default
-  database: db/development.sqlite3
+  database: traction_development
 
 test:
   <<: *default
-  database: db/test.sqlite3
+  database: traction_test

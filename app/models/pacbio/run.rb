@@ -10,7 +10,7 @@ module Pacbio
 
     enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2 }
 
-    delegate :wells, :all_wells_have_libraries?, to: :plate, allow_nil: true
+    delegate :wells, :all_wells_have_pools?, to: :plate, allow_nil: true
 
     after_create :generate_name
 
