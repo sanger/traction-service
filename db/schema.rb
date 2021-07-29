@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_14_121514) do
+ActiveRecord::Schema.define(version: 2021_07_28_134357) do
 
   create_table "container_materials", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "container_type"
@@ -116,7 +116,6 @@ ActiveRecord::Schema.define(version: 2021_07_14_121514) do
 
   create_table "pacbio_runs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
-    t.string "binding_kit_box_barcode"
     t.string "sequencing_kit_box_barcode"
     t.string "dna_control_complex_box_barcode"
     t.string "comments"
@@ -158,6 +157,7 @@ ActiveRecord::Schema.define(version: 2021_07_14_121514) do
     t.integer "pre_extension_time"
     t.integer "generate_hifi"
     t.string "ccs_analysis_output"
+    t.string "binding_kit_box_barcode"
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
 
