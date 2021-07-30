@@ -25,7 +25,7 @@ module V1
       end
 
       def self.records_for_populate(*_args)
-        super.preload(:source_wells)
+        super.preload(source_wells: :plate)
       end
 
       def self.create_model(*_opt)

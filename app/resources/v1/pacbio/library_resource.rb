@@ -13,6 +13,8 @@ module V1
       has_one :tube
       has_one :tag, always_include_optional_linkage_data: true
       has_one :pool, always_include_optional_linkage_data: true
+      has_one :source_well, relation_name: :source_well, class_name: 'Well'
+      has_one :source_plate, relation_name: :source_plate, class_name: 'Plate'
 
       def self.records_for_populate(*_args)
         super.preload(source_well: :plate, request: :sample,

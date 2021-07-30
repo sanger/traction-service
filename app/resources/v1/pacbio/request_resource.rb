@@ -5,6 +5,9 @@ module V1
     # RequestResource
     class RequestResource < JSONAPI::Resource
       include Pipelines::Requestor::Resource
+
+      has_one :well
+      has_one :plate
     end
   end
 end
