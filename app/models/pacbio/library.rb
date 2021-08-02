@@ -28,6 +28,8 @@ module Pacbio
     # # after that is defined
     include DualSourcedLibrary
 
+    has_one :source_plate, through: :source_well, source: :plate, class_name: '::Plate'
+
     def collection?
       false
     end
