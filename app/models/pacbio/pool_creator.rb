@@ -10,8 +10,14 @@ module Pacbio
   class PoolCreator
     delegate_missing_to :pool
 
-    def initialize(libraries: [])
+    def initialize(libraries: [], template_prep_kit_box_barcode: nil, volume: nil, concentration: nil, fragment_size: nil)
       self.libraries = libraries
+      pool.assign_attributes(
+        template_prep_kit_box_barcode: template_prep_kit_box_barcode,
+        volume: volume,
+        concentration: concentration,
+        fragment_size: fragment_size
+      )
     end
 
     def libraries=(library_options)
