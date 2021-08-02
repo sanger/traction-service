@@ -15,6 +15,26 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
     expect(pool.libraries).to eq(libraries)
   end
 
+  it 'can have a template prep kit box barcode' do
+    pool = build(:pacbio_pool)
+    expect(pool.template_prep_kit_box_barcode).to be_present
+  end
+
+  it 'can have a volume' do
+    pool = build(:pacbio_pool)
+    expect(pool.volume).to be_present
+  end
+
+  it 'can have a concentration' do
+    pool = build(:pacbio_pool)
+    expect(pool.concentration).to be_present
+  end
+
+  it 'can have a fragment size' do
+    pool = build(:pacbio_pool)
+    expect(pool.fragment_size).to be_present
+  end
+
   it 'is not valid unless there is at least one library' do
     expect(build(:pacbio_pool, libraries: [])).to_not be_valid
   end
