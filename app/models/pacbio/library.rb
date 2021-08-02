@@ -13,7 +13,7 @@ module Pacbio
     include Librarian
     include SampleSheet
 
-    validates :volume, :concentration, :template_prep_kit_box_barcode,
+    validates :volume, :concentration,
               :fragment_size, presence: true
 
     belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id,
