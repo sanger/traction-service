@@ -28,8 +28,30 @@ module SampleSheet
     libraries.first.tag.tag_set.uuid
   end
 
+  # Sample bio Name field - TEMPORARY: Want well row to have sample_names when isoSeq tags
+  def find_sample_name
+    if defined?(sample_names) # When row type is well
+      return sample_names unless check_library_tags
+    elsif defined?(request.sample_name) # When row type is library (sample)
+      return request.sample_name
+    end
+    ''
+  end
+
   # Sample is Barcoded field
   def all_libraries_tagged
+    libraries.all?(&:tag_id?)
+  end
+
+  # Sample is Barcoded field - TEMPORARY: Want IsoSeq samples to return false
+  def check_library_tags
+    isoseq_tag_sets = %w[IsoSeq_Primers_12_Barcodes_v1]
+    if libraries.any? do |library|
+         isoseq_tag_sets.include?(library.tag.tag_set.name) if library.tag
+       end
+      return false
+    end
+
     libraries.all?(&:tag_id?)
   end
 

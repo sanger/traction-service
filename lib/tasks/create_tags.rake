@@ -62,7 +62,7 @@ namespace :tags do
     task pacbio_isoseq: :environment do
       puts '-> Creating Pacbio IsoSeq tag set and tags'
       set = TagSet.pacbio_pipeline
-                  .find_or_create_by!(name: 'IsoSeq_v1', uuid: SecureRandom.uuid)
+                  .find_or_create_by!(name: 'IsoSeq_Primers_12_Barcodes_v1', uuid: 'd1bb7419-4343-286f-f6f7-7365fa2d1ee9')
       puts '-> Tag Set successfully created'
       Tag.find_or_create_by!(oligo: 'CACATATCAGAGTGCG', group_id: 'bc1001', tag_set_id: set.id)
       Tag.find_or_create_by!(oligo: 'ACACACAGACTGTGAG', group_id: 'bc1002', tag_set_id: set.id)
@@ -76,7 +76,7 @@ namespace :tags do
       Tag.find_or_create_by!(oligo: 'ACACACTCTATCAGAT', group_id: 'bc1019', tag_set_id: set.id)
       Tag.find_or_create_by!(oligo: 'CACGACACGACGATGT', group_id: 'bc1020', tag_set_id: set.id)
       Tag.find_or_create_by!(oligo: 'CAGAGAGATATCTCTG', group_id: 'bc1023', tag_set_id: set.id)
-      puts '-> IsoSeqw_v1 created'
+      puts '-> IsoSeq_Primers_12_Barcodes_v1 created'
     end
 
     desc 'Create ont tags for 96 samples (dummy not prod)'
