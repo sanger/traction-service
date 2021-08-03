@@ -6,6 +6,7 @@
 # TODO: This is included in a couple of places, but only some of the methods work in each.
 module SampleSheet
   # include ActiveSupport::Concern
+  ISOSEQ_TAG_SETS = %w[IsoSeq_Primers_12_Barcodes_v1].freeze
 
   # Sample Well field
   def position_leading_zero
@@ -28,9 +29,28 @@ module SampleSheet
     libraries.first.tag.tag_set.uuid
   end
 
+  # Sample bio Name field - TEMPORARY: Want well row to have sample_names when isoSeq tags
+  def find_sample_name
+    if defined?(sample_names) # When row type is well
+      return sample_names unless check_library_tags
+    elsif defined?(request.sample_name) # When row type is library (sample)
+      return request.sample_name
+    end
+    ''
+  end
+
   # Sample is Barcoded field
   def all_libraries_tagged
     libraries.all?(&:tag_id?)
+  end
+
+  # Sample is Barcoded field - TEMPORARY: Want IsoSeq samples to return false
+  def check_library_tags
+    no_isoseq_tag_sets = libraries.none? do |library|
+      ISOSEQ_TAG_SETS.include?(library.tag.tag_set.name) if library.tag
+    end
+
+    no_isoseq_tag_sets && libraries.all?(&:tag_id?)
   end
 
   # Same Barcodes on Both Ends of Sequence field
