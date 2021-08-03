@@ -6,6 +6,7 @@
 # TODO: This is included in a couple of places, but only some of the methods work in each.
 module SampleSheet
   # include ActiveSupport::Concern
+  ISOSEQ_TAG_SETS = %w[IsoSeq_Primers_12_Barcodes_v1].freeze
 
   # Sample Well field
   def position_leading_zero
@@ -45,14 +46,11 @@ module SampleSheet
 
   # Sample is Barcoded field - TEMPORARY: Want IsoSeq samples to return false
   def check_library_tags
-    isoseq_tag_sets = %w[IsoSeq_Primers_12_Barcodes_v1]
-    if libraries.any? do |library|
-         isoseq_tag_sets.include?(library.tag.tag_set.name) if library.tag
-       end
-      return false
+    no_isoseq_tag_sets = libraries.none? do |library|
+      ISOSEQ_TAG_SETS.include?(library.tag.tag_set.name) if library.tag
     end
 
-    libraries.all?(&:tag_id?)
+    no_isoseq_tag_sets && libraries.all?(&:tag_id?)
   end
 
   # Same Barcodes on Both Ends of Sequence field
