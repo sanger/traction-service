@@ -8,7 +8,7 @@ module V1
 
       attributes :name, :binding_kit_box_barcode,
                  :sequencing_kit_box_barcode, :dna_control_complex_box_barcode,
-                 :system_name, :created_at, :state, :comments, :all_wells_have_libraries
+                 :system_name, :created_at, :state, :comments, :all_wells_have_pools
 
       has_one :plate, foreign_key_on: :related, foreign_key: 'pacbio_run_id',
                       class_name: 'Runs::Plate'
@@ -16,8 +16,10 @@ module V1
       def self.records_for_populate(*_args)
         super.preload(plate: {
                         wells: {
-                          libraries: {
-                            request: :sample
+                          pools: {
+                            libraries: {
+                              request: :sample
+                            }
                           }
                         }
                       })
@@ -27,8 +29,8 @@ module V1
         @model.created_at.to_s(:us)
       end
 
-      def all_wells_have_libraries
-        @model.all_wells_have_libraries?
+      def all_wells_have_pools
+        @model.all_wells_have_pools?
       end
 
       # JSON API Resources builds up a representation of the relationships on
