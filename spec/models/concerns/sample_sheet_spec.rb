@@ -36,6 +36,53 @@ RSpec.describe SampleSheet do
       end
     end
 
+    context 'check_library_tags' do
+      it 'returns true if all well libraries are tagged and non isoSeq tags' do
+        expect(well.check_library_tags).to eq true
+      end
+
+      it 'returns false if there is one library and it has no tag' do
+        empty_well.pools << create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged ))
+        expect(empty_well.check_library_tags).to eq false
+      end
+
+      it 'returns true if there is only one library and it has a non isoSeq tag' do
+        pool = create(:pacbio_pool)
+        empty_well.pools << pool
+        expect(empty_well.check_library_tags).to eq true
+      end
+
+      it 'returns false if any of the well libraries are not tagged' do
+        well.pools.first.libraries << create(:pacbio_library_without_tag)
+        expect(well.check_library_tags).to eq false
+      end
+
+      it 'returns false if any of the well libraries are tagged with IsoSeq tags' do
+        isoSeq_tag_set = create(:tag_set, name: 'IsoSeq_Primers_12_Barcodes_v1')
+        isoSeq_tag = create(:tag, tag_set: isoSeq_tag_set)
+        well.pools.first.libraries << create(:pacbio_library, tag: isoSeq_tag)
+        expect(well.check_library_tags).to eq false
+      end
+    end
+
+    context 'check_library_tags' do
+      it 'returns nothing when well libraries are non isoSeq and the row type is well' do
+        expect(well.find_sample_name).to eq ""
+      end
+
+      it 'returns well sample_names when well has isoSeq tagged libraries and the row type is well' do
+        isoSeq_tag_set = create(:tag_set, name: 'IsoSeq_Primers_12_Barcodes_v1')
+        isoSeq_tag = create(:tag, tag_set: isoSeq_tag_set)
+        well.pools.first.libraries << create(:pacbio_library, tag: isoSeq_tag)
+        expect(well.find_sample_name).to eq well.sample_names
+      end
+
+      it 'returns library sample_name when well has libraries and row type is library' do
+        library = create(:pacbio_library)
+        expect(library.find_sample_name).to eq library.request.sample_name
+      end
+    end
+   
     context 'all_libraries_tagged' do
       it 'returns true if all well libraries are tagged' do
         expect(well.all_libraries_tagged).to eq true
