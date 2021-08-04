@@ -56,11 +56,10 @@ namespace :pacbio_data do
 
     puts '-> Creating pacbio runs...'
     (1..5).each do |i|
-      run = Pacbio::Run.create!(name: "Run#{i}", binding_kit_box_barcode: "BKB#{i}",
-                                sequencing_kit_box_barcode: "SKB#{i}", dna_control_complex_box_barcode: "DCCB#{i}")
+      run = Pacbio::Run.create!(name: "Run#{i}", sequencing_kit_box_barcode: "SKB#{i}", dna_control_complex_box_barcode: "DCCB#{i}")
       plate = Pacbio::Plate.create!(run: run)
       Pacbio::Well.create!(plate: plate, pools: [Pacbio::Pool.order('RAND()').first], movie_time: 20, insert_size: 10, on_plate_loading_concentration: 1,
-                           row: 'A', column: i + 1, generate_hifi: 'In SMRT Link', ccs_analysis_output: '')
+                           row: 'A', column: i + 1, generate_hifi: 'In SMRT Link', ccs_analysis_output: '',  binding_kit_box_barcode: "BKB#{i}")
     end
     puts '-> Pacbio runs successfully created'
   end
