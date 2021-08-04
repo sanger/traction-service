@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe 'LibrariesController', type: :request, pacbio: true do
+RSpec.describe 'PoolsController', type: :request, pacbio: true do
 
   let!(:request) { create(:pacbio_request) }
   let!(:tag) { create(:tag) }
@@ -8,7 +8,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
   let!(:tag2) { create(:tag) }
 
   context '#get' do
-    
+
     let!(:pools) { create_list(:pacbio_pool, 2)}
 
     it 'returns a list of pools' do
@@ -16,6 +16,22 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'].length).to eq(2)
+    end
+
+    it 'returns pool attributes', aggregate_failures: true do
+      get v1_pacbio_pools_path, headers: json_api_headers
+
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+
+      pool_resource = json['data'][0]['attributes']
+      pool = pools.first
+
+      expect(pool_resource['source_identifier']).to eq(pool.source_identifier)
+      expect(pool_resource['volume']).to eq(pool.volume)
+      expect(pool_resource['concentration']).to eq(pool.concentration)
+      expect(pool_resource['template_prep_kit_box_barcode']).to eq(pool.template_prep_kit_box_barcode)
+      expect(pool_resource['fragment_size']).to eq(pool.fragment_size)
     end
 
     it 'returns the correct attributes', aggregate_failures: true do
@@ -43,10 +59,14 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
             data: {
               type: 'pools',
               attributes: {
-                libraries: [
+                template_prep_kit_box_barcode: 'LK1234567',
+                volume: 1.11,
+                concentration: 2.22,
+                fragment_size: 100,
+                library_attributes: [
                   {
-                    template_prep_kit_box_barcode: 'LK1234567',
                     volume: 1.11,
+                    template_prep_kit_box_barcode: 'LK1234567',
                     concentration: 2.22,
                     fragment_size: 100,
                     pacbio_request_id: request.id,
@@ -69,10 +89,14 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
         it 'returns the id' do
           post v1_pacbio_pools_path, params: body, headers: json_api_headers
-          json = ActiveSupport::JSON.decode(response.body)
-          expect(json["model"]["id"].to_i).to eq(Pacbio::Pool.first.id)
+          expect(json.dig('data', 'id').to_i).to eq(Pacbio::Pool.first.id)
         end
 
+        it 'includes the tube' do
+          post "#{v1_pacbio_pools_path}?include=tube", params: body, headers: json_api_headers
+          tube = find_included_resource(id: Pacbio::Pool.first.tube_id, type: 'tubes')
+          expect(tube.dig('attributes', 'barcode')).to be_present
+        end
       end
 
       context 'on failure' do
@@ -82,7 +106,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
               data: {
                 type: 'pools',
                 attributes: {
-                  libraries: [
+                  library_attributes: [
                     {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
@@ -117,7 +141,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
             data: {
               type: 'pools',
               attributes: {
-                libraries: [
+                library_attributes: [
                   {
                     template_prep_kit_box_barcode: 'LK1234567',
                     volume: 1.11,
@@ -158,7 +182,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
               data: {
                 type: 'pools',
                 attributes: {
-                  libraries: [
+                  library_attributes: [
                     {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,

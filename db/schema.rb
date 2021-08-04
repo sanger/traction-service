@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_28_134357) do
+ActiveRecord::Schema.define(version: 2021_08_04_095017) do
 
   create_table "container_materials", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "container_type"
@@ -88,7 +88,13 @@ ActiveRecord::Schema.define(version: 2021_07_28_134357) do
   end
 
   create_table "pacbio_pools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "tube_id"
+    t.bigint "tube_id", null: false
+    t.float "volume"
+    t.float "concentration"
+    t.string "template_prep_kit_box_barcode"
+    t.integer "fragment_size"
+    t.datetime "created_at", precision: 6
+    t.datetime "updated_at", precision: 6
     t.index ["tube_id"], name: "index_pacbio_pools_on_tube_id"
   end
 
@@ -284,4 +290,5 @@ ActiveRecord::Schema.define(version: 2021_07_28_134357) do
 
   add_foreign_key "pacbio_libraries", "pacbio_pools"
   add_foreign_key "pacbio_libraries", "pacbio_requests"
+  add_foreign_key "pacbio_pools", "tubes"
 end

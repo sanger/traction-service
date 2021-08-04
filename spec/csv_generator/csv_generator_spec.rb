@@ -198,7 +198,7 @@ RSpec.describe CsvGenerator, type: :model do
         '',
         well1.barcode_set,
         well1.same_barcodes_on_both_ends_of_sequence.to_s,
-        '',
+        well1.find_sample_name,
         well1.automation_parameters,
         well1.generate_hifi,
         well1.ccs_analysis_output
@@ -222,7 +222,7 @@ RSpec.describe CsvGenerator, type: :model do
         '',
         well2.barcode_set,
         well2.same_barcodes_on_both_ends_of_sequence.to_s,
-        '',
+        well2.find_sample_name,
         well2.automation_parameters,
         well2.generate_hifi,
         well2.ccs_analysis_output

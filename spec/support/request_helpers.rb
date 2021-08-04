@@ -1,5 +1,4 @@
 module RequestHelpers
-
   def json_api_headers
     {
       'Content-Type' => 'application/vnd.api+json',

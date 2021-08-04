@@ -200,7 +200,7 @@ default: &default
             with: :well
         Sample is Barcoded:
           type: :model
-          value: all_libraries_tagged
+          value: check_library_tags
           populate:
             for:
               - :well
@@ -228,11 +228,12 @@ default: &default
             with: :well
         Bio Sample Name:
           type: :model
-          value: request.sample_name
+          value: find_sample_name
           populate:
             for:
+              - :well
               - :sample
-            with: :sample
+            with: :row_type
         Automation Parameters:
           type: :model
           value: automation_parameters
