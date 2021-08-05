@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_04_095017) do
+ActiveRecord::Schema.define(version: 2021_08_05_135643) do
 
   create_table "container_materials", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "container_type"
@@ -154,7 +154,6 @@ ActiveRecord::Schema.define(version: 2021_08_04_095017) do
     t.string "row"
     t.string "column"
     t.decimal "movie_time", precision: 3, scale: 1
-    t.integer "insert_size"
     t.float "on_plate_loading_concentration"
     t.string "comment"
     t.string "uuid"
