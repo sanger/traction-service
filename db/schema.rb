@@ -122,7 +122,6 @@ ActiveRecord::Schema.define(version: 2021_08_04_095017) do
 
   create_table "pacbio_runs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
-    t.string "binding_kit_box_barcode"
     t.string "sequencing_kit_box_barcode"
     t.string "dna_control_complex_box_barcode"
     t.string "comments"
@@ -164,6 +163,7 @@ ActiveRecord::Schema.define(version: 2021_08_04_095017) do
     t.integer "pre_extension_time"
     t.integer "generate_hifi"
     t.string "ccs_analysis_output"
+    t.string "binding_kit_box_barcode"
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
 
