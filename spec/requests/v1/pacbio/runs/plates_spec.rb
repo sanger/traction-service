@@ -30,7 +30,7 @@ RSpec.describe 'PlatesController', type: :request do
 
       well = wells[0]['attributes']
       plate_well = plate2.wells.first
-      expect(well['insert_size']).to eq(plate_well.insert_size)
+      expect(well['on_plate_loading_concentration']).to eq(plate_well.on_plate_loading_concentration)
     end
 
   end
