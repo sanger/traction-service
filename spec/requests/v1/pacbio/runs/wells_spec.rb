@@ -29,6 +29,7 @@ RSpec.describe 'WellsController', type: :request do
       expect(well_attributes['pre_extension_time']).to eq(well.pre_extension_time)
       expect(well_attributes['generate_hifi']).to eq(well.generate_hifi)
       expect(well_attributes['ccs_analysis_output']).to eq(well.ccs_analysis_output)
+      expect(well_attributes['binding_kit_box_barcode']).to eq(well.binding_kit_box_barcode)
     end
   end
 
@@ -53,6 +54,7 @@ RSpec.describe 'WellsController', type: :request do
                     pre_extension_time: '2',
                     generate_hifi: 'In SMRT Link',
                     ccs_analysis_output: 'Yes',
+                    binding_kit_box_barcode: 'DM1117100862200111711',
                     relationships: {
                       plate: {
                         data: {
@@ -81,6 +83,7 @@ RSpec.describe 'WellsController', type: :request do
                     pre_extension_time: 1,
                     generate_hifi: 'In SMRT Link',
                     ccs_analysis_output: 'Yes',
+                    binding_kit_box_barcode: 'DM1117100862200111711',
                     relationships: {
                       plate: {
                         data: {
@@ -112,9 +115,11 @@ RSpec.describe 'WellsController', type: :request do
           expect(Pacbio::Well.find(created_well_id).pre_extension_time).to eq(2)
           expect(Pacbio::Well.find(created_well_2_id).pre_extension_time).to eq(1)
           expect(Pacbio::Well.find(created_well_id).generate_hifi).to eq("In SMRT Link")
-          expect(Pacbio::Well.find(created_well_id).ccs_analysis_output).to eq("Yes")
           expect(Pacbio::Well.find(created_well_2_id).generate_hifi).to eq("In SMRT Link")
+          expect(Pacbio::Well.find(created_well_id).ccs_analysis_output).to eq("Yes")
           expect(Pacbio::Well.find(created_well_2_id).ccs_analysis_output).to eq("Yes")
+          expect(Pacbio::Well.find(created_well_id).binding_kit_box_barcode).to eq('DM1117100862200111711')
+          expect(Pacbio::Well.find(created_well_2_id).binding_kit_box_barcode).to eq('DM1117100862200111711')
         end
 
         it 'creates a plate' do
@@ -147,6 +152,7 @@ RSpec.describe 'WellsController', type: :request do
                   on_plate_loading_concentration: 8.35,
                   generate_hifi: 'In SMRT Link',
                   ccs_analysis_output: 'Yes',
+                  binding_kit_box_barcode: 'DM1117100862200111711'
                 ]
               }
             }
@@ -191,60 +197,6 @@ RSpec.describe 'WellsController', type: :request do
         end
       end
     end
-
-    #   context 'on well libraries failure' do
-    #     let(:body) do
-    #       {
-    #         data: {
-    #           type: "wells",
-    #           attributes: {
-    #             wells: [
-    #               { row: 'A',
-    #                 column: '1',
-    #                 movie_time: 8,
-    #                 on_plate_loading_concentration: 8.35,
-    #                 generate_hifi: 'In SMRT Link',
-    #                 ccs_analysis_output: 'Yes',
-    #                 relationships: {
-    #                   plate: {
-    #                     data: {
-    #                       type: 'plate',
-    #                       id: plate.id
-    #                     }
-    #                   },
-    #                   libraries: {
-    #                     data: [
-    #                       {
-    #                         type: 'libraries',
-    #                         id: library1.id
-    #                       },
-    #                       {
-    #                         type: 'libraries',
-    #                         id: library_invalid.id
-    #                       }
-    #                     ]
-    #                   }
-    #                 }
-    #               }
-    #             ],
-    #           }
-    #         }
-    #       }.to_json
-    #     end
-
-    #     it 'has a ok unprocessable_entity' do
-    #       post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
-    #       expect(response).to have_http_status(:unprocessable_entity)
-    #     end
-
-    #     it 'has the correct data errors' do
-    #       post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
-    #       json = ActiveSupport::JSON.decode(response.body)
-    #       errors = json['data']['errors']
-    #       expect(errors['tags'][0]).to include "are not unique within the libraries for well"
-    #     end
-    #   end
-    # end
   end
 
   context '#update' do
@@ -258,6 +210,7 @@ RSpec.describe 'WellsController', type: :request do
     let(:pre_extension_time) { 4 }
     let(:generate_hifi) { 'Do Not Generate' }
     let(:ccs_analysis_output) { 'No' }
+    let(:binding_kit_box_barcode) { 'DM1117100862200111711' }
 
     context 'when only updating the wells attributes' do
       let(:body) do
@@ -273,6 +226,7 @@ RSpec.describe 'WellsController', type: :request do
               pre_extension_time: pre_extension_time,
               generate_hifi: generate_hifi,
               ccs_analysis_output: ccs_analysis_output,
+              binding_kit_box_barcode: binding_kit_box_barcode
             },
             relationships: {
               pools: {
@@ -299,6 +253,7 @@ RSpec.describe 'WellsController', type: :request do
         expect(well.pre_extension_time).to eq pre_extension_time
         expect(well.generate_hifi).to eq generate_hifi
         expect(well.ccs_analysis_output).to eq ccs_analysis_output
+        expect(well.binding_kit_box_barcode).to eq binding_kit_box_barcode
       end
 
       it 'does not update a wells pools' do
@@ -318,6 +273,7 @@ RSpec.describe 'WellsController', type: :request do
         expect(response['attributes']['on_plate_loading_concentration']).to eq on_plate_loading_concentration
         expect(response['attributes']['generate_hifi']).to eq generate_hifi
         expect(response['attributes']['ccs_analysis_output']).to eq ccs_analysis_output
+        expect(response['attributes']['binding_kit_box_barcode']).to eq binding_kit_box_barcode
       end
 
       it 'sends a message to the warehouse' do

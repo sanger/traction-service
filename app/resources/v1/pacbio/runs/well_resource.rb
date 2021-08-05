@@ -9,7 +9,8 @@ module V1
 
         attributes :movie_time, :insert_size, :on_plate_loading_concentration,
                    :row, :column, :pacbio_plate_id, :comment, :generate_hifi,
-                   :position, :pre_extension_time, :ccs_analysis_output
+                   :position, :pre_extension_time, :ccs_analysis_output,
+                   :binding_kit_box_barcode
 
         has_many :libraries
         has_many :pools

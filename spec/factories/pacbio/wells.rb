@@ -8,6 +8,7 @@ FactoryBot.define do
     sequence(:comment) { |n| "comment#{n}" }
     generate_hifi { 'In SMRT Link' }
     ccs_analysis_output { '' }
+    sequence(:binding_kit_box_barcode) { |n| "DM111710086220011171#{n}"}
 
     transient do
       pool_count { 5 }
