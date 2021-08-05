@@ -164,7 +164,7 @@ default: &default
             with: :well
         Binding Kit Box Barcode:
           type: :model
-          value: plate.run.binding_kit_box_barcode
+          value: binding_kit_box_barcode
           populate:
             for:
               - :well

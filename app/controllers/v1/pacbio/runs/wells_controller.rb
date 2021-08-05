@@ -8,6 +8,7 @@ module V1
         PERMITTED_WELL_PARAMETERS = %i[
           movie_time insert_size row on_plate_loading_concentration
           column comment pre_extension_time generate_hifi ccs_analysis_output
+          binding_kit_box_barcode
         ].freeze
 
         def create
