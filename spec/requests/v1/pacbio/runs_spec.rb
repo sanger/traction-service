@@ -22,7 +22,6 @@ RSpec.describe 'RunsController', type: :request do
       json = ActiveSupport::JSON.decode(response.body)
 
       expect(json['data'][0]['attributes']['name']).to eq(run1.name)
-      expect(json['data'][0]['attributes']['binding_kit_box_barcode']).to eq(run1.binding_kit_box_barcode)
       expect(json['data'][0]["attributes"]["sequencing_kit_box_barcode"]).to eq(run1.sequencing_kit_box_barcode)
       expect(json['data'][0]['attributes']['dna_control_complex_box_barcode']).to eq(run1.dna_control_complex_box_barcode)
       expect(json['data'][0]['attributes']['system_name']).to eq(run1.system_name)
@@ -33,7 +32,6 @@ RSpec.describe 'RunsController', type: :request do
 
       run = json['data'][1]['attributes']
       expect(run['name']).to eq(run2.name)
-      expect(run['binding_kit_box_barcode']).to eq(run2.binding_kit_box_barcode)
       expect(run["sequencing_kit_box_barcode"]).to eq(run2.sequencing_kit_box_barcode)
       expect(run['dna_control_complex_box_barcode']).to eq(run2.dna_control_complex_box_barcode)
       expect(run['system_name']).to eq(run2.system_name)
@@ -84,7 +82,6 @@ RSpec.describe 'RunsController', type: :request do
         run = Pacbio::Run.first
         expect(run.name).to be_present
         expect(run.state).to be_present
-        expect(run.binding_kit_box_barcode).to be_present
         expect(run.sequencing_kit_box_barcode).to be_present
         expect(run.dna_control_complex_box_barcode).to be_present
         expect(run.system_name).to be_present
@@ -116,7 +113,6 @@ RSpec.describe 'RunsController', type: :request do
         post v1_pacbio_runs_path, params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         errors = json['data']['errors']
-        expect(errors['binding_kit_box_barcode']).to be_present
         expect(errors['sequencing_kit_box_barcode']).to be_present
         expect(errors['dna_control_complex_box_barcode']).to be_present
       end
@@ -216,7 +212,6 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data']['id']).to eq(run.id.to_s)
       expect(json['data']['attributes']['state']).to eq(run.state)
       expect(json['data']['attributes']['name']).to eq(run.name)
-      expect(json['data']['attributes']['binding_kit_box_barcode']).to eq(run.binding_kit_box_barcode)
       expect(json['data']["attributes"]["sequencing_kit_box_barcode"]).to eq(run.sequencing_kit_box_barcode)
       expect(json['data']['attributes']['dna_control_complex_box_barcode']).to eq(run.dna_control_complex_box_barcode)
       expect(json['data']['attributes']['system_name']).to eq(run.system_name)

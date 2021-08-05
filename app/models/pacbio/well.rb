@@ -27,7 +27,7 @@ module Pacbio
     has_many :libraries, through: :pools
 
     validates :movie_time, :on_plate_loading_concentration,
-              :row, :column, :generate_hifi, presence: true
+              :row, :column, :generate_hifi, :binding_kit_box_barcode, presence: true
     validates :movie_time,
               numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 }
     validates :pre_extension_time, numericality: { only_integer: true }, allow_blank: true

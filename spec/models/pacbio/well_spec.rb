@@ -59,6 +59,10 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     expect(build(:pacbio_well, plate: nil)).to_not be_valid
   end
 
+  it 'must have a binding kit box barcode' do
+    expect(build(:pacbio_well, binding_kit_box_barcode: nil)).to_not be_valid
+  end
+
   it 'can have a comment' do
     expect(build(:pacbio_well).comment).to be_present
   end
