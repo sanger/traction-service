@@ -2,7 +2,7 @@
 
 namespace :pacbio_data do
   desc 'Populate the database with pacbio plates and runs'
-  task create: :environment do
+  task create: [:environment, 'tags:create:pacbio_sequel', 'tags:create:pacbio_isoseq'] do
     require 'factory_bot'
 
     include FactoryBot::Syntax::Methods
@@ -35,12 +35,22 @@ namespace :pacbio_data do
     factory = Pacbio::RequestFactory.new(attributes)
     factory.save
 
-    tag_ids = Tag.pluck(:id).sort
+    tag_ids = Tag.ids
 
     Pacbio::Request.all.each_with_index do |request, _i|
-      library = Pacbio::Library.create!(volume: 1, concentration: 1, template_prep_kit_box_barcode: 'LK12345', fragment_size: 100, request: request, tag: Tag.find(rand(tag_ids.first...tag_ids.last)))
+      tube = Tube.create
+      library = Pacbio::Library.create!(
+        volume: 1,
+        concentration: 1,
+        template_prep_kit_box_barcode: 'LK12345',
+        fragment_size: 100,
+        request: request,
+        tag: Tag.find(tag_ids.sample)
+      ) do |lib|
+        lib.pool = Pacbio::Pool.new(tube: tube, libraries: [lib])
+      end
 
-      ContainerMaterial.create(container: Tube.create, material: library)
+      ContainerMaterial.create(container: tube, material: library)
     end
     puts '-> Pacbio libraries successfully created'
 
@@ -49,7 +59,7 @@ namespace :pacbio_data do
       run = Pacbio::Run.create!(name: "Run#{i}", binding_kit_box_barcode: "BKB#{i}",
                                 sequencing_kit_box_barcode: "SKB#{i}", dna_control_complex_box_barcode: "DCCB#{i}")
       plate = Pacbio::Plate.create!(run: run)
-      Pacbio::Well.create!(plate: plate, libraries: [Pacbio::Library.order('RAND()').first], movie_time: 20, insert_size: 10, on_plate_loading_concentration: 1,
+      Pacbio::Well.create!(plate: plate, pools: [Pacbio::Pool.order('RAND()').first], movie_time: 20, insert_size: 10, on_plate_loading_concentration: 1,
                            row: 'A', column: i + 1, generate_hifi: 'In SMRT Link', ccs_analysis_output: '')
     end
     puts '-> Pacbio runs successfully created'
