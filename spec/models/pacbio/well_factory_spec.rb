@@ -5,12 +5,18 @@ require 'rails_helper'
 RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
 
   let(:plate)           { create(:pacbio_plate) }
-  let(:libraries)       { create_list(:pacbio_library_without_tag, 3) }
+  let(:pools)           { create_list(:pacbio_pool, 3) }
   let(:wells_attributes) {
                           [
-                            attributes_for(:pacbio_well).except(:plate).merge( plate: {type: 'plate', id: plate.id}, libraries: [{type: 'libraries', id: libraries.first.id}]),
-                            attributes_for(:pacbio_well).except(:plate).merge( plate: {type: 'plate', id: plate.id}, libraries: [{type: 'libraries', id: libraries[1].id}]),
-                            attributes_for(:pacbio_well).except(:plate).merge( plate: {type: 'plate', id: plate.id}, libraries: [{type: 'libraries', id: libraries.last.id}])
+                            attributes_for(:pacbio_well).except(:plate).merge(
+                              plate: {type: 'plate', id: plate.id},
+                              pools: [{type: 'pools', id: pools[0].id}]),
+                            attributes_for(:pacbio_well).except(:plate).merge(
+                              plate: {type: 'plate', id: plate.id},
+                              pools: [{type: 'pools', id: pools[1].id}]),
+                            attributes_for(:pacbio_well).except(:plate).merge(
+                              plate: {type: 'plate', id: plate.id},
+                              pools: [{type: 'pools', id: pools[2].id}])
                         ]}
 
   context 'WellFactory' do
@@ -74,7 +80,7 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
 
       context 'when the error is the in WellFactory:Well' do
         let(:wells_attributes_well_error)  {
-                                  [ attributes_for(:pacbio_well).except(:movie_time).except(:plate).merge( plate: {type: 'plate', id: plate.id}, libraries: [{type: 'libraries', id: libraries.first.id}]) ]
+                                  [ attributes_for(:pacbio_well).except(:movie_time).except(:plate).merge( plate: {type: 'plate', id: plate.id}, pools: [{type: 'pools', id: pools.first.id}]) ]
                                 }
 
         it 'returns the correct error message' do
@@ -83,40 +89,19 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
           expect(factory.errors.messages[:movie_time]).to eq ["can't be blank", "is not a number"]
         end
       end
-
-      context 'when the error is the in WellFactory:Well:Libraries' do
-        let(:library) { create(:pacbio_library_with_tag) }
-
-        let(:libraries_attributes_dupl_tags) do
-          [{ type: 'libraries', id: library.id }, { type: 'libraries', id: library.id }]
-        end
-
-        let(:wells_attributes_libraries_error)  {
-                                                  [ attributes_for(:pacbio_well).merge(
-                                                    plate: { type: 'plate', id: plate.id },
-                                                    libraries: libraries_attributes_dupl_tags
-                                                  ) ]
-                                                }
-
-        it 'returns the correct error message' do
-          factory = Pacbio::WellFactory.new(wells_attributes_libraries_error)
-          factory.save
-          expect(factory.errors.messages[:tags][0]).to include 'are not unique within the libraries for well'
-        end
-      end
     end
   end
 
   context 'WellFactory::Well' do
-    let(:library1)             { create(:pacbio_library_with_tag) }
-    let(:library2)             { create(:pacbio_library_with_tag) }
-    let(:library_attributes)            { [
-                                          { type: 'libraries', id: library1.id },
-                                          { type: 'libraries', id: library2.id }
+    let(:pool1)             { create(:pacbio_pool) }
+    let(:pool2)             { create(:pacbio_pool) }
+    let(:pool_attributes)               { [
+                                          { type: 'pools', id: pool1.id },
+                                          { type: 'pools', id: pool2.id }
                                         ] }
     let(:well_attributes)               { attributes_for(:pacbio_well).except(:plate).merge(
                                           plate: { type: 'plate', id: plate.id },
-                                          libraries: library_attributes )
+                                          pools: pool_attributes)
                                         }
 
     context '#initialize' do
@@ -134,10 +119,10 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
           expect(factory.well.comment).to eq well_attributes[:comment]
         end
 
-        it 'creates a list of WellFactory::Well::Libraries' do
+        it 'creates a list of WellFactory::Well::Pools' do
           factory = Pacbio::WellFactory::Well.new(well_attributes)
-          expect(factory.libraries.class).to eq Pacbio::WellFactory::Well::Libraries
-          expect(factory.libraries.libraries.length).to eq(2)
+          expect(factory.pools.class).to eq Pacbio::WellFactory::Well::Pools
+          expect(factory.pools.pools.length).to eq(2)
         end
 
         it 'sets the Pacbio::Well plate' do
@@ -146,44 +131,46 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         end
 
         it 'produces an error message if the plate doesnt exist' do
-          well_attributes_no_plate = attributes_for(:pacbio_well).except(:plate).merge( libraries: [{type: 'libraries', id: libraries.last.id}])
+          well_attributes_no_plate = attributes_for(:pacbio_well).except(:plate).merge( pools: [{type: 'pools', id: pools.last.id}] )
           factory = Pacbio::WellFactory::Well.new(well_attributes_no_plate)
           expect(factory).to_not be_valid
           expect(factory.errors.full_messages).to include 'Plate must exist'
         end
 
-        it 'creates the well with no libraries, when libraries arent included' do
-          well_with_no_libraries = well_attributes.except(:libraries)
-          factory = Pacbio::WellFactory::Well.new(well_with_no_libraries)
+        it 'creates the well with no pools, when pools arent included' do
+          well_with_no_pools = well_attributes.except(:pools)
+          factory = Pacbio::WellFactory::Well.new(well_with_no_pools)
 
           expect(factory.well.id).to eq nil
-          expect(factory.well.libraries.length).to eq(0)
+          expect(factory.well.pools.length).to eq(0)
         end
       end
 
       context 'when the wells do exist' do
-        let(:well_with_libraries)                { create(:pacbio_well_with_libraries) }
-        let(:new_library1) { create(:pacbio_library) }
-        let(:new_library2) { create(:pacbio_library) }
-        let(:updated_well_attributes)  { { id: well_with_libraries.id, insert_size: 123, on_plate_loading_concentration: 12, libraries: [ { type: 'libraries', id: new_library1.id }, { type: 'libraries', id: new_library2.id } ] } }
+        let(:well_with_pools)     { create(:pacbio_well_with_pools) }
+        let(:pool1)               { create(:pacbio_pool) }
+        let(:pool2)               { create(:pacbio_pool) }
+        let(:updated_well_attributes)  { { id: well_with_pools.id, insert_size: 123, on_plate_loading_concentration: 12,
+                                           pools: [ { type: 'pools', id: pool1.id }, { type: 'pools', id: pool2.id } ]
+                                       } }
 
         it 'updates the Pacbio::Well' do
           factory = Pacbio::WellFactory::Well.new(updated_well_attributes)
-          expect(factory.well.id).to eq well_with_libraries.id
-          expect(factory.well.movie_time).to eq well_with_libraries[:movie_time]
+          expect(factory.well.id).to eq well_with_pools.id
+          expect(factory.well.movie_time).to eq well_with_pools[:movie_time]
           expect(factory.well.insert_size).to eq updated_well_attributes[:insert_size].to_i
           expect(factory.well.on_plate_loading_concentration).to eq updated_well_attributes[:on_plate_loading_concentration].to_f
-          expect(factory.well.row).to eq well_with_libraries[:row]
-          expect(factory.well.column).to eq well_with_libraries[:column]
-          expect(factory.well.comment).to eq well_with_libraries[:comment]
+          expect(factory.well.row).to eq well_with_pools[:row]
+          expect(factory.well.column).to eq well_with_pools[:column]
+          expect(factory.well.comment).to eq well_with_pools[:comment]
         end
 
-        it 'creates a list of WellFactory::Well::Libraries' do
+        it 'creates a list of WellFactory::Well::Pools' do
           factory = Pacbio::WellFactory::Well.new(updated_well_attributes)
-          expect(factory.libraries.class).to eq Pacbio::WellFactory::Well::Libraries
-          expect(factory.libraries.libraries.length).to eq(2)
-          expect(factory.libraries.libraries[0].id).to eq new_library1.id
-          expect(factory.libraries.libraries[1].id).to eq new_library2.id
+          expect(factory.pools.class).to eq Pacbio::WellFactory::Well::Pools
+          expect(factory.pools.pools.length).to eq(2)
+          expect(factory.pools.pools[0].id).to eq pool1.id
+          expect(factory.pools.pools[1].id).to eq pool2.id
         end
       end
     end
@@ -195,9 +182,9 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         expect { factory.save }.to change(Pacbio::Well, :count).by(1)
       end
 
-      it 'will call the WellFactory:Well::Libraries save if wells are valid' do
+      it 'will call the WellFactory:Well::Pools save if wells are valid' do
         factory = Pacbio::WellFactory::Well.new(well_attributes)
-        expect(factory.libraries).to receive(:save)
+        expect(factory.pools).to receive(:save)
 
         factory.save
       end
@@ -211,11 +198,11 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
       end
     end
 
-    context '#libraries' do
-      it 'creates a list of WellFactory::Well::Libraries' do
+    context '#pools' do
+      it 'creates a list of WellFactory::Well::Pools' do
         factory = Pacbio::WellFactory::Well.new(well_attributes)
-        expect(factory.libraries.class).to eq Pacbio::WellFactory::Well::Libraries
-        expect(factory.libraries.libraries.length).to eq(2)
+        expect(factory.pools.class).to eq Pacbio::WellFactory::Well::Pools
+        expect(factory.pools.pools.length).to eq(2)
       end
     end
 
@@ -228,79 +215,72 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
     end
   end
 
-  context 'WellFactory::Well::Libraries' do
-    let(:well)                          { create(:pacbio_well) }
-    let(:library1)                      { create(:pacbio_library_with_tag) }
-    let(:library2)                      { create(:pacbio_library_with_tag) }
-    let(:library_invalid)               { create(:pacbio_library, tag: library1.tag) }
-    let(:library_attributes)            { [
-                                          { type: 'libraries', id: library1.id },
-                                          { type: 'libraries', id: library2.id }
-                                        ] }
-    let(:libraries_attributes_no_tags)  { [
-                                          { type: 'libraries', id: create(:pacbio_library_without_tag).id},
-                                          { type: 'libraries', id: create(:pacbio_library_with_tag).id }
-                                        ] }
-    let(:library_attributes_dupl_tags)  { library_attributes.push(
-                                          { type: 'libraries', id: library_invalid.id }
-                                        ) }
-    let(:library_attributes_17)         { create_list(:pacbio_library, 17) }
-    let(:library_attributes_fake)       { [ { type: 'libraries', id: 123 } ] }
+  context 'WellFactory::Well::Pools' do
+    let(:well)                       { create(:pacbio_well) }
+    let(:pool1)                      { create(:pacbio_pool) }
+    let(:pool2)                      { create(:pacbio_pool) }
+    let(:pool_attributes)            { [
+                                          { type: 'pools', id: pool1.id },
+                                          { type: 'pools', id: pool2.id }
+                                       ] }
 
     context '#initialize' do
-      it 'creates a list of Pacbio::Library' do
-        factory = Pacbio::WellFactory::Well::Libraries.new(well, library_attributes)
-        expect(factory.libraries.count).to eq(library_attributes.length)
-        expect(factory.libraries[0].class).to eq Pacbio::Library
-        expect(factory.libraries[1].class).to eq Pacbio::Library
+      it 'creates a list of Pacbio::Pool' do
+        factory = Pacbio::WellFactory::Well::Pools.new(well, pool_attributes)
+        expect(factory.pools.count).to eq(pool_attributes.length)
+        expect(factory.pools[0].class).to eq Pacbio::Pool
+        expect(factory.pools[1].class).to eq Pacbio::Pool
       end
     end
 
-    context '#libraries' do
-      it 'contains a list of Pacbio::Library' do
-        factory = Pacbio::WellFactory::Well::Libraries.new(well, library_attributes)
-        expect(factory.libraries.count).to eq(library_attributes.length)
+    context '#pools' do
+      it 'contains a list of Pacbio::Pool' do
+        factory = Pacbio::WellFactory::Well::Pools.new(well, pool_attributes)
+        expect(factory.pools.count).to eq(pool_attributes.length)
       end
     end
 
     context '#well' do
-      it 'contains the given Pacbio::Well' do
-        factory = Pacbio::WellFactory::Well::Libraries.new(well, library_attributes)
+      it 'contains the given Pacbio::Pool' do
+        factory = Pacbio::WellFactory::Well::Pools.new(well, pool_attributes)
         expect(factory.well).to eq(well)
       end
     end
 
     context '#save' do
-      it 'updates the wells libaries, if libraries are valid' do
-        factory = Pacbio::WellFactory::Well::Libraries.new(well, library_attributes)
+      it 'updates the wells pools, if pools are valid' do
+        factory = Pacbio::WellFactory::Well::Pools.new(well, pool_attributes)
         expect(factory).to be_valid
         expect(factory.save).to be_truthy
-        expect(well.libraries.length).to eq library_attributes.length
-        expect(well.libraries[0].id).to eq library_attributes[0][:id]
-        expect(well.libraries[1].id).to eq library_attributes[1][:id]
+        expect(well.pools.length).to eq pool_attributes.length
+        expect(well.pools[0].id).to eq pool_attributes[0][:id]
+        expect(well.pools[1].id).to eq pool_attributes[1][:id]
       end
 
-      it 'does not update the well libaries, if libraries are invalid - check_tags_present' do
-        factory = Pacbio::WellFactory::Well::Libraries.new(well, libraries_attributes_no_tags)
-        expect(factory).not_to be_valid
-        expect(factory.save).not_to be_truthy
-        expect(factory.errors.messages[:tags]).to include 'are missing from the libraries'
+      context 'if tags are missing' do
+        let(:pool1) { create(:pacbio_pool, libraries: create_list(:pacbio_library_without_tag, 1)) }
+        let(:pool2) { create(:pacbio_pool, libraries: create_list(:pacbio_library_without_tag, 1)) }
+
+        it 'does not update the well libaries, if pools are invalid - check_tags_present' do
+          factory = Pacbio::WellFactory::Well::Pools.new(well, pool_attributes)
+          expect(factory).not_to be_valid
+          expect(factory.save).not_to be_truthy
+          expect(factory.errors.messages[:tags]).to include 'are missing from the libraries'
+        end
       end
 
-      it 'does not update the well libaries, if libraries are invalid - check_tags_uniq' do
-        factory = Pacbio::WellFactory::Well::Libraries.new(well, library_attributes_dupl_tags)
-        expect(factory).not_to be_valid
-        expect(factory.save).not_to be_truthy
-        expect(factory.errors.messages[:tags]).to eq ["are not unique within the libraries for well " + well.position]
-      end
+      context 'if tags are the same' do
+        let(:shared_tag) { create :tag }
+        let(:pool1) { create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, tag: shared_tag)) }
+        let(:pool2) { create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, tag: shared_tag)) }
 
-      it 'does not update the well libaries, if libraries are invalid - check_libraries_max' do
-        factory = Pacbio::WellFactory::Well::Libraries.new(well, library_attributes_17)
-        expect(factory).not_to be_valid
-        expect(factory.save).not_to be_truthy
-        expect(factory.errors.messages[:libraries]).to eq ["There are more than 16 libraries in well " + well.position]
+        it 'does not update the well libaries, if pools are invalid - check_tags_uniq' do
+          factory = Pacbio::WellFactory::Well::Pools.new(well, pool_attributes)
+          expect(factory).not_to be_valid
+          expect(factory.save).not_to be_truthy
+          expect(factory.errors.messages[:tags]).to include "are not unique within the libraries for well #{well.position}"
+        end
       end
     end
-
   end
 end
