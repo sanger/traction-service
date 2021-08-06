@@ -20,8 +20,8 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
     expect(create(:pacbio_library).template_prep_kit_box_barcode).to be_present
   end
 
-  it 'must have a fragment size' do
-    expect(build(:pacbio_library, fragment_size: nil)).to_not be_valid
+  it 'must have a insert size' do
+    expect(build(:pacbio_library, insert_size: nil)).to_not be_valid
   end
 
   it 'can have a request' do

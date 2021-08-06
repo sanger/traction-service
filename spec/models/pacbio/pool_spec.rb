@@ -30,9 +30,9 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
     expect(pool.concentration).to be_present
   end
 
-  it 'can have a fragment size' do
+  it 'can have a insert size' do
     pool = build(:pacbio_pool)
-    expect(pool.fragment_size).to be_present
+    expect(pool.insert_size).to be_present
   end
 
   it 'is not valid unless there is at least one library' do

@@ -43,7 +43,7 @@ module V1
       def attributes
         params.require(:data).require(:attributes)
               .permit(:volume, :concentration, :template_prep_kit_box_barcode,
-                      :fragment_size, :relationships, :request_id, :tag_id)
+                      :insert_size, :relationships, :request_id, :tag_id)
               .to_h
       end
 
@@ -59,7 +59,7 @@ module V1
       # having to send unneccessary data in body of request
       def library_update_params
         params.require(:data).require(:attributes)
-              .permit(:volume, :concentration, :template_prep_kit_box_barcode, :fragment_size)
+              .permit(:volume, :concentration, :template_prep_kit_box_barcode, :insert_size)
       end
 
       def render_json(status)

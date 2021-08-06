@@ -7,7 +7,7 @@ module V1
       model_name 'Pacbio::Library'
 
       attributes :state, :volume, :concentration, :template_prep_kit_box_barcode,
-                 :fragment_size, :created_at, :deactivated_at, :source_identifier
+                 :insert_size, :created_at, :deactivated_at, :source_identifier
 
       has_one :request, always_include_optional_linkage_data: true
       has_one :tube

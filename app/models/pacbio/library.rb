@@ -14,7 +14,7 @@ module Pacbio
     include SampleSheet
 
     validates :volume, :concentration,
-              :fragment_size, presence: true
+              :insert_size, presence: true
 
     belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id,
                          inverse_of: :libraries

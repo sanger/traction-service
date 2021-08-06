@@ -41,7 +41,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     let(:well)      { create(:pacbio_well, pools: pools) }
 
     it 'gest the fragment size of the first pool in the well' do
-      expect(well.pools[0].fragment_size).to eq(well.insert_size)
+      expect(well.pools[0].insert_size).to eq(well.insert_size)
     end
   end
 
