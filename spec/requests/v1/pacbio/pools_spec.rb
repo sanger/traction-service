@@ -80,7 +80,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
 
         it 'has a created status' do
           post v1_pacbio_pools_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:created)
+          expect(response).to have_http_status(:created), response.body
         end
 
         it 'creates a pool' do

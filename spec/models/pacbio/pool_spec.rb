@@ -4,10 +4,10 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
 
   let(:libraries) { create_list(:pacbio_library, 5) }
 
-  it 'will have a tube' do
-    tube = create(:tube)
-    pool = build(:pacbio_pool, tube: tube)
-    expect(pool.tube).to eq(tube)
+  it 'will have a tube on validation' do
+    pool = build(:pacbio_pool)
+    pool.valid?
+    expect(pool.tube).to be_a(Tube)
   end
 
   it 'can have many libraries' do
@@ -62,7 +62,7 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
     end
 
   end
-  
+
   context 'wells' do
     it 'can have one or more' do
       pool = create(:pacbio_pool)
@@ -70,5 +70,5 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
       expect(pool.wells.count).to eq(5)
     end
   end
-  
+
 end
