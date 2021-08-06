@@ -29,7 +29,7 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][0]['attributes']['created_at']).to eq(run1.created_at.to_s(:us))
       expect(json['data'][0]['attributes']['state']).to eq(run1.state)
       expect(json['data'][0]['attributes']['comments']).to eq(run1.comments)
-      expect(json['data'][0]['attributes']['all_wells_have_libraries']).to eq(run1.all_wells_have_libraries?)
+      expect(json['data'][0]['attributes']['all_wells_have_pools']).to eq(run1.all_wells_have_pools?)
 
       run = json['data'][1]['attributes']
       expect(run['name']).to eq(run2.name)
@@ -283,8 +283,8 @@ RSpec.describe 'RunsController', type: :request do
   context '#sample_sheet' do
     after(:each) { File.delete('sample_sheet.csv') if File.exists?('sample_sheet.csv') }
 
-    let(:well1)   { create(:pacbio_well_with_libraries) }
-    let(:well2)   { create(:pacbio_well_with_libraries) }
+    let(:well1)   { create(:pacbio_well_with_pools) }
+    let(:well2)   { create(:pacbio_well_with_pools) }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_run, plate: plate) }
 
