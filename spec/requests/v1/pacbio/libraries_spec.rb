@@ -11,7 +11,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       end
 
       it 'has a success status' do
-        expect(response).to have_http_status(:success)
+        expect(response).to have_http_status(:success), response.body
       end
 
       it 'returns a list of libraries' do
