@@ -43,7 +43,7 @@ namespace :pacbio_data do
         volume: 1,
         concentration: 1,
         template_prep_kit_box_barcode: 'LK12345',
-        fragment_size: 100,
+        insert_size: 100,
         request: request,
         tag: Tag.find(tag_ids.sample)
       ) do |lib|

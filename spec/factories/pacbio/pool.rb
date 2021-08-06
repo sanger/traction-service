@@ -9,6 +9,6 @@ FactoryBot.define do
     template_prep_kit_box_barcode { 'ABC1' }
     concentration { 10 }
     volume { 10 }
-    fragment_size { 100 }
+    insert_size { 100 }
   end
 end

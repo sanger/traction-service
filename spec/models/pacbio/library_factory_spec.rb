@@ -26,7 +26,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
         expect(@pacbio_library.volume).to be_present
         expect(@pacbio_library.concentration).to be_present
         expect(@pacbio_library.template_prep_kit_box_barcode).to be_present
-        expect(@pacbio_library.fragment_size).to be_present
+        expect(@pacbio_library.insert_size).to be_present
         expect(@pacbio_library.id).to be_nil
         expect(@pacbio_library.created_at).to be_nil
         expect(@pacbio_library.updated_at).to be_nil
@@ -39,7 +39,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
         expect(@pacbio_library.pool.volume).to eq @pacbio_library.volume
         expect(@pacbio_library.pool.concentration).to eq @pacbio_library.concentration
         expect(@pacbio_library.pool.template_prep_kit_box_barcode).to eq @pacbio_library.template_prep_kit_box_barcode
-        expect(@pacbio_library.pool.fragment_size).to eq @pacbio_library.fragment_size
+        expect(@pacbio_library.pool.insert_size).to eq @pacbio_library.insert_size
       end
     end
 

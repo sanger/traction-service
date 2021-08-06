@@ -74,7 +74,7 @@ module Pacbio
     end
 
     def insert_size
-      pools? ? pools.first.fragment_size : ''
+      pools? ? pools.first.insert_size : ''
       # How to handle multiple pools in a well?
     end
 

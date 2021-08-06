@@ -24,7 +24,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
           expect(library_attributes['volume']).to eq(library.volume)
           expect(library_attributes['concentration']).to eq(library.concentration)
           expect(library_attributes['template_prep_kit_box_barcode']).to eq(library.template_prep_kit_box_barcode)
-          expect(library_attributes['fragment_size']).to eq(library.fragment_size)
+          expect(library_attributes['insert_size']).to eq(library.insert_size)
           expect(library_attributes['state']).to eq(library.state)
           expect(library_attributes['created_at']).to eq(library.created_at.to_s(:us))
           expect(library_attributes['deactivated_at']).to eq(nil)
@@ -121,7 +121,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                 volume: 1.11,
                 concentration: 2.22,
                 template_prep_kit_box_barcode: 'LK1234567',
-                fragment_size: 100
+                insert_size: 100
               },
               relationships: {
                 request: { data: { type: 'requests', id: request.id } },
@@ -167,7 +167,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                 attributes: {
                   concentration: 2.22,
                   template_prep_kit_box_barcode: 'LK1234567',
-                  fragment_size: 100
+                  insert_size: 100
                 },
                 relationships: {
                   request: { data: { type: 'requests', id: request.id } },
@@ -207,7 +207,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                   volume: 1.11,
                   concentration: 2.22,
                   template_prep_kit_box_barcode: 'LK1234567',
-                  fragment_size: 100
+                  insert_size: 100
                 },
                 relationships: {
                   request: { data: { type: 'requests', id: request_empty_cost_code.id } },

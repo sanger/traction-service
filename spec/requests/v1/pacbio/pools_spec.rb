@@ -31,7 +31,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
       expect(pool_resource['volume']).to eq(pool.volume)
       expect(pool_resource['concentration']).to eq(pool.concentration)
       expect(pool_resource['template_prep_kit_box_barcode']).to eq(pool.template_prep_kit_box_barcode)
-      expect(pool_resource['fragment_size']).to eq(pool.fragment_size)
+      expect(pool_resource['insert_size']).to eq(pool.insert_size)
     end
 
     it 'returns the correct attributes', aggregate_failures: true do
@@ -46,7 +46,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
       expect(library_attributes['volume']).to eq(library.volume)
       expect(library_attributes['concentration']).to eq(library.concentration)
       expect(library_attributes['template_prep_kit_box_barcode']).to eq(library.template_prep_kit_box_barcode)
-      expect(library_attributes['fragment_size']).to eq(library.fragment_size)
+      expect(library_attributes['insert_size']).to eq(library.insert_size)
     end
 
   end
@@ -62,13 +62,13 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
                 template_prep_kit_box_barcode: 'LK1234567',
                 volume: 1.11,
                 concentration: 2.22,
-                fragment_size: 100,
+                insert_size: 100,
                 library_attributes: [
                   {
                     volume: 1.11,
                     template_prep_kit_box_barcode: 'LK1234567',
                     concentration: 2.22,
-                    fragment_size: 100,
+                    insert_size: 100,
                     pacbio_request_id: request.id,
                     tag_id: tag.id
                   }
@@ -148,7 +148,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
                     template_prep_kit_box_barcode: 'LK1234567',
                     volume: 1.11,
                     concentration: 2.22,
-                    fragment_size: 100,
+                    insert_size: 100,
                     pacbio_request_id: request.id,
                     tag_id: tag.id
                   },
@@ -156,7 +156,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
                     template_prep_kit_box_barcode: 'LK1234567',
                     volume: 1.11,
                     concentration: 2.22,
-                    fragment_size: 100,
+                    insert_size: 100,
                     pacbio_request_id: request2.id,
                     tag_id: tag2.id
                   }
@@ -191,7 +191,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
                       concentration: 2.22,
-                      fragment_size: 100,
+                      insert_size: 100,
                       pacbio_request_id: request.id,
                       tag_id: tag.id
                     },
@@ -199,7 +199,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
                       concentration: 2.22,
-                      fragment_size: 100,
+                      insert_size: 100,
                       pacbio_request_id: request2.id,
                       tag_id: tag.id
                     }
@@ -253,7 +253,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
                     tag_id: tag.id,
                     volume: 1,
                     concentration: 1,
-                    fragment_size: 100
+                    insert_size: 100
                   },
                   {
                     pacbio_request_id: added_request.id.to_s,
@@ -261,13 +261,13 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
                     tag_id: tag2.id,
                     volume: 1,
                     concentration: 1,
-                    fragment_size: 100
+                    insert_size: 100
                   }
                 ],
                 volume: '200',
                 concentration: '22',
                 template_prep_kit_box_barcode: '100',
-                fragment_size: '11',
+                insert_size: '11',
                 created_at: '2021-08-04T14:35:47.208Z',
                 updated_at: '2021-08-04T14:35:47.208Z'
               }
@@ -319,7 +319,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
                       tag_id: tag.id,
                       volume: 1,
                       concentration: 1,
-                      fragment_size: 100
+                      insert_size: 100
                     },
                     {
                       pacbio_request_id: added_request.id.to_s,
@@ -327,13 +327,13 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
                       tag_id: tag.id,
                       volume: 1,
                       concentration: 1,
-                      fragment_size: 100
+                      insert_size: 100
                     }
                   ],
                   volume: '200',
                   concentration: '22',
                   template_prep_kit_box_barcode: '100',
-                  fragment_size: '11',
+                  insert_size: '11',
                   created_at: '2021-08-04T14:35:47.208Z',
                   updated_at: '2021-08-04T14:35:47.208Z'
                 }

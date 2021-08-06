@@ -26,7 +26,7 @@ module Pacbio
                                **library_attributes.slice(:volume,
                                                           :concentration,
                                                           :template_prep_kit_box_barcode,
-                                                          :fragment_size))
+                                                          :insert_size))
       @container_material = ContainerMaterial.new(container: @tube, material: library)
     end
 
