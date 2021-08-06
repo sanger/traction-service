@@ -45,6 +45,41 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
     expect(build(:pacbio_pool, libraries: libraries + [dodgy_library])).to_not be_valid
   end
 
+  describe '#library_attributes=' do
+    context 'with new libraries' do
+      let(:library_attributes) { attributes_for_list(:pacbio_library, 5) }
+
+      it 'sets up libraries' do
+        pool = build(:pacbio_pool, library_count: 0)
+        pool.library_attributes = library_attributes
+        expect(pool.libraries.length).to eq 5
+      end
+    end
+
+    context 'with existing libraries' do
+      let(:pool) { create(:pacbio_pool, library_count: 5) }
+      let(:library_attributes) do
+        pool.libraries.map do |library|
+          library.attributes.merge(
+            'template_prep_kit_box_barcode' => 'Updated'
+          )
+        end
+      end
+
+      it 'update existing libraries' do
+        pool.library_attributes = library_attributes
+        expect(pool.libraries.length).to eq 5
+      end
+
+      it 'changes library attributes' do
+        pool.library_attributes = library_attributes
+        expect(
+          pool.libraries.map(&:template_prep_kit_box_barcode)
+        ).to all eq 'Updated'
+      end
+    end
+  end
+
   context 'tags' do
     it 'will be valid if there is a single library with no tag' do
       expect(build(:pacbio_pool, libraries: [build(:pacbio_library, tag: nil)])).to be_valid

@@ -5,7 +5,6 @@ module V1
     # PoolResource
     class PoolResource < JSONAPI::Resource
       model_name 'Pacbio::Pool'
-      # before_update :wrap_model
 
       has_one :tube
       has_many :libraries
@@ -29,14 +28,6 @@ module V1
       def self.records_for_populate(*_args)
         super.preload(source_wells: :plate)
       end
-
-      # def self.create_model(*_opt)
-      #   ::Pacbio::PoolCreator.new
-      # end
-
-      # def wrap_model
-      #   @model = ::Pacbio::PoolUpdater.new(@model)
-      # end
     end
   end
 end
