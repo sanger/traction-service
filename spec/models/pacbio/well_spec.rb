@@ -37,14 +37,11 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
   end
 
   context 'insert size' do
+    let(:pools)     { create_list(:pacbio_pool, 2) }
+    let(:well)      { create(:pacbio_well, pools: pools) }
 
-    it 'must be present' do
-      expect(build(:pacbio_well, insert_size: nil)).to_not be_valid
-    end
-
-    it 'must be within range' do
-      expect(build(:pacbio_well, insert_size: 10)).to be_valid
-      expect(build(:pacbio_well, insert_size: 5)).to_not be_valid
+    it 'gest the fragment size of the first pool in the well' do
+      expect(well.pools[0].fragment_size).to eq(well.insert_size)
     end
   end
 
