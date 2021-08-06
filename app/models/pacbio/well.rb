@@ -26,11 +26,10 @@ module Pacbio
 
     has_many :libraries, through: :pools
 
-    validates :movie_time, :insert_size, :on_plate_loading_concentration,
+    validates :movie_time, :on_plate_loading_concentration,
               :row, :column, :generate_hifi, :binding_kit_box_barcode, presence: true
     validates :movie_time,
               numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 }
-    validates :insert_size, numericality: { greater_than_or_equal_to: 10 }
     validates :pre_extension_time, numericality: { only_integer: true }, allow_blank: true
 
     def position
@@ -72,6 +71,11 @@ module Pacbio
       return GENERIC_KIT_BARCODE if barcodes.uniq.length > 1
 
       barcodes[0]
+    end
+
+    def insert_size
+      pools? ? pools.first.fragment_size : ''
+      # How to handle multiple pools in a well?
     end
 
     def collection?
