@@ -4,7 +4,7 @@ FactoryBot.define do
       library_count { 1 }
     end
 
-    tube { build(:tube) }
+   # tube { build(:tube) }
     libraries { build_list(:pacbio_library, library_count, pool: instance) }
     template_prep_kit_box_barcode { 'ABC1' }
     concentration { 10 }

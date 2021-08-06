@@ -5,7 +5,7 @@ module V1
     # PoolResource
     class PoolResource < JSONAPI::Resource
       model_name 'Pacbio::Pool'
-      before_update :wrap_model
+      # before_update :wrap_model
 
       has_one :tube
       has_many :libraries
@@ -16,7 +16,7 @@ module V1
       attribute :source_identifier, readonly: true
 
       def library_attributes=(library_parameters)
-        @model.libraries = library_parameters.map do |library|
+        @model.library_attributes = library_parameters.map do |library|
           library.permit(:id, :volume, :template_prep_kit_box_barcode,
                          :concentration, :fragment_size, :pacbio_request_id, :tag_id)
         end
@@ -30,13 +30,13 @@ module V1
         super.preload(source_wells: :plate)
       end
 
-      def self.create_model(*_opt)
-        ::Pacbio::PoolCreator.new
-      end
+      # def self.create_model(*_opt)
+      #   ::Pacbio::PoolCreator.new
+      # end
 
-      def wrap_model
-        @model = ::Pacbio::PoolUpdater.new(@model)
-      end
+      # def wrap_model
+      #   @model = ::Pacbio::PoolUpdater.new(@model)
+      # end
     end
   end
 end
