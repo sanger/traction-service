@@ -6,6 +6,7 @@ FactoryBot.define do
     fragment_size { 100 }
     request { create(:pacbio_request) }
     tag { create(:tag) }
+    pool { association :pacbio_pool, libraries: [instance] }
 
     # Untagged should possibly be the default
     factory :pacbio_library_without_tag do

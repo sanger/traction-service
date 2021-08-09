@@ -5,11 +5,13 @@ module Pacbio
   # WellFactory
   # A well factory can create multiple wells
   # Each of those wells must have a plate
-  # Each well can have multiple libraries which must exist
+  # Each well can have multiple pools which must exist
   class WellFactory
     include ActiveModel::Model
+    extend NestedValidation
 
-    validate :validate_wells
+    validates_nested :wells
+    validates :wells, presence: { message: 'there are no wells' }
 
     def initialize(attributes = [])
       build_wells(attributes)
@@ -38,28 +40,12 @@ module Pacbio
       end
     end
 
-    def validate_wells
-      if wells.empty?
-        errors.add(:wells, 'there are no wells')
-        return
-      end
-
-      wells.each do |well|
-        next if well.valid?
-
-        well.errors.each do |k, v|
-          errors.add(k, v)
-        end
-      end
-
-      true
-    end
-
     # WellFactory::Well
     class Well
       include ActiveModel::Model
+      extend NestedValidation
 
-      validate :validate_well
+      validates_nested :well, :pools
 
       # Pacbio::Well
       attr_reader :well
@@ -72,93 +58,62 @@ module Pacbio
         well.id
       end
 
-      # WellFactory::Well::Libraries
-      def libraries
-        @libraries ||= []
+      # WellFactory::Well::Pools
+      def pools
+        @pools ||= []
       end
 
       def build_well(well_attributes)
         @well = create_or_update_well(well_attributes)
-        build_libraries(well, well_attributes[:libraries])
+        build_pools(well, well_attributes[:pools])
       end
 
       def create_or_update_well(well_attributes)
         if well_attributes[:id].present?
           well = Pacbio::Well.find(well_attributes[:id])
-          attributes_to_update = well_attributes.except(:id, :libraries)
+          attributes_to_update = well_attributes.except(:id, :pools)
           well.update(attributes_to_update)
         else
-          well = Pacbio::Well.new(well_attributes.except(:plate, :libraries))
+          well = Pacbio::Well.new(well_attributes.except(:plate, :pools))
           well.plate = Pacbio::Plate.find_by(id: well_attributes.dig(:plate, :id))
         end
         well
       end
 
-      def build_libraries(well, libraries_attributes)
-        @libraries = Libraries.new(well, libraries_attributes)
+      def build_pools(well, pool_attributes)
+        @pools = Pools.new(well, pool_attributes)
       end
 
       def save
         return false unless valid?
 
-        well.save
-        return false unless libraries.save
-
-        true
+        well.save && pools.save
       end
 
-      def validate_well
-        unless well.valid?
-          well.errors.each do |k, v|
-            errors.add(k, v)
-          end
-        end
-
-        return if libraries.valid?
-
-        libraries.errors.each do |k, v|
-          errors.add(k, v)
-        end
-      end
-
-      # WellFactory::Well::Libraries
-      class Libraries
+      # WellFactory::Well::Pools
+      class Pools
         include ActiveModel::Model
-        attr_reader :well
+        attr_reader :well, :pools
 
         validate :check_tags_present, if: :multiple_libraries
         validate :check_tags_uniq, if: :multiple_libraries
-        validate :check_libraries_max
 
-        def initialize(well, library_attributes)
+        def initialize(well, pool_attributes)
           @well = well
-          build_libraries(library_attributes)
-        end
-
-        # Pacbio::Library
-        def libraries
-          @libraries ||= []
+          @pools = find_pools(pool_attributes || [])
         end
 
         def save
           return false unless valid?
 
-          destroy_libraries
-          well.libraries << libraries
+          well.pools = pools
+          true
         end
 
         private
 
-        def build_libraries(library_attributes)
-          return if library_attributes.nil?
-
-          library_attributes.each do |library|
-            libraries << Pacbio::Library.find(library[:id]) if Pacbio::Library.exists?(library[:id])
-          end
-        end
-
-        def destroy_libraries
-          well.libraries.destroy_all
+        def libraries
+          @pools.flat_map(&:libraries)
         end
 
         def check_tags_present
@@ -173,19 +128,17 @@ module Pacbio
           errors.add(:tags, "are not unique within the libraries for well #{well.position}")
         end
 
-        def check_libraries_max
-          return if libraries.length <= 16
-
-          errors.add(:libraries, "There are more than 16 libraries in well #{well.position}")
-        end
-
         def multiple_libraries
-          libraries.length > 1
+          libraries.many?
         end
 
         def all_tags
-          # This assumes each library has request_libraries
           libraries.collect(&:tag)
+        end
+
+        def find_pools(pool_attributes)
+          ids = pool_attributes.pluck(:id)
+          Pacbio::Pool.includes(:libraries).where(id: ids)
         end
       end
     end

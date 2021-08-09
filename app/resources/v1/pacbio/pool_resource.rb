@@ -6,6 +6,7 @@ module V1
     class PoolResource < JSONAPI::Resource
       model_name 'Pacbio::Pool'
 
+      has_one :tube
       has_many :libraries
     end
   end

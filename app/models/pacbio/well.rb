@@ -20,9 +20,11 @@ module Pacbio
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
                        inverse_of: :wells
 
-    has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_well_id,
-                              dependent: :destroy, inverse_of: :well, autosave: true
-    has_many :libraries, class_name: 'Pacbio::Library', through: :well_libraries, autosave: true
+    has_many :well_pools, class_name: 'Pacbio::WellPool', foreign_key: :pacbio_well_id,
+                          dependent: :destroy, inverse_of: :well
+    has_many :pools, class_name: 'Pacbio::Pool', through: :well_pools, autosave: true
+
+    has_many :libraries, through: :pools
 
     validates :movie_time, :insert_size, :on_plate_loading_concentration,
               :row, :column, :generate_hifi, presence: true
@@ -57,8 +59,8 @@ module Pacbio
       libraries.collect(&:tag_id)
     end
 
-    def libraries?
-      libraries.present?
+    def pools?
+      pools.present?
     end
 
     def ccs_analysis_output=(value)
