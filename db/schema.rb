@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_14_121514) do
+ActiveRecord::Schema.define(version: 2021_07_19_101856) do
 
   create_table "container_materials", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "container_type"
@@ -112,6 +112,7 @@ ActiveRecord::Schema.define(version: 2021_07_14_121514) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "source_barcode"
+    t.integer "qc_status", default: 0
   end
 
   create_table "pacbio_runs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -136,7 +137,7 @@ ActiveRecord::Schema.define(version: 2021_07_14_121514) do
     t.index ["pacbio_well_id"], name: "index_pacbio_well_libraries_on_pacbio_well_id"
   end
 
-  create_table "pacbio_well_pools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "pacbio_well_pools", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "pacbio_well_id"
     t.bigint "pacbio_pool_id"
     t.index ["pacbio_pool_id"], name: "index_pacbio_well_pools_on_pacbio_pool_id"
