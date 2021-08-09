@@ -33,7 +33,7 @@ jobs:
       run: ./compile-build
 
     - name: Create release and upload release.tar.gz
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v0.1.7
       with:
         name: ${{ env.RELEASE_VERSION }}
         tag_name: v${{ env.RELEASE_VERSION }}
