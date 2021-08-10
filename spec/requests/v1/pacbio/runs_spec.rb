@@ -276,12 +276,12 @@ RSpec.describe 'RunsController', type: :request do
   end
 
   context '#sample_sheet' do
-    after(:each) { File.delete('sample_sheet.csv') if File.exists?('sample_sheet.csv') }
-
     let(:well1)   { create(:pacbio_well_with_pools) }
     let(:well2)   { create(:pacbio_well_with_pools) }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_run, plate: plate) }
+
+    after(:each) { File.delete("#{run.name}.csv") if File.exists?("#{run.name}.csv") }
 
     it 'returns the correct status' do
       get "#{v1_pacbio_run_sample_sheet_path(run)}", headers: json_api_headers
@@ -291,6 +291,11 @@ RSpec.describe 'RunsController', type: :request do
     it 'returns a CSV file' do
       get "#{v1_pacbio_run_sample_sheet_path(run)}", headers: json_api_headers
       expect(response.header['Content-Type']).to include 'text/csv'
+    end
+
+    it 'the attached csv file is named after the run its assoicated with' do
+      get "#{v1_pacbio_run_sample_sheet_path(run)}", headers: json_api_headers
+      expect(response.header['Content-Disposition']).to include "#{run.name}.csv"
     end
   end
 end

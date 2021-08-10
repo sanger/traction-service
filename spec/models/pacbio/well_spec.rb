@@ -72,6 +72,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     expect(well.summary).to eq("#{well.sample_names} #{well.comment}")
   end
 
+
   context '#pools?' do
     let(:pools) { create_list(:pacbio_pool, 2) }
     it 'with pools' do
@@ -180,12 +181,8 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     let(:well)   { create(:pacbio_well_with_pools) }
 
     it 'returns the well pools template_prep_kit_box_barcode' do
-      expect(well.template_prep_kit_box_barcode).to eq 'LK1234567'
-    end
-
-    it 'returns default pacbio code when template_prep_kit_box_barcodes are different' do
-      well.libraries[0].template_prep_kit_box_barcode = "unique"
-      expect(well.template_prep_kit_box_barcode).to eq Pacbio::Well::GENERIC_KIT_BARCODE
+      expected = well.pools.first.template_prep_kit_box_barcode
+      expect(well.template_prep_kit_box_barcode).to eq expected
     end
   end
 

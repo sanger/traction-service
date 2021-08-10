@@ -136,7 +136,7 @@ default: &default
             with: :well
         Sample Name:
           type: :model
-          value: sample_names
+          value: find_pool_barcode
           populate:
             for:
               - :well
