@@ -12,33 +12,35 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        bundler-cache: true # Runs bundle install and caches gems. See the ruby_test.yml
-                            # example if you need more control over bundler.
+      - uses: actions/checkout@v2
+      - uses: nelonoel/branch-name@v1.0.1
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true # Runs bundle install and caches gems. See the ruby_test.yml
+                              # example if you need more control over bundler.
 
-    - name: Set release version
-      run: echo "RELEASE_VERSION=$([ ${GITHUB_REF##*/} = "develop" ] && printf '%s\n' $(cat .release-version)-develop || printf '%s\n' $(cat .release-version))" >> $GITHUB_ENV
+      - name: Set release version
+        # On the develop branch this might create RELEASE_VERSION=2.4.6-987654321-develop
+        # On the master branch this would then only create RELEASE_VERSION=2.4.6
+        run: echo "RELEASE_VERSION=$(printf -- '%s%s\n' $(cat .release-version) $([ ${BRANCH_NAME} = "develop" ] && printf -- '-%s-develop' ${GITHUB_RUN_ID} || echo ""))" >> $GITHUB_ENV
 
-    - name: Set up environment
-      run: |
-        cp config/database.yml.example config/database.yml
-        cp config/mailer.yml.example config/mailer.yml
-        cp config/bunny.yml.example config/bunny.yml
-        cp config/env_constants.yml.example config/env_constants.yml
+      - name: Set up environment
+        run: |
+          cp config/database.yml.example config/database.yml
+          cp config/mailer.yml.example config/mailer.yml
+          cp config/bunny.yml.example config/bunny.yml
+          cp config/env_constants.yml.example config/env_constants.yml
 
-    - name: Compile Build
-      run: ./compile-build
+      - name: Compile Build
+        run: ./compile-build
 
-    - name: Create release and upload release.tar.gz
-      uses: softprops/action-gh-release@v0.1.7
-      with:
-        name: ${{ env.RELEASE_VERSION }}
-        tag_name: v${{ env.RELEASE_VERSION }}
-        prerelease: ${{ !(github.ref == 'refs/heads/master') }}
-        files: release.tar.gz
-        fail_on_unmatched_files: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create release and upload release.tar.gz
+        uses: ncipollo/release-action@v1.8.8
+        with:
+          name: ${{ env.RELEASE_VERSION }}
+          tag: v${{ env.RELEASE_VERSION }}
+          prerelease: ${{ !(github.ref == 'refs/heads/master') }}
+          commit: ${{ github.sha }}
+          artifacts: release.tar.gz
+          artifactErrorsFailBuild: true
