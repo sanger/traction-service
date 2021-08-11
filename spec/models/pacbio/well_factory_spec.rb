@@ -112,7 +112,6 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
           expect(factory.well.class).to eq Pacbio::Well
           expect(factory.well.id).to eq nil
           expect(factory.well.movie_time).to eq well_attributes[:movie_time]
-          expect(factory.well.insert_size).to eq well_attributes[:insert_size].to_i
           expect(factory.well.on_plate_loading_concentration).to eq well_attributes[:on_plate_loading_concentration].to_f
           expect(factory.well.row).to eq well_attributes[:row]
           expect(factory.well.column).to eq well_attributes[:column]
@@ -150,7 +149,7 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         let(:well_with_pools)     { create(:pacbio_well_with_pools) }
         let(:pool1)               { create(:pacbio_pool) }
         let(:pool2)               { create(:pacbio_pool) }
-        let(:updated_well_attributes)  { { id: well_with_pools.id, insert_size: 123, on_plate_loading_concentration: 12,
+        let(:updated_well_attributes)  { { id: well_with_pools.id, on_plate_loading_concentration: 12,
                                            pools: [ { type: 'pools', id: pool1.id }, { type: 'pools', id: pool2.id } ]
                                        } }
 
@@ -158,7 +157,6 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
           factory = Pacbio::WellFactory::Well.new(updated_well_attributes)
           expect(factory.well.id).to eq well_with_pools.id
           expect(factory.well.movie_time).to eq well_with_pools[:movie_time]
-          expect(factory.well.insert_size).to eq updated_well_attributes[:insert_size].to_i
           expect(factory.well.on_plate_loading_concentration).to eq updated_well_attributes[:on_plate_loading_concentration].to_f
           expect(factory.well.row).to eq well_with_pools[:row]
           expect(factory.well.column).to eq well_with_pools[:column]
