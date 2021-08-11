@@ -72,7 +72,6 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     expect(well.summary).to eq("#{well.sample_names} #{well.comment}")
   end
 
-
   context '#pools?' do
     let(:pools) { create_list(:pacbio_pool, 2) }
     it 'with pools' do

@@ -54,7 +54,7 @@ module SampleSheet
   end
 
   # Sample Name field
-  def find_pool_barcode
+  def pool_barcode
     # First pool in well's barcode as samples names are already contained in bio sample name
     pools.first.tube.barcode
   end
