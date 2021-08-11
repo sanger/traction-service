@@ -67,15 +67,11 @@ module Pacbio
     end
 
     def template_prep_kit_box_barcode
-      barcodes = libraries.pluck(:template_prep_kit_box_barcode)
-      return GENERIC_KIT_BARCODE if barcodes.uniq.length > 1
-
-      barcodes[0]
+      pools? ? pools.first.template_prep_kit_box_barcode : ''
     end
 
     def insert_size
       pools? ? pools.first.insert_size : ''
-      # How to handle multiple pools in a well?
     end
 
     def collection?
