@@ -35,7 +35,7 @@ module V1
 
         send_data csv,
                   type: 'text/csv; charset=utf-8; header=present',
-                  disposition: 'attachment; filename=sample_sheet.csv'
+                  disposition: "attachment; filename=#{run.name}.csv"
       end
 
       private

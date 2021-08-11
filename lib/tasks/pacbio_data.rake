@@ -47,7 +47,12 @@ namespace :pacbio_data do
         request: request,
         tag: Tag.find(tag_ids.sample)
       ) do |lib|
-        lib.pool = Pacbio::Pool.new(tube: tube, libraries: [lib])
+        lib.pool = Pacbio::Pool.new(tube: tube,
+                                    volume: lib.volume,
+                                    concentration: lib.concentration,
+                                    template_prep_kit_box_barcode: lib.template_prep_kit_box_barcode,
+                                    insert_size: lib.insert_size,
+                                    libraries: [lib])
       end
 
       ContainerMaterial.create(container: tube, material: library)
@@ -69,7 +74,7 @@ namespace :pacbio_data do
       sample.destroy if sample.requests[0].requestable_type == 'Pacbio::Request'
     end
     [Pacbio::Request, Pacbio::Library, Pacbio::Run, Pacbio::Plate, Pacbio::Well,
-     Pacbio::WellLibrary].each(&:delete_all)
+     Pacbio::WellPool, Pacbio::Pool].each(&:delete_all)
     Plate.by_pipeline('Pacbio').destroy_all
 
     puts '-> Pacbio data successfully deleted'
