@@ -3,7 +3,7 @@ FactoryBot.define do
     volume { 1.111 }
     concentration { 2.222 }
     template_prep_kit_box_barcode { 'LK1234567' }
-    fragment_size { 100 }
+    insert_size { 100 }
     request { create(:pacbio_request) }
     tag { create(:tag) }
     pool { association :pacbio_pool, libraries: [instance] }

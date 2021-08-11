@@ -37,14 +37,11 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
   end
 
   context 'insert size' do
+    let(:pools)     { create_list(:pacbio_pool, 2) }
+    let(:well)      { create(:pacbio_well, pools: pools) }
 
-    it 'must be present' do
-      expect(build(:pacbio_well, insert_size: nil)).to_not be_valid
-    end
-
-    it 'must be within range' do
-      expect(build(:pacbio_well, insert_size: 10)).to be_valid
-      expect(build(:pacbio_well, insert_size: 5)).to_not be_valid
+    it 'gest the fragment size of the first pool in the well' do
+      expect(well.pools[0].insert_size).to eq(well.insert_size)
     end
   end
 
@@ -60,6 +57,10 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
   it 'must have to a plate' do
     expect(build(:pacbio_well, plate: nil)).to_not be_valid
+  end
+
+  it 'must have a binding kit box barcode' do
+    expect(build(:pacbio_well, binding_kit_box_barcode: nil)).to_not be_valid
   end
 
   it 'can have a comment' do
@@ -179,12 +180,8 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     let(:well)   { create(:pacbio_well_with_pools) }
 
     it 'returns the well pools template_prep_kit_box_barcode' do
-      expect(well.template_prep_kit_box_barcode).to eq 'LK1234567'
-    end
-
-    it 'returns default pacbio code when template_prep_kit_box_barcodes are different' do
-      well.libraries[0].template_prep_kit_box_barcode = "unique"
-      expect(well.template_prep_kit_box_barcode).to eq Pacbio::Well::GENERIC_KIT_BARCODE
+      expected = well.pools.first.template_prep_kit_box_barcode
+      expect(well.template_prep_kit_box_barcode).to eq expected
     end
   end
 

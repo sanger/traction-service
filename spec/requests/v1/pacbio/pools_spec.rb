@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe 'LibrariesController', type: :request, pacbio: true do
+RSpec.describe 'PoolsController', type: :request, pacbio: true do
 
   let!(:request) { create(:pacbio_request) }
   let!(:tag) { create(:tag) }
@@ -8,7 +8,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
   let!(:tag2) { create(:tag) }
 
   context '#get' do
-    
+
     let!(:pools) { create_list(:pacbio_pool, 2)}
 
     it 'returns a list of pools' do
@@ -16,6 +16,22 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'].length).to eq(2)
+    end
+
+    it 'returns pool attributes', aggregate_failures: true do
+      get v1_pacbio_pools_path, headers: json_api_headers
+
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+
+      pool_resource = json['data'][0]['attributes']
+      pool = pools.first
+
+      expect(pool_resource['source_identifier']).to eq(pool.source_identifier)
+      expect(pool_resource['volume']).to eq(pool.volume)
+      expect(pool_resource['concentration']).to eq(pool.concentration)
+      expect(pool_resource['template_prep_kit_box_barcode']).to eq(pool.template_prep_kit_box_barcode)
+      expect(pool_resource['insert_size']).to eq(pool.insert_size)
     end
 
     it 'returns the correct attributes', aggregate_failures: true do
@@ -30,7 +46,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       expect(library_attributes['volume']).to eq(library.volume)
       expect(library_attributes['concentration']).to eq(library.concentration)
       expect(library_attributes['template_prep_kit_box_barcode']).to eq(library.template_prep_kit_box_barcode)
-      expect(library_attributes['fragment_size']).to eq(library.fragment_size)
+      expect(library_attributes['insert_size']).to eq(library.insert_size)
     end
 
   end
@@ -43,12 +59,16 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
             data: {
               type: 'pools',
               attributes: {
-                libraries: [
+                template_prep_kit_box_barcode: 'LK1234567',
+                volume: 1.11,
+                concentration: 2.22,
+                insert_size: 100,
+                library_attributes: [
                   {
-                    template_prep_kit_box_barcode: 'LK1234567',
                     volume: 1.11,
+                    template_prep_kit_box_barcode: 'LK1234567',
                     concentration: 2.22,
-                    fragment_size: 100,
+                    insert_size: 100,
                     pacbio_request_id: request.id,
                     tag_id: tag.id
                   }
@@ -60,7 +80,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
         it 'has a created status' do
           post v1_pacbio_pools_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:created)
+          expect(response).to have_http_status(:created), response.body
         end
 
         it 'creates a pool' do
@@ -69,10 +89,14 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
         it 'returns the id' do
           post v1_pacbio_pools_path, params: body, headers: json_api_headers
-          json = ActiveSupport::JSON.decode(response.body)
-          expect(json["model"]["id"].to_i).to eq(Pacbio::Pool.first.id)
+          expect(json.dig('data', 'id').to_i).to eq(Pacbio::Pool.first.id)
         end
 
+        it 'includes the tube' do
+          post "#{v1_pacbio_pools_path}?include=tube", params: body, headers: json_api_headers
+          tube = find_included_resource(id: Pacbio::Pool.first.tube_id, type: 'tubes')
+          expect(tube.dig('attributes', 'barcode')).to be_present
+        end
       end
 
       context 'on failure' do
@@ -82,7 +106,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
               data: {
                 type: 'pools',
                 attributes: {
-                  libraries: [
+                  library_attributes: [
                     {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
@@ -102,7 +126,9 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
           end
 
           it 'cannot create a pool' do
-            expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Pool, :count)
+            expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to_not(
+              change(Pacbio::Pool, :count)
+            )
           end
 
         end
@@ -117,12 +143,12 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
             data: {
               type: 'pools',
               attributes: {
-                libraries: [
+                library_attributes: [
                   {
                     template_prep_kit_box_barcode: 'LK1234567',
                     volume: 1.11,
                     concentration: 2.22,
-                    fragment_size: 100,
+                    insert_size: 100,
                     pacbio_request_id: request.id,
                     tag_id: tag.id
                   },
@@ -130,7 +156,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                     template_prep_kit_box_barcode: 'LK1234567',
                     volume: 1.11,
                     concentration: 2.22,
-                    fragment_size: 100,
+                    insert_size: 100,
                     pacbio_request_id: request2.id,
                     tag_id: tag2.id
                   }
@@ -146,7 +172,9 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
         end
 
         it 'creates a pool' do
-          expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to change(Pacbio::Pool, :count).by(1)
+          expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to(
+            change(Pacbio::Pool, :count).by(1)
+          )
         end
 
       end
@@ -158,12 +186,12 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
               data: {
                 type: 'pools',
                 attributes: {
-                  libraries: [
+                  library_attributes: [
                     {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
                       concentration: 2.22,
-                      fragment_size: 100,
+                      insert_size: 100,
                       pacbio_request_id: request.id,
                       tag_id: tag.id
                     },
@@ -171,7 +199,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
                       concentration: 2.22,
-                      fragment_size: 100,
+                      insert_size: 100,
                       pacbio_request_id: request2.id,
                       tag_id: tag.id
                     }
@@ -187,7 +215,9 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
           end
 
           it 'cannot create a pool' do
-            expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Pool, :count)
+            expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to_not(
+              change(Pacbio::Pool, :count)
+            )
           end
 
         end
@@ -196,4 +226,138 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
   end
 
+  context '#updating' do
+    context 'when updating a multiplex library' do
+      let!(:pool) { create(:pacbio_pool, library_count: 2) }
+      # We let! this as we want to ensure we have the original state
+      let!(:updated_library) { pool.libraries.first }
+      let!(:removed_library) { pool.libraries.last }
+      let(:added_request) { create(:pacbio_request) }
+
+      setup do
+        patch v1_pacbio_pool_path(pool), params: body, headers: json_api_headers
+      end
+
+      context 'on success' do
+        let(:body) do
+          {
+            data: {
+              type: 'pools',
+              id: pool.id.to_s,
+              attributes: {
+                library_attributes: [
+                  {
+                    id: updated_library.id.to_s,
+                    pacbio_request_id: updated_library.pacbio_request_id.to_s,
+                    template_prep_kit_box_barcode: 'LK12345',
+                    tag_id: tag.id,
+                    volume: 1,
+                    concentration: 1,
+                    insert_size: 100
+                  },
+                  {
+                    pacbio_request_id: added_request.id.to_s,
+                    template_prep_kit_box_barcode: 'LK12345',
+                    tag_id: tag2.id,
+                    volume: 1,
+                    concentration: 1,
+                    insert_size: 100
+                  }
+                ],
+                volume: '200',
+                concentration: '22',
+                template_prep_kit_box_barcode: '100',
+                insert_size: '11',
+                created_at: '2021-08-04T14:35:47.208Z',
+                updated_at: '2021-08-04T14:35:47.208Z'
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns created  status' do
+          expect(response).to have_http_status(:success), response.body
+        end
+
+        it 'updates a pool' do
+          pool.reload
+          expect(pool.template_prep_kit_box_barcode).to eq('100')
+        end
+
+        it 'update libraries' do
+          updated_library.reload
+          expect(updated_library.template_prep_kit_box_barcode).to eq('LK12345')
+        end
+
+        it 'destroys removed libraries' do
+          expect(Pacbio::Library.find_by(id:removed_library)).to be_nil
+        end
+
+        it 'adds new libraries' do
+          libraries = pool.libraries.reload
+          new_libraries = libraries.reject do |library|
+            [updated_library.id, removed_library.id].include?(library.id)
+          end
+          expect(new_libraries.length).to eq(1)
+          expect(new_libraries.first.pacbio_request_id).to eq(added_request.id)
+        end
+      end
+
+      context 'on failure' do
+        context 'when there is a tag clash' do
+          let(:body) do
+            {
+              data: {
+                type: 'pools',
+                id: pool.id.to_s,
+                attributes: {
+                  library_attributes: [
+                    {
+                      id: updated_library.id.to_s,
+                      pacbio_request_id: updated_library.pacbio_request_id.to_s,
+                      template_prep_kit_box_barcode: 'LK12345',
+                      tag_id: tag.id,
+                      volume: 1,
+                      concentration: 1,
+                      insert_size: 100
+                    },
+                    {
+                      pacbio_request_id: added_request.id.to_s,
+                      template_prep_kit_box_barcode: 'LK12345',
+                      tag_id: tag.id,
+                      volume: 1,
+                      concentration: 1,
+                      insert_size: 100
+                    }
+                  ],
+                  volume: '200',
+                  concentration: '22',
+                  template_prep_kit_box_barcode: '100',
+                  insert_size: '11',
+                  created_at: '2021-08-04T14:35:47.208Z',
+                  updated_at: '2021-08-04T14:35:47.208Z'
+                }
+              }
+            }.to_json
+          end
+
+          it 'returns unprocessable entity status' do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it 'does not update a pool' do
+            pool.reload
+            expect(pool.template_prep_kit_box_barcode).not_to eq('100')
+          end
+
+          it 'does not change the libraries' do
+            attributes = pool.libraries.reload.map(&:attributes)
+            expect(attributes).to include(updated_library.attributes)
+            expect(attributes).to include(removed_library.attributes)
+          end
+        end
+      end
+    end
+
+  end
 end
