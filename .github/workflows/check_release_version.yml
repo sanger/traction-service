@@ -1,12 +1,10 @@
 # Checks that the .release-version file has been updated
-
 name: Check release version
 
 on:
   pull_request:
     branches:
       - master
-      - develop
 
 jobs:
   check:
@@ -14,26 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set excluded release types
-        run: >-
-          if [ "${{ github.base_ref }}" = "master" ]; then
-            echo "exclude_types=draft|prerelease" >> $GITHUB_ENV
-          elif [ "${{ github.base_ref }}" = "develop" ]; then
-            echo "exclude_types=draft" >> $GITHUB_ENV
-          else
-            exit 1;
-          fi
       - name: Get the latest release
         id: last_release
-        uses: InsonusK/get-latest-release@v1.0.1
+        uses: pozetroninc/github-action-get-latest-release@v0.5.0
         with:
-          myToken: ${{ github.token }}
-          exclude_types: ${{ env.exclude_types }}
-          view_top: 1
+          owner: Sanger
+          repo: Traction-Service
+          excludes: prerelease, draft
 
       - name: Compare releases
         run: >-
-          if [ "${{ steps.last_release.outputs.tag_name }}" = "$(printf 'v%s-develop\n' $(cat .release-version))" ] ||
-          [ "${{ steps.last_release.outputs.tag_name }}" = "$(printf 'v%s\n' $(cat .release-version))" ]; then
+          if [ "${{ steps.last_release.outputs.release }}" = "$(printf 'v%s\n' $(cat .release-version))" ]; then
             exit 1;
           fi

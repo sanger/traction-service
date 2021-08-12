@@ -8,6 +8,7 @@ module V1
       attributes :barcode
       has_many :materials, class_name: 'ContainerMaterial', relation_name: :container_materials,
                            foreign_key_on: :related
+      has_many :pools, relation_name: :pacbio_pools, class_name: 'Pool'
 
       # Filters
       filter :barcode, apply: ->(records, value, _options) { records.by_barcode(value) }
