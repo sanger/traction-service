@@ -35,7 +35,7 @@ module V1
 
         send_data csv,
                   type: 'text/csv; charset=utf-8; header=present',
-                  disposition: 'attachment; filename=sample_sheet.csv'
+                  disposition: "attachment; filename=#{run.name}.csv"
       end
 
       private
@@ -45,8 +45,7 @@ module V1
       end
 
       def params_names
-        params.require(:data)['attributes'].permit(:binding_kit_box_barcode,
-                                                   :sequencing_kit_box_barcode,
+        params.require(:data)['attributes'].permit(:sequencing_kit_box_barcode,
                                                    :dna_control_complex_box_barcode,
                                                    :system_name,
                                                    :state,

@@ -53,6 +53,12 @@ module SampleSheet
     no_isoseq_tag_sets && libraries.all?(&:tag_id?)
   end
 
+  # Sample Name field
+  def pool_barcode
+    # First pool in well's barcode as samples names are already contained in bio sample name
+    pools.first.tube.barcode
+  end
+
   # Same Barcodes on Both Ends of Sequence field
   def same_barcodes_on_both_ends_of_sequence
     # Always true at the time of writing

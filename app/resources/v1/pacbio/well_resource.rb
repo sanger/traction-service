@@ -16,6 +16,7 @@ module V1
                            foreign_key_on: :related
 
       has_many :requests, relation_name: :pacbio_requests
+      has_one :plate
     end
   end
 end

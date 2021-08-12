@@ -106,6 +106,13 @@ RSpec.describe SampleSheet do
       end
     end
 
+    context 'pool_barcode' do
+      it 'returns the first pools tube barcode in well' do
+        expected = well.pools.first.tube.barcode
+        expect(well.pool_barcode).to eq expected
+      end
+    end
+
     context 'same_barcodes_on_both_ends_of_sequence' do
       it 'returns true' do
         expect(well.same_barcodes_on_both_ends_of_sequence).to eq true

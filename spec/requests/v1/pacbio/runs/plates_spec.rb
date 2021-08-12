@@ -19,7 +19,7 @@ RSpec.describe 'PlatesController', type: :request do
     it 'returns the correct attributes' do
       get "#{v1_pacbio_runs_plates_path}?include=wells", headers: json_api_headers
 
-      expect(response).to have_http_status(:success)
+      expect(response).to have_http_status(:success), response.body
       json = ActiveSupport::JSON.decode(response.body)
 
       expect(json['data'][0]['attributes']['pacbio_run_id']).to eq(plate1.pacbio_run_id)
@@ -30,7 +30,7 @@ RSpec.describe 'PlatesController', type: :request do
 
       well = wells[0]['attributes']
       plate_well = plate2.wells.first
-      expect(well['insert_size']).to eq(plate_well.insert_size)
+      expect(well['on_plate_loading_concentration']).to eq(plate_well.on_plate_loading_concentration)
     end
 
   end
