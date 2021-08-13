@@ -42,20 +42,20 @@ module Deployed
       @minor ||= version(:minor)
     end
 
+    def patch
+      @patch ||= version(:patch)
+    end
+
     def extra
       @extra ||= version(:extra)
     end
 
     def version_hash
-      @version_hash ||= /\Arelease-(?<major>\d+)\.(?<minor>\d+)\.?(?<extra>\S*)\z/.match(label)
+      @version_hash ||= /\Av(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?<extra>\S*)/.match(label)
     end
 
     def version_label
-      if major == 0 && minor == 0 && extra == 0
-        'WIP'
-      else
-        "#{major}.#{minor}.#{extra}"
-      end
+      major == 0 && minor == 0 && patch == 0 ? 'WIP' : "#{major}.#{minor}.#{patch}"
     end
 
     private
@@ -103,6 +103,7 @@ module Deployed
 
   MAJOR = REPO_DATA.major
   MINOR = REPO_DATA.minor
+  PATCH = REPO_DATA.patch
   EXTRA = REPO_DATA.extra
   BRANCH = REPO_DATA.label.presence || 'unknown_branch'
   COMMIT = REPO_DATA.revision.presence || 'unknown_revision'
