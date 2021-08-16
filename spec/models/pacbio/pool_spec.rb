@@ -4,15 +4,35 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
 
   let(:libraries) { create_list(:pacbio_library, 5) }
 
-  it 'will have a tube' do
-    tube = create(:tube)
-    pool = build(:pacbio_pool, tube: tube)
-    expect(pool.tube).to eq(tube)
+  it 'will have a tube on validation' do
+    pool = build(:pacbio_pool)
+    pool.valid?
+    expect(pool.tube).to be_a(Tube)
   end
 
   it 'can have many libraries' do
     pool = build(:pacbio_pool, libraries: libraries)
     expect(pool.libraries).to eq(libraries)
+  end
+
+  it 'can have a template prep kit box barcode' do
+    pool = build(:pacbio_pool)
+    expect(pool.template_prep_kit_box_barcode).to be_present
+  end
+
+  it 'can have a volume' do
+    pool = build(:pacbio_pool)
+    expect(pool.volume).to be_present
+  end
+
+  it 'can have a concentration' do
+    pool = build(:pacbio_pool)
+    expect(pool.concentration).to be_present
+  end
+
+  it 'can have a insert size' do
+    pool = build(:pacbio_pool)
+    expect(pool.insert_size).to be_present
   end
 
   it 'is not valid unless there is at least one library' do
@@ -23,6 +43,41 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
     dodgy_library = build(:pacbio_library, volume: nil)
 
     expect(build(:pacbio_pool, libraries: libraries + [dodgy_library])).to_not be_valid
+  end
+
+  describe '#library_attributes=' do
+    context 'with new libraries' do
+      let(:library_attributes) { attributes_for_list(:pacbio_library, 5) }
+
+      it 'sets up libraries' do
+        pool = build(:pacbio_pool, library_count: 0)
+        pool.library_attributes = library_attributes
+        expect(pool.libraries.length).to eq 5
+      end
+    end
+
+    context 'with existing libraries' do
+      let(:pool) { create(:pacbio_pool, library_count: 5) }
+      let(:library_attributes) do
+        pool.libraries.map do |library|
+          library.attributes.merge(
+            'template_prep_kit_box_barcode' => 'Updated'
+          )
+        end
+      end
+
+      it 'update existing libraries' do
+        pool.library_attributes = library_attributes
+        expect(pool.libraries.length).to eq 5
+      end
+
+      it 'changes library attributes' do
+        pool.library_attributes = library_attributes
+        expect(
+          pool.libraries.map(&:template_prep_kit_box_barcode)
+        ).to all eq 'Updated'
+      end
+    end
   end
 
   context 'tags' do
@@ -42,7 +97,7 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
     end
 
   end
-  
+
   context 'wells' do
     it 'can have one or more' do
       pool = create(:pacbio_pool)
@@ -50,5 +105,5 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
       expect(pool.wells.count).to eq(5)
     end
   end
-  
+
 end

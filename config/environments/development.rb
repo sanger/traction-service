@@ -59,6 +59,9 @@ Rails.application.configure do
     end
   end
 
+  # Highlight code that triggered database queries in logs.
+  config.active_record.verbose_query_logs = true
+
   config.middleware.use ExceptionNotification::Rack
 
   # We don't want to send emails in development mode, but its useful to see

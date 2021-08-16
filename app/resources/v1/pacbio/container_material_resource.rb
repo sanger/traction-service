@@ -10,7 +10,7 @@ module V1
       model_name 'ContainerMaterial'
 
       # Library attributes
-      attributes :state, :fragment_size, :volume, :concentration,
+      attributes :state, :insert_size, :volume, :concentration,
                  :template_prep_kit_box_barcode, :deactivated_at, :sample_names
 
       # Request attributes
@@ -23,7 +23,7 @@ module V1
       def fetchable_fields
         case @model.material
         when ::Pacbio::Library
-          %i[state barcode volume concentration template_prep_kit_box_barcode fragment_size
+          %i[state barcode volume concentration template_prep_kit_box_barcode insert_size
              created_at deactivated_at sample_names material_type]
         when ::Pacbio::Request
           %i[library_type estimate_of_gb_required number_of_smrt_cells cost_code external_study_id
@@ -53,7 +53,7 @@ module V1
                :cost_code, :external_study_id,
                :sample_name, :sample_species, :state, :volume,
                :concentration, :template_prep_kit_box_barcode,
-               :fragment_size, :sample_names, :qc_status, to: :material
+               :insert_size, :sample_names, :qc_status, to: :material
 
       # TODO: Moved here as dropped it from library, but this should probably become sample name.
       #      But overall, not really convinced this model should be exposed via the API.

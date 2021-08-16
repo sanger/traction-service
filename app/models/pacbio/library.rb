@@ -13,8 +13,8 @@ module Pacbio
     include Librarian
     include SampleSheet
 
-    validates :volume, :concentration, :template_prep_kit_box_barcode,
-              :fragment_size, presence: true
+    validates :volume, :concentration,
+              :insert_size, presence: true
 
     belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id,
                          inverse_of: :libraries
@@ -27,6 +27,8 @@ module Pacbio
     # # This is dependent on the request association, so needs to be included
     # # after that is defined
     include DualSourcedLibrary
+
+    has_one :source_plate, through: :source_well, source: :plate, class_name: '::Plate'
 
     def collection?
       false
