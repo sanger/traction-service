@@ -28,6 +28,14 @@ module V1
       def self.records_for_populate(*_args)
         super.preload(source_wells: :plate)
       end
+
+      def created_at
+        @model.created_at.to_s(:us)
+      end
+
+      def updated_at
+        @model.updated_at.to_s(:us)
+      end
     end
   end
 end
