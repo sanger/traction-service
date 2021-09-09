@@ -105,142 +105,6 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
 
   end
 
-  context '#create' do
-    context 'when creating a library' do
-      let!(:request) { create(:pacbio_request) }
-      let!(:tag) { create(:tag) }
-      let!(:request2) { create(:pacbio_request) }
-      let!(:tag2) { create(:tag) }
-
-      context 'on success' do
-        let(:body) do
-          {
-            data: {
-              type: 'libraries',
-              attributes: {
-                volume: 1.11,
-                concentration: 2.22,
-                template_prep_kit_box_barcode: 'LK1234567',
-                insert_size: 100
-              },
-              relationships: {
-                request: { data: { type: 'requests', id: request.id } },
-                tag: { data: { type: 'tags', id: tag.id } }
-              }
-            }
-          }.to_json
-        end
-
-        it 'has a created status' do
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:created)
-        end
-
-        it 'creates a library' do
-          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to change(Pacbio::Library,:count).by(1)
-        end
-
-        it 'doe not create a request' do
-          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.not_to change(Pacbio::Request, :count)
-        end
-
-        it 'associates the request, library request and tag' do
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          library = Pacbio::Library.first
-          expect(library.request).to eq(request)
-          expect(library.tag).to eq(tag)
-        end
-
-        it 'generates a pool of a single library' do
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          library = Pacbio::Library.first
-          expect(library.pool).to be_a(Pacbio::Pool)
-        end
-      end
-
-      context 'on failure' do
-        context 'when library is invalid' do
-          let(:body) do
-            {
-              data: {
-                type: 'libraries',
-                attributes: {
-                  concentration: 2.22,
-                  template_prep_kit_box_barcode: 'LK1234567',
-                  insert_size: 100
-                },
-                relationships: {
-                  request: { data: { type: 'requests', id: request.id } },
-                  tag: { data: { type: 'tags', id: tag.id } }
-                }
-              }
-            }.to_json
-          end
-
-          it 'returns unprocessable entity status' do
-            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
-
-          it 'cannot create a library' do
-            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
-          end
-
-          it 'cannot create a request' do
-            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Request, :count)
-          end
-
-          it 'has an error message' do
-            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-            expect(JSON.parse(response.body)["data"]).to include("errors" => {"volume"=>["can't be blank"]})
-          end
-        end
-
-        context 'when the request is invalid' do
-          let(:request_empty_cost_code) { create(:pacbio_request, cost_code: "")}
-
-          let(:body) do
-            {
-              data: {
-                type: 'libraries',
-                attributes: {
-                  volume: 1.11,
-                  concentration: 2.22,
-                  template_prep_kit_box_barcode: 'LK1234567',
-                  insert_size: 100
-                },
-                relationships: {
-                  request: { data: { type: 'requests', id: request_empty_cost_code.id } },
-                  tag: { data: { type: 'tags', id: tag.id } }
-                }
-              }
-            }.to_json
-          end
-
-          it 'returns unprocessable entity status' do
-            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
-
-          it 'cannot create a library' do
-            expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.to_not change(Pacbio::Library, :count)
-          end
-
-          it 'cannot create a request' do
-            cache_body = body
-            expect { post v1_pacbio_libraries_path, params: cache_body, headers: json_api_headers }.to_not change(Pacbio::Request, :count)
-          end
-
-          it 'has an error message' do
-            post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-            expect(JSON.parse(response.body)["data"]).to include("errors" => {"cost_code"=>["must be present"]})
-          end
-
-        end
-      end
-    end
-  end
-
   context '#destroy' do
     context 'on success' do
       let!(:library) { create(:pacbio_library) }
@@ -264,13 +128,12 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
     context 'on failure' do
       it 'does not delete the library' do
         delete "/v1/pacbio/libraries/dodgyid", headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:bad_request)
       end
 
       it 'has an error message' do
         delete "/v1/pacbio/libraries/dodgyid", headers: json_api_headers
-        data = JSON.parse(response.body)['data']
-        expect(data['errors']).to be_present
+        expect(json['errors']).to be_present
       end
     end
   end
