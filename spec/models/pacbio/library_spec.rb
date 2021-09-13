@@ -39,11 +39,9 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
     expect(build(:pacbio_library, pool: pool).pool).to eq(pool)
   end
 
-  it 'can have a tube' do
-    library = create(:pacbio_library)
-    tube = create(:tube)
-    create(:container_material, container: tube, material: library)
-    expect(library.tube).to eq tube
+  it 'can have a tube through pool' do
+    pool = create(:pacbio_pool)
+    expect(build(:pacbio_library, pool: pool).tube).to eq(pool.tube)
   end
 
   describe '#request' do
@@ -65,11 +63,6 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
     let(:library_model) { Pacbio::Library }
 
     it_behaves_like 'library'
-  end
-
-  context 'tube material' do
-    let(:material_model) { :pacbio_library }
-    it_behaves_like "tube_material"
   end
 
   describe '#source_identifier' do

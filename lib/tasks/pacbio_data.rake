@@ -39,7 +39,7 @@ namespace :pacbio_data do
 
     Pacbio::Request.all.each_with_index do |request, _i|
       tube = Tube.create
-      library = Pacbio::Library.create!(
+      Pacbio::Library.create!(
         volume: 1,
         concentration: 1,
         template_prep_kit_box_barcode: 'LK12345',
@@ -54,8 +54,6 @@ namespace :pacbio_data do
                                     insert_size: lib.insert_size,
                                     libraries: [lib])
       end
-
-      ContainerMaterial.create(container: tube, material: library)
     end
     puts '-> Pacbio libraries successfully created'
 
