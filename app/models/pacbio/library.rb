@@ -23,6 +23,7 @@ module Pacbio
                       inverse_of: :libraries
 
     has_one :sample, through: :request
+    has_one :tube, through: :pool
 
     # # This is dependent on the request association, so needs to be included
     # # after that is defined
