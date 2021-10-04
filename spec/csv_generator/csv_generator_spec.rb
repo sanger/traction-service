@@ -237,4 +237,20 @@ RSpec.describe CsvGenerator, type: :model do
     end
   end
 
+  context '#sort wells method' do
+    it '#sorts the wells by column' do
+      sorted_wells = []
+        for column in '1'...'12'
+          for row in 'A'...'H' do
+            sorted_wells.push(create(:pacbio_well, row: row, column: column))
+          end
+        end
+      plate = create(:pacbio_plate, wells: sorted_wells) 
+      run = create(:pacbio_run, plate: plate)
+      csv = ::CsvGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet)
+
+      expect(csv.send(:sort_wells, sorted_wells.shuffle)).to eq(sorted_wells)
+    end
+  end
+
 end
