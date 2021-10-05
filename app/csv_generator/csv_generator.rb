@@ -51,12 +51,11 @@ class CsvGenerator
   end
 
   # Takes a list of wells and sorts them according to their position
-  # Example: well positions => ["A4", "B2", "C1", "D1", "H4"] => ["C1", "D1", "B2", "A4", "H4" ]
+  # Example: ['A1', 'A2', 'B1']) => ['A1', 'B1', 'A2']
   def sort_wells(wells)
-    # Groups wells by column and orders the groups in ascending order
-    wells_by_column = wells.group_by(&:column).sort_by { |key, _value| key.to_i }.to_h
-    # Gets the values from each column and sorts each one by row
-    wells_by_column.values.map { |column| column.sort_by!(&:row) }.flatten
+    WellSorterService.sort_in_column_order(wells.map(&:position)).map do |position|
+      wells.find { |well| well.position == position }
+    end
   end
 
   # if the column does not need to be populated for the row_type return empty string
