@@ -14,8 +14,9 @@ class CsvGenerator
   def generate_sample_sheet
     CSV.generate do |csv|
       csv << csv_headers
+      sorted_wells = sort_wells(run.plate.wells)
 
-      run.plate.wells.each do |well|
+      sorted_wells.each do |well|
         # add well header row
         csv << csv_data(well: well, row_type: :well)
 
@@ -46,6 +47,14 @@ class CsvGenerator
   def csv_data(options = {})
     configuration.columns.map do |column|
       populate_column(options.merge(column_options: column[1]))
+    end
+  end
+
+  # Takes a list of wells and sorts them according to their position
+  # Example: ['A1', 'A2', 'B1']) => ['A1', 'B1', 'A2']
+  def sort_wells(wells)
+    WellSorterService.sort_in_column_order(wells.map(&:position)).map do |position|
+      wells.find { |well| well.position == position }
     end
   end
 
