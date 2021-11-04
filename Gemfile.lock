@@ -111,7 +111,7 @@ GEM
       nokogiri (>= 1.4)
     i18n (1.8.10)
       concurrent-ruby (~> 1.0)
-    jsonapi-resources (0.10.4)
+    jsonapi-resources (0.10.5)
       activerecord (>= 4.1)
       concurrent-ruby
       railties (>= 4.1)
