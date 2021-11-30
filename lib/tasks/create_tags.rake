@@ -34,6 +34,67 @@ namespace :tags do
       puts '-> Sequel_16_barcodes_v3 tags successfully created'
     end
 
+    desc 'Create pacbio bacterial multiplexing tags'
+    task pacbio_sequel_bacterial: :environment do
+      puts '-> Creating Sequel_48_Microbial_Barcoded_OHA_v1tag set and tags'
+      set = TagSet.pacbio_pipeline
+                  .find_or_create_by!(name: 'Sequel_48_Microbial_Barcoded_OHA_v1', uuid: 'c808dbb2-a26b-cfae-0a16-c3e7c3b8d7fe')
+      puts '-> Tag Set successfully created'
+      [
+        { oligo: 'TCTGTATCTCTATGTGT', group_id: 'bc1007T' },
+        { oligo: 'CAGAGAGATATCTCTGT', group_id: 'bc1023T' },
+        { oligo: 'CATGTAGAGCAGAGAGT', group_id: 'bc1024T' },
+        { oligo: 'CACAGAGACACGCACAT', group_id: 'bc1026T' },
+        { oligo: 'CTCACACTCTCTCACAT', group_id: 'bc1027T' },
+        { oligo: 'CTCTGCTCTGACTCTCT', group_id: 'bc1028T' },
+        { oligo: 'TATATATGTCTATAGAT', group_id: 'bc1029T' },
+        { oligo: 'GATGTCTGAGTGTGTGT', group_id: 'bc1031T' },
+        { oligo: 'TCTCGTCGCAGTCTCTT', group_id: 'bc1033T' },
+        { oligo: 'ATGTGTATATAGATATT', group_id: 'bc1034T' },
+        { oligo: 'GAGACACGTCGCACACT', group_id: 'bc1036T' },
+        { oligo: 'ACACATATCGCACTACT', group_id: 'bc1037T' },
+        { oligo: 'TGTCATATGAGAGTGTT', group_id: 'bc1040T' },
+        { oligo: 'TATAGAGCTCTACATAT', group_id: 'bc1043T' },
+        { oligo: 'GCTGAGACGACGCGCGT', group_id: 'bc1044T' },
+        { oligo: 'GATATATCGAGTATATT', group_id: 'bc1046T' },
+        { oligo: 'TGTCATGTGTACACACT', group_id: 'bc1047T' },
+        { oligo: 'GATATACGCGAGAGAGT', group_id: 'bc1050T' },
+        { oligo: 'GTGTGAGATATATATCT', group_id: 'bc1052T' },
+        { oligo: 'CTCACGTACGTCACACT', group_id: 'bc1053T' },
+        { oligo: 'GCGCACGCACTACAGAT', group_id: 'bc1054T' },
+        { oligo: 'CACACGAGATCTCATCT', group_id: 'bc1055T' },
+        { oligo: 'GACGAGCGTCTGAGAGT', group_id: 'bc1057T' },
+        { oligo: 'TGTGTCTCTGAGAGTAT', group_id: 'bc1058T' },
+        { oligo: 'CACACGCACTGAGATAT', group_id: 'bc1059T' },
+        { oligo: 'GATGAGTATAGACACAT', group_id: 'bc1060T' },
+        { oligo: 'GCTGTGTGTGCTCGTCT', group_id: 'bc1061T' },
+        { oligo: 'TCTCAGATAGTCTATAT', group_id: 'bc1062T' },
+        { oligo: 'TATATACAGAGTCGAGT', group_id: 'bc1064T' },
+        { oligo: 'GCGCTCTCTCACATACT', group_id: 'bc1065T' },
+        { oligo: 'TATATGCTCTGTGTGAT', group_id: 'bc1066T' },
+        { oligo: 'CTCTATATATCTCGTCT', group_id: 'bc1067T' },
+        { oligo: 'AGAGAGCTCTCTCATCT', group_id: 'bc1068T' },
+        { oligo: 'TGCTCTCGTGTACTGTT', group_id: 'bc1070T' },
+        { oligo: 'TGTACGCTCTCTATATT', group_id: 'bc1074T' },
+        { oligo: 'GTGCACTCGCGCTCTCT', group_id: 'bc1076T' },
+        { oligo: 'TATCTCTCGAGTCGCGT', group_id: 'bc1077T' },
+        { oligo: 'CTCACACATACACGTCT', group_id: 'bc1078T' },
+        { oligo: 'ATAGTACACTCTGTGTT', group_id: 'bc1079T' },
+        { oligo: 'GATATATATGTGTGTAT', group_id: 'bc1081T' },
+        { oligo: 'GTGACACACAGAGCACT', group_id: 'bc1082T' },
+        { oligo: 'ATATGACATACACGCAT', group_id: 'bc1083T' },
+        { oligo: 'CGTCTCTCGTCTGTGCT', group_id: 'bc1084T' },
+        { oligo: 'CTATCTAGCACTCACAT', group_id: 'bc1087T' },
+        { oligo: 'GTATATATATACGTCTT', group_id: 'bc1091T' },
+        { oligo: 'TCTCACGAGAGCGCACT', group_id: 'bc1092T' },
+        { oligo: 'ATAGCGACATCTCTCTT', group_id: 'bc1094T' },
+        { oligo: 'GCACGATGTCAGCGCGT', group_id: 'bc1095T' }
+      ].each do |tag_attributes|
+        set.tags.find_or_create_by!(tag_attributes)
+      end
+      puts '-> Sequel_48_Microbial_Barcoded_OHA_v1 tags successfully created'
+    end
+
     desc 'Create pacbio IsoSeq tags'
     task pacbio_isoseq: :environment do
       puts '-> Creating Pacbio IsoSeq tag set and tags'
