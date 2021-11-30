@@ -2,34 +2,6 @@
 
 require 'securerandom'
 
-# Extension methods for String
-# to handle incrementing oligo sequences
-class String
-  def increment_oligo!
-    upcase!
-    increment_base_at_index!(length - 1)
-  end
-
-  private
-
-  def increment_base_at_index!(index)
-    return unless index >= 0 && index < length
-
-    base_sequence = %w[A C G T]
-    char_at_index = self[index]
-    current_sequence_index = base_sequence.index(char_at_index)
-    new_sequence_index = current_sequence_index.nil? ? 0 : current_sequence_index + 1
-
-    if new_sequence_index == base_sequence.length
-      # We passed the last base in the sequence
-      self[index] = base_sequence.first
-      increment_base_at_index!(index - 1)
-    else
-      self[index] = base_sequence[new_sequence_index]
-    end
-  end
-end
-
 namespace :tags do
   desc 'Create tags and tag sets'
   namespace :create do
@@ -86,13 +58,13 @@ namespace :tags do
       tag_set = TagSet.ont_pipeline
                       .find_or_create_by!(name: tag_set_name, uuid: SecureRandom.uuid)
       puts '-> Tag Set successfully created'
-      oligo = +'ACGTACGTACGTACGT'
       (1..96).each do |tag_index|
+        # Generate incremental 24 character long oligos for development
+        oligo = (78901234567890 + tag_index).to_s(4).tr('0', 'A').tr('1', 'T').tr('2', 'C').tr('3', 'G')
         padded_tag_number = format('%<tag_number>02i', { tag_number: tag_index })
         Tag.find_or_create_by!(oligo: oligo,
                                group_id: "ont_96_tag_#{padded_tag_number}",
                                tag_set_id: tag_set.id)
-        oligo.increment_oligo!
       end
       puts '-> ONT tag set for 96 sample wells successfully created'
     end
