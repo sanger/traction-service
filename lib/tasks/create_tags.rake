@@ -11,22 +11,26 @@ namespace :tags do
       set = TagSet.pacbio_pipeline
                   .find_or_create_by!(name: 'Sequel_16_barcodes_v3', uuid: '4d87a8ab-4d16-f0b0-77e5-0f467dba442e')
       puts '-> Tag Set successfully created'
-      Tag.find_or_create_by!(oligo: 'CACATATCAGAGTGCGT', group_id: 'bc1001_BAK8A_OA', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'ACACACAGACTGTGAGT', group_id: 'bc1002_BAK8A_OA', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'ACACATCTCGTGAGAGT', group_id: 'bc1003_BAK8A_OA', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'ACAGTCGAGCGCTGCGT', group_id: 'bc1008_BAK8A_OA', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'ACACACGCGAGACAGAT', group_id: 'bc1009_BAK8A_OA', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'ACGCGCTATCTCAGAGT', group_id: 'bc1010_BAK8A_OA', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'CTATACGTATATCTATT', group_id: 'bc1011_BAK8A_OA', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'ACACTAGATCGCGTGTT', group_id: 'bc1012_BAK8A_OA', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'CGCATGACACGTGTGTT', group_id: 'bc1015_BAK8B_OA', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'CATAGAGAGATAGTATT', group_id: 'bc1016_BAK8B_OA', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'CACACGCGCGCTATATT', group_id: 'bc1017_BAK8B_OA', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'TCACGTGCTCACTGTGT', group_id: 'bc1018_BAK8B_OA', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'ACACACTCTATCAGATT', group_id: 'bc1019_BAK8B_OA', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'CACGACACGACGATGTT', group_id: 'bc1020_BAK8B_OA', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'CTATACATAGTGATGTT', group_id: 'bc1021_BAK8B_OA', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'CACTCACGTGTGATATT', group_id: 'bc1022_BAK8B_OA', tag_set_id: set.id)
+      [
+        { oligo: 'CACATATCAGAGTGCGT', group_id: 'bc1001_BAK8A_OA' },
+        { oligo: 'ACACACAGACTGTGAGT', group_id: 'bc1002_BAK8A_OA' },
+        { oligo: 'ACACATCTCGTGAGAGT', group_id: 'bc1003_BAK8A_OA' },
+        { oligo: 'ACAGTCGAGCGCTGCGT', group_id: 'bc1008_BAK8A_OA' },
+        { oligo: 'ACACACGCGAGACAGAT', group_id: 'bc1009_BAK8A_OA' },
+        { oligo: 'ACGCGCTATCTCAGAGT', group_id: 'bc1010_BAK8A_OA' },
+        { oligo: 'CTATACGTATATCTATT', group_id: 'bc1011_BAK8A_OA' },
+        { oligo: 'ACACTAGATCGCGTGTT', group_id: 'bc1012_BAK8A_OA' },
+        { oligo: 'CGCATGACACGTGTGTT', group_id: 'bc1015_BAK8B_OA' },
+        { oligo: 'CATAGAGAGATAGTATT', group_id: 'bc1016_BAK8B_OA' },
+        { oligo: 'CACACGCGCGCTATATT', group_id: 'bc1017_BAK8B_OA' },
+        { oligo: 'TCACGTGCTCACTGTGT', group_id: 'bc1018_BAK8B_OA' },
+        { oligo: 'ACACACTCTATCAGATT', group_id: 'bc1019_BAK8B_OA' },
+        { oligo: 'CACGACACGACGATGTT', group_id: 'bc1020_BAK8B_OA' },
+        { oligo: 'CTATACATAGTGATGTT', group_id: 'bc1021_BAK8B_OA' },
+        { oligo: 'CACTCACGTGTGATATT', group_id: 'bc1022_BAK8B_OA' }
+      ].each do |tag_attributes|
+        set.tags.find_or_create_by!(tag_attributes)
+      end
       puts '-> Sequel_16_barcodes_v3 tags successfully created'
     end
 
@@ -36,18 +40,22 @@ namespace :tags do
       set = TagSet.pacbio_pipeline
                   .find_or_create_by!(name: 'IsoSeq_Primers_12_Barcodes_v1', uuid: 'd1bb7419-4343-286f-f6f7-7365fa2d1ee9')
       puts '-> Tag Set successfully created'
-      Tag.find_or_create_by!(oligo: 'CACATATCAGAGTGCG', group_id: 'bc1001', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'ACACACAGACTGTGAG', group_id: 'bc1002', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'ACACATCTCGTGAGAG', group_id: 'bc1003', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'CACGCACACACGCGCG', group_id: 'bc1004', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'CACTCGACTCTCGCGT', group_id: 'bc1005', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'CATATATATCAGCTGT', group_id: 'bc1006', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'ACAGTCGAGCGCTGCG', group_id: 'bc1008', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'ACACTAGATCGCGTGT', group_id: 'bc1012', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'TCACGTGCTCACTGTG', group_id: 'bc1018', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'ACACACTCTATCAGAT', group_id: 'bc1019', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'CACGACACGACGATGT', group_id: 'bc1020', tag_set_id: set.id)
-      Tag.find_or_create_by!(oligo: 'CAGAGAGATATCTCTG', group_id: 'bc1023', tag_set_id: set.id)
+      [
+        { oligo: 'CACATATCAGAGTGCG', group_id: 'bc1001' },
+        { oligo: 'ACACACAGACTGTGAG', group_id: 'bc1002' },
+        { oligo: 'ACACATCTCGTGAGAG', group_id: 'bc1003' },
+        { oligo: 'CACGCACACACGCGCG', group_id: 'bc1004' },
+        { oligo: 'CACTCGACTCTCGCGT', group_id: 'bc1005' },
+        { oligo: 'CATATATATCAGCTGT', group_id: 'bc1006' },
+        { oligo: 'ACAGTCGAGCGCTGCG', group_id: 'bc1008' },
+        { oligo: 'ACACTAGATCGCGTGT', group_id: 'bc1012' },
+        { oligo: 'TCACGTGCTCACTGTG', group_id: 'bc1018' },
+        { oligo: 'ACACACTCTATCAGAT', group_id: 'bc1019' },
+        { oligo: 'CACGACACGACGATGT', group_id: 'bc1020' },
+        { oligo: 'CAGAGAGATATCTCTG', group_id: 'bc1023' }
+      ].each do |tag_attributes|
+        set.tags.find_or_create_by!(tag_attributes)
+      end
       puts '-> IsoSeq_Primers_12_Barcodes_v1 created'
     end
 
