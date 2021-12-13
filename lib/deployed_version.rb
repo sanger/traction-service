@@ -114,10 +114,5 @@ module Deployed
   REPO_URL       = REPO_DATA.release_url.presence || '#'
   HOSTNAME       = Socket.gethostname
 
-  require 'ostruct'
-  DETAILS = OpenStruct.new(
-    name: nil,
-    version: VERSION_ID,
-    environment: ENVIRONMENT
-  )
+  DETAILS = { name: nil, version: VERSION_ID, environment: ENVIRONMENT }.freeze
 end
