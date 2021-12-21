@@ -102,6 +102,10 @@ default: &default
                 tag_set_name:
                   type: :model
                   value: tag.tag_set_name
+                pipeline_id_lims:
+                  type: :model
+                  value: request.library_type
+
     sample_sheet:
       columns:
         System Name:
