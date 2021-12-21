@@ -13,6 +13,10 @@ module Pacbio
     ]
   end
 
+  def self.sample_attributes
+    %i[external_id name species]
+  end
+
   def self.required_request_attributes
     [
       :external_study_id
