@@ -193,11 +193,8 @@ module Pacbio
     class SampleWrapper
       include ActiveModel::Model
 
-      SAMPLE_ATTRIBUTES = %i[external_id name species].freeze
-      REQUEST_ATTRIBUTES = %i[
-        library_type estimate_of_gb_required number_of_smrt_cells cost_code
-        external_study_id
-      ].freeze
+      SAMPLE_ATTRIBUTES = Pacbio.sample_attributes.freeze
+      REQUEST_ATTRIBUTES = Pacbio.request_attributes.freeze
 
       attr_reader :sample, :well, :pacbio_request, :request, :container_material
 
