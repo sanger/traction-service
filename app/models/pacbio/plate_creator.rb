@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+# Need to ensure we load to top level module first to avoid
+# load order issues on production
+require 'pacbio/pacbio'
+
 module Pacbio
   # PlateCreator
   # This will build a plate with wells and samples
