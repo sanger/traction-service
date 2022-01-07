@@ -2,7 +2,6 @@ require: rubocop-rails
 
 AllCops:
   NewCops: enable
-  TargetRubyVersion: 2.6
   Exclude:
     - db/schema.rb
     - db/seeds.rb
@@ -50,7 +49,6 @@ Layout/LineLength:
   Max: 100
   Exclude:
     - 'lib/tasks/*'
-    
 
 Metrics/MethodLength:
   Max: 12
@@ -96,10 +94,10 @@ Style/ExponentialNotation:
   Enabled: true
 
 Layout/EmptyLinesAroundAttributeAccessor:
-  Enabled: true 
+  Enabled: true
 
 Lint/DeprecatedOpenSSLConstant:
-  Enabled: true 
+  Enabled: true
 
 Lint/MixedRegexpCaptureTypes:
   Enabled: true
@@ -127,4 +125,3 @@ Rails/SkipsModelValidations:
 
 Rails/EnvironmentVariableAccess:
   AllowReads: true
-    
