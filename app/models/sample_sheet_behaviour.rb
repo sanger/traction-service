@@ -4,10 +4,11 @@
 module SampleSheetBehaviour
   BEHAVIOURS = {
     default: SampleSheetBehaviour::Default,
-    hidden: SampleSheetBehaviour::Hidden
+    hidden: SampleSheetBehaviour::Hidden,
+    untagged: SampleSheetBehaviour::Untagged
   }.freeze
 
   def self.get(behaviour_name)
-    BEHAVIOURS.fetch(behaviour_name.to_sym)
+    BEHAVIOURS.fetch(behaviour_name.to_sym).new
   end
 end

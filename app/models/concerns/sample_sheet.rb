@@ -14,14 +14,12 @@ module SampleSheet
     # Barcode Set field
     def barcode_set
       # Assuming each request libraries tag has the same set name
-      return unless all_libraries_tagged
-
-      sample_sheet_behaviour.barcode_set(libraries.first.tag)
+      sample_sheet_behaviour.barcode_set(tag_set)
     end
 
     # Determines rendering of a row-per sample
-    def all_libraries_tagged
-      libraries.all?(&:tag_id?)
+    def any_libraries_tagged?
+      libraries.any?(&:tag_id?)
     end
 
     # Sample Name field

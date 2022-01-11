@@ -19,7 +19,7 @@ class SampleSheetBehaviour::Untagged < SampleSheetBehaviour::Default
     false
   end
 
-  def library_sample_name(_library)
+  def library_sample_name(library)
     library.request.sample_name || ''
   end
 end

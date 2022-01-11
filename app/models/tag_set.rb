@@ -10,8 +10,4 @@ class TagSet < ApplicationRecord
 
   validates :name, presence: true
   validates :pipeline, presence: true
-
-  def sample_sheet_behaviour_class
-    SampleSheetBehaviour.get(sample_sheet_behaviour)
-  end
 end

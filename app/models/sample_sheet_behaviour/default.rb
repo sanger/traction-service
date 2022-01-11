@@ -5,16 +5,12 @@
 # Will return
 # barcode_name => example--example
 class SampleSheetBehaviour::Default
-  def initialize(tag = nil)
-    @tag = tag
-  end
-
   def barcode_name(tag)
     "#{tag.group_id}--#{tag.group_id}"
   end
 
-  def barcode_set(tag)
-    tag.tag_set.uuid
+  def barcode_set(tag_set)
+    tag_set.uuid
   end
 
   def barcoded_for_sample_sheet?
