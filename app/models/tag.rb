@@ -6,7 +6,7 @@ class Tag < ApplicationRecord
   has_many :tag_taggables, dependent: :destroy
 
   delegate :name, :sample_sheet_behaviour_class, to: :tag_set, prefix: :tag_set, allow_nil: true
-  delegate :barcode_name, :barcode_set, :barcoded_for_sample_sheet?, to: :behaviour
+  # delegate :barcode_name, :barcode_set, :barcoded_for_sample_sheet?, to: :behaviour
 
   validates :oligo, :group_id, :tag_set_id, presence: true
 

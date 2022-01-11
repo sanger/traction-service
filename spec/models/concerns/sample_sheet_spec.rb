@@ -53,7 +53,7 @@ RSpec.describe SampleSheet do
     end
 
     it 'returns false if there is one library and it has no tag' do
-      empty_well.pools << create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged ))
+      empty_well.pools << create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged))
       expect(empty_well.sample_is_barcoded).to eq false
     end
 
@@ -61,11 +61,6 @@ RSpec.describe SampleSheet do
       pool = create(:pacbio_pool)
       empty_well.pools << pool
       expect(empty_well.sample_is_barcoded).to eq true
-    end
-
-    it 'returns false if any of the well libraries are not tagged' do
-      well.pools.first.libraries << create(:pacbio_library_without_tag)
-      expect(well.sample_is_barcoded).to eq false
     end
 
     it 'returns false if the libraries are tagged with a :hidden tag set (egh. IsoSeq)' do
@@ -96,7 +91,7 @@ RSpec.describe SampleSheet do
       end
 
       it 'returns nothing when well has libraries and row type is library' do
-        expect(library.find_sample_name).to eq library.request.sample_name
+        expect(library.find_sample_name).to eq ''
       end
     end
   end
