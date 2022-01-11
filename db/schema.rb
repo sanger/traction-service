@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_06_133747) do
+ActiveRecord::Schema.define(version: 2022_01_07_145503) do
 
   create_table "container_materials", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "container_type"
@@ -250,6 +250,7 @@ ActiveRecord::Schema.define(version: 2021_08_06_133747) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "pipeline", null: false
+    t.integer "sample_sheet_behaviour", default: 0, null: false
   end
 
   create_table "tag_taggables", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|

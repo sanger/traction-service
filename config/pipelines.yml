@@ -204,7 +204,7 @@ default: &default
             with: :well
         Sample is Barcoded:
           type: :model
-          value: check_library_tags
+          value: sample_is_barcoded
           populate:
             for:
               - :well
