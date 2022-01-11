@@ -150,8 +150,8 @@ RSpec.describe CsvGenerator, type: :model do
     let(:csv)     { ::CsvGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet) }
 
     before(:each) do
-      well1.pools.first.libraries = create_list(:pacbio_library, 2, :untagged)
-      well2.pools.first.libraries = create_list(:pacbio_library, 2, :untagged)
+      well1.pools.first.libraries = create_list(:pacbio_library, 1, :untagged)
+      well2.pools.first.libraries = create_list(:pacbio_library, 1, :untagged)
     end
 
     it 'check validity' do
@@ -194,7 +194,7 @@ RSpec.describe CsvGenerator, type: :model do
         well1.on_plate_loading_concentration.to_s,
         well1.plate.run.dna_control_complex_box_barcode,
         well1.plate.run.comments,
-        well1.all_libraries_tagged.to_s,
+        well1.sample_is_barcoded.to_s,
         '',
         well1.barcode_set,
         well1.same_barcodes_on_both_ends_of_sequence.to_s,
@@ -218,7 +218,7 @@ RSpec.describe CsvGenerator, type: :model do
         well2.on_plate_loading_concentration.to_s,
         well2.plate.run.dna_control_complex_box_barcode,
         well2.plate.run.comments,
-        well2.all_libraries_tagged.to_s,
+        well2.sample_is_barcoded.to_s,
         '',
         well2.barcode_set,
         well2.same_barcodes_on_both_ends_of_sequence.to_s,
@@ -245,7 +245,7 @@ RSpec.describe CsvGenerator, type: :model do
             sorted_wells.push(create(:pacbio_well, row: row, column: column))
           end
         end
-      plate = create(:pacbio_plate, wells: sorted_wells) 
+      plate = create(:pacbio_plate, wells: sorted_wells)
       run = create(:pacbio_run, plate: plate)
       csv = ::CsvGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet)
 

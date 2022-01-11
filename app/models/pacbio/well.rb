@@ -25,12 +25,21 @@ module Pacbio
     has_many :pools, class_name: 'Pacbio::Pool', through: :well_pools, autosave: true
 
     has_many :libraries, through: :pools
+    has_many :tag_sets, through: :libraries
 
     validates :movie_time, :on_plate_loading_concentration,
               :row, :column, :generate_hifi, :binding_kit_box_barcode, presence: true
     validates :movie_time,
               numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 }
     validates :pre_extension_time, numericality: { only_integer: true }, allow_blank: true
+
+    def tag_set
+      tag_sets.first
+    end
+
+    def sample_sheet_behaviour
+      (tag_set&.sample_sheet_behaviour_class || SampleSheetBehaviour::Untagged).new
+    end
 
     def position
       "#{row}#{column}"

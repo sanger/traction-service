@@ -16,7 +16,7 @@ module SampleSheet
       # Assuming each request libraries tag has the same set name
       return unless all_libraries_tagged
 
-      libraries.first.tag.barcode_set
+      sample_sheet_behaviour.barcode_set(libraries.first.tag)
     end
 
     # Determines rendering of a row-per sample
@@ -34,7 +34,7 @@ module SampleSheet
     # Note: This doesn't actually indicate that a sample *is* barcoded, as :hidden
     # tag sets (such as IsoSeq) lie.
     def sample_is_barcoded
-      libraries.all? { |l| l.tag&.barcoded_for_sample_sheet? }
+      sample_sheet_behaviour.barcoded_for_sample_sheet?
     end
 
     # Same Barcodes on Both Ends of Sequence field
@@ -61,12 +61,12 @@ module SampleSheet
     # Barcode Name field
     # Used in context of Pacbio::Library model
     def barcode_name
-      tag&.barcode_name
+      sample_sheet_behaviour.barcode_name(tag)
     end
 
     # Sample bio Name field
     def find_sample_name
-      request.sample_name || ''
+      sample_sheet_behaviour.library_sample_name(self)
     end
   end
 end
