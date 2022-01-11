@@ -1,4 +1,4 @@
-require "rails_helper"
+require 'rails_helper'
 require 'ostruct'
 
 class ObjectB
@@ -32,21 +32,21 @@ class ObjectC
 end
 
 RSpec.describe Messages::Message, type: :model do
-
   let(:object_b)  { ObjectB.new('attr_d')}
   let(:object_a)  { ObjectA.new('attr_a', 'attr_b', object_b)}
-  let(:params)    { {
-                      key: 'a_table',
-                      lims: 'a_lims',
-                      fields: { 
-                        instrument_name: { type: :string, value: 'saphyr' },
-                        field_a: { type: :model, value: 'attr_a' }, 
-                        field_b: { type: :model, value: 'attr_b' }, 
-                        field_c: { type: :model, value: 'attr_c.attr_d' },
-                        updated_at: { type: :constant, value: 'Time.current' }
-                      }
-                    }.with_indifferent_access
-                  }
+  let(:params) do
+    {
+      key: 'a_table',
+      lims: 'a_lims',
+      fields: {
+        instrument_name: { type: :string, value: 'saphyr' },
+        field_a: { type: :model, value: 'attr_a' },
+        field_b: { type: :model, value: 'attr_b' },
+        field_c: { type: :model, value: 'attr_c.attr_d' },
+        updated_at: { type: :constant, value: 'Time.current' }
+      }
+    }.with_indifferent_access
+  end
 
   let(:config) { OpenStruct.new(params) }
 
@@ -58,15 +58,15 @@ RSpec.describe Messages::Message, type: :model do
   end
 
   it 'has some content' do
-    expect(message.content).to eq(
-      { config[:key] => {
-        field_a: 'attr_a',
-        field_b: 'attr_b',
-        field_c: 'attr_d',
-        updated_at: timestamp,
-        instrument_name: 'saphyr'
-      },
-      lims: config[:lims],
+    expect(message.content).to eq({
+      config[:key] => {
+          field_a: 'attr_a',
+          field_b: 'attr_b',
+          field_c: 'attr_d',
+          updated_at: timestamp,
+          instrument_name: 'saphyr'
+        },
+        lims: config[:lims],
       }.with_indifferent_access
     )
   end
@@ -78,39 +78,39 @@ RSpec.describe Messages::Message, type: :model do
   context 'nested fields' do
     let(:children) { Array.new(5) { |o| o = ObjectB.new('attr_d')}}
     let(:object_c) { ObjectC.new(children)}
-    let(:params)    { {
-                      key: 'a_table',
-                      lims: 'a_lims',
-                      fields: { 
-                        field_e: { type: :model, value: 'attr_e' },
-                        samples: { 
-                          type: :array, 
-                          value: 'libraries',
-                          children: {
-                            field_d: { type: :model, value: 'attr_d' }
-                          }
-                        },
-                      }
-                    }.with_indifferent_access
-                  }
+    let(:params) do
+      {
+        key: 'a_table',
+        lims: 'a_lims',
+        fields: {
+          field_e: { type: :model, value: 'attr_e' },
+          samples: {
+            type: :array,
+            value: 'libraries',
+            children: {
+              field_d: { type: :model, value: 'attr_d' }
+            }
+          }
+        }
+      }.with_indifferent_access
+    end
 
-  let(:config) { OpenStruct.new(params) }
-
-  let(:message) { Messages::Message.new(object: object_c, configuration: config ) }
+    let(:config) { OpenStruct.new(params) }
+    let(:message) { Messages::Message.new(object: object_c, configuration: config ) }
 
     it 'works' do
       expect(message.content).to eq(
         { config[:key] => {
           field_e: 'another attribute',
           samples: [
-            { field_d: 'attr_d'},
-            { field_d: 'attr_d'},
-            { field_d: 'attr_d'},
-            { field_d: 'attr_d'},
-            { field_d: 'attr_d'}
+            { field_d: 'attr_d' },
+            { field_d: 'attr_d' },
+            { field_d: 'attr_d' },
+            { field_d: 'attr_d' },
+            { field_d: 'attr_d' }
           ]
         },
-        lims: config[:lims],
+        lims: config[:lims]
         }.with_indifferent_access
     )
     end

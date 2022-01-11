@@ -5,7 +5,8 @@ class Tag < ApplicationRecord
   belongs_to :tag_set
   has_many :tag_taggables, dependent: :destroy
 
-  delegate :name, to: :tag_set, prefix: :tag_set, allow_nil: true
+  delegate :name, :sample_sheet_behaviour_class, to: :tag_set, prefix: :tag_set, allow_nil: true
+  delegate :barcode_name, :barcode_set, :barcoded_for_sample_sheet?, to: :behaviour
 
   validates :oligo, :group_id, :tag_set_id, presence: true
 
@@ -19,5 +20,9 @@ class Tag < ApplicationRecord
 
   def self.includes_args
     :tag_set
+  end
+
+  def behaviour
+    tag_set_sample_sheet_behaviour_class.new(self)
   end
 end

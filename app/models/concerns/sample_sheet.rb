@@ -6,7 +6,6 @@
 # TODO: This is included in a couple of places, but only some of the methods work in each.
 module SampleSheet
   # include ActiveSupport::Concern
-  ISOSEQ_TAG_SETS = %w[IsoSeq_Primers_12_Barcodes_v1].freeze
 
   # Sample Well field
   def position_leading_zero
@@ -16,9 +15,7 @@ module SampleSheet
   # Barcode Name field
   # Used in context of Request Library model
   def barcode_name
-    return if tag.blank?
-
-    "#{tag.group_id}--#{tag.group_id}"
+    tag&.barcode_name
   end
 
   # Barcode Set field
@@ -26,13 +23,13 @@ module SampleSheet
     # Assuming each request libraries tag has the same set name
     return unless all_libraries_tagged
 
-    libraries.first.tag.tag_set.uuid
+    libraries.first.tag.barcode_set
   end
 
-  # Sample bio Name field - TEMPORARY: Want well row to have sample_names when isoSeq tags
+  # Sample bio Name field
   def find_sample_name
     if defined?(sample_names) # When row type is well
-      return sample_names unless check_library_tags
+      return sample_names unless sample_is_barcoded
     elsif defined?(request.sample_name) # When row type is library (sample)
       return request.sample_name
     end
@@ -44,13 +41,11 @@ module SampleSheet
     libraries.all?(&:tag_id?)
   end
 
-  # Sample is Barcoded field - TEMPORARY: Want IsoSeq samples to return false
-  def check_library_tags
-    no_isoseq_tag_sets = libraries.none? do |library|
-      ISOSEQ_TAG_SETS.include?(library.tag.tag_set.name) if library.tag
-    end
-
-    no_isoseq_tag_sets && libraries.all?(&:tag_id?)
+  # Used to indicate to the sample sheet whether it should treat a sample as barcoded
+  # Note: This doesn't actually indicate that a sample *is* barcoded, as :hidden
+  # tag sets (such as IsoSeq) lie.
+  def sample_is_barcoded
+    libraries.all? { |l| l.tag&.barcoded_for_sample_sheet? }
   end
 
   # Sample Name field
