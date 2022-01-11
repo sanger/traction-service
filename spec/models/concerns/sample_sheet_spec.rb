@@ -96,26 +96,26 @@ RSpec.describe SampleSheet do
     end
   end
 
-  context 'all_libraries_tagged' do
+  context 'any_libraries_tagged?' do
     it 'returns true if all well libraries are tagged' do
-      expect(well.all_libraries_tagged).to eq true
+      expect(well.any_libraries_tagged?).to be true
     end
 
     it 'returns false if there is one library and it has no tag' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged ))
       empty_well.pools << pool
-      expect(empty_well.all_libraries_tagged).to eq false
+      expect(empty_well.any_libraries_tagged?).to be false
     end
 
     it 'returns true if there is only one library and it has a tag' do
       pool = create(:pacbio_pool)
       empty_well.pools << pool
-      expect(empty_well.all_libraries_tagged).to eq true
+      expect(empty_well.any_libraries_tagged?).to be true
     end
 
-    it 'returns false if any of the well libraries are not tagged' do
+    it 'returns true if at least one of the well libraries are tagged' do
       well.pools.first.libraries << create(:pacbio_library_without_tag)
-      expect(well.all_libraries_tagged).to eq false
+      expect(well.any_libraries_tagged?).to be true
     end
   end
 
