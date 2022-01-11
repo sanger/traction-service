@@ -7,7 +7,7 @@ module Pacbio
     GENERIC_KIT_BARCODE = 'Lxxxxx100938900123199'
 
     include Uuidable
-    include SampleSheet
+    include SampleSheet::Well
 
     # We should get rid of the below enum,
     # as we are not supporting sequencing_mode in SMRTLink v10

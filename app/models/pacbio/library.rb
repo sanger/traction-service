@@ -11,7 +11,7 @@ module Pacbio
     include TubeMaterial
     include Uuidable
     include Librarian
-    include SampleSheet
+    include SampleSheet::Library
 
     validates :volume, :concentration,
               :insert_size, presence: true
