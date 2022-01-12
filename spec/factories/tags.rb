@@ -8,6 +8,10 @@ FactoryBot.define do
       association(:tag_set, factory: :ont_tag_set)
     end
 
+    factory :hidden_tag do
+      association(:tag_set, factory: :hidden_tag_set)
+    end
+
     factory :tag_with_taggables do
       transient do
         taggables_count { 3 }

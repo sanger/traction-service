@@ -18,7 +18,6 @@ gem 'mysql2'
 gem 'puma', '~> 4.3' # Use Puma as the app server
 gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX possible
 gem 'rails', '~> 6.0.4.1'
-gem 'rubocop-rails'
 
 group :development do
   gem 'listen', '>= 3.0.5', '< 3.2'
@@ -38,6 +37,7 @@ group :development, :test do
   gem 'pry-rails'
   gem 'rspec-rails'
   gem 'rubocop', require: false
+  gem 'rubocop-rails'
   gem 'shoulda-matchers'
   gem 'sqlite3'
 end
