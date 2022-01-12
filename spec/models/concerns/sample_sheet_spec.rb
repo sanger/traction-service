@@ -3,78 +3,77 @@
 require 'rails_helper'
 
 RSpec.describe SampleSheet do
-  context 'sample sheet methods' do
-    let(:well) { create(:pacbio_well_with_pools, pool_count: 5) }
-    let(:empty_well) { create(:pacbio_well) }
+  let(:well) { create(:pacbio_well_with_pools, pool_count: 5) }
+  let(:empty_well) { create(:pacbio_well) }
 
-    context 'barcode_name' do
-      it 'returns a string of library tags when the well has one library' do
-        pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :tagged ))
-        empty_well.pools << pool
-        tag_group_id = empty_well.pools.first.libraries.first.tag.group_id
-        expected = "#{tag_group_id}--#{tag_group_id}"
-        expect(empty_well.libraries.last.barcode_name).to eq expected
-      end
-
-      it 'returns nothing if the libraries are not tagged' do
-        pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged ))
-        empty_well.pools << pool
-        expect(empty_well.libraries.last.barcode_name).to be_nil
-      end
+  describe '#barcode_name' do
+    it 'returns a string of library tags when the well has one library' do
+      pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :tagged))
+      empty_well.pools << pool
+      tag_group_id = empty_well.pools.first.libraries.first.tag.group_id
+      expected = "#{tag_group_id}--#{tag_group_id}"
+      expect(empty_well.libraries.last.barcode_name).to eq expected
     end
 
-    context 'barcode_set' do
-      it 'returns the tag set uuid' do
-        expected_set_name = well.libraries.first.tag.tag_set.uuid
-        expect(well.barcode_set).to eq expected_set_name
-      end
-
-      it 'returns nothing if the libraries are not tagged' do
-        pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged ))
-        empty_well.pools << pool
-        expect(empty_well.barcode_set).to be_nil
-      end
+    it 'returns nothing if the libraries are tagged with a :hidden tag set (egh. IsoSeq)' do
+      pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :hidden_tagged))
+      empty_well.pools << pool
+      expect(empty_well.libraries.last.barcode_name).to be_nil
     end
 
-    context 'check_library_tags' do
-      it 'returns true if all well libraries are tagged and non isoSeq tags' do
-        expect(well.check_library_tags).to eq true
-      end
+    it 'returns nothing if the libraries are not tagged' do
+      pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged))
+      empty_well.pools << pool
+      expect(empty_well.libraries.last.barcode_name).to be_nil
+    end
+  end
 
-      it 'returns false if there is one library and it has no tag' do
-        empty_well.pools << create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged ))
-        expect(empty_well.check_library_tags).to eq false
-      end
-
-      it 'returns true if there is only one library and it has a non isoSeq tag' do
-        pool = create(:pacbio_pool)
-        empty_well.pools << pool
-        expect(empty_well.check_library_tags).to eq true
-      end
-
-      it 'returns false if any of the well libraries are not tagged' do
-        well.pools.first.libraries << create(:pacbio_library_without_tag)
-        expect(well.check_library_tags).to eq false
-      end
-
-      it 'returns false if any of the well libraries are tagged with IsoSeq tags' do
-        isoSeq_tag_set = create(:tag_set, name: 'IsoSeq_Primers_12_Barcodes_v1')
-        isoSeq_tag = create(:tag, tag_set: isoSeq_tag_set)
-        well.pools.first.libraries << create(:pacbio_library, tag: isoSeq_tag)
-        expect(well.check_library_tags).to eq false
-      end
+  describe '#barcode_set' do
+    it 'returns the tag set uuid' do
+      expected_set_name = well.libraries.first.tag.tag_set.uuid
+      expect(well.barcode_set).to eq expected_set_name
     end
 
-    context 'check_library_tags' do
-      it 'returns nothing when well libraries are non isoSeq and the row type is well' do
-        expect(well.find_sample_name).to eq ""
-      end
+    it 'returns nothing if the libraries are not tagged' do
+      pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged ))
+      empty_well.pools << pool
+      expect(empty_well.barcode_set).to be_nil
+    end
 
-      it 'returns well sample_names when well has isoSeq tagged libraries and the row type is well' do
-        isoSeq_tag_set = create(:tag_set, name: 'IsoSeq_Primers_12_Barcodes_v1')
-        isoSeq_tag = create(:tag, tag_set: isoSeq_tag_set)
-        well.pools.first.libraries << create(:pacbio_library, tag: isoSeq_tag)
-        expect(well.find_sample_name).to eq well.sample_names
+    it 'returns nothing if the libraries are tagged with a :hidden tag set (egh. IsoSeq)' do
+      pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :hidden_tagged))
+      empty_well.pools << pool
+      expect(empty_well.barcode_set).to be_nil
+    end
+  end
+
+  context '#sample_is_barcoded' do
+    it 'returns true if all well libraries are tagged and non isoSeq tags' do
+      expect(well.sample_is_barcoded).to eq true
+    end
+
+    it 'returns false if there is one library and it has no tag' do
+      empty_well.pools << create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged))
+      expect(empty_well.sample_is_barcoded).to eq false
+    end
+
+    it 'returns true if there is only one library and it has a non isoSeq tag' do
+      pool = create(:pacbio_pool)
+      empty_well.pools << pool
+      expect(empty_well.sample_is_barcoded).to eq true
+    end
+
+    it 'returns false if the libraries are tagged with a :hidden tag set (egh. IsoSeq)' do
+      pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :hidden_tagged))
+      well.pools << pool
+      expect(well.sample_is_barcoded).to eq false
+    end
+  end
+
+  describe '#find_sample_name' do
+    context 'when tag set is :default type' do
+      it 'returns nothing if row type is well' do
+        expect(well.find_sample_name).to eq ''
       end
 
       it 'returns library sample_name when well has libraries and row type is library' do
@@ -82,69 +81,82 @@ RSpec.describe SampleSheet do
         expect(library.find_sample_name).to eq library.request.sample_name
       end
     end
-   
-    context 'all_libraries_tagged' do
-      it 'returns true if all well libraries are tagged' do
-        expect(well.all_libraries_tagged).to eq true
+
+    context 'when tag set is :hidden type (eg. IsoSeq)' do
+      let(:library) { create(:pacbio_library, :hidden_tagged) }
+
+      it 'returns well sample_names if row type is well' do
+        empty_well.pools << create(:pacbio_pool, libraries: [library])
+        expect(empty_well.find_sample_name).to eq empty_well.sample_names
       end
 
-      it 'returns false if there is one library and it has no tag' do
-        pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged ))
-        empty_well.pools << pool
-        expect(empty_well.all_libraries_tagged).to eq false
-      end
-
-      it 'returns true if there is only one library and it has a tag' do
-        pool = create(:pacbio_pool)
-        empty_well.pools << pool
-        expect(empty_well.all_libraries_tagged).to eq true
-      end
-
-      it 'returns false if any of the well libraries are not tagged' do
-        well.pools.first.libraries << create(:pacbio_library_without_tag)
-        expect(well.all_libraries_tagged).to eq false
+      it 'returns nothing when well has libraries and row type is library' do
+        expect(library.find_sample_name).to eq ''
       end
     end
+  end
 
-    context 'pool_barcode' do
-      it 'returns the first pools tube barcode in well' do
-        expected = well.pools.first.tube.barcode
-        expect(well.pool_barcode).to eq expected
-      end
+  context 'any_libraries_tagged?' do
+    it 'returns true if all well libraries are tagged' do
+      expect(well.any_libraries_tagged?).to be true
     end
 
-    context 'same_barcodes_on_both_ends_of_sequence' do
-      it 'returns true' do
-        expect(well.same_barcodes_on_both_ends_of_sequence).to eq true
-      end
+    it 'returns false if there is one library and it has no tag' do
+      pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged ))
+      empty_well.pools << pool
+      expect(empty_well.any_libraries_tagged?).to be false
     end
 
-    context 'position_leading_zero' do
-      it 'can have a position with a leading zero for sample sheet generation' do
-        expect(build(:pacbio_well, row: 'B', column: '1').position_leading_zero).to eq('B01')
-      end
+    it 'returns true if there is only one library and it has a tag' do
+      pool = create(:pacbio_pool)
+      empty_well.pools << pool
+      expect(empty_well.any_libraries_tagged?).to be true
     end
 
-    context 'with pre-extension time' do
-      let(:well) { create(:pacbio_well, pre_extension_time: 3) }
-
-      it 'automation parameters is formatted properly' do
-        expect(well.automation_parameters).to eq("ExtensionTime=double:3|ExtendFirst=boolean:True")
-      end
+    it 'returns true if at least one of the well libraries are tagged' do
+      well.pools.first.libraries << create(:pacbio_library_without_tag)
+      expect(well.any_libraries_tagged?).to be true
     end
+  end
 
-    context 'without pre-extension time' do
-      it 'automation parameters is blank' do
-        expect(well.automation_parameters).to be_nil
-      end
+  context 'pool_barcode' do
+    it 'returns the first pools tube barcode in well' do
+      expected = well.pools.first.tube.barcode
+      expect(well.pool_barcode).to eq expected
     end
+  end
 
-    context 'pre-extension time 0' do
-      let(:well) { create(:pacbio_well, pre_extension_time: 0) }
+  context 'same_barcodes_on_both_ends_of_sequence' do
+    it 'returns true' do
+      expect(well.same_barcodes_on_both_ends_of_sequence).to eq true
+    end
+  end
 
-      it 'automation parameters is blank' do
-        expect(well.automation_parameters).to be_nil
-      end
+  context 'position_leading_zero' do
+    it 'can have a position with a leading zero for sample sheet generation' do
+      expect(build(:pacbio_well, row: 'B', column: '1').position_leading_zero).to eq('B01')
+    end
+  end
+
+  context 'with pre-extension time' do
+    let(:well) { create(:pacbio_well, pre_extension_time: 3) }
+
+    it 'automation parameters is formatted properly' do
+      expect(well.automation_parameters).to eq("ExtensionTime=double:3|ExtendFirst=boolean:True")
+    end
+  end
+
+  context 'without pre-extension time' do
+    it 'automation parameters is blank' do
+      expect(well.automation_parameters).to be_nil
+    end
+  end
+
+  context 'pre-extension time 0' do
+    let(:well) { create(:pacbio_well, pre_extension_time: 0) }
+
+    it 'automation parameters is blank' do
+      expect(well.automation_parameters).to be_nil
     end
   end
 end

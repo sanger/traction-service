@@ -8,19 +8,18 @@ class CsvGenerator
   # configuration => Pipelines::Configuration::Item
   attr_accessor :run, :configuration
 
-  # return a CSV file
+  # return a CSV String
   # using run and configuration attributes
   # to generate headers and data
   def generate_sample_sheet
     CSV.generate do |csv|
       csv << csv_headers
-      sorted_wells = sort_wells(run.plate.wells)
 
       sorted_wells.each do |well|
         # add well header row
         csv << csv_data(well: well, row_type: :well)
 
-        next unless well.all_libraries_tagged
+        next unless well.any_libraries_tagged?
 
         csv_sample_rows(well).each { |sample_row| csv << sample_row }
       end
@@ -28,6 +27,17 @@ class CsvGenerator
   end
 
   private
+
+  def wells
+    run.plate.wells
+  end
+
+  # Returns a list of wells associated with the plate in column order
+  # Example: [<Well position:'A1'>, <Well position:'A2'>, <Well position:'B1'>]) =>
+  #          [<Well position:'A1'>, <Well position:'B1'>, <Well position:'A2'>]
+  def sorted_wells
+    wells.sort_by { |well| [well.column.to_i, well.row] }
+  end
 
   # return a list of column names ie headers
   # eg ['System Name', 'Run Name']
@@ -47,14 +57,6 @@ class CsvGenerator
   def csv_data(options = {})
     configuration.columns.map do |column|
       populate_column(options.merge(column_options: column[1]))
-    end
-  end
-
-  # Takes a list of wells and sorts them according to their position
-  # Example: ['A1', 'A2', 'B1']) => ['A1', 'B1', 'A2']
-  def sort_wells(wells)
-    WellSorterService.sort_in_column_order(wells.map(&:position)).map do |position|
-      wells.find { |well| well.position == position }
     end
   end
 
