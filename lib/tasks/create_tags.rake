@@ -148,7 +148,7 @@ namespace :tags do
     tag_group_name = Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name
     tag_group_hostname = Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_hostname
     puts "-> Fetching tag set '#{tag_group_name}' from sequencescape"
-    uri = URI("http://#{tag_group_hostname}/api/v2/tag_groups?filter[name]=#{tag_group_name}")
+    uri = URI("#{tag_group_hostname}/api/v2/tag_groups?filter[name]=#{tag_group_name}")
     res = Net::HTTP.get_response(uri)
     if res.is_a?(Net::HTTPSuccess)
       json_res = JSON.parse(res.body)
