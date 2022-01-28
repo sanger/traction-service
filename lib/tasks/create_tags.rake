@@ -99,7 +99,11 @@ namespace :tags do
     task pacbio_isoseq: :environment do
       puts '-> Creating Pacbio IsoSeq tag set and tags'
       set = TagSet.pacbio_pipeline
+                  .create_with(sample_sheet_behaviour: :hidden)
                   .find_or_create_by!(name: 'IsoSeq_Primers_12_Barcodes_v1', uuid: 'd1bb7419-4343-286f-f6f7-7365fa2d1ee9')
+
+      set.update!(sample_sheet_behaviour: :hidden) unless set.hidden_sample_sheet_behaviour?
+
       puts '-> Tag Set successfully created'
       [
         { oligo: 'CACATATCAGAGTGCG', group_id: 'bc1001' },
@@ -144,7 +148,7 @@ namespace :tags do
     tag_group_name = Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name
     tag_group_hostname = Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_hostname
     puts "-> Fetching tag set '#{tag_group_name}' from sequencescape"
-    uri = URI("http://#{tag_group_hostname}/api/v2/tag_groups?filter[name]=#{tag_group_name}")
+    uri = URI("#{tag_group_hostname}/api/v2/tag_groups?filter[name]=#{tag_group_name}")
     res = Net::HTTP.get_response(uri)
     if res.is_a?(Net::HTTPSuccess)
       json_res = JSON.parse(res.body)

@@ -29,8 +29,7 @@ module V1
       def plates_params
         params.require(:data)['attributes'].permit(
           plates: [:barcode, { wells: [:position, { samples:
-              %i[name external_id species library_type estimate_of_gb_required
-                 number_of_smrt_cells cost_code external_study_id] }] }]
+              ::Pacbio.request_attributes + ::Pacbio.sample_attributes }] }]
         ).to_h
       end
     end

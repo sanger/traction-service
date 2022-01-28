@@ -16,6 +16,6 @@ class TagSetService
 
     return if tag_set.nil?
 
-    loaded_tag_sets[tag_set_name] = tag_set.tags.map { |tag| [tag.oligo, tag.id] }.to_h
+    loaded_tag_sets[tag_set_name] = tag_set.tags.to_h { |tag| [tag.oligo, tag.id] }
   end
 end

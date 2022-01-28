@@ -11,7 +11,7 @@ module Pacbio
     include TubeMaterial
     include Uuidable
     include Librarian
-    include SampleSheet
+    include SampleSheet::Library
 
     validates :volume, :concentration,
               :insert_size, presence: true
@@ -24,6 +24,7 @@ module Pacbio
 
     has_one :sample, through: :request
     has_one :tube, through: :pool
+    has_one :tag_set, through: :tag
 
     # # This is dependent on the request association, so needs to be included
     # # after that is defined
@@ -33,6 +34,10 @@ module Pacbio
 
     def collection?
       false
+    end
+
+    def sample_sheet_behaviour
+      SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour || :untagged)
     end
   end
 end
