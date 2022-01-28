@@ -67,8 +67,6 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
   end
 
   context '#generate_sample_sheet' do
-    after(:all) { File.delete('sample_sheet.csv') if File.exists?('sample_sheet.csv') }
-
     it 'must call CsvGenerator' do
       well1 = create(:pacbio_well_with_pools)
       well2 = create(:pacbio_well_with_pools)

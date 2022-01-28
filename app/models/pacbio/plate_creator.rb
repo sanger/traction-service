@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+# Need to ensure we load to top level module first to avoid
+# load order issues on production
+require 'pacbio/pacbio'
+
 module Pacbio
   # PlateCreator
   # This will build a plate with wells and samples
@@ -193,11 +197,8 @@ module Pacbio
     class SampleWrapper
       include ActiveModel::Model
 
-      SAMPLE_ATTRIBUTES = %i[external_id name species].freeze
-      REQUEST_ATTRIBUTES = %i[
-        library_type estimate_of_gb_required number_of_smrt_cells cost_code
-        external_study_id
-      ].freeze
+      SAMPLE_ATTRIBUTES = Pacbio.sample_attributes.freeze
+      REQUEST_ATTRIBUTES = Pacbio.request_attributes.freeze
 
       attr_reader :sample, :well, :pacbio_request, :request, :container_material
 
