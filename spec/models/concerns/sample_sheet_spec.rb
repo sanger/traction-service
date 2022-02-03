@@ -96,26 +96,32 @@ RSpec.describe SampleSheet do
     end
   end
 
-  context 'any_libraries_tagged?' do
+  context 'show_row_per_sample?' do
     it 'returns true if all well libraries are tagged' do
-      expect(well.any_libraries_tagged?).to be true
+      expect(well.show_row_per_sample?).to be true
     end
 
     it 'returns false if there is one library and it has no tag' do
-      pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged ))
+      pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged))
       empty_well.pools << pool
-      expect(empty_well.any_libraries_tagged?).to be false
+      expect(empty_well.show_row_per_sample?).to be false
     end
 
     it 'returns true if there is only one library and it has a tag' do
       pool = create(:pacbio_pool)
       empty_well.pools << pool
-      expect(empty_well.any_libraries_tagged?).to be true
+      expect(empty_well.show_row_per_sample?).to be true
     end
 
     it 'returns true if at least one of the well libraries are tagged' do
       well.pools.first.libraries << create(:pacbio_library_without_tag)
-      expect(well.any_libraries_tagged?).to be true
+      expect(well.show_row_per_sample?).to be true
+    end
+
+    it 'returns nothing if the libraries are tagged with a :hidden tag set (egh. IsoSeq)' do
+      pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 3, :hidden_tagged))
+      empty_well.pools << pool
+      expect(empty_well.show_row_per_sample?).to be false
     end
   end
 

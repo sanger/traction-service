@@ -19,7 +19,7 @@ class CsvGenerator
         # add well header row
         csv << csv_data(well: well, row_type: :well)
 
-        next unless well.any_libraries_tagged?
+        next unless well.show_row_per_sample?
 
         csv_sample_rows(well).each { |sample_row| csv << sample_row }
       end
@@ -120,8 +120,8 @@ class CsvGenerator
     when :model
       evaluate_method_chain(obj, field[:value].split('.'))
     when :constant
-      evaluate_method_chain(field[:value].split('.').first.constantize,
-                            field[:value].split('.')[1..])
+      const_obj, *methods = field[:value].split('.')
+      evaluate_method_chain(const_obj.constantize, methods)
     end
   end
 
