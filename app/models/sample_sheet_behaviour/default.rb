@@ -20,4 +20,8 @@ class SampleSheetBehaviour::Default
   def library_sample_name(library)
     library.request.sample_name || ''
   end
+
+  def show_row_per_sample?(libraries)
+    libraries.any?(&:tag_id?)
+  end
 end
