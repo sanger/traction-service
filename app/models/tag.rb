@@ -7,7 +7,7 @@ class Tag < ApplicationRecord
 
   delegate :name, to: :tag_set, prefix: :tag_set, allow_nil: true
 
-  validates :oligo, :group_id, presence: true
+  validates :oligo, :group_id, :tag_set_id, presence: true
 
   validates :oligo, uniqueness: { scope: :tag_set_id,
                                   message: 'oligo should only appear once within set',
