@@ -24,4 +24,8 @@ class SampleSheetBehaviour::Hidden < SampleSheetBehaviour::Default
   def library_sample_name(_library)
     ''
   end
+
+  def show_row_per_sample?(_libraries)
+    false
+  end
 end

@@ -18,8 +18,8 @@ module SampleSheet
     end
 
     # Determines rendering of a row-per sample
-    def any_libraries_tagged?
-      libraries.any?(&:tag_id?)
+    def show_row_per_sample?
+      sample_sheet_behaviour.show_row_per_sample?(libraries)
     end
 
     # Sample Name field
