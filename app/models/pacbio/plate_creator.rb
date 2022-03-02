@@ -10,7 +10,8 @@ module Pacbio
   # we could use the respective models but that would cause more complexity
   # It is done in a cascading manner
   # Assumptions are:
-  #  *the plate will probably have an external barcode to map to the LIMS it has originated from
+  #  *the plate will probably have an external barcode to map to the LIMS it has
+  #   originated from
   #  *if no barcode then a TRAC one is generated
   #  *the plate will have one or more wells
   #  *each well can have a sample but it is not required
@@ -22,13 +23,13 @@ module Pacbio
     validate :check_plates
 
     def initialize(attributes = {})
-      @plate_wrappers = attributes[:plates].try(:collect) { |plate| PlateWrapper.new(plate) }
+      @plate_wrappers = attributes[:plates].try(:map) { |plate| PlateWrapper.new(plate) } || []
     end
 
-    # Previously checking validity and then saving but this causes problems because
-    # things are validated several times so it is inefficient
-    # So do save bang and if anything is not valid it will raise an error
-    # We can then collect those errors on rescue
+    # Previously checking validity and then saving but this causes problems
+    # because things are validated several times so it is inefficient So do save
+    # bang and if anything is not valid it will raise an error We can then
+    # collect those errors on rescue
     # @return [Boolean] was everything saved correctly
     def save!
       ActiveRecord::Base.transaction do
@@ -37,10 +38,15 @@ module Pacbio
         plate_wrappers.collect(&:save!)
         true
       end
-    rescue ActiveRecord::RecordInvalid
-      # we need to cascade the errors up to the current error object
-      # otherwise it will look like there are no errors
+    rescue ActiveRecord::RecordInvalid => e
+      # we need to cascade the errors up to the current error object otherwise
+      # it will look like there are no errors
+      Rails.logger.error(e.message)
       check_plates
+      # If we've not managed to detect our error through the standard validation
+      # then we've hit something slightly unexpected. Let's extract our original
+      # exception and use that.
+      errors.add(:base, e.message) if errors.empty?
       false
     end
 
@@ -50,10 +56,7 @@ module Pacbio
     end
 
     def check_plates
-      if plate_wrappers.empty?
-        errors.add(:plates, 'should be present')
-        return
-      end
+      errors.add(:plates, 'should be present and an array') if plate_wrappers.empty?
 
       plate_wrappers.each do |plate_wrapper|
         next if plate_wrapper.valid?
@@ -118,8 +121,8 @@ module Pacbio
     # WellWrapper
     # creates a standard Well
     # creates an array of samples which are instances of SampleWrapper
-    # the wells will generally contain a single untagged sample but the LIMS
-    # has the potential for multiple tagged samples in a well
+    # the wells will generally contain a single untagged sample but the LIMS has
+    # the potential for multiple tagged samples in a well
     # Wells can be empty
 
     # For a well wrapper to be valid:
@@ -177,23 +180,25 @@ module Pacbio
 
     # SampleWrapper
     # This is the biggie
-    # A sample can be sequenced multiple times so the sample is fixed and read only
-    # and it can have multiple requests so
+    # A sample can be sequenced multiple times so the sample is fixed and read
+    # only and it can have multiple requests so
     # we will either find or create the sample
     # we will then create a Pacbio::Request
     # This is then wrapped in an outer Request made up of the Sample and
     # the Pacbio::Request because the container is used by all pipelines
-    # Finally we create a link (Container::Material) between the well (container)
-    # and the material (request)
-    # Because samples in each pipeline can exist in various containers e.g. Tube or Well
+    # Finally we create a link (Container::Material) between the well
+    # (container) and the material (request)
+    # Because samples in each pipeline can exist in various containers e.g. Tube
+    # or Well
 
     # For a sample wrapper to be valid:
     #  *the sample needs to be valid
     #  *the request needs to be valid
     #  *the container (well) needs to be valid
-    # we don't need to check the request as it would duplicate the sample and pacbio_request checks
-    # we don't need to check the container material as the container is checked in the parent and
-    # the material is the pacbio_request
+    # we don't need to check the request as it would duplicate the sample and
+    # pacbio_request checks
+    # we don't need to check the container material as the container is checked
+    # in the parent and the material is the pacbio_request
     class SampleWrapper
       include ActiveModel::Model
 
