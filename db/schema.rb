@@ -10,11 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_07_145503) do
+ActiveRecord::Schema.define(version: 2022_03_03_085155) do
 
   create_table "container_materials", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "container_type"
-    t.bigint "container_id"
+    t.string "container_type", null: false
+    t.bigint "container_id", null: false
     t.string "material_type"
     t.bigint "material_id"
     t.datetime "created_at", precision: 6, null: false
