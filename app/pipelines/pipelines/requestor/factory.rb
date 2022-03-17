@@ -49,9 +49,14 @@ module Pipelines
       # checks if the factory is valid, if so will save all of the requests
       # @return [Boolean] if the requests have been successfully saved or not
       def save
-        return false unless valid?
+        ApplicationRecord.transaction do
+          return false unless valid?
 
-        @request_wrappers.all?(&:save)
+          @request_wrappers.all?(&:save)
+        end
+      rescue StandardError => e
+        errors.add(:base, e.message)
+        false
       end
 
       # Takes each set of request attributes:
@@ -88,7 +93,7 @@ module Pipelines
         end
 
         def save
-          request.save && container_material.save
+          tube.save! && request.save! && container_material.save!
         end
 
         def sample=(sample_attributes)
@@ -100,7 +105,7 @@ module Pipelines
         end
 
         def tube=(tube_attributes)
-          @tube = Tube.new(tube_attributes)
+          @tube = Tube.find_or_initialize_by(tube_attributes)
         end
       end
 
