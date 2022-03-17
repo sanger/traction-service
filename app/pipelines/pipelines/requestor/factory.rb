@@ -74,6 +74,10 @@ module Pipelines
 
       # Handles the creation of the request, containers and samples for each request
       # passed to the factory
+      # Note: This approach will have some issues with scalability if large numbers of tubes
+      # are imported at once, as we hit the database per tube/sample.
+      # However, there is a need to update this to a more resource based solution,
+      # so we'll defer this problem for now
       class RequestWrapper
         include ActiveModel::Model
 
