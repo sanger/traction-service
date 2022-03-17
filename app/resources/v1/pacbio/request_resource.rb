@@ -8,6 +8,7 @@ module V1
 
       has_one :well
       has_one :plate
+      has_one :tube
     end
   end
 end
