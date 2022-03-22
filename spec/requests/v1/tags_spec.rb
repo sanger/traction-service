@@ -77,7 +77,7 @@ RSpec.describe 'TagsController', type: :request do
 
         it 'has an error message' do
           post v1_tags_path, params: body, headers: json_api_headers
-          expect(JSON.parse(response.body)["data"]).to include("errors" => {"group_id"=>["can't be blank"], "oligo"=>["can't be blank"], "tag_set"=>["must exist"], "tag_set_id"=>["can't be blank"]})
+          expect(JSON.parse(response.body)["data"]).to include("errors" => {"group_id"=>["can't be blank"], "oligo"=>["can't be blank"], "tag_set"=>["must exist"]})
         end
       end
     end
