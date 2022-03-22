@@ -49,9 +49,14 @@ module Pipelines
       # checks if the factory is valid, if so will save all of the requests
       # @return [Boolean] if the requests have been successfully saved or not
       def save
-        return false unless valid?
+        ApplicationRecord.transaction do
+          return false unless valid?
 
-        @request_wrappers.all?(&:save)
+          @request_wrappers.all?(&:save)
+        end
+      rescue StandardError => e
+        errors.add(:base, e.message)
+        false
       end
 
       # Takes each set of request attributes:
@@ -69,6 +74,10 @@ module Pipelines
 
       # Handles the creation of the request, containers and samples for each request
       # passed to the factory
+      # Note: This approach will have some issues with scalability if large numbers of tubes
+      # are imported at once, as we hit the database per tube/sample.
+      # However, there is a need to update this to a more resource based solution,
+      # so we'll defer this problem for now
       class RequestWrapper
         include ActiveModel::Model
 
@@ -88,7 +97,7 @@ module Pipelines
         end
 
         def save
-          request.save && container_material.save
+          tube.save! && request.save! && container_material.save!
         end
 
         def sample=(sample_attributes)
@@ -100,7 +109,7 @@ module Pipelines
         end
 
         def tube=(tube_attributes)
-          @tube = Tube.new(tube_attributes)
+          @tube = Tube.find_or_initialize_by(tube_attributes)
         end
       end
 

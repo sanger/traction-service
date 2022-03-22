@@ -12,7 +12,7 @@ RSpec.describe Pacbio::PlateCreator, type: :model, pacbio: true do
     let(:plate_creator) { Pacbio::PlateCreator.new({ plates: [external_plate]})}
 
     context 'plate wrapper' do
-      
+
       let(:plate_wrapper) { plate_creator.plate_wrappers.first}
 
       it 'will have a barcode' do
@@ -24,7 +24,7 @@ RSpec.describe Pacbio::PlateCreator, type: :model, pacbio: true do
       end
 
       context 'well wrapper' do
-        
+
         let(:well_wrapper) { plate_wrapper.well_wrappers.first}
 
         it 'will have a position' do
@@ -36,7 +36,7 @@ RSpec.describe Pacbio::PlateCreator, type: :model, pacbio: true do
         end
 
         context 'sample wrapper' do
-        
+
           let(:sample_wrapper) { well_wrapper.sample_wrappers.first }
           let(:original_sample) { external_plate[:wells].first[:samples].first }
 
@@ -76,7 +76,7 @@ RSpec.describe Pacbio::PlateCreator, type: :model, pacbio: true do
   end
 
   context '#valid' do
-    
+
     context 'sample wrapper' do
 
       it 'will not be valid without a valid sample' do
@@ -92,11 +92,11 @@ RSpec.describe Pacbio::PlateCreator, type: :model, pacbio: true do
         expect(sample_wrapper).to_not be_valid
         expect(sample_wrapper.errors.full_messages).to include("Sample external study can't be blank")
       end
-      
+
     end
 
     context 'well wrapper' do
-      
+
       it 'will not be valid if the well is not valid' do
         attributes = attributes_for(:well).except(:position).merge(plate: build(:plate))
         well_wrapper = Pacbio::PlateCreator::WellWrapper.new(attributes)
@@ -119,7 +119,7 @@ RSpec.describe Pacbio::PlateCreator, type: :model, pacbio: true do
         expect(plate_wrapper).to_not be_valid
         expect(plate_wrapper.errors.full_messages).to include("Wells should be present")
       end
-     
+
       it 'will not be valid if the wells are not valid' do
         attributes = attributes_for(:plate).merge(wells: [attributes_for(:well).except(:position)])
         plate_wrapper = Pacbio::PlateCreator::PlateWrapper.new(attributes)
@@ -132,9 +132,9 @@ RSpec.describe Pacbio::PlateCreator, type: :model, pacbio: true do
       it 'will not be valid if there are no plates' do
         plate_creator = Pacbio::PlateCreator.new(plates: [])
         expect(plate_creator).to_not be_valid
-        expect(plate_creator.errors.full_messages).to include("Plates should be present")
+        expect(plate_creator.errors.full_messages).to include("Plates should be present and an array")
       end
-     
+
       it 'will not be valid if there are no wells' do
         attributes = attributes_for(:plate).merge(wells: [attributes_for(:well).except(:position)])
         plate_creator = Pacbio::PlateCreator.new(plates: [attributes])
@@ -152,13 +152,13 @@ RSpec.describe Pacbio::PlateCreator, type: :model, pacbio: true do
       before(:each) do
         plate_creator.save!
       end
-      
+
       it 'will create a plate' do
         plate_creator.plate_wrappers.each do |plate_wrapper|
           expect(plate_wrapper.plate).to be_persisted
         end
       end
-  
+
       it 'will create some wells' do
         plate_wrapper = plate_creator.plate_wrappers.first
         plate_wrapper.well_wrappers.each do |well_wrapper|
@@ -166,7 +166,7 @@ RSpec.describe Pacbio::PlateCreator, type: :model, pacbio: true do
         end
 
       end
-  
+
       it 'will create some samples, requests and and container_materials' do
         well_wrapper = plate_creator.plate_wrappers.first.well_wrappers.first
         well_wrapper.sample_wrappers.each do |sample_wrapper|
@@ -175,9 +175,9 @@ RSpec.describe Pacbio::PlateCreator, type: :model, pacbio: true do
           expect(sample_wrapper.request).to be_persisted
           expect(sample_wrapper.container_material).to be_persisted
         end
-        
+
       end
-  
+
       it 'the requests will be linked to the samples and containers (sanity check)' do
         sample_wrapper = plate_creator.plate_wrappers.first.well_wrappers.first.sample_wrappers.first
         expect(sample_wrapper.well.materials.first).to eq(sample_wrapper.pacbio_request)
@@ -203,19 +203,19 @@ RSpec.describe Pacbio::PlateCreator, type: :model, pacbio: true do
           external_plate[:wells] << attributes_for(:well).except(:position)
           external_plate
         end
-        
+
         let(:plate_creator) { Pacbio::PlateCreator.new({ plates: [invalid_plate]})}
-  
+
         it 'should not be valid' do
           expect(plate_creator).to_not be_valid
         end
 
         it 'should not save anything' do
           plate_creator.save!
-  
+
           plate_creator.plate_wrappers.each do |plate_wrapper|
             expect(plate_wrapper.plate).to_not be_persisted
-  
+
             plate_wrapper.well_wrappers.each do |well_wrapper|
               expect(well_wrapper.plate).to_not be_persisted
               next if well_wrapper.sample_wrappers.nil?
@@ -227,13 +227,13 @@ RSpec.describe Pacbio::PlateCreator, type: :model, pacbio: true do
               end
             end
           end
-  
+
         end
-  
+
       end
 
     end
-  
+
   end
 
 end

@@ -5,8 +5,8 @@
 # This means that a material can belong to more than one container
 # And a container can have more than one type of material
 class ContainerMaterial < ApplicationRecord
-  belongs_to :container, polymorphic: true
-  belongs_to :material, polymorphic: true
+  belongs_to :container, polymorphic: true, optional: false
+  belongs_to :material, polymorphic: true, optional: false
 
   def self.includes_args(except = nil)
     args = []

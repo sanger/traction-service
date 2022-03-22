@@ -156,7 +156,7 @@ RSpec.describe 'PlatesController', type: :request do
       it 'has an error message' do
         post v1_pacbio_plates_path, params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['errors']).to be_present
+        expect(json['errors']).to be_present
       end
 
     end
