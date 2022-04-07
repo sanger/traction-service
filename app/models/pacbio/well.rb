@@ -32,6 +32,9 @@ module Pacbio
     validates :movie_time,
               numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 }
     validates :pre_extension_time, numericality: { only_integer: true }, allow_blank: true
+    validates :loading_target_p1_plus_p2,
+              allow_blank: true,
+              numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
 
     def tag_set
       tag_sets.first
@@ -85,6 +88,10 @@ module Pacbio
 
     def collection?
       true
+    end
+
+    def adaptive_loading_check
+      loading_target_p1_plus_p2.present?
     end
   end
 end
