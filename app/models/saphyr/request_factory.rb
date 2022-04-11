@@ -3,7 +3,6 @@
 module Saphyr
   # RequestFactory
   class RequestFactory
-
     include ActiveModel::Model
 
     validate :check_requests
@@ -13,7 +12,7 @@ module Saphyr
     def initialize(attributes = [])
       build_requests(attributes)
     end
-    
+
     # @return [Array of ActiveRecord Requests]
     def requests
       @request_wrappers.collect(&:request)
