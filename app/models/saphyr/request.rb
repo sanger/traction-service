@@ -8,9 +8,27 @@ module Saphyr
   # A saphyr request can have many libraries
   # A saphyr request can have one sample
   class Request < ApplicationRecord
-    include Pipelines::Requestor::Model
+
+    include TubeMaterial
+    include WellMaterial
 
     has_many :libraries, class_name: 'Saphyr::Library', foreign_key: :saphyr_request_id,
                          dependent: :nullify, inverse_of: :request
+
+    has_one :request, class_name: '::Request', as: :requestable, dependent: :nullify
+    has_one :sample, through: :request
+
+    delegate :name, to: :sample, prefix: :sample
+    delegate :species, to: :sample, prefix: :sample
+
+    validates(*to_s.deconstantize.constantize.required_request_attributes, presence: true)
+
+    def container
+      tube || well
+    end
+
+    def source_identifier
+      container&.identifier
+    end
   end
 end
