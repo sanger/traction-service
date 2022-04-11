@@ -8,7 +8,6 @@ module Saphyr
   # A saphyr request can have many libraries
   # A saphyr request can have one sample
   class Request < ApplicationRecord
-
     include TubeMaterial
     include WellMaterial
 
