@@ -376,7 +376,7 @@ namespace :tags do
       ].each do |tag_attributes|
         set.tags.find_or_create_by!(tag_attributes)
       end
-      puts '-> Nextera_UD_Index_PlateA'
+      puts '-> Nextera_UD_Index_PlateA tags successfully created'
     end
 
     desc 'Create ont tags for 96 samples (dummy not prod)'
