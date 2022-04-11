@@ -4,7 +4,6 @@ module V1
   module Saphyr
     # RequestsController
     class RequestsController < ApplicationController
-
       # create action for the pipeline requests
       # uses the request factory
       def create
