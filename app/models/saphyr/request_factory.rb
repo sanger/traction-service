@@ -5,7 +5,7 @@ module Saphyr
   class RequestFactory
     include ActiveModel::Model
 
-    validate :check_requests
+    validate :check_requests, :check_requestables
 
     # @param attributes [Array of ActionController::Parameters] list of request parameters
     # @return [Array of ActiveRecord Requests]
@@ -102,6 +102,18 @@ module Saphyr
         next if request.valid?
 
         request.errors.each do |k, v|
+          errors.add(k, v)
+        end
+      end
+    end
+
+    # Validates the requestables:
+    # * checks each requestable and if it is not valid adds the errors to the factory
+    def check_requestables
+      requestables.each do |requestable|
+        next if requestable.valid?
+
+        requestable.errors.each do |k, v|
           errors.add(k, v)
         end
       end

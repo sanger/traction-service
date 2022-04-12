@@ -18,7 +18,7 @@ RSpec.describe Saphyr::RequestFactory, type: :model, saphyr: true do
     end
 
     it 'produces error messages if any of the resources are not valid' do
-      attributes << {}
+      attributes << { request: {}, sample: {}}
       factory = Saphyr::RequestFactory.new(attributes)
       expect(factory).to_not be_valid
       expect(factory.errors.full_messages).to_not be_empty
@@ -68,6 +68,16 @@ RSpec.describe Saphyr::RequestFactory, type: :model, saphyr: true do
       expect(factory).not_to be_valid
       expect(factory.save).to be_falsey
       expect(Tube.all.count).to eq(0)
+    end
+
+    it 'adds requestables validation message to errors if attributes are not valid' do
+      attributes << {
+        request: {},
+        sample: attributes_for(:sample)
+      }
+      factory = Saphyr::RequestFactory.new(attributes)
+      expect(factory).not_to be_valid
+      expect(factory.errors.messages).to include({:requestable=>["is invalid"], :external_study_id=>["can't be blank"]})
     end
   end
 
