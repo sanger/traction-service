@@ -28,6 +28,10 @@ module Pacbio
       end
     end
 
+    def sequencing_plates
+      wells&.collect(&:plate)
+    end
+
     private
 
     def update_library(attributes)
