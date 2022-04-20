@@ -259,6 +259,22 @@ default: &default
             for:
               - :well
             with: :well
+        Loading Target:
+          type: :model
+          value: loading_target_p1_plus_p2
+          populate:
+            for:
+              - :well
+            with: :well
+          populate_on_row_type: :well
+        Adaptive Loading:
+          type: :model
+          value: adaptive_loading_check
+          populate:
+            for:
+              - :well
+            with: :well
+          populate_on_row_type: :well
   ont:
     message:
       lims: *lims

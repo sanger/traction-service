@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_03_085155) do
+ActiveRecord::Schema.define(version: 2022_04_07_104659) do
 
   create_table "container_materials", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "container_type", null: false
@@ -163,6 +163,7 @@ ActiveRecord::Schema.define(version: 2022_03_03_085155) do
     t.integer "generate_hifi"
     t.string "ccs_analysis_output"
     t.string "binding_kit_box_barcode"
+    t.decimal "loading_target_p1_plus_p2", precision: 3, scale: 2
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
 
