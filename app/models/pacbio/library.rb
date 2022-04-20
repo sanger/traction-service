@@ -39,5 +39,7 @@ module Pacbio
     def sample_sheet_behaviour
       SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour || :untagged)
     end
+
+    delegate :sequencing_plates, to: :pool
   end
 end
