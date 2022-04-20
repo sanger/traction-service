@@ -4,7 +4,6 @@ module V1
   module Pacbio
     # RequestsController
     class RequestsController < ApplicationController
-
       # @return [Constant] the ActiveRecord model for requests for the pipeline
       #  e.g. +request_model('Pacbio') = Pacbio::Request+
       def self.request_model
@@ -29,7 +28,7 @@ module V1
           render json: body, status: :created
         else
           render json: { data: { errors: @request_factory.errors.messages } },
-                  status: :unprocessable_entity
+                 status: :unprocessable_entity
         end
       end
 
@@ -50,7 +49,7 @@ module V1
         @body ||= serialize_array(resources)
       end
 
-       # Finds request based on the id, used by destroy or edit
+      # Finds request based on the id, used by destroy or edit
       # @return [ActiveRecord Object] e.g. +Pacbio::Request.find(1)
       def pipeline_request
         @pipeline_request = (params[:id] && self.class.request_model.find_by(id: params[:id]))
