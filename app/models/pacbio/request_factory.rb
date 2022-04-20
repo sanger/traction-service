@@ -7,7 +7,7 @@ module Pacbio
 
     validate :check_requests
 
-      # @return [Constant] the ActiveRecord model for requests for the pipeline
+    # @return [Constant] the ActiveRecord model for requests for the pipeline
     #  e.g. +request_model('Pacbio') = Pacbio::Request+
     def self.request_model
       @request_model ||= Pacbio::Request
@@ -115,5 +115,3 @@ module Pacbio
     end
   end
 end
-
-
