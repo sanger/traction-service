@@ -15,7 +15,7 @@ module V1
       attribute :source_identifier, readonly: true
 
       # When a pool is updated and it is attached to a run we need
-      # to resend the data to the warehouse
+      # to republish the messages for the run
       after_update :publish_messages
 
       def library_attributes=(library_parameters)
