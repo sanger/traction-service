@@ -3,24 +3,9 @@
 module V1
   module Pacbio
     # RequestsController
+    # TODO: different actions are in different places across controllers
+    # needs to be a rethink to standardise all controllers and resources
     class RequestsController < ApplicationController
-      # @return [Constant] the ActiveRecord model for requests for the pipeline
-      #  e.g. +request_model('Pacbio') = Pacbio::Request+
-      def self.request_model
-        @request_model ||= ::Pacbio::Request
-      end
-
-      # @return [Object] new request factory initialized with request params
-      def self.request_factory_model
-        @request_factory_model ||= ::Pacbio::RequestFactory
-      end
-
-      # @return [Constant] the JSON API resource model for requests for the pipeline
-      #  e.g. +resource_model('V1::Pacbio') = Pacbio::RequestResource+
-      def self.resource_model
-        @resource_model ||= Pacbio::RequestResource
-      end
-
       # create action for the pipeline requests
       # uses the request factory
       def create
@@ -34,13 +19,13 @@ module V1
 
       # @return [Object] new request factory initialized with request params
       def request_factory
-        @request_factory ||= self.class.request_factory_model.new(params_names)
+        @request_factory ||= ::Pacbio::RequestFactory.new(params_names)
       end
 
       # @return [Array] an array of request resources built on tne requestables
       def resources
         @resources ||= request_factory.requestables.map do |request|
-          self.class.resource_model.new(request, nil)
+          Pacbio::RequestResource.new(request, nil)
         end
       end
 
@@ -52,12 +37,11 @@ module V1
       # Finds request based on the id, used by destroy or edit
       # @return [ActiveRecord Object] e.g. +Pacbio::Request.find(1)
       def pipeline_request
-        @pipeline_request = (params[:id] && self.class.request_model.find_by(id: params[:id]))
+        @pipeline_request = (params[:id] && ::Pacbio::Request.find_by(id: params[:id]))
       end
 
       # destroy action for the pipeline request
       def destroy
-        # binding.pry
         pipeline_request.destroy
         head :no_content
       rescue StandardError => e
