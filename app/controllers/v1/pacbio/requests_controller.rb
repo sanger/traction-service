@@ -64,7 +64,6 @@ module V1
       def pipeline_request
         @pipeline_request = (params[:id] && ::Pacbio::Request.find_by(id: params[:id]))
       end
-
     end
   end
 end
