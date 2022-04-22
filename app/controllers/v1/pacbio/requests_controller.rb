@@ -17,6 +17,31 @@ module V1
         end
       end
 
+      # destroy action for the pipeline request
+      def destroy
+        pipeline_request.destroy
+        head :no_content
+      rescue StandardError => e
+        render json: { data: { errors: e.message } }, status: :unprocessable_entity
+      end
+
+      # Permitted parameters for create and edit actions
+      # @return [Hash] - hash of permitted parameters
+      def params_names
+        params.require(:data).require(:attributes)
+              .permit(
+                requests: [
+                  {
+                    request: ::Pacbio.request_attributes,
+                    sample: %i[name external_id species],
+                    tube: :barcode
+                  }
+                ]
+              ).to_h[:requests]
+      end
+
+      private
+
       # @return [Object] new request factory initialized with request params
       def request_factory
         @request_factory ||= ::Pacbio::RequestFactory.new(params_names)
@@ -40,28 +65,6 @@ module V1
         @pipeline_request = (params[:id] && ::Pacbio::Request.find_by(id: params[:id]))
       end
 
-      # destroy action for the pipeline request
-      def destroy
-        pipeline_request.destroy
-        head :no_content
-      rescue StandardError => e
-        render json: { data: { errors: e.message } }, status: :unprocessable_entity
-      end
-
-      # Permitted parameters for create and edit actions
-      # @return [Hash] - hash of permitted parameters
-      def params_names
-        params.require(:data).require(:attributes)
-              .permit(
-                requests: [
-                  {
-                    request: ::Pacbio.request_attributes,
-                    sample: %i[name external_id species],
-                    tube: :barcode
-                  }
-                ]
-              ).to_h[:requests]
-      end
     end
   end
 end
