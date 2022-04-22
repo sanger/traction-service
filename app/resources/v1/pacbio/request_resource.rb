@@ -14,7 +14,7 @@ module V1
       has_one :tube
 
       # When a request is updated and it is attached to a run we need
-      # to resend the data to the warehouse
+      # to republish the messages for the run
       after_update :publish_messages
 
       def barcode
