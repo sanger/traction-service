@@ -28,6 +28,7 @@ module Pacbio
       end
     end
 
+    # @return [Array] of Plates attached to a sequencing run
     def sequencing_plates
       wells&.collect(&:plate)
     end
