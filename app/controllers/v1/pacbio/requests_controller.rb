@@ -3,8 +3,7 @@
 module V1
   module Pacbio
     # RequestsController
-    # TODO: different actions are in different places across controllers
-    # needs to be a rethink to standardise all controllers and resources
+    # TODO: Move to request resource as per pool
     class RequestsController < ApplicationController
       # create action for the pipeline requests
       # uses the request factory
