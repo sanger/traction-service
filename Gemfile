@@ -8,9 +8,6 @@ ruby '2.7.3'
 gem 'bootsnap', '>= 1.1.0', require: false # Reduces boot times through caching
 gem 'bunny'
 gem 'exception_notification'
-gem 'graphql'
-gem 'graphql-client'
-gem 'graphql-docs'
 # 0.10.5 Results in MySQL syntax error on several tests when run against a MySQL
 # There is a 'monkey patch' for this in config/intializers/jsonapi_resources:15-63
 gem 'jsonapi-resources'
