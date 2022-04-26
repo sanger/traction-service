@@ -30,31 +30,12 @@ RSpec.describe Plate, type: :model do
     expect(sorted_positions).to eq(expected_positions)
   end
 
-  context 'resolved' do
-    let!(:pacbio_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'pacbio')}
-    let!(:ont_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'ont')}
-
-    it 'only retrieves ONT plates' do
-      expect(Plate.resolved_query).to eq(ont_plates)
-    end
-
-    it 'returns expected includes_args' do
-      expect(Plate.includes_args.flat_map(&:keys)).to contain_exactly(:wells)
-    end
-
-    it 'removes keys from includes_args' do
-      expect(Plate.includes_args(:wells).flat_map(&:keys)).to_not include(:wells)
-    end
-  end
-
   context 'by pipeline' do
 
     let!(:pacbio_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'pacbio')}
-    let!(:ont_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'ont')}
     
     it 'returns the correct plates' do
       expect(Plate.by_pipeline(:pacbio).length).to eq(5)
-      expect(Plate.by_pipeline(:ont).length).to eq(5)
     end
   end
 

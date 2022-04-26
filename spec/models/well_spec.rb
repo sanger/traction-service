@@ -28,18 +28,4 @@ RSpec.describe Well, type: :model do
     expect(well.column).to eq(12)
   end
 
-  context 'resolved' do
-    it 'returns expected includes_args' do
-      expect(Well.includes_args.flat_map(&:keys)).to contain_exactly(:container_materials, :plate)
-    end
-
-    it 'removes plate from includes_args' do
-      expect(Well.includes_args(:plate).flat_map(&:keys)).to_not include(:plate)
-    end
-
-    it 'removes container_materials from includes_args' do
-      expect(Well.includes_args(:container_materials).flat_map(&:keys))
-        .to_not include(:container_materials)
-    end
-  end
 end

@@ -1,8 +1,18 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require './spec/support/read_only.rb'
 
-RSpec.describe Ont::Library, type: :model do
+RSpec.describe Ont::Library, type: :model, ont: true do
+
+  before(:all) do
+    set_read_only([Ont::Library, Ont::Request], false)
+  end
+
+  after(:all) do
+    set_read_only([Ont::Library, Ont::Request], true)
+  end
+
   context 'material' do
     let(:material_model) { :ont_library }
     it_behaves_like 'material'
@@ -87,17 +97,4 @@ RSpec.describe Ont::Library, type: :model do
     end
   end
 
-  context 'resolved' do
-    it 'returns expected includes_args' do
-      expect(Ont::Library.includes_args.flat_map(&:keys)).to contain_exactly(:flowcell, :requests)
-    end
-
-    it 'removes requests from includes_args' do
-      expect(Ont::Library.includes_args(:requests).flat_map(&:keys)).to_not include(:requests)
-    end
-
-    it 'removes flowcell from includes_args' do
-      expect(Ont::Library.includes_args(:flowcell).flat_map(&:keys)).to_not include(:flowcell)
-    end
-  end
 end

@@ -4,10 +4,6 @@ FactoryBot.define do
     sequence(:uuid) { |n| n }
     pipeline { :pacbio }
 
-    factory :ont_tag_set do
-      pipeline { :ont }
-    end
-
     factory :hidden_tag_set do
       sample_sheet_behaviour { :hidden }
     end

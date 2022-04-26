@@ -16,8 +16,4 @@ class Tag < ApplicationRecord
   validates :group_id, uniqueness: { scope: :tag_set_id,
                                      message: 'group id should only appear once within set',
                                      case_sensitive: false }
-
-  def self.includes_args
-    :tag_set
-  end
 end
