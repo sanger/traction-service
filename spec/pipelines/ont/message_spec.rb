@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require './spec/support/read_only.rb'
 
 RSpec.describe 'Ont', type: :model, ont: true do
   let(:config)            { Pipelines.configure(Pipelines.load_yaml) }
@@ -8,6 +9,14 @@ RSpec.describe 'Ont', type: :model, ont: true do
   let(:run)               { create(:ont_run_with_flowcells) }
   let(:message) do
     Messages::Message.new(object: run, configuration: pipeline_config.message)
+  end
+
+  before(:all) do
+    set_read_only([Ont::Flowcell, Ont::Library, Ont::Request, Ont::Run], false)
+  end
+
+  after(:all) do
+    set_read_only([Ont::Flowcell, Ont::Library, Ont::Request, Ont::Run], true)
   end
 
   it 'should have a lims' do

@@ -14,12 +14,9 @@ module Ont
               uniqueness: { scope: :ont_run_id,
                             message: 'should only appear once within run' }
 
-    def self.includes_args(except = nil)
-      args = []
-      args << { library: Ont::Library.includes_args(:flowcell) } unless except == :library
-      args << { run: Ont::Run.includes_args(:flowcells) } unless except == :run
-
-      args
+    # Make table. We don't want anything pushing to it.
+    def readonly?
+      true
     end
   end
 end

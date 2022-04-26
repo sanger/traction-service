@@ -5,7 +5,6 @@ RSpec.describe 'PlatesController', type: :request do
   context '#get' do
 
     let!(:pacbio_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'pacbio')}
-    let!(:other_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'ont')}
 
     it 'returns a list of plates' do
       get v1_pacbio_plates_path, headers: json_api_headers

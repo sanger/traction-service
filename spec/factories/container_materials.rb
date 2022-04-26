@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :container_material do
     container { create(:well) }
-    material { create(:ont_request) }
+    material { create(:pacbio_request) }
   end
 end

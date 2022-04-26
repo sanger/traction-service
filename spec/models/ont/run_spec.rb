@@ -1,8 +1,18 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require './spec/support/read_only.rb'
 
 RSpec.describe Ont::Run, type: :model, ont: true do
+
+  before(:all) do
+    set_read_only(Ont::Run, false)
+  end
+
+  after(:all) do
+    set_read_only(Ont::Run, true)
+  end
+
   context 'on creation' do
     it 'state is pending' do
       run = create(:ont_run)
@@ -83,13 +93,4 @@ RSpec.describe Ont::Run, type: :model, ont: true do
     end
   end
 
-  context 'resolved' do
-    it 'returns expected includes_args' do
-      expect(Ont::Run.includes_args.flat_map(&:keys)).to contain_exactly(:flowcells)
-    end
-
-    it 'removes keys from includes_args' do
-      expect(Ont::Run.includes_args(:flowcells).flat_map(&:keys)).to_not include(:flowcells)
-    end
-  end
 end

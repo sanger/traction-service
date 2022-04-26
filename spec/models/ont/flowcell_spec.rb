@@ -1,8 +1,18 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require './spec/support/read_only.rb'
 
 RSpec.describe Ont::Flowcell, type: :model, ont: true do
+
+  before(:all) do
+    set_read_only([Ont::Flowcell, Ont::Run, Ont::Request, Ont::Library], false)
+  end
+
+  after(:all) do
+    set_read_only([Ont::Flowcell, Ont::Run, Ont::Request, Ont::Library], true)
+  end
+
   context 'uuidable' do
     let(:uuidable_model) { :ont_flowcell }
     it_behaves_like 'uuidable'
@@ -46,17 +56,4 @@ RSpec.describe Ont::Flowcell, type: :model, ont: true do
     end
   end
 
-  context 'resolve' do
-    it 'returns expected includes_args' do
-      expect(Ont::Flowcell.includes_args.flat_map(&:keys)).to contain_exactly(:library, :run)
-    end
-
-    it 'removes run from includes_args' do
-      expect(Ont::Flowcell.includes_args(:run).flat_map(&:keys)).to_not include(:run)
-    end
-
-    it 'removes library from includes_args' do
-      expect(Ont::Flowcell.includes_args(:library).flat_map(&:keys)).to_not include(:library)
-    end
-  end
 end

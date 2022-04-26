@@ -49,17 +49,12 @@ RSpec.describe Tag, type: :model do
     num_taggables = 3
     tag = create(:tag_with_taggables, taggables_count: num_taggables)
     # sanity check
-    expect(Ont::Request.all.count).to eq(num_taggables)
+    expect(Pacbio::Request.all.count).to eq(num_taggables)
     # destroy the tag
     tag.destroy
     # test outcome
     expect(TagTaggable.all.count).to eq(0)
-    expect(Ont::Request.all.count).to eq(num_taggables)
+    expect(Pacbio::Request.all.count).to eq(num_taggables)
   end
 
-  context 'resolve' do
-    it 'returns expected includes_args' do
-      expect(Tag.includes_args).to eq(:tag_set)
-    end
-  end
 end
