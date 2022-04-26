@@ -44,7 +44,6 @@ module TractionService
 
     config.mailer = config_for(:mailer)
     config.pipelines = config_for(:pipelines)
-    config.env_constants = config_for(:env_constants)
 
     config.autoload_paths += %W{#{Rails.root}/app}
 
