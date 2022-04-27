@@ -22,7 +22,7 @@ Bundler.require(*Rails.groups)
 module TractionService
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 5.2
+    config.load_defaults 7.0
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
@@ -46,7 +46,6 @@ module TractionService
     config.pipelines = config_for(:pipelines)
 
     # Make it Rails 7 ready
-    config.autoloader = :zeitwerk
     config.autoload_paths += %W{#{Rails.root}/app}
     config.eager_load_paths += %W{#{Rails.root}/app}
 

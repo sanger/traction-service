@@ -125,8 +125,8 @@ module Pipelines
         requests.each do |request|
           next if request.valid?
 
-          request.errors.each do |k, v|
-            errors.add(k, v)
+          request.errors.each do |error|
+            errors.add(error.attribute, error.message)
           end
         end
       end
