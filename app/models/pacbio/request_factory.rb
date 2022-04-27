@@ -2,6 +2,10 @@
 
 module Pacbio
   # RequestFactory
+  # Factory - behaviour for pipeline requests factory
+  # It will take an array of request parameters and build an
+  # array of request and associated samples (if they dont exist)
+  # Also manages validation and saving
   class RequestFactory
     include ActiveModel::Model
 
