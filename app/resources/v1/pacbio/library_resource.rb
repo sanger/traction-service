@@ -23,11 +23,11 @@ module V1
       end
 
       def created_at
-        @model.created_at.to_s(:us)
+        @model.created_at.to_fs(:us)
       end
 
       def deactivated_at
-        @model&.deactivated_at&.to_s(:us)
+        @model&.deactivated_at&.to_fs(:us)
       end
     end
   end

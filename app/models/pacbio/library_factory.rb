@@ -49,8 +49,8 @@ module Pacbio
     def validate_library
       return if library.valid?
 
-      library.errors.each do |k, v|
-        errors.add(k, v)
+      library.errors.each do |error|
+        errors.add(error.attribute, error.message)
       end
     end
   end

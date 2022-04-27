@@ -32,9 +32,9 @@ module NestedValidation
       Array(value).each do |nested|
         next if nested.valid?
 
-        nested.errors.each do |nested_attribute, nested_error|
+        nested.errors.each do |error|
           if @flatten_keys
-            record.errors.add(nested_attribute, nested_error)
+            record.errors.add(error.attribute, error.message)
           elsif nested_attribute == :base
             record.errors.add(attribute, nested_error)
           else
