@@ -111,7 +111,7 @@ shared_examples_for 'tubes' do
           expect(json['included'][0]['attributes']['sample_name']).to eq tube.materials.first.sample.name
           expect(json['included'][0]['attributes']['barcode']).to eq tube.barcode
           expect(json['included'][0]['attributes']['sample_species']).to eq tube.materials.first.sample.species
-          expect(json['included'][0]['attributes']['created_at']).to eq tube.materials.first.sample.created_at.to_s(:us)
+          expect(json['included'][0]['attributes']['created_at']).to eq tube.materials.first.sample.created_at.to_fs(:us)
           expect(json['included'][0]['attributes']['material_type']).to eq 'request'
 
           expect(json['data'][0]['relationships']['materials']['data'].count).to eq(1)

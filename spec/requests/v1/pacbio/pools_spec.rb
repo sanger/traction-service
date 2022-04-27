@@ -32,7 +32,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
       expect(pool_resource['concentration']).to eq(pool.concentration)
       expect(pool_resource['template_prep_kit_box_barcode']).to eq(pool.template_prep_kit_box_barcode)
       expect(pool_resource['insert_size']).to eq(pool.insert_size)
-      expect(pool_resource['created_at']).to eq(pool.created_at.to_s(:us))
+      expect(pool_resource['created_at']).to eq(pool.created_at.to_fs(:us))
     end
 
     it 'returns the correct attributes', aggregate_failures: true do

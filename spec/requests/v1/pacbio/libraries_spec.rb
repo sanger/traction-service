@@ -26,7 +26,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
           expect(library_attributes['template_prep_kit_box_barcode']).to eq(library.template_prep_kit_box_barcode)
           expect(library_attributes['insert_size']).to eq(library.insert_size)
           expect(library_attributes['state']).to eq(library.state)
-          expect(library_attributes['created_at']).to eq(library.created_at.to_s(:us))
+          expect(library_attributes['created_at']).to eq(library.created_at.to_fs(:us))
           expect(library_attributes['deactivated_at']).to eq(nil)
           expect(library_attributes['source_identifier']).to eq(library.source_identifier)
         end
