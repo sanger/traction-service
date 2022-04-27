@@ -20,7 +20,7 @@ RSpec.describe 'PlatesController', type: :request do
       json = ActiveSupport::JSON.decode(response.body)
 
       expect(json['data'][0]['attributes']['barcode']).to eq(pacbio_plates.first.barcode)
-      expect(json['data'][0]['attributes']['created_at']).to eq(pacbio_plates.first.created_at.to_s(:us))
+      expect(json['data'][0]['attributes']['created_at']).to eq(pacbio_plates.first.created_at.to_fs(:us))
     end
 
     it 'returns the correct relationships' do
