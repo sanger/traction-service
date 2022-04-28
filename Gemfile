@@ -10,7 +10,7 @@ gem 'bunny'
 gem 'exception_notification'
 # 0.10.5 Results in MySQL syntax error on several tests when run against a MySQL
 # There is a 'monkey patch' for this in config/intializers/jsonapi_resources:15-63
-gem 'jsonapi-resources'
+gem 'jsonapi-resources', '=0.10.5'
 gem 'mysql2'
 gem 'puma', '~> 4.3' # Use Puma as the app server
 gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX possible
