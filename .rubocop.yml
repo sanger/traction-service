@@ -6,6 +6,9 @@ AllCops:
     - db/schema.rb
     - db/seeds.rb
     - db/migrate/*
+    # GitHub actions installs gems in the vendor directory, which causes rubocop to try
+    # and cop our gems. We don't want it to.
+    - vendor/**/*
     - 'spec/**/*'
     - 'config/routes.rb'
     - 'config/initializers/secret_token.rb'
