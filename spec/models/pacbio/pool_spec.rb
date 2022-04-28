@@ -106,4 +106,28 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
     end
   end
 
+  describe '#sequencing_plates' do
+
+    it 'when there is no run' do
+      pool = create(:pacbio_pool)
+      expect(pool.sequencing_plates).to be_empty
+    end
+
+    it 'when there is a single run' do
+      plate = create(:pacbio_plate_with_wells, :pooled)
+      pool = plate.wells.first.pools.first
+      expect(pool.sequencing_plates).to eq([plate])
+    end
+
+    it 'when there are multiple runs' do
+      plate1 = create(:pacbio_plate)
+      plate2 = create(:pacbio_plate)
+      pool = create(:pacbio_pool)
+      create(:pacbio_well, pools: [pool], plate: plate1)
+      create(:pacbio_well, pools: [pool], plate: plate2)
+      expect(pool.sequencing_plates).to eq([plate1, plate2])
+    end
+
+  end
+
 end
