@@ -35,3 +35,11 @@ en:
     attributes:
       cost_code:
         blank: must be present
+    messages:
+      uniqueness:
+        flowcell: 'must appear only once within a run'
+        library: 'must be unique: a pool already exists for this plate'
+        oligo: 'oligo must only appear once within a set'
+        group_id: 'group id must only appear once within a set'
+      presence:
+        wells: 'there are no wells'

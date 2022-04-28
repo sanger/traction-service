@@ -11,7 +11,7 @@ module Pacbio
     extend NestedValidation
 
     validates_nested :wells
-    validates :wells, presence: { message: 'there are no wells' }
+    validates :wells, presence: { message: I18n.t('errors.messages.presence.wells') }
 
     def initialize(attributes = [])
       build_wells(attributes)
