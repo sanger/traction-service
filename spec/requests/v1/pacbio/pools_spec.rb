@@ -98,6 +98,8 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
           tube = find_included_resource(id: Pacbio::Pool.first.tube_id, type: 'tubes')
           expect(tube.dig('attributes', 'barcode')).to be_present
         end
+
+      
       end
 
       context 'on failure' do
@@ -302,6 +304,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
           expect(new_libraries.length).to eq(1)
           expect(new_libraries.first.pacbio_request_id).to eq(added_request.id)
         end
+
       end
 
       context 'on failure' do
@@ -357,6 +360,46 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
             expect(attributes).to include(removed_library.attributes)
           end
         end
+      end
+    end
+
+    context 'when there is an associated run' do
+      let!(:pool) { create(:pacbio_pool) }
+      let!(:updated_library) { pool.libraries.first }
+      let!(:plate) { create(:pacbio_plate) }
+      let!(:well) { create(:pacbio_well, pools: [pool], plate: plate) }
+      let(:body) do
+        {
+          data: {
+            type: 'pools',
+            id: pool.id.to_s,
+            attributes: {
+              library_attributes: [
+                {
+                  id: updated_library.id.to_s,
+                  pacbio_request_id: updated_library.pacbio_request_id.to_s,
+                  template_prep_kit_box_barcode: 'LK12345',
+                  tag_id: tag.id,
+                  volume: 1,
+                  concentration: 1,
+                  insert_size: 100
+                }
+              ],
+              volume: '200',
+              concentration: '22',
+              template_prep_kit_box_barcode: '100',
+              insert_size: '11',
+              created_at: '2021-08-04T14:35:47.208Z',
+              updated_at: '2021-08-04T14:35:47.208Z'
+            }
+          }
+        }.to_json
+      end
+      
+      it 'publishes a message' do
+        expect(Messages).to receive(:publish).with(pool.sequencing_plates, having_attributes(pipeline: 'pacbio'))
+        patch v1_pacbio_pool_path(pool), params: body, headers: json_api_headers
+        expect(response).to have_http_status(:success), response.body
       end
     end
 
