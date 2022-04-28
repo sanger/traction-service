@@ -15,7 +15,7 @@ module TractionGraphQL
   end
 
   # Configure GraphQL endpoint using the basic HTTP network adapter.
-  RAILS_ROOT_URI = (ENV['RAILS_ROOT_URI'] || 'http://localhost:3000').chomp '/'
+  RAILS_ROOT_URI = (ENV.fetch('RAILS_ROOT_URI', nil) || 'http://localhost:3000').chomp '/'
   HTTP = NoTimeoutHTTP.new("#{RAILS_ROOT_URI}/v2/")
 
   # Fetch latest schema on init, this will make a network request
