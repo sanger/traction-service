@@ -18,6 +18,10 @@ module V1
                  :library_attributes
       attribute :source_identifier, readonly: true
 
+      # When a pool is updated and it is attached to a run we need
+      # to republish the messages for the run
+      after_update :publish_messages
+
       def library_attributes=(library_parameters)
         @model.library_attributes = library_parameters.map do |library|
           library.permit(:id, :volume, :template_prep_kit_box_barcode,
@@ -39,6 +43,10 @@ module V1
 
       def updated_at
         @model.updated_at.to_fs(:us)
+      end
+
+      def publish_messages
+        Messages.publish(@model.sequencing_plates, Pipelines.pacbio.message)
       end
     end
   end
