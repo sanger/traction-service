@@ -10,7 +10,7 @@ module Ont
                          dependent: :destroy, optional: true
     validates :name, :external_id, presence: true
 
-    # Make table. We don't want anything pushing to it.
+    # Make table read only. We don't want anything pushing to it.
     def readonly?
       true
     end

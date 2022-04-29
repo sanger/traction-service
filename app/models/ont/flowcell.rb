@@ -14,7 +14,7 @@ module Ont
               uniqueness: { scope: :ont_run_id,
                             message: I18n.t('errors.messages.uniqueness.flowcell') }
 
-    # Make table. We don't want anything pushing to it.
+    # Make table read only. We don't want anything pushing to it.
     def readonly?
       true
     end
