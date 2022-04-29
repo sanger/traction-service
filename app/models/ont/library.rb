@@ -37,7 +37,7 @@ module Ont
       !!flowcell
     end
 
-    # Make table. We don't want anything pushing to it.
+    # Make table read only. We don't want anything pushing to it.
     def readonly?
       true
     end
