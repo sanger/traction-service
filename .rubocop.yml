@@ -48,6 +48,9 @@ Layout/LineLength:
   Max: 100
   Exclude:
     - 'lib/tasks/*'
+    # TODO: I have tried to add this to rubocop todo but it is causing all sorts of issues
+    # The maximum line length is 157.
+    - 'spec/**/*'
 
 Metrics/MethodLength:
   Max: 12
