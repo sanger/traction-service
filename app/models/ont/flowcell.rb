@@ -12,7 +12,7 @@ module Ont
     validates :position,
               presence: true,
               uniqueness: { scope: :ont_run_id,
-                            message: I18n.t('errors.messages.uniqueness.flowcell') }
+                            message: :duplicated_in_run }
 
     # Make table read only. We don't want anything pushing to it.
     def readonly?
