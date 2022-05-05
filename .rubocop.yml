@@ -1,4 +1,8 @@
-require: rubocop-rails
+inherit_from: .rubocop_todo.yml
+
+require:
+  - rubocop-rails
+  - rubocop-rspec
 
 AllCops:
   NewCops: enable
@@ -9,7 +13,6 @@ AllCops:
     # GitHub actions installs gems in the vendor directory, which causes rubocop to try
     # and cop our gems. We don't want it to.
     - vendor/**/*
-    - 'spec/**/*'
     - 'config/routes.rb'
     - 'config/initializers/secret_token.rb'
     - 'config/initializers/backtrace_silencers.rb'

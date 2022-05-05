@@ -1,0 +1,10 @@
+inherit_from: ../.rubocop.yml
+
+# TODO: There is a clash having Layout/LineLength in the main file and this one here. Not
+# ideal but I can't spend any more time on this at the moment
+# Offense count: 73
+# This cop supports safe auto-correction (--auto-correct).
+# Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, AllowedPatterns, IgnoredPatterns.
+# URISchemes: http, https
+Layout/LineLength:
+  Max: 157

@@ -5,6 +5,7 @@ require 'rails_helper'
 RSpec.describe Plate, type: :model do
   context 'labware' do
     let(:labware_model) { :plate }
+
     it_behaves_like 'labware'
   end
 
@@ -31,20 +32,19 @@ RSpec.describe Plate, type: :model do
   end
 
   context 'by pipeline' do
+    let!(:pacbio_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'pacbio') }
 
-    let!(:pacbio_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'pacbio')}
-    
     it 'returns the correct plates' do
-      expect(Plate.by_pipeline(:pacbio).length).to eq(5)
+      expect(described_class.by_pipeline(:pacbio).length).to eq(5)
     end
   end
 
   context 'by barcode' do
-    let!(:plates) { create_list(:plate, 5)}
+    let!(:plates) { create_list(:plate, 5) }
 
     it 'returns the correct plates' do
       barcodes = plates.pluck(:barcode)[0..1]
-      expect(Plate.by_barcode(barcodes).length).to eq(2)
+      expect(described_class.by_barcode(barcodes).length).to eq(2)
     end
   end
 end

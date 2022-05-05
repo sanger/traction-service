@@ -8,12 +8,12 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
   let(:plate)         { create(:pacbio_plate_with_wells) }
   let(:message)       { Messages::Message.new(object: plate, configuration: pacbio_config.message) }
 
-  it 'should have a lims' do
+  it 'has a lims' do
     expect(message.content[:lims]).to eq(pacbio_config.lims)
   end
 
-  it 'should have a key' do
-    expect(message.content[pacbio_config.key]).to_not be_empty
+  it 'has a key' do
+    expect(message.content[pacbio_config.key]).not_to be_empty
   end
 
   describe 'key' do
@@ -21,7 +21,7 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
 
     let(:timestamp) { Time.zone.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
 
-    before(:each) do
+    before do
       allow(Time).to receive(:current).and_return timestamp
     end
 
@@ -68,7 +68,7 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
         let(:pool) { create(:pacbio_pool, libraries: libraries) }
         let(:request) { library.request }
 
-        before(:each) do
+        before do
           plate_well.pools << pool
         end
 
