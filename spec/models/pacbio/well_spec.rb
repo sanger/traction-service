@@ -1,39 +1,40 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Pacbio::Well, type: :model, pacbio: true do
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_well }
+
     it_behaves_like 'uuidable'
   end
 
   context 'row' do
     it 'must have a row' do
-      expect(build(:pacbio_well, row: nil)).to_not be_valid
+      expect(build(:pacbio_well, row: nil)).not_to be_valid
     end
   end
 
   context 'column' do
     it 'must have a column' do
-      expect(build(:pacbio_well, column: nil)).to_not be_valid
+      expect(build(:pacbio_well, column: nil)).not_to be_valid
     end
   end
 
   context 'movie time' do
     it 'must be present' do
-      expect(build(:pacbio_well, movie_time: nil)).to_not be_valid
+      expect(build(:pacbio_well, movie_time: nil)).not_to be_valid
     end
 
     it 'can be a decimal' do
       expect(build(:pacbio_well, movie_time: 0.2).movie_time).to eq(0.2)
-
     end
 
     it 'must be within range' do
       expect(build(:pacbio_well, movie_time: 15)).to be_valid
-      expect(build(:pacbio_well, movie_time: 31)).to_not be_valid
-      expect(build(:pacbio_well, movie_time: 0)).to_not be_valid
+      expect(build(:pacbio_well, movie_time: 31)).not_to be_valid
+      expect(build(:pacbio_well, movie_time: 0)).not_to be_valid
     end
-
   end
 
   context 'insert size' do
@@ -46,7 +47,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
   end
 
   it 'must have an on plate loading concentration' do
-    expect(build(:pacbio_well, on_plate_loading_concentration: nil)).to_not be_valid
+    expect(build(:pacbio_well, on_plate_loading_concentration: nil)).not_to be_valid
   end
 
   context 'position' do
@@ -56,11 +57,11 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
   end
 
   it 'must have to a plate' do
-    expect(build(:pacbio_well, plate: nil)).to_not be_valid
+    expect(build(:pacbio_well, plate: nil)).not_to be_valid
   end
 
   it 'must have a binding kit box barcode' do
-    expect(build(:pacbio_well, binding_kit_box_barcode: nil)).to_not be_valid
+    expect(build(:pacbio_well, binding_kit_box_barcode: nil)).not_to be_valid
   end
 
   it 'can have a comment' do
@@ -72,35 +73,39 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     expect(well.summary).to eq("#{well.sample_names} #{well.comment}")
   end
 
-  context '#pools?' do
+  describe '#pools?' do
     let(:pools) { create_list(:pacbio_pool, 2) }
+
     it 'with pools' do
       well = create(:pacbio_well, pools: pools)
-      expect(well.pools?).to be_truthy
+      expect(well).to be_pools
     end
 
     it 'no pools' do
       well = create(:pacbio_well)
-      expect(well.pools?).to_not be_truthy
+      expect(well).not_to be_pools
     end
   end
 
   context 'Generate HiFi' do
     it 'must have a generate_hifi' do
-      expect(build(:pacbio_well, generate_hifi: nil)).to_not be_valid
+      expect(build(:pacbio_well, generate_hifi: nil)).not_to be_valid
     end
 
     it 'must include the correct options' do
-      expect(Pacbio::Well.generate_hifis.keys).to eq(["In SMRT Link", "On Instrument", "Do Not Generate"])
+      expect(described_class.generate_hifis.keys).to eq(['In SMRT Link', 'On Instrument',
+                                                         'Do Not Generate'])
     end
 
     it 'must have a Generate_hifi' do
-      expect(create(:pacbio_well, generate_hifi: 0).generate_hifi).to eq "In SMRT Link"
-      expect(create(:pacbio_well, generate_hifi: "In SMRT Link").generate_hifi).to eq "In SMRT Link"
-      expect(create(:pacbio_well, generate_hifi: 1).generate_hifi).to eq "On Instrument"
-      expect(create(:pacbio_well, generate_hifi: "On Instrument").generate_hifi).to eq "On Instrument"
-      expect(create(:pacbio_well, generate_hifi: 2).generate_hifi).to eq "Do Not Generate"
-      expect(create(:pacbio_well, generate_hifi: "Do Not Generate").generate_hifi).to eq "Do Not Generate"
+      expect(create(:pacbio_well, generate_hifi: 0).generate_hifi).to eq 'In SMRT Link'
+      expect(create(:pacbio_well, generate_hifi: 'In SMRT Link').generate_hifi).to eq 'In SMRT Link'
+      expect(create(:pacbio_well, generate_hifi: 1).generate_hifi).to eq 'On Instrument'
+      expect(create(:pacbio_well,
+                    generate_hifi: 'On Instrument').generate_hifi).to eq 'On Instrument'
+      expect(create(:pacbio_well, generate_hifi: 2).generate_hifi).to eq 'Do Not Generate'
+      expect(create(:pacbio_well,
+                    generate_hifi: 'Do Not Generate').generate_hifi).to eq 'Do Not Generate'
     end
   end
 
@@ -113,12 +118,12 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
     it 'sets ccs_analysis_output to "No" if blank' do
       well = create(:pacbio_well, ccs_analysis_output: '')
-      expect(well.ccs_analysis_output).to eq("No")
+      expect(well.ccs_analysis_output).to eq('No')
     end
 
     it 'ccs_analysis_output stays "Yes" if set to yes' do
       well = create(:pacbio_well, ccs_analysis_output: 'Yes')
-      expect(well.ccs_analysis_output).to eq("Yes")
+      expect(well.ccs_analysis_output).to eq('Yes')
     end
   end
 
@@ -128,7 +133,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
 
     it 'can be set' do
-      well = build(:pacbio_well, pre_extension_time: 2 )
+      well = build(:pacbio_well, pre_extension_time: 2)
       expect(well.pre_extension_time).to eq(2)
     end
   end
@@ -139,16 +144,15 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
 
     it 'can be a decimal' do
-      expect(build(:pacbio_well, loading_target_p1_plus_p2: 0.5).loading_target_p1_plus_p2).to eq(0.5)
-
+      expect(build(:pacbio_well,
+                   loading_target_p1_plus_p2: 0.5).loading_target_p1_plus_p2).to eq(0.5)
     end
 
     it 'must be within range' do
       expect(build(:pacbio_well, loading_target_p1_plus_p2: 0.45)).to be_valid
-      expect(build(:pacbio_well, loading_target_p1_plus_p2: 72)).to_not be_valid
+      expect(build(:pacbio_well, loading_target_p1_plus_p2: 72)).not_to be_valid
       expect(build(:pacbio_well, loading_target_p1_plus_p2: 0)).to be_valid
     end
-
   end
 
   context 'libraries' do
@@ -183,19 +187,18 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
       tag_ids = well.libraries.collect(&:tag_id)
       expect(well.tags).to eq(tag_ids)
     end
-
   end
 
   context 'sample sheet mixin' do
-    let(:well)                { create(:pacbio_well) }
+    let(:well) { create(:pacbio_well) }
 
     it 'includes the Sample Sheet mixin' do
-      expect(well.same_barcodes_on_both_ends_of_sequence).to eq true
+      expect(well.same_barcodes_on_both_ends_of_sequence).to be true
     end
   end
 
   context 'template prep kit box barcode' do
-    let(:well)   { create(:pacbio_well_with_pools) }
+    let(:well) { create(:pacbio_well_with_pools) }
 
     it 'returns the well pools template_prep_kit_box_barcode' do
       expected = well.pools.first.template_prep_kit_box_barcode
@@ -204,7 +207,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
   end
 
   context 'collection?' do
-    let(:well)                { create(:pacbio_well) }
+    let(:well) { create(:pacbio_well) }
 
     it 'will always be true' do
       expect(well).to be_collection

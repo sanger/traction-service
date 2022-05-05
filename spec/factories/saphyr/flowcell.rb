@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
-  factory :saphyr_flowcell, class: Saphyr::Flowcell do
+  factory :saphyr_flowcell, class: 'Saphyr::Flowcell' do
     association :chip, factory: :saphyr_chip
 
     position { 1 }

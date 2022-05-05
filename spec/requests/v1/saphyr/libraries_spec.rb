@@ -1,8 +1,9 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 RSpec.describe 'LibrariesController', type: :request do
-
-  context '#get' do
+  describe '#get' do
     let!(:library1) { create(:saphyr_library_in_tube) }
     let!(:library2) { create(:saphyr_library_in_tube) }
 
@@ -23,14 +24,14 @@ RSpec.describe 'LibrariesController', type: :request do
       expect(json['data'][0]['attributes']['barcode']).to eq(library1.tube.barcode)
       expect(json['data'][0]['attributes']['sample_name']).to eq(library1.request.sample_name)
       expect(json['data'][0]['attributes']['enzyme_name']).to eq(library1.enzyme.name)
-      expect(json['data'][0]["attributes"]["created_at"]).to eq(library1.created_at.to_fs(:us))
-      expect(json['data'][0]["attributes"]["deactivated_at"]).to eq(nil)
+      expect(json['data'][0]['attributes']['created_at']).to eq(library1.created_at.to_fs(:us))
+      expect(json['data'][0]['attributes']['deactivated_at']).to be_nil
 
       expect(json['data'][1]['attributes']['state']).to eq(library2.state)
       expect(json['data'][1]['attributes']['barcode']).to eq(library2.tube.barcode)
       expect(json['data'][1]['attributes']['enzyme_name']).to eq(library2.enzyme.name)
-      expect(json['data'][1]["attributes"]["created_at"]).to eq(library2.created_at.to_fs(:us))
-      expect(json['data'][1]["attributes"]["deactivated_at"]).to eq(nil)
+      expect(json['data'][1]['attributes']['created_at']).to eq(library2.created_at.to_fs(:us))
+      expect(json['data'][1]['attributes']['deactivated_at']).to be_nil
     end
 
     context 'when some libraries are deactivated' do
@@ -47,9 +48,8 @@ RSpec.describe 'LibrariesController', type: :request do
     end
   end
 
-  context '#create' do
+  describe '#create' do
     context 'when creating a single library' do
-
       context 'on success' do
         let(:request) { create(:saphyr_request) }
         let(:saphyr_enzyme) { create(:saphyr_enzyme) }
@@ -58,7 +58,8 @@ RSpec.describe 'LibrariesController', type: :request do
             data: {
               attributes: {
                 libraries: [
-                  { state: 'pending', saphyr_request_id: request.id, saphyr_enzyme_id: saphyr_enzyme.id}
+                  { state: 'pending', saphyr_request_id: request.id,
+                    saphyr_enzyme_id: saphyr_enzyme.id }
                 ]
               }
             }
@@ -71,7 +72,11 @@ RSpec.describe 'LibrariesController', type: :request do
         end
 
         it 'creates a library' do
-          expect { post v1_saphyr_libraries_path, params: body, headers: json_api_headers }.to change { Saphyr::Library.count }.by(1)
+          expect do
+            post v1_saphyr_libraries_path, params: body, headers: json_api_headers
+          end.to change {
+                   Saphyr::Library.count
+                 }.by(1)
         end
 
         it 'creates a library with a tube' do
@@ -105,7 +110,7 @@ RSpec.describe 'LibrariesController', type: :request do
               data: {
                 attributes: {
                   libraries: [
-                    { state: 'pending', saphyr_request_id: 1, saphyr_enzyme_id: saphyr_enzyme.id}
+                    { state: 'pending', saphyr_request_id: 1, saphyr_enzyme_id: saphyr_enzyme.id }
                   ]
                 }
               }
@@ -118,12 +123,16 @@ RSpec.describe 'LibrariesController', type: :request do
           end
 
           it 'cannot create a library' do
-            expect { post v1_saphyr_libraries_path, params: body, headers: json_api_headers }.to change { Saphyr::Library.count }.by(0)
+            expect do
+              post v1_saphyr_libraries_path, params: body, headers: json_api_headers
+            end.to change {
+                     Saphyr::Library.count
+                   }.by(0)
           end
 
           it 'has an error message' do
             post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-            expect(JSON.parse(response.body)["data"]).to include("errors" => {"request"=>['must exist']})
+            expect(JSON.parse(response.body)['data']).to include('errors' => { 'request' => ['must exist'] })
           end
         end
 
@@ -135,7 +144,7 @@ RSpec.describe 'LibrariesController', type: :request do
               data: {
                 attributes: {
                   libraries: [
-                    { state: 'pending', saphyr_request_id: request.id, enzyme_id: 1}
+                    { state: 'pending', saphyr_request_id: request.id, enzyme_id: 1 }
                   ]
                 }
               }
@@ -148,18 +157,19 @@ RSpec.describe 'LibrariesController', type: :request do
           end
 
           it 'cannot create a library' do
-            expect { post v1_saphyr_libraries_path, params: body, headers: json_api_headers }.to change { Saphyr::Library.count }.by(0)
+            expect do
+              post v1_saphyr_libraries_path, params: body, headers: json_api_headers
+            end.to change {
+                     Saphyr::Library.count
+                   }.by(0)
           end
 
           it 'has an error message' do
             post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-            expect(JSON.parse(response.body)["data"]).to include("errors" => {"enzyme"=>['must exist']})
+            expect(JSON.parse(response.body)['data']).to include('errors' => { 'enzyme' => ['must exist'] })
           end
         end
-
       end
-
-
     end
 
     context 'when creating multiple libraries' do
@@ -173,9 +183,12 @@ RSpec.describe 'LibrariesController', type: :request do
               data: {
                 attributes: {
                   libraries: [
-                    { state: 'pending', saphyr_request_id: request.id, saphyr_enzyme_id: saphyr_enzyme.id},
-                    { state: 'pending', saphyr_request_id: request.id, saphyr_enzyme_id: saphyr_enzyme.id},
-                    { state: 'pending', saphyr_request_id: request.id, saphyr_enzyme_id: saphyr_enzyme.id}
+                    { state: 'pending', saphyr_request_id: request.id,
+                      saphyr_enzyme_id: saphyr_enzyme.id },
+                    { state: 'pending', saphyr_request_id: request.id,
+                      saphyr_enzyme_id: saphyr_enzyme.id },
+                    { state: 'pending', saphyr_request_id: request.id,
+                      saphyr_enzyme_id: saphyr_enzyme.id }
                   ]
                 }
               }
@@ -198,8 +211,8 @@ RSpec.describe 'LibrariesController', type: :request do
               data: {
                 attributes: {
                   libraries: [
-                    { state: 'pending', saphyr_request_id: 1, saphyr_enzyme_id: saphyr_enzyme.id},
-                    { state: 'pending', saphyr_request_id: 1, saphyr_enzyme_id: saphyr_enzyme.id}
+                    { state: 'pending', saphyr_request_id: 1, saphyr_enzyme_id: saphyr_enzyme.id },
+                    { state: 'pending', saphyr_request_id: 1, saphyr_enzyme_id: saphyr_enzyme.id }
                   ]
                 }
               }
@@ -213,15 +226,16 @@ RSpec.describe 'LibrariesController', type: :request do
 
           it 'has an error message' do
             post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-            expect(JSON.parse(response.body)["data"]).to include("errors" => {"request"=>['must exist', 'must exist']})
+            expect(JSON.parse(response.body)['data']).to include('errors' => { 'request' => [
+              'must exist', 'must exist'
+            ] })
           end
         end
       end
-
     end
   end
 
-  context '#destroy' do
+  describe '#destroy' do
     context 'on success' do
       let!(:library) { create(:saphyr_library_in_tube) }
 
@@ -248,9 +262,8 @@ RSpec.describe 'LibrariesController', type: :request do
 
       it 'has an error message' do
         delete "/v1/saphyr/libraries/#{library.id}", headers: json_api_headers
-        expect(JSON.parse(response.body)["data"]).to include("errors" => {})
+        expect(JSON.parse(response.body)['data']).to include('errors' => {})
       end
     end
   end
-
 end

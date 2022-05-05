@@ -1,16 +1,11 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require './spec/support/read_only.rb'
+require './spec/support/read_only'
 
 RSpec.describe Ont::Run, type: :model, ont: true do
-
-  before(:all) do
-    set_read_only(Ont::Run, false)
-  end
-
-  after(:all) do
-    set_read_only(Ont::Run, true)
+  before do
+    set_read_only(described_class, false)
   end
 
   context 'on creation' do
@@ -63,12 +58,12 @@ RSpec.describe Ont::Run, type: :model, ont: true do
     it 'can filter runs based on state' do
       create_list(:ont_run, 2)
       create(:ont_run, state: :started)
-      expect(Ont::Run.pending.length).to eq 2
-      expect(Ont::Run.started.length).to eq 1
+      expect(described_class.pending.length).to eq 2
+      expect(described_class.started.length).to eq 1
     end
   end
 
-  context '#cancel' do
+  describe '#cancel' do
     it 'can be cancelled' do
       run = create(:ont_run)
       run.cancel
@@ -79,18 +74,17 @@ RSpec.describe Ont::Run, type: :model, ont: true do
     it 'returns true if already cancelled' do
       run = create(:ont_run)
       run.cancel
-      expect(run.cancel).to eq true
+      expect(run.cancel).to be true
     end
   end
 
   context 'scope' do
     context 'active' do
-      it 'should return only active runs' do
+      it 'returns only active runs' do
         create_list(:ont_run, 2)
         create(:ont_run, deactivated_at: DateTime.now)
-        expect(Ont::Run.active.length).to eq 2
+        expect(described_class.active.length).to eq 2
       end
     end
   end
-
 end

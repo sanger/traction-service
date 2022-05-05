@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :tag_set do
     sequence(:name) { |n| "Tag-Set-#{n}" }

@@ -61,6 +61,7 @@ RSpec.describe WellSorterService do
     let(:wells) { described_class.column_order }
     let(:size) { 96 }
     let(:range) { 'A1-H12' }
+
     it_behaves_like 'range generator'
   end
 
@@ -68,6 +69,7 @@ RSpec.describe WellSorterService do
     let(:wells) { described_class.column_order.slice(0, 12) }
     let(:size) { 96 }
     let(:range) { 'A1-D2' }
+
     it_behaves_like 'range generator'
   end
 
@@ -75,6 +77,7 @@ RSpec.describe WellSorterService do
     let(:wells) { %w[A1 B1 C1 F1 G1 H1 A2 C10 F10 G10] }
     let(:size) { 96 }
     let(:range) { 'A1-C1, F1-A2, C10, F10-G10' }
+
     it_behaves_like 'range generator'
   end
 
@@ -82,6 +85,7 @@ RSpec.describe WellSorterService do
     let(:wells) { %w[A1 F10 F1 B1 C1 G1 H1 A2 C10 G10] }
     let(:size) { 96 }
     let(:range) { 'A1-C1, F1-A2, C10, F10-G10' }
+
     it_behaves_like 'range generator'
   end
 
@@ -89,23 +93,29 @@ RSpec.describe WellSorterService do
     let(:wells) { WELL_384 }
     let(:size) { 384 }
     let(:range) { 'A1-P24' }
+
     it_behaves_like 'range generator'
   end
 
   describe '::column_order' do
     context 'by default' do
       subject { described_class.column_order }
+
       it { is_expected.to eq(well_96) }
     end
 
     context 'with a specified size' do
       subject { described_class.column_order(size) }
+
       context 'of 96' do
         let(:size) { 96 }
+
         it { is_expected.to eq(well_96) }
       end
+
       context 'of 384' do
         let(:size) { 384 }
+
         it { is_expected.to eq(well_384) }
       end
     end
@@ -113,12 +123,16 @@ RSpec.describe WellSorterService do
 
   describe '::stamp_hash' do
     subject { described_class.stamp_hash(size) }
+
     context '96' do
       let(:size) { 96 }
+
       it { is_expected.to eq(stamp_96) }
     end
+
     context '384' do
       let(:size) { 384 }
+
       it { is_expected.to eq(stamp_384) }
     end
   end
@@ -130,6 +144,7 @@ RSpec.describe WellSorterService do
       WELL_96.each_with_index do |test_well, test_index|
         context("well #{test_well}") do
           let(:well) { test_well }
+
           it { is_expected.to eq(test_index) }
         end
       end
@@ -137,11 +152,14 @@ RSpec.describe WellSorterService do
 
     context 'with a specified size' do
       subject { described_class.index_of(well, size) }
+
       context 'of 96' do
         let(:size) { 96 }
+
         WELL_96.each_with_index do |test_well, test_index|
           context("well #{test_well}") do
             let(:well) { test_well }
+
             it { is_expected.to eq(test_index) }
           end
         end
@@ -149,9 +167,11 @@ RSpec.describe WellSorterService do
 
       context 'of 384' do
         let(:size) { 384 }
+
         WELL_384.each_with_index do |test_well, test_index|
           context("well #{test_well}") do
             let(:well) { test_well }
+
             it { is_expected.to eq(test_index) }
           end
         end
@@ -161,19 +181,25 @@ RSpec.describe WellSorterService do
 
   describe ':well_name' do
     subject { described_class.well_name(row, column) }
+
     context 'A1' do
       let(:row) { 0 }
       let(:column) { 0 }
+
       it { is_expected.to eq('A1') }
     end
+
     context 'H12' do
       let(:row) { 7 }
       let(:column) { 11 }
+
       it { is_expected.to eq('H12') }
     end
+
     context 'P24' do
       let(:row) { 15 }
       let(:column) { 23 }
+
       it { is_expected.to eq('P24') }
     end
   end

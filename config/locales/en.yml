@@ -58,3 +58,5 @@ en:
     attributes:
       cost_code:
         blank: must be present
+      wells:
+        blank: must be present
