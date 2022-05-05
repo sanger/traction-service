@@ -10,10 +10,10 @@ class Tag < ApplicationRecord
   validates :oligo, :group_id, presence: true
 
   validates :oligo, uniqueness: { scope: :tag_set_id,
-                                  message: I18n.t('errors.messages.uniqueness.oligo'),
+                                  message: :duplicated_in_tag_set,
                                   case_sensitive: false }
 
   validates :group_id, uniqueness: { scope: :tag_set_id,
-                                     message: I18n.t('errors.messages.uniqueness.group_id'),
+                                     message: :duplicated_in_tag_set,
                                      case_sensitive: false }
 end

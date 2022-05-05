@@ -15,7 +15,7 @@ module Ont
 
     validates :name, :pool, :pool_size, presence: true
     validates :name, uniqueness: { case_sensitive: false,
-                                   message: I18n.t('errors.messages.uniqueness.library') }
+                                   message: :duplicated_in_plate }
 
     def self.library_name(plate_barcode, pool)
       return nil if plate_barcode.nil? || pool.nil?

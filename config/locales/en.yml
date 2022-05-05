@@ -31,15 +31,30 @@
 
 en:
   hello: "Hello world"
+  activemodel:
+    errors:
+      models:
+        pacbio/well_factory:
+          attributes:
+            wells:
+              empty: there are no wells
+  activerecord:
+    errors:
+      models:
+        ont/library:
+          attributes:
+            name:
+              duplicated_in_plate: 'must be unique: a pool already exists for this plate'
+            flowcell:
+              duplicated_in_run: must appear only once within a run
+        tag:
+          # TODO: this could be dryed out more. Something for a later date
+          attributes:
+            oligo:
+              duplicated_in_tag_set:  must only appear once within a set
+            group_id:
+              duplicated_in_tag_set: must only appear once within a set
   errors:
     attributes:
       cost_code:
         blank: must be present
-    messages:
-      uniqueness:
-        flowcell: 'must appear only once within a run'
-        library: 'must be unique: a pool already exists for this plate'
-        oligo: 'oligo must only appear once within a set'
-        group_id: 'group id must only appear once within a set'
-      presence:
-        wells: 'there are no wells'
