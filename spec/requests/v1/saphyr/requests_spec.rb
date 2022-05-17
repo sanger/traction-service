@@ -1,9 +1,10 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 RSpec.describe 'RequestsController', type: :request, saphyr: true do
-
-  context '#get' do
-    let!(:requests) { create_list(:saphyr_request, 2)}
+  describe '#get' do
+    let!(:requests) { create_list(:saphyr_request, 2) }
 
     it 'returns a list of requests' do
       get v1_saphyr_requests_path, headers: json_api_headers
@@ -23,15 +24,12 @@ RSpec.describe 'RequestsController', type: :request, saphyr: true do
       end
 
       expect(json['data'][0]['attributes']['sample_name']).to eq(request.sample_name)
-
     end
   end
 
-  context '#create' do
-
+  describe '#create' do
     context 'when creating a single request' do
       context 'on success' do
-
         let(:body) do
           {
             data: {
@@ -55,17 +53,21 @@ RSpec.describe 'RequestsController', type: :request, saphyr: true do
         end
 
         it 'creates a request' do
-          expect { post v1_saphyr_requests_path, params: body, headers: json_api_headers }.to change { Saphyr::Request.count }.by(1)
+          expect do
+            post v1_saphyr_requests_path, params: body, headers: json_api_headers
+          end.to change {
+                   Saphyr::Request.count
+                 }.by(1)
         end
 
         it 'creates a sample' do
-          expect { post v1_saphyr_requests_path, params: body, headers: json_api_headers }.to change { Sample.count }.by(1)
+          expect do
+            post v1_saphyr_requests_path, params: body, headers: json_api_headers
+          end.to change(Sample, :count).by(1)
         end
-
       end
 
       context 'on failure' do
-
         let(:body) do
           {
             data: {
@@ -88,20 +90,21 @@ RSpec.describe 'RequestsController', type: :request, saphyr: true do
         end
 
         it 'cannot create a request' do
-          expect { post v1_saphyr_requests_path, params: body, headers: json_api_headers }.to_not change(Saphyr::Request, :count)
+          expect do
+            post v1_saphyr_requests_path, params: body,
+                                          headers: json_api_headers
+          end.not_to change(Saphyr::Request, :count)
         end
 
         it 'has an error message' do
           post v1_saphyr_requests_path, params: body, headers: json_api_headers
-          expect(JSON.parse(response.body)["data"]).to include("errors" => {"sample"=>['is invalid']})
+          expect(JSON.parse(response.body)['data']).to include('errors' => { 'sample' => ['is invalid'] })
         end
       end
 
       context 'when creating multiple requests' do
-
         context 'on success' do
           context 'when the sample does exist' do
-
             let(:body) do
               {
                 data: {
@@ -121,45 +124,44 @@ RSpec.describe 'RequestsController', type: :request, saphyr: true do
             end
 
             it 'will have the correct number of requests' do
-              expect { post v1_saphyr_requests_path, params: body, headers: json_api_headers }.to change(Saphyr::Request, :count).by(2)
+              expect do
+                post v1_saphyr_requests_path, params: body,
+                                              headers: json_api_headers
+              end.to change(Saphyr::Request, :count).by(2)
             end
           end
         end
-
       end
     end
   end
 
-  context '#destroy' do
-
+  describe '#destroy' do
     let!(:request) { create(:saphyr_request) }
 
     context 'on success' do
-
       it 'returns the correct status' do
         delete "/v1/saphyr/requests/#{request.id}", headers: json_api_headers
         expect(response).to have_http_status(:no_content)
       end
 
       it 'destroys the request' do
-        expect { delete "/v1/saphyr/requests/#{request.id}", headers: json_api_headers }.to change { Saphyr::Request.count }.by(-1)
+        expect { delete "/v1/saphyr/requests/#{request.id}", headers: json_api_headers }.to change {
+                                                                                              Saphyr::Request.count
+                                                                                            }.by(-1)
       end
-
     end
 
     context 'on failure' do
-
       it 'does not delete the request' do
-        delete "/v1/saphyr/requests/fakerequest", headers: json_api_headers
+        delete '/v1/saphyr/requests/fakerequest', headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
       it 'has an error message' do
-        delete "/v1/saphyr/requests/fakerequest", headers: json_api_headers
+        delete '/v1/saphyr/requests/fakerequest', headers: json_api_headers
         data = JSON.parse(response.body)['data']
         expect(data['errors']).to be_present
       end
     end
   end
-
 end

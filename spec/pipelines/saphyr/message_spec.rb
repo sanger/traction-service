@@ -1,27 +1,29 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 RSpec.describe 'Saphyr', type: :model, saphyr: true do
-
   let(:config)            { Pipelines.configure(Pipelines.load_yaml) }
   let(:pipeline_config)   { config.saphyr }
   let(:flowcell)          { create(:saphyr_flowcell_with_library) }
-  let(:message)           { Messages::Message.new(object: flowcell, configuration: pipeline_config.message) }
+  let(:message)           do
+    Messages::Message.new(object: flowcell, configuration: pipeline_config.message)
+  end
 
-  it 'should have a lims' do
+  it 'has a lims' do
     expect(message.content[:lims]).to eq(pipeline_config.lims)
   end
 
-  it 'should have a key' do
-    expect(message.content[pipeline_config.key]).to_not be_empty
+  it 'has a key' do
+    expect(message.content[pipeline_config.key]).not_to be_empty
   end
 
   describe 'key' do
-
     let(:key) { message.content[pipeline_config.key] }
 
-    let(:timestamp) { Time.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
+    let(:timestamp) { Time.zone.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
 
-    before(:each) do
+    before do
       allow(Time).to receive(:current).and_return timestamp
     end
 
@@ -68,7 +70,5 @@ RSpec.describe 'Saphyr', type: :model, saphyr: true do
     it 'must have an instrument_name' do
       expect(key[:instrument_name]).to eq('saphyr')
     end
-
   end
-
 end
