@@ -1,8 +1,7 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
+
   let(:libraries) { create_list(:pacbio_library, 5) }
 
   it 'will have a tube on validation' do
@@ -37,13 +36,13 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
   end
 
   it 'is not valid unless there is at least one library' do
-    expect(build(:pacbio_pool, libraries: [])).not_to be_valid
+    expect(build(:pacbio_pool, libraries: [])).to_not be_valid
   end
 
   it 'is not valid unless all of the associated libraries are valid' do
     dodgy_library = build(:pacbio_library, volume: nil)
 
-    expect(build(:pacbio_pool, libraries: libraries + [dodgy_library])).not_to be_valid
+    expect(build(:pacbio_pool, libraries: libraries + [dodgy_library])).to_not be_valid
   end
 
   describe '#library_attributes=' do
@@ -89,14 +88,14 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
     it 'will not be valid if there are multiple libraries and any of them dont have tags' do
       untagged_library = build(:pacbio_library, tag: nil)
 
-      expect(build(:pacbio_pool, libraries: libraries + [untagged_library])).not_to be_valid
+      expect(build(:pacbio_pool, libraries: libraries + [untagged_library])).to_not be_valid
     end
 
     it 'is not valid unless all of the tags are unique' do
       library_with_duplicate_tag = build(:pacbio_library, tag: libraries.first.tag)
-      expect(build(:pacbio_pool,
-                   libraries: libraries + [library_with_duplicate_tag])).not_to be_valid
+      expect(build(:pacbio_pool, libraries: libraries + [library_with_duplicate_tag])).to_not be_valid
     end
+
   end
 
   context 'wells' do
@@ -108,6 +107,7 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
   end
 
   describe '#sequencing_plates' do
+
     it 'when there is no run' do
       pool = create(:pacbio_pool)
       expect(pool.sequencing_plates).to be_empty
@@ -127,5 +127,7 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
       create(:pacbio_well, pools: [pool], plate: plate2)
       expect(pool.sequencing_plates).to eq([plate1, plate2])
     end
+
   end
+
 end

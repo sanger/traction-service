@@ -8,13 +8,16 @@ ruby '2.7.3'
 gem 'bootsnap', '>= 1.1.0', require: false # Reduces boot times through caching
 gem 'bunny'
 gem 'exception_notification'
+gem 'graphql'
+gem 'graphql-client'
+gem 'graphql-docs'
 # 0.10.5 Results in MySQL syntax error on several tests when run against a MySQL
 # There is a 'monkey patch' for this in config/intializers/jsonapi_resources:15-63
 gem 'jsonapi-resources'
 gem 'mysql2'
 gem 'puma', '~> 4.3' # Use Puma as the app server
 gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX possible
-gem 'rails', '~> 7.0.2.3'
+gem 'rails', '~> 6.0.4.1'
 
 group :development do
   gem 'listen', '>= 3.0.5', '< 3.2'
@@ -34,8 +37,7 @@ group :development, :test do
   gem 'pry-rails'
   gem 'rspec-rails'
   gem 'rubocop', require: false
-  gem 'rubocop-rails', require: false
-  gem 'rubocop-rspec', require: false
+  gem 'rubocop-rails'
   gem 'shoulda-matchers'
   gem 'sqlite3'
 end

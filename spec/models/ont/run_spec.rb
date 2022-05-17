@@ -1,13 +1,8 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require './spec/support/read_only'
 
 RSpec.describe Ont::Run, type: :model, ont: true do
-  before do
-    set_read_only(described_class, false)
-  end
-
   context 'on creation' do
     it 'state is pending' do
       run = create(:ont_run)
@@ -58,12 +53,12 @@ RSpec.describe Ont::Run, type: :model, ont: true do
     it 'can filter runs based on state' do
       create_list(:ont_run, 2)
       create(:ont_run, state: :started)
-      expect(described_class.pending.length).to eq 2
-      expect(described_class.started.length).to eq 1
+      expect(Ont::Run.pending.length).to eq 2
+      expect(Ont::Run.started.length).to eq 1
     end
   end
 
-  describe '#cancel' do
+  context '#cancel' do
     it 'can be cancelled' do
       run = create(:ont_run)
       run.cancel
@@ -74,17 +69,27 @@ RSpec.describe Ont::Run, type: :model, ont: true do
     it 'returns true if already cancelled' do
       run = create(:ont_run)
       run.cancel
-      expect(run.cancel).to be true
+      expect(run.cancel).to eq true
     end
   end
 
   context 'scope' do
     context 'active' do
-      it 'returns only active runs' do
+      it 'should return only active runs' do
         create_list(:ont_run, 2)
         create(:ont_run, deactivated_at: DateTime.now)
-        expect(described_class.active.length).to eq 2
+        expect(Ont::Run.active.length).to eq 2
       end
+    end
+  end
+
+  context 'resolved' do
+    it 'returns expected includes_args' do
+      expect(Ont::Run.includes_args.flat_map(&:keys)).to contain_exactly(:flowcells)
+    end
+
+    it 'removes keys from includes_args' do
+      expect(Ont::Run.includes_args(:flowcells).flat_map(&:keys)).to_not include(:flowcells)
     end
   end
 end

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 require 'ostruct'
 
@@ -34,8 +32,8 @@ class ObjectC
 end
 
 RSpec.describe Messages::Message, type: :model do
-  let(:object_b)  { ObjectB.new('attr_d') }
-  let(:object_a)  { ObjectA.new('attr_a', 'attr_b', object_b) }
+  let(:object_b)  { ObjectB.new('attr_d')}
+  let(:object_a)  { ObjectA.new('attr_a', 'attr_b', object_b)}
   let(:params) do
     {
       key: 'a_table',
@@ -52,33 +50,34 @@ RSpec.describe Messages::Message, type: :model do
 
   let(:config) { OpenStruct.new(params) }
 
-  let(:message) { described_class.new(object: object_a, configuration: config) }
-  let(:timestamp) { Time.zone.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
+  let(:message) { Messages::Message.new(object: object_a, configuration: config ) }
+  let(:timestamp) { Time.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
 
-  before do
+  before(:each) do
     allow(Time).to receive(:current).and_return timestamp
   end
 
   it 'has some content' do
     expect(message.content).to eq({
       config[:key] => {
-        field_a: 'attr_a',
-        field_b: 'attr_b',
-        field_c: 'attr_d',
-        updated_at: timestamp,
-        instrument_name: 'saphyr'
-      },
-      lims: config[:lims]
-    }.with_indifferent_access)
+          field_a: 'attr_a',
+          field_b: 'attr_b',
+          field_c: 'attr_d',
+          updated_at: timestamp,
+          instrument_name: 'saphyr'
+        },
+        lims: config[:lims],
+      }.with_indifferent_access
+    )
   end
 
   it 'has a payload' do
-    expect(message.payload).not_to be_nil
+    expect(message.payload).to_not be_nil
   end
 
   context 'nested fields' do
-    let(:children) { Array.new(5) { |_o| o = ObjectB.new('attr_d') } }
-    let(:object_c) { ObjectC.new(children) }
+    let(:children) { Array.new(5) { |o| o = ObjectB.new('attr_d')}}
+    let(:object_c) { ObjectC.new(children)}
     let(:params) do
       {
         key: 'a_table',
@@ -97,7 +96,7 @@ RSpec.describe Messages::Message, type: :model do
     end
 
     let(:config) { OpenStruct.new(params) }
-    let(:message) { described_class.new(object: object_c, configuration: config) }
+    let(:message) { Messages::Message.new(object: object_c, configuration: config ) }
 
     it 'works' do
       expect(message.content).to eq(
@@ -111,8 +110,10 @@ RSpec.describe Messages::Message, type: :model do
             { field_d: 'attr_d' }
           ]
         },
-          lims: config[:lims] }.with_indifferent_access
-      )
+        lims: config[:lims]
+        }.with_indifferent_access
+    )
     end
   end
+
 end

@@ -1,7 +1,5 @@
-# frozen_string_literal: true
-
 FactoryBot.define do
-  factory :pacbio_plate, class: 'Pacbio::Plate' do
+  factory :pacbio_plate, class: Pacbio::Plate do
     run { create(:pacbio_run) }
 
     factory :pacbio_plate_with_wells do
@@ -10,7 +8,7 @@ FactoryBot.define do
         well_factory { :pacbio_well }
       end
 
-      wells { create_list(well_factory, well_count) }
+      wells { create_list(well_factory, well_count)}
     end
 
     trait :pooled do

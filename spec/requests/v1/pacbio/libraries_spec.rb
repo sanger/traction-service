@@ -1,12 +1,11 @@
-# frozen_string_literal: true
-
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe 'LibrariesController', type: :request, pacbio: true do
-  describe '#get' do
+  context '#get' do
     let!(:libraries) { create_list(:pacbio_library_in_tube, 5, :tagged) }
 
     context 'without includes' do
+
       before do
         get v1_pacbio_libraries_path, headers: json_api_headers
       end
@@ -27,27 +26,28 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
           expect(library_attributes['template_prep_kit_box_barcode']).to eq(library.template_prep_kit_box_barcode)
           expect(library_attributes['insert_size']).to eq(library.insert_size)
           expect(library_attributes['state']).to eq(library.state)
-          expect(library_attributes['created_at']).to eq(library.created_at.to_fs(:us))
-          expect(library_attributes['deactivated_at']).to be_nil
+          expect(library_attributes['created_at']).to eq(library.created_at.to_s(:us))
+          expect(library_attributes['deactivated_at']).to eq(nil)
           expect(library_attributes['source_identifier']).to eq(library.source_identifier)
         end
       end
     end
 
     context 'with includes' do
-      before do
+      setup do
         get "#{v1_pacbio_libraries_path}?include=request,tag.tag_set,tube",
             headers: json_api_headers
       end
 
+      it 'has a success status' do
+        expect(response).to have_http_status(:success)
+      end
+
+      let(:library) { libraries.first }
+
       let(:library_relationships) do
         library_resource = find_resource(type: 'libraries', id: libraries.first.id)
         library_resource.fetch('relationships')
-      end
-      let(:library) { libraries.first }
-
-      it 'has a success status' do
-        expect(response).to have_http_status(:success)
       end
 
       it 'returns the correct relationships and included data', aggregate_failures: true do
@@ -102,9 +102,10 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
         expect(library_relationships['source_plate']).to be_present
       end
     end
+
   end
 
-  describe '#destroy' do
+  context '#destroy' do
     context 'on success' do
       let!(:library) { create(:pacbio_library) }
       let!(:request) { library.request }
@@ -115,32 +116,26 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       end
 
       it 'destroys the library' do
-        expect do
-          delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
-        end.to change {
-                 Pacbio::Library.count
-               }.by(-1)
+        expect { delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers }.to change { Pacbio::Library.count }.by(-1)
       end
 
       it 'does not destroy the requests' do
-        expect do
-          delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
-        end.not_to change {
-                     Pacbio::Request.count
-                   }
+        expect { delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers }.not_to change { Pacbio::Request.count }
       end
+
     end
 
     context 'on failure' do
       it 'does not delete the library' do
-        delete '/v1/pacbio/libraries/dodgyid', headers: json_api_headers
+        delete "/v1/pacbio/libraries/dodgyid", headers: json_api_headers
         expect(response).to have_http_status(:bad_request)
       end
 
       it 'has an error message' do
-        delete '/v1/pacbio/libraries/dodgyid', headers: json_api_headers
+        delete "/v1/pacbio/libraries/dodgyid", headers: json_api_headers
         expect(json['errors']).to be_present
       end
     end
   end
+
 end
