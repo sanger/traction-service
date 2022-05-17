@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RequestHelpers
   def json_api_headers
     {
@@ -55,8 +57,8 @@ module RequestHelpers
       resource.values_at('type', 'id') == [type, id.to_s]
     end
 
-    expect(matching_resource).not_to be_nil, -> {
-      found = data.map { |resource| resource.values_at('type','id').join(':') }
+    expect(matching_resource).not_to be_nil, lambda {
+      found = data.map { |resource| resource.values_at('type', 'id').join(':') }
       "Could not find #{type}:#{id} in #{from}. Found #{found.to_sentence}"
     }
 

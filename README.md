@@ -29,17 +29,13 @@ If you need to create the database afresh: `bundle exec rails db:setup`.
 
 To create a set of enzymes (needed for saphyr dummy runs): `bundle exec rails enzymes:create`
 
-To create the first set of tags (needed for pacbio and ont dummy runs): `bundle exec rails tags:create`
+To create the first set of tags (needed for pacbio dummy runs): `bundle exec rails tags:create`
 
 To fetch tags from SS: `bundle exec rails tags:fetch`
-
-To update tags for an ONT plate which has tags wrongly assigned by row rather than column: `BARCODES=barcode1,barcode2... bundle exec rails tags:reorder`
 
 To create pacbio dummy runs: `bundle exec rails pacbio_data:create`
 
 To create saphyr dummy runs: `bundle exec rails saphyr_runs:create`
-
-To create ont dummy data: `bundle exec rails ont_data:create`
 
 ## Database drop
 
@@ -89,14 +85,6 @@ To see all the commands available from rails: `bundle exec rails -T`
 An ERD was created using the `rails-erd` gem by executing: `bundle exec erd`
 
 ![ERD](erd.jpg "ERD")
-
-### GraphQL
-
-The documentation for GraphQL can be accessed by navigating to [http://localhost:3000/v2/docs](http://localhost:3000/v2/docs) while the development rails server is running.
-This documentation can be updated by running the following commands:
-
-1. Update the stored schema: `bundle exec rails graphql:schema:dump`
-1. Update the documentation: `bundle exec rails graphql:docs:generate`
 
 ## Releases
 

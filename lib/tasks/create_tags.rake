@@ -378,68 +378,6 @@ namespace :tags do
       end
       puts '-> Nextera_UD_Index_PlateA tags successfully created'
     end
-
-    desc 'Create ont tags for 96 samples (dummy not prod)'
-    task ont_96: :environment do
-      puts '-> Creating ONT tag set for 96 sample wells'
-      tag_set_name = Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name
-      tag_set = TagSet.ont_pipeline
-                      .find_or_create_by!(name: tag_set_name, uuid: SecureRandom.uuid)
-      puts '-> Tag Set successfully created'
-      (1..96).each do |tag_index|
-        # Generate incremental 24 character long oligos for development
-        oligo = (78901234567890 + tag_index).to_s(4).tr('0', 'A').tr('1', 'T').tr('2', 'C').tr('3', 'G')
-        padded_tag_number = format('%<tag_number>02i', { tag_number: tag_index })
-        Tag.find_or_create_by!(oligo: oligo,
-                               group_id: "ont_96_tag_#{padded_tag_number}",
-                               tag_set_id: tag_set.id)
-      end
-      puts '-> ONT tag set for 96 sample wells successfully created'
-    end
-  end
-
-  desc 'Fetch tags and tag sets from sequencescape. Used to seed ONT Covid tags'
-  task fetch: :environment do
-    tag_group_name = Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name
-    tag_group_hostname = Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_hostname
-    puts "-> Fetching tag set '#{tag_group_name}' from sequencescape"
-    uri = URI("#{tag_group_hostname}/api/v2/tag_groups?filter[name]=#{tag_group_name}")
-    res = Net::HTTP.get_response(uri)
-    if res.is_a?(Net::HTTPSuccess)
-      json_res = JSON.parse(res.body)
-      tag_groups = json_res['data']
-      show_errors ['-> Expected one and only one tag group'] if tag_groups.count != 1
-      tag_group = tag_groups.first
-      if tag_group['attributes']['name'] != tag_group_name
-        show_errors ["-> Expected tag group with name '#{tag_group_name}'"]
-      end
-      tag_set = TagSet.ont_pipeline
-                      .find_or_create_by!(name: tag_group_name, uuid: SecureRandom.uuid)
-      puts "-> #{tag_group_name} successfully created"
-      tag_group['attributes']['tags'].each_with_index do |tag, idx|
-        padded_tag_number = format('%<tag_number>02i', { tag_number: idx + 1 })
-        Tag.find_or_create_by!(oligo: tag['oligo'],
-                               group_id: "#{tag_group_name}-#{padded_tag_number}",
-                               tag_set_id: tag_set.id)
-      end
-      puts "-> #{tag_group_name} tags successfully created"
-    end
-  end
-
-  # to run this use bundle exec rake BARCODES=barcode1,barcode2 tags:reorder
-  desc 'reorder ONT tags by column rather than row.'
-  task reorder: :environment do
-    tag_set = TagSet.find_by(name: Pipelines::ConstantsAccessor.ont_covid_pcr_tag_set_name)
-    ENV['BARCODES'].split(',').each do |barcode|
-      puts "Reordering tags for plate #{barcode}"
-      plate = Plate.find_by(barcode: barcode)
-      Ont::AddTags.run!(plate: plate, tag_set: tag_set, order: 'column')
-      library = Ont::Library.where("name like '%#{plate.barcode}%'").first
-      Messages.publish(library.flowcell.run, Pipelines.ont.message)
-    end
-  rescue StandardError => e
-    puts e
-    puts 'Something went wrong. It was probably your fault!'
   end
 
   task destroy: :environment do

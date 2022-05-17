@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
-  factory :pacbio_library, class: Pacbio::Library do
+  factory :pacbio_library, class: 'Pacbio::Library' do
     volume { 1.111 }
     concentration { 2.222 }
     template_prep_kit_box_barcode { 'LK1234567' }

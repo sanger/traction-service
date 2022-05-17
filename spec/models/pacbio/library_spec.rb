@@ -1,18 +1,20 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Pacbio::Library, type: :model, pacbio: true do
-
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_library }
+
     it_behaves_like 'uuidable'
   end
 
   it 'must have a volume' do
-    expect(build(:pacbio_library, volume: nil)).to_not be_valid
+    expect(build(:pacbio_library, volume: nil)).not_to be_valid
   end
 
   it 'must have a concentration' do
-    expect(build(:pacbio_library, concentration: nil)).to_not be_valid
+    expect(build(:pacbio_library, concentration: nil)).not_to be_valid
   end
 
   it 'can have a template prep kit box barcode' do
@@ -21,7 +23,7 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
   end
 
   it 'must have a insert size' do
-    expect(build(:pacbio_library, insert_size: nil)).to_not be_valid
+    expect(build(:pacbio_library, insert_size: nil)).not_to be_valid
   end
 
   it 'can have a request' do
@@ -45,7 +47,6 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
   end
 
   describe '#request' do
-
     let!(:library) { create(:pacbio_library, tag: create(:tag)) }
 
     it 'can have one' do
@@ -58,9 +59,8 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
   end
 
   context 'library' do
-
     let(:library_factory) { :pacbio_library }
-    let(:library_model) { Pacbio::Library }
+    let(:library_model) { described_class }
 
     it_behaves_like 'library'
   end

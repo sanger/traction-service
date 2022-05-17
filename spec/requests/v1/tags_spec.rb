@@ -1,8 +1,9 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 RSpec.describe 'TagsController', type: :request do
-
-  context '#get' do
+  describe '#get' do
     let!(:tag1) { create(:tag) }
     let!(:tag2) { create(:tag) }
 
@@ -22,13 +23,11 @@ RSpec.describe 'TagsController', type: :request do
       expect(json['data'][0]['attributes']['oligo']).to eq(tag1.oligo)
       expect(json['data'][1]['attributes']['oligo']).to eq(tag2.oligo)
     end
-
   end
 
-  context '#create' do
+  describe '#create' do
     context 'on success' do
-
-      let!(:tag_set) {create(:tag_set)}
+      let!(:tag_set) { create(:tag_set) }
 
       let(:body) do
         {
@@ -45,7 +44,9 @@ RSpec.describe 'TagsController', type: :request do
       end
 
       it 'creates a tag' do
-        expect { post v1_tags_path, params: body, headers: json_api_headers }.to change { Tag.count }.by(1)
+        expect do
+          post v1_tags_path, params: body, headers: json_api_headers
+        end.to change(Tag, :count).by(1)
       end
 
       it 'creates a tag with the correct attributes' do
@@ -72,29 +73,32 @@ RSpec.describe 'TagsController', type: :request do
         end
 
         it 'cannot create a tag' do
-          expect { post v1_tags_path, params: body, headers: json_api_headers }.to_not change(Tag, :count)
+          expect do
+            post v1_tags_path, params: body, headers: json_api_headers
+          end.not_to change(Tag, :count)
         end
 
         it 'has an error message' do
           post v1_tags_path, params: body, headers: json_api_headers
-          expect(JSON.parse(response.body)["data"]).to include("errors" => {"group_id"=>["can't be blank"], "oligo"=>["can't be blank"], "tag_set"=>["must exist"]})
+          expect(JSON.parse(response.body)['data']).to include('errors' => {
+                                                                 'group_id' => ["can't be blank"], 'oligo' => ["can't be blank"], 'tag_set' => ['must exist']
+                                                               })
         end
       end
     end
-
   end
 
-  context '#update' do
+  describe '#update' do
     let(:tag) { create(:tag) }
 
     context 'on success' do
       let(:body) do
         {
           data: {
-            type: "tags",
+            type: 'tags',
             id: tag.id,
             attributes: {
-              "oligo": "ACDC"
+              oligo: 'ACDC'
             }
           }
         }.to_json
@@ -108,7 +112,7 @@ RSpec.describe 'TagsController', type: :request do
       it 'updates a tag' do
         patch v1_tag_path(tag), params: body, headers: json_api_headers
         tag.reload
-        expect(tag.oligo).to eq "ACDC"
+        expect(tag.oligo).to eq 'ACDC'
       end
 
       it 'returns the correct attributes' do
@@ -122,10 +126,10 @@ RSpec.describe 'TagsController', type: :request do
       let(:body) do
         {
           data: {
-            type: "tags",
+            type: 'tags',
             id: 123,
             attributes: {
-              "oligo": "ACDC"
+              oligo: 'ACDC'
             }
           }
         }.to_json
@@ -138,12 +142,12 @@ RSpec.describe 'TagsController', type: :request do
 
       it 'has an error message' do
         patch v1_tag_path(123), params: body, headers: json_api_headers
-        expect(JSON.parse(response.body)["data"]).to include("errors" => "Couldn't find Tag with 'id'=123")
+        expect(JSON.parse(response.body)['data']).to include('errors' => "Couldn't find Tag with 'id'=123")
       end
     end
   end
 
-  context '#destroy' do
+  describe '#destroy' do
     context 'on success' do
       let!(:tag) { create(:tag) }
 
@@ -153,14 +157,15 @@ RSpec.describe 'TagsController', type: :request do
       end
 
       it 'destroys the tag' do
-        expect { delete "/v1/tags/#{tag.id}", headers: json_api_headers }.to change { Tag.count }.by(-1)
+        expect do
+          delete "/v1/tags/#{tag.id}", headers: json_api_headers
+        end.to change(Tag, :count).by(-1)
       end
-
     end
 
     context 'on failure' do
       it 'returns the correct status' do
-        delete "/v1/tags/123", headers: json_api_headers
+        delete '/v1/tags/123', headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
 

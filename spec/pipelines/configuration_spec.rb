@@ -1,58 +1,60 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 RSpec.describe Pipelines::Configuration, type: :model do
-  let(:params) {
+  let(:params) do
     {
-      'pipeline_a': {
-        'lims': 'lims_a',
-        'instrument_name': 'bert',
-        'message': {
-          'key': 'pipeline_a_flowcell',
-          'fields': {
-            'field_a': {
-              'type': :string,
-              'value': 'blah, blah, blah'
+      pipeline_a: {
+        lims: 'lims_a',
+        instrument_name: 'bert',
+        message: {
+          key: 'pipeline_a_flowcell',
+          fields: {
+            field_a: {
+              type: :string,
+              value: 'blah, blah, blah'
             },
-            'field_b': {
-              'type': :model,
-              'value': 'attr_a'
+            field_b: {
+              type: :model,
+              value: 'attr_a'
             },
-            'field_c': {
-              'type': :model,
-              'value': 'attr_c.attr_d'
+            field_c: {
+              type: :model,
+              value: 'attr_c.attr_d'
             },
-            'field_d': {
-              'type': :constant,
-              'value': 'Time.current'
+            field_d: {
+              type: :constant,
+              value: 'Time.current'
             }
           }
         }
       },
-      'pipeline_b': {
-        'lims': 'lims_b',
-        'instrument_name': 'ernie',
-        'message': {
-          'key': 'pipeline_b_flowcell',
-          'fields': {
-            'field_a': {
-              'type': :string,
-              'value': 'dah, dah, dah'
+      pipeline_b: {
+        lims: 'lims_b',
+        instrument_name: 'ernie',
+        message: {
+          key: 'pipeline_b_flowcell',
+          fields: {
+            field_a: {
+              type: :string,
+              value: 'dah, dah, dah'
             },
-            'field_b': {
-              'type': :model,
-              'value': 'attr_b'
+            field_b: {
+              type: :model,
+              value: 'attr_b'
             },
-            'field_c': {
-              'type': :constant,
-              'value': 'Time.current'
+            field_c: {
+              type: :constant,
+              value: 'Time.current'
             }
           }
         }
       }
     }
-  }
+  end
 
-  let(:configuration) { Pipelines::Configuration.new(params) }
+  let(:configuration) { described_class.new(params) }
 
   it 'will have configuration for each pipeline' do
     expect(configuration).to respond_to(:pipeline_a)
@@ -88,15 +90,15 @@ RSpec.describe Pipelines::Configuration, type: :model do
   end
 
   it 'will have a list of pipelines' do
-    expect(configuration.pipelines).to eq(['pipeline_a', 'pipeline_b'])
+    expect(configuration.pipelines).to eq(%w[pipeline_a pipeline_b])
   end
 
   it 'will still work if we create an item' do
-    pipeline_a = Pipelines::Configuration::Item.new('pipeline_a', params[:pipeline_a].with_indifferent_access)
+    pipeline_a = Pipelines::Configuration::Item.new('pipeline_a',
+                                                    params[:pipeline_a].with_indifferent_access)
     expect(pipeline_a.pipeline).to eq('pipeline_a')
     expect(pipeline_a.lims).to eq('lims_a')
     expect(pipeline_a.instrument_name).to eq('bert')
     expect(pipeline_a.message.fields.count).to eq(4)
   end
-
 end
