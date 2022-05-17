@@ -1,9 +1,8 @@
-# frozen_string_literal: true
-
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe 'EnzymesController', type: :request do
-  describe '#get' do
+
+  context '#get' do
     let!(:saphyr_enzyme1) { create(:saphyr_enzyme) }
     let!(:saphyr_enzyme2) { create(:saphyr_enzyme) }
 
@@ -22,5 +21,7 @@ RSpec.describe 'EnzymesController', type: :request do
       expect(json['data'][0]['attributes']['name']).to eq(saphyr_enzyme1.name)
       expect(json['data'][1]['attributes']['name']).to eq(saphyr_enzyme2.name)
     end
+
   end
+
 end

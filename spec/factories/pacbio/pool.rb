@@ -1,7 +1,5 @@
-# frozen_string_literal: true
-
 FactoryBot.define do
-  factory :pacbio_pool, class: 'Pacbio::Pool' do
+  factory :pacbio_pool, class: Pacbio::Pool do
     transient do
       library_count { 1 }
       library_factory { :pacbio_library }

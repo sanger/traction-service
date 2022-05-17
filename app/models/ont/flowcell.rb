@@ -12,11 +12,14 @@ module Ont
     validates :position,
               presence: true,
               uniqueness: { scope: :ont_run_id,
-                            message: :duplicated_in_run }
+                            message: 'should only appear once within run' }
 
-    # Make table read only. We don't want anything pushing to it.
-    def readonly?
-      true
+    def self.includes_args(except = nil)
+      args = []
+      args << { library: Ont::Library.includes_args(:flowcell) } unless except == :library
+      args << { run: Ont::Run.includes_args(:flowcells) } unless except == :run
+
+      args
     end
   end
 end

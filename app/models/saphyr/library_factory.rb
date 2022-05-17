@@ -44,8 +44,8 @@ module Saphyr
       libraries.each do |library|
         next if library.valid?
 
-        library.errors.each do |error|
-          errors.add(error.attribute, error.message)
+        library.errors.each do |k, v|
+          errors.add(k, v)
         end
       end
     end

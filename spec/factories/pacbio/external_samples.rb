@@ -1,8 +1,8 @@
-# frozen_string_literal: true
-
 # ExternalSamples
 class ExternalSample
+
   def initialize(attributes = {})
+
     @attributes = attributes
 
     attributes.each do |k, v|
@@ -13,10 +13,12 @@ class ExternalSample
   def to_h
     @attributes
   end
+  
 end
 
 FactoryBot.define do
-  factory :external_sample, class: 'ExternalSample' do
+  factory :external_sample, class: ExternalSample do
+
     sequence(:name) { |n| "Sample#{n}" }
     sequence(:external_id, &:to_s)
     species { 'human' }
@@ -29,5 +31,6 @@ FactoryBot.define do
     initialize_with { new(**attributes).to_h }
 
     skip_create
+
   end
 end

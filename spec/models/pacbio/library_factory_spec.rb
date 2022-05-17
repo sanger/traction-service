@@ -3,10 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
+
   let(:tags)                    { create_list(:tag, 3) }
   let(:requests)                { create_list(:pacbio_request, 3) }
   let(:request_attributes)      do
-    [{ id: requests[0].id, type: 'requests', tag: { id: tags[0].id, type: 'tags' } }]
+    [{id: requests[0].id, type: 'requests', tag: { id: tags[0].id, type: 'tags'}}]
   end
 
   let(:libraries_attributes) do
@@ -15,9 +16,9 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
   end
 
   context 'LibraryFactory' do
-    describe '#initialize' do
+    context '#initialize' do
       before do
-        @factory = described_class.new(libraries_attributes)
+        @factory = Pacbio::LibraryFactory.new(libraries_attributes)
         @pacbio_library = @factory.library
       end
 
@@ -42,10 +43,10 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
       end
     end
 
-    describe '#save' do
+    context '#save' do
       context 'when valid' do
         before do
-          @factory = described_class.new(libraries_attributes)
+          @factory = Pacbio::LibraryFactory.new(libraries_attributes)
           @factory.save
         end
 
@@ -79,35 +80,36 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
           library = @factory.library
           expect(library.tag_id).to eq tags[0].id
         end
+
       end
 
       context 'when invalid' do
         context 'when the library is invalid' do
           it 'produces error messages if the library is missing a required attribute' do
             invalid_library_attributes = libraries_attributes.except(:volume)
-            factory = described_class.new(invalid_library_attributes)
+            factory = Pacbio::LibraryFactory.new(invalid_library_attributes)
             expect(factory.save).to be_falsy
             expect(factory.errors.full_messages).to include "Volume can't be blank"
           end
         end
 
         context 'when the request libraries are invalid' do
-          let(:request_empty_cost_code) { create(:pacbio_request, cost_code: '') }
-          let(:request_nil_cost_code) { create(:pacbio_request, cost_code: nil) }
+          let(:request_empty_cost_code) { create(:pacbio_request, cost_code: "")}
+          let(:request_nil_cost_code) { create(:pacbio_request, cost_code: nil)}
 
           it 'produces an error if any request contains an empty cost code' do
             library_attributes = attributes_for(:pacbio_library).merge(pacbio_request_id: request_empty_cost_code.id)
 
-            factory = described_class.new(library_attributes)
-            expect(factory).not_to be_valid
+            factory = Pacbio::LibraryFactory.new(library_attributes)
+            expect(factory.valid?).to be_falsy
             expect(factory.errors.full_messages).to eq(['Cost code must be present'])
           end
 
           it 'produces an error if any request contains a nil cost code' do
             library_attributes = attributes_for(:pacbio_library).merge(pacbio_request_id: request_nil_cost_code.id)
 
-            factory = described_class.new(library_attributes)
-            expect(factory).not_to be_valid
+            factory = Pacbio::LibraryFactory.new(library_attributes)
+            expect(factory.valid?).to be_falsy
             expect(factory.errors.full_messages).to eq(['Cost code must be present'])
           end
         end
@@ -115,7 +117,7 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
 
       context 'when save errors' do
         before do
-          @factory = described_class.new(attributes)
+          @factory = Pacbio::LibraryFactory.new(attributes)
           allow(@factory).to receive(:valid?).and_return true
         end
 
@@ -133,9 +135,9 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
       end
     end
 
-    describe '#id' do
+    context '#id' do
       it 'returns the Pacbio::Library id' do
-        factory = described_class.new(libraries_attributes)
+        factory = Pacbio::LibraryFactory.new(libraries_attributes)
         factory.save
         library = factory.library
         expect(factory.id).to eq library.id

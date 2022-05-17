@@ -1,6 +1,4 @@
-# frozen_string_literal: true
-
-RSpec.shared_examples 'uuidable' do
+RSpec.shared_examples "uuidable" do
   it 'has a uuid after creation' do
     uuidable = create(uuidable_model)
     expect(uuidable.uuid).to be_present

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
-
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe Messages::Broker do
   let(:bunny) { double('Bunny') }
@@ -24,9 +23,9 @@ RSpec.describe Messages::Broker do
   let(:exchange) { double('exchange') }
   let(:queue) { double('queue') }
 
-  let(:broker) { described_class.new(bunny_config) }
+  let(:broker) { Messages::Broker.new(bunny_config) }
 
-  before do
+  setup do
     stub_const('Bunny', bunny)
   end
 
@@ -63,7 +62,7 @@ RSpec.describe Messages::Broker do
   end
 
   describe '#create_connection' do
-    it 'does not do anything when already connected' do
+    it 'should not do anything when already connected' do
       mock_connection
       allow(connection).to receive(:connected?).and_return(true)
 
@@ -71,23 +70,23 @@ RSpec.describe Messages::Broker do
       expect(broker).not_to receive(:connect)
     end
 
-    it 'connects when not already connected' do
+    it 'should connect when not already connected' do
       expect(broker).to receive(:connect)
       broker.create_connection
     end
   end
 
   describe '#connected?' do
-    it 'returns true when the broker is connected' do
+    it 'should return true when the broker is connected' do
       mock_connection
 
       broker.create_connection
       allow(connection).to receive(:connected?).and_return(true)
-      expect(broker).to be_connected
+      expect(broker.connected?).to be_truthy
     end
 
-    it 'returns false when the broken is not connected' do
-      expect(broker).not_to be_connected
+    it 'should return false when the broken is not connected' do
+      expect(broker.connected?).to be_falsey
     end
   end
 
@@ -108,10 +107,12 @@ RSpec.describe Messages::Broker do
   end
 
   describe '#publish' do
-    it 'publishes the message' do
+
+    it 'should publish the message' do
       mock_connection
       allow(exchange).to receive(:publish)
       broker.publish('message')
     end
   end
+
 end
