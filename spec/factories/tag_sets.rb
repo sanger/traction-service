@@ -1,12 +1,10 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :tag_set do
     sequence(:name) { |n| "Tag-Set-#{n}" }
     sequence(:uuid) { |n| n }
     pipeline { :pacbio }
-
-    factory :ont_tag_set do
-      pipeline { :ont }
-    end
 
     factory :hidden_tag_set do
       sample_sheet_behaviour { :hidden }

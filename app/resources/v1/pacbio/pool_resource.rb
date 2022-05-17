@@ -6,7 +6,11 @@ module V1
     class PoolResource < JSONAPI::Resource
       model_name 'Pacbio::Pool'
 
-      has_one :tube
+      # If we don't specify the relation_name here, jsonapi-resources
+      # attempts to use_related_resource_records_for_joins
+      # In this case I can see it using container_associations
+      # so seems to be linking the wrong tube relationship.
+      has_one :tube, relation_name: :tube
       has_many :libraries
 
       attributes :volume, :concentration, :template_prep_kit_box_barcode,
@@ -34,11 +38,11 @@ module V1
       end
 
       def created_at
-        @model.created_at.to_s(:us)
+        @model.created_at.to_fs(:us)
       end
 
       def updated_at
-        @model.updated_at.to_s(:us)
+        @model.updated_at.to_fs(:us)
       end
 
       def publish_messages

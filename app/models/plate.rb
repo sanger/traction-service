@@ -45,16 +45,4 @@ class Plate < ApplicationRecord
   def formatted_range(wells)
     WellSorterService.formatted_range(wells, DEFAULT_SIZE)
   end
-
-  def self.includes_args(except = nil)
-    args = []
-    args << { wells: Well.includes_args(:plate) } unless except == :wells
-
-    args
-  end
-
-  def self.resolved_query
-    # graphql query returns only ONT plates
-    Plate.by_pipeline('Ont').includes(*includes_args)
-  end
 end

@@ -20,7 +20,7 @@ module Pacbio
 
     def library_attributes=(library_options)
       self.libraries = library_options.map do |attributes|
-        if attributes[:id]
+        if attributes['id']
           update_library(attributes)
         else
           Pacbio::Library.new(attributes)
@@ -36,7 +36,7 @@ module Pacbio
     private
 
     def update_library(attributes)
-      id = attributes[:id].to_s
+      id = attributes['id'].to_s
       indexed_libraries.fetch(id) { missing_library(id) }
                        .tap { |l| l.update(attributes) }
     end

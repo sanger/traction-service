@@ -22,7 +22,7 @@ module V1
       end
 
       def created_at
-        @model.created_at.to_s(:us)
+        @model.created_at.to_fs(:us)
       end
 
       def self.records_for_populate(*_args)

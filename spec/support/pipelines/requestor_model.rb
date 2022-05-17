@@ -1,8 +1,9 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 shared_examples_for 'requestor model' do
-
-  let(:model)   { described_class.to_s.split('::').join('_').downcase }
+  let(:model) { described_class.to_s.split('::').join('_').downcase }
 
   module_ = described_class.to_s.deconstantize.constantize
 
@@ -14,7 +15,7 @@ shared_examples_for 'requestor model' do
     it "is not valid without #{attribute.to_s.gsub('_', ' ')}" do
       factory = build(model)
       factory.send("#{attribute}=", nil)
-      expect(factory).to_not be_valid
+      expect(factory).not_to be_valid
     end
   end
 
@@ -25,7 +26,7 @@ shared_examples_for 'requestor model' do
       before do
         create(:plate_with_wells_and_requests,
                row_count: 1, column_count: 1, barcode: 'BC12',
-               requests: [request] )
+               requests: [request])
       end
 
       it 'returns the plate barcode and well' do
@@ -43,5 +44,4 @@ shared_examples_for 'requestor model' do
       end
     end
   end
-
 end

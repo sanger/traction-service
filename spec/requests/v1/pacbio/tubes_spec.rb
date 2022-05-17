@@ -1,14 +1,15 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 RSpec.describe 'TubesController', type: :request do
-
   let(:pipeline_name)       { 'pacbio' }
   let(:other_pipeline_name) { 'saphyr' }
 
   it_behaves_like 'tubes'
 
-  context '#get?include=pools' do
-    setup do
+  describe '#get?include=pools' do
+    before do
       pacbio_pool
       get "#{v1_pacbio_tubes_path}?include=pools", headers: json_api_headers
     end
@@ -23,5 +24,4 @@ RSpec.describe 'TubesController', type: :request do
       expect(find_included_resource(type: 'pools', id: pacbio_pool.id)).to be_present
     end
   end
-
 end
