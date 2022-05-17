@@ -1,7 +1,6 @@
-# frozen_string_literal: true
-
 FactoryBot.define do
-  factory :saphyr_library, class: 'Saphyr::Library' do
+  factory :saphyr_library, class: Saphyr::Library do
+
     state { 'pending' }
     request { create(:saphyr_request) }
     association :enzyme, factory: :saphyr_enzyme

@@ -1,15 +1,14 @@
-# frozen_string_literal: true
-
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe 'RunsController', type: :request do
-  describe '#get' do
+
+  context '#get' do
     let!(:run1) { create(:saphyr_run, state: 'pending', name: 'run1') }
     let!(:run2) { create(:saphyr_run, state: 'started') }
     let!(:chip1) { create(:saphyr_chip, run: run1) }
     let!(:chip2) { create(:saphyr_chip, run: run2) }
-    let!(:flowcells1) { create_list(:saphyr_flowcell, 2, chip: chip1) }
-    let!(:flowcells2) { create_list(:saphyr_flowcell, 2, chip: chip2) }
+    let!(:flowcells1) {create_list(:saphyr_flowcell, 2, chip: chip1)}
+    let!(:flowcells2) {create_list(:saphyr_flowcell, 2, chip: chip2)}
 
     it 'returns a list of runs' do
       get v1_saphyr_runs_path, headers: json_api_headers
@@ -35,11 +34,11 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][0]['attributes']['state']).to eq(run1.state)
       expect(json['data'][0]['attributes']['name']).to eq(run1.name)
       expect(json['data'][0]['attributes']['chip_barcode']).to eq(run1.chip.barcode)
-      expect(json['data'][0]['attributes']['created_at']).to eq(run1.created_at.to_fs(:us))
+      expect(json['data'][0]["attributes"]["created_at"]).to eq(run1.created_at.to_s(:us))
       expect(json['data'][1]['attributes']['state']).to eq(run2.state)
       expect(json['data'][1]['attributes']['name']).to eq(run2.name)
       expect(json['data'][1]['attributes']['chip_barcode']).to eq(run2.chip.barcode)
-      expect(json['data'][1]['attributes']['created_at']).to eq(run2.created_at.to_fs(:us))
+      expect(json['data'][1]["attributes"]["created_at"]).to eq(run2.created_at.to_s(:us))
     end
 
     it 'returns the correct relationships' do
@@ -48,20 +47,23 @@ RSpec.describe 'RunsController', type: :request do
       json = ActiveSupport::JSON.decode(response.body)
 
       expect(json['data'][0]['relationships']['chip']).to be_present
-      expect(json['data'][0]['relationships']['chip']['data']['type']).to eq 'chips'
+      expect(json['data'][0]['relationships']['chip']['data']['type']).to eq "chips"
       expect(json['data'][0]['relationships']['chip']['data']['id']).to eq chip1.id.to_s
 
       expect(json['data'][1]['relationships']['chip']).to be_present
-      expect(json['data'][1]['relationships']['chip']['data']['type']).to eq 'chips'
+      expect(json['data'][1]['relationships']['chip']['data']['type']).to eq "chips"
       expect(json['data'][1]['relationships']['chip']['data']['id']).to eq chip2.id.to_s
     end
+
+
+
   end
 
-  describe '#create' do
+  context '#create' do
     let(:body) do
       {
         data: {
-          type: 'runs',
+          type: "runs",
           attributes: attributes_for(:saphyr_run)
         }
       }.to_json
@@ -74,9 +76,7 @@ RSpec.describe 'RunsController', type: :request do
       end
 
       it 'creates a run' do
-        expect { post v1_saphyr_runs_path, params: body, headers: json_api_headers }.to change {
-                                                                                          Saphyr::Run.count
-                                                                                        }.by(1)
+        expect { post v1_saphyr_runs_path, params: body, headers: json_api_headers }.to change { Saphyr::Run.count }.by(1)
       end
 
       it 'creates a run with the correct attributes' do
@@ -86,10 +86,13 @@ RSpec.describe 'RunsController', type: :request do
         expect(run.state).to be_present
         expect(run.chip).to be_nil
       end
+
     end
+
   end
 
-  describe '#update' do
+  context '#update' do
+
     before do
       @run = create(:saphyr_run)
       @chip = create(:saphyr_chip, run: @run)
@@ -100,11 +103,11 @@ RSpec.describe 'RunsController', type: :request do
       let(:body) do
         {
           data: {
-            type: 'runs',
+            type: "runs",
             id: @run.id,
             attributes: {
-              state: 'started',
-              name: 'aname'
+              state: "started",
+              name: "aname"
             }
           }
         }.to_json
@@ -118,8 +121,8 @@ RSpec.describe 'RunsController', type: :request do
       it 'updates a run' do
         patch v1_saphyr_run_path(@run), params: body, headers: json_api_headers
         @run.reload
-        expect(@run.state).to eq 'started'
-        expect(@run.name).to eq 'aname'
+        expect(@run.state).to eq "started"
+        expect(@run.name).to eq "aname"
       end
 
       it 'sends a message to the warehouse' do
@@ -132,17 +135,18 @@ RSpec.describe 'RunsController', type: :request do
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data']['id']).to eq @run.id.to_s
       end
+
     end
 
     context 'on failure' do
       let(:body) do
         {
           data: {
-            type: 'runs',
+            type: "runs",
             id: 123,
             attributes: {
-              state: 'started',
-              name: 'aname'
+              state: "started",
+              name: "aname"
             }
           }
         }.to_json
@@ -161,12 +165,13 @@ RSpec.describe 'RunsController', type: :request do
 
       it 'has an error message' do
         patch v1_saphyr_run_path(123), params: body, headers: json_api_headers
-        expect(JSON.parse(response.body)['data']).to include('errors' => "Couldn't find Saphyr::Run with 'id'=123")
+        expect(JSON.parse(response.body)["data"]).to include("errors" => "Couldn't find Saphyr::Run with 'id'=123")
       end
     end
+
   end
 
-  describe '#show' do
+  context '#show' do
     let!(:run) { create(:saphyr_run, state: 'pending') }
     let!(:chip) { create(:saphyr_chip_with_flowcells_and_library_in_tube, run: run) }
 
@@ -194,7 +199,7 @@ RSpec.describe 'RunsController', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data']['relationships']['chip']).to be_present
-      expect(json['data']['relationships']['chip']['data']['type']).to eq 'chips'
+      expect(json['data']['relationships']['chip']['data']['type']).to eq "chips"
       expect(json['data']['relationships']['chip']['data']['id']).to eq chip.id.to_s
     end
 
@@ -205,32 +210,36 @@ RSpec.describe 'RunsController', type: :request do
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['included'][0]['id']).to eq chip.id.to_s
-      expect(json['included'][0]['type']).to eq 'chips'
+      expect(json['included'][0]['type']).to eq "chips"
       expect(json['included'][0]['attributes']['barcode']).to eq chip.barcode
       expect(json['included'][0]['relationships']['flowcells']['data'][0]['id']).to eq chip.flowcells[0].id.to_s
       expect(json['included'][0]['relationships']['flowcells']['data'][1]['id']).to eq chip.flowcells[1].id.to_s
 
       expect(json['included'][1]['id']).to eq chip.flowcells[0].id.to_s
-      expect(json['included'][1]['type']).to eq 'flowcells'
+      expect(json['included'][1]['type']).to eq "flowcells"
       expect(json['included'][1]['attributes']['position']).to eq chip.flowcells[0].position
       expect(json['included'][1]['relationships']['library']).to be_present
 
       expect(json['included'][2]['id']).to eq chip.flowcells[1].id.to_s
-      expect(json['included'][2]['type']).to eq 'flowcells'
+      expect(json['included'][2]['type']).to eq "flowcells"
       expect(json['included'][2]['attributes']['position']).to eq chip.flowcells[1].position
       expect(json['included'][2]['relationships']['library']).to be_present
 
-      expect(json['included'][1]['relationships']['library']['data']['id']).to eq chip.flowcells[0].library.id.to_s
-      expect(json['included'][2]['relationships']['library']['data']['id']).to eq chip.flowcells[1].library.id.to_s
+      expect(json['included'][1]['relationships']['library']["data"]["id"]).to eq chip.flowcells[0].library.id.to_s
+      expect(json['included'][2]['relationships']['library']["data"]["id"]).to eq chip.flowcells[1].library.id.to_s
     end
+
   end
 
-  describe '#destroy' do
+  context '#destroy' do
+
     let(:run) { create(:saphyr_run) }
 
     it 'has a status of ok' do
       delete v1_saphyr_run_path(run), headers: json_api_headers
       expect(response).to have_http_status(:no_content)
     end
+
   end
+
 end

@@ -6,7 +6,6 @@ default: &default
   host: 127.0.0.1
   port: <%= ENV.fetch('DBPORT','3306') %>
   timeout: 5000
-  encoding: utf8
 
 development:
   <<: *default

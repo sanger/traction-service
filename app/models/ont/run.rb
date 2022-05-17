@@ -23,9 +23,15 @@ module Ont
       "ONTRUN-#{id}"
     end
 
-    # Make table read only. We don't want anything pushing to it.
-    def readonly?
-      true
+    def self.includes_args(except = nil)
+      args = []
+      args << { flowcells: Ont::Flowcell.includes_args(:run) } unless except == :flowcells
+
+      args
+    end
+
+    def self.resolved_query
+      Ont::Run.includes(*includes_args)
     end
   end
 end

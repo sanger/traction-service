@@ -12,10 +12,9 @@ module Pacbio
   # * save the library
   class LibraryFactory
     include ActiveModel::Model
-    extend NestedValidation
 
+    validate :validate_library
     validates :cost_code, presence: true
-    validates_nested :library
 
     # Pacbio::Library
     attr_reader :library
@@ -45,6 +44,14 @@ module Pacbio
 
     def create_library(library_attributes)
       Pacbio::Library.new(library_attributes)
+    end
+
+    def validate_library
+      return if library.valid?
+
+      library.errors.each do |k, v|
+        errors.add(k, v)
+      end
     end
   end
 end

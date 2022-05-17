@@ -10,9 +10,16 @@ module Ont
                          dependent: :destroy, optional: true
     validates :name, :external_id, presence: true
 
-    # Make table read only. We don't want anything pushing to it.
-    def readonly?
-      true
+    def self.includes_args(except = nil)
+      args = []
+      args << { tags: Tag.includes_args } unless except == :tags
+      args << { library: Ont::Library.includes_args(:requests) } unless except == :library
+
+      unless except == :container_material
+        args << { container_material: ContainerMaterial.includes_args(:material) }
+      end
+
+      args
     end
   end
 end

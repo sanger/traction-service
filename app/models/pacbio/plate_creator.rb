@@ -61,8 +61,8 @@ module Pacbio
       plate_wrappers.each do |plate_wrapper|
         next if plate_wrapper.valid?
 
-        plate_wrapper.errors.each do |error|
-          errors.add(error.attribute, error.message)
+        plate_wrapper.errors.each do |k, v|
+          errors.add(k, v)
         end
       end
     end
@@ -111,8 +111,8 @@ module Pacbio
         well_wrappers.each do |well_wrapper|
           next if well_wrapper.valid?
 
-          well_wrapper.errors.each do |error|
-            errors.add(error.attribute, error.message)
+          well_wrapper.errors.each do |k, v|
+            errors.add(k, v)
           end
         end
       end
@@ -160,8 +160,8 @@ module Pacbio
       def check_well
         return if well.valid?
 
-        well.errors.each do |error|
-          errors.add("Well #{error.attribute}", error.message)
+        well.errors.each do |k, v|
+          errors.add("Well #{k}", v)
         end
       end
 
@@ -171,8 +171,8 @@ module Pacbio
         sample_wrappers.each do |sample|
           next if sample.valid?
 
-          sample.errors.each do |error|
-            errors.add(error.attribute, error.message)
+          sample.errors.each do |k, v|
+            errors.add(k, v)
           end
         end
       end
@@ -233,8 +233,8 @@ module Pacbio
         [sample, pacbio_request].each do |model|
           next if model.valid?
 
-          model.errors.each do |error|
-            errors.add("Sample #{error.attribute}", error.message)
+          model.errors.each do |k, v|
+            errors.add("Sample #{k}", v)
           end
         end
       end
