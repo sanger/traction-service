@@ -1,15 +1,15 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 RSpec.describe 'PoolsController', type: :request, pacbio: true do
-
   let!(:request) { create(:pacbio_request) }
   let!(:tag) { create(:tag) }
   let!(:request2) { create(:pacbio_request) }
   let!(:tag2) { create(:tag) }
 
-  context '#get' do
-
-    let!(:pools) { create_list(:pacbio_pool, 2)}
+  describe '#get' do
+    let!(:pools) { create_list(:pacbio_pool, 2) }
 
     it 'returns a list of pools' do
       get v1_pacbio_pools_path, headers: json_api_headers
@@ -32,7 +32,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
       expect(pool_resource['concentration']).to eq(pool.concentration)
       expect(pool_resource['template_prep_kit_box_barcode']).to eq(pool.template_prep_kit_box_barcode)
       expect(pool_resource['insert_size']).to eq(pool.insert_size)
-      expect(pool_resource['created_at']).to eq(pool.created_at.to_s(:us))
+      expect(pool_resource['created_at']).to eq(pool.created_at.to_fs(:us))
     end
 
     it 'returns the correct attributes', aggregate_failures: true do
@@ -49,10 +49,9 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
       expect(library_attributes['template_prep_kit_box_barcode']).to eq(library.template_prep_kit_box_barcode)
       expect(library_attributes['insert_size']).to eq(library.insert_size)
     end
-
   end
 
-  context '#create' do
+  describe '#create' do
     context 'when creating a singleplex library' do
       context 'on success' do
         let(:body) do
@@ -85,7 +84,9 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
         end
 
         it 'creates a pool' do
-          expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to change { Pacbio::Pool.count }.by(1)
+          expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to change {
+                                                                                             Pacbio::Pool.count
+                                                                                           }.by(1)
         end
 
         it 'returns the id' do
@@ -98,8 +99,6 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
           tube = find_included_resource(id: Pacbio::Pool.first.tube_id, type: 'tubes')
           expect(tube.dig('attributes', 'barcode')).to be_present
         end
-
-      
       end
 
       context 'on failure' do
@@ -129,13 +128,11 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
           end
 
           it 'cannot create a pool' do
-            expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to_not(
+            expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.not_to(
               change(Pacbio::Pool, :count)
             )
           end
-
         end
-
       end
     end
 
@@ -169,7 +166,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
           }.to_json
         end
 
-        it 'returns created  status' do
+        it 'returns created status' do
           post v1_pacbio_pools_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:created)
         end
@@ -179,7 +176,6 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
             change(Pacbio::Pool, :count).by(1)
           )
         end
-
       end
 
       context 'on failure' do
@@ -218,18 +214,16 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
           end
 
           it 'cannot create a pool' do
-            expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to_not(
+            expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.not_to(
               change(Pacbio::Pool, :count)
             )
           end
-
         end
       end
     end
-
   end
 
-  context '#updating' do
+  describe '#updating' do
     context 'when updating a multiplex library' do
       let!(:pool) { create(:pacbio_pool, library_count: 2) }
       # We let! this as we want to ensure we have the original state
@@ -237,7 +231,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
       let!(:removed_library) { pool.libraries.last }
       let(:added_request) { create(:pacbio_request) }
 
-      setup do
+      before do
         patch v1_pacbio_pool_path(pool), params: body, headers: json_api_headers
       end
 
@@ -278,7 +272,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
           }.to_json
         end
 
-        it 'returns created  status' do
+        it 'returns created status' do
           expect(response).to have_http_status(:success), response.body
         end
 
@@ -293,7 +287,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
         end
 
         it 'destroys removed libraries' do
-          expect(Pacbio::Library.find_by(id:removed_library)).to be_nil
+          expect(Pacbio::Library.find_by(id: removed_library)).to be_nil
         end
 
         it 'adds new libraries' do
@@ -304,7 +298,6 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
           expect(new_libraries.length).to eq(1)
           expect(new_libraries.first.pacbio_request_id).to eq(added_request.id)
         end
-
       end
 
       context 'on failure' do
@@ -395,13 +388,13 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
           }
         }.to_json
       end
-      
+
       it 'publishes a message' do
-        expect(Messages).to receive(:publish).with(pool.sequencing_plates, having_attributes(pipeline: 'pacbio'))
+        expect(Messages).to receive(:publish).with(pool.sequencing_plates,
+                                                   having_attributes(pipeline: 'pacbio'))
         patch v1_pacbio_pool_path(pool), params: body, headers: json_api_headers
         expect(response).to have_http_status(:success), response.body
       end
     end
-
   end
 end

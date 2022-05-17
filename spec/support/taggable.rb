@@ -1,4 +1,6 @@
-RSpec.shared_examples "taggable" do
+# frozen_string_literal: true
+
+RSpec.shared_examples 'taggable' do
   it 'returns empty tags with no tag_taggables' do
     taggable = create(taggable_model, tags_count: 0)
     expect(taggable.tags).to be_empty
@@ -6,8 +8,8 @@ RSpec.shared_examples "taggable" do
 
   it 'returns all tags with many tag_taggables' do
     taggable = create(taggable_model)
-    expect(taggable.tags).to_not be_empty
-    expect(taggable.tags).to eq(taggable.tag_taggables.map { |tag_taggable| tag_taggable.tag })
+    expect(taggable.tags).not_to be_empty
+    expect(taggable.tags).to eq(taggable.tag_taggables.map(&:tag))
   end
 
   it 'on destroy destroys tag_taggables, not taggables' do

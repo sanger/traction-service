@@ -35,7 +35,7 @@ RSpec.describe SampleSheet do
     end
 
     it 'returns nothing if the libraries are not tagged' do
-      pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged ))
+      pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged))
       empty_well.pools << pool
       expect(empty_well.barcode_set).to be_nil
     end
@@ -47,26 +47,27 @@ RSpec.describe SampleSheet do
     end
   end
 
-  context '#sample_is_barcoded' do
+  describe '#sample_is_barcoded' do
     it 'returns true if all well libraries are tagged and non isoSeq tags' do
-      expect(well.sample_is_barcoded).to eq true
+      expect(well.sample_is_barcoded).to be true
     end
 
     it 'returns false if there is one library and it has no tag' do
-      empty_well.pools << create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged))
-      expect(empty_well.sample_is_barcoded).to eq false
+      empty_well.pools << create(:pacbio_pool,
+                                 libraries: create_list(:pacbio_library, 1, :untagged))
+      expect(empty_well.sample_is_barcoded).to be false
     end
 
     it 'returns true if there is only one library and it has a non isoSeq tag' do
       pool = create(:pacbio_pool)
       empty_well.pools << pool
-      expect(empty_well.sample_is_barcoded).to eq true
+      expect(empty_well.sample_is_barcoded).to be true
     end
 
     it 'returns false if the libraries are tagged with a :hidden tag set (egh. IsoSeq)' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :hidden_tagged))
       well.pools << pool
-      expect(well.sample_is_barcoded).to eq false
+      expect(well.sample_is_barcoded).to be false
     end
   end
 
@@ -134,7 +135,7 @@ RSpec.describe SampleSheet do
 
   context 'same_barcodes_on_both_ends_of_sequence' do
     it 'returns true' do
-      expect(well.same_barcodes_on_both_ends_of_sequence).to eq true
+      expect(well.same_barcodes_on_both_ends_of_sequence).to be true
     end
   end
 
@@ -148,7 +149,7 @@ RSpec.describe SampleSheet do
     let(:well) { create(:pacbio_well, pre_extension_time: 3) }
 
     it 'automation parameters is formatted properly' do
-      expect(well.automation_parameters).to eq("ExtensionTime=double:3|ExtendFirst=boolean:True")
+      expect(well.automation_parameters).to eq('ExtensionTime=double:3|ExtendFirst=boolean:True')
     end
   end
 
