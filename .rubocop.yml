@@ -1,4 +1,8 @@
-require: rubocop-rails
+inherit_from: .rubocop_todo.yml
+
+require:
+  - rubocop-rails
+  - rubocop-rspec
 
 AllCops:
   NewCops: enable
@@ -6,11 +10,9 @@ AllCops:
     - db/schema.rb
     - db/seeds.rb
     - db/migrate/*
-    # Travis installs gems in the vendor directory, which causes rubocop to try
+    # GitHub actions installs gems in the vendor directory, which causes rubocop to try
     # and cop our gems. We don't want it to.
     - vendor/**/*
-    - 'test/**/*'
-    - 'spec/**/*'
     - 'config/routes.rb'
     - 'config/initializers/secret_token.rb'
     - 'config/initializers/backtrace_silencers.rb'
@@ -18,10 +20,7 @@ AllCops:
     - 'bin/*'
     - 'config/application.rb'
     - 'config/initializers/content_security_policy.rb'
-    # Exclude auto-generated GraphQL classes
-    - 'app/controllers/graphql_controller.rb'
-    - 'app/graphql/mutations/base_*'
-    - 'app/graphql/types/base_*'
+    - 'config/initializers/new_framework_defaults_7_0.rb'
 
 # The cop is meant to enforce conventions regarding variables containing numbers
 # However in 0.43.0 it is bugged. Both changed on master and disabled by default
@@ -49,6 +48,9 @@ Layout/LineLength:
   Max: 100
   Exclude:
     - 'lib/tasks/*'
+    # TODO: I have tried to add this to rubocop todo but it is causing all sorts of issues
+    # The maximum line length is 157.
+    - 'spec/**/*'
 
 Metrics/MethodLength:
   Max: 12
@@ -117,11 +119,6 @@ Style/RedundantFetchBlock:
 Style/CaseEquality:
   Exclude:
     - 'db/migrate/*'
-    - 'config/initializers/01_proc.rb'
-
-Rails/SkipsModelValidations:
-  Exclude:
-    - 'app/models/ont/plate_with_samples_factory.rb'
 
 Rails/EnvironmentVariableAccess:
   AllowReads: true

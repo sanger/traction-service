@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Saphyr::Run, type: :model, saphyr: true do
-
   context 'on creation' do
     it 'state is pending' do
       run = create(:saphyr_run)
@@ -55,12 +56,12 @@ RSpec.describe Saphyr::Run, type: :model, saphyr: true do
     it 'can filter runs based on state' do
       create_list(:saphyr_run, 2)
       create(:saphyr_run, state: :started)
-      expect(Saphyr::Run.pending.length).to eq 2
-      expect(Saphyr::Run.started.length).to eq 1
+      expect(described_class.pending.length).to eq 2
+      expect(described_class.started.length).to eq 1
     end
   end
 
-  context '#cancel' do
+  describe '#cancel' do
     it 'can be cancelled' do
       run = create(:saphyr_run)
       run.cancel
@@ -71,16 +72,16 @@ RSpec.describe Saphyr::Run, type: :model, saphyr: true do
     it 'returns true if already cancelled' do
       run = create(:saphyr_run)
       run.cancel
-      expect(run.cancel).to eq true
+      expect(run.cancel).to be true
     end
   end
 
   context 'scope' do
     context 'active' do
-      it 'should return only active runs' do
+      it 'returns only active runs' do
         create_list(:saphyr_run, 2)
         run = create(:saphyr_run, deactivated_at: DateTime.now)
-        expect(Saphyr::Run.active.length).to eq 2
+        expect(described_class.active.length).to eq 2
       end
     end
   end
@@ -110,5 +111,4 @@ RSpec.describe Saphyr::Run, type: :model, saphyr: true do
       expect(run.name).to eq('run1')
     end
   end
-
 end

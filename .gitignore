@@ -32,7 +32,6 @@
 config/database.yml
 config/mailer.yml
 config/bunny.yml
-config/env_constants.yml
 
 release.tar.gz
 

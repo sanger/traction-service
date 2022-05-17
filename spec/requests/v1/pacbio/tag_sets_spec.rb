@@ -7,11 +7,11 @@ RSpec.describe 'Pacbio::TagSetsController', type: :request do
     ActiveSupport::JSON.decode(response.body)
   end
 
-  context '#get' do
+  describe '#get' do
     let!(:tag_set1) { create(:tag_set, pipeline: :pacbio) }
     let!(:tag_set2) { create(:tag_set, pipeline: :ont) }
 
-    setup do
+    before do
       get v1_pacbio_tag_sets_path, headers: json_api_headers
     end
 
@@ -28,7 +28,7 @@ RSpec.describe 'Pacbio::TagSetsController', type: :request do
     end
   end
 
-  context '#create' do
+  describe '#create' do
     context 'on success' do
       let(:body) do
         {
@@ -46,7 +46,7 @@ RSpec.describe 'Pacbio::TagSetsController', type: :request do
 
       it 'creates a tag set' do
         expect { post v1_pacbio_tag_sets_path, params: body, headers: json_api_headers }.to(
-          change { TagSet.count }.by(1)
+          change(TagSet, :count).by(1)
         )
       end
 
@@ -77,7 +77,7 @@ RSpec.describe 'Pacbio::TagSetsController', type: :request do
           expect do
             post v1_pacbio_tag_sets_path, params: body,
                                           headers: json_api_headers
-          end.to_not change(TagSet, :count)
+          end.not_to change(TagSet, :count)
         end
 
         # the failure responses are slightly different to in tags_spec because we are using the
@@ -89,8 +89,9 @@ RSpec.describe 'Pacbio::TagSetsController', type: :request do
       end
     end
 
-    context '#update' do
+    describe '#update' do
       let(:tag_set) { create(:tag_set) }
+
       context 'on success' do
         let(:body) do
           {
@@ -154,7 +155,7 @@ RSpec.describe 'Pacbio::TagSetsController', type: :request do
     end
   end
 
-  context '#destroy' do
+  describe '#destroy' do
     context 'on success' do
       let!(:tag_set) { create(:tag_set) }
 
@@ -164,9 +165,9 @@ RSpec.describe 'Pacbio::TagSetsController', type: :request do
       end
 
       it 'destroys the tag' do
-        expect { delete "/v1/tag_sets/#{tag_set.id}", headers: json_api_headers }.to change {
-                                                                                       TagSet.count
-                                                                                     }.by(-1)
+        expect do
+          delete "/v1/tag_sets/#{tag_set.id}", headers: json_api_headers
+        end.to change(TagSet, :count).by(-1)
       end
     end
 

@@ -10,7 +10,11 @@ module V1
                  :insert_size, :created_at, :deactivated_at, :source_identifier
 
       has_one :request, always_include_optional_linkage_data: true
-      has_one :tube
+      # If we don't specify the relation_name here, jsonapi-resources
+      # attempts to use_related_resource_records_for_joins
+      # In this case I can see it using container_associations
+      # so seems to be linking the wrong tube relationship.
+      has_one :tube, relation_name: :tube
       has_one :tag, always_include_optional_linkage_data: true
       has_one :pool, always_include_optional_linkage_data: true
       has_one :source_well, relation_name: :source_well, class_name: 'Well'
@@ -23,11 +27,11 @@ module V1
       end
 
       def created_at
-        @model.created_at.to_s(:us)
+        @model.created_at.to_fs(:us)
       end
 
       def deactivated_at
-        @model&.deactivated_at&.to_s(:us)
+        @model&.deactivated_at&.to_fs(:us)
       end
     end
   end
