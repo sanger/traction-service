@@ -49,7 +49,9 @@ RSpec.describe CsvGenerator, type: :model do
           '',
           well1.automation_parameters,
           well1.generate_hifi,
-          well1.ccs_analysis_output
+          well1.ccs_analysis_output,
+          well1.loading_target_p1_plus_p2,
+          well1.adaptive_loading_check.to_s
         ])
 
         expect(well_data_2).to eq([
@@ -73,7 +75,9 @@ RSpec.describe CsvGenerator, type: :model do
           '',
           well2.automation_parameters,
           well2.generate_hifi,
-          well2.ccs_analysis_output
+          well2.ccs_analysis_output,
+          well2.loading_target_p1_plus_p2,
+          well2.adaptive_loading_check.to_s
         ])
       end
 
@@ -102,6 +106,8 @@ RSpec.describe CsvGenerator, type: :model do
           well1.libraries.first.request.sample_name,
           '',
           '',
+          '',
+          '',
           ''
         ])
 
@@ -124,6 +130,8 @@ RSpec.describe CsvGenerator, type: :model do
           '',
           '',
           well2.libraries.first.request.sample_name,
+          '',
+          '',
           '',
           '',
           ''
@@ -175,7 +183,9 @@ RSpec.describe CsvGenerator, type: :model do
           well1.find_sample_name,
           well1.automation_parameters,
           well1.generate_hifi,
-          well1.ccs_analysis_output
+          well1.ccs_analysis_output,
+          well1.loading_target_p1_plus_p2,
+          well1.adaptive_loading_check.to_s
         ])
 
         expect(well_data_2).to eq([
@@ -199,7 +209,9 @@ RSpec.describe CsvGenerator, type: :model do
           well2.find_sample_name,
           well2.automation_parameters,
           well2.generate_hifi,
-          well2.ccs_analysis_output
+          well2.ccs_analysis_output,
+          well2.loading_target_p1_plus_p2,
+          well2.adaptive_loading_check.to_s
         ])
       end
 

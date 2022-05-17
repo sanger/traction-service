@@ -133,6 +133,24 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
+  context 'loading target p1 plus p2' do
+    it 'is not required' do
+      expect(build(:pacbio_well, loading_target_p1_plus_p2: nil)).to be_valid
+    end
+
+    it 'can be a decimal' do
+      expect(build(:pacbio_well, loading_target_p1_plus_p2: 0.5).loading_target_p1_plus_p2).to eq(0.5)
+
+    end
+
+    it 'must be within range' do
+      expect(build(:pacbio_well, loading_target_p1_plus_p2: 0.45)).to be_valid
+      expect(build(:pacbio_well, loading_target_p1_plus_p2: 72)).to_not be_valid
+      expect(build(:pacbio_well, loading_target_p1_plus_p2: 0)).to be_valid
+    end
+
+  end
+
   context 'libraries' do
     let(:libraries) { create_list(:pacbio_library, 5, :tagged) }
     let(:pools)     { create_list(:pacbio_pool, 2, libraries: libraries) }

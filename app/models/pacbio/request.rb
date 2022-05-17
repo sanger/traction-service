@@ -6,11 +6,32 @@ module Pacbio
   # Pacbio::Request
   # A request can have many libraries
   class Request < ApplicationRecord
-    include Pipelines::Requestor::Model
+    include TubeMaterial
+    include WellMaterial
+
     attribute :cost_code, default: Rails.application.config.pacbio_request_cost_code
 
     has_many :libraries, class_name: 'Pacbio::Library', dependent: :nullify,
                          foreign_key: :pacbio_request_id, inverse_of: :request
     has_one :plate, through: :well, class_name: '::Plate'
+    has_one :request, class_name: '::Request', as: :requestable, dependent: :nullify
+    has_one :sample, through: :request
+
+    delegate :name, to: :sample, prefix: :sample
+    delegate :species, to: :sample, prefix: :sample
+
+    validates(*Pacbio.required_request_attributes, presence: true)
+
+    def container
+      tube || well
+    end
+
+    def source_identifier
+      container&.identifier
+    end
+
+    def sequencing_plates
+      libraries.collect(&:sequencing_plates).flatten.uniq
+    end
   end
 end
