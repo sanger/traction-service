@@ -1,28 +1,29 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 RSpec.describe Saphyr::Library, type: :model, saphyr: true do
-
   context 'tube material' do
     let(:material_model) { :saphyr_library }
-    it_behaves_like "tube_material"
+
+    it_behaves_like 'tube_material'
   end
 
   context 'library' do
     let(:library_factory) { :saphyr_library }
-    let(:library_model)   { Saphyr::Library}
+    let(:library_model)   { described_class }
 
     it_behaves_like 'library'
   end
 
   context 'on creation' do
+    let(:request) { create(:saphyr_request) }
 
-    let(:request) { create(:saphyr_request)}
-
-    it 'should have a request' do
+    it 'has a request' do
       expect(create(:saphyr_library, request: request).request).to eq(request)
     end
 
-    it 'should have a enzyme' do
+    it 'has a enzyme' do
       enzyme = create(:saphyr_enzyme)
       expect(create(:saphyr_library, enzyme: enzyme).enzyme).to eq(enzyme)
       expect(create(:saphyr_library, enzyme: enzyme).saphyr_enzyme_id).to eq(enzyme.id)
@@ -63,5 +64,4 @@ RSpec.describe Saphyr::Library, type: :model, saphyr: true do
       expect(build(:saphyr_library, enzyme: nil)).not_to be_valid
     end
   end
-
 end
