@@ -1,18 +1,17 @@
-# frozen_string_literal: true
-
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe 'ChipsController', type: :request do
+
   let(:barcode) { 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX-2' }
 
-  describe '#create' do
+  context '#create' do
     let(:run) { create(:saphyr_run) }
 
     context 'on success' do
       let(:body) do
         {
           data: {
-            type: 'chips',
+            type: "chips",
             attributes: {
               barcode: barcode,
               saphyr_run_id: run.id
@@ -32,13 +31,15 @@ RSpec.describe 'ChipsController', type: :request do
         expect(chip.barcode).to eq barcode
         expect(chip.run).to eq run
       end
+
+
     end
 
     context 'on failure' do
       let(:body) do
         {
           data: {
-            type: 'chips',
+            type: "chips",
             attributes: {
               run_id: run.id
             }
@@ -52,27 +53,25 @@ RSpec.describe 'ChipsController', type: :request do
       end
 
       it 'does not create a chip' do
-        expect do
-          post v1_saphyr_chips_path, params: body,
-                                     headers: json_api_headers
-        end.not_to change(Saphyr::Chip, :count)
+        expect { post v1_saphyr_chips_path, params: body, headers: json_api_headers }.to_not change(Saphyr::Chip, :count)
       end
 
       it 'has an error message' do
         post v1_saphyr_chips_path, params: body, headers: json_api_headers
-        expect(JSON.parse(response.body)['data']['errors'].length).to eq(1)
+        expect(JSON.parse(response.body)["data"]["errors"].length).to eq(1)
       end
+
     end
   end
 
-  describe '#update' do
+  context '#update' do
     let(:chip) { create(:saphyr_chip) }
 
     context 'on success' do
       let(:body) do
         {
           data: {
-            type: 'chips',
+            type: "chips",
             id: chip.id,
             attributes: {
               barcode: barcode
@@ -108,7 +107,7 @@ RSpec.describe 'ChipsController', type: :request do
       let(:body) do
         {
           data: {
-            type: 'chips',
+            type: "chips",
             id: chip.id,
             attributes: {
               barcode: barcode
@@ -130,17 +129,20 @@ RSpec.describe 'ChipsController', type: :request do
 
       it 'has an error message' do
         patch v1_saphyr_chip_path(123), params: body, headers: json_api_headers
-        expect(JSON.parse(response.body)['data']).to include('errors' => "Couldn't find Saphyr::Chip with 'id'=123")
+        expect(JSON.parse(response.body)["data"]).to include("errors" => "Couldn't find Saphyr::Chip with 'id'=123")
       end
     end
   end
 
-  describe '#destroy' do
+  context '#destroy' do
+
     let(:chip) { create(:saphyr_chip) }
 
     it 'has a status of ok' do
       delete v1_saphyr_chip_path(chip), headers: json_api_headers
       expect(response).to have_http_status(:no_content)
     end
+
   end
+
 end

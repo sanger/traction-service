@@ -15,7 +15,7 @@ module Ont
 
     validates :name, :pool, :pool_size, presence: true
     validates :name, uniqueness: { case_sensitive: false,
-                                   message: :duplicated_in_plate }
+                                   message: 'must be unique: a pool already exists for this plate' }
 
     def self.library_name(plate_barcode, pool)
       return nil if plate_barcode.nil? || pool.nil?
@@ -37,9 +37,16 @@ module Ont
       !!flowcell
     end
 
-    # Make table read only. We don't want anything pushing to it.
-    def readonly?
-      true
+    def self.includes_args(except = nil)
+      args = []
+      args << { flowcell: Ont::Flowcell.includes_args(:library) } unless except == :flowcell
+      args << { requests: Ont::Request.includes_args(:library) } unless except == :requests
+
+      args
+    end
+
+    def self.resolved_query
+      Ont::Library.includes(*includes_args)
     end
   end
 end

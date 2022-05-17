@@ -1,25 +1,17 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe CsvGenerator, type: :model do
   describe '#generate_sample_sheet' do
-    subject(:csv_string) { csv.generate_sample_sheet }
+    let(:run)     { create(:pacbio_run, plate: plate) }
+    let(:csv)     { ::CsvGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet) }
 
-    let(:run) { create(:pacbio_run, plate: plate) }
+    subject(:csv_string) { csv.generate_sample_sheet }
     let(:parsed_csv) { CSV.parse(csv_string) }
-    let(:csv) { ::CsvGenerator.new(run: run, configuration: Pipelines.pacbio.sample_sheet) }
 
     context 'when the libraries are tagged' do
-      let(:well1) do
-        create(:pacbio_well_with_pools, pre_extension_time: 2, generate_hifi: 'In SMRT Link',
-                                        ccs_analysis_output: 'Yes')
-      end
-      let(:well2) do
-        create(:pacbio_well_with_pools, pre_extension_time: 2, generate_hifi: 'In SMRT Link',
-                                        ccs_analysis_output: 'No')
-      end
-      let(:plate) { create(:pacbio_plate, wells: [well1, well2]) }
+      let(:well1)   { create(:pacbio_well_with_pools, pre_extension_time: 2, generate_hifi: 'In SMRT Link', ccs_analysis_output: 'Yes') }
+      let(:well2)   { create(:pacbio_well_with_pools, pre_extension_time: 2, generate_hifi: 'In SMRT Link', ccs_analysis_output: 'No') }
+      let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
 
       it 'must return a csv string' do
         expect(csv_string.class).to eq String
@@ -147,18 +139,13 @@ RSpec.describe CsvGenerator, type: :model do
       end
     end
 
+
     context 'when the libraries are untagged' do
       let(:pool1)   { create_list(:pacbio_pool, 1, :untagged) }
       let(:pool2)   { create_list(:pacbio_pool, 1, :untagged) }
-      let(:well1)   do
-        create(:pacbio_well, pre_extension_time: 2, generate_hifi: 'Do Not Generate',
-                             ccs_analysis_output: 'Yes', pools: pool1)
-      end
-      let(:well2) do
-        create(:pacbio_well, generate_hifi: 'On Instrument', ccs_analysis_output: 'No',
-                             pools: pool2)
-      end
-      let(:plate) { create(:pacbio_plate, wells: [well1, well2]) }
+      let(:well1)   { create(:pacbio_well, pre_extension_time: 2, generate_hifi: 'Do Not Generate', ccs_analysis_output: 'Yes', pools: pool1) }
+      let(:well2)   { create(:pacbio_well, generate_hifi: 'On Instrument', ccs_analysis_output: 'No', pools: pool2) }
+      let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
 
       it 'must return a csv string' do
         expect(csv_string).to be_a String

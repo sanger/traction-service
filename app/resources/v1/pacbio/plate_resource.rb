@@ -18,7 +18,7 @@ module V1
       end
 
       def created_at
-        @model.created_at.to_fs(:us)
+        @model.created_at.to_s(:us)
       end
     end
   end

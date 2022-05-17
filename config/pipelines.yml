@@ -305,8 +305,8 @@ default: &default
                   type: :model
                   value: external_id
                 study_uuid:
-                  type: :string
-                  value: 468e0cd0-6a9d-11ea-a04f-fa163e68e77d
+                  type: :constant
+                  value: Pipelines::ConstantsAccessor.ont_covid_study_uuid
                 tag_identifier:
                   type: :model
                   value: tags.first.group_id

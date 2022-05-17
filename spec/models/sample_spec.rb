@@ -3,13 +3,14 @@
 require 'rails_helper'
 
 RSpec.describe Sample, type: :model do
+
   context 'on creation' do
-    it 'is active' do
+    it 'should be active' do
       expect(create(:sample)).to be_active
     end
 
     describe 'name' do
-      it 'has a name' do
+      it 'should have a name' do
         expect(create(:sample, name: 'mysample').name).to eq('mysample')
       end
 
@@ -24,8 +25,8 @@ RSpec.describe Sample, type: :model do
     end
 
     describe 'external_id' do
-      it 'has a external_id' do
-        expect(create(:sample, external_id: 123).external_id).to eq('123')
+      it 'should have a external_id' do
+        expect(create(:sample, external_id: 123).external_id).to eq("123")
       end
 
       it 'is not valid without a external_id' do
@@ -34,7 +35,7 @@ RSpec.describe Sample, type: :model do
     end
 
     describe 'species' do
-      it 'has a species' do
+      it 'should have a species' do
         expect(create(:sample, species: 'human').species).to eq('human')
       end
 
@@ -43,9 +44,10 @@ RSpec.describe Sample, type: :model do
       end
     end
 
-    it 'is active' do
+    it 'should be active' do
       expect(create(:sample)).to be_active
     end
+
   end
 
   context 'on update' do
@@ -64,4 +66,5 @@ RSpec.describe Sample, type: :model do
       expect(sample.requests.length).to eq 2
     end
   end
+
 end

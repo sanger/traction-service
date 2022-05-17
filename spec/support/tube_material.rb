@@ -1,6 +1,4 @@
-# frozen_string_literal: true
-
-RSpec.shared_examples 'tube_material' do
+RSpec.shared_examples "tube_material" do
   it_behaves_like 'material'
 
   it { is_expected.to respond_to(:tube) }

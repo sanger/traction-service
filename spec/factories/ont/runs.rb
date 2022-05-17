@@ -1,7 +1,5 @@
-# frozen_string_literal: true
-
 FactoryBot.define do
-  factory :ont_run, class: 'Ont::Run' do
+  factory :ont_run, class: Ont::Run do
     factory :ont_run_with_flowcells do
       after(:create) do |run|
         run.flowcells = [
