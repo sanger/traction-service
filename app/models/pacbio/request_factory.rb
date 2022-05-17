@@ -55,7 +55,7 @@ module Pacbio
     # @return [Array of ActiveRecord Requests] for the chosen pipeline
     def build_requests(attributes)
       @request_wrappers = attributes.map do |request_attributes|
-        RequestWrapper.new(request_model: self.class.request_model, **request_attributes)
+        RequestWrapper.new(**request_attributes)
       end
     end
 
