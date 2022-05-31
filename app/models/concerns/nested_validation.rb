@@ -30,7 +30,7 @@ module NestedValidation
 
     def validate_each(record, attribute, value)
       Array(value).each do |nested|
-        next if nested.valid?
+        next if nested.valid?(options[:context])
 
         add_errors(nested, record, attribute)
       end
@@ -42,10 +42,10 @@ module NestedValidation
       nested.errors.each do |error|
         if @flatten_keys
           record.errors.add(error.attribute, error.message)
-        elsif nested_attribute == :base
-          record.errors.add(attribute, nested_error)
+        elsif error.attribute == :base
+          record.errors.add(attribute, error.message)
         else
-          record.errors.add("#{attribute}.#{nested_attribute}", nested_error)
+          record.errors.add("#{attribute}.#{error.attribute}", error.message)
         end
       end
     end
