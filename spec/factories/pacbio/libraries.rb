@@ -10,6 +10,10 @@ FactoryBot.define do
     tag { create(:tag) }
     pool { association :pacbio_pool, libraries: [instance] }
 
+    factory :pacbio_incomplete_library do
+      insert_size { nil }
+    end
+
     # Untagged should possibly be the default
     factory :pacbio_library_without_tag do
       untagged
