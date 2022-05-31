@@ -74,7 +74,6 @@ RSpec/IdenticalEqualityAssertion:
 # Configuration parameters: AssignmentOnly.
 RSpec/InstanceVariable:
   Exclude:
-    - 'spec/models/pacbio/library_factory_spec.rb'
     - 'spec/requests/v1/pacbio/runs_spec.rb'
     - 'spec/requests/v1/saphyr/runs_spec.rb'
 

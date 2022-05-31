@@ -41,7 +41,7 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
   end
 
   it 'is not valid unless all of the associated libraries are valid' do
-    dodgy_library = build(:pacbio_library, volume: nil)
+    dodgy_library = build(:pacbio_library, volume: 'big')
 
     expect(build(:pacbio_pool, libraries: libraries + [dodgy_library])).not_to be_valid
   end

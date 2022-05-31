@@ -14,7 +14,9 @@ module Pacbio
     include SampleSheet::Library
 
     validates :volume, :concentration,
-              :insert_size, presence: true
+              :insert_size, presence: true, on: :run_creation
+    validates :volume, :concentration,
+              :insert_size, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
 
     belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id,
                          inverse_of: :libraries
