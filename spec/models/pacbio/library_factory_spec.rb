@@ -16,45 +16,46 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
 
   context 'LibraryFactory' do
     describe '#initialize' do
-      before do
-        @factory = described_class.new(libraries_attributes)
-        @pacbio_library = @factory.library
-      end
+      subject(:factory) { described_class.new(libraries_attributes) }
+
+      let(:pacbio_library) { factory.library }
 
       it 'creates a Pacbio::Library object', aggregate_failures: true do
-        expect(@pacbio_library.volume).to be_present
-        expect(@pacbio_library.concentration).to be_present
-        expect(@pacbio_library.template_prep_kit_box_barcode).to be_present
-        expect(@pacbio_library.insert_size).to be_present
-        expect(@pacbio_library.id).to be_nil
-        expect(@pacbio_library.created_at).to be_nil
-        expect(@pacbio_library.updated_at).to be_nil
-        expect(@pacbio_library.state).to be_nil
-        expect(@pacbio_library.request).to be_a(Pacbio::Request)
-        expect(@pacbio_library.pool).to be_a(Pacbio::Pool)
+        expect(pacbio_library.volume).to be_present
+        expect(pacbio_library.concentration).to be_present
+        expect(pacbio_library.template_prep_kit_box_barcode).to be_present
+        expect(pacbio_library.insert_size).to be_present
+        expect(pacbio_library.id).to be_nil
+        expect(pacbio_library.created_at).to be_nil
+        expect(pacbio_library.updated_at).to be_nil
+        expect(pacbio_library.state).to be_nil
+        expect(pacbio_library.request).to be_a(Pacbio::Request)
+        expect(pacbio_library.pool).to be_a(Pacbio::Pool)
       end
 
       it 'populates to pool object with the library information', aggregate_failures: true do
-        expect(@pacbio_library.pool.volume).to eq @pacbio_library.volume
-        expect(@pacbio_library.pool.concentration).to eq @pacbio_library.concentration
-        expect(@pacbio_library.pool.template_prep_kit_box_barcode).to eq @pacbio_library.template_prep_kit_box_barcode
-        expect(@pacbio_library.pool.insert_size).to eq @pacbio_library.insert_size
+        expect(pacbio_library.pool.volume).to eq pacbio_library.volume
+        expect(pacbio_library.pool.concentration).to eq pacbio_library.concentration
+        expect(pacbio_library.pool.template_prep_kit_box_barcode).to eq pacbio_library.template_prep_kit_box_barcode
+        expect(pacbio_library.pool.insert_size).to eq pacbio_library.insert_size
       end
     end
 
     describe '#save' do
       context 'when valid' do
+        subject(:factory) { described_class.new(libraries_attributes) }
+
+        let(:library) { factory.library }
+
         before do
-          @factory = described_class.new(libraries_attributes)
-          @factory.save
+          factory.save
         end
 
         it 'can save' do
-          expect(@factory).to be_valid
+          expect(factory).to be_valid
         end
 
         it 'creates a Pacbio::Library' do
-          library = @factory.library
           expect(library.id).to be_present
           expect(library.created_at).to be_present
           expect(library.updated_at).to be_present
@@ -62,21 +63,19 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
         end
 
         it 'creates a Tube' do
-          tube = @factory.library.tube
+          tube = factory.library.tube
           expect(tube.id).not_to be_nil
           expect(tube.barcode).not_to be_nil
-          expect(tube.materials.first.id).to eq @factory.library.id
+          expect(tube.materials.first.id).to eq factory.library.id
           expect(tube.created_at).to be_present
           expect(tube.updated_at).to be_present
         end
 
         it 'associates the Pacbio::Request with the Pacbio::Library' do
-          library = @factory.library
           expect(library.request).to eq requests.first
         end
 
         it 'associated the Tag with the Pacbio::Library' do
-          library = @factory.library
           expect(library.tag_id).to eq tags[0].id
         end
       end
@@ -84,10 +83,10 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
       context 'when invalid' do
         context 'when the library is invalid' do
           it 'produces error messages if the library is missing a required attribute' do
-            invalid_library_attributes = libraries_attributes.except(:volume)
+            invalid_library_attributes = libraries_attributes.merge(volume: 'elephant')
             factory = described_class.new(invalid_library_attributes)
             expect(factory.save).to be_falsy
-            expect(factory.errors.full_messages).to include "Volume can't be blank"
+            expect(factory.errors.full_messages).to include 'Volume is not a number'
           end
         end
 
@@ -114,20 +113,28 @@ RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
       end
 
       context 'when save errors' do
+        subject(:factory) { described_class.new(attributes) }
+
         before do
-          @factory = described_class.new(attributes)
-          allow(@factory).to receive(:valid?).and_return true
+          # This test seems to be designed to catch edge cases, in which problems that
+          # slip past validation, and cause the factory to fail, should result in the
+          # entire factory rolling back. It is achieving this by bypassing the standard
+          # validation, thereby causing the model level validation to fail. However
+          # the structure of this test is somewhat artificial, and doesn't really test
+          # the behaviour we want.
+          # https://github.com/sanger/traction-service/issues/753
+          allow(factory).to receive(:valid?).and_return true # rubocop:todo RSpec/SubjectStub
         end
 
         context 'when the library fails to save' do
-          let(:attributes) { attributes_for(:pacbio_library).except(:volume) }
+          let(:attributes) { attributes_for(:pacbio_library, volume: 'elephant') }
 
           it 'doesnt create a library' do
-            expect { @factory.save }.not_to change(Pacbio::Library, :count)
+            expect { factory.save }.not_to change(Pacbio::Library, :count)
           end
 
           it 'doesnt create the requests' do
-            expect { @factory.save }.not_to change(Pacbio::Request, :count)
+            expect { factory.save }.not_to change(Pacbio::Request, :count)
           end
         end
       end

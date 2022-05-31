@@ -113,6 +113,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
                       concentration: 2.22,
+                      insert_size: 'Sausages',
                       pacbio_request_id: request.id,
                       tag_id: tag.id
                     }
