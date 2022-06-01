@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+require './app/resources/v1/shared/run_suitability'
+
 module V1
   module Pacbio
     # PoolResource
     class PoolResource < JSONAPI::Resource
+      include RunSuitability
+
       model_name 'Pacbio::Pool'
 
       # If we don't specify the relation_name here, jsonapi-resources

@@ -14,7 +14,6 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
     it 'returns a list of pools' do
       get v1_pacbio_pools_path, headers: json_api_headers
       expect(response).to have_http_status(:success)
-      json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'].length).to eq(2)
     end
 
@@ -22,24 +21,54 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
       get v1_pacbio_pools_path, headers: json_api_headers
 
       expect(response).to have_http_status(:success)
-      json = ActiveSupport::JSON.decode(response.body)
 
-      pool_resource = json['data'][0]['attributes']
       pool = pools.first
+      pool_resource = find_resource(id: pool.id, type: 'pools')
 
-      expect(pool_resource['source_identifier']).to eq(pool.source_identifier)
-      expect(pool_resource['volume']).to eq(pool.volume)
-      expect(pool_resource['concentration']).to eq(pool.concentration)
-      expect(pool_resource['template_prep_kit_box_barcode']).to eq(pool.template_prep_kit_box_barcode)
-      expect(pool_resource['insert_size']).to eq(pool.insert_size)
-      expect(pool_resource['created_at']).to eq(pool.created_at.to_fs(:us))
+      expect(pool_resource['attributes']).to include(
+        'source_identifier' => pool.source_identifier,
+        'volume' => pool.volume,
+        'concentration' => pool.concentration,
+        'template_prep_kit_box_barcode' => pool.template_prep_kit_box_barcode,
+        'insert_size' => pool.insert_size,
+        'created_at' => pool.created_at.to_fs(:us)
+      )
+    end
+
+    it 'includes pool run suitability' do
+      get v1_pacbio_pools_path, headers: json_api_headers
+      pool_resource = find_resource(id: pools.first.id, type: 'pools')
+      expect(pool_resource.dig('attributes', 'run_suitability')).to eq({
+                                                                         'ready_for_run' => true,
+                                                                         'errors' => []
+                                                                       })
+    end
+
+    context 'when not suited for run creation' do
+      let!(:pools) { create_list(:pacbio_pool, 2, insert_size: nil) }
+
+      it 'includes invalid pool run suitability' do
+        get v1_pacbio_pools_path, headers: json_api_headers
+        pool_resource = find_resource(id: pools.first.id, type: 'pools')
+        run_suitability = pool_resource.dig('attributes', 'run_suitability')
+        expect(run_suitability).to eq({
+                                        'ready_for_run' => false,
+                                        'errors' => [
+                                          {
+                                            'code' => '100',
+                                            'detail' => "insert_size - can't be blank",
+                                            'source' => { 'pointer' => '/data/attributes/insert_size' },
+                                            'title' => "can't be blank"
+                                          }
+                                        ]
+                                      })
+      end
     end
 
     it 'returns the correct attributes', aggregate_failures: true do
       get "#{v1_pacbio_pools_path}?include=libraries", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
-      json = ActiveSupport::JSON.decode(response.body)
 
       library_attributes = json['included'][0]['attributes']
       library = pools.first.libraries.first
@@ -361,7 +390,6 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
       let!(:pool) { create(:pacbio_pool) }
       let!(:updated_library) { pool.libraries.first }
       let!(:plate) { create(:pacbio_plate) }
-      let!(:well) { create(:pacbio_well, pools: [pool], plate: plate) }
       let(:body) do
         {
           data: {
@@ -389,6 +417,8 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
           }
         }.to_json
       end
+
+      before { create(:pacbio_well, pools: [pool], plate: plate) }
 
       it 'publishes a message' do
         expect(Messages).to receive(:publish).with(pool.sequencing_plates,
