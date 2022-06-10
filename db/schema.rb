@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_10_122339) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_10_135319) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -200,6 +200,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_10_122339) do
 
   create_table "plates", charset: "utf8mb3", force: :cascade do |t|
     t.string "barcode"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "receptions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "source", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

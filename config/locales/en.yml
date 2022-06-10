@@ -47,6 +47,10 @@ en:
               duplicated_in_plate: 'must be unique: a pool already exists for this plate'
             flowcell:
               duplicated_in_run: must appear only once within a run
+        reception:
+          attributes:
+            source:
+              invalid: should only contain lowercase letters, numbers, hyphens and full-stops.
         tag:
           # TODO: this could be dryed out more. Something for a later date
           attributes:

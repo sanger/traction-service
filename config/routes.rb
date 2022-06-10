@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     jsonapi_resources :samples,  only: %i[index create]
     jsonapi_resources :tags,     only: %i[index create update destroy]
     jsonapi_resources :tag_sets, only: %i[index create update destroy]
+    jsonapi_resources :receptions, only: %i[index create show]
 
     namespace :saphyr do
       jsonapi_resources :runs,          only: %i[index create show update destroy]
@@ -19,7 +20,6 @@ Rails.application.routes.draw do
     end
 
     namespace :pacbio do
-
       jsonapi_resources :plates,        only: %i[index create]
       jsonapi_resources :tag_sets
 
@@ -28,14 +28,21 @@ Rails.application.routes.draw do
       # it will treat runs/plates or runs/wells as part of the resource
       # limiting it to numbers will cause plates and wells
       # to be redirected to the namespace
-      jsonapi_resources :runs, constraints: { id: /[0-9]+/} do
-        %i[index create update destroy]
+      jsonapi_resources :runs, constraints: { id: /[0-9]+/ } do
         get 'sample_sheet', to: 'runs#sample_sheet'
       end
 
       namespace :runs do
+        # The empty block here *does* seem to change the behaviour, as the removal
+        # results in the error:
+        # JSONAPI: Could not find resource 'v1/pacbio/runs/library'.
+        #   (Class V1::Pacbio::Runs::LibraryResource not found)
+        # Which is an issue with the namespaced resources not looking up the global ones.
+        # See comment in app/resources/v1/pacbio/runs/well_resource.rb
+        # rubocop:disable Lint/EmptyBlock
         jsonapi_resources(:plates,        only: %i[index create update destroy]) {}
         jsonapi_resources(:wells,         only: %i[index create update destroy]) {}
+        # rubocop:enable Lint/EmptyBlock
       end
 
       jsonapi_resources :libraries,       only: %i[index update destroy]
