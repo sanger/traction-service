@@ -8,4 +8,6 @@ class LibraryType < ApplicationRecord
 
   validates :pipeline, presence: true
   validates :name, presence: true, uniqueness: { scope: :pipeline }
+
+  scope :active, -> { where(active: true) }
 end
