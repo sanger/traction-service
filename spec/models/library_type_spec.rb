@@ -13,9 +13,13 @@ RSpec.describe LibraryType, type: :model do
       expect(build(:library_type, name: 'example')).not_to be_valid
     end
 
-    it 'can be shared between pipelines' do
+    # Initially I hoped we could share library type between pipelines, but that
+    # would impact on the ability to use library type to determine pipeline
+    # Leaving this test here to warn if someone else makes a similar change in
+    # future and hasn't considered this.
+    it 'must be unique between pipelines' do
       create(:library_type, name: 'example', pipeline: :pacbio)
-      expect(build(:library_type, name: 'example', pipeline: :ont)).to be_valid
+      expect(build(:library_type, name: 'example', pipeline: :ont)).not_to be_valid
     end
   end
 

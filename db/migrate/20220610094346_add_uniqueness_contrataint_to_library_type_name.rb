@@ -6,6 +6,6 @@
 # of concurrency problems running tasks on deployment.
 class AddUniquenessContrataintToLibraryTypeName < ActiveRecord::Migration[7.0]
   def change
-    add_index :library_types, %i[pipeline name], unique: true
+    add_index :library_types, :name, unique: true
   end
 end
