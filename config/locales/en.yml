@@ -57,6 +57,7 @@ en:
   errors:
     messages:
       uuid: is not a valid uuid
+      pipeline_invalid: is in %{actual} not %{expected} pipeline
     attributes:
       cost_code:
         blank: must be present
