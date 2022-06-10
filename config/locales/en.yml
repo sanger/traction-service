@@ -55,6 +55,8 @@ en:
             group_id:
               duplicated_in_tag_set: must only appear once within a set
   errors:
+    messages:
+      uuid: is not a valid uuid
     attributes:
       cost_code:
         blank: must be present
