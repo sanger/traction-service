@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_09_141912) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_10_094346) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -45,6 +45,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_09_141912) do
     t.integer "pipeline", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["pipeline", "name"], name: "index_library_types_on_pipeline_and_name", unique: true
     t.index ["pipeline"], name: "index_library_types_on_pipeline"
   end
 

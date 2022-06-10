@@ -4,6 +4,12 @@
 # A Pipeline is a series of steps that are required to prepare sample material
 # for sequencing
 module Pipelines
+  # In a number of models we associate records with a pipeline, via an enum
+  # In order to maintain consistent numbering, this has been pulled out into
+  # a constant. Please do *not* remove entries from this list, as it could
+  # result in legacy data being reassigned to the incorrect pipelines
+  ENUMS = { pacbio: 0, ont: 1, saphyr: 2 }.freeze
+
   # InstanceMethodCreator
   module InstanceMethodCreator
     # Creates an instance method in the included class
