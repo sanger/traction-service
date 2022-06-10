@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_07_104659) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_09_141912) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -20,6 +20,32 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_07_104659) do
     t.datetime "updated_at", null: false
     t.index ["container_type", "container_id"], name: "index_container_materials_on_container_type_and_container_id"
     t.index ["material_type", "material_id"], name: "index_container_materials_on_material_type_and_material_id"
+  end
+
+  create_table "data_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "pipeline", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pipeline"], name: "index_data_types_on_pipeline"
+  end
+
+  create_table "heron_ont_requests", charset: "utf8mb3", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "ont_library_id"
+    t.string "name"
+    t.string "external_id"
+    t.string "uuid"
+    t.index ["ont_library_id"], name: "index_heron_ont_requests_on_ont_library_id"
+  end
+
+  create_table "library_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "pipeline", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pipeline"], name: "index_library_types_on_pipeline"
   end
 
   create_table "ont_flowcells", charset: "utf8mb3", force: :cascade do |t|
@@ -43,14 +69,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_07_104659) do
     t.index ["name"], name: "index_ont_libraries_on_name", unique: true
   end
 
-  create_table "ont_requests", charset: "utf8mb3", force: :cascade do |t|
+  create_table "ont_requests", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "library_type_id", null: false
+    t.bigint "data_type_id", null: false
+    t.integer "number_of_flowcells", default: 1, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "ont_library_id"
-    t.string "name"
-    t.string "external_id"
-    t.string "uuid"
-    t.index ["ont_library_id"], name: "index_ont_requests_on_ont_library_id"
+    t.string "external_study_id", limit: 36, null: false
+    t.string "cost_code", null: false
+    t.index ["data_type_id"], name: "index_ont_requests_on_data_type_id"
+    t.index ["library_type_id"], name: "index_ont_requests_on_library_type_id"
   end
 
   create_table "ont_runs", charset: "utf8mb3", force: :cascade do |t|
@@ -288,6 +316,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_07_104659) do
     t.index ["plate_id"], name: "index_wells_on_plate_id"
   end
 
+  add_foreign_key "ont_requests", "data_types"
+  add_foreign_key "ont_requests", "library_types"
   add_foreign_key "pacbio_libraries", "pacbio_pools"
   add_foreign_key "pacbio_libraries", "pacbio_requests"
   add_foreign_key "pacbio_pools", "tubes"

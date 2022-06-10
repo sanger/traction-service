@@ -11,9 +11,5 @@ FactoryBot.define do
         create(:container_material, material: library, container: create(:tube))
       end
     end
-
-    factory :ont_library_with_requests do
-      requests { [create(:ont_request_with_tags)] }
-    end
   end
 end
