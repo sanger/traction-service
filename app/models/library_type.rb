@@ -7,7 +7,7 @@ class LibraryType < ApplicationRecord
   enum pipeline: Pipelines::ENUMS, _suffix: true
 
   validates :pipeline, presence: true
-  validates :name, presence: true, uniqueness: { scope: :pipeline }
+  validates :name, presence: true, uniqueness: true
 
   scope :active, -> { where(active: true) }
 end

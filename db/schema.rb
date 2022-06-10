@@ -48,7 +48,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_10_122339) do
     t.datetime "updated_at", null: false
     t.string "external_identifier"
     t.boolean "active", default: true, null: false
-    t.index ["pipeline", "name"], name: "index_library_types_on_pipeline_and_name", unique: true
+    t.index ["name"], name: "index_library_types_on_pipeline_and_name", unique: true
     t.index ["pipeline"], name: "index_library_types_on_pipeline"
   end
 
