@@ -11,7 +11,6 @@ module Pacbio
     extend NestedValidation
 
     validates_nested :wells
-    # validates :wells, presence: { message: :empty }
     validates :wells, presence: true
 
     def initialize(attributes = [])
@@ -93,11 +92,14 @@ module Pacbio
 
       # WellFactory::Well::Pools
       class Pools
+        extend NestedValidation
         include ActiveModel::Model
+
         attr_reader :well, :pools
 
         validate :check_tags_present, if: :multiple_libraries
         validate :check_tags_uniq, if: :multiple_libraries
+        validates_nested :libraries, context: :run_creation
 
         def initialize(well, pool_attributes)
           @well = well
