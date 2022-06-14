@@ -3,10 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
+  subject(:pool) { build(:pacbio_pool, params) }
+
   let(:libraries) { create_list(:pacbio_library, 5) }
+  let(:params) { {} }
 
   it 'will have a tube on validation' do
-    pool = build(:pacbio_pool)
     pool.valid?
     expect(pool.tube).to be_a(Tube)
   end
@@ -17,22 +19,18 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
   end
 
   it 'can have a template prep kit box barcode' do
-    pool = build(:pacbio_pool)
     expect(pool.template_prep_kit_box_barcode).to be_present
   end
 
   it 'can have a volume' do
-    pool = build(:pacbio_pool)
     expect(pool.volume).to be_present
   end
 
   it 'can have a concentration' do
-    pool = build(:pacbio_pool)
     expect(pool.concentration).to be_present
   end
 
   it 'can have a insert size' do
-    pool = build(:pacbio_pool)
     expect(pool.insert_size).to be_present
   end
 
@@ -41,9 +39,133 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
   end
 
   it 'is not valid unless all of the associated libraries are valid' do
-    dodgy_library = build(:pacbio_library, volume: nil)
+    dodgy_library = build(:pacbio_library, volume: 'big')
 
     expect(build(:pacbio_pool, libraries: libraries + [dodgy_library])).not_to be_valid
+  end
+
+  describe '#valid?(:run_creation)' do
+    subject { pool.valid?(:run_creation) }
+
+    context 'when volume is nil' do
+      let(:params) { { volume: nil } }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when concentration is nil' do
+      let(:params) { { concentration: nil } }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when insert_size is nil' do
+      let(:params) { { insert_size: nil } }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when template_prep_kit_box_barcode is nil' do
+      let(:params) { { template_prep_kit_box_barcode: nil } }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when volume is 12.0' do
+      let(:params) { { volume: 12.0 } }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when concentration is 12.0' do
+      let(:params) { { concentration: 12.0 } }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when insert_size is 12.0' do
+      let(:params) { { insert_size: 12.0 } }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when template_prep_kit_box_barcode is "1234"' do
+      let(:params) { { template_prep_kit_box_barcode: '1234' } }
+
+      it { is_expected.to be true }
+    end
+  end
+
+  context 'when volume is nil' do
+    let(:params) { { volume: nil } }
+
+    it { is_expected.to be_valid }
+  end
+
+  context 'when volume is positive' do
+    let(:params) { { volume: 23 } }
+
+    it { is_expected.to be_valid }
+  end
+
+  context 'when volume is negative' do
+    let(:params) { { volume: -23 } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context 'when volume is "a word"' do
+    let(:params) { { volume: 'a word' } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context 'when concentration is nil' do
+    let(:params) { { concentration: nil } }
+
+    it { is_expected.to be_valid }
+  end
+
+  context 'when concentration is positive' do
+    let(:params) { { concentration: 23 } }
+
+    it { is_expected.to be_valid }
+  end
+
+  context 'when concentration is negative' do
+    let(:params) { { concentration: -23 } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context 'when concentration is "a word"' do
+    let(:params) { { concentration: 'a word' } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context 'when insert_size is nil' do
+    let(:params) { { insert_size: nil } }
+
+    it { is_expected.to be_valid }
+  end
+
+  context 'when insert_size is positive' do
+    let(:params) { { insert_size: 23 } }
+
+    it { is_expected.to be_valid }
+  end
+
+  context 'when insert_size is negative' do
+    let(:params) { { insert_size: -23 } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context 'when insert_size is "a word"' do
+    let(:params) { { insert_size: 'a word' } }
+
+    it { is_expected.not_to be_valid }
   end
 
   describe '#library_attributes=' do

@@ -32,6 +32,38 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
           expect(library_attributes['source_identifier']).to eq(library.source_identifier)
         end
       end
+
+      it 'includes library run suitability' do
+        get v1_pacbio_libraries_path, headers: json_api_headers
+        library_resource = find_resource(id: libraries.first.id, type: 'libraries')
+        expect(library_resource.dig('attributes', 'run_suitability')).to eq({
+                                                                              'ready_for_run' => true,
+                                                                              'errors' => []
+                                                                            })
+      end
+
+      context 'when not suited for run creation' do
+        let!(:libraries) { create_list(:pacbio_library_in_tube, 1, :tagged, insert_size: nil) }
+
+        it 'includes invalid library run suitability' do
+          get v1_pacbio_libraries_path, headers: json_api_headers
+          library_resource = find_resource(id: libraries.first.id, type: 'libraries')
+          run_suitability = library_resource.dig('attributes', 'run_suitability')
+          expect(run_suitability).to eq({
+                                          'ready_for_run' => false,
+                                          'errors' => [
+                                            # We use the standard json-api errors object. Status is excluded
+                                            # as it makes little sense in this context
+                                            {
+                                              'code' => '100',
+                                              'detail' => "insert_size - can't be blank",
+                                              'source' => { 'pointer' => '/data/attributes/insert_size' },
+                                              'title' => "can't be blank"
+                                            }
+                                          ]
+                                        })
+        end
+      end
     end
 
     context 'with includes' do
@@ -107,7 +139,6 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
   describe '#destroy' do
     context 'on success' do
       let!(:library) { create(:pacbio_library) }
-      let!(:request) { library.request }
 
       it 'returns the correct status' do
         delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
@@ -125,9 +156,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       it 'does not destroy the requests' do
         expect do
           delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
-        end.not_to change {
-                     Pacbio::Request.count
-                   }
+        end.not_to change(Pacbio::Request, :count)
       end
     end
 

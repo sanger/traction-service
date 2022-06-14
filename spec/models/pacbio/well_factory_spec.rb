@@ -70,6 +70,15 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         expect(factory.save).to be_falsey
         expect(factory.errors.messages[:wells]).not_to be_empty
       end
+
+      context 'if pools are invalid for run creation' do
+        let(:pools) { create_list(:pacbio_pool, 3, library_factory: :pacbio_incomplete_library) }
+
+        it 'will make sure wells are valid for run creation' do
+          factory = described_class.new(wells_attributes)
+          expect(factory.save).to be_falsey
+        end
+      end
     end
 
     describe '#errors' do
