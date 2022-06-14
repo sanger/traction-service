@@ -13,7 +13,6 @@
 Lint/AmbiguousBlockAssociation:
   Exclude:
     - 'spec/pipelines/pipelines_spec.rb'
-    - 'spec/requests/v1/pacbio/libraries_spec.rb'
 
 # Offense count: 1
 # Configuration parameters: AllowComments, AllowEmptyLambdas.
@@ -74,7 +73,6 @@ RSpec/IdenticalEqualityAssertion:
 # Configuration parameters: AssignmentOnly.
 RSpec/InstanceVariable:
   Exclude:
-    - 'spec/models/pacbio/library_factory_spec.rb'
     - 'spec/requests/v1/pacbio/runs_spec.rb'
     - 'spec/requests/v1/saphyr/runs_spec.rb'
 
@@ -83,8 +81,6 @@ RSpec/LetSetup:
   Exclude:
     - 'spec/models/plate_spec.rb'
     - 'spec/models/tube_spec.rb'
-    - 'spec/requests/v1/pacbio/libraries_spec.rb'
-    - 'spec/requests/v1/pacbio/pools_spec.rb'
     - 'spec/requests/v1/pacbio/runs/plates_spec.rb'
     - 'spec/requests/v1/pacbio/runs/wells_spec.rb'
     - 'spec/requests/v1/pacbio/runs_spec.rb'
