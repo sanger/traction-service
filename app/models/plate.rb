@@ -16,6 +16,10 @@ class Plate < ApplicationRecord
     end
   end
 
+  # This validation probably *should* be always on. It doesn't seem to be violated in production
+  # but engaging it does cause tests to fail.
+  validates :barcode, presence: true, on: :reception
+
   scope :by_pipeline,
         lambda { |pipeline|
           joins(wells: :container_materials).where(

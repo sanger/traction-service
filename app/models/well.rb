@@ -8,7 +8,10 @@ class Well < ApplicationRecord
   has_many :pacbio_requests, through: :container_materials, source: :material,
                              source_type: 'Pacbio::Request', class_name: 'Pacbio::Request'
 
+  delegate :barcode, to: :plate, allow_nil: true
+
   validates :position, presence: true
+  validates :barcode, presence: true, on: :reception
 
   def row
     position[0]
