@@ -13,7 +13,7 @@ class Reception
     attr_writer :sample, :container
 
     validates :request, :container, :resource_factory, presence: true
-    validates_nested :sample, :container, :request, flatten_keys: false
+    validates_nested :sample, :container, :request, flatten_keys: false, context: :reception
 
     delegate :save!, :save, to: :request
 

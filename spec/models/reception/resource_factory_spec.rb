@@ -24,7 +24,7 @@ RSpec.describe Reception::ResourceFactory, type: :model do
       it { is_expected.to be_invalid }
     end
 
-    context 'with invalid containers' do
+    context 'with unknown containers' do
       let(:request_attributes) do
         [{
           request: attributes_for(:ont_request).merge(
@@ -33,6 +33,51 @@ RSpec.describe Reception::ResourceFactory, type: :model do
           ),
           sample: attributes_for(:sample),
           container: { type: 'elephant', barcode: 'NT1' }
+        }]
+      end
+
+      it { is_expected.to be_invalid }
+    end
+
+    context 'with invalid tubes' do
+      let(:request_attributes) do
+        [{
+          request: attributes_for(:ont_request).merge(
+            library_type: library_type.name,
+            data_type: data_type.name
+          ),
+          sample: attributes_for(:sample),
+          container: { type: 'tubes' }
+        }]
+      end
+
+      it { is_expected.to be_invalid }
+    end
+
+    context 'with invalid wells' do
+      let(:request_attributes) do
+        [{
+          request: attributes_for(:ont_request).merge(
+            library_type: library_type.name,
+            data_type: data_type.name
+          ),
+          sample: attributes_for(:sample),
+          container: { type: 'wells', barcode: 'DN1' }
+        }]
+      end
+
+      it { is_expected.to be_invalid }
+    end
+
+    context 'with invalid plates' do
+      let(:request_attributes) do
+        [{
+          request: attributes_for(:ont_request).merge(
+            library_type: library_type.name,
+            data_type: data_type.name
+          ),
+          sample: attributes_for(:sample),
+          container: { type: 'wells', position: 'A1' }
         }]
       end
 
