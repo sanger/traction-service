@@ -113,13 +113,6 @@ RSpec.describe Reception::ResourceFactory, type: :model do
     let(:existing_sample_a1) { attributes_for(:sample) }
     let(:existing_sample_b1) { attributes_for(:sample) }
 
-    let(:request_parameters) do
-      attributes_for(:ont_request).merge(
-        library_type: library_type.name,
-        data_type: data_type.name
-      )
-    end
-
     let(:request_attributes) do
       [{
         request: request_parameters,
@@ -148,28 +141,103 @@ RSpec.describe Reception::ResourceFactory, type: :model do
       }]
     end
 
-    it 'creates 6 Requests' do
-      expect { construct_resources }.to change(Request, :count).by(6)
+    context 'ont' do
+      let(:request_parameters) do
+        attributes_for(:ont_request).merge(
+          library_type: library_type.name,
+          data_type: data_type.name
+        )
+      end
+
+      it 'creates 6 Requests' do
+        expect { construct_resources }.to change(Request, :count).by(6)
+      end
+
+      it 'creates 6 ONT::Requests' do
+        expect { construct_resources }.to change(Ont::Request, :count).by(6)
+      end
+
+      it 'creates new samples' do
+        expect { construct_resources }.to change(Sample, :count).by(4)
+      end
+
+      it 'creates new tubes' do
+        expect { construct_resources }.to change(Tube, :count).by(1)
+      end
+
+      it 'creates new plates' do
+        expect { construct_resources }.to change(Plate, :count).by(1)
+      end
+
+      it 'creates new wells' do
+        expect { construct_resources }.to change(Well, :count).by(3)
+      end
     end
 
-    it 'creates 6 ONT::Requests' do
-      expect { construct_resources }.to change(Ont::Request, :count).by(6)
+    context 'pacbio' do
+      let(:library_type) { create :library_type, :pacbio }
+      let(:request_parameters) do
+        attributes_for(:pacbio_request).merge(
+          library_type: library_type.name
+        )
+      end
+
+      it 'creates 6 Requests' do
+        expect { construct_resources }.to change(Request, :count).by(6)
+      end
+
+      it 'creates 6 ONT::Requests' do
+        expect { construct_resources }.to change(Pacbio::Request, :count).by(6)
+      end
+
+      it 'creates new samples' do
+        expect { construct_resources }.to change(Sample, :count).by(4)
+      end
+
+      it 'creates new tubes' do
+        expect { construct_resources }.to change(Tube, :count).by(1)
+      end
+
+      it 'creates new plates' do
+        expect { construct_resources }.to change(Plate, :count).by(1)
+      end
+
+      it 'creates new wells' do
+        expect { construct_resources }.to change(Well, :count).by(3)
+      end
     end
 
-    it 'creates new samples' do
-      expect { construct_resources }.to change(Sample, :count).by(4)
-    end
+    context 'saphyr' do
+      let(:library_type) { create :library_type, :saphyr }
+      let(:request_parameters) do
+        attributes_for(:saphyr_request).merge(
+          library_type: library_type.name
+        )
+      end
 
-    it 'creates new tubes' do
-      expect { construct_resources }.to change(Tube, :count).by(1)
-    end
+      it 'creates 6 Requests' do
+        expect { construct_resources }.to change(Request, :count).by(6)
+      end
 
-    it 'creates new plates' do
-      expect { construct_resources }.to change(Plate, :count).by(1)
-    end
+      it 'creates 6 ONT::Requests' do
+        expect { construct_resources }.to change(Saphyr::Request, :count).by(6)
+      end
 
-    it 'creates new wells' do
-      expect { construct_resources }.to change(Well, :count).by(3)
+      it 'creates new samples' do
+        expect { construct_resources }.to change(Sample, :count).by(4)
+      end
+
+      it 'creates new tubes' do
+        expect { construct_resources }.to change(Tube, :count).by(1)
+      end
+
+      it 'creates new plates' do
+        expect { construct_resources }.to change(Plate, :count).by(1)
+      end
+
+      it 'creates new wells' do
+        expect { construct_resources }.to change(Well, :count).by(3)
+      end
     end
   end
 end
