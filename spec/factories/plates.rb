@@ -13,7 +13,7 @@ FactoryBot.define do
 
         %w[A B C D E F G H].first(options.row_count).each do |row|
           (1..options.column_count).each do |col|
-            create(:well, position: "#{row}#{col}", plate: plate)
+            create(:well, position: "#{row}#{col}", plate:)
           end
         end
       end
@@ -40,7 +40,7 @@ FactoryBot.define do
 
       after :create do |plate, options|
         options.wells.each do |well_spec|
-          plate.wells << create(:well_with_ont_requests, plate: plate,
+          plate.wells << create(:well_with_ont_requests, plate:,
                                                          position: well_spec[:position], requests: well_spec[:requests])
         end
       end
@@ -57,7 +57,7 @@ FactoryBot.define do
 
         %w[A B C D E F G H].first(options.row_count).each do |row|
           (1..options.column_count).each do |col|
-            create(:well_with_tagged_ont_requests, position: "#{row}#{col}", plate: plate)
+            create(:well_with_tagged_ont_requests, position: "#{row}#{col}", plate:)
           end
         end
       end

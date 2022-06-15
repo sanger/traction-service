@@ -27,10 +27,10 @@ module Pacbio
   # rubocop:disable Lint/UnusedMethodArgument
   def self.request_factory(sample:, container:, request_attributes:, resource_factory:, reception:)
     ::Request.new(
-      sample: sample,
-      reception: reception,
+      sample:,
+      reception:,
       requestable: Pacbio::Request.new(
-        container: container,
+        container:,
         **request_attributes.slice(*self.request_attributes)
       )
     )

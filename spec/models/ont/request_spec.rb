@@ -55,7 +55,7 @@ RSpec.describe Ont::Request, type: :model, ont: true do
 
     context 'when set' do
       let(:library_type) { build :library_type, :ont }
-      let(:attributes) { { library_type: library_type } }
+      let(:attributes) { { library_type: } }
 
       it { expect(request.library_type).to eq library_type }
       it { is_expected.to be_valid }
@@ -63,7 +63,7 @@ RSpec.describe Ont::Request, type: :model, ont: true do
 
     context 'when from a different pipeline' do
       let(:library_type) { build :library_type, :pacbio }
-      let(:attributes) { { library_type: library_type } }
+      let(:attributes) { { library_type: } }
 
       it { is_expected.not_to be_valid }
     end
@@ -74,7 +74,7 @@ RSpec.describe Ont::Request, type: :model, ont: true do
 
     context 'when set' do
       let(:data_type) { build :data_type, :ont }
-      let(:attributes) { { data_type: data_type } }
+      let(:attributes) { { data_type: } }
 
       it { is_expected.to eq data_type }
     end

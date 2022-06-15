@@ -39,7 +39,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
   context 'insert size' do
     let(:pools)     { create_list(:pacbio_pool, 2) }
-    let(:well)      { create(:pacbio_well, pools: pools) }
+    let(:well)      { create(:pacbio_well, pools:) }
 
     it 'gest the fragment size of the first pool in the well' do
       expect(well.pools[0].insert_size).to eq(well.insert_size)
@@ -77,7 +77,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     let(:pools) { create_list(:pacbio_pool, 2) }
 
     it 'with pools' do
-      well = create(:pacbio_well, pools: pools)
+      well = create(:pacbio_well, pools:)
       expect(well).to be_pools
     end
 
@@ -157,8 +157,8 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
   context 'libraries' do
     let(:libraries) { create_list(:pacbio_library, 5, :tagged) }
-    let(:pools)     { create_list(:pacbio_pool, 2, libraries: libraries) }
-    let(:well)      { create(:pacbio_well, pools: pools) }
+    let(:pools)     { create_list(:pacbio_pool, 2, libraries:) }
+    let(:well)      { create(:pacbio_well, pools:) }
 
     it 'can have one or more' do
       expect(well.libraries).to eq(libraries)
@@ -167,7 +167,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
   context 'pools' do
     let(:pools) { create_list(:pacbio_pool, 2) }
-    let(:well)  { create(:pacbio_well, pools: pools) }
+    let(:well)  { create(:pacbio_well, pools:) }
 
     it 'can have one or more' do
       expect(well.pools.length).to eq(2)

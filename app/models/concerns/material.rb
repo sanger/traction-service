@@ -12,6 +12,6 @@ module Material
   end
 
   def container=(container)
-    build_container_material(container: container)
+    build_container_material(container:)
   end
 end

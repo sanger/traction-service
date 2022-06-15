@@ -65,7 +65,7 @@ RSpec.describe 'PacBio', type: :model, pacbio: true do
 
       context 'samples' do
         let(:libraries) { create_list(:pacbio_library, 5, :tagged) }
-        let(:pool) { create(:pacbio_pool, libraries: libraries) }
+        let(:pool) { create(:pacbio_pool, libraries:) }
         let(:request) { library.request }
 
         before do

@@ -20,7 +20,7 @@ FactoryBot.define do
       end
 
       after(:create) do |tag, evaluator|
-        create_list(:tag_taggable, evaluator.taggables_count, tag: tag)
+        create_list(:tag_taggable, evaluator.taggables_count, tag:)
       end
     end
   end

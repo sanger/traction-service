@@ -9,9 +9,9 @@ class Plate < ApplicationRecord
   has_many :wells, inverse_of: :plate, dependent: :destroy do
     def located_at(position)
       if loaded?
-        detect { |w| w.position == position } || build(position: position)
+        detect { |w| w.position == position } || build(position:)
       else
-        find_or_initialize_by(position: position)
+        find_or_initialize_by(position:)
       end
     end
   end

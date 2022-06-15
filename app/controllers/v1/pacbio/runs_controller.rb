@@ -53,7 +53,7 @@ module V1
       end
 
       def render_json(status)
-        render json: serialize_resource(RunResource.new(@run, nil)), status: status
+        render json: serialize_resource(RunResource.new(@run, nil)), status:
       end
     end
   end

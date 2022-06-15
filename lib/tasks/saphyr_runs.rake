@@ -9,14 +9,14 @@ namespace :saphyr_runs do
     factory.save
 
     Saphyr::Request.all.each do |request|
-      library = Saphyr::Library.create!(request: request, saphyr_enzyme_id: 1)
+      library = Saphyr::Library.create!(request:, saphyr_enzyme_id: 1)
       ContainerMaterial.create(container: Tube.create, material: library)
       chip = Saphyr::Chip.create!(barcode: 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX')
       (1..2).each do |n|
-        chip.flowcells << Saphyr::Flowcell.create(position: n, library: library)
+        chip.flowcells << Saphyr::Flowcell.create(position: n, library:)
       end
       chip.save
-      Saphyr::Run.create!(chip: chip)
+      Saphyr::Run.create!(chip:)
     end
     puts '-> Saphyr runs successfully created'
   end

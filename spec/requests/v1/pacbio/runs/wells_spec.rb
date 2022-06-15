@@ -225,14 +225,14 @@ RSpec.describe 'WellsController', type: :request do
             id: well.id,
             type: 'wells',
             attributes: {
-              row: row,
-              column: column,
-              movie_time: movie_time,
-              on_plate_loading_concentration: on_plate_loading_concentration,
-              pre_extension_time: pre_extension_time,
-              generate_hifi: generate_hifi,
-              ccs_analysis_output: ccs_analysis_output,
-              binding_kit_box_barcode: binding_kit_box_barcode
+              row:,
+              column:,
+              movie_time:,
+              on_plate_loading_concentration:,
+              pre_extension_time:,
+              generate_hifi:,
+              ccs_analysis_output:,
+              binding_kit_box_barcode:
             },
             relationships: {
               pools: {
@@ -298,7 +298,7 @@ RSpec.describe 'WellsController', type: :request do
             id: well.id,
             type: 'wells',
             attributes: {
-              movie_time: movie_time
+              movie_time:
             },
             relationships: {
               pools: {
@@ -331,7 +331,7 @@ RSpec.describe 'WellsController', type: :request do
             id: well.id,
             type: 'wells',
             attributes: {
-              movie_time: movie_time
+              movie_time:
             },
             relationships: {
               pools: {
@@ -372,7 +372,7 @@ RSpec.describe 'WellsController', type: :request do
             id: well.id,
             type: 'wells',
             attributes: {
-              movie_time: movie_time
+              movie_time:
             },
             relationships: {
               pools: {
@@ -402,7 +402,7 @@ RSpec.describe 'WellsController', type: :request do
             id: well.id,
             type: 'wells',
             attributes: {
-              movie_time: movie_time
+              movie_time:
             },
             relationships: {
               pools: {
@@ -457,7 +457,7 @@ RSpec.describe 'WellsController', type: :request do
 
   describe '#destroy' do
     let!(:well) { create(:pacbio_well) }
-    let!(:pacbio_well_pool) { create(:pacbio_well_pool, well: well) }
+    let!(:pacbio_well_pool) { create(:pacbio_well_pool, well:) }
 
     context 'on success' do
       it 'has a status of no content' do

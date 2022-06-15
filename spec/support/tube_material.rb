@@ -8,7 +8,7 @@ RSpec.shared_examples 'tube_material' do
   it 'accesses the correct tube' do
     material = create(material_model)
     tube = create(:tube)
-    create(:container_material, container: tube, material: material)
+    create(:container_material, container: tube, material:)
 
     # Sanity check using .container
     expect(material.container).to eq(tube)
@@ -20,7 +20,7 @@ RSpec.shared_examples 'tube_material' do
   it 'gets back nil for the tube if it is in a well' do
     material = create(material_model)
     well = create(:well)
-    container_material = create(:container_material, container: well, material: material)
+    container_material = create(:container_material, container: well, material:)
 
     # Sanity check using .container
     expect(material.container).to eq(well)
