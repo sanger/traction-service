@@ -45,7 +45,8 @@ class Reception
       @request ||= library_type.request_factory(
         sample: sample,
         container: container,
-        request_attributes: @request_attributes
+        request_attributes: @request_attributes,
+        resource_factory: resource_factory
       )
     end
 

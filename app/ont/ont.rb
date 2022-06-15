@@ -16,14 +16,14 @@ module Ont
     %i[library_type data_type]
   end
 
-  def self.request_factory(sample:, container:, request_attributes:)
+  def self.request_factory(sample:, container:, request_attributes:, resource_factory:)
     ::Request.new(
       sample: sample,
       requestable: Ont::Request.new(
         container: container,
         **request_attributes.slice(*self.request_attributes - associated_request_attributes),
-        library_type: LibraryType.find_by(name: request_attributes[:library_type]),
-        data_type: DataType.find_by(name: request_attributes[:data_type])
+        library_type: resource_factory.library_type_for(request_attributes),
+        data_type: resource_factory.data_type_for(request_attributes)
       )
     )
   end
