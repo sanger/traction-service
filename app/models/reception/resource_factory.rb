@@ -12,6 +12,7 @@ class Reception
     validates :request_attributes, presence: true
 
     validates_nested :request_attributes, flatten_keys: false
+
     #
     # Array describing the requests to create.
     # Each request consists of:
@@ -42,13 +43,23 @@ class Reception
       sample_cache[attributes[:external_id]] ||= Sample.new(attributes)
     end
 
+    #
+    # Finds or creates the container with the given attributes
+    #
+    # @param attributes [Hash] Hash describing the container
+    # @option attributes ['tubes','wells'] type: The type of container to create
+    # @option attributes [String] barcode: The tube or plate barcode
+    # @option attributes [String] position: The well co-ordinate (eg. A1)
+    #
+    # @return [Tube,Well] The container
+    #
     def container_for(attributes)
       case attributes[:type]
       when 'tubes'
         tube_cache[attributes[:barcode]] ||= Tube.new(attributes.slice(:barcode))
       when 'wells'
         plate = plate_cache[attributes[:barcode]] ||= Plate.new(attributes.slice(:barcode))
-        plate.wells.find_or_initialize_by(attributes.slice(:position))
+        plate.wells.located_at(attributes[:position])
       end
     end
 

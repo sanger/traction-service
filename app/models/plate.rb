@@ -6,7 +6,15 @@ class Plate < ApplicationRecord
 
   DEFAULT_SIZE = 96
 
-  has_many :wells, inverse_of: :plate, dependent: :destroy
+  has_many :wells, inverse_of: :plate, dependent: :destroy do
+    def located_at(position)
+      if loaded?
+        detect { |w| w.position == position } || build(position: position)
+      else
+        find_or_initialize_by(position: position)
+      end
+    end
+  end
 
   scope :by_pipeline,
         lambda { |pipeline|
