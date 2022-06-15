@@ -23,7 +23,9 @@ module Pacbio
     ]
   end
 
-  def self.request_factory(sample:, container:, request_attributes:)
+  # We have this argument here for API compatibility
+  # rubocop:disable Lint/UnusedMethodArgument
+  def self.request_factory(sample:, container:, request_attributes:, resource_factory:)
     ::Request.new(
       sample: sample,
       requestable: Pacbio::Request.new(
@@ -32,4 +34,5 @@ module Pacbio
       )
     )
   end
+  # rubocop:enable Lint/UnusedMethodArgument
 end

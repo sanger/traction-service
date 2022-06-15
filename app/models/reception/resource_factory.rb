@@ -74,10 +74,18 @@ class Reception
       end
     end
 
+    def data_type_for(attributes)
+      data_type_cache.fetch(attributes[:data_type], nil)
+    end
+
     private
 
     def library_type_cache
       @library_type_cache = LibraryType.all.index_by(&:name)
+    end
+
+    def data_type_cache
+      @data_type_cache = DataType.all.index_by(&:name)
     end
 
     def tube_cache
