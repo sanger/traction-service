@@ -17,4 +17,14 @@ module Saphyr
       :external_study_id
     ]
   end
+
+  def self.request_factory(sample:, container:, request_attributes:)
+    ::Request.new(
+      sample: sample,
+      requestable: Saphyr::Request.new(
+        container: container,
+        **request_attributes.slice(*self.request_attributes)
+      )
+    )
+  end
 end
