@@ -168,7 +168,7 @@ RSpec.describe 'RunsController', type: :request do
 
   describe '#show' do
     let!(:run) { create(:saphyr_run, state: 'pending') }
-    let!(:chip) { create(:saphyr_chip_with_flowcells_and_library_in_tube, run: run) }
+    let!(:chip) { create(:saphyr_chip_with_flowcells_and_library_in_tube, run:) }
 
     it 'returns the runs' do
       get v1_saphyr_run_path(run), headers: json_api_headers

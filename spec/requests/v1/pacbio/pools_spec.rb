@@ -418,7 +418,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
         }.to_json
       end
 
-      before { create(:pacbio_well, pools: [pool], plate: plate) }
+      before { create(:pacbio_well, pools: [pool], plate:) }
 
       it 'publishes a message' do
         expect(Messages).to receive(:publish).with(pool.sequencing_plates,

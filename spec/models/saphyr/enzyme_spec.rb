@@ -23,8 +23,8 @@ RSpec.describe Saphyr::Enzyme, type: :model, saphyr: true do
   describe 'libraries' do
     it 'can have many librarues' do
       enzyme = create(:saphyr_enzyme)
-      library1 = create(:saphyr_library, enzyme: enzyme)
-      library2 = create(:saphyr_library, enzyme: enzyme)
+      library1 = create(:saphyr_library, enzyme:)
+      library2 = create(:saphyr_library, enzyme:)
       expect(enzyme.libraries).to eq [library1, library2]
     end
   end

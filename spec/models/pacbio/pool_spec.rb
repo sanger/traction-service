@@ -14,7 +14,7 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
   end
 
   it 'can have many libraries' do
-    pool = build(:pacbio_pool, libraries: libraries)
+    pool = build(:pacbio_pool, libraries:)
     expect(pool.libraries).to eq(libraries)
   end
 

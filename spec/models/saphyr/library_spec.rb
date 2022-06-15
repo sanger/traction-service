@@ -20,13 +20,13 @@ RSpec.describe Saphyr::Library, type: :model, saphyr: true do
     let(:request) { create(:saphyr_request) }
 
     it 'has a request' do
-      expect(create(:saphyr_library, request: request).request).to eq(request)
+      expect(create(:saphyr_library, request:).request).to eq(request)
     end
 
     it 'has a enzyme' do
       enzyme = create(:saphyr_enzyme)
-      expect(create(:saphyr_library, enzyme: enzyme).enzyme).to eq(enzyme)
-      expect(create(:saphyr_library, enzyme: enzyme).saphyr_enzyme_id).to eq(enzyme.id)
+      expect(create(:saphyr_library, enzyme:).enzyme).to eq(enzyme)
+      expect(create(:saphyr_library, enzyme:).saphyr_enzyme_id).to eq(enzyme.id)
     end
 
     context 'tube' do
@@ -45,7 +45,7 @@ RSpec.describe Saphyr::Library, type: :model, saphyr: true do
     context 'flowcell' do
       it 'can have a flowcell' do
         library = create(:saphyr_library)
-        flowcell = create(:saphyr_flowcell, library: library)
+        flowcell = create(:saphyr_flowcell, library:)
         expect(library.flowcells).to eq [flowcell]
       end
 

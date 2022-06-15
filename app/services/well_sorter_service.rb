@@ -3,9 +3,9 @@
 # Derived from https://github.com/sanger/code_snippets/blob/main/ruby/well_helpers.rb
 # Provides tools for dealing with well ranges
 module WellSorterService
-  COLUMNS_RANGE = { 96 => (1..12).freeze, 384 => (1..24).freeze }.freeze
+  COLUMNS_RANGE = { 96 => (1..12), 384 => (1..24) }.freeze
 
-  ROWS_RANGE = { 96 => ('A'..'H').freeze, 384 => ('A'..'P').freeze }.freeze
+  ROWS_RANGE = { 96 => ('A'..'H'), 384 => ('A'..'P') }.freeze
 
   def self.columns_range(size)
     COLUMNS_RANGE.fetch(size)

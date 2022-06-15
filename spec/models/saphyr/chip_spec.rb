@@ -13,7 +13,7 @@ RSpec.describe Saphyr::Chip, type: :model, saphyr: true do
   context 'run' do
     it 'can belong to a run' do
       run = create(:saphyr_run)
-      expect(create(:saphyr_chip, run: run)).to be_valid
+      expect(create(:saphyr_chip, run:)).to be_valid
     end
 
     it 'doesnt have to belong to a run' do
@@ -22,13 +22,13 @@ RSpec.describe Saphyr::Chip, type: :model, saphyr: true do
 
     it 'can have a run' do
       run = create(:saphyr_run)
-      expect(create(:saphyr_chip, run: run).run).to eq run
+      expect(create(:saphyr_chip, run:).run).to eq run
     end
   end
 
   context 'barcode' do
     it 'must have a barcode' do
-      expect(build(:saphyr_chip, barcode: barcode)).to be_valid
+      expect(build(:saphyr_chip, barcode:)).to be_valid
       expect(build(:saphyr_chip, barcode: nil)).not_to be_valid
     end
 

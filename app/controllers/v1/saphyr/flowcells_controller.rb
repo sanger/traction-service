@@ -19,7 +19,7 @@ module V1
       end
 
       def update
-        flowcell.update(library: library)
+        flowcell.update(library:)
         Messages.publish(flowcell, Pipelines.saphyr.message)
         render json: serialize_resource(FlowcellResource.new(flowcell, nil)),
                status: :ok
