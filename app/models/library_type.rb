@@ -4,7 +4,7 @@
 # protocol that has been performed. They are exposed downstream, and can affect
 # the analysis performed by NPG.
 class LibraryType < ApplicationRecord
-  enum pipeline: Pipelines::ENUMS, _suffix: true
+  include Pipelineable
 
   validates :pipeline, presence: true
   validates :name, presence: true, uniqueness: true

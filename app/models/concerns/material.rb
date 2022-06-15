@@ -10,4 +10,8 @@ module Material
     # delegate instead.
     delegate :container, to: :container_material, allow_nil: true
   end
+
+  def container=(container)
+    build_container_material(container: container)
+  end
 end

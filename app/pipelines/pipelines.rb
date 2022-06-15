@@ -9,6 +9,17 @@ module Pipelines
   # a constant. Please do *not* remove entries from this list, as it could
   # result in legacy data being reassigned to the incorrect pipelines
   ENUMS = { pacbio: 0, ont: 1, saphyr: 2 }.freeze
+  HANDERS = {
+    pacbio: Pacbio,
+    ont: Ont,
+    saphyr: Saphyr
+  }.with_indifferent_access.freeze
+
+  def self.handler(pipeline)
+    HANDERS.fetch(pipeline) do
+      raise "Unknown pipeline #{pipeline}"
+    end
+  end
 
   # InstanceMethodCreator
   module InstanceMethodCreator

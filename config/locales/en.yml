@@ -67,3 +67,7 @@ en:
         blank: must be present
       wells:
         blank: must be present
+      duplicate_containers:
+        present: must be submitted separately
+      library_type:
+        inclusion: is not a recognised library type

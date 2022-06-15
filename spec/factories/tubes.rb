@@ -2,6 +2,10 @@
 
 FactoryBot.define do
   factory :tube do
+    trait :with_barcode do
+      barcode
+    end
+
     transient do
       requests { [] }
       libraries { [] }
