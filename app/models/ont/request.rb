@@ -3,10 +3,14 @@
 module Ont
   # Ont::Request
   class Request < ApplicationRecord
-    include Material
+    include TubeMaterial
+    include WellMaterial
 
     belongs_to :library_type
     belongs_to :data_type
+
+    has_one :request, class_name: '::Request', as: :requestable, dependent: :nullify
+    has_one :sample, through: :request
 
     validates :cost_code, presence: true
     validates :number_of_flowcells, numericality: { only_integer: true, greater_than: 0 }
