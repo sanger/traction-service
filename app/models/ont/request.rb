@@ -14,7 +14,7 @@ module Ont
 
     validates :cost_code, presence: true
     validates :number_of_flowcells, numericality: { only_integer: true, greater_than: 0 }
-    validates :external_study_id, uuid: true
+    validates :external_study_id, uuid: true, presence: true
 
     validates :library_type, pipeline: :ont
     validates :data_type, pipeline: :ont

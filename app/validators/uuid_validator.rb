@@ -10,7 +10,7 @@ class UuidValidator < ActiveModel::EachValidator
   UUID = /\A[0-f]{8}-([0-f]{4}-){3}[0-f]{12}\z/.freeze
 
   def validate_each(record, attribute, value)
-    return if UUID.match?(value)
+    return if value.blank? || UUID.match?(value)
 
     record.errors.add(attribute, :uuid)
   end
