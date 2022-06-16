@@ -10,6 +10,8 @@ module Saphyr
     # @param attributes [Array of ActionController::Parameters] list of request parameters
     # @return [Array of ActiveRecord Requests]
     def initialize(attributes = [])
+      raise if Flipper.enabled?(:dpl_277_disable_saphyr_specific_reception)
+
       build_requests(attributes)
     end
 
@@ -73,6 +75,8 @@ module Saphyr
       end
 
       def save
+        raise if Flipper.enabled?(:dpl_277_disable_saphyr_specific_reception)
+
         tube.save! && request.save! && container_material.save!
       end
 

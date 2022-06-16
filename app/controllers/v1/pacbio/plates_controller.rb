@@ -30,6 +30,8 @@ module V1
       private
 
       def plates_params
+        raise if Flipper.enabled?(:dpl_277_disable_pacbio_specific_reception)
+
         params.require(:data)['attributes'].permit(
           plates: [:barcode, { wells: [:position, { samples:
               ::Pacbio.request_attributes + ::Pacbio.sample_attributes }] }]

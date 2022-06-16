@@ -23,6 +23,8 @@ module Pacbio
     validate :check_plates
 
     def initialize(attributes = {})
+      raise if Flipper.enabled?(:dpl_277_disable_pacbio_specific_reception)
+
       @plate_wrappers = attributes[:plates].try(:map) { |plate| PlateWrapper.new(plate) } || []
     end
 
@@ -87,6 +89,8 @@ module Pacbio
       #  * barcode
       #  * array of wells
       def initialize(attributes = {})
+        raise if Flipper.enabled?(:dpl_277_disable_pacbio_specific_reception)
+
         @plate = ::Plate.new(attributes.except(:wells))
         @well_wrappers = attributes[:wells].try(:collect) do |well|
           WellWrapper.new(well.merge(plate: plate))
@@ -142,6 +146,8 @@ module Pacbio
       #  * position
       #  * array of samples
       def initialize(attributes = {})
+        raise if Flipper.enabled?(:dpl_277_disable_pacbio_specific_reception)
+
         @well = ::Well.new(attributes.except(:samples))
         @sample_wrappers = attributes[:samples].try(:collect) do |sample|
           SampleWrapper.new(sample.merge(well: well))
@@ -214,6 +220,8 @@ module Pacbio
 
       # @param attributes [Hash] hash of attributes (see SAMPLE_ATTRIBUTES or REQUEST_ATTRIBUTES)
       def initialize(attributes = {})
+        raise if Flipper.enabled?(:dpl_277_disable_pacbio_specific_reception)
+
         @well = attributes[:well]
         @sample = ::Sample.find_or_initialize_by(attributes.slice(*SAMPLE_ATTRIBUTES))
         @pacbio_request = Pacbio::Request.new(attributes.slice(*REQUEST_ATTRIBUTES))
