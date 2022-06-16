@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_16_093631) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_16_114645) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -218,6 +218,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_16_093631) do
     t.string "barcode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["barcode"], name: "index_plates_on_barcode", unique: true
   end
 
   create_table "receptions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -243,6 +244,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_16_093631) do
     t.string "species"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.index ["external_id"], name: "index_samples_on_external_id", unique: true
     t.index ["name", "external_id", "species"], name: "index_samples_on_name_and_external_id_and_species"
     t.index ["name"], name: "index_samples_on_name", unique: true
   end
@@ -332,6 +334,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_16_093631) do
     t.string "barcode"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.index ["barcode"], name: "index_tubes_on_barcode", unique: true
   end
 
   create_table "wells", charset: "utf8mb3", force: :cascade do |t|
@@ -339,6 +342,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_16_093631) do
     t.bigint "plate_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["plate_id", "position"], name: "index_wells_on_plate_id_and_position", unique: true
     t.index ["plate_id"], name: "index_wells_on_plate_id"
   end
 
