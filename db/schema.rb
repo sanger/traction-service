@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_10_135319) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_16_093631) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -29,6 +29,22 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_10_135319) do
     t.datetime "updated_at", null: false
     t.index ["pipeline", "name"], name: "index_data_types_on_pipeline_and_name", unique: true
     t.index ["pipeline"], name: "index_data_types_on_pipeline"
+  end
+
+  create_table "flipper_features", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "key", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_flipper_features_on_key", unique: true
+  end
+
+  create_table "flipper_gates", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "feature_key", null: false
+    t.string "key", null: false
+    t.string "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
   end
 
   create_table "heron_ont_requests", charset: "utf8mb3", force: :cascade do |t|

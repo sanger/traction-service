@@ -51,4 +51,25 @@ Rails.application.routes.draw do
       jsonapi_resources :pools,           except: %i[destroy]
     end
   end
+
+  mount Flipper::Api.app(Flipper) => '/flipper/api', constraints: ->(request) { request.get? }
+
+  # Caution: We currently have no auth on the flipper UI, potentially allowing anyone within
+  # the sanger who knows the URL to flip features. You *can* add basic auth with:
+  #
+  #   builder.use Rack::Auth::Basic do |username, password|
+  #     # do_validation
+  #   end
+  # end
+  #
+  # You could then either add bcrypt and validate against a hash stored in FLIPPER_USER
+  # or auth with ldap and check teams.
+  #
+  # Choosing to defer for the moment, as risk is pretty low.
+  flipper_ui = Flipper::UI.app do |builder|
+    # Required to prevent a 'Forbidden' response. I'm assuming as the Rails app
+    # itself is API only
+    builder.use Rack::Session::Pool
+  end
+  mount flipper_ui, at: '/flipper'
 end
