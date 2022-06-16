@@ -3,6 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe 'ReceptionsController', type: :request do
+  before do
+    Flipper.enable(:dpl_277_enable_general_reception)
+  end
+
   describe '#post' do
     let!(:library_type) { create :library_type, :ont }
     let!(:data_type) { create :data_type, :ont }

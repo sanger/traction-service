@@ -7,6 +7,8 @@ module V1
       # create action for the pipeline requests
       # uses the request factory
       def create
+        not_found if Flipper.enabled?(:dpl_277_disable_saphyr_specific_reception)
+
         if request_factory.save
           render json: body, status: :created
         else
