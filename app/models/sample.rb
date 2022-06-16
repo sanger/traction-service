@@ -6,8 +6,9 @@ class Sample < ApplicationRecord
 
   attr_readonly :name
 
-  validates :name, :external_id, :species, presence: true
-  validates :name, uniqueness: { case_sensitive: false }
+  validates :species, presence: true
+  validates :external_id, presence: true, uuid: true
+  validates :name, uniqueness: { case_sensitive: false }, presence: true
 
   def active?
     deactivated_at.nil?
