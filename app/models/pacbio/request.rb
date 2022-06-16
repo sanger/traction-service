@@ -20,6 +20,8 @@ module Pacbio
     delegate :name, to: :sample, prefix: :sample
     delegate :species, to: :sample, prefix: :sample
 
+    validates :external_study_id, uuid: true
+
     validates(*Pacbio.required_request_attributes, presence: true)
 
     def container

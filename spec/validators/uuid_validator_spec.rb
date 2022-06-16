@@ -15,8 +15,8 @@ RSpec.describe UuidValidator do
     context 'with a nil value' do
       let(:value) { nil }
 
-      it 'adds an error to the record' do
-        expect(record.errors.full_messages).to include('External study is not a valid uuid')
+      it 'is valid' do
+        expect(record.errors.full_messages).to be_empty
       end
     end
 
@@ -31,7 +31,7 @@ RSpec.describe UuidValidator do
     context 'with a uuid' do
       let(:value) { generate(:uuid) }
 
-      it 'adds an error to the record' do
+      it 'is valid' do
         expect(record.errors.full_messages).to be_empty
       end
     end
