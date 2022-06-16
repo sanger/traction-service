@@ -31,6 +31,6 @@ class ApplicationController < ActionController::Base
 
   # Call to return a 404
   def not_found
-    raise ActionController::RoutingError.new('Not Found')
+    raise ActionController::RoutingError, 'Not Found'
   end
 end

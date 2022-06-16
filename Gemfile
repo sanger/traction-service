@@ -40,7 +40,7 @@ group :development, :test do
   gem 'sqlite3'
 end
 
-gem "flipper", "~> 0.25.0"
-gem "flipper-ui", "~> 0.25.0"
-gem "flipper-api", "~> 0.25.0"
-gem "flipper-active_record", "~> 0.25.0"
+gem 'flipper', '~> 0.25.0'
+gem 'flipper-active_record', '~> 0.25.0'
+gem 'flipper-api', '~> 0.25.0'
+gem 'flipper-ui', '~> 0.25.0'
