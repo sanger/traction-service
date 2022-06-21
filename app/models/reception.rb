@@ -15,7 +15,8 @@ class Reception < ApplicationRecord
   delegate :request_attributes=, :construct_resources!, to: :resource_factory
 
   # We flatten the keys here as they map back directly to the correpsonding
-  # attributes in Reception.We're mere'l using the ractory to encapsulate the behaviour
+  # attributes in Reception. We're merely using the ResourceFactory to
+  # encapsulate the behaviour
   validates_nested :resource_factory, flatten_keys: true
 
   private
