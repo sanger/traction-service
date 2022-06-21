@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# frozen_string_literal: true
-
 class Reception
   # Acts on behalf of a {Reception::ResourceFactory} to handle the creation and validation
   # of individual requests
