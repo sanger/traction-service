@@ -22,7 +22,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_16_114645) do
     t.index ["material_type", "material_id"], name: "index_container_materials_on_material_type_and_material_id"
   end
 
-  create_table "data_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "data_types", charset: "utf8mb3", force: :cascade do |t|
     t.string "name", null: false
     t.integer "pipeline", null: false
     t.datetime "created_at", null: false
@@ -31,14 +31,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_16_114645) do
     t.index ["pipeline"], name: "index_data_types_on_pipeline"
   end
 
-  create_table "flipper_features", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "flipper_features", charset: "utf8mb3", force: :cascade do |t|
     t.string "key", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_flipper_features_on_key", unique: true
   end
 
-  create_table "flipper_gates", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "flipper_gates", charset: "utf8mb3", force: :cascade do |t|
     t.string "feature_key", null: false
     t.string "key", null: false
     t.string "value"
@@ -57,14 +57,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_16_114645) do
     t.index ["ont_library_id"], name: "index_heron_ont_requests_on_ont_library_id"
   end
 
-  create_table "library_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "library_types", charset: "utf8mb3", force: :cascade do |t|
     t.string "name", null: false
     t.integer "pipeline", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "external_identifier"
     t.boolean "active", default: true, null: false
-    t.index ["name"], name: "index_library_types_on_pipeline_and_name", unique: true
+    t.index ["name"], name: "index_library_types_on_name", unique: true
     t.index ["pipeline"], name: "index_library_types_on_pipeline"
   end
 
@@ -89,7 +89,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_16_114645) do
     t.index ["name"], name: "index_ont_libraries_on_name", unique: true
   end
 
-  create_table "ont_requests", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "ont_requests", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "library_type_id", null: false
     t.bigint "data_type_id", null: false
     t.integer "number_of_flowcells", default: 1, null: false
@@ -221,7 +221,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_16_114645) do
     t.index ["barcode"], name: "index_plates_on_barcode", unique: true
   end
 
-  create_table "receptions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "receptions", charset: "utf8mb3", force: :cascade do |t|
     t.string "source", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
