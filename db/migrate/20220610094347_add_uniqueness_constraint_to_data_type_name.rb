@@ -4,7 +4,7 @@
 # we're unlikely to reap much form the performance or data-integrity issues,
 # this will be a low volume rarely changing table, but there could be risks
 # of concurrency problems running tasks on deployment.
-class AddUniquenessContrataintToDataTypeName < ActiveRecord::Migration[7.0]
+class AddUniquenessConstraintToDataTypeName < ActiveRecord::Migration[7.0]
   def change
     add_index :data_types, %i[pipeline name], unique: true
   end
