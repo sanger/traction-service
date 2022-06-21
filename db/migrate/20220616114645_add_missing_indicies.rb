@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
-# We avoid creating duplicate resources, so lets an in index to help the reception
+# We avoid creating duplicate resources, so lets add in index to help the
+# reception find any resources that are already registered. The index
+# constraints should also prevent against any race conditions introducing
+# duplicates.
 class AddMissingIndicies < ActiveRecord::Migration[7.0]
   def change
     add_index :plates, :barcode, unique: true
