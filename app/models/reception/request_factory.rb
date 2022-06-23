@@ -7,7 +7,7 @@ class Reception
     include ActiveModel::Model
     extend NestedValidation
 
-    attr_accessor :resource_factory
+    attr_accessor :resource_factory, :reception
     attr_writer :sample, :container
 
     validates :request, :container, :resource_factory, presence: true
@@ -41,6 +41,7 @@ class Reception
 
     def request
       @request ||= library_type.request_factory(
+        reception: reception,
         sample: sample,
         container: container,
         request_attributes: @request_attributes,

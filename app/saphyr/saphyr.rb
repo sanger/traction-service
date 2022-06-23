@@ -20,9 +20,10 @@ module Saphyr
 
   # We have this argument here for API compatibility
   # rubocop:disable Lint/UnusedMethodArgument
-  def self.request_factory(sample:, container:, request_attributes:, resource_factory:)
+  def self.request_factory(sample:, container:, request_attributes:, resource_factory:, reception:)
     ::Request.new(
       sample: sample,
+      reception: reception,
       requestable: Saphyr::Request.new(
         container: container,
         **request_attributes.slice(*self.request_attributes)
