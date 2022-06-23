@@ -16,9 +16,10 @@ module Ont
     %i[library_type data_type]
   end
 
-  def self.request_factory(sample:, container:, request_attributes:, resource_factory:)
+  def self.request_factory(sample:, container:, request_attributes:, resource_factory:, reception:)
     ::Request.new(
       sample: sample,
+      reception: reception,
       requestable: Ont::Request.new(
         container: container,
         **request_attributes.slice(*self.request_attributes - associated_request_attributes),

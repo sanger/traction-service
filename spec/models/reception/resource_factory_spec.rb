@@ -137,27 +137,20 @@ RSpec.describe Reception::ResourceFactory, type: :model do
   end
 
   describe '#construct_resources!' do
-    subject(:construct_resources) { build(:reception_resource_factory, request_attributes: request_attributes).construct_resources! }
-
-    before do
-      create :tube, existing_tube
-      exists = create :plate, existing_plate
-      create :well, **existing_well_a1.except(:barcode), plate: exists
-      create :sample, existing_sample_a1
-      create :sample, existing_sample_b1
+    subject(:construct_resources) do
+      resource_factory.construct_resources!
     end
 
+    let(:resource_factory) do
+      build(:reception_resource_factory, request_attributes: request_attributes)
+    end
     let(:existing_tube) { attributes_for(:tube, :with_barcode) }
     let(:new_plate_barcode) { generate(:barcode) }
     let(:existing_plate_barcode) { generate(:barcode) }
     let(:existing_plate) { attributes_for(:plate, barcode: existing_plate_barcode) }
-    let(:new_well_a1) { attributes_for(:well, position: 'A1', barcode: new_plate_barcode) }
-    let(:new_well_b1) { attributes_for(:well, position: 'B1', barcode: new_plate_barcode) }
     let(:existing_well_a1) { attributes_for(:well, position: 'A1', barcode: existing_plate_barcode) }
-    let(:new_well_c1) { attributes_for(:well, position: 'C1', barcode: existing_plate_barcode) }
     let(:existing_sample_a1) { attributes_for(:sample) }
     let(:existing_sample_b1) { attributes_for(:sample) }
-
     let(:request_attributes) do
       [{
         request: request_parameters,
@@ -170,11 +163,11 @@ RSpec.describe Reception::ResourceFactory, type: :model do
       }, {
         request: request_parameters,
         sample: attributes_for(:sample),
-        container: { type: 'wells', **new_well_a1 }
+        container: { type: 'wells', **attributes_for(:well, position: 'A1', barcode: new_plate_barcode) }
       }, {
         request: request_parameters,
         sample: existing_sample_b1,
-        container: { type: 'wells', **new_well_b1 }
+        container: { type: 'wells', **attributes_for(:well, position: 'B1', barcode: new_plate_barcode) }
       }, {
         request: request_parameters,
         sample: existing_sample_a1,
@@ -182,8 +175,18 @@ RSpec.describe Reception::ResourceFactory, type: :model do
       }, {
         request: request_parameters,
         sample: attributes_for(:sample),
-        container: { type: 'wells', **new_well_c1 }
+        container: { type: 'wells', **attributes_for(:well, position: 'C1', barcode: existing_plate_barcode) }
       }]
+    end
+
+    let(:reception) { resource_factory.reception }
+
+    before do
+      create :tube, existing_tube
+      exists = create :plate, existing_plate
+      create :well, **existing_well_a1.except(:barcode), plate: exists
+      create :sample, existing_sample_a1
+      create :sample, existing_sample_b1
     end
 
     context 'ont' do
@@ -216,6 +219,11 @@ RSpec.describe Reception::ResourceFactory, type: :model do
 
       it 'creates new wells' do
         expect { construct_resources }.to change(Well, :count).by(3)
+      end
+
+      it 'associates the requests with the reception' do
+        construct_resources
+        expect(reception.requests.reload.count).to eq 6
       end
     end
 
@@ -250,6 +258,11 @@ RSpec.describe Reception::ResourceFactory, type: :model do
       it 'creates new wells' do
         expect { construct_resources }.to change(Well, :count).by(3)
       end
+
+      it 'associates the requests with the reception' do
+        construct_resources
+        expect(reception.requests.reload.count).to eq 6
+      end
     end
 
     context 'saphyr' do
@@ -282,6 +295,11 @@ RSpec.describe Reception::ResourceFactory, type: :model do
 
       it 'creates new wells' do
         expect { construct_resources }.to change(Well, :count).by(3)
+      end
+
+      it 'associates the requests with the reception' do
+        construct_resources
+        expect(reception.requests.reload.count).to eq 6
       end
     end
   end

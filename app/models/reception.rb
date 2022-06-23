@@ -5,6 +5,8 @@
 # auditing and event tracking purposes.
 class Reception < ApplicationRecord
   extend NestedValidation
+  has_many :requests, dependent: :restrict_with_error
+
   # Source is used to track where a reception event came from.
   # Anything going via traction-ui (ie. everything initially) should be prefixed
   # traction-ui. For example traction-ui.sequencescape or traction-ui.samples-extraction

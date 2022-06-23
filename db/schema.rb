@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_16_114645) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_23_104146) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -233,6 +233,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_16_114645) do
     t.bigint "requestable_id"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.bigint "reception_id"
+    t.index ["reception_id"], name: "index_requests_on_reception_id"
     t.index ["requestable_type", "requestable_id"], name: "index_requests_on_requestable_type_and_requestable_id"
     t.index ["sample_id"], name: "index_requests_on_sample_id"
   end
@@ -351,4 +353,5 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_16_114645) do
   add_foreign_key "pacbio_libraries", "pacbio_pools"
   add_foreign_key "pacbio_libraries", "pacbio_requests"
   add_foreign_key "pacbio_pools", "tubes"
+  add_foreign_key "requests", "receptions"
 end

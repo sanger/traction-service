@@ -29,7 +29,7 @@ class Reception
     # @option request [Hash] container: Hash containing the attributes for the container
     def request_attributes=(attributes)
       @request_attributes = attributes.map do |request_attribute|
-        RequestFactory.new(resource_factory: self, **request_attribute)
+        RequestFactory.new(resource_factory: self, reception: reception, **request_attribute)
       end
     end
 
