@@ -5,8 +5,6 @@ module Ont
   class Library < ApplicationRecord
     include Material
 
-    has_many :requests, foreign_key: :ont_library_id,
-                        inverse_of: :library, dependent: :nullify
     has_one :flowcell, foreign_key: :ont_library_id, inverse_of: :library, dependent: :destroy
 
     # This is dependent on the requests association, so needs to be included
@@ -40,6 +38,12 @@ module Ont
     # Make table read only. We don't want anything pushing to it.
     def readonly?
       true
+    end
+
+    # Temporary dummy methods to try and assist migration to
+    # new schema
+    def requests
+      Ont::Request.none
     end
   end
 end

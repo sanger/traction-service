@@ -13,7 +13,6 @@ AllCops:
     # GitHub actions installs gems in the vendor directory, which causes rubocop to try
     # and cop our gems. We don't want it to.
     - vendor/**/*
-    - 'config/routes.rb'
     - 'config/initializers/secret_token.rb'
     - 'config/initializers/backtrace_silencers.rb'
     - 'config/environments/*'

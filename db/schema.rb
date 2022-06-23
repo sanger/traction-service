@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_07_104659) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_23_104146) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -20,6 +20,52 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_07_104659) do
     t.datetime "updated_at", null: false
     t.index ["container_type", "container_id"], name: "index_container_materials_on_container_type_and_container_id"
     t.index ["material_type", "material_id"], name: "index_container_materials_on_material_type_and_material_id"
+  end
+
+  create_table "data_types", charset: "utf8mb3", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "pipeline", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pipeline", "name"], name: "index_data_types_on_pipeline_and_name", unique: true
+    t.index ["pipeline"], name: "index_data_types_on_pipeline"
+  end
+
+  create_table "flipper_features", charset: "utf8mb3", force: :cascade do |t|
+    t.string "key", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_flipper_features_on_key", unique: true
+  end
+
+  create_table "flipper_gates", charset: "utf8mb3", force: :cascade do |t|
+    t.string "feature_key", null: false
+    t.string "key", null: false
+    t.string "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
+  end
+
+  create_table "heron_ont_requests", charset: "utf8mb3", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "ont_library_id"
+    t.string "name"
+    t.string "external_id"
+    t.string "uuid"
+    t.index ["ont_library_id"], name: "index_heron_ont_requests_on_ont_library_id"
+  end
+
+  create_table "library_types", charset: "utf8mb3", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "pipeline", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "external_identifier"
+    t.boolean "active", default: true, null: false
+    t.index ["name"], name: "index_library_types_on_name", unique: true
+    t.index ["pipeline"], name: "index_library_types_on_pipeline"
   end
 
   create_table "ont_flowcells", charset: "utf8mb3", force: :cascade do |t|
@@ -44,13 +90,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_07_104659) do
   end
 
   create_table "ont_requests", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "library_type_id", null: false
+    t.bigint "data_type_id", null: false
+    t.integer "number_of_flowcells", default: 1, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "ont_library_id"
-    t.string "name"
-    t.string "external_id"
-    t.string "uuid"
-    t.index ["ont_library_id"], name: "index_ont_requests_on_ont_library_id"
+    t.string "external_study_id", limit: 36, null: false
+    t.string "cost_code", null: false
+    t.index ["data_type_id"], name: "index_ont_requests_on_data_type_id"
+    t.index ["library_type_id"], name: "index_ont_requests_on_library_type_id"
   end
 
   create_table "ont_runs", charset: "utf8mb3", force: :cascade do |t|
@@ -170,6 +218,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_07_104659) do
     t.string "barcode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["barcode"], name: "index_plates_on_barcode", unique: true
+  end
+
+  create_table "receptions", charset: "utf8mb3", force: :cascade do |t|
+    t.string "source", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "requests", charset: "utf8mb3", force: :cascade do |t|
@@ -178,6 +233,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_07_104659) do
     t.bigint "requestable_id"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.bigint "reception_id"
+    t.index ["reception_id"], name: "index_requests_on_reception_id"
     t.index ["requestable_type", "requestable_id"], name: "index_requests_on_requestable_type_and_requestable_id"
     t.index ["sample_id"], name: "index_requests_on_sample_id"
   end
@@ -189,6 +246,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_07_104659) do
     t.string "species"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.index ["external_id"], name: "index_samples_on_external_id", unique: true
     t.index ["name", "external_id", "species"], name: "index_samples_on_name_and_external_id_and_species"
     t.index ["name"], name: "index_samples_on_name", unique: true
   end
@@ -278,6 +336,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_07_104659) do
     t.string "barcode"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.index ["barcode"], name: "index_tubes_on_barcode", unique: true
   end
 
   create_table "wells", charset: "utf8mb3", force: :cascade do |t|
@@ -285,10 +344,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_07_104659) do
     t.bigint "plate_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["plate_id", "position"], name: "index_wells_on_plate_id_and_position", unique: true
     t.index ["plate_id"], name: "index_wells_on_plate_id"
   end
 
+  add_foreign_key "ont_requests", "data_types"
+  add_foreign_key "ont_requests", "library_types"
   add_foreign_key "pacbio_libraries", "pacbio_pools"
   add_foreign_key "pacbio_libraries", "pacbio_requests"
   add_foreign_key "pacbio_pools", "tubes"
+  add_foreign_key "requests", "receptions"
 end

@@ -28,4 +28,9 @@ class ApplicationController < ActionController::Base
   def serialize_resource(resource)
     { data: JSONAPI::ResourceSerializer.new(resource.class).object_hash(resource, {}) }
   end
+
+  # Call to return a 404
+  def not_found
+    raise ActionController::RoutingError, 'Not Found'
+  end
 end
