@@ -69,7 +69,7 @@ Rails.application.routes.draw do
   flipper_ui = Flipper::UI.app do |builder|
     # Required to prevent a 'Forbidden' response. I'm assuming as the Rails app
     # itself is API only
-    builder.use Rack::Session::Pool
+    builder.use Rack::Session::Cookie
   end
   mount flipper_ui, at: '/flipper'
 end
