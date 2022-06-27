@@ -1,18 +1,86 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Pacbio::Library, type: :model, pacbio: true do
+  subject { build(:pacbio_library, params) }
 
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_library }
+
     it_behaves_like 'uuidable'
   end
 
-  it 'must have a volume' do
-    expect(build(:pacbio_library, volume: nil)).to_not be_valid
+  context 'when volume is nil' do
+    let(:params) { { volume: nil } }
+
+    it { is_expected.to be_valid }
   end
 
-  it 'must have a concentration' do
-    expect(build(:pacbio_library, concentration: nil)).to_not be_valid
+  context 'when volume is positive' do
+    let(:params) { { volume: 23 } }
+
+    it { is_expected.to be_valid }
+  end
+
+  context 'when volume is negative' do
+    let(:params) { { volume: -23 } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context 'when volume is "a word"' do
+    let(:params) { { volume: 'a word' } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context 'when concentration is nil' do
+    let(:params) { { concentration: nil } }
+
+    it { is_expected.to be_valid }
+  end
+
+  context 'when concentration is positive' do
+    let(:params) { { concentration: 23 } }
+
+    it { is_expected.to be_valid }
+  end
+
+  context 'when concentration is negative' do
+    let(:params) { { concentration: -23 } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context 'when concentration is "a word"' do
+    let(:params) { { concentration: 'a word' } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context 'when insert_size is nil' do
+    let(:params) { { insert_size: nil } }
+
+    it { is_expected.to be_valid }
+  end
+
+  context 'when insert_size is positive' do
+    let(:params) { { insert_size: 23 } }
+
+    it { is_expected.to be_valid }
+  end
+
+  context 'when insert_size is negative' do
+    let(:params) { { insert_size: -23 } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context 'when insert_size is "a word"' do
+    let(:params) { { insert_size: 'a word' } }
+
+    it { is_expected.not_to be_valid }
   end
 
   it 'can have a template prep kit box barcode' do
@@ -20,32 +88,27 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
     expect(create(:pacbio_library).template_prep_kit_box_barcode).to be_present
   end
 
-  it 'must have a insert size' do
-    expect(build(:pacbio_library, insert_size: nil)).to_not be_valid
-  end
-
   it 'can have a request' do
-    request = create(:pacbio_request)
+    request = build(:pacbio_request)
     expect(build(:pacbio_library, request: request).request).to eq(request)
   end
 
   it 'can have a tag' do
-    tag = create(:tag)
+    tag = build(:tag)
     expect(build(:pacbio_library, tag: tag).tag).to eq(tag)
   end
 
   it 'can have a pool' do
-    pool = create(:pacbio_pool)
+    pool = build(:pacbio_pool)
     expect(build(:pacbio_library, pool: pool).pool).to eq(pool)
   end
 
   it 'can have a tube through pool' do
-    pool = create(:pacbio_pool)
+    pool = build(:pacbio_pool)
     expect(build(:pacbio_library, pool: pool).tube).to eq(pool.tube)
   end
 
   describe '#request' do
-
     let!(:library) { create(:pacbio_library, tag: create(:tag)) }
 
     it 'can have one' do
@@ -58,9 +121,8 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
   end
 
   context 'library' do
-
     let(:library_factory) { :pacbio_library }
-    let(:library_model) { Pacbio::Library }
+    let(:library_model) { described_class }
 
     it_behaves_like 'library'
   end

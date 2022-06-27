@@ -3,23 +3,20 @@
 module Ont
   # Ont::Request
   class Request < ApplicationRecord
-    include Material
-    include Taggable
+    include TubeMaterial
+    include WellMaterial
 
-    belongs_to :library, foreign_key: :ont_library_id, inverse_of: :requests,
-                         dependent: :destroy, optional: true
-    validates :name, :external_id, presence: true
+    belongs_to :library_type
+    belongs_to :data_type
 
-    def self.includes_args(except = nil)
-      args = []
-      args << { tags: Tag.includes_args } unless except == :tags
-      args << { library: Ont::Library.includes_args(:requests) } unless except == :library
+    has_one :request, class_name: '::Request', as: :requestable, dependent: :nullify
+    has_one :sample, through: :request
 
-      unless except == :container_material
-        args << { container_material: ContainerMaterial.includes_args(:material) }
-      end
+    validates :cost_code, presence: true
+    validates :number_of_flowcells, numericality: { only_integer: true, greater_than: 0 }
+    validates :external_study_id, uuid: true, presence: true
 
-      args
-    end
+    validates :library_type, pipeline: :ont
+    validates :data_type, pipeline: :ont
   end
 end

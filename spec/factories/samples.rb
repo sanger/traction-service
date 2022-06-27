@@ -2,8 +2,8 @@
 
 FactoryBot.define do
   factory :sample do
-    sequence(:name) { |n| "Sample#{n}" }
-    sequence(:external_id, &:to_s)
+    name { generate(:sample_name) }
+    external_id
     species { 'human' }
   end
 end

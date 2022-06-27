@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
-  factory :pacbio_library, class: Pacbio::Library do
+  factory :pacbio_library, class: 'Pacbio::Library' do
     volume { 1.111 }
     concentration { 2.222 }
     template_prep_kit_box_barcode { 'LK1234567' }
@@ -7,6 +9,10 @@ FactoryBot.define do
     request { create(:pacbio_request) }
     tag { create(:tag) }
     pool { association :pacbio_pool, libraries: [instance] }
+
+    factory :pacbio_incomplete_library do
+      insert_size { nil }
+    end
 
     # Untagged should possibly be the default
     factory :pacbio_library_without_tag do

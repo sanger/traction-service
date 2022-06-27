@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
-  factory :saphyr_chip, class: Saphyr::Chip do
+  factory :saphyr_chip, class: 'Saphyr::Chip' do
     run { create(:saphyr_run) }
 
     sequence(:barcode) { |n| "FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX-#{n}" }

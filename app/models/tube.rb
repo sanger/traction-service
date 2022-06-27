@@ -5,6 +5,10 @@ class Tube < ApplicationRecord
   include Labware
   include Container
 
+  # This validation probably *should* be always on. It doesn't seem to be violated in production
+  # but engaging it does cause tests to fail.
+  validates :barcode, presence: true, on: :reception
+
   has_many :pacbio_pools, dependent: :restrict_with_exception, class_name: 'Pacbio::Pool'
 
   scope :by_barcode, ->(*barcodes) { where(barcode: barcodes) }
@@ -17,18 +21,5 @@ class Tube < ApplicationRecord
 
   def identifier
     barcode
-  end
-
-  def self.includes_args(except = nil)
-    args = []
-    unless except == :container_materials
-      args << { container_materials: ContainerMaterial.includes_args(:container) }
-    end
-
-    args
-  end
-
-  def self.resolved_query
-    Tube.includes(*includes_args)
   end
 end

@@ -20,6 +20,8 @@ module Saphyr
     delegate :name, to: :sample, prefix: :sample
     delegate :species, to: :sample, prefix: :sample
 
+    validates :external_study_id, uuid: true
+
     validates(*Saphyr.required_request_attributes, presence: true)
 
     def container

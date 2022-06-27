@@ -1,45 +1,88 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require './spec/support/read_only'
 
 RSpec.describe Ont::Request, type: :model, ont: true do
+  describe '#valid?' do
+    subject { build :ont_request, attributes }
+
+    context 'with all required attributes' do
+      let(:attributes) { {} }
+
+      it { is_expected.to be_valid }
+    end
+
+    context 'without a costcode' do
+      let(:attributes) { { cost_code: '' } }
+
+      it { is_expected.not_to be_valid }
+    end
+
+    context 'without an external_study_id' do
+      let(:attributes) { { external_study_id: '' } }
+
+      it { is_expected.not_to be_valid }
+    end
+
+    context 'with a non uuid external_study_id' do
+      let(:attributes) { { external_study_id: '2' } }
+
+      it { is_expected.not_to be_valid }
+    end
+
+    context 'without a number of flowcells' do
+      let(:attributes) { { number_of_flowcells: '' } }
+
+      it { is_expected.not_to be_valid }
+    end
+
+    context 'with a negative of flowcells' do
+      let(:attributes) { { number_of_flowcells: -3 } }
+
+      it { is_expected.not_to be_valid }
+    end
+
+    context 'with a non-integer of flowcells' do
+      let(:attributes) { { number_of_flowcells: 3.5 } }
+
+      it { is_expected.not_to be_valid }
+    end
+  end
+
+  describe '#library_type' do
+    subject(:request) { build(:ont_request, attributes) }
+
+    context 'when set' do
+      let(:library_type) { build :library_type, :ont }
+      let(:attributes) { { library_type: library_type } }
+
+      it { expect(request.library_type).to eq library_type }
+      it { is_expected.to be_valid }
+    end
+
+    context 'when from a different pipeline' do
+      let(:library_type) { build :library_type, :pacbio }
+      let(:attributes) { { library_type: library_type } }
+
+      it { is_expected.not_to be_valid }
+    end
+  end
+
+  describe '#data_type' do
+    subject { build(:ont_request, attributes).data_type }
+
+    context 'when set' do
+      let(:data_type) { build :data_type, :ont }
+      let(:attributes) { { data_type: data_type } }
+
+      it { is_expected.to eq data_type }
+    end
+  end
+
   context 'material' do
     let(:material_model) { :ont_request }
+
     it_behaves_like 'material'
-  end
-
-  context 'taggable' do
-    let(:taggable_model) { :ont_request_with_tags }
-    it_behaves_like 'taggable'
-  end
-
-  it 'must have a name' do
-    request = build(:ont_request, name: nil)
-    expect(request).not_to be_valid
-  end
-
-  it 'must have an external_id' do
-    request = build(:ont_request, external_id: nil)
-    expect(request).not_to be_valid
-  end
-
-  context 'resolve' do
-    it 'returns expected includes_args' do
-      expect(Ont::Request.includes_args.flat_map(&:keys))
-        .to contain_exactly(:container_material, :library, :tags)
-    end
-
-    it 'removes container from includes_args' do
-      expect(Ont::Request.includes_args(:container_material).flat_map(&:keys))
-        .to_not include(:container_material)
-    end
-
-    it 'removes library from includes_args' do
-      expect(Ont::Request.includes_args(:library).flat_map(&:keys)).to_not include(:library)
-    end
-
-    it 'removes tags from includes_args' do
-      expect(Ont::Request.includes_args(:tags).flat_map(&:keys)).to_not include(:tags)
-    end
   end
 end
