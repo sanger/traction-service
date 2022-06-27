@@ -5,8 +5,6 @@ module Ont
   class Library < ApplicationRecord
     include Material
 
-    has_many :requests, foreign_key: :ont_library_id,
-                        inverse_of: :library, dependent: :nullify
     has_one :flowcell, foreign_key: :ont_library_id, inverse_of: :library, dependent: :destroy
 
     # This is dependent on the requests association, so needs to be included
@@ -15,7 +13,7 @@ module Ont
 
     validates :name, :pool, :pool_size, presence: true
     validates :name, uniqueness: { case_sensitive: false,
-                                   message: 'must be unique: a pool already exists for this plate' }
+                                   message: :duplicated_in_plate }
 
     def self.library_name(plate_barcode, pool)
       return nil if plate_barcode.nil? || pool.nil?
@@ -37,16 +35,15 @@ module Ont
       !!flowcell
     end
 
-    def self.includes_args(except = nil)
-      args = []
-      args << { flowcell: Ont::Flowcell.includes_args(:library) } unless except == :flowcell
-      args << { requests: Ont::Request.includes_args(:library) } unless except == :requests
-
-      args
+    # Make table read only. We don't want anything pushing to it.
+    def readonly?
+      true
     end
 
-    def self.resolved_query
-      Ont::Library.includes(*includes_args)
+    # Temporary dummy methods to try and assist migration to
+    # new schema
+    def requests
+      Ont::Request.none
     end
   end
 end

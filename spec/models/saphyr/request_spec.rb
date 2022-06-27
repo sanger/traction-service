@@ -1,14 +1,15 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 RSpec.describe Saphyr::Request, type: :model, saphyr: true do
+  let(:model) { described_class.to_s.split('::').join('_').downcase }
 
   it 'can have many libraries' do
     request = create(:saphyr_request)
     request.libraries << create_list(:saphyr_library, 5)
     expect(request.libraries.count).to eq(5)
   end
-
-  let(:model)   { described_class.to_s.split('::').join('_').downcase }
 
   module_ = described_class.to_s.deconstantize.constantize
 
@@ -20,7 +21,7 @@ RSpec.describe Saphyr::Request, type: :model, saphyr: true do
     it "is not valid without #{attribute.to_s.gsub('_', ' ')}" do
       factory = build(model)
       factory.send("#{attribute}=", nil)
-      expect(factory).to_not be_valid
+      expect(factory).not_to be_valid
     end
   end
 
@@ -31,7 +32,7 @@ RSpec.describe Saphyr::Request, type: :model, saphyr: true do
       before do
         create(:plate_with_wells_and_requests,
                row_count: 1, column_count: 1, barcode: 'BC12',
-               requests: [request] )
+               requests: [request])
       end
 
       it 'returns the plate barcode and well' do

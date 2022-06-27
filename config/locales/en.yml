@@ -31,7 +31,43 @@
 
 en:
   hello: "Hello world"
+  activemodel:
+    errors:
+      models:
+        pacbio/well_factory:
+          attributes:
+            wells:
+              empty: there are no wells
+  activerecord:
+    errors:
+      models:
+        ont/library:
+          attributes:
+            name:
+              duplicated_in_plate: 'must be unique: a pool already exists for this plate'
+            flowcell:
+              duplicated_in_run: must appear only once within a run
+        reception:
+          attributes:
+            source:
+              invalid: should only contain lowercase letters, numbers, hyphens and full-stops.
+        tag:
+          # TODO: this could be dryed out more. Something for a later date
+          attributes:
+            oligo:
+              duplicated_in_tag_set:  must only appear once within a set
+            group_id:
+              duplicated_in_tag_set: must only appear once within a set
   errors:
+    messages:
+      uuid: is not a valid uuid
+      pipeline_invalid: is in %{actual} not %{expected} pipeline
     attributes:
       cost_code:
         blank: must be present
+      wells:
+        blank: must be present
+      duplicate_containers:
+        present: must be submitted separately
+      library_type:
+        inclusion: is not a recognised library type

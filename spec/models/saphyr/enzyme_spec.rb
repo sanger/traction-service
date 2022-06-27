@@ -1,8 +1,10 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 RSpec.describe Saphyr::Enzyme, type: :model, saphyr: true do
   context 'on creation' do
-    it 'should have a name' do
+    it 'has a name' do
       expect(create(:saphyr_enzyme).name).to be_present
     end
   end
@@ -26,5 +28,4 @@ RSpec.describe Saphyr::Enzyme, type: :model, saphyr: true do
       expect(enzyme.libraries).to eq [library1, library2]
     end
   end
-
 end

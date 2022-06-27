@@ -1,61 +1,54 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require './spec/support/read_only'
 
-RSpec.describe Ont::Library, type: :model do
+RSpec.describe Ont::Library, type: :model, ont: true do
+  before do
+    set_read_only([described_class, Ont::Request], false)
+  end
+
   context 'material' do
     let(:material_model) { :ont_library }
+
     it_behaves_like 'material'
   end
 
   it 'must have a name' do
     library = build(:ont_library, name: nil)
-    expect(library).to_not be_valid
+    expect(library).not_to be_valid
   end
 
   it 'must have a pool' do
     library = build(:ont_library, pool: nil)
-    expect(library).to_not be_valid
+    expect(library).not_to be_valid
   end
 
   it 'must have a pool_size' do
     library = build(:ont_library, pool_size: nil)
-    expect(library).to_not be_valid
+    expect(library).not_to be_valid
   end
 
   it 'name must be unique' do
     library = create(:ont_library)
     new_library = build(:ont_library, name: library.name)
-    expect(new_library).to_not be_valid
-    expect(new_library.errors.full_messages)
-      .to contain_exactly('Name must be unique: a pool already exists for this plate')
-  end
-
-  it 'does not delete associated requests on destroy' do
-    library = create(:ont_library)
-    num_requests = 3
-    library.requests = create_list(:ont_request, num_requests)
-    # sanity check
-    expect(Ont::Library.count).to eq(1)
-    expect(Ont::Request.count).to eq(num_requests)
-    library.destroy
-    expect(Ont::Library.count).to eq(0)
-    expect(Ont::Request.count).to eq(num_requests)
+    expect(new_library).not_to be_valid
+    expect(new_library.errors.full_messages).not_to be_empty
   end
 
   context 'library name' do
     it 'returns nil with nil plate_barcode' do
-      name = Ont::Library.library_name(nil, 2)
+      name = described_class.library_name(nil, 2)
       expect(name).to be_nil
     end
 
     it 'returns nil with nil pool' do
-      name = Ont::Library.library_name('PLATE-1234', nil)
+      name = described_class.library_name('PLATE-1234', nil)
       expect(name).to be_nil
     end
 
     it 'returns expected name' do
-      name = Ont::Library.library_name('PLATE-1234', 2)
+      name = described_class.library_name('PLATE-1234', 2)
       expect(name).to eq('PLATE-1234-2')
     end
   end
@@ -84,20 +77,6 @@ RSpec.describe Ont::Library, type: :model do
       tube = create(:tube)
       create(:container_material, container: tube, material: library)
       expect(library.tube_barcode).to eq(tube.barcode)
-    end
-  end
-
-  context 'resolved' do
-    it 'returns expected includes_args' do
-      expect(Ont::Library.includes_args.flat_map(&:keys)).to contain_exactly(:flowcell, :requests)
-    end
-
-    it 'removes requests from includes_args' do
-      expect(Ont::Library.includes_args(:requests).flat_map(&:keys)).to_not include(:requests)
-    end
-
-    it 'removes flowcell from includes_args' do
-      expect(Ont::Library.includes_args(:flowcell).flat_map(&:keys)).to_not include(:flowcell)
     end
   end
 end

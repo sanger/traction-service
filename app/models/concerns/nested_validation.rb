@@ -29,17 +29,31 @@ module NestedValidation
     end
 
     def validate_each(record, attribute, value)
-      Array(value).each do |nested|
-        next if nested.valid?
+      case value
+      when Array
+        value.each_with_index { |nested, index| validate_one(nested, record, attribute, index) }
+      when nil
+        nil # Do nothing
+      else
+        validate_one(value, record, attribute)
+      end
+    end
 
-        nested.errors.each do |nested_attribute, nested_error|
-          if @flatten_keys
-            record.errors.add(nested_attribute, nested_error)
-          elsif nested_attribute == :base
-            record.errors.add(attribute, nested_error)
-          else
-            record.errors.add("#{attribute}.#{nested_attribute}", nested_error)
-          end
+    private
+
+    def validate_one(value, record, attribute, index = nil)
+      return if value.valid?(options[:context])
+
+      add_errors(value, record, attribute, index)
+    end
+
+    def add_errors(nested, record, attribute, index)
+      nested.errors.each do |error|
+        if @flatten_keys
+          record.errors.add(error.attribute, error.message)
+        else
+          attribute_address = [attribute, index, error.attribute].compact.join('/').chomp('/base')
+          record.errors.add(attribute_address, error.message)
         end
       end
     end

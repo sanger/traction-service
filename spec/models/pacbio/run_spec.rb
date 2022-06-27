@@ -1,41 +1,42 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Pacbio::Run, type: :model, pacbio: true do
-
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_run }
+
     it_behaves_like 'uuidable'
   end
 
   context 'validation' do
     it 'must have a sequencing kit box barcode' do
-      expect(build(:pacbio_run, sequencing_kit_box_barcode: nil)).to_not be_valid
+      expect(build(:pacbio_run, sequencing_kit_box_barcode: nil)).not_to be_valid
     end
 
     it 'must have a DNA control complex kit box barcode' do
-      expect(build(:pacbio_run, dna_control_complex_box_barcode: nil)).to_not be_valid
+      expect(build(:pacbio_run, dna_control_complex_box_barcode: nil)).not_to be_valid
     end
 
     it 'must have a system name' do
-      expect(build(:pacbio_run, system_name: nil)).to_not be_valid
+      expect(build(:pacbio_run, system_name: nil)).not_to be_valid
     end
   end
 
   context 'System Name' do
     it 'must include the correct options' do
-      expect(Pacbio::Run.system_names.keys).to eq(["Sequel II", "Sequel I", "Sequel IIe"])
+      expect(described_class.system_names.keys).to eq(['Sequel II', 'Sequel I', 'Sequel IIe'])
     end
 
     it 'must have a System Name' do
-      expect(create(:pacbio_run, system_name: 0).system_name).to eq "Sequel II"
-      expect(create(:pacbio_run, system_name: "Sequel II").system_name).to eq "Sequel II"
-      expect(create(:pacbio_run, system_name: 1).system_name).to eq "Sequel I"
-      expect(create(:pacbio_run, system_name: "Sequel I").system_name).to eq "Sequel I"
-      expect(create(:pacbio_run, system_name: 2).system_name).to eq "Sequel IIe"
-      expect(create(:pacbio_run, system_name: "Sequel IIe").system_name).to eq "Sequel IIe"
+      expect(create(:pacbio_run, system_name: 0).system_name).to eq 'Sequel II'
+      expect(create(:pacbio_run, system_name: 'Sequel II').system_name).to eq 'Sequel II'
+      expect(create(:pacbio_run, system_name: 1).system_name).to eq 'Sequel I'
+      expect(create(:pacbio_run, system_name: 'Sequel I').system_name).to eq 'Sequel I'
+      expect(create(:pacbio_run, system_name: 2).system_name).to eq 'Sequel IIe'
+      expect(create(:pacbio_run, system_name: 'Sequel IIe').system_name).to eq 'Sequel IIe'
     end
   end
-
 
   it 'must have a system_name default' do
     expect(create(:pacbio_run).system_name).to eq 'Sequel II'
@@ -54,9 +55,9 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     expect(run.wells.count).to eq(5)
   end
 
-  it 'can have run comments ' do
+  it 'can have run comments' do
     run = create(:pacbio_run)
-    expect(run.comments).to eq("A Run Comment")
+    expect(run.comments).to eq('A Run Comment')
   end
 
   it 'can have the wells summary when no run comments exist' do
@@ -66,7 +67,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     expect(run.comments).to eq("#{wells.first.summary}:#{wells[1].summary}")
   end
 
-  context '#generate_sample_sheet' do
+  describe '#generate_sample_sheet' do
     it 'must call CsvGenerator' do
       well1 = create(:pacbio_well_with_pools)
       well2 = create(:pacbio_well_with_pools)
@@ -123,17 +124,17 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     it 'can filter runs based on state' do
       create_list(:pacbio_run, 2)
       create(:pacbio_run, state: :started)
-      expect(Pacbio::Run.pending.length).to eq 2
-      expect(Pacbio::Run.started.length).to eq 1
+      expect(described_class.pending.length).to eq 2
+      expect(described_class.started.length).to eq 1
     end
   end
 
   context 'scope' do
     context 'active' do
-      it 'should return only active runs' do
+      it 'returns only active runs' do
         create_list(:pacbio_run, 2)
         run = create(:pacbio_run, deactivated_at: DateTime.now)
-        expect(Pacbio::Run.active.length).to eq 2
+        expect(described_class.active.length).to eq 2
       end
     end
   end
@@ -152,15 +153,13 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
 
     it 'must be unique' do
       run = create(:pacbio_run, name: 'run1')
-      expect(build(:pacbio_run, name: run.name)).to_not be_valid
+      expect(build(:pacbio_run, name: run.name)).not_to be_valid
     end
 
-    it 'should be updateable' do
+    it 'is updateable' do
       run = create(:pacbio_run)
       run.update(name: 'run1')
       expect(run.name).to eq('run1')
     end
-
   end
-
 end

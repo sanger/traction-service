@@ -6,7 +6,19 @@ class Plate < ApplicationRecord
 
   DEFAULT_SIZE = 96
 
-  has_many :wells, inverse_of: :plate, dependent: :destroy
+  has_many :wells, inverse_of: :plate, dependent: :destroy do
+    def located_at(position)
+      if loaded?
+        detect { |w| w.position == position } || build(position: position)
+      else
+        find_or_initialize_by(position: position)
+      end
+    end
+  end
+
+  # This validation probably *should* be always on. It doesn't seem to be violated in production
+  # but engaging it does cause tests to fail.
+  validates :barcode, presence: true, on: :reception
 
   scope :by_pipeline,
         lambda { |pipeline|
@@ -44,17 +56,5 @@ class Plate < ApplicationRecord
   #
   def formatted_range(wells)
     WellSorterService.formatted_range(wells, DEFAULT_SIZE)
-  end
-
-  def self.includes_args(except = nil)
-    args = []
-    args << { wells: Well.includes_args(:plate) } unless except == :wells
-
-    args
-  end
-
-  def self.resolved_query
-    # graphql query returns only ONT plates
-    Plate.by_pipeline('Ont').includes(*includes_args)
   end
 end

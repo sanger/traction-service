@@ -23,6 +23,8 @@ module Pacbio
     validate :check_plates
 
     def initialize(attributes = {})
+      raise if Flipper.enabled?(:dpl_277_disable_pacbio_specific_reception)
+
       @plate_wrappers = attributes[:plates].try(:map) { |plate| PlateWrapper.new(plate) } || []
     end
 
@@ -61,8 +63,8 @@ module Pacbio
       plate_wrappers.each do |plate_wrapper|
         next if plate_wrapper.valid?
 
-        plate_wrapper.errors.each do |k, v|
-          errors.add(k, v)
+        plate_wrapper.errors.each do |error|
+          errors.add(error.attribute, error.message)
         end
       end
     end
@@ -87,6 +89,8 @@ module Pacbio
       #  * barcode
       #  * array of wells
       def initialize(attributes = {})
+        raise if Flipper.enabled?(:dpl_277_disable_pacbio_specific_reception)
+
         @plate = ::Plate.new(attributes.except(:wells))
         @well_wrappers = attributes[:wells].try(:collect) do |well|
           WellWrapper.new(well.merge(plate: plate))
@@ -111,8 +115,8 @@ module Pacbio
         well_wrappers.each do |well_wrapper|
           next if well_wrapper.valid?
 
-          well_wrapper.errors.each do |k, v|
-            errors.add(k, v)
+          well_wrapper.errors.each do |error|
+            errors.add(error.attribute, error.message)
           end
         end
       end
@@ -142,6 +146,8 @@ module Pacbio
       #  * position
       #  * array of samples
       def initialize(attributes = {})
+        raise if Flipper.enabled?(:dpl_277_disable_pacbio_specific_reception)
+
         @well = ::Well.new(attributes.except(:samples))
         @sample_wrappers = attributes[:samples].try(:collect) do |sample|
           SampleWrapper.new(sample.merge(well: well))
@@ -160,8 +166,8 @@ module Pacbio
       def check_well
         return if well.valid?
 
-        well.errors.each do |k, v|
-          errors.add("Well #{k}", v)
+        well.errors.each do |error|
+          errors.add("Well #{error.attribute}", error.message)
         end
       end
 
@@ -171,8 +177,8 @@ module Pacbio
         sample_wrappers.each do |sample|
           next if sample.valid?
 
-          sample.errors.each do |k, v|
-            errors.add(k, v)
+          sample.errors.each do |error|
+            errors.add(error.attribute, error.message)
           end
         end
       end
@@ -214,6 +220,8 @@ module Pacbio
 
       # @param attributes [Hash] hash of attributes (see SAMPLE_ATTRIBUTES or REQUEST_ATTRIBUTES)
       def initialize(attributes = {})
+        raise if Flipper.enabled?(:dpl_277_disable_pacbio_specific_reception)
+
         @well = attributes[:well]
         @sample = ::Sample.find_or_initialize_by(attributes.slice(*SAMPLE_ATTRIBUTES))
         @pacbio_request = Pacbio::Request.new(attributes.slice(*REQUEST_ATTRIBUTES))
@@ -233,8 +241,8 @@ module Pacbio
         [sample, pacbio_request].each do |model|
           next if model.valid?
 
-          model.errors.each do |k, v|
-            errors.add("Sample #{k}", v)
+          model.errors.each do |error|
+            errors.add("Sample #{error.attribute}", error.message)
           end
         end
       end

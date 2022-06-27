@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :tag_taggable do
-    tag { create(:ont_tag) }
-    taggable { create(:ont_request) }
+    tag { create(:tag) }
+    taggable { create(:pacbio_request) }
   end
 end

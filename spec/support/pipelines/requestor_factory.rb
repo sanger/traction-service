@@ -1,10 +1,11 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 shared_examples_for 'requestor factory' do
+  let(:request_model) { described_class.request_model.to_s.split('::').join('_').downcase }
 
-  let(:request_model)   { described_class.request_model.to_s.split('::').join('_').downcase }
-
-  context '#initialize' do
+  describe '#initialize' do
     it 'creates an object for each given request' do
       factory = described_class.new(attributes)
       expect(factory.requests.count).to eq(3)
@@ -13,12 +14,12 @@ shared_examples_for 'requestor factory' do
     it 'produces error messages if any of the resources are not valid' do
       attributes << {}
       factory = described_class.new(attributes)
-      expect(factory).to_not be_valid
-      expect(factory.errors.full_messages).to_not be_empty
+      expect(factory).not_to be_valid
+      expect(factory.errors.full_messages).not_to be_empty
     end
   end
 
-  context '#save' do
+  describe '#save' do
     it 'creates a request in a tube for each set of attributes if they are valid' do
       factory = described_class.new(attributes)
       expect(factory).to be_valid
@@ -73,5 +74,4 @@ shared_examples_for 'requestor factory' do
       expect(Tube.all.count).to eq(0)
     end
   end
-
 end
