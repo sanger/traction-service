@@ -19,7 +19,7 @@ class PipelineValidator < ActiveModel::EachValidator
     actual = value.pipeline
     return if actual == expected.to_s
 
-    record.errors.add(attribute, :pipeline_invalid, { expected: expected, actual: actual })
+    record.errors.add(attribute, :pipeline_invalid, expected:, actual:)
   end
 
   private

@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '2.7.3'
+ruby '3.1.2'
 
 gem 'bootsnap', '>= 1.1.0', require: false # Reduces boot times through caching
 gem 'bunny'
@@ -17,10 +17,10 @@ gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX poss
 gem 'rails', '~> 7.0.2.3'
 
 group :development do
-  gem 'listen', '>= 3.0.5', '< 3.2'
+  gem 'listen'
   gem 'rails-erd'
   gem 'spring' # Spring speeds up development by keeping your application running in the background.
-  gem 'spring-watcher-listen', '~> 2.0.0'
+  gem 'spring-watcher-listen'
   gem 'yard', require: false
 end
 

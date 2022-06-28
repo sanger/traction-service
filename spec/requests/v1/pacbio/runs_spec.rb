@@ -193,7 +193,7 @@ RSpec.describe 'RunsController', type: :request do
 
   describe '#show' do
     let!(:run) { create(:pacbio_run) }
-    let!(:plate) { create(:pacbio_plate, run: run) }
+    let!(:plate) { create(:pacbio_plate, run:) }
 
     it 'returns the runs' do
       get v1_pacbio_run_path(run), headers: json_api_headers
@@ -240,7 +240,7 @@ RSpec.describe 'RunsController', type: :request do
 
   describe '#destroy' do
     let!(:run) { create(:pacbio_run) }
-    let!(:plate1) { create(:pacbio_plate, run: run) }
+    let!(:plate1) { create(:pacbio_plate, run:) }
 
     context 'on success' do
       it 'returns the correct status' do
@@ -279,7 +279,7 @@ RSpec.describe 'RunsController', type: :request do
     let(:well1)   { create(:pacbio_well_with_pools) }
     let(:well2)   { create(:pacbio_well_with_pools) }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
-    let(:run)     { create(:pacbio_run, plate: plate) }
+    let(:run)     { create(:pacbio_run, plate:) }
 
     after { File.delete("#{run.name}.csv") if File.exist?("#{run.name}.csv") }
 
