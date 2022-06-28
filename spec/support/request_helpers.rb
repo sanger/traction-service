@@ -28,7 +28,7 @@ module RequestHelpers
   # @return [Hash] Hash representation of the given resource
   #
   def find_resource(id:, type:, from: 'data', json: self.json)
-    find_id_and_type(id: id, type: type, data: json.fetch(from))
+    find_id_and_type(id:, type:, data: json.fetch(from))
   end
 
   # Find a resource record in the included section of the provided json
@@ -40,7 +40,7 @@ module RequestHelpers
   # @return [Hash] Hash representation of the given resource
   #
   def find_included_resource(id:, type:, json: self.json)
-    find_resource(id: id, type: type, from: 'included', json: json)
+    find_resource(id:, type:, from: 'included', json:)
   end
 
   #

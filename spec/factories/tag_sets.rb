@@ -17,7 +17,7 @@ FactoryBot.define do
 
       after :create do |tag_set, options|
         options.number_of_tags.times do
-          create(:tag, tag_set: tag_set)
+          create(:tag, tag_set:)
         end
       end
     end

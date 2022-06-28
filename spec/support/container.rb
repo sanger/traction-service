@@ -11,7 +11,7 @@ RSpec.shared_examples 'container' do
   it 'returns all materials for some container materials' do
     container = create(factory)
     num_materials = 3
-    container_materials = create_list(:container_material, num_materials, container: container)
+    container_materials = create_list(:container_material, num_materials, container:)
     expect(container.materials.count).to eq(num_materials)
     expect(container.materials).to eq(container_materials.map(&:material))
   end
