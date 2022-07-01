@@ -9,9 +9,12 @@ module V1
       attributes(*::Pacbio.request_attributes, :sample_name, :barcode, :sample_species,
                  :created_at, :source_identifier)
 
-      has_one :well
-      has_one :plate
-      has_one :tube
+      # If we don't specify the relation_name here, jsonapi-resources
+      # attempts to use_related_resource_records_for_joins
+      # It pulls out the wrong ids. Seen similar behaviour over on pool_resource
+      has_one :well, relation_name: :well
+      has_one :plate, relation_name: :plate
+      has_one :tube, relation_name: :tube
 
       # When a request is updated and it is attached to a run we need
       # to republish the messages for the run
