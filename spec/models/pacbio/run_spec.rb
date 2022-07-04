@@ -44,14 +44,14 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
 
   it 'can have a plate' do
     plate = create(:pacbio_plate)
-    run = create(:pacbio_run, plate: plate)
+    run = create(:pacbio_run, plate:)
     expect(run.plate).to eq(plate)
   end
 
   it 'can have some wells' do
     wells = create_list(:pacbio_well, 5)
-    plate = create(:pacbio_plate, wells: wells)
-    run = create(:pacbio_run, plate: plate)
+    plate = create(:pacbio_plate, wells:)
+    run = create(:pacbio_run, plate:)
     expect(run.wells.count).to eq(5)
   end
 
@@ -62,8 +62,8 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
 
   it 'can have the wells summary when no run comments exist' do
     wells = create_list(:pacbio_well_with_pools, 2)
-    plate = create(:pacbio_plate, wells: wells)
-    run = create(:pacbio_run, plate: plate, comments: nil)
+    plate = create(:pacbio_plate, wells:)
+    run = create(:pacbio_run, plate:, comments: nil)
     expect(run.comments).to eq("#{wells.first.summary}:#{wells[1].summary}")
   end
 
@@ -73,7 +73,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
       well2 = create(:pacbio_well_with_pools)
 
       plate = create(:pacbio_plate, wells: [well1, well2])
-      run = create(:pacbio_run, plate: plate)
+      run = create(:pacbio_run, plate:)
 
       expect_any_instance_of(::CsvGenerator).to receive(:generate_sample_sheet)
       run.generate_sample_sheet
@@ -84,7 +84,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
       well2 = create(:pacbio_well_with_pools)
 
       plate = create(:pacbio_plate, wells: [well1, well2])
-      run = create(:pacbio_run, plate: plate)
+      run = create(:pacbio_run, plate:)
 
       sample_sheet = run.generate_sample_sheet
       expect(sample_sheet.class).to eq String

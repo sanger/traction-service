@@ -17,7 +17,7 @@ class CsvGenerator
 
       sorted_wells.each do |well|
         # add well header row
-        csv << csv_data(well: well, row_type: :well)
+        csv << csv_data(well:, row_type: :well)
 
         next unless well.show_row_per_sample?
 
@@ -48,7 +48,7 @@ class CsvGenerator
   def csv_sample_rows(well)
     well.libraries.map do |library|
       # add row under well header for each sample in the well
-      csv_data(sample: library, well: well, row_type: :sample)
+      csv_data(sample: library, well:, row_type: :sample)
     end
   end
 

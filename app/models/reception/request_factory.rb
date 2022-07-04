@@ -41,11 +41,11 @@ class Reception
 
     def request
       @request ||= library_type.request_factory(
-        reception: reception,
-        sample: sample,
-        container: container,
+        reception:,
+        sample:,
+        container:,
         request_attributes: @request_attributes,
-        resource_factory: resource_factory
+        resource_factory:
       )
     end
 

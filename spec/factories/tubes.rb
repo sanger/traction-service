@@ -16,7 +16,7 @@ FactoryBot.define do
       next if evaluator.materials.empty? # Avoids us flagging the relationship as loaded
 
       tube.container_materials = evaluator.materials.map do |material|
-        create(:container_material, container: tube, material: material)
+        create(:container_material, container: tube, material:)
       end
     end
 

@@ -8,8 +8,8 @@ namespace :migrate_saphyr_data do
     table = CSV.parse(File.read(Rails.root.join('lib/data/saphyr_samples.csv')), headers: true)
     table.each do |row|
       created_at = Date.parse(row['created_at'])
-      sample = Sample.create!(name: row['name'], species: row['species'], external_id: row['external_id'], created_at: created_at)
-      request = Saphyr::Request.create!(sample: sample, external_study_id: row['external_study_id'], created_at: created_at)
+      sample = Sample.create!(name: row['name'], species: row['species'], external_id: row['external_id'], created_at:)
+      request = Saphyr::Request.create!(sample:, external_study_id: row['external_study_id'], created_at:)
       ContainerMaterial.create(container: Tube.create, material: request)
     end
 
@@ -25,15 +25,15 @@ namespace :migrate_saphyr_data do
     table = CSV.parse(File.read(Rails.root.join('lib/data/saphyr_runs.csv')), headers: true)
     table.each do |row|
       created_at = Date.parse(row['created_at'])
-      run = Saphyr::Run.create!(state: 2, created_at: created_at)
-      chip = Saphyr::Chip.create!(barcode: row['chip_barcode'], run: run, created_at: created_at)
+      run = Saphyr::Run.create!(state: 2, created_at:)
+      chip = Saphyr::Chip.create!(barcode: row['chip_barcode'], run:, created_at:)
 
       # flowcell1
       sample = Sample.find_by(name: row['flowcell_1_sample_name'])
       request = sample.requests.first.requestable
       enzyme = Saphyr::Enzyme.find_by(name: row['flowcell_1_enzyme'])
       library = request.libraries.find_by(saphyr_enzyme_id: enzyme.id)
-      flowcell = Saphyr::Flowcell.create(position: 1, chip: chip, library: library, created_at: created_at)
+      flowcell = Saphyr::Flowcell.create(position: 1, chip:, library:, created_at:)
       Messages.publish(flowcell, Pipelines.saphyr.message)
 
       # flowcell2
@@ -41,7 +41,7 @@ namespace :migrate_saphyr_data do
       request = sample.requests.first.requestable
       enzyme = Saphyr::Enzyme.find_by(name: row['flowcell_2_enzyme'])
       library = request.libraries.find_by(saphyr_enzyme_id: enzyme.id)
-      flowcell = Saphyr::Flowcell.create(position: 2, chip: chip, library: library, created_at: created_at)
+      flowcell = Saphyr::Flowcell.create(position: 2, chip:, library:, created_at:)
       Messages.publish(flowcell, Pipelines.saphyr.message)
     end
   end

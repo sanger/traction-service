@@ -41,7 +41,7 @@ module V1
 
         def render_json(status)
           render json: serialize_resource(PlateResource.new(@plate, nil)),
-                 status: status
+                 status:
         end
       end
     end

@@ -14,7 +14,7 @@ RSpec.describe 'ChipsController', type: :request do
           data: {
             type: 'chips',
             attributes: {
-              barcode: barcode,
+              barcode:,
               saphyr_run_id: run.id
             }
           }
@@ -75,7 +75,7 @@ RSpec.describe 'ChipsController', type: :request do
             type: 'chips',
             id: chip.id,
             attributes: {
-              barcode: barcode
+              barcode:
             }
           }
         }.to_json
@@ -111,7 +111,7 @@ RSpec.describe 'ChipsController', type: :request do
             type: 'chips',
             id: chip.id,
             attributes: {
-              barcode: barcode
+              barcode:
             }
           }
         }.to_json
