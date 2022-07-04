@@ -104,7 +104,7 @@ module V1
 
         def render_json(status)
           render json: serialize_resource(WellResource.new(@well, nil)),
-                 status: status
+                 status:
         end
 
         def data_params

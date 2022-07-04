@@ -27,7 +27,7 @@ RSpec.describe Pacbio::Request, type: :model, pacbio: true do
   context 'libraries' do
     it 'can have one or more' do
       request = create(:pacbio_request)
-      create_list(:pacbio_library_with_tag, 5, request: request)
+      create_list(:pacbio_library_with_tag, 5, request:)
       expect(request.libraries.count).to eq(5)
     end
   end
@@ -43,8 +43,8 @@ RSpec.describe Pacbio::Request, type: :model, pacbio: true do
       plate1 = create(:pacbio_plate)
       plate2 = create(:pacbio_plate)
       request = create(:pacbio_request)
-      library1 = create(:pacbio_library, request: request)
-      library2 = create(:pacbio_library, request: request)
+      library1 = create(:pacbio_library, request:)
+      library2 = create(:pacbio_library, request:)
       pool = create(:pacbio_pool, libraries: [library1, library2])
       create(:pacbio_well, pools: [pool], plate: plate1)
       create(:pacbio_well, pools: [pool], plate: plate2)

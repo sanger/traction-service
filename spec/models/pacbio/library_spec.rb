@@ -90,22 +90,22 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
 
   it 'can have a request' do
     request = build(:pacbio_request)
-    expect(build(:pacbio_library, request: request).request).to eq(request)
+    expect(build(:pacbio_library, request:).request).to eq(request)
   end
 
   it 'can have a tag' do
     tag = build(:tag)
-    expect(build(:pacbio_library, tag: tag).tag).to eq(tag)
+    expect(build(:pacbio_library, tag:).tag).to eq(tag)
   end
 
   it 'can have a pool' do
     pool = build(:pacbio_pool)
-    expect(build(:pacbio_library, pool: pool).pool).to eq(pool)
+    expect(build(:pacbio_library, pool:).pool).to eq(pool)
   end
 
   it 'can have a tube through pool' do
     pool = build(:pacbio_pool)
-    expect(build(:pacbio_library, pool: pool).tube).to eq(pool.tube)
+    expect(build(:pacbio_library, pool:).tube).to eq(pool.tube)
   end
 
   describe '#request' do

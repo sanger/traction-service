@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Reception::ResourceFactory, type: :model do
-  subject { build :reception_resource_factory, request_attributes: request_attributes }
+  subject { build :reception_resource_factory, request_attributes: }
 
   let(:library_type) { create :library_type, :ont }
   let(:data_type) { create :data_type, :ont }
@@ -142,7 +142,7 @@ RSpec.describe Reception::ResourceFactory, type: :model do
     end
 
     let(:resource_factory) do
-      build(:reception_resource_factory, request_attributes: request_attributes)
+      build(:reception_resource_factory, request_attributes:)
     end
     let(:existing_tube) { attributes_for(:tube, :with_barcode) }
     let(:new_plate_barcode) { generate(:barcode) }

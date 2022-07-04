@@ -21,8 +21,8 @@ module V1
           render json: body, status: :created
         else
           # JSON-API formatted errors.
-          errors = @plate_creator.errors.map { |title, detail| { title: title, detail: detail } }
-          render json: { errors: errors },
+          errors = @plate_creator.errors.map { |title, detail| { title:, detail: } }
+          render json: { errors: },
                  status: :unprocessable_entity
         end
       end

@@ -7,7 +7,7 @@
 # likely to see technically 'valid' uuids, which just don't
 # map to a resource, so lets keep things simple.
 class UuidValidator < ActiveModel::EachValidator
-  UUID = /\A[0-f]{8}-([0-f]{4}-){3}[0-f]{12}\z/.freeze
+  UUID = /\A[0-f]{8}-([0-f]{4}-){3}[0-f]{12}\z/
 
   def validate_each(record, attribute, value)
     return if value.blank? || UUID.match?(value)

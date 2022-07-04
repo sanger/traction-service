@@ -78,7 +78,7 @@ module Pacbio
       end
 
       def request
-        @request ||= ::Request.new(requestable: requestable, sample: sample)
+        @request ||= ::Request.new(requestable:, sample:)
       end
 
       def container_material

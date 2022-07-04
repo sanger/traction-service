@@ -51,8 +51,8 @@ module Pipelines
         end
       end
 
-      def each(&block)
-        children.each(&block)
+      def each(&)
+        children.each(&)
       end
     end
   end

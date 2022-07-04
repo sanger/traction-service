@@ -93,7 +93,7 @@ module Pacbio
 
         @plate = ::Plate.new(attributes.except(:wells))
         @well_wrappers = attributes[:wells].try(:collect) do |well|
-          WellWrapper.new(well.merge(plate: plate))
+          WellWrapper.new(well.merge(plate:))
         end
       end
 
@@ -150,7 +150,7 @@ module Pacbio
 
         @well = ::Well.new(attributes.except(:samples))
         @sample_wrappers = attributes[:samples].try(:collect) do |sample|
-          SampleWrapper.new(sample.merge(well: well))
+          SampleWrapper.new(sample.merge(well:))
         end
       end
 
@@ -225,7 +225,7 @@ module Pacbio
         @well = attributes[:well]
         @sample = ::Sample.find_or_initialize_by(attributes.slice(*SAMPLE_ATTRIBUTES))
         @pacbio_request = Pacbio::Request.new(attributes.slice(*REQUEST_ATTRIBUTES))
-        @request = ::Request.new(requestable: pacbio_request, sample: sample)
+        @request = ::Request.new(requestable: pacbio_request, sample:)
         @container_material = ContainerMaterial.new(container: well, material: pacbio_request)
       end
 
