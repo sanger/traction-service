@@ -258,7 +258,7 @@ GEM
     spring-watcher-listen (2.0.1)
       listen (>= 2.7, < 4.0)
       spring (>= 1.2, < 3.0)
-    sqlite3 (1.4.2)
+    sqlite3 (1.4.4)
     strscan (3.0.1)
     thor (1.2.1)
     timeout (0.2.0)
