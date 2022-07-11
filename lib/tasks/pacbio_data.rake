@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'securerandom'
+
 namespace :pacbio_data do
   desc 'Populate the database with pacbio plates and runs'
   task create: [:environment, 'tags:create:pacbio_sequel', 'tags:create:pacbio_isoseq'] do
@@ -25,6 +27,8 @@ namespace :pacbio_data do
       { library_type: 'IsoSeq-v1', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 5 }
     ]
 
+    external_study_id = SecureRandom.uuid
+
     pool_records = pools.map.with_index do |data, pool_index|
       attributes = Array.new(data[:size]) do |library_index|
         unique_index = (1000 * pool_index) + library_index
@@ -34,11 +38,11 @@ namespace :pacbio_data do
             estimate_of_gb_required: 10,
             number_of_smrt_cells: 3,
             cost_code: 'PSD1234',
-            external_study_id: 4086
+            external_study_id:
           },
           sample: {
             name: "Sample#{unique_index}",
-            external_id: "DEA#{unique_index}",
+            external_id: SecureRandom.uuid,
             species: "Species#{unique_index}"
           }
         }
