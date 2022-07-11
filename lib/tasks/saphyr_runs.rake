@@ -1,12 +1,20 @@
 # frozen_string_literal: true
 
+require 'securerandom'
+
 namespace :saphyr_runs do
   desc 'Populate the database with saphyr tubes and runs'
   task create: :environment do
-    attributes = (1..5).collect { |i| { name: "Sample#{i}", external_id: i, external_study_id: i, species: "Species#{i}" } }
+    external_study_id = SecureRandom.uuid
+
+    attributes = (1..5).collect do |i|
+      { sample: { name: "SaphyrSample#{i}", external_id: SecureRandom.uuid, species: "Species#{i}" }, request: { external_study_id: } }
+    end
 
     factory = Saphyr::RequestFactory.new(attributes)
     factory.save
+
+    # binding.pry
 
     Saphyr::Request.all.each do |request|
       library = Saphyr::Library.create!(request:, saphyr_enzyme_id: 1)
