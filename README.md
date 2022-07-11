@@ -29,9 +29,7 @@ If you need to create the database afresh: `bundle exec rails db:setup`.
 
 To create a set of enzymes (needed for saphyr dummy runs): `bundle exec rails enzymes:create`
 
-To create the first set of tags (needed for pacbio dummy runs): `bundle exec rails tags:create`
-
-To fetch tags from SS: `bundle exec rails tags:fetch`
+To create all of the pacbio tags (needed for pacbio dummy runs): `bundle exec rails tags:create:pacbio_all`
 
 To create pacbio dummy runs: `bundle exec rails pacbio_data:create`
 
