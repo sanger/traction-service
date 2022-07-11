@@ -41,7 +41,7 @@ namespace :pacbio_data do
             external_study_id:
           },
           sample: {
-            name: "Sample#{unique_index}",
+            name: "PacbioSample#{unique_index}",
             external_id: SecureRandom.uuid,
             species: "Species#{unique_index}"
           }
