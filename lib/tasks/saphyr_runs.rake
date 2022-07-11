@@ -7,8 +7,6 @@ namespace :saphyr_runs do
   task create: :environment do
     external_study_id = SecureRandom.uuid
 
-    # attributes = { sample: { name: "Sample#{i}", external_id: SecureRandom.uuid, species: "Species#{i}" }, requestable: { external_stud_id: }}
-
     attributes = (1..5).collect do |i|
       { sample: { name: "SaphyrSample#{i}", external_id: SecureRandom.uuid, species: "Species#{i}" }, request: { external_study_id: } }
     end
