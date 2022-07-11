@@ -5,6 +5,15 @@ require 'securerandom'
 namespace :tags do
   desc 'Create tags and tag sets'
   namespace :create do
+    desc 'Create all pacbio tags'
+    task pacbio_all: :environment do
+      Rake::Task['tags:create:pacbio_sequel'].invoke
+      Rake::Task['tags:create:pacbio_sequel_bacterial'].invoke
+      Rake::Task['tags:create:pacbio_truseq'].invoke
+      Rake::Task['tags:create:pacbio_sequel_96'].invoke
+      Rake::Task['tags:create:pacbio_isoseq'].invoke
+    end
+
     desc 'Create pacbio sequel tags'
     task pacbio_sequel: :environment do
       puts '-> Creating Sequel_16_barcodes_v3 tag set and tags'
