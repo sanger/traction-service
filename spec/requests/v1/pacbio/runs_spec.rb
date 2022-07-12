@@ -281,7 +281,7 @@ RSpec.describe 'RunsController', type: :request do
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_run, plate:) }
 
-    after { File.delete("#{run.name}.csv") if File.exist?("#{run.name}.csv") }
+    after { FileUtils.rm_rf("#{run.name}.csv")  }
 
     it 'returns the correct status' do
       get v1_pacbio_run_sample_sheet_path(run).to_s, headers: json_api_headers
