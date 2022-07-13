@@ -102,15 +102,15 @@ RSpec.describe Messages::Message, type: :model do
     it 'works' do
       expect(message.content).to eq(
         { config[:key] => {
-          field_e: 'another attribute',
-          samples: [
-            { field_d: 'attr_d' },
-            { field_d: 'attr_d' },
-            { field_d: 'attr_d' },
-            { field_d: 'attr_d' },
-            { field_d: 'attr_d' }
-          ]
-        },
+            field_e: 'another attribute',
+            samples: [
+              { field_d: 'attr_d' },
+              { field_d: 'attr_d' },
+              { field_d: 'attr_d' },
+              { field_d: 'attr_d' },
+              { field_d: 'attr_d' }
+            ]
+          },
           lims: config[:lims] }.with_indifferent_access
       )
     end
