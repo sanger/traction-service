@@ -1,5 +1,5 @@
 class AddSmrtLinkVersionToPacbioRun < ActiveRecord::Migration[7.0]
   def change
-    add_column :pacbio_runs, :smrt_link_version, :string
+    add_column :pacbio_runs, :smrt_link_version, :string, null: false
   end
 end

@@ -19,7 +19,8 @@ module Pacbio
 
     validates :sequencing_kit_box_barcode,
               :dna_control_complex_box_barcode,
-              :system_name, presence: true
+              :system_name,
+              :smrt_link_version, presence: true
 
     validates :name, uniqueness: { case_sensitive: false }
 
