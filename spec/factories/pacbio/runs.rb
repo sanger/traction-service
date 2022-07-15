@@ -6,5 +6,6 @@ FactoryBot.define do
     sequence(:dna_control_complex_box_barcode) { |n| "Lxxxxx10171760012319#{n}" }
     system_name { 'Sequel II' }
     comments { 'A Run Comment' }
+    smrt_link_version { '10' }
   end
 end
