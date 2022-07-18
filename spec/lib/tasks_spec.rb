@@ -4,7 +4,7 @@ require 'rails_helper'
 
 Rails.application.load_tasks
 
-Rspec.describe 'Rake Tasks' do
+RSpec.describe 'Rake Tasks' do
   describe 'create tags' do
     it 'creates all of the tag sets' do
       Rake::Task['tags:create:pacbio_all'].invoke
