@@ -21,6 +21,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     it 'must have a system name' do
       expect(build(:pacbio_run, system_name: nil)).not_to be_valid
     end
+
   end
 
   context 'System Name' do
