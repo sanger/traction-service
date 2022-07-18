@@ -12,10 +12,8 @@ namespace :pacbio_data do
       FactoryBot.find_definitions
     end
 
-    include FactoryBot::Syntax::Methods
-
     puts '-> Creating pacbio plates...'
-    external_plates = build_list(:external_plate, 5)
+    external_plates = FactoryBot.build_list(:external_plate, 5)
     external_plates.each { |plate| Pacbio::PlateCreator.new({ plates: [plate] }).save! }
     puts '-> Pacbio plates successfully created'
 
