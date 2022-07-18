@@ -13,7 +13,8 @@ module Pacbio
 
     delegate :wells, :all_wells_have_pools?, to: :plate, allow_nil: true
 
-    before_validation :update_smrt_link_version
+    # This may seem like overkill but it will cover all bases
+    before_validation :update_smrt_link_version, on: :create
     after_create :generate_name
 
     has_one :plate, foreign_key: :pacbio_run_id,
