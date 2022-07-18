@@ -48,6 +48,8 @@ module Pacbio
     # A version can be assigned to a run but changed.
     # We need to use send as it is dynamic
     # e.g. Pipelines.pacbio.sample_sheet.send('v10')
+    # TODO: This would probably be better as a proper method
+    # but as we create this dynamically might be too tricky for value
     def pacbio_run_sample_sheet_config
       Pipelines.pacbio.sample_sheet.send(smrt_link_version)
     end
