@@ -8,7 +8,7 @@ RSpec.describe CsvGenerator, type: :model do
 
     let(:run) { create(:pacbio_run, plate:) }
     let(:parsed_csv) { CSV.parse(csv_string) }
-    let(:csv) { ::CsvGenerator.new(run:, configuration: Pipelines.pacbio.sample_sheet) }
+    let(:csv) { ::CsvGenerator.new(run:, configuration: Pipelines.pacbio.sample_sheet.send(run.smrt_link_version)) }
 
     context 'when the libraries are tagged' do
       let(:well1) do
