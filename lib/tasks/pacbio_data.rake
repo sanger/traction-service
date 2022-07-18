@@ -5,8 +5,7 @@ require 'securerandom'
 namespace :pacbio_data do
   desc 'Populate the database with pacbio plates and runs'
   task create: [:environment, 'tags:create:pacbio_sequel', 'tags:create:pacbio_isoseq'] do
-
-    unless Object.const_defined?("FactoryBot")
+    unless Object.const_defined?('FactoryBot')
       require 'factory_bot'
       FactoryBot.factories.clear
       FactoryBot.find_definitions
