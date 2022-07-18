@@ -22,9 +22,6 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
       expect(build(:pacbio_run, system_name: nil)).not_to be_valid
     end
 
-    it 'must have a smrt link version' do
-      expect(build(:pacbio_run, smrt_link_version: nil)).not_to be_valid
-    end
   end
 
   context 'System Name' do
@@ -164,6 +161,14 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
       run = create(:pacbio_run)
       run.update(name: 'run1')
       expect(run.name).to eq('run1')
+    end
+  end
+
+  context 'smrt_link_version' do
+    it 'will set a default value before validation' do
+      run = build(:pacbio_run, smrt_link_version: nil)
+      expect(run).to be_valid
+      expect(run.smrt_link_version).to eq(Pacbio::Run::DEFAULT_SMRT_LINK_VERSION)
     end
   end
 end
