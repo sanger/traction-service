@@ -8,5 +8,4 @@ namespace :pacbio_run do
     end
     puts "-> #{runs.length} instances of nil smrt_link_version updated."
   end
-
 end
