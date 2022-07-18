@@ -13,8 +13,8 @@ module Pacbio
 
     delegate :wells, :all_wells_have_pools?, to: :plate, allow_nil: true
 
-    after_create :generate_name
     before_validation :update_smrt_link_version
+    after_create :generate_name
 
     has_one :plate, foreign_key: :pacbio_run_id,
                     dependent: :destroy, inverse_of: :run
@@ -41,7 +41,7 @@ module Pacbio
 
     private
 
-    # We now have SMRT Link versioning 
+    # We now have SMRT Link versioning
     # This allows generation of sample sheets based on the SMRT Link version
     # Each different version of SMRT Link has different columns
     # A version can be assigned to a run but changed.
