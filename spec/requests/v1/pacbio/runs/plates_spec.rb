@@ -58,9 +58,7 @@ RSpec.describe 'PlatesController', type: :request do
       it 'creates a plate' do
         expect do
           post v1_pacbio_runs_plates_path, params: body, headers: json_api_headers
-        end.to change {
-                 Pacbio::Plate.count
-               }.by(1)
+        end.to change(Pacbio::Plate, :count).by(1)
       end
 
       it 'has the correct attributes' do
@@ -174,15 +172,11 @@ RSpec.describe 'PlatesController', type: :request do
       end
 
       it 'deletes the plate' do
-        expect { delete v1_pacbio_runs_plate_path(plate), headers: json_api_headers }.to change {
-                                                                                           Pacbio::Plate.count
-                                                                                         }.by(-1)
+        expect { delete v1_pacbio_runs_plate_path(plate), headers: json_api_headers }.to change(Pacbio::Plate, :count).by(-1)
       end
 
       it 'deletes the wells' do
-        expect { delete v1_pacbio_runs_plate_path(plate), headers: json_api_headers }.to change {
-                                                                                           Pacbio::Well.count
-                                                                                         }.by(-1)
+        expect { delete v1_pacbio_runs_plate_path(plate), headers: json_api_headers }.to change(Pacbio::Well, :count).by(-1)
       end
     end
 
