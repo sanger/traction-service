@@ -74,9 +74,7 @@ RSpec.describe 'RunsController', type: :request do
       end
 
       it 'creates a run' do
-        expect { post v1_saphyr_runs_path, params: body, headers: json_api_headers }.to change {
-                                                                                          Saphyr::Run.count
-                                                                                        }.by(1)
+        expect { post v1_saphyr_runs_path, params: body, headers: json_api_headers }.to change(Saphyr::Run, :count).by(1)
       end
 
       it 'creates a run with the correct attributes' do
