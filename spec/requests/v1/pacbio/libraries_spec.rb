@@ -148,9 +148,7 @@ RSpec.describe 'LibrariesController', type: :request, pacbio: true do
       it 'destroys the library' do
         expect do
           delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
-        end.to change {
-                 Pacbio::Library.count
-               }.by(-1)
+        end.to change(Pacbio::Library, :count).by(-1)
       end
 
       it 'does not destroy the requests' do
