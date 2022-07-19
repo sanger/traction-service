@@ -21,15 +21,24 @@ This will:
 - Run bundle install
 - Create copies of any .example files
 - Create the database
+- Seed basic data such as library types and tags.
 
 ## Database setup
 
 The database should have been generated as part of the installation step above.
-If you need to create the database afresh: `bundle exec rails db:setup`.
+If you need to create the database afresh: `bundle exec rails db:reset`.
 
-To create a set of enzymes (needed for saphyr dummy runs): `bundle exec rails enzymes:create`
+### Seeded data
 
-To create all of the pacbio tags (needed for pacbio dummy runs): `bundle exec rails tags:create:pacbio_all`
+The following tasks are run automatically by `rails db:seed` at the end of the
+setup process
+
+- To create a set of enzymes (needed for saphyr dummy runs): `bundle exec rails enzymes:create`
+- To create all of the pacbio tags (needed for pacbio dummy runs): `bundle exec rails tags:create:pacbio_all`
+- To create all the supported library types: `bundle exec rails library_types:create`
+- To create all the supported data types: `bundle exec rails data_types:create`
+
+### Useful support data
 
 To create pacbio dummy runs: `bundle exec rails pacbio_data:create`
 
