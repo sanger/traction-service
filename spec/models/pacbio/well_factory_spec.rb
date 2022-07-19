@@ -212,7 +212,7 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         well_attributes_no_movie_time = well_attributes.except(:movie_time)
         factory = Pacbio::WellFactory::Well.new(well_attributes_no_movie_time)
         expect(factory).not_to be_valid
-        expect { factory.save }.to change(Pacbio::Well, :count).by(0)
+        expect { factory.save }.not_to change(Pacbio::Well, :count)
         expect(factory.errors.messages[:movie_time]).to eq ["can't be blank", 'is not a number']
       end
     end

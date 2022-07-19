@@ -113,9 +113,7 @@ RSpec.describe 'PoolsController', type: :request, pacbio: true do
         end
 
         it 'creates a pool' do
-          expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to change {
-                                                                                             Pacbio::Pool.count
-                                                                                           }.by(1)
+          expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to change(Pacbio::Pool, :count).by(1)
         end
 
         it 'returns the id' do

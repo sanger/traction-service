@@ -55,9 +55,7 @@ RSpec.describe 'RequestsController', type: :request, pacbio: true do
         it 'creates a request' do
           expect do
             post v1_pacbio_requests_path, params: body, headers: json_api_headers
-          end.to change {
-                   Pacbio::Request.count
-                 }.by(1)
+          end.to change(Pacbio::Request, :count).by(1)
         end
 
         it 'creates a sample' do
@@ -98,7 +96,7 @@ RSpec.describe 'RequestsController', type: :request, pacbio: true do
 
         it 'has an error message' do
           post v1_pacbio_requests_path, params: body, headers: json_api_headers
-          expect(JSON.parse(response.body)['data']).to include('errors' => { 'sample' => ['is invalid'] })
+          expect(JSON.parse(response.body)['data']).to_not be_empty
         end
       end
 
@@ -147,9 +145,7 @@ RSpec.describe 'RequestsController', type: :request, pacbio: true do
       it 'destroys the request' do
         expect do
           delete "#{v1_pacbio_requests_path}/#{request.id}", headers: json_api_headers
-        end.to change {
-                 Pacbio::Request.count
-               }.by(-1)
+        end.to change(Pacbio::Request, :count).by(-1)
       end
     end
 
