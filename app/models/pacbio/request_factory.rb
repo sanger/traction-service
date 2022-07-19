@@ -39,11 +39,11 @@ module Pacbio
     # @return [Boolean] if the requests have been successfully saved or not
     def save
       ApplicationRecord.transaction do
-        return false unless valid?
+        raise ActiveRecord::RecordInvalid unless valid?
 
         @request_wrappers.all?(&:save)
       end
-    rescue StandardError => e
+    rescue ActiveRecord::RecordInvalid, StandardError => e
       errors.add(:base, e.message)
       false
     end

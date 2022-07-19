@@ -74,9 +74,7 @@ RSpec.describe 'LibrariesController', type: :request do
         it 'creates a library' do
           expect do
             post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-          end.to change {
-                   Saphyr::Library.count
-                 }.by(1)
+          end.to change(Saphyr::Library, :count).by(1)
         end
 
         it 'creates a library with a tube' do
@@ -125,9 +123,7 @@ RSpec.describe 'LibrariesController', type: :request do
           it 'cannot create a library' do
             expect do
               post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-            end.to change {
-                     Saphyr::Library.count
-                   }.by(0)
+            end.not_to change(Saphyr::Library, :count)
           end
 
           it 'has an error message' do
@@ -159,9 +155,7 @@ RSpec.describe 'LibrariesController', type: :request do
           it 'cannot create a library' do
             expect do
               post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-            end.to change {
-                     Saphyr::Library.count
-                   }.by(0)
+            end.not_to change(Saphyr::Library, :count)
           end
 
           it 'has an error message' do
