@@ -55,9 +55,7 @@ RSpec.describe 'RequestsController', type: :request, saphyr: true do
         it 'creates a request' do
           expect do
             post v1_saphyr_requests_path, params: body, headers: json_api_headers
-          end.to change {
-                   Saphyr::Request.count
-                 }.by(1)
+          end.to change(Saphyr::Request, :count).by(1)
         end
 
         it 'creates a sample' do
@@ -145,9 +143,7 @@ RSpec.describe 'RequestsController', type: :request, saphyr: true do
       end
 
       it 'destroys the request' do
-        expect { delete "/v1/saphyr/requests/#{request.id}", headers: json_api_headers }.to change {
-                                                                                              Saphyr::Request.count
-                                                                                            }.by(-1)
+        expect { delete "/v1/saphyr/requests/#{request.id}", headers: json_api_headers }.to change(Saphyr::Request, :count).by(-1)
       end
     end
 

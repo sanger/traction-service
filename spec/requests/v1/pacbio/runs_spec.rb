@@ -74,9 +74,7 @@ RSpec.describe 'RunsController', type: :request do
       end
 
       it 'creates a run' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change {
-                                                                                          Pacbio::Run.count
-                                                                                        }.by(1)
+        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Run, :count).by(1)
       end
 
       it 'creates a run with the correct attributes' do
@@ -249,15 +247,11 @@ RSpec.describe 'RunsController', type: :request do
       end
 
       it 'deletes the run' do
-        expect { delete v1_pacbio_run_path(run), headers: json_api_headers }.to change {
-                                                                                  Pacbio::Run.count
-                                                                                }.by(-1)
+        expect { delete v1_pacbio_run_path(run), headers: json_api_headers }.to change(Pacbio::Run, :count).by(-1)
       end
 
       it 'deletes the plate' do
-        expect { delete v1_pacbio_run_path(run), headers: json_api_headers }.to change {
-                                                                                  Pacbio::Plate.count
-                                                                                }.by(-1)
+        expect { delete v1_pacbio_run_path(run), headers: json_api_headers }.to change(Pacbio::Plate, :count).by(-1)
       end
     end
 
