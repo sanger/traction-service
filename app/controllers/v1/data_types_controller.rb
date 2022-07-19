@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 module V1
-  # See the DataTypeResource for more information
+  # JsonApi::Resource controllers are primarily handled by the corresponding
+  # resources
+  # See {DataType} and {DataTypeResource} for more information
   class DataTypesController < ApplicationController
   end
 end
