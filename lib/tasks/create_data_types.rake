@@ -9,5 +9,6 @@ namespace :data_types do
     ].each do |options|
       DataType.create_with(options).find_or_create_by!(name: options[:name])
     end
+    puts '-> Data types updated'
   end
 end

@@ -20,5 +20,6 @@ namespace :library_types do
     ].each do |options|
       LibraryType.create_with(options).find_or_create_by!(name: options[:name])
     end
+    puts '-> Library types updated'
   end
 end
