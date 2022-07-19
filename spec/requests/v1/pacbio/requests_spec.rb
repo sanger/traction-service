@@ -96,7 +96,7 @@ RSpec.describe 'RequestsController', type: :request, pacbio: true do
 
         it 'has an error message' do
           post v1_pacbio_requests_path, params: body, headers: json_api_headers
-          expect(JSON.parse(response.body)['data']).to_not be_empty
+          expect(JSON.parse(response.body)['data']).not_to be_empty
         end
       end
 
