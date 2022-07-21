@@ -108,6 +108,7 @@ default: &default
 
     sample_sheet:
       v10:
+        version: v10
         columns:
           System Name:
             type: :model
@@ -277,6 +278,7 @@ default: &default
               with: :well
             populate_on_row_type: :well
       v11:
+        version: v11
         columns:
           System Name:
             type: :model

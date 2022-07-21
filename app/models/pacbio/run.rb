@@ -14,7 +14,7 @@ module Pacbio
     delegate :wells, :all_wells_have_pools?, to: :plate, allow_nil: true
 
     # This may seem like overkill but it will cover all bases
-    before_validation :update_smrt_link_version, on: :create
+    # before_validation :update_smrt_link_version, on: :create
     after_create :generate_name
 
     has_one :plate, foreign_key: :pacbio_run_id,
@@ -22,12 +22,13 @@ module Pacbio
 
     validates :sequencing_kit_box_barcode,
               :dna_control_complex_box_barcode,
-              :system_name,
-              :smrt_link_version, presence: true
+              :system_name, presence: true
 
     validates :name, uniqueness: { case_sensitive: false }
 
     scope :active, -> { where(deactivated_at: nil) }
+
+    attribute :smrt_link_version, :string, default: DEFAULT_SMRT_LINK_VERSION
 
     def comments
       super || wells.collect(&:summary).join(':')
@@ -60,10 +61,5 @@ module Pacbio
       update(name: "#{NAME_PREFIX}#{id}")
     end
 
-    def update_smrt_link_version
-      return if smrt_link_version.present?
-
-      self.smrt_link_version = DEFAULT_SMRT_LINK_VERSION
-    end
   end
 end

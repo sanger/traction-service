@@ -165,8 +165,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
 
   context 'smrt_link_version' do
     it 'will set a default value before validation' do
-      run = build(:pacbio_run, smrt_link_version: nil)
-      expect(run).to be_valid
+      run = create(:pacbio_run)
       expect(run.smrt_link_version).to eq(Pacbio::Run::DEFAULT_SMRT_LINK_VERSION)
     end
   end
