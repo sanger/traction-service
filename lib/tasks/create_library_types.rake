@@ -16,7 +16,8 @@ namespace :library_types do
       { pipeline: 'ont', name: 'ONT_PromethIon' },
       { pipeline: 'ont', name: 'ONT_PromethIon_mplx' },
       { pipeline: 'ont', name: 'ONT_PromethIon_High_Quality' },
-      { pipeline: 'ont', name: 'ONT_Ultralong' }
+      { pipeline: 'ont', name: 'ONT_Ultralong' },
+      { pipeline: 'saphyr', name: 'Saphyr_v1' }
     ].each do |options|
       LibraryType.create_with(options).find_or_create_by!(name: options[:name])
     end
