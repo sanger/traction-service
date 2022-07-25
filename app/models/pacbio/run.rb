@@ -26,6 +26,9 @@ module Pacbio
 
     validates :name, uniqueness: { case_sensitive: false }
 
+    # validates :smrt_link_version, format: /\Av\d{2}?\.?\d{1,2}?\.?\d{1,3}\z/, allow_blank: true
+    validates :smrt_link_version, format: Version::FORMAT, allow_blank: true
+
     scope :active, -> { where(deactivated_at: nil) }
 
     attribute :smrt_link_version, :string, default: DEFAULT_SMRT_LINK_VERSION
@@ -60,6 +63,5 @@ module Pacbio
 
       update(name: "#{NAME_PREFIX}#{id}")
     end
-
   end
 end

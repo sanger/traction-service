@@ -54,6 +54,20 @@ module Pipelines
       def each(&)
         children.each(&)
       end
+
+      # Return the version of the item
+      # Check if it is a valid version type as per Version::FORMAT
+      # Otherwise raise an error
+      # Try and get the version if it does not exist raise an error
+      def by_version(version)
+        # raise("Not a valid version") unless version.match(Version::FORMAT) && respond_to?(version)
+        unless version.match(Version::FORMAT) && respond_to?(version)
+          raise(StandardError,
+                'Not a valid version')
+        end
+
+        send(version)
+      end
     end
   end
 end
