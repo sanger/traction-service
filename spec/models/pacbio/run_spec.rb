@@ -166,16 +166,16 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
   context 'smrt_link_version' do
     it 'will set a default value' do
       run = create(:pacbio_run)
-      expect(run.smrt_link_version).to eq(Pacbio::Run::DEFAULT_SMRT_LINK_VERSION)
+      expect(run.smrt_link_version).to eq(Version::SmrtLink::DEFAULT)
     end
 
     context 'version format' do
-      it 'will be valid if it is semver format' do
+      it 'will be valid if it is correct format' do
         expect(build(:pacbio_run, smrt_link_version: 'v10')).to be_valid
         expect(build(:pacbio_run, smrt_link_version: 'v11_1')).to be_valid
       end
 
-      it 'will not be invalid if it is not semver format' do
+      it 'will invalid if it is not the correct format' do
         expect(build(:pacbio_run, smrt_link_version: '10')).not_to be_valid
         expect(build(:pacbio_run, smrt_link_version: 'xx')).not_to be_valid
         expect(build(:pacbio_run, smrt_link_version: 'y.y.10')).not_to be_valid
