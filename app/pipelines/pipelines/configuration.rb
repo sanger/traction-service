@@ -59,10 +59,7 @@ module Pipelines
       # Check if it is a valid version type as per Version::FORMAT
       # Otherwise raise an error
       def by_version(version)
-        unless version.match(Version::FORMAT) && respond_to?(version)
-          raise(StandardError,
-                'Not a valid version')
-        end
+        raise Version::Error unless version.match(Version::FORMAT) && respond_to?(version)
 
         send(version)
       end

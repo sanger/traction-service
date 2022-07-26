@@ -125,11 +125,11 @@ RSpec.describe Pipelines::Configuration, type: :model do
     end
 
     it 'will raise an error if it is not a valid version format' do
-      expect { configuration.pipeline_c.sample_sheet.by_version('not a version') }.to raise_error(StandardError, 'Not a valid version')
+      expect { configuration.pipeline_c.sample_sheet.by_version('not a version') }.to raise_error(Version::Error, 'Not a valid version')
     end
 
     it 'will raise an error if it is not a valid version' do
-      expect { configuration.pipeline_c.sample_sheet.by_version('v30') }.to raise_error(StandardError, 'Not a valid version')
+      expect { configuration.pipeline_c.sample_sheet.by_version('v30') }.to raise_error(Version::Error, 'Not a valid version')
     end
   end
 end

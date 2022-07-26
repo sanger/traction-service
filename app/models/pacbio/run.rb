@@ -3,8 +3,7 @@
 module Pacbio
   # Pacbio::Run
   class Run < ApplicationRecord
-    NAME_PREFIX               = 'TRACTION-RUN-'
-    DEFAULT_SMRT_LINK_VERSION = 'v10'
+    NAME_PREFIX = 'TRACTION-RUN-'
 
     include Uuidable
     include Stateful
@@ -13,8 +12,6 @@ module Pacbio
 
     delegate :wells, :all_wells_have_pools?, to: :plate, allow_nil: true
 
-    # This may seem like overkill but it will cover all bases
-    # before_validation :update_smrt_link_version, on: :create
     after_create :generate_name
 
     has_one :plate, foreign_key: :pacbio_run_id,
@@ -26,12 +23,11 @@ module Pacbio
 
     validates :name, uniqueness: { case_sensitive: false }
 
-    # validates :smrt_link_version, format: /\Av\d{2}?\.?\d{1,2}?\.?\d{1,3}\z/, allow_blank: true
     validates :smrt_link_version, format: Version::FORMAT, allow_blank: true
 
     scope :active, -> { where(deactivated_at: nil) }
 
-    attribute :smrt_link_version, :string, default: DEFAULT_SMRT_LINK_VERSION
+    attribute :smrt_link_version, :string, default: Version::SmrtLink::DEFAULT
 
     def comments
       super || wells.collect(&:summary).join(':')
