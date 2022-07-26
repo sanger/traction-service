@@ -176,6 +176,13 @@ RSpec.describe Reception::ResourceFactory, type: :model do
         request: request_parameters,
         sample: attributes_for(:sample),
         container: { type: 'wells', **attributes_for(:well, position: 'C1', barcode: existing_plate_barcode) }
+      }, {
+        # Generate a second new plate, as I have a potential issue with the
+        # reception where I'm not sure I'm generating a new plate instance for
+        # each barcode.
+        request: request_parameters,
+        sample: attributes_for(:sample),
+        container: { type: 'wells', **attributes_for(:well, position: 'A1', barcode: generate(:barcode)) }
       }]
     end
 
@@ -198,15 +205,15 @@ RSpec.describe Reception::ResourceFactory, type: :model do
       end
 
       it 'creates 6 Requests' do
-        expect { construct_resources }.to change(Request, :count).by(6)
+        expect { construct_resources }.to change(Request, :count).by(7)
       end
 
       it 'creates 6 ONT::Requests' do
-        expect { construct_resources }.to change(Ont::Request, :count).by(6)
+        expect { construct_resources }.to change(Ont::Request, :count).by(7)
       end
 
       it 'creates new samples' do
-        expect { construct_resources }.to change(Sample, :count).by(4)
+        expect { construct_resources }.to change(Sample, :count).by(5)
       end
 
       it 'creates new tubes' do
@@ -214,16 +221,16 @@ RSpec.describe Reception::ResourceFactory, type: :model do
       end
 
       it 'creates new plates' do
-        expect { construct_resources }.to change(Plate, :count).by(1)
+        expect { construct_resources }.to change(Plate, :count).by(2)
       end
 
       it 'creates new wells' do
-        expect { construct_resources }.to change(Well, :count).by(3)
+        expect { construct_resources }.to change(Well, :count).by(4)
       end
 
       it 'associates the requests with the reception' do
         construct_resources
-        expect(reception.requests.reload.count).to eq 6
+        expect(reception.requests.reload.count).to eq 7
       end
     end
 
@@ -236,15 +243,15 @@ RSpec.describe Reception::ResourceFactory, type: :model do
       end
 
       it 'creates 6 Requests' do
-        expect { construct_resources }.to change(Request, :count).by(6)
+        expect { construct_resources }.to change(Request, :count).by(7)
       end
 
       it 'creates 6 ONT::Requests' do
-        expect { construct_resources }.to change(Pacbio::Request, :count).by(6)
+        expect { construct_resources }.to change(Pacbio::Request, :count).by(7)
       end
 
       it 'creates new samples' do
-        expect { construct_resources }.to change(Sample, :count).by(4)
+        expect { construct_resources }.to change(Sample, :count).by(5)
       end
 
       it 'creates new tubes' do
@@ -252,16 +259,16 @@ RSpec.describe Reception::ResourceFactory, type: :model do
       end
 
       it 'creates new plates' do
-        expect { construct_resources }.to change(Plate, :count).by(1)
+        expect { construct_resources }.to change(Plate, :count).by(2)
       end
 
       it 'creates new wells' do
-        expect { construct_resources }.to change(Well, :count).by(3)
+        expect { construct_resources }.to change(Well, :count).by(4)
       end
 
       it 'associates the requests with the reception' do
         construct_resources
-        expect(reception.requests.reload.count).to eq 6
+        expect(reception.requests.reload.count).to eq 7
       end
     end
 
@@ -274,15 +281,15 @@ RSpec.describe Reception::ResourceFactory, type: :model do
       end
 
       it 'creates 6 Requests' do
-        expect { construct_resources }.to change(Request, :count).by(6)
+        expect { construct_resources }.to change(Request, :count).by(7)
       end
 
       it 'creates 6 ONT::Requests' do
-        expect { construct_resources }.to change(Saphyr::Request, :count).by(6)
+        expect { construct_resources }.to change(Saphyr::Request, :count).by(7)
       end
 
       it 'creates new samples' do
-        expect { construct_resources }.to change(Sample, :count).by(4)
+        expect { construct_resources }.to change(Sample, :count).by(5)
       end
 
       it 'creates new tubes' do
@@ -290,16 +297,16 @@ RSpec.describe Reception::ResourceFactory, type: :model do
       end
 
       it 'creates new plates' do
-        expect { construct_resources }.to change(Plate, :count).by(1)
+        expect { construct_resources }.to change(Plate, :count).by(2)
       end
 
       it 'creates new wells' do
-        expect { construct_resources }.to change(Well, :count).by(3)
+        expect { construct_resources }.to change(Well, :count).by(4)
       end
 
       it 'associates the requests with the reception' do
         construct_resources
-        expect(reception.requests.reload.count).to eq 6
+        expect(reception.requests.reload.count).to eq 7
       end
     end
   end

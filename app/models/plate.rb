@@ -8,11 +8,13 @@ class Plate < ApplicationRecord
 
   has_many :wells, inverse_of: :plate, dependent: :destroy do
     def located_at(position)
-      if loaded?
-        detect { |w| w.position == position } || build(position:)
-      else
-        find_or_initialize_by(position:)
-      end
+      # Caution, this loads the entire set of wells if not already loaded.
+      # However I found trying to be clever and switching behaviour would result
+      # in different instances being returned each time the method was called.
+      # While filtering in ruby is slower in the scenario where we only care
+      # about a single well, in practice this is probably less likely than
+      # dealing with multiple wells on the same plate.
+      detect { |w| w.position == position } || build(position:)
     end
   end
 
