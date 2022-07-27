@@ -8,4 +8,3 @@ Rake::Task['library_types:create'].invoke
 Rake::Task['data_types:create'].invoke
 Rake::Task['enzymes:create'].invoke
 Rake::Task['tags:create:pacbio_all'].invoke
-Rake::Task['tags:create:nextera_ud'].invoke

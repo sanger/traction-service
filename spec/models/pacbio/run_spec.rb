@@ -162,4 +162,25 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
       expect(run.name).to eq('run1')
     end
   end
+
+  context 'smrt_link_version' do
+    it 'will set a default value' do
+      run = create(:pacbio_run)
+      expect(run.smrt_link_version).to eq(Version::SmrtLink::DEFAULT)
+    end
+
+    context 'version format' do
+      it 'will be valid if it is correct format' do
+        expect(build(:pacbio_run, smrt_link_version: 'v10')).to be_valid
+        expect(build(:pacbio_run, smrt_link_version: 'v11_1')).to be_valid
+      end
+
+      it 'will invalid if it is not the correct format' do
+        expect(build(:pacbio_run, smrt_link_version: '10')).not_to be_valid
+        expect(build(:pacbio_run, smrt_link_version: 'xx')).not_to be_valid
+        expect(build(:pacbio_run, smrt_link_version: 'y.y.10')).not_to be_valid
+        expect(build(:pacbio_run, smrt_link_version: 'vy_10')).not_to be_valid
+      end
+    end
+  end
 end

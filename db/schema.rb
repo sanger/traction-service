@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_23_104146) do
+ActiveRecord::Schema[7.0].define(version: 2022_07_14_125848) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -178,6 +178,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_23_104146) do
     t.datetime "updated_at", precision: nil, null: false
     t.integer "state", default: 0
     t.datetime "deactivated_at", precision: nil
+    t.string "smrt_link_version", null: false
     t.index ["name"], name: "index_pacbio_runs_on_name", unique: true
   end
 

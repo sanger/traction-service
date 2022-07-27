@@ -5,14 +5,14 @@ require 'securerandom'
 namespace :pacbio_data do
   desc 'Populate the database with pacbio plates and runs'
   task create: [:environment, 'tags:create:pacbio_sequel', 'tags:create:pacbio_isoseq'] do
-    require 'factory_bot'
-
-    include FactoryBot::Syntax::Methods
-    FactoryBot.factories.clear
-    FactoryBot.find_definitions
+    unless Object.const_defined?('FactoryBot')
+      require 'factory_bot'
+      FactoryBot.factories.clear
+      FactoryBot.find_definitions
+    end
 
     puts '-> Creating pacbio plates...'
-    external_plates = build_list(:external_plate, 5)
+    external_plates = FactoryBot.build_list(:external_plate, 5)
     external_plates.each { |plate| Pacbio::PlateCreator.new({ plates: [plate] }).save! }
     puts '-> Pacbio plates successfully created'
 

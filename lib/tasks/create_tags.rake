@@ -12,6 +12,7 @@ namespace :tags do
       Rake::Task['tags:create:pacbio_truseq'].invoke
       Rake::Task['tags:create:pacbio_sequel_96'].invoke
       Rake::Task['tags:create:pacbio_isoseq'].invoke
+      Rake::Task['tags:create:nextera_ud'].invoke
     end
 
     desc 'Create pacbio sequel tags'
