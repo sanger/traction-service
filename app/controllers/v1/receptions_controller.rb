@@ -8,6 +8,5 @@ module V1
   # This file is largely empty, as JSONAPI::Resource heavily favours convention
   # over configuration and relies on the resource to determine what's possible
   class ReceptionsController < ApplicationController
-    before_action { not_found unless Flipper.enabled?(:dpl_277_enable_general_reception) }
   end
 end

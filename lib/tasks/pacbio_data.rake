@@ -5,53 +5,37 @@ require 'securerandom'
 namespace :pacbio_data do
   desc 'Populate the database with pacbio plates and runs'
   task create: [:environment, 'tags:create:pacbio_sequel', 'tags:create:pacbio_isoseq'] do
-    unless Object.const_defined?('FactoryBot')
-      require 'factory_bot'
-      FactoryBot.factories.clear
-      FactoryBot.find_definitions
-    end
+    require_relative 'reception_generator'
 
     puts '-> Creating pacbio plates...'
-    external_plates = FactoryBot.build_list(:external_plate, 5)
-    external_plates.each { |plate| Pacbio::PlateCreator.new({ plates: [plate] }).save! }
+
+    reception_generator = ReceptionGenerator.new(
+      number_of_plates: 5,
+      number_of_tubes: 0,
+      wells_per_plate: 48,
+      pipeline: :pacbio
+    ).tap(&:construct_resources!)
+
+    requests = reception_generator.reception.requests.each
+
     puts '-> Pacbio plates successfully created'
 
     puts '-> Creating pacbio libraries...'
 
     pools = [
-      { library_type: 'Sequel-v1', tag_set: nil, size: 1 },
-      { library_type: 'Sequel-v1', tag_set: 'Sequel_16_barcodes_v3', size: 1 },
-      { library_type: 'Sequel-v1', tag_set: 'Sequel_16_barcodes_v3', size: 5 },
-      { library_type: 'IsoSeq-v1', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 1 },
-      { library_type: 'IsoSeq-v1', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 5 },
-      { library_type: 'IsoSeq-v1', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 5 }
+      { library_type: 'Pacbio_HiFi', tag_set: nil, size: 1 },
+      { library_type: 'Pacbio_HiFi', tag_set: 'Sequel_16_barcodes_v3', size: 1 },
+      { library_type: 'Pacbio_HiFi_mplx', tag_set: 'Sequel_16_barcodes_v3', size: 5 },
+      { library_type: 'PacBio_IsoSeq_mplx', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 1 },
+      { library_type: 'Pacbio_IsoSeq', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 5 },
+      { library_type: 'Pacbio_IsoSeq', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 5 }
     ]
 
-    external_study_id = SecureRandom.uuid
-
-    pool_records = pools.map.with_index do |data, pool_index|
-      attributes = Array.new(data[:size]) do |library_index|
-        unique_index = (1000 * pool_index) + library_index
-        {
-          request: {
-            library_type: data[:library_type],
-            estimate_of_gb_required: 10,
-            number_of_smrt_cells: 3,
-            cost_code: 'PSD1234',
-            external_study_id:
-          },
-          sample: {
-            name: "PacbioSample#{unique_index}",
-            external_id: SecureRandom.uuid,
-            species: "Species#{unique_index}"
-          }
-        }
-      end
-      factory = Pacbio::RequestFactory.new(attributes).tap(&:save)
+    pool_records = pools.map do |data|
       tube = Tube.create
       tags = data[:tag_set] ? TagSet.find_by!(name: data[:tag_set]).tags : []
 
-      factory.requests.each_with_index.reduce(nil) do |pool, (request, tag_index)|
+      requests.take(data[:size]).each_with_index.reduce(nil) do |pool, (request, tag_index)|
         Pacbio::Library.create!(
           volume: 1,
           concentration: 1,
