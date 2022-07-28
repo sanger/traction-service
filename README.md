@@ -44,6 +44,8 @@ To create pacbio dummy runs: `bundle exec rails pacbio_data:create`
 
 To create saphyr dummy runs: `bundle exec rails saphyr_runs:create`
 
+To create ont dummy plates and tubes: `bundle exec rails ont_data:create`
+
 ## Database drop
 
 To drop the database `bundle exec rails db:drop`
