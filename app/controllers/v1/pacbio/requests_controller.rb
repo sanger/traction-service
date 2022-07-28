@@ -5,18 +5,6 @@ module V1
     # RequestsController
     # TODO: Move to request resource as per pool
     class RequestsController < ApplicationController
-      # create action for the pipeline requests
-      # uses the request factory
-      def create
-        not_found if Flipper.enabled?(:dpl_277_disable_pacbio_specific_reception)
-        if request_factory.save
-          render json: body, status: :created
-        else
-          render json: { data: { errors: @request_factory.errors.messages } },
-                 status: :unprocessable_entity
-        end
-      end
-
       # destroy action for the pipeline request
       def destroy
         pipeline_request.destroy
@@ -41,23 +29,6 @@ module V1
       end
 
       private
-
-      # @return [Object] new request factory initialized with request params
-      def request_factory
-        @request_factory ||= ::Pacbio::RequestFactory.new(params_names)
-      end
-
-      # @return [Array] an array of request resources built on tne requestables
-      def resources
-        @resources ||= request_factory.requestables.map do |request|
-          Pacbio::RequestResource.new(request, nil)
-        end
-      end
-
-      # @return [Hash] the body of the response; serialized resources
-      def body
-        @body ||= serialize_array(resources)
-      end
 
       # Finds request based on the id, used by destroy or edit
       # @return [ActiveRecord Object] e.g. +Pacbio::Request.find(1)
