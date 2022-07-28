@@ -52,6 +52,10 @@ Rails.application.routes.draw do
       jsonapi_resources :tubes,           only: %i[index]
       jsonapi_resources :pools,           except: %i[destroy]
     end
+
+    namespace :ont do
+      jsonapi_resources :requests, except: %i[create destroy]
+    end
   end
 
   mount Flipper::Api.app(Flipper) => '/flipper/api', constraints: ->(request) { request.get? }
