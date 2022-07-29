@@ -37,9 +37,9 @@ module Pacbio
     # We can't set a default in the db because it changes
     attribute :smrt_link_version, :smrt_link_version
 
-    # if comments are nil this blows up so add the implicit try.
+    # if comments are nil this blows up so add try.
     def comments
-      super || wells&.collect(&:summary)&.join(':')
+      super || wells.try(:collect, &:summary).join(':')
     end
 
     # returns sample sheet csv for a Pacbio::Run
