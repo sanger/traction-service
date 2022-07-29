@@ -28,13 +28,7 @@ module Pacbio
 
     scope :active, -> { where(deactivated_at: nil) }
 
-    # we use a special type here
-    # I tried using a string with default but there were issues
-    # because we are using a combination of a default and validation
-    # it is possible to pass nil
-    # this was causing issues with null constraints
-    # Mysql2::Error: Column 'smrt_link_version' cannot be null (ActiveRecord::NotNullViolation)
-    # We can't set a default in the db because it changes
+    # This allows us to set the default for the version without a callback
     attribute :smrt_link_version, :string, default: Version::SmrtLink::DEFAULT
 
     # if comments are nil this blows up so add try.
