@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # SmrtLinkVersionType
+# This should be in the Pacbio namespace but causing more errors
 class SmrtLinkVersionType < ActiveRecord::Type::String
   # if the smrt link version is nil then we need to set it
   # to the default
