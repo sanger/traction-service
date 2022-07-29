@@ -39,7 +39,7 @@ module Pacbio
 
     # if comments are nil this blows up so add try.
     def comments
-      super || wells.try(:collect, &:summary).join(':')
+      super || wells.try(:collect, &:summary).try(:join, ':')
     end
 
     # returns sample sheet csv for a Pacbio::Run
