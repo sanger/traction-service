@@ -23,14 +23,23 @@ module Pacbio
 
     validates :name, uniqueness: { case_sensitive: false }
 
+    # we need to allow blank because it could be passed as nil
     validates :smrt_link_version, format: Version::FORMAT, allow_blank: true
 
     scope :active, -> { where(deactivated_at: nil) }
 
-    attribute :smrt_link_version, :string, default: Version::SmrtLink::DEFAULT
+    # we use a special type here
+    # I tried using a string with default but there were issues
+    # because we are using a combination of a default and validation
+    # it is possible to pass nil
+    # this was causing issues with null constraints
+    # Mysql2::Error: Column 'smrt_link_version' cannot be null (ActiveRecord::NotNullViolation)
+    # We can't set a default in the db because it changes
+    attribute :smrt_link_version, :smrt_link_version
 
+    # if comments are nil this blows up so add the implicit try.
     def comments
-      super || wells.collect(&:summary).join(':')
+      super || wells&.collect(&:summary)&.join(':')
     end
 
     # returns sample sheet csv for a Pacbio::Run
