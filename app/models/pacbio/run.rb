@@ -35,7 +35,7 @@ module Pacbio
     # this was causing issues with null constraints
     # Mysql2::Error: Column 'smrt_link_version' cannot be null (ActiveRecord::NotNullViolation)
     # We can't set a default in the db because it changes
-    attribute :smrt_link_version, :smrt_link_version
+    attribute :smrt_link_version, :string, default: Version::SmrtLink::DEFAULT
 
     # if comments are nil this blows up so add try.
     def comments
