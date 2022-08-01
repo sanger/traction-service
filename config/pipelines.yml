@@ -277,7 +277,6 @@ default: &default
               with: :well
             populate_on_row_type: :well
       v11:
-        version: v11
         columns:
           System Name:
             type: :model
@@ -439,6 +438,20 @@ default: &default
               with: :well
             populate_on_row_type: :well
           Use Adaptive Loading:
+            type: :model
+            value: adaptive_loading_check
+            populate:
+              for:
+                - :well
+              with: :well
+            populate_on_row_type: :well
+          CCS Analysis Output - Include Low Quality Reads:
+            type: :string
+            value: true
+          5mC Calls in CpG Motifs:
+            type: :string
+            value: true
+
   ont:
     message:
       lims: *lims
