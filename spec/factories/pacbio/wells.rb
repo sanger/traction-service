@@ -12,6 +12,9 @@ FactoryBot.define do
     ccs_analysis_output { '' }
     sequence(:binding_kit_box_barcode) { |n| "DM111710086220011171#{n}" }
 
+    ccs_analysis_output_include_low_quality_reads { true }
+    fivemc_calls_in_cpg_motifs { true }
+
     transient do
       pool_count { 5 }
     end

@@ -28,13 +28,20 @@ module Pacbio
     has_many :tag_sets, through: :libraries
 
     validates :movie_time, :on_plate_loading_concentration,
-              :row, :column, :generate_hifi, :binding_kit_box_barcode, presence: true
+              :row, :column, :binding_kit_box_barcode, presence: true
     validates :movie_time,
               numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 }
     validates :pre_extension_time, numericality: { only_integer: true }, allow_blank: true
     validates :loading_target_p1_plus_p2,
               allow_blank: true,
               numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
+
+    # Before we were adding SMRT Link options as columns.
+    # This is brittle as due to v11 options are canned
+    # which are required
+    # We need to find a way to make them required when smrt link is a particular version
+    store :smrt_link_options,
+          accessors: %i[ccs_analysis_output_include_low_quality_reads fivemc_calls_in_cpg_motifs]
 
     def tag_set
       tag_sets.first
