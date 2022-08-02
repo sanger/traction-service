@@ -88,8 +88,9 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
   end
 
   context 'Generate HiFi' do
-    it 'must have a generate_hifi' do
-      expect(build(:pacbio_well, generate_hifi: nil)).not_to be_valid
+    # v11 does not require generate hifi
+    it 'is valid without generate_hifi' do
+      expect(build(:pacbio_well, generate_hifi: nil)).to be_valid
     end
 
     it 'must include the correct options' do
@@ -211,6 +212,35 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
     it 'will always be true' do
       expect(well).to be_collection
+    end
+  end
+
+  # we need to find a way to make these required if smrt link v11
+  context 'Smrt Link Options' do
+    let(:well) { create(:pacbio_well) }
+
+    it 'will include the relevant options' do
+      expect(described_class.stored_attributes[:smrt_link_options]).to eq(%i[ccs_analysis_output_include_low_quality_reads fivemc_calls_in_cpg_motifs])
+    end
+
+    context 'CCS Analysis Output - Include Low Quality Reads' do
+      it 'can be present' do
+        expect(well.ccs_analysis_output_include_low_quality_reads).to be_present
+      end
+
+      it 'is optional' do
+        expect(build(:pacbio_well, ccs_analysis_output_include_low_quality_reads: nil)).to be_valid
+      end
+    end
+
+    context '5mC Calls in CpG Motifs' do
+      it 'can be present' do
+        expect(well.fivemc_calls_in_cpg_motifs).to be_present
+      end
+
+      it 'is optional' do
+        expect(build(:pacbio_well, fivemc_calls_in_cpg_motifs: nil)).to be_valid
+      end
     end
   end
 end

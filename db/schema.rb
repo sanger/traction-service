@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_14_125848) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_02_091919) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -212,6 +212,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_14_125848) do
     t.string "ccs_analysis_output"
     t.string "binding_kit_box_barcode"
     t.decimal "loading_target_p1_plus_p2", precision: 3, scale: 2
+    t.json "smrt_link_options"
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
 
