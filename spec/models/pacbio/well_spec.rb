@@ -220,7 +220,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     let(:well) { create(:pacbio_well) }
 
     it 'will include the relevant options' do
-      expect(described_class.stored_attributes[:smrt_link_options]).to eq(%i[ccs_analysis_output_include_low_quality_reads fivemc_calls_in_cpg_motifs])
+      expect(described_class.stored_attributes[:smrt_link_options]).to eq(%i[ccs_analysis_output_include_low_quality_reads fivemc_calls_in_cpg_motifs ccs_analysis_output_include_kinetics_information])
     end
 
     context 'CCS Analysis Output - Include Low Quality Reads' do
@@ -240,6 +240,16 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
       it 'is optional' do
         expect(build(:pacbio_well, fivemc_calls_in_cpg_motifs: nil)).to be_valid
+      end
+    end
+
+    context 'CCS Analysis Output - Include Kinetics Information' do
+      it 'can be present' do
+        expect(well.ccs_analysis_output_include_kinetics_information).to be_present
+      end
+
+      it 'is optional' do
+        expect(build(:pacbio_well, ccs_analysis_output_include_low_quality_reads: nil)).to be_valid
       end
     end
   end
