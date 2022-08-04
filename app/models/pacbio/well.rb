@@ -40,8 +40,11 @@ module Pacbio
     # This is brittle as due to v11 options are canned
     # which are required
     # We need to find a way to make them required when smrt link is a particular version
+    # ccs_analysis_output_include_kinetics_information replaces ccs analysis options but
+    # need to move it in next story
     store :smrt_link_options,
-          accessors: %i[ccs_analysis_output_include_low_quality_reads fivemc_calls_in_cpg_motifs]
+          accessors: %i[ccs_analysis_output_include_low_quality_reads fivemc_calls_in_cpg_motifs
+                        ccs_analysis_output_include_kinetics_information]
 
     def tag_set
       tag_sets.first

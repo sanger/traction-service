@@ -21,7 +21,6 @@ RSpec.describe 'WellsController', type: :request do
       expect(well_attributes['pacbio_plate_id']).to eq(well.pacbio_plate_id)
       expect(well_attributes['row']).to eq(well.row)
       expect(well_attributes['column']).to eq(well.column)
-      # TODO: fix movie time column
       expect(well_attributes['movie_time'].to_s).to eq(well.movie_time.to_s)
       expect(well_attributes['on_plate_loading_concentration']).to eq(well.on_plate_loading_concentration)
       expect(well_attributes['pacbio_plate_id']).to eq(well.pacbio_plate_id)
@@ -30,6 +29,11 @@ RSpec.describe 'WellsController', type: :request do
       expect(well_attributes['generate_hifi']).to eq(well.generate_hifi)
       expect(well_attributes['ccs_analysis_output']).to eq(well.ccs_analysis_output)
       expect(well_attributes['binding_kit_box_barcode']).to eq(well.binding_kit_box_barcode)
+
+      # v11
+      expect(well_attributes['ccs_analysis_output_include_low_quality_reads']).to eq(well.ccs_analysis_output_include_low_quality_reads)
+      expect(well_attributes['fivemc_calls_in_cpg_motifs']).to eq(well.fivemc_calls_in_cpg_motifs)
+      expect(well_attributes['ccs_analysis_output_include_kinetics_information']).to eq(well.ccs_analysis_output_include_kinetics_information)
     end
   end
 
@@ -54,6 +58,9 @@ RSpec.describe 'WellsController', type: :request do
                     generate_hifi: 'In SMRT Link',
                     ccs_analysis_output: 'Yes',
                     binding_kit_box_barcode: 'DM1117100862200111711',
+                    ccs_analysis_output_include_low_quality_reads: 'Yes',
+                    fivemc_calls_in_cpg_motifs: 'Yes',
+                    ccs_analysis_output_include_kinetics_information: 'Yes',
                     relationships: {
                       plate: {
                         data: {
@@ -82,6 +89,9 @@ RSpec.describe 'WellsController', type: :request do
                     generate_hifi: 'In SMRT Link',
                     ccs_analysis_output: 'Yes',
                     binding_kit_box_barcode: 'DM1117100862200111711',
+                    ccs_analysis_output_include_low_quality_reads: 'Yes',
+                    fivemc_calls_in_cpg_motifs: 'Yes',
+                    ccs_analysis_output_include_kinetics_information: 'Yes',
                     relationships: {
                       plate: {
                         data: {
@@ -120,6 +130,10 @@ RSpec.describe 'WellsController', type: :request do
           expect(Pacbio::Well.find(created_well_2_id).ccs_analysis_output).to eq('Yes')
           expect(Pacbio::Well.find(created_well_id).binding_kit_box_barcode).to eq('DM1117100862200111711')
           expect(Pacbio::Well.find(created_well_2_id).binding_kit_box_barcode).to eq('DM1117100862200111711')
+
+          expect(Pacbio::Well.find(created_well_id).ccs_analysis_output_include_low_quality_reads).to eq('Yes')
+          expect(Pacbio::Well.find(created_well_id).fivemc_calls_in_cpg_motifs).to eq('Yes')
+          expect(Pacbio::Well.find(created_well_id).ccs_analysis_output_include_kinetics_information).to eq('Yes')
         end
 
         it 'creates a plate' do
@@ -209,14 +223,7 @@ RSpec.describe 'WellsController', type: :request do
     let(:well) { create(:pacbio_well_with_pools) }
     let(:existing_pools_data) { well.pools.map { |p| { type: 'pools', id: p.id } } }
 
-    let(:row) { 'A' }
-    let(:column) { '1' }
-    let(:movie_time) { '15.0' }
-    let(:on_plate_loading_concentration) { 12 }
-    let(:pre_extension_time) { 4 }
-    let(:generate_hifi) { 'Do Not Generate' }
-    let(:ccs_analysis_output) { 'No' }
-    let(:binding_kit_box_barcode) { 'DM1117100862200111711' }
+    let(:well_attributes) { attributes_for(:pacbio_well).except(:plate) }
 
     context 'when only updating the wells attributes' do
       let(:body) do
@@ -224,16 +231,7 @@ RSpec.describe 'WellsController', type: :request do
           data: {
             id: well.id,
             type: 'wells',
-            attributes: {
-              row:,
-              column:,
-              movie_time:,
-              on_plate_loading_concentration:,
-              pre_extension_time:,
-              generate_hifi:,
-              ccs_analysis_output:,
-              binding_kit_box_barcode:
-            },
+            attributes: well_attributes,
             relationships: {
               pools: {
                 data: existing_pools_data
@@ -252,14 +250,17 @@ RSpec.describe 'WellsController', type: :request do
         patch v1_pacbio_runs_well_path(well), params: body, headers: json_api_headers
         well.reload
 
-        expect(well.row).to eq row
-        expect(well.column).to eq column
-        expect(well.movie_time.to_i).to eq movie_time.to_i
-        expect(well.on_plate_loading_concentration).to eq on_plate_loading_concentration
-        expect(well.pre_extension_time).to eq pre_extension_time
-        expect(well.generate_hifi).to eq generate_hifi
-        expect(well.ccs_analysis_output).to eq ccs_analysis_output
-        expect(well.binding_kit_box_barcode).to eq binding_kit_box_barcode
+        expect(well.row).to eq well_attributes[:row]
+        expect(well.column).to eq well_attributes[:column]
+        expect(well.movie_time.to_i).to eq well_attributes[:movie_time].to_i
+        expect(well.on_plate_loading_concentration).to eq well_attributes[:on_plate_loading_concentration].to_f
+        expect(well.pre_extension_time).to eq well_attributes[:pre_extension_time]
+        expect(well.generate_hifi).to eq well_attributes[:generate_hifi]
+        expect(well.ccs_analysis_output).to eq well_attributes[:ccs_analysis_output]
+        expect(well.binding_kit_box_barcode).to eq well_attributes[:binding_kit_box_barcode]
+        expect(well.ccs_analysis_output_include_low_quality_reads).to eq well_attributes[:ccs_analysis_output_include_low_quality_reads]
+        expect(well.fivemc_calls_in_cpg_motifs).to eq well_attributes[:fivemc_calls_in_cpg_motifs]
+        expect(well.ccs_analysis_output_include_kinetics_information).to eq well_attributes[:ccs_analysis_output_include_kinetics_information]
       end
 
       it 'does not update a wells pools' do
@@ -273,13 +274,16 @@ RSpec.describe 'WellsController', type: :request do
         json = ActiveSupport::JSON.decode(response.body)
         response = json['data'].first
         expect(response['id'].to_i).to eq well.id
-        expect(response['attributes']['movie_time']).to eq movie_time
-        expect(response['attributes']['row']).to eq row
-        expect(response['attributes']['column']).to eq column
-        expect(response['attributes']['on_plate_loading_concentration']).to eq on_plate_loading_concentration
-        expect(response['attributes']['generate_hifi']).to eq generate_hifi
-        expect(response['attributes']['ccs_analysis_output']).to eq ccs_analysis_output
-        expect(response['attributes']['binding_kit_box_barcode']).to eq binding_kit_box_barcode
+        expect(response['attributes']['movie_time'].to_f).to eq well_attributes[:movie_time]
+        expect(response['attributes']['row']).to eq well_attributes[:row]
+        expect(response['attributes']['column']).to eq well_attributes[:column]
+        expect(response['attributes']['on_plate_loading_concentration']).to eq well_attributes[:on_plate_loading_concentration].to_f
+        expect(response['attributes']['generate_hifi']).to eq well_attributes[:generate_hifi]
+        expect(response['attributes']['ccs_analysis_output']).to eq well_attributes[:ccs_analysis_output]
+        expect(response['attributes']['binding_kit_box_barcode']).to eq well_attributes[:binding_kit_box_barcode]
+        expect(response['attributes']['ccs_analysis_output_include_low_quality_reads']).to eq well_attributes[:ccs_analysis_output_include_low_quality_reads]
+        expect(response['attributes']['fivemc_calls_in_cpg_motifs']).to eq well_attributes[:fivemc_calls_in_cpg_motifs]
+        expect(response['attributes']['ccs_analysis_output_include_kinetics_information']).to eq well_attributes[:ccs_analysis_output_include_kinetics_information]
       end
 
       it 'sends a message to the warehouse' do
@@ -298,7 +302,7 @@ RSpec.describe 'WellsController', type: :request do
             id: well.id,
             type: 'wells',
             attributes: {
-              movie_time:
+              movie_time: well_attributes[:movie_time]
             },
             relationships: {
               pools: {
@@ -331,7 +335,7 @@ RSpec.describe 'WellsController', type: :request do
             id: well.id,
             type: 'wells',
             attributes: {
-              movie_time:
+              movie_time: well_attributes[:movie_time]
             },
             relationships: {
               pools: {
@@ -372,7 +376,7 @@ RSpec.describe 'WellsController', type: :request do
             id: well.id,
             type: 'wells',
             attributes: {
-              movie_time:
+              movie_time: well_attributes[:movie_time]
             },
             relationships: {
               pools: {
@@ -402,7 +406,7 @@ RSpec.describe 'WellsController', type: :request do
             id: well.id,
             type: 'wells',
             attributes: {
-              movie_time:
+              movie_time: well_attributes[:movie_time]
             },
             relationships: {
               pools: {
