@@ -12,6 +12,7 @@ module V1
           ccs_analysis_output_include_low_quality_reads
           fivemc_calls_in_cpg_motifs
           ccs_analysis_output_include_kinetics_information
+          demultiplex_barcodes
         ].freeze
 
         def create

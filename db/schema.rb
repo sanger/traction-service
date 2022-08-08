@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_02_091919) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_08_190501) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -208,8 +208,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_02_091919) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.integer "pre_extension_time"
-    t.integer "generate_hifi"
-    t.string "ccs_analysis_output"
+    t.integer "generate_hifi_deprecated"
+    t.string "ccs_analysis_output_deprecaated"
     t.string "binding_kit_box_barcode"
     t.decimal "loading_target_p1_plus_p2", precision: 3, scale: 2
     t.json "smrt_link_options"
