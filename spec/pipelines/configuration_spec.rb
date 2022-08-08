@@ -101,4 +101,35 @@ RSpec.describe Pipelines::Configuration, type: :model do
     expect(pipeline_a.instrument_name).to eq('bert')
     expect(pipeline_a.message.fields.count).to eq(4)
   end
+
+  describe 'versioning' do
+    subject(:configuration) { described_class.new(params) }
+
+    let(:params) do
+      {
+        pipeline_c: {
+          sample_sheet: {
+            v10: {
+              field_a: 'a'
+            },
+            v20: {
+              field_a: 'a'
+            }
+          }
+        }
+      }
+    end
+
+    it 'will return the version if it exists' do
+      expect(configuration.pipeline_c.sample_sheet.by_version('v10').children).to eq(configuration.pipeline_c.sample_sheet.v10.children)
+    end
+
+    it 'will raise an error if it is not a valid version format' do
+      expect { configuration.pipeline_c.sample_sheet.by_version('not a version') }.to raise_error(Version::Error, 'Not a valid version')
+    end
+
+    it 'will raise an error if it is not a valid version' do
+      expect { configuration.pipeline_c.sample_sheet.by_version('v30') }.to raise_error(Version::Error, 'Not a valid version')
+    end
+  end
 end

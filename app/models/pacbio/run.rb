@@ -23,10 +23,17 @@ module Pacbio
 
     validates :name, uniqueness: { case_sensitive: false }
 
+    # we need to allow blank because it could be passed as nil
+    validates :smrt_link_version, format: Version::FORMAT, allow_blank: true
+
     scope :active, -> { where(deactivated_at: nil) }
 
+    # This allows us to set the default for the version without a callback
+    attribute :smrt_link_version, :string, default: Version::SmrtLink::DEFAULT
+
+    # if comments are nil this blows up so add try.
     def comments
-      super || wells.collect(&:summary).join(':')
+      super || wells.try(:collect, &:summary).try(:join, ':')
     end
 
     # returns sample sheet csv for a Pacbio::Run
@@ -38,8 +45,13 @@ module Pacbio
 
     private
 
+    # We now have SMRT Link versioning
+    # This allows generation of sample sheets based on the SMRT Link version
+    # Each different version of SMRT Link has different columns
+    # A version can be assigned to a run but changed
+    # e.g. Pipelines.pacbio.sample_sheet.by_version('v10')
     def pacbio_run_sample_sheet_config
-      Pipelines.pacbio.sample_sheet
+      Pipelines.pacbio.sample_sheet.by_version(smrt_link_version)
     end
 
     def generate_name

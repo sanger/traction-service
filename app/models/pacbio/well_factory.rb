@@ -54,9 +54,7 @@ module Pacbio
         build_well(well_attributes)
       end
 
-      def id
-        well.id
-      end
+      delegate :id, to: :well
 
       # WellFactory::Well::Pools
       def pools
