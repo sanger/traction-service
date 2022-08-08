@@ -12,9 +12,9 @@ gem 'exception_notification'
 # There is a 'monkey patch' for this in config/intializers/jsonapi_resources:15-63
 gem 'jsonapi-resources'
 gem 'mysql2'
-gem 'puma', '~> 4.3' # Use Puma as the app server
+gem 'puma', '~> 5.6' # Use Puma as the app server
 gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX possible
-gem 'rails', '~> 7.0.2.3'
+gem 'rails', '~> 7.0.3'
 
 group :development do
   gem 'listen'

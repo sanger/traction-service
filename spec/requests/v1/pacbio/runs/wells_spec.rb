@@ -466,21 +466,15 @@ RSpec.describe 'WellsController', type: :request do
       end
 
       it 'deletes the well' do
-        expect { delete v1_pacbio_runs_well_path(well), headers: json_api_headers }.to change {
-                                                                                         Pacbio::Well.count
-                                                                                       }.by(-1)
+        expect { delete v1_pacbio_runs_well_path(well), headers: json_api_headers }.to change(Pacbio::Well, :count).by(-1)
       end
 
       it 'deletes the well pool' do
-        expect { delete v1_pacbio_runs_well_path(well), headers: json_api_headers }.to change {
-                                                                                         Pacbio::WellPool.count
-                                                                                       }.by(-1)
+        expect { delete v1_pacbio_runs_well_path(well), headers: json_api_headers }.to change(Pacbio::WellPool, :count).by(-1)
       end
 
       it 'does not delete the pool' do
-        expect { delete v1_pacbio_runs_well_path(well), headers: json_api_headers }.to change {
-                                                                                         Pacbio::Pool.count
-                                                                                       }.by(0)
+        expect { delete v1_pacbio_runs_well_path(well), headers: json_api_headers }.not_to change(Pacbio::Pool, :count)
       end
     end
 

@@ -19,26 +19,18 @@ RSpec.describe 'RunsController', type: :request do
     it 'returns the correct attributes' do
       get v1_pacbio_runs_path, headers: json_api_headers
 
-      expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
       expect(json['data'][0]['attributes']['name']).to eq(run1.name)
       expect(json['data'][0]['attributes']['sequencing_kit_box_barcode']).to eq(run1.sequencing_kit_box_barcode)
       expect(json['data'][0]['attributes']['dna_control_complex_box_barcode']).to eq(run1.dna_control_complex_box_barcode)
       expect(json['data'][0]['attributes']['system_name']).to eq(run1.system_name)
+      expect(json['data'][0]['attributes']['smrt_link_version']).to eq(run1.smrt_link_version)
       expect(json['data'][0]['attributes']['created_at']).to eq(run1.created_at.to_fs(:us))
       expect(json['data'][0]['attributes']['state']).to eq(run1.state)
       expect(json['data'][0]['attributes']['comments']).to eq(run1.comments)
       expect(json['data'][0]['attributes']['all_wells_have_pools']).to eq(run1.all_wells_have_pools?)
-
-      run = json['data'][1]['attributes']
-      expect(run['name']).to eq(run2.name)
-      expect(run['sequencing_kit_box_barcode']).to eq(run2.sequencing_kit_box_barcode)
-      expect(run['dna_control_complex_box_barcode']).to eq(run2.dna_control_complex_box_barcode)
-      expect(run['system_name']).to eq(run2.system_name)
-      expect(run['created_at']).to eq(run2.created_at.to_fs(:us))
-      expect(run['state']).to eq(run2.state)
-      expect(run['comments']).to eq(run2.comments)
+      expect(json['data'][1]['attributes']['name']).to eq(run2.name)
     end
 
     it 'returns the correct relationships', aggregate_failures: true do
@@ -74,9 +66,7 @@ RSpec.describe 'RunsController', type: :request do
       end
 
       it 'creates a run' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change {
-                                                                                          Pacbio::Run.count
-                                                                                        }.by(1)
+        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Run, :count).by(1)
       end
 
       it 'creates a run with the correct attributes' do
@@ -249,15 +239,11 @@ RSpec.describe 'RunsController', type: :request do
       end
 
       it 'deletes the run' do
-        expect { delete v1_pacbio_run_path(run), headers: json_api_headers }.to change {
-                                                                                  Pacbio::Run.count
-                                                                                }.by(-1)
+        expect { delete v1_pacbio_run_path(run), headers: json_api_headers }.to change(Pacbio::Run, :count).by(-1)
       end
 
       it 'deletes the plate' do
-        expect { delete v1_pacbio_run_path(run), headers: json_api_headers }.to change {
-                                                                                  Pacbio::Plate.count
-                                                                                }.by(-1)
+        expect { delete v1_pacbio_run_path(run), headers: json_api_headers }.to change(Pacbio::Plate, :count).by(-1)
       end
     end
 
@@ -281,7 +267,7 @@ RSpec.describe 'RunsController', type: :request do
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_run, plate:) }
 
-    after { File.delete("#{run.name}.csv") if File.exist?("#{run.name}.csv") }
+    after { FileUtils.rm_rf("#{run.name}.csv")  }
 
     it 'returns the correct status' do
       get v1_pacbio_run_sample_sheet_path(run).to_s, headers: json_api_headers

@@ -49,7 +49,8 @@ module V1
                                                    :dna_control_complex_box_barcode,
                                                    :system_name,
                                                    :state,
-                                                   :comments)
+                                                   :comments,
+                                                   :smrt_link_version)
       end
 
       def render_json(status)
