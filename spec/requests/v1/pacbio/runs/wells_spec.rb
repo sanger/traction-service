@@ -26,14 +26,17 @@ RSpec.describe 'WellsController', type: :request do
       expect(well_attributes['pacbio_plate_id']).to eq(well.pacbio_plate_id)
       expect(well_attributes['comment']).to eq(well.comment)
       expect(well_attributes['pre_extension_time']).to eq(well.pre_extension_time)
+      expect(well_attributes['binding_kit_box_barcode']).to eq(well.binding_kit_box_barcode)
+
+      # v10
       expect(well_attributes['generate_hifi']).to eq(well.generate_hifi)
       expect(well_attributes['ccs_analysis_output']).to eq(well.ccs_analysis_output)
-      expect(well_attributes['binding_kit_box_barcode']).to eq(well.binding_kit_box_barcode)
 
       # v11
       expect(well_attributes['ccs_analysis_output_include_low_quality_reads']).to eq(well.ccs_analysis_output_include_low_quality_reads)
       expect(well_attributes['fivemc_calls_in_cpg_motifs']).to eq(well.fivemc_calls_in_cpg_motifs)
       expect(well_attributes['ccs_analysis_output_include_kinetics_information']).to eq(well.ccs_analysis_output_include_kinetics_information)
+      expect(well_attributes['demultiplex_barcodes']).to eq(well.demultiplex_barcodes)
     end
   end
 
@@ -61,6 +64,7 @@ RSpec.describe 'WellsController', type: :request do
                     ccs_analysis_output_include_low_quality_reads: 'Yes',
                     fivemc_calls_in_cpg_motifs: 'Yes',
                     ccs_analysis_output_include_kinetics_information: 'Yes',
+                    demultiplex_barcodes: 'In SMRT Link',
                     relationships: {
                       plate: {
                         data: {
@@ -92,6 +96,7 @@ RSpec.describe 'WellsController', type: :request do
                     ccs_analysis_output_include_low_quality_reads: 'Yes',
                     fivemc_calls_in_cpg_motifs: 'Yes',
                     ccs_analysis_output_include_kinetics_information: 'Yes',
+                    demultiplex_barcodes: 'In SMRT Link',
                     relationships: {
                       plate: {
                         data: {
@@ -134,6 +139,7 @@ RSpec.describe 'WellsController', type: :request do
           expect(Pacbio::Well.find(created_well_id).ccs_analysis_output_include_low_quality_reads).to eq('Yes')
           expect(Pacbio::Well.find(created_well_id).fivemc_calls_in_cpg_motifs).to eq('Yes')
           expect(Pacbio::Well.find(created_well_id).ccs_analysis_output_include_kinetics_information).to eq('Yes')
+          expect(Pacbio::Well.find(created_well_id).demultiplex_barcodes).to eq('In SMRT Link')
         end
 
         it 'creates a plate' do
@@ -261,6 +267,7 @@ RSpec.describe 'WellsController', type: :request do
         expect(well.ccs_analysis_output_include_low_quality_reads).to eq well_attributes[:ccs_analysis_output_include_low_quality_reads]
         expect(well.fivemc_calls_in_cpg_motifs).to eq well_attributes[:fivemc_calls_in_cpg_motifs]
         expect(well.ccs_analysis_output_include_kinetics_information).to eq well_attributes[:ccs_analysis_output_include_kinetics_information]
+        expect(well.demultiplex_barcodes).to eq well_attributes[:demultiplex_barcodes]
       end
 
       it 'does not update a wells pools' do
@@ -284,6 +291,7 @@ RSpec.describe 'WellsController', type: :request do
         expect(response['attributes']['ccs_analysis_output_include_low_quality_reads']).to eq well_attributes[:ccs_analysis_output_include_low_quality_reads]
         expect(response['attributes']['fivemc_calls_in_cpg_motifs']).to eq well_attributes[:fivemc_calls_in_cpg_motifs]
         expect(response['attributes']['ccs_analysis_output_include_kinetics_information']).to eq well_attributes[:ccs_analysis_output_include_kinetics_information]
+        expect(response['attributes']['demultiplex_barcodes']).to eq well_attributes[:demultiplex_barcodes]
       end
 
       it 'sends a message to the warehouse' do

@@ -87,47 +87,6 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
-  context 'Generate HiFi' do
-    # v11 does not require generate hifi
-    it 'is valid without generate_hifi' do
-      expect(build(:pacbio_well, generate_hifi: nil)).to be_valid
-    end
-
-    it 'must include the correct options' do
-      expect(described_class.generate_hifis.keys).to eq(['In SMRT Link', 'On Instrument',
-                                                         'Do Not Generate'])
-    end
-
-    it 'must have a Generate_hifi' do
-      expect(create(:pacbio_well, generate_hifi: 0).generate_hifi).to eq 'In SMRT Link'
-      expect(create(:pacbio_well, generate_hifi: 'In SMRT Link').generate_hifi).to eq 'In SMRT Link'
-      expect(create(:pacbio_well, generate_hifi: 1).generate_hifi).to eq 'On Instrument'
-      expect(create(:pacbio_well,
-                    generate_hifi: 'On Instrument').generate_hifi).to eq 'On Instrument'
-      expect(create(:pacbio_well, generate_hifi: 2).generate_hifi).to eq 'Do Not Generate'
-      expect(create(:pacbio_well,
-                    generate_hifi: 'Do Not Generate').generate_hifi).to eq 'Do Not Generate'
-    end
-  end
-
-  context 'ccs_analysis_output' do
-    it 'may have ccs_analysis_output' do
-      expect(create(:pacbio_well, ccs_analysis_output: 'Yes')).to be_valid
-      expect(create(:pacbio_well, ccs_analysis_output: 'No')).to be_valid
-      expect(create(:pacbio_well, ccs_analysis_output: '')).to be_valid
-    end
-
-    it 'sets ccs_analysis_output to "No" if blank' do
-      well = create(:pacbio_well, ccs_analysis_output: '')
-      expect(well.ccs_analysis_output).to eq('No')
-    end
-
-    it 'ccs_analysis_output stays "Yes" if set to yes' do
-      well = create(:pacbio_well, ccs_analysis_output: 'Yes')
-      expect(well.ccs_analysis_output).to eq('Yes')
-    end
-  end
-
   context 'pre-extension time' do
     it 'is not required' do
       expect(create(:pacbio_well, pre_extension_time: nil)).to be_valid
@@ -215,41 +174,105 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
   end
 
-  # we need to find a way to make these required if smrt link v11
   context 'Smrt Link Options' do
-    let(:well) { create(:pacbio_well) }
+    let(:well)  { create(:pacbio_well) }
+    let(:options) { SmrtLink::Versions.required_fields_by_version }
 
     it 'will include the relevant options' do
-      expect(described_class.stored_attributes[:smrt_link_options]).to eq(%i[ccs_analysis_output_include_low_quality_reads fivemc_calls_in_cpg_motifs ccs_analysis_output_include_kinetics_information])
+      expect(described_class.stored_attributes[:smrt_link_options]).to eq(%i[ccs_analysis_output generate_hifi ccs_analysis_output_include_low_quality_reads fivemc_calls_in_cpg_motifs ccs_analysis_output_include_kinetics_information demultiplex_barcodes])
     end
 
-    context 'CCS Analysis Output - Include Low Quality Reads' do
-      it 'can be present' do
-        expect(well.ccs_analysis_output_include_low_quality_reads).to be_present
+    context 'v10' do
+      let(:well) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: 'v10'))) }
+      let(:v10_options) { options[:v10] }
+
+      context 'generate hifi' do
+        it 'must be present' do
+          well.generate_hifi = nil
+          expect(well).not_to be_valid
+        end
+
+        it 'must be a valid value' do
+          v10_options['generate_hifi'].each do |option|
+            well.generate_hifi = option
+            expect(well).to be_valid
+          end
+
+          well.generate_hifi = 'junk'
+          expect(well).not_to be_valid
+        end
       end
 
-      it 'is optional' do
-        expect(build(:pacbio_well, ccs_analysis_output_include_low_quality_reads: nil)).to be_valid
+      context 'ccs analysis output' do
+        it 'must be present' do
+          well.ccs_analysis_output = nil
+          expect(well).not_to be_valid
+        end
+
+        it 'must be a valid value' do
+          v10_options['ccs_analysis_output'].each do |option|
+            well.ccs_analysis_output = option
+            expect(well).to be_valid
+          end
+
+          well.ccs_analysis_output = 'junk'
+          expect(well).not_to be_valid
+        end
       end
     end
 
-    context '5mC Calls in CpG Motifs' do
-      it 'can be present' do
-        expect(well.fivemc_calls_in_cpg_motifs).to be_present
+    context 'v11' do
+      let(:well) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: 'v11'))) }
+      let(:v11_options) { options[:v11] }
+
+      context 'CCS Analysis Output - Include Low Quality Reads' do
+        it 'must be present' do
+          well.ccs_analysis_output_include_low_quality_reads = nil
+          expect(well).not_to be_valid
+        end
+
+        it 'must be a valid value' do
+          v11_options['ccs_analysis_output_include_low_quality_reads'].each do |option|
+            well.generate_hifi = option
+            expect(well).to be_valid
+          end
+
+          well.ccs_analysis_output_include_low_quality_reads = 'junk'
+          expect(well).not_to be_valid
+        end
       end
 
-      it 'is optional' do
-        expect(build(:pacbio_well, fivemc_calls_in_cpg_motifs: nil)).to be_valid
-      end
-    end
+      context 'CCS Analysis Output - Include Kinetics Information' do
+        it 'must be present' do
+          well.ccs_analysis_output_include_kinetics_information = nil
+          expect(well).not_to be_valid
+        end
 
-    context 'CCS Analysis Output - Include Kinetics Information' do
-      it 'can be present' do
-        expect(well.ccs_analysis_output_include_kinetics_information).to be_present
+        it 'must be a valid value' do
+          v11_options['ccs_analysis_output_include_kinetics_information'].each do |option|
+            well.generate_hifi = option
+            expect(well).to be_valid
+          end
+
+          well.ccs_analysis_output_include_kinetics_information = 'junk'
+          expect(well).not_to be_valid
+        end
       end
 
-      it 'is optional' do
-        expect(build(:pacbio_well, ccs_analysis_output_include_low_quality_reads: nil)).to be_valid
+      context 'Demultiplex barcodes' do
+        it 'must be present' do
+          expect(well.demultiplex_barcodes).to be_present
+        end
+
+        it 'must be a valid value' do
+          v11_options['demultiplex_barcodes'].each do |option|
+            well.generate_hifi = option
+            expect(well).to be_valid
+          end
+
+          well.demultiplex_barcodes = 'junk'
+          expect(well).not_to be_valid
+        end
       end
     end
   end

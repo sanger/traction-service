@@ -13,7 +13,8 @@ module V1
                    :binding_kit_box_barcode, :loading_target_p1_plus_p2,
                    :ccs_analysis_output_include_low_quality_reads,
                    :fivemc_calls_in_cpg_motifs,
-                   :ccs_analysis_output_include_kinetics_information
+                   :ccs_analysis_output_include_kinetics_information,
+                   :demultiplex_barcodes
 
         has_many :libraries
         has_many :pools
