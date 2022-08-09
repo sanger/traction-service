@@ -9,12 +9,6 @@ module Pacbio
     include Uuidable
     include SampleSheet::Well
 
-    # We should get rid of the below enum,
-    # as we are not supporting sequencing_mode in SMRTLink v10
-    # but if we keep the field in the database, for auditing,
-    # then we need this to translate the integer to a value
-    enum sequencing_mode: { 'CLR' => 0, 'CCS' => 1 }
-
     # Do not delete until the column has been migrated
     # enum generate_hifi: { 'In SMRT Link' => 0, 'On Instrument' => 1, 'Do Not Generate' => 2 }
 
@@ -28,34 +22,35 @@ module Pacbio
     has_many :libraries, through: :pools
     has_many :tag_sets, through: :libraries
 
-    validates :on_plate_loading_concentration,
-              :row, :column, :binding_kit_box_barcode, presence: true
-    validates :movie_time, presence: true,
-                           numericality: { greater_than_or_equal_to: 0.1,
-                                           less_than_or_equal_to: 30 }
-    validates :pre_extension_time, numericality: { only_integer: true }, allow_blank: true
-    validates :loading_target_p1_plus_p2,
-              allow_blank: true,
-              numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
-
-    validates_with SmrtLinkOptionsValidator,
-                   available_smrt_link_versions: SmrtLink::Versions::AVAILABLE,
-                   required_fields_by_version: SmrtLink::Versions.required_fields_by_version
-
-    delegate :run, to: :plate, allow_nil: true
-
     # Before we were adding SMRT Link options as columns.
     # This is brittle as due to v11 options are canned
-    # which are required
-    # We need to find a way to make them required when smrt link is a particular version
-    # ccs_analysis_output_include_kinetics_information replaces ccs analysis options but
-    # need to move it in next story
+    # With a json column it means different versions can have different options
+    # Downside is they need to be validated differently
+    # This is done with a specific validator
     store :smrt_link_options,
           accessors: %i[ccs_analysis_output generate_hifi
                         ccs_analysis_output_include_low_quality_reads
                         fivemc_calls_in_cpg_motifs
                         ccs_analysis_output_include_kinetics_information
                         demultiplex_barcodes]
+
+    validates_with SmrtLinkOptionsValidator,
+                   available_smrt_link_versions: SmrtLink::Versions::AVAILABLE,
+                   required_fields_by_version: SmrtLink::Versions.required_fields_by_version
+
+    # The following are all smrt link options
+    # It would make sense to transfer them all to smrt_link_options
+    validates :on_plate_loading_concentration,
+              :row, :column, :binding_kit_box_barcode, presence: true
+    validates :movie_time, presence: true,
+                           numericality: { greater_than_or_equal_to: 0.1,
+                                           less_than_or_equal_to: 30 }
+    validates :pre_extension_time, numericality: true, allow_blank: true
+    validates :loading_target_p1_plus_p2,
+              allow_blank: true,
+              numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
+
+    delegate :run, to: :plate, allow_nil: true
 
     def tag_set
       tag_sets.first

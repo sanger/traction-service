@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_08_190501) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_09_103551) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -204,10 +204,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_08_190501) do
     t.float "on_plate_loading_concentration"
     t.string "comment"
     t.string "uuid"
-    t.integer "sequencing_mode"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.integer "pre_extension_time"
+    t.decimal "pre_extension_time", precision: 3, scale: 1
     t.integer "generate_hifi_deprecated"
     t.string "ccs_analysis_output_deprecated"
     t.string "binding_kit_box_barcode"
