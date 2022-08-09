@@ -96,6 +96,11 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
       well = build(:pacbio_well, pre_extension_time: 2)
       expect(well.pre_extension_time).to eq(2)
     end
+
+    it 'can be a decimal' do
+      well = build(:pacbio_well, pre_extension_time: 2.5)
+      expect(well).to be_valid
+    end
   end
 
   context 'loading target p1 plus p2' do
