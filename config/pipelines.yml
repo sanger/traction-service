@@ -441,10 +441,24 @@ default: &default
           CCS Analysis Output - Include Low Quality Reads:
             type: :model
             value: ccs_analysis_output_include_low_quality_reads
+            populate:
+              for:
+                - :well
+              with: :well
           5mC Calls in CpG Motifs:
             type: :model
             value: fivemc_calls_in_cpg_motifs
-
+            populate:
+              for:
+                - :well
+              with: :well
+          Demultiplex Barcodes:
+            type: :model
+            value: demultiplex_barcodes
+            populate:
+              for:
+                - :well
+              with: :well
   ont:
     message:
       lims: *lims
