@@ -9,9 +9,6 @@ module Pacbio
     include Uuidable
     include SampleSheet::Well
 
-    # Do not delete until the column has been migrated
-    # enum generate_hifi: { 'In SMRT Link' => 0, 'On Instrument' => 1, 'Do Not Generate' => 2 }
-
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
                        inverse_of: :wells
 
