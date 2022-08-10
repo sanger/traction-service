@@ -9,10 +9,6 @@ module Version
   # having the format here gives us the advantage of modifying easily.
   FORMAT = /\Av\d{2}?_?\d{1,2}\z/
 
-  module SmrtLink
-    DEFAULT = 'v10'
-  end
-
   # Bespoke error class to highlight version errors
   class Error < StandardError
     def message

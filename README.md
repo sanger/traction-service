@@ -1,8 +1,19 @@
 # Traction service
 
-[![Build Status](https://travis-ci.org/sanger/traction-service.svg?branch=devel)](https://travis-ci.org/sanger/traction-service)
+Rails app which exposes a RESTful API for a Long Read LIMS
 
-Rails app which exposes a RESTful API.
+- Add details aboout traction ui
+- importing samples from external sources currently:
+    - Sequencescape
+    - Samples extraction
+- creating libraries
+- creating pools of libraries with support for multiplexing
+- creating sequencing runs
+- printing sample sheets
+- supports the following technologies:
+    - Saphyr
+    - Pacbio
+    - ONT (In progress)
 
 ## Requirements
 
