@@ -29,7 +29,7 @@ module Pacbio
     scope :active, -> { where(deactivated_at: nil) }
 
     # This allows us to set the default for the version without a callback
-    attribute :smrt_link_version, :string, default: Version::SmrtLink::DEFAULT
+    attribute :smrt_link_version, :string, default: SmrtLink::Versions::DEFAULT
 
     # if comments are nil this blows up so add try.
     def comments

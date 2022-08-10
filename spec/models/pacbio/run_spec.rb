@@ -166,7 +166,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
   context 'smrt_link_version' do
     it 'will set a default value' do
       run = create(:pacbio_run)
-      expect(run.smrt_link_version).to eq(Version::SmrtLink::DEFAULT)
+      expect(run.smrt_link_version).to eq(SmrtLink::Versions::DEFAULT)
     end
 
     context 'version format' do

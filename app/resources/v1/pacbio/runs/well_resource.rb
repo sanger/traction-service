@@ -10,7 +10,11 @@ module V1
         attributes :movie_time, :insert_size, :on_plate_loading_concentration,
                    :row, :column, :pacbio_plate_id, :comment, :generate_hifi,
                    :position, :pre_extension_time, :ccs_analysis_output,
-                   :binding_kit_box_barcode, :loading_target_p1_plus_p2
+                   :binding_kit_box_barcode, :loading_target_p1_plus_p2,
+                   :ccs_analysis_output_include_low_quality_reads,
+                   :fivemc_calls_in_cpg_motifs,
+                   :ccs_analysis_output_include_kinetics_information,
+                   :demultiplex_barcodes
 
         has_many :libraries
         has_many :pools
