@@ -2,7 +2,6 @@
 
 # tried to namespace this under module Pacbio
 # not playing ball
-# moduel SmrtLink
 module SmrtLink
   # This is a set of constants and methods to help identify and
   # validate SMRT Link versioning.
