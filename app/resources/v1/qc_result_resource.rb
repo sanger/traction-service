@@ -6,5 +6,7 @@ module V1
     attributes :labware_barcode, :sample_external_id, :value
 
     belongs_to :qc_assay_type
+
+    filter :labware_barcode
   end
 end
