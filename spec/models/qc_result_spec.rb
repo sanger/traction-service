@@ -13,7 +13,8 @@ RSpec.describe QcResult, type: :model do
           sample_external_id: 'any_id',
           qc_assay_type:,
           value: 'the result'
-        ) end.to change(described_class, :count).by(1)
+        )
+      end.to change(described_class, :count).by(1)
     end
 
     it 'errors if missing required relationship' do
@@ -22,7 +23,8 @@ RSpec.describe QcResult, type: :model do
           labware_barcode: 'YZ1234',
           sample_external_id: 'any_id',
           value: 'the result'
-        ) end.to raise_error(ActiveRecord::RecordInvalid)
+        )
+      end.to raise_error(ActiveRecord::RecordInvalid)
     end
 
     it 'errors if missing required fields' do
