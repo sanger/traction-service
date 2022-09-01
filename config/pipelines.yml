@@ -277,7 +277,6 @@ default: &default
               with: :well
             populate_on_row_type: :well
       v11:
-        version: v11
         columns:
           System Name:
             type: :model
@@ -416,13 +415,6 @@ default: &default
               for:
                 - :well
               with: :well
-          Generate HiFi Reads:
-            type: :model
-            value: generate_hifi
-            populate:
-              for:
-                - :well
-              with: :well
           CCS Analysis Output - Include Kinetics Information:
             type: :model
             value: ccs_analysis_output
@@ -439,6 +431,34 @@ default: &default
               with: :well
             populate_on_row_type: :well
           Use Adaptive Loading:
+            type: :model
+            value: adaptive_loading_check
+            populate:
+              for:
+                - :well
+              with: :well
+            populate_on_row_type: :well
+          CCS Analysis Output - Include Low Quality Reads:
+            type: :model
+            value: ccs_analysis_output_include_low_quality_reads
+            populate:
+              for:
+                - :well
+              with: :well
+          5mC Calls in CpG Motifs:
+            type: :model
+            value: fivemc_calls_in_cpg_motifs
+            populate:
+              for:
+                - :well
+              with: :well
+          Demultiplex Barcodes:
+            type: :model
+            value: demultiplex_barcodes
+            populate:
+              for:
+                - :well
+              with: :well
   ont:
     message:
       lims: *lims
