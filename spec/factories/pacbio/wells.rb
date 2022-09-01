@@ -8,13 +8,21 @@ FactoryBot.define do
     sequence(:column) { |n| "0#{n}" }
     plate { create(:pacbio_plate) }
     sequence(:comment) { |n| "comment#{n}" }
-    generate_hifi { 'In SMRT Link' }
-    ccs_analysis_output { '' }
     sequence(:binding_kit_box_barcode) { |n| "DM111710086220011171#{n}" }
 
     transient do
       pool_count { 5 }
     end
+
+    # v10
+    generate_hifi { 'In SMRT Link' }
+    ccs_analysis_output { 'Yes' }
+
+    # v11
+    ccs_analysis_output_include_low_quality_reads { 'Yes' }
+    ccs_analysis_output_include_kinetics_information { 'Yes' }
+    fivemc_calls_in_cpg_motifs { 'Yes' }
+    demultiplex_barcodes { 'In SMRT Link' }
 
     factory :pacbio_well_with_pools do
       after(:create) do |well, evaluator|
