@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_09_103551) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_18_152758) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -222,6 +222,24 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_09_103551) do
     t.index ["barcode"], name: "index_plates_on_barcode", unique: true
   end
 
+  create_table "qc_assay_types", charset: "utf8mb3", force: :cascade do |t|
+    t.string "key"
+    t.string "label"
+    t.string "units"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "qc_results", charset: "utf8mb3", force: :cascade do |t|
+    t.string "labware_barcode"
+    t.string "sample_external_id"
+    t.bigint "qc_assay_type_id", null: false
+    t.string "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["qc_assay_type_id"], name: "index_qc_results_on_qc_assay_type_id"
+  end
+
   create_table "receptions", charset: "utf8mb3", force: :cascade do |t|
     t.string "source", null: false
     t.datetime "created_at", null: false
@@ -354,5 +372,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_09_103551) do
   add_foreign_key "pacbio_libraries", "pacbio_pools"
   add_foreign_key "pacbio_libraries", "pacbio_requests"
   add_foreign_key "pacbio_pools", "tubes"
+  add_foreign_key "qc_results", "qc_assay_types"
   add_foreign_key "requests", "receptions"
 end
