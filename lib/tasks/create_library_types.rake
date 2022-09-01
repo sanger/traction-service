@@ -11,6 +11,7 @@ namespace :library_types do
       { pipeline: 'pacbio', name: 'PacBio_IsoSeq_mplx', external_identifier: 'Iso-Seq Method' },
       { pipeline: 'pacbio', name: 'PacBio_Ultra_Low_Input', external_identifier: 'HiFi Reads' },
       { pipeline: 'pacbio', name: 'PacBio_Ultra_Low_Input_mplx', external_identifier: 'HiFi Reads' },
+      { pipeline: 'pacbio', name: 'Pacbio_Amplicon', external_identifier: 'HiFi Reads' },
       { pipeline: 'ont', name: 'ONT_GridIon' },
       { pipeline: 'ont', name: 'ONT_GridIon_mplx' },
       { pipeline: 'ont', name: 'ONT_PromethIon' },
