@@ -23,19 +23,13 @@ RSpec.describe 'RakeTasks' do
 
   describe 'library_types:create' do
     it 'creates the library types' do
-      expect { Rake::Task['library_types:create'].invoke }.to(
-        change(LibraryType, :count).by(13) &&
-        output("-> Library types updated\n").to_stdout
-      )
+      expect { Rake::Task['library_types:create'].invoke }.to change(LibraryType, :count).by(15).and output("-> Library types updated\n").to_stdout
     end
   end
 
   describe 'data_types:create' do
     it 'creates the data types' do
-      expect { Rake::Task['data_types:create'].invoke }.to(
-        change(DataType, :count).by(2) &&
-        output("-> Data types updated\n").to_stdout
-      )
+      expect { Rake::Task['data_types:create'].invoke }.to change(DataType, :count).by(2).and output("-> Data types updated\n").to_stdout
     end
   end
 
@@ -79,8 +73,7 @@ RSpec.describe 'RakeTasks' do
 
   describe 'qc_assay_types:create' do
     it 'creates the correct number of qc assay types' do
-      Rake::Task['qc_assay_types:create'].invoke
-      expect(QcAssayType.count).to eq(20)
+      expect { Rake::Task['qc_assay_types:create'].invoke }.to change(QcAssayType, :count).and output("-> QC Assay Types updated\n").to_stdout
     end
   end
 end
