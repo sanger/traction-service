@@ -76,4 +76,11 @@ RSpec.describe 'RakeTasks' do
       expect(well5.ccs_analysis_output).to eq('No')
     end
   end
+
+  describe 'qc_assay_types:create' do
+    it 'creates the correct number of qc assay types' do
+      Rake::Task['qc_assay_types:create'].invoke
+      expect(QcAssayType.count).to eq(20)
+    end
+  end
 end
