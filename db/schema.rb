@@ -223,18 +223,18 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_18_152758) do
   end
 
   create_table "qc_assay_types", charset: "utf8mb3", force: :cascade do |t|
-    t.string "key"
-    t.string "label"
+    t.string "key", null: false
+    t.string "label", null: false
     t.string "units"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "qc_results", charset: "utf8mb3", force: :cascade do |t|
-    t.string "labware_barcode"
-    t.string "sample_external_id"
+    t.string "labware_barcode", null: false
+    t.string "sample_external_id", null: false
     t.bigint "qc_assay_type_id", null: false
-    t.string "value"
+    t.string "value", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["qc_assay_type_id"], name: "index_qc_results_on_qc_assay_type_id"
