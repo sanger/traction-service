@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_18_152758) do
+ActiveRecord::Schema[7.0].define(version: 2022_09_07_090851) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -180,6 +180,36 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_18_152758) do
     t.datetime "deactivated_at", precision: nil
     t.string "smrt_link_version", null: false
     t.index ["name"], name: "index_pacbio_runs_on_name", unique: true
+  end
+
+  create_table "pacbio_smrt_link_option_versions", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "pacbio_smrt_link_version_id"
+    t.bigint "pacbio_smrt_link_option_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pacbio_smrt_link_option_id"], name: "index_smrt_link_option_versions_on_option_id"
+    t.index ["pacbio_smrt_link_version_id"], name: "index_smrt_link_option_versions_on_version_id"
+  end
+
+  create_table "pacbio_smrt_link_options", charset: "utf8mb3", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "label", null: false
+    t.string "default_value"
+    t.json "validations"
+    t.string "data_type"
+    t.text "select_options"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_pacbio_smrt_link_options_on_key", unique: true
+  end
+
+  create_table "pacbio_smrt_link_versions", charset: "utf8mb3", force: :cascade do |t|
+    t.string "name", null: false
+    t.boolean "default", default: false
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_pacbio_smrt_link_versions_on_name", unique: true
   end
 
   create_table "pacbio_well_libraries", charset: "utf8mb3", force: :cascade do |t|
@@ -372,6 +402,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_18_152758) do
   add_foreign_key "pacbio_libraries", "pacbio_pools"
   add_foreign_key "pacbio_libraries", "pacbio_requests"
   add_foreign_key "pacbio_pools", "tubes"
+  add_foreign_key "pacbio_smrt_link_option_versions", "pacbio_smrt_link_options"
+  add_foreign_key "pacbio_smrt_link_option_versions", "pacbio_smrt_link_versions"
   add_foreign_key "qc_results", "qc_assay_types"
   add_foreign_key "requests", "receptions"
 end
