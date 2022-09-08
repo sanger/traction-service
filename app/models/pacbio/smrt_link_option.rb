@@ -4,7 +4,8 @@ module Pacbio
   # Pacbio::SmrtLinkOption
   class SmrtLinkOption < ApplicationRecord
     has_many :smrt_link_option_versions, class_name: 'Pacbio::SmrtLinkOptionVersion',
-                                         foreign_key: :pacbio_smrt_link_option_id, autosave: true
+                                         foreign_key: :pacbio_smrt_link_option_id,
+                                         dependent: :destroy, inverse_of: :smrt_link_option
     has_many :smrt_link_versions, through: :smrt_link_option_versions, source: :smrt_link_version,
                                   class_name: 'Pacbio::SmrtLinkVersion'
 
