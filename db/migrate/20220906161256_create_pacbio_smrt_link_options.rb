@@ -6,7 +6,7 @@ class CreatePacbioSmrtLinkOptions < ActiveRecord::Migration[7.0]
       t.string :label, null: false
       t.string :default_value
       t.json :validations
-      t.string :data_type
+      t.integer :data_type, default: 0
       t.text :select_options
 
       t.timestamps

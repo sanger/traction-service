@@ -196,7 +196,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_07_090851) do
     t.string "label", null: false
     t.string "default_value"
     t.json "validations"
-    t.string "data_type"
+    t.integer "data_type", default: 0
     t.text "select_options"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
