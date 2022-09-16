@@ -29,7 +29,12 @@ module Pacbio
                         ccs_analysis_output_include_low_quality_reads
                         fivemc_calls_in_cpg_motifs
                         ccs_analysis_output_include_kinetics_information
-                        demultiplex_barcodes]
+                        demultiplex_barcodes
+                        on_plate_loading_concentration
+                        binding_kit_box_barcode
+                        pre_extension_time
+                        loading_target_p1_plus_p2
+                        movie_time]
 
     validates_with SmrtLinkOptionsValidator,
                    available_smrt_link_versions: SmrtLink::Versions::AVAILABLE,

@@ -184,7 +184,8 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     let(:options) { SmrtLink::Versions.required_fields_by_version }
 
     it 'will include the relevant options' do
-      expect(described_class.stored_attributes[:smrt_link_options]).to eq(%i[ccs_analysis_output generate_hifi ccs_analysis_output_include_low_quality_reads fivemc_calls_in_cpg_motifs ccs_analysis_output_include_kinetics_information demultiplex_barcodes])
+      expect(described_class.stored_attributes[:smrt_link_options]).to eq(%i[ccs_analysis_output generate_hifi ccs_analysis_output_include_low_quality_reads fivemc_calls_in_cpg_motifs ccs_analysis_output_include_kinetics_information demultiplex_barcodes
+        on_plate_loading_concentration binding_kit_box_barcode pre_extension_time loading_target_p1_plus_p2 movie_time])
     end
 
     context 'v10' do

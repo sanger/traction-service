@@ -76,4 +76,33 @@ RSpec.describe 'RakeTasks' do
       expect { Rake::Task['qc_assay_types:create'].invoke }.to change(QcAssayType, :count).and output("-> QC Assay Types updated\n").to_stdout
     end
   end
+
+  describe 'deprecate_existing_pacbio_smrt_link_columns' do
+    it 'migrates data from deprecated columns to store' do
+      well = build(:pacbio_well,
+        on_plate_loading_concentration_deprecated: 1, on_plate_loading_concentration: nil,
+        binding_kit_box_barcode_deprecated: '2', binding_kit_box_barcode: nil,
+        pre_extension_time_deprecated: 3, pre_extension_time: nil,
+        loading_target_p1_plus_p2_deprecated: 4, loading_target_p1_plus_p2: nil,
+        movie_time_deprecated: 5, movie_time: nil,
+        plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: 'v12')))
+      well.save!(validate: false)
+
+      Rake::Task['pacbio_wells:migrate_smrt_link_options'].reenable
+      Rake::Task['pacbio_wells:migrate_smrt_link_options'].invoke
+
+      # XXX: We might need to add the following to the configuration to avoid Psych::DisallowedClass error.
+      # config.active_record.yaml_column_permitted_classes = [BigDecimal, HashWithIndifferentAccess]
+      ActiveRecord.yaml_column_permitted_classes = [BigDecimal, HashWithIndifferentAccess]
+
+      well.reload
+      # puts well.inspect
+
+      expect(well.on_plate_loading_concentration).to eq(1)
+      expect(well.binding_kit_box_barcode).to eq('2')
+      expect(well.pre_extension_time).to eq(3)
+      expect(well.loading_target_p1_plus_p2).to eq(4)
+      expect(well.movie_time).to eq(5)
+    end
+  end
 end

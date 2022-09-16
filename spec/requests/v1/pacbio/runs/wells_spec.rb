@@ -127,7 +127,7 @@ RSpec.describe 'WellsController', type: :request do
           post v1_pacbio_runs_wells_path, params: body, headers: json_api_headers
           created_well_id = response.parsed_body['data'][0]['id']
           created_well_2_id = response.parsed_body['data'][1]['id']
-          expect(Pacbio::Well.find(created_well_id).pre_extension_time).to eq(2)
+          expect(Pacbio::Well.find(created_well_id).pre_extension_time).to eq('2')
           expect(Pacbio::Well.find(created_well_2_id).pre_extension_time).to eq(1)
           expect(Pacbio::Well.find(created_well_id).generate_hifi).to eq('In SMRT Link')
           expect(Pacbio::Well.find(created_well_2_id).generate_hifi).to eq('In SMRT Link')
@@ -259,7 +259,7 @@ RSpec.describe 'WellsController', type: :request do
         expect(well.row).to eq well_attributes[:row]
         expect(well.column).to eq well_attributes[:column]
         expect(well.movie_time.to_i).to eq well_attributes[:movie_time].to_i
-        expect(well.on_plate_loading_concentration).to eq well_attributes[:on_plate_loading_concentration].to_f
+        expect(well.on_plate_loading_concentration).to eq well_attributes[:on_plate_loading_concentration]
         expect(well.pre_extension_time).to eq well_attributes[:pre_extension_time]
         expect(well.generate_hifi).to eq well_attributes[:generate_hifi]
         expect(well.ccs_analysis_output).to eq well_attributes[:ccs_analysis_output]
@@ -284,7 +284,7 @@ RSpec.describe 'WellsController', type: :request do
         expect(response['attributes']['movie_time'].to_f).to eq well_attributes[:movie_time]
         expect(response['attributes']['row']).to eq well_attributes[:row]
         expect(response['attributes']['column']).to eq well_attributes[:column]
-        expect(response['attributes']['on_plate_loading_concentration']).to eq well_attributes[:on_plate_loading_concentration].to_f
+        expect(response['attributes']['on_plate_loading_concentration']).to eq well_attributes[:on_plate_loading_concentration]
         expect(response['attributes']['generate_hifi']).to eq well_attributes[:generate_hifi]
         expect(response['attributes']['ccs_analysis_output']).to eq well_attributes[:ccs_analysis_output]
         expect(response['attributes']['binding_kit_box_barcode']).to eq well_attributes[:binding_kit_box_barcode]
