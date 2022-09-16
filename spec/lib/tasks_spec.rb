@@ -79,13 +79,20 @@ RSpec.describe 'RakeTasks' do
 
   describe 'deprecate_existing_pacbio_smrt_link_columns' do
     it 'migrates data from deprecated columns to store' do
-      well = build(:pacbio_well,
-        on_plate_loading_concentration_deprecated: 1, on_plate_loading_concentration: nil,
-        binding_kit_box_barcode_deprecated: '2', binding_kit_box_barcode: nil,
-        pre_extension_time_deprecated: 3, pre_extension_time: nil,
-        loading_target_p1_plus_p2_deprecated: 4, loading_target_p1_plus_p2: nil,
-        movie_time_deprecated: 5, movie_time: nil,
-        plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: 'v12')))
+      well = build(
+        :pacbio_well,
+        on_plate_loading_concentration_deprecated: 1,
+        on_plate_loading_concentration: nil,
+        binding_kit_box_barcode_deprecated: '2',
+        binding_kit_box_barcode: nil,
+        pre_extension_time_deprecated: 3,
+        pre_extension_time: nil,
+        loading_target_p1_plus_p2_deprecated: 4,
+        loading_target_p1_plus_p2: nil,
+        movie_time_deprecated: 5,
+        movie_time: nil,
+        plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: 'v12'))
+      )
       well.save!(validate: false)
 
       Rake::Task['pacbio_wells:migrate_smrt_link_options'].reenable
