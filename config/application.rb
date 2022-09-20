@@ -64,6 +64,6 @@ module TractionService
     config.pacbio_request_cost_code = 'S4773'
 
     # Fix for Psych::DisallowedClass. Added the four top classes as this may guard against hidden errors.
-    config.active_record.yaml_column_permitted_classes = [Symbol, Hash, Array, ActiveSupport::HashWithIndifferentAccess]
+    config.active_record.yaml_column_permitted_classes = [Symbol, Hash, Array, ActiveSupport::HashWithIndifferentAccess, BigDecimal]
   end
 end

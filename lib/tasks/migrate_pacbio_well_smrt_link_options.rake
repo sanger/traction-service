@@ -34,7 +34,7 @@ namespace :pacbio_wells do
         well.movie_time = well.movie_time_deprecated
       end
 
-      well.save!(validate: false)
+      well.save!
     end
 
     puts "-> #{wells.length} instances of pacbio well updated."
