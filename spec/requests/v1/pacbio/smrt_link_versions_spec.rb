@@ -58,4 +58,5 @@ RSpec.describe 'SmrtLinkVersionsController', type: :request do
       expect(option_json['attributes']['select_option']).to eq(option.select_options)
     end
   end
+
 end
