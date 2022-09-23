@@ -11,7 +11,14 @@ module Pacbio
     has_many :smrt_link_options, through: :smrt_link_option_versions, source: :smrt_link_option,
                                  class_name: 'Pacbio::SmrtLinkOption'
 
+    has_many :runs, class_name: 'Pacbio::Run', dependent: :destroy, inverse_of: :smrt_link_version
+
     scope :active, -> { where(active: true) }
     scope :by_default, -> { order(default: :desc) }
+
+    def self.default
+      find_by(default: true, active: true)
+    end
+
   end
 end

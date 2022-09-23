@@ -3,6 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe 'RunsController', type: :request do
+  let!(:pacbio_smrt_link_default) { create(:pacbio_smrt_link_default) }
+
+  # let!(:version10) { create(:pacbio_smrt_link_version10) }
+  # let!(:version11) { create(:pacbio_smrt_link_version11) }
+
   describe '#get' do
     let!(:run1) { create(:pacbio_run, state: 'pending') }
     let!(:run2) { create(:pacbio_run, state: 'started') }
@@ -17,15 +22,13 @@ RSpec.describe 'RunsController', type: :request do
     end
 
     it 'returns the correct attributes' do
-      get v1_pacbio_runs_path, headers: json_api_headers
+      get v1_pacbio_runs_path, headers:
 
       json = ActiveSupport::JSON.decode(response.body)
-
       expect(json['data'][0]['attributes']['name']).to eq(run1.name)
       expect(json['data'][0]['attributes']['sequencing_kit_box_barcode']).to eq(run1.sequencing_kit_box_barcode)
       expect(json['data'][0]['attributes']['dna_control_complex_box_barcode']).to eq(run1.dna_control_complex_box_barcode)
       expect(json['data'][0]['attributes']['system_name']).to eq(run1.system_name)
-      expect(json['data'][0]['attributes']['smrt_link_version']).to eq(run1.smrt_link_version)
       expect(json['data'][0]['attributes']['created_at']).to eq(run1.created_at.to_fs(:us))
       expect(json['data'][0]['attributes']['state']).to eq(run1.state)
       expect(json['data'][0]['attributes']['comments']).to eq(run1.comments)
@@ -34,7 +37,7 @@ RSpec.describe 'RunsController', type: :request do
     end
 
     it 'returns the correct relationships', aggregate_failures: true do
-      get "#{v1_pacbio_runs_path}?include=plate", headers: json_api_headers
+      get "#{v1_pacbio_runs_path}?include=plate,smrt_link_version", headers: json_api_headers
 
       expect(response).to have_http_status(:success), response.body
       json = ActiveSupport::JSON.decode(response.body)
@@ -46,6 +49,10 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][1]['relationships']['plate']).to be_present
       expect(json['data'][1]['relationships']['plate']['data']['type']).to eq 'plates'
       expect(json['data'][1]['relationships']['plate']['data']['id']).to eq plate2.id.to_s
+
+      expect(json['data'][0]['relationships']['smrt_link_version']).to be_present
+      expect(json['data'][0]['relationships']['smrt_link_version']['data']['type']).to eq 'smrt_link_version'
+      expect(json['data'][0]['relationships']['smrt_link_version']['data']['id']).to eq plate1.smrt_link_version.id.to_s
     end
   end
 
@@ -265,9 +272,9 @@ RSpec.describe 'RunsController', type: :request do
     let(:well1)   { create(:pacbio_well_with_pools) }
     let(:well2)   { create(:pacbio_well_with_pools) }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
-    let(:run)     { create(:pacbio_run, plate:) }
+    let(:run)     { create(:pacbio_run, smrt_link_version: create(:pacbio_smrt_link_version, name: 'v10'), plate:) }
 
-    after { FileUtils.rm_rf("#{run.name}.csv")  }
+    after { FileUtils.rm_rf("#{run.name}.csv") }
 
     it 'returns the correct status' do
       get v1_pacbio_run_sample_sheet_path(run).to_s, headers: json_api_headers

@@ -9,7 +9,7 @@ module SmrtLink
   # next story
   module Versions
     # Default SMRT Link version
-    DEFAULT = 'v10'
+    # DEFAULT = 'v10'
 
     # Currently available SMRT Link Versions
     AVAILABLE = %w[v10 v11].freeze

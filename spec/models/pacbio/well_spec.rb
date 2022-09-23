@@ -3,6 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Pacbio::Well, type: :model, pacbio: true do
+  let!(:version10) { create(:pacbio_smrt_link_version10) }
+  let!(:version11) { create(:pacbio_smrt_link_version11) }
+
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_well }
 
@@ -199,7 +202,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
 
     context 'v10' do
-      let(:well) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: 'v10'))) }
+      let(:well) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version10))) }
       let(:v10_options) { options[:v10] }
 
       context 'generate hifi' do
@@ -238,7 +241,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
 
     context 'v11' do
-      let(:well) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: 'v11'))) }
+      let(:well) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version11))) }
       let(:v11_options) { options[:v11] }
 
       context 'CCS Analysis Output - Include Low Quality Reads' do

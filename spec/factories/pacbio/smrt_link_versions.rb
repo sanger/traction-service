@@ -13,5 +13,26 @@ FactoryBot.define do
         create_list(:pacbio_smrt_link_option_version, evaluator.option_count, smrt_link_version:)
       end
     end
+
+    factory :pacbio_smrt_link_default, class: 'Pacbio::SmrtLinkVersion' do
+      default { true }
+      active { true }
+    end
+
   end
+
+  
+
+  factory :pacbio_smrt_link_version10, class: 'Pacbio::SmrtLinkVersion' do
+    name { 'v10' }
+    default { true }
+    active { true }
+  end
+
+  factory :pacbio_smrt_link_version11, class: 'Pacbio::SmrtLinkVersion' do
+    name { 'v11' }
+    default { false }
+    active { true }
+  end
+
 end

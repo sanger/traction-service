@@ -7,11 +7,12 @@ module V1
       model_name 'Pacbio::Run'
 
       attributes :name, :sequencing_kit_box_barcode, :dna_control_complex_box_barcode,
-                 :system_name, :created_at, :state, :comments, :all_wells_have_pools,
-                 :smrt_link_version
+                 :system_name, :created_at, :state, :comments, :all_wells_have_pools
 
       has_one :plate, foreign_key_on: :related, foreign_key: 'pacbio_run_id',
                       class_name: 'Runs::Plate'
+
+      has_one :smrt_link_version, foreign_key: 'pacbio_smrt_link_version_id'
 
       def self.records_for_populate(*_args)
         super.preload(plate: {

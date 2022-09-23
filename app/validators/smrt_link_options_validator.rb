@@ -16,7 +16,7 @@ class SmrtLinkOptionsValidator < ActiveModel::Validator
     return if record&.run&.smrt_link_version.blank?
 
     # If the version is not valid no point validating
-    smrt_link_version = record.run.smrt_link_version
+    smrt_link_version = record.run.smrt_link_version.name
     return unless available_smrt_link_versions.include?(smrt_link_version)
 
     # match the version and return the fields for that version
