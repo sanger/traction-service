@@ -14,7 +14,7 @@ FactoryBot.define do
       end
     end
 
-    factory :pacbio_smrt_link_default, class: 'Pacbio::SmrtLinkVersion' do
+    factory :pacbio_smrt_link_version_default, class: 'Pacbio::SmrtLinkVersion' do
       default { true }
       active { true }
     end
