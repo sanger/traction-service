@@ -172,20 +172,5 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
       run = create(:pacbio_run)
       expect(run.smrt_link_version).to eq(version10)
     end
-
-    context 'version format' do
-      it 'will be valid if it is correct format' do
-
-        expect(build(:pacbio_run, smrt_link_version: build(:pacbio_smrt_link_version, name: 'v12'))).to be_valid
-        expect(build(:pacbio_run, smrt_link_version: build(:pacbio_smrt_link_version, name: 'v11_1'))).to be_valid
-      end
-
-      it 'will invalid if it is not the correct format' do
-        expect(build(:pacbio_run, smrt_link_version: build(:pacbio_smrt_link_version, name: '10'))).not_to be_valid
-        expect(build(:pacbio_run, smrt_link_version: build(:pacbio_smrt_link_version, name: 'xx'))).not_to be_valid
-        expect(build(:pacbio_run, smrt_link_version: build(:pacbio_smrt_link_version, name: 'y.y.10'))).not_to be_valid
-        expect(build(:pacbio_run, smrt_link_version: build(:pacbio_smrt_link_version, name: 'vy_10'))).not_to be_valid
-      end
-    end
   end
 end
