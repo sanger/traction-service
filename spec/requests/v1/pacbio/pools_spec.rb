@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'PoolsController', type: :request, pacbio: true do
-  let!(:pacbio_smrt_link_default) { create(:pacbio_smrt_link_default) }
+  let!(:pacbio_smrt_link_version_default) { create(:pacbio_smrt_link_version_default) }
   let!(:request) { create(:pacbio_request) }
   let!(:tag) { create(:tag) }
   let!(:request2) { create(:pacbio_request) }

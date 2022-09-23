@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'RunsController', type: :request do
-  let!(:pacbio_smrt_link_default) { create(:pacbio_smrt_link_default) }
+  let!(:pacbio_smrt_link_version_default) { create(:pacbio_smrt_link_version_default) }
 
   # let!(:version10) { create(:pacbio_smrt_link_version10) }
   # let!(:version11) { create(:pacbio_smrt_link_version11) }
