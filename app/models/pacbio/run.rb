@@ -29,11 +29,6 @@ module Pacbio
 
     validates :name, uniqueness: { case_sensitive: false }
 
-    # we need to allow blank because it could be passed as nil
-    # validates :smrt_link_version, format: Version::FORMAT, allow_blank: true
-    # TODO: Remove this tunnelling. Not necessary. Remove the test as well.
-    validates_associated :smrt_link_version
-
     scope :active, -> { where(deactivated_at: nil) }
 
     # This allows us to set the default for the version without a callback
