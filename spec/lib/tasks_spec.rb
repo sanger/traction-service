@@ -5,6 +5,10 @@ require 'rails_helper'
 Rails.application.load_tasks
 
 RSpec.describe 'RakeTasks' do
+
+  let!(:version10) { create(:pacbio_smrt_link_version10) }
+  let!(:version11) { create(:pacbio_smrt_link_version11) }
+
   describe 'create tags' do
     it 'creates all of the tag sets' do
       Rake::Task['tags:create:pacbio_all'].invoke
@@ -53,11 +57,12 @@ RSpec.describe 'RakeTasks' do
   describe 'pacbio_wells:migrate_smrt_link_options' do
     # We need to set the smrt link version to v12 so it is not validated
     # generate_hifi - 'In SMRT Link' => 0, 'On Instrument' => 1, 'Do Not Generate' => 2
-    let!(:well1) { create(:pacbio_well, generate_hifi_deprecated: 0, generate_hifi: nil, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: 'v12'))) }
-    let!(:well2) { create(:pacbio_well, generate_hifi_deprecated: 1,  generate_hifi: nil, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: 'v12'))) }
-    let!(:well3) { create(:pacbio_well, generate_hifi_deprecated: 2,  generate_hifi: nil, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: 'v12'))) }
-    let!(:well4) { create(:pacbio_well, ccs_analysis_output_deprecated: 'Yes', ccs_analysis_output: nil, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: 'v12'))) }
-    let!(:well5) { create(:pacbio_well, ccs_analysis_output_deprecated: 'No',  ccs_analysis_output: nil, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: 'v12'))) }
+    let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12') }
+    let!(:well1) { create(:pacbio_well, generate_hifi_deprecated: 0, generate_hifi: nil, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version12))) }
+    let!(:well2) { create(:pacbio_well, generate_hifi_deprecated: 1,  generate_hifi: nil, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version12))) }
+    let!(:well3) { create(:pacbio_well, generate_hifi_deprecated: 2,  generate_hifi: nil, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version12))) }
+    let!(:well4) { create(:pacbio_well, ccs_analysis_output_deprecated: 'Yes', ccs_analysis_output: nil, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version12))) }
+    let!(:well5) { create(:pacbio_well, ccs_analysis_output_deprecated: 'No',  ccs_analysis_output: nil, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version12))) }
 
     it 'modifies the data correctly' do
       expect(Pacbio::Well.count).to eq(5)
@@ -78,6 +83,9 @@ RSpec.describe 'RakeTasks' do
   end
 
   describe 'deprecate_existing_pacbio_smrt_link_columns' do
+
+    let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12') }
+
     it 'migrates data from deprecated columns to store' do
       well = build(
         :pacbio_well,
@@ -91,7 +99,7 @@ RSpec.describe 'RakeTasks' do
         loading_target_p1_plus_p2: nil,
         movie_time_deprecated: 5,
         movie_time: nil,
-        plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: 'v12'))
+        plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version12))
       )
       well.save!(validate: false)
 

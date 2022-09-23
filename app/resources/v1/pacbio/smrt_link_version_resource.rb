@@ -11,6 +11,7 @@ module V1
       has_many :smrt_link_option_versions, class_name: 'SmrtLinkOptionVersion'
 
       def self.records(_options = {})
+        # super.active.by_default
         super.active.by_default
       end
     end

@@ -3,6 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Pacbio::Request, type: :model, pacbio: true do
+  let!(:version10) { create(:pacbio_smrt_link_version10) }
+  let!(:version11) { create(:pacbio_smrt_link_version11) }
+
   it_behaves_like 'requestor model'
 
   context 'cost_code default value' do

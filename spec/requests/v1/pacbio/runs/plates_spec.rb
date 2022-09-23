@@ -3,6 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe 'PlatesController', type: :request do
+  let!(:version10) { create(:pacbio_smrt_link_version10) }
+  let!(:version11) { create(:pacbio_smrt_link_version11) }
+
   describe '#get' do
     let!(:run1) { create(:pacbio_run) }
     let!(:run2) { create(:pacbio_run) }

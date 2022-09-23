@@ -5,6 +5,9 @@ require 'rails_helper'
 RSpec.describe Pacbio::Library, type: :model, pacbio: true do
   subject { build(:pacbio_library, params) }
 
+  let!(:version10) { create(:pacbio_smrt_link_version10) }
+  let!(:version11) { create(:pacbio_smrt_link_version11) }
+
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_library }
 

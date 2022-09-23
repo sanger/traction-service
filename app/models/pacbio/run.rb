@@ -17,6 +17,12 @@ module Pacbio
     has_one :plate, foreign_key: :pacbio_run_id,
                     dependent: :destroy, inverse_of: :run
 
+    belongs_to :smrt_link_version,
+               class_name: 'Pacbio::SmrtLinkVersion',
+               foreign_key: :pacbio_smrt_link_version_id,
+               inverse_of: :runs,
+               default: -> { SmrtLinkVersion.default }
+
     validates :sequencing_kit_box_barcode,
               :dna_control_complex_box_barcode,
               :system_name, presence: true
@@ -24,12 +30,14 @@ module Pacbio
     validates :name, uniqueness: { case_sensitive: false }
 
     # we need to allow blank because it could be passed as nil
-    validates :smrt_link_version, format: Version::FORMAT, allow_blank: true
+    # validates :smrt_link_version, format: Version::FORMAT, allow_blank: true
+    # TODO: Remove this tunnelling. Not necessary. Remove the test as well.
+    validates_associated :smrt_link_version
 
     scope :active, -> { where(deactivated_at: nil) }
 
     # This allows us to set the default for the version without a callback
-    attribute :smrt_link_version, :string, default: SmrtLink::Versions::DEFAULT
+    # attribute :smrt_link_version, :string, default: SmrtLink::Versions::DEFAULT
 
     # if comments are nil this blows up so add try.
     def comments
@@ -51,7 +59,7 @@ module Pacbio
     # A version can be assigned to a run but changed
     # e.g. Pipelines.pacbio.sample_sheet.by_version('v10')
     def pacbio_run_sample_sheet_config
-      Pipelines.pacbio.sample_sheet.by_version(smrt_link_version)
+      Pipelines.pacbio.sample_sheet.by_version(smrt_link_version.name)
     end
 
     def generate_name
