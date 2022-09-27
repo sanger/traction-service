@@ -12,7 +12,7 @@ module V1
 
       def self.records(_options = {})
         # super.active.by_default
-        super.active.by_default
+        super.active
       end
     end
   end
