@@ -116,4 +116,40 @@ RSpec.describe 'RakeTasks' do
       expect(well.movie_time).to eq(5)
     end
   end
+
+  describe 'create smrt_link_versions' do
+    
+    it 'creates smrt link versions and options for v10' do 
+      
+      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
+      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].invoke
+
+      version10 = Pacbio::SmrtLinkVersion.find_by(name: 'v10', default: true, active: true)
+      expect(version10).not_to be_nil
+
+      # TODO: Test v10 and common options
+
+      # puts version.inspect
+    end
+
+    it 'creates smrt link versions and options for v11' do 
+
+      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
+      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].invoke
+
+      version11 = Pacbio::SmrtLinkVersion.find_by(name: 'v11', default: false, active: true)
+      expect(version11).not_to be_nil
+
+      # TODO: Test v11 and common options
+
+    end
+
+    it 'migrates pacbio smrt link versions' do
+
+      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
+      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].invoke
+
+      # TODO: Test if run versions are set to FK correctly using the deprecated string version.
+    end
+  end
 end
