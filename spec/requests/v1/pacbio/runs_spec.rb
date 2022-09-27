@@ -22,7 +22,7 @@ RSpec.describe 'RunsController', type: :request do
     end
 
     it 'returns the correct attributes' do
-      get v1_pacbio_runs_path, headers:
+      get v1_pacbio_runs_path, headers: json_api_headers
 
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'][0]['attributes']['name']).to eq(run1.name)
