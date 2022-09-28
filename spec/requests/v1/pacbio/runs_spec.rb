@@ -5,9 +5,6 @@ require 'rails_helper'
 RSpec.describe 'RunsController', type: :request do
   let!(:pacbio_smrt_link_version_default) { create(:pacbio_smrt_link_version_default) }
 
-  # let!(:version10) { create(:pacbio_smrt_link_version10) }
-  # let!(:version11) { create(:pacbio_smrt_link_version11) }
-
   describe '#get' do
     let!(:run1) { create(:pacbio_run, state: 'pending') }
     let!(:run2) { create(:pacbio_run, state: 'started') }
@@ -22,7 +19,7 @@ RSpec.describe 'RunsController', type: :request do
     end
 
     it 'returns the correct attributes' do
-      get v1_pacbio_runs_path, headers:
+      get v1_pacbio_runs_path, headers: json_api_headers
 
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'][0]['attributes']['name']).to eq(run1.name)
@@ -51,8 +48,8 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][1]['relationships']['plate']['data']['id']).to eq plate2.id.to_s
 
       expect(json['data'][0]['relationships']['smrt_link_version']).to be_present
-      expect(json['data'][0]['relationships']['smrt_link_version']['data']['type']).to eq 'smrt_link_version'
-      expect(json['data'][0]['relationships']['smrt_link_version']['data']['id']).to eq plate1.smrt_link_version.id.to_s
+      expect(json['data'][0]['relationships']['smrt_link_version']['data']['type']).to eq 'smrt_link_versions'
+      expect(json['data'][0]['relationships']['smrt_link_version']['data']['id']).to eq run1.smrt_link_version.id.to_s
     end
   end
 
