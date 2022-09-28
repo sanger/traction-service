@@ -9,6 +9,7 @@ RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
     create(:pacbio_smrt_link_version, name: 'v10', default: true)
   end
 
+  let(:libraries) { create_list(:pacbio_library, 5)}
   let(:params) { {} }
 
   it 'will have a tube on validation' do
