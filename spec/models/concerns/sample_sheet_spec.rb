@@ -3,8 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe SampleSheet do
-  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
-  let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
+  before do
+    create(:pacbio_smrt_link_version, name: 'v10', default: true)
+  end
 
   let(:well) { create(:pacbio_well_with_pools, pool_count: 5) }
   let(:empty_well) { create(:pacbio_well) }

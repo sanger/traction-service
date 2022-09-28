@@ -3,8 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
-  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
-  let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
+  before do
+    create(:pacbio_smrt_link_version, name: 'v10', default: true)
+  end
 
   let(:plate)           { create(:pacbio_plate) }
   let(:pools)           { create_list(:pacbio_pool, 3) }
