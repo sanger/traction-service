@@ -53,6 +53,7 @@ RSpec.describe 'SmrtLinkVersionsController', type: :request do
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['included']).to be_present
       option_json = json['included'].detect { |opt| opt['id'] == option.id.to_s }
+      expect(option_json).to be_present
       expect(option_json['attributes']['key']).to eq(option.key)
       expect(option_json['attributes']['label']).to eq(option.label)
       expect(option_json['attributes']['default_value']).to eq(option.default_value)
