@@ -50,6 +50,8 @@ RSpec.describe 'SmrtLinkVersionsController', type: :request do
 
     it 'will include the data for each option' do
       option = smrt_link_version_1.smrt_link_options.first
+      json = ActiveSupport::JSON.decode(response.body)
+      expect(json['included']).to be_present
       option_json = json['included'].detect { |opt| opt['id'] == option.id.to_s }
       expect(option_json['attributes']['key']).to eq(option.key)
       expect(option_json['attributes']['label']).to eq(option.label)
