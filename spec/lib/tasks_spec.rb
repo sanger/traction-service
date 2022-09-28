@@ -5,9 +5,8 @@ require 'rails_helper'
 Rails.application.load_tasks
 
 RSpec.describe 'RakeTasks' do
-
-  let!(:version10) { create(:pacbio_smrt_link_version10) }
-  let!(:version11) { create(:pacbio_smrt_link_version11) }
+  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
+  let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
 
   describe 'create tags' do
     it 'creates all of the tag sets' do
@@ -83,7 +82,6 @@ RSpec.describe 'RakeTasks' do
   end
 
   describe 'deprecate_existing_pacbio_smrt_link_columns' do
-
     let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12') }
 
     it 'migrates data from deprecated columns to store' do
@@ -118,9 +116,7 @@ RSpec.describe 'RakeTasks' do
   end
 
   describe 'create smrt_link_versions' do
-    
-    it 'creates smrt link versions and options for v10' do 
-      
+    it 'creates smrt link versions and options for v10' do
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].invoke
 
@@ -132,8 +128,7 @@ RSpec.describe 'RakeTasks' do
       # puts version.inspect
     end
 
-    it 'creates smrt link versions and options for v11' do 
-
+    it 'creates smrt link versions and options for v11' do
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].invoke
 
@@ -141,11 +136,9 @@ RSpec.describe 'RakeTasks' do
       expect(version11).not_to be_nil
 
       # TODO: Test v11 and common options
-
     end
 
     it 'migrates pacbio smrt link versions' do
-
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].invoke
 
