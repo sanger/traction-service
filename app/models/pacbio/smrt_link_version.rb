@@ -19,6 +19,5 @@ module Pacbio
     def self.default
       find_by(default: true, active: true)
     end
-
   end
 end
