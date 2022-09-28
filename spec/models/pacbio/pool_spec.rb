@@ -5,9 +5,10 @@ require 'rails_helper'
 RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
   subject(:pool) { build(:pacbio_pool, params) }
 
-  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
-  let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
-  let(:libraries) { create_list(:pacbio_library, 5) }
+  before do
+    create(:pacbio_smrt_link_version, name: 'v10', default: true)
+  end
+
   let(:params) { {} }
 
   it 'will have a tube on validation' do

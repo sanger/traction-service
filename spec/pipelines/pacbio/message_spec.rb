@@ -3,8 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe 'PacBio', type: :model, pacbio: true do
-  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
-  let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
+  before do
+    create(:pacbio_smrt_link_version, name: 'v10', default: true)
+  end
+
   let(:config)        { Pipelines.configure(Pipelines.load_yaml) }
   let(:pacbio_config) { config.pacbio }
   let(:plate)         { create(:pacbio_plate_with_wells) }

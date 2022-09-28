@@ -3,7 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe CsvGenerator, type: :model do
-  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
+  before do
+    create(:pacbio_smrt_link_version, name: 'v10', default: true)
+  end
 
   describe '#generate_sample_sheet' do
     subject(:csv_string) { csv.generate_sample_sheet }
