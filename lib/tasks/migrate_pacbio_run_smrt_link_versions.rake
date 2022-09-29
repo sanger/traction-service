@@ -169,7 +169,6 @@ namespace :pacbio_runs do
     # Set SMRT Link Versions on Pacbio Runs.
 
     runs = Pacbio::Run.all
-    versions = { version10.name => version10, version11.name => version11}
     runs.each do |run|
       if run.smrt_link_version_deprecated.present?
         run.smrt_link_version = Pacbio::SmrtLinkVersion.where(name: run.smrt_link_version_deprecated, active: true).first
