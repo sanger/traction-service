@@ -171,7 +171,6 @@ RSpec.describe 'WellsController', type: :request do
               attributes: {
                 wells: [
                   row: 'A',
-                  column: '1',
                   on_plate_loading_concentration: 8.35,
                   generate_hifi: 'In SMRT Link',
                   ccs_analysis_output: 'Yes',
@@ -207,9 +206,9 @@ RSpec.describe 'WellsController', type: :request do
           errors = json['data']['errors']
 
           expect(errors).to include('plate')
-          expect(errors).to include('movie_time')
+          expect(errors).to include('column')
           expect(errors['plate'][0]).to eq 'must exist'
-          expect(errors['movie_time'][0]).to eq "can't be blank"
+          expect(errors['column'][0]).to eq "can't be blank"
         end
 
         it 'does not send a message to the warehouse' do

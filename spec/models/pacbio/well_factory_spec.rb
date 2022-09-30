@@ -3,10 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
-  before do
-    create(:pacbio_smrt_link_version, name: 'v10', default: true)
-  end
-
+  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
   let(:plate)           { create(:pacbio_plate) }
   let(:pools)           { create_list(:pacbio_pool, 3) }
   let(:wells_attributes) do
@@ -24,6 +21,10 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
         pools: [{ type: 'pools', id: pools[2].id }]
       )
     ]
+  end
+
+  before do
+    create(:pacbio_smrt_link_option, key: :movie_time, validations: { presence: {}, numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 } }, smrt_link_versions: [version10])
   end
 
   context 'WellFactory' do

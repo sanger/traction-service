@@ -3,21 +3,21 @@
 require 'rails_helper'
 
 RSpec.describe SmrtLinkOptionsValidator do
-  describe.skip '#validate' do
+  describe '#validate' do
     let(:record) { build(:pacbio_well) }
     let(:available_smrt_link_versions) { SmrtLink::Versions::AVAILABLE }
     let(:required_fields_by_version) { SmrtLink::Versions.required_fields_by_version }
 
     let(:versions) { create_list(:pacbio_smrt_link_version, 2) }
 
-    # rubocop:disable RSpec/LetSetup
-    let!(:smrt_link_option_for_demultiplex_barcodes) { create(:pacbio_smrt_link_option, key: 'demultiplex_barcodes', validations: { required: true, inclusion: { in: %w[yes no] } }, smrt_link_versions: [versions.first, versions.last]) }
-    let!(:smrt_link_option_for_loading_target_p1_plus_p2) { create(:pacbio_smrt_link_option, key: 'loading_target_p1_plus_p2', validations: { allow_blank: true, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 } }, smrt_link_versions: [versions.first]) }
-    let!(:smrt_link_option_for_movie_time) { create(:pacbio_smrt_link_option, key: 'movie_time', validations: { presence: true, numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 } }, smrt_link_versions: [versions.last]) }
-    # rubocop:enable RSpec/LetSetup
+    before do
+      create(:pacbio_smrt_link_option, key: 'demultiplex_barcodes', validations: { presence: {}, inclusion: { in: ['In SMRT Link', 'On Instrument', 'Do Not Generate'] } }, smrt_link_versions: [versions.first, versions.last])
+      create(:pacbio_smrt_link_option, key: 'loading_target_p1_plus_p2', validations: { numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 } }, smrt_link_versions: [versions.first])
+      create(:pacbio_smrt_link_option, key: 'movie_time', validations: { presence: {}, numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 } }, smrt_link_versions: [versions.last])
+    end
 
     context 'valid' do
-      let(:record) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: versions.first)), demultiplex_barcodes: 'yes', loading_target_p1_plus_p2: 0.85) }
+      let(:record) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: versions.first)), demultiplex_barcodes: 'In SMRT Link', loading_target_p1_plus_p2: 0.85, movie_time: 5) }
 
       before do
         described_class.new(available_smrt_link_versions:, required_fields_by_version:).validate(record)
@@ -29,8 +29,12 @@ RSpec.describe SmrtLinkOptionsValidator do
     end
 
     context 'invalid' do
+      let(:plate) { create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: versions.first)) }
+
       it 'will mark the record as invalid' do
-        expect(build(:pacbio_well, demultiplex_barcodes: nil)).not_to be_valid
+        well = build(:pacbio_well, plate:, demultiplex_barcodes: nil)
+        described_class.new(available_smrt_link_versions:, required_fields_by_version:).validate(well)
+        expect(well).not_to be_valid
       end
 
       context 'will show the correct errors' do
@@ -38,28 +42,35 @@ RSpec.describe SmrtLinkOptionsValidator do
 
         it 'when the value is missing' do
           well = build(:pacbio_well, plate:, demultiplex_barcodes: nil)
-          expect(well.errors.full_messages.length).to eq(1)
-          expect(well.errors.full_messages).to include('Demultiplex barcodes must be present')
+          described_class.new(available_smrt_link_versions:, required_fields_by_version:).validate(well)
+          p well.errors.full_messages
+          expect(well.errors.full_messages.length).to eq(2)
+          expect(well.errors.full_messages).to include("Demultiplex barcodes can\'t be blank")
+          expect(well.errors.full_messages).to include('Demultiplex barcodes is not included in the list')
         end
 
         it 'when the value is not in the proscribed list' do
           well = build(:pacbio_well, plate:, demultiplex_barcodes: 'si')
-          expect(well.errors.full_messages).to include('Demultiplex barcodes is not a valid value')
+          described_class.new(available_smrt_link_versions:, required_fields_by_version:).validate(well)
+          expect(well.errors.full_messages).to include('Demultiplex barcodes is not included in the list')
         end
 
         it 'when the value is not a number' do
           well = build(:pacbio_well, plate:, loading_target_p1_plus_p2: 'manana')
-          expect(well.errors.full_messages).to include('Loading target p1 plus p2 is not a valid value')
+          described_class.new(available_smrt_link_versions:, required_fields_by_version:).validate(well)
+          expect(well.errors.full_messages).to include('Loading target p1 plus p2 is not a number')
         end
 
         it 'when the value is not within range' do
           well = build(:pacbio_well, plate:, loading_target_p1_plus_p2: 2)
-          expect(well.errors.full_messages).to include('Loading target p1 plus p2 is not in range')
+          described_class.new(available_smrt_link_versions:, required_fields_by_version:).validate(well)
+          expect(well.errors.full_messages).to include('Loading target p1 plus p2 must be less than or equal to 1')
         end
       end
 
       it 'will only mark the record as invalid for the correct version' do
         well = build(:pacbio_well, plate:, movie_time: nil)
+        described_class.new(available_smrt_link_versions:, required_fields_by_version:).validate(well)
         expect(well).to be_valid
       end
     end
