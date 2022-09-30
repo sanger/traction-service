@@ -84,7 +84,7 @@ RSpec.describe 'RakeTasks' do
   end
 
   describe 'deprecate_existing_pacbio_smrt_link_columns' do
-    let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12') }
+    let!(:version) { create(:pacbio_smrt_link_version, name: 'v12') }
 
     it 'migrates data from deprecated columns to store' do
       well = build(
@@ -99,7 +99,7 @@ RSpec.describe 'RakeTasks' do
         loading_target_p1_plus_p2: nil,
         movie_time_deprecated: 5,
         movie_time: nil,
-        plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version12))
+        plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version))
       )
       well.save!(validate: false)
 
@@ -117,34 +117,80 @@ RSpec.describe 'RakeTasks' do
     end
   end
 
-  describe 'create smrt_link_versions' do
-    it 'creates smrt link versions and options for v10' do
+  describe 'migrate_pacbio_run_smrt_link_versions' do
+    it 'creates smrt link version and options for v10' do
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].invoke
 
-      version10 = Pacbio::SmrtLinkVersion.find_by(name: 'v10', default: true, active: true)
-      expect(version10).not_to be_nil
+      version = Pacbio::SmrtLinkVersion.find_by(name: 'v10', default: true, active: true)
+      expect(version).not_to be_nil
+      expect(version.smrt_link_options).not_to be_nil
+      expect(version.default).to be true
+      expect(version.active).to be true
 
-      # TODO: Test v10 and common options
+      keys = %w[
+        ccs_analysis_output
+        generate_hifi
+        on_plate_loading_concentration
+        binding_kit_box_barcode
+        pre_extension_time
+        loading_target_p1_plus_p2
+        movie_time
+      ]
 
-      # puts version.inspect
+      keys.each do |key|
+        obj = version.smrt_link_options.where(key:)
+        expect(obj).not_to be_nil
+      end
     end
 
     it 'creates smrt link versions and options for v11' do
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].invoke
 
-      version11 = Pacbio::SmrtLinkVersion.find_by(name: 'v11', default: false, active: true)
-      expect(version11).not_to be_nil
+      version = Pacbio::SmrtLinkVersion.find_by(name: 'v11', default: false, active: true)
+      expect(version).not_to be_nil
+      expect(version.smrt_link_options).not_to be_nil
+      expect(version.default).to be false
+      expect(version.active).to be true
 
-      # TODO: Test v11 and common options
+      keys = %w[
+        ccs_analysis_output_include_low_quality_reads
+        ccs_analysis_output_include_kinetics_information
+        fivemc_calls_in_cpg_motifs
+        demultiplex_barcodes
+        on_plate_loading_concentration
+        binding_kit_box_barcode
+        pre_extension_time
+        loading_target_p1_plus_p2
+        movie_time
+      ]
+
+      keys.each do |key|
+        obj = version.smrt_link_options.where(key:)
+        expect(obj).not_to be_nil
+      end
     end
 
-    it 'migrates pacbio smrt link versions' do
+    it 'sets pacbio smrt link versions' do
+      run10 = create(:pacbio_run, smrt_link_version_deprecated: 'v10')
+      run11 = create(:pacbio_run, smrt_link_version_deprecated: 'v11')
+
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].invoke
 
-      # TODO: Test if run versions are set to FK correctly using the deprecated string version.
+      run10.reload
+      run11.reload
+
+      expect(run10.smrt_link_version).not_to be_nil
+      expect(run10.smrt_link_version.name).to eq('v10')
+      expect(run10.smrt_link_version.smrt_link_options).not_to be_nil
+      expect(run10.smrt_link_version.smrt_link_options).not_to be_empty
+
+      expect(run11.smrt_link_version).not_to be_nil
+      expect(run11.smrt_link_version.name).to eq('v11')
+      expect(run11.smrt_link_version.smrt_link_options).not_to be_nil
+      expect(run11.smrt_link_version.smrt_link_options).not_to be_empty
     end
   end
 end
