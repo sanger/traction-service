@@ -62,7 +62,7 @@ RSpec.describe CsvGenerator, type: :model do
           well1.automation_parameters,
           well1.generate_hifi,
           well1.ccs_analysis_output,
-          well1.loading_target_p1_plus_p2,
+          well1.loading_target_p1_plus_p2.to_s,
           well1.adaptive_loading_check.to_s
         ])
 
@@ -88,7 +88,7 @@ RSpec.describe CsvGenerator, type: :model do
           well2.automation_parameters,
           well2.generate_hifi,
           well2.ccs_analysis_output,
-          well2.loading_target_p1_plus_p2,
+          well2.loading_target_p1_plus_p2.to_s,
           well2.adaptive_loading_check.to_s
         ])
       end
@@ -201,7 +201,7 @@ RSpec.describe CsvGenerator, type: :model do
           well1.automation_parameters,
           well1.generate_hifi,
           well1.ccs_analysis_output,
-          well1.loading_target_p1_plus_p2,
+          well1.loading_target_p1_plus_p2.to_s,
           well1.adaptive_loading_check.to_s
         ])
 
@@ -227,7 +227,7 @@ RSpec.describe CsvGenerator, type: :model do
           well2.automation_parameters,
           well2.generate_hifi,
           well2.ccs_analysis_output,
-          well2.loading_target_p1_plus_p2,
+          well2.loading_target_p1_plus_p2.to_s,
           well2.adaptive_loading_check.to_s
         ])
       end
