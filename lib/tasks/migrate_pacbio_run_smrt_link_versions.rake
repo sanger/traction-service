@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 namespace :pacbio_runs do
-  task migrate_pacbio_run_smrt_link_versions_yaml: :environment do
+  task migrate_pacbio_run_smrt_link_versions: :environment do
     # Invoke rake task to create version and option records.
     Rake::Task['smrt_link_versions:create'].invoke
 

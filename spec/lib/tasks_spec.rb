@@ -117,10 +117,10 @@ RSpec.describe 'RakeTasks' do
     end
   end
 
-  describe 'migrate_pacbio_run_smrt_link_versions_yaml' do
+  describe 'migrate_pacbio_run_smrt_link_versions' do
     it 'creates smrt link version and options for v10' do
-      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions_yaml'].reenable
-      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions_yaml'].invoke
+      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
+      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].invoke
 
       version = Pacbio::SmrtLinkVersion.find_by(name: 'v10', default: true, active: true)
       expect(version).not_to be_nil
@@ -145,8 +145,8 @@ RSpec.describe 'RakeTasks' do
     end
 
     it 'creates smrt link versions and options for v11' do
-      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions_yaml'].reenable
-      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions_yaml'].invoke
+      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
+      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].invoke
 
       version = Pacbio::SmrtLinkVersion.find_by(name: 'v11', default: false, active: true)
       expect(version).not_to be_nil
@@ -177,8 +177,8 @@ RSpec.describe 'RakeTasks' do
       run11 = create(:pacbio_run, smrt_link_version_deprecated: 'v11')
 
       Rake::Task['smrt_link_versions:create'].reenable
-      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions_yaml'].reenable
-      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions_yaml'].invoke
+      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
+      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].invoke
 
       run10.reload
       run11.reload
@@ -195,8 +195,8 @@ RSpec.describe 'RakeTasks' do
     end
 
     it 'sets smrt link version default and active flags' do
-      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions_yaml'].reenable
-      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions_yaml'].invoke
+      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
+      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].invoke
 
       # Load config file
       config_name = 'pacbio_smrt_link_versions.yml'
