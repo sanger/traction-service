@@ -176,6 +176,7 @@ RSpec.describe 'RakeTasks' do
       run10 = create(:pacbio_run, smrt_link_version_deprecated: 'v10')
       run11 = create(:pacbio_run, smrt_link_version_deprecated: 'v11')
 
+      Rake::Task['smrt_link_versions:create'].reenable
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions_yaml'].reenable
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions_yaml'].invoke
 
