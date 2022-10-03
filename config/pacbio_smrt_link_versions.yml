@@ -1,13 +1,13 @@
 ---
 default: &default
 
-  yes_no: &yes_no [Yes,No]
+  yes_no: &yes_no ['Yes','No']
   generate: &generate [In SMRT Link,Do Not Generate,On Instrument]
-  times: &times [15.0,20.0,24.0,30.0]
+  times: &times [10.0,15.0,20.0,24.0,30.0]
 
   select_yes_no: &select_yes_no Yes,No
   select_generate: &select_generate In SMRT Link,Do Not Generate,On Instrument
-  select_times: &select_times 15.0,20.0,24.0,30.0
+  select_times: &select_times 10.0,15.0,20.0,24.0,30.0
   
   versions:
     v10:
@@ -25,11 +25,9 @@ default: &default
       label: 'Ccs Analysis Output:'
       default_value: 'Yes'
       validations:
-        presence:
-          options:
+        presence: {}
         inclusion:
-          options:
-            in: *yes_no
+          in: *yes_no
       data_type: list
       select_options: *select_yes_no
       versions:
@@ -39,13 +37,11 @@ default: &default
       label: 'Generate HiFi:'
       default_value: On Instrument      
       validations:
-        presence:
-          options:
+        presence: {}
         inclusion:
-          options:
-            in: *generate
+          in: *generate
       data_type: list
-      select_options: *select_generate
+      select_options: *generate
       versions: 
         - v10
     ccs_analysis_output_include_kinetics_information:
@@ -53,11 +49,9 @@ default: &default
       label: 'Include Kinetics Information:'
       default_value: 'Yes'
       validations:
-        presence:
-          options:
+        presence: {}
         inclusion:
-          options:
-            in: *yes_no
+          in: *yes_no
       data_type: list
       select_options: *select_yes_no
       versions:
@@ -67,11 +61,9 @@ default: &default
       label: 'Include Low Quality Reads:'
       default_value: 'Yes'
       validations:
-        presence:
-          options:
+        presence: {}
         inclusion:
-          options:
-            in: *yes_no
+          in: *yes_no
       data_type: list
       select_options: *select_yes_no
       versions:
@@ -81,11 +73,9 @@ default: &default
       label: '5mC Calls In CpG Motifs:'
       default_value: 'Yes'
       validations:
-        presence:
-          options: 
+        presence: {}
         inclusion:
-          options:
-            in: *yes_no
+          in: *yes_no
       data_type: list
       select_options: *select_yes_no
       versions:
@@ -93,10 +83,9 @@ default: &default
     demultiplex_barcodes:
       key: demultiplex_barcodes
       label: 'Demultiplex Barcodes:'
-      default_value: In SMRT Link
+      default_value: 'In SMRT Link'
       validations:
-        presence:
-          options:
+        presence: {}
         inclusion:
           in: *generate
       data_type: list
@@ -108,10 +97,8 @@ default: &default
       label: 'On Plate Loading Concentration (mP):'
       default_value:
       validations:
-        presence:
-          options:
+        presence: {}
       data_type: number
-      select_options:
       versions:
         - v10
         - v11
@@ -120,10 +107,8 @@ default: &default
       label: 'Binding Kit Box Barcode:'
       default_value:
       validations:
-        presence:
-          options:
+        presence: {}
       data_type: number
-      select_options:
       versions:
         - v10
         - v11
@@ -133,10 +118,8 @@ default: &default
       default_value: '2'
       validations:
         numericality:
-          options:
-            allow_blank: true
+          allow_blank: true
       data_type: number
-      select_options:
       versions:
         - v10
         - v11
@@ -146,12 +129,10 @@ default: &default
       default_value: '0.85'
       validations:
         numericality:
-          options:
-            allow_blank: true
-            less_than_or_equal_to: 1.0
-            greater_than_or_equal_to: 0.0
+          allow_blank: true
+          less_than_or_equal_to: 1.0
+          greater_than_or_equal_to: 0.0
       data_type: number
-      select_options:
       versions:
         - v10
         - v11
@@ -160,17 +141,14 @@ default: &default
       label: 'Movie Time (hrs):'
       default_value:
       validations:
-        presence: 
-          options:
+        presence: {}
         inclusion:
-          options:
-            in: *times
+          in: *times
         numericality:
-          options:
-            less_than_or_equal_to: 30
-            greater_than_or_equal_to: 0.1
-      data_type: number
+          less_than_or_equal_to: 30
+          greater_than_or_equal_to: 0.1
       select_options: *select_times
+      data_type: number
       versions:
         - v10
         - v11
