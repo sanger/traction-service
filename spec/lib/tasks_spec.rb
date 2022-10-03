@@ -101,13 +101,18 @@ RSpec.describe 'RakeTasks' do
         movie_time: nil,
         plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version))
       )
+      # Skip validations in the following to be able set nil for options as
+      # entry condition.
       well.save!(validate: false)
 
+      # Reenabling the task makes it possible to invoke again.
+      # Invoke the data migration task for smrt_link options.
       Rake::Task['pacbio_wells:migrate_smrt_link_options'].reenable
       Rake::Task['pacbio_wells:migrate_smrt_link_options'].invoke
 
+      # Reload the attributes of the record from the database.
+      # We want to see what was saved by the task.
       well.reload
-      # puts well.inspect
 
       expect(well.on_plate_loading_concentration).to eq(1)
       expect(well.binding_kit_box_barcode).to eq('2')
