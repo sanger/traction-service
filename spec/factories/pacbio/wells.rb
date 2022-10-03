@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :pacbio_well, class: 'Pacbio::Well' do
-    movie_time { 10 }
+    movie_time { 15 }
     sequence(:on_plate_loading_concentration) { |n| "10.#{n}".to_f }
     row { 'A' }
     sequence(:column) { |n| "0#{n}" }

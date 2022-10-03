@@ -6,8 +6,8 @@ Rails.application.load_tasks
 
 RSpec.describe 'RakeTasks' do
   before do
-    create(:pacbio_smrt_link_version, name: 'v10', default: true)
-    create(:pacbio_smrt_link_version, name: 'v11')
+    Pacbio::SmrtLinkVersion.find_by(name: 'v10') || create(:pacbio_smrt_link_version, name: 'v10', default: true)
+    Pacbio::SmrtLinkVersion.find_by(name: 'v11') || create(:pacbio_smrt_link_version, name: 'v11')
   end
 
   describe 'create tags' do
