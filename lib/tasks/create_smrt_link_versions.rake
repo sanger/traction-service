@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+# This task is used for creating pacbio_smrt_link_versions and
+# pacbio_smrt_link_options as database seed. It is also invoked before data
+# migrations to set the version according to the deprecated string version.
+
 namespace :smrt_link_versions do
   desc 'Create Pacbio SMRT Link versions and options'
   task create: :environment do
