@@ -10,6 +10,7 @@ module V1
 
       has_many :smrt_link_option_versions, class_name: 'SmrtLinkOptionVersion'
 
+      # Returns active versions.
       def self.records(_options = {})
         super.active
       end
