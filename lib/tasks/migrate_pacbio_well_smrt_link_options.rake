@@ -3,7 +3,7 @@
 # In this data migration, we copy the values from deprecated Pacbio columns to
 # the smrt_link_options column (store) of Pacbio Wells. The options are
 # accessible just like any attribute of the model. If there is a deprecated
-# colum for an option key and the option is not in the store yet, we copy the
+# column for an option key and the option is not in the store yet, we copy the
 # value.
 
 namespace :pacbio_wells do
