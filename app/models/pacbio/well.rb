@@ -19,12 +19,11 @@ module Pacbio
     has_many :libraries, through: :pools
     has_many :tag_sets, through: :libraries
 
-    # Before we were adding SMRT Link options as columns.
-    # This is brittle as due to v11 options are canned
-    # With a json column it means different versions can have different options
-    # Downside is they need to be validated differently
-    # This is done with a specific validator
-    # This would be better loaded from the database but that has challenges
+    # pacbio smrt link options for a well are kept in store field of the well
+    # which is mapped to smrt_link_options column (JSON) of pacbio_wells table.
+    # They are accessible on the model as well.
+    # See https://api.rubyonrails.org/classes/ActiveRecord/Store.html
+
     store :smrt_link_options,
           accessors: %i[ccs_analysis_output
                         generate_hifi
