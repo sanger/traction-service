@@ -26,7 +26,8 @@ module Pacbio
     # This is done with a specific validator
     # This would be better loaded from the database but that has challenges
     store :smrt_link_options,
-          accessors: %i[ccs_analysis_output generate_hifi
+          accessors: %i[ccs_analysis_output
+                        generate_hifi
                         ccs_analysis_output_include_low_quality_reads
                         fivemc_calls_in_cpg_motifs
                         ccs_analysis_output_include_kinetics_information
