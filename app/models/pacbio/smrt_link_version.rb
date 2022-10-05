@@ -15,7 +15,7 @@ module Pacbio
     has_many :runs, class_name: 'Pacbio::Run', dependent: :destroy, inverse_of: :smrt_link_version
 
     scope :active, -> { where(active: true) }
-    scope :by_default, -> { order(default: :desc) }
+    scope :ordered_by_default, -> { order(default: :desc) }
 
     # Returns the default SMRT Link version.
     def self.default
