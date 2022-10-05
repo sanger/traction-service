@@ -7,9 +7,9 @@
 # build a validator and validate the record for each specified attribute
 # the validations are standard ActiveRecord ones with specified options
 # @example
-#   smrt_link_options = { key: attribute_1, validations: required: {},
-#                         numericality: { greater_than_equal_to: 0,
-#                         less_than_or_equal_to: 1}}
+#   smrt_link_option = { key: attribute_1, validations: { required: {},
+#                        numericality: { greater_than_equal_to: 0,
+#                        less_than_or_equal_to: 1}} }
 # This will then run each validator against the specified key
 # @example
 #   ActiveModel::Validations::NumericalityValidator.new(attributes: attribute_1,
