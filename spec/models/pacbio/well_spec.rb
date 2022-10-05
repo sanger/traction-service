@@ -197,8 +197,8 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
   context 'Smrt Link Options' do
     let(:well)  { create(:pacbio_well) }
-    let(:generate_in) { ['In SMRT Link', 'On Instrument', 'Do Not Generate'] }
-    let(:yes_no) { %w[Yes No] }
+    let(:generate_in) { Pacbio::GENERATE }
+    let(:yes_no) { Pacbio::YES_NO }
 
     it 'will include the relevant options' do
       expect(described_class.stored_attributes[:smrt_link_options]).to eq(%i[

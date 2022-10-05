@@ -8,7 +8,7 @@ RSpec.describe SmrtLinkOptionsValidator do
     let(:versions) { create_list(:pacbio_smrt_link_version, 2) }
 
     before do
-      create(:pacbio_smrt_link_option, key: 'demultiplex_barcodes', validations: { presence: {}, inclusion: { in: ['In SMRT Link', 'On Instrument', 'Do Not Generate'] } }, smrt_link_versions: [versions.first, versions.last])
+      create(:pacbio_smrt_link_option, key: 'demultiplex_barcodes', validations: { presence: {}, inclusion: { in: Pacbio::GENERATE } }, smrt_link_versions: [versions.first, versions.last])
       create(:pacbio_smrt_link_option, key: 'loading_target_p1_plus_p2', validations: { numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 } }, smrt_link_versions: [versions.first])
       create(:pacbio_smrt_link_option, key: 'movie_time', validations: { presence: {}, numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 } }, smrt_link_versions: [versions.last])
     end
