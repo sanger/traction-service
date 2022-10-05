@@ -45,13 +45,13 @@ RSpec.describe Pacbio::SmrtLinkVersion, type: :model, pacbio: true do
     end
   end
 
-  describe '#by_default' do
+  describe '#ordered_by_default' do
     it 'will show the default version first' do
       create_list(:pacbio_smrt_link_version, 5)
       default_version = create(:pacbio_smrt_link_version, default: true)
-      by_default = described_class.by_default
-      expect(by_default.count).to eq(6)
-      expect(by_default.first).to eq(default_version)
+      ordered_by_default = described_class.ordered_by_default
+      expect(ordered_by_default.count).to eq(6)
+      expect(ordered_by_default.first).to eq(default_version)
     end
   end
 end
