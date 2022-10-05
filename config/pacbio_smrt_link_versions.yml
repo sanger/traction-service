@@ -41,7 +41,7 @@ default: &default
         inclusion:
           in: *generate
       data_type: list
-      select_options: *generate
+      select_options: *select_generate
       versions: 
         - v10
     ccs_analysis_output_include_kinetics_information:
@@ -152,7 +152,6 @@ default: &default
       versions:
         - v10
         - v11
-
 
 development: *default
 
