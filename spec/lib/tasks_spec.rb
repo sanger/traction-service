@@ -59,11 +59,13 @@ RSpec.describe 'RakeTasks' do
     # We need to set the smrt link version to v12 so it is not validated
     # generate_hifi - 'In SMRT Link' => 0, 'On Instrument' => 1, 'Do Not Generate' => 2
     let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12') }
-    let!(:well1) { create(:pacbio_well, generate_hifi_deprecated: 0, generate_hifi: nil, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version12))) }
-    let!(:well2) { create(:pacbio_well, generate_hifi_deprecated: 1,  generate_hifi: nil, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version12))) }
-    let!(:well3) { create(:pacbio_well, generate_hifi_deprecated: 2,  generate_hifi: nil, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version12))) }
-    let!(:well4) { create(:pacbio_well, ccs_analysis_output_deprecated: 'Yes', ccs_analysis_output: nil, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version12))) }
-    let!(:well5) { create(:pacbio_well, ccs_analysis_output_deprecated: 'No',  ccs_analysis_output: nil, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version12))) }
+    let!(:run) { create(:pacbio_run, smrt_link_version: version12) }
+    let!(:plate) { create(:pacbio_plate, run:) }
+    let!(:well1) { create(:pacbio_well, generate_hifi_deprecated: 0, generate_hifi: nil, plate:) }
+    let!(:well2) { create(:pacbio_well, generate_hifi_deprecated: 1,  generate_hifi: nil, plate:) }
+    let!(:well3) { create(:pacbio_well, generate_hifi_deprecated: 2,  generate_hifi: nil, plate:) }
+    let!(:well4) { create(:pacbio_well, ccs_analysis_output_deprecated: 'Yes', ccs_analysis_output: nil, plate:) }
+    let!(:well5) { create(:pacbio_well, ccs_analysis_output_deprecated: 'No',  ccs_analysis_output: nil, plate:) }
 
     it 'modifies the data correctly' do
       expect(Pacbio::Well.count).to eq(5)
