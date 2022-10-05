@@ -17,9 +17,9 @@ module Pacbio
     has_one :plate, foreign_key: :pacbio_run_id,
                     dependent: :destroy, inverse_of: :run
 
-    # This association creates the link to the SmrtLinkVersion. Pacbio Run
-    # belongs to a SMRT Link version. We set the default SmrtLinkversion for
-    # the run using the class method 'default'.
+    # This association creates the link to the SmrtLinkVersion. Run belongs
+    # to a SMRT Link version. We set the default SmrtLinkversion for the run
+    # using the class method 'default'.
     belongs_to :smrt_link_version,
                class_name: 'Pacbio::SmrtLinkVersion',
                foreign_key: :pacbio_smrt_link_version_id,
