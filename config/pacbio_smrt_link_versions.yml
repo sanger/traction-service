@@ -22,7 +22,7 @@ default: &default
   options:
     ccs_analysis_output:
       key: ccs_analysis_output
-      label: 'Ccs Analysis Output:'
+      label: 'CCS Analysis Output:'
       default_value: 'Yes'
       validations:
         presence: {}
