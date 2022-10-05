@@ -18,7 +18,7 @@ module Pacbio
                     dependent: :destroy, inverse_of: :run
 
     # This association creates the link to the SmrtLinkVersion. Run belongs
-    # to a SMRT Link version. We set the default SmrtLinkversion for the run
+    # to a SmrtLinkVersion. We set the default SmrtLinkVersion for the run
     # using the class method 'default'.
     belongs_to :smrt_link_version,
                class_name: 'Pacbio::SmrtLinkVersion',
