@@ -3,8 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe 'PlatesController', type: :request do
-  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
-  let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
+  before do
+    # Create a default smrt link version for pacbio runs.
+    create(:pacbio_smrt_link_version, name: 'v10', default: true)
+  end
 
   describe '#get' do
     let!(:run1) { create(:pacbio_run) }
