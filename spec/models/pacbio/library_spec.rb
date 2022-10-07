@@ -6,6 +6,7 @@ RSpec.describe Pacbio::Library, type: :model, pacbio: true do
   subject { build(:pacbio_library, params) }
 
   before do
+    # Create a default pacbio smrt link version for pacbio runs.
     create(:pacbio_smrt_link_version, name: 'v10', default: true)
   end
 
