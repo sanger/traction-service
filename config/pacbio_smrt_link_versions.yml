@@ -3,7 +3,6 @@ default: &default
 
   yes_no: &yes_no ['Yes','No']
   generate: &generate [In SMRT Link,Do Not Generate,On Instrument]
-  times: &times [10.0,15.0,20.0,24.0,30.0]
 
   select_yes_no: &select_yes_no Yes,No
   select_generate: &select_generate In SMRT Link,Do Not Generate,On Instrument
@@ -142,8 +141,6 @@ default: &default
       default_value:
       validations:
         presence: {}
-        inclusion:
-          in: *times
         numericality:
           less_than_or_equal_to: 30
           greater_than_or_equal_to: 0.1
