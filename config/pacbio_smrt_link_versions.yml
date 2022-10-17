@@ -153,3 +153,7 @@ default: &default
 development: *default
 
 test: *default
+
+production: *default
+
+uat: *default
