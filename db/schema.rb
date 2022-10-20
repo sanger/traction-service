@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_09_103551) do
+ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -178,8 +178,40 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_09_103551) do
     t.datetime "updated_at", precision: nil, null: false
     t.integer "state", default: 0
     t.datetime "deactivated_at", precision: nil
-    t.string "smrt_link_version", null: false
+    t.string "smrt_link_version_deprecated"
+    t.bigint "pacbio_smrt_link_version_id"
     t.index ["name"], name: "index_pacbio_runs_on_name", unique: true
+    t.index ["pacbio_smrt_link_version_id"], name: "index_pacbio_runs_on_pacbio_smrt_link_version_id"
+  end
+
+  create_table "pacbio_smrt_link_option_versions", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "pacbio_smrt_link_version_id"
+    t.bigint "pacbio_smrt_link_option_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pacbio_smrt_link_option_id"], name: "index_smrt_link_option_versions_on_option_id"
+    t.index ["pacbio_smrt_link_version_id"], name: "index_smrt_link_option_versions_on_version_id"
+  end
+
+  create_table "pacbio_smrt_link_options", charset: "utf8mb3", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "label", null: false
+    t.string "default_value"
+    t.json "validations"
+    t.integer "data_type", default: 0
+    t.text "select_options"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_pacbio_smrt_link_options_on_key", unique: true
+  end
+
+  create_table "pacbio_smrt_link_versions", charset: "utf8mb3", force: :cascade do |t|
+    t.string "name", null: false
+    t.boolean "default", default: false
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_pacbio_smrt_link_versions_on_name", unique: true
   end
 
   create_table "pacbio_well_libraries", charset: "utf8mb3", force: :cascade do |t|
@@ -200,17 +232,17 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_09_103551) do
     t.bigint "pacbio_plate_id"
     t.string "row"
     t.string "column"
-    t.decimal "movie_time", precision: 3, scale: 1
-    t.float "on_plate_loading_concentration"
+    t.decimal "movie_time_deprecated", precision: 3, scale: 1
+    t.float "on_plate_loading_concentration_deprecated"
     t.string "comment"
     t.string "uuid"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.decimal "pre_extension_time", precision: 3, scale: 1
+    t.decimal "pre_extension_time_deprecated", precision: 3, scale: 1
     t.integer "generate_hifi_deprecated"
     t.string "ccs_analysis_output_deprecated"
-    t.string "binding_kit_box_barcode"
-    t.decimal "loading_target_p1_plus_p2", precision: 3, scale: 2
+    t.string "binding_kit_box_barcode_deprecated"
+    t.decimal "loading_target_p1_plus_p2_deprecated", precision: 3, scale: 2
     t.json "smrt_link_options"
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
@@ -220,6 +252,24 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_09_103551) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["barcode"], name: "index_plates_on_barcode", unique: true
+  end
+
+  create_table "qc_assay_types", charset: "utf8mb3", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "label", null: false
+    t.string "units"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "qc_results", charset: "utf8mb3", force: :cascade do |t|
+    t.string "labware_barcode", null: false
+    t.string "sample_external_id", null: false
+    t.bigint "qc_assay_type_id", null: false
+    t.string "value", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["qc_assay_type_id"], name: "index_qc_results_on_qc_assay_type_id"
   end
 
   create_table "receptions", charset: "utf8mb3", force: :cascade do |t|
@@ -354,5 +404,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_09_103551) do
   add_foreign_key "pacbio_libraries", "pacbio_pools"
   add_foreign_key "pacbio_libraries", "pacbio_requests"
   add_foreign_key "pacbio_pools", "tubes"
+  add_foreign_key "pacbio_runs", "pacbio_smrt_link_versions"
+  add_foreign_key "pacbio_smrt_link_option_versions", "pacbio_smrt_link_options"
+  add_foreign_key "pacbio_smrt_link_option_versions", "pacbio_smrt_link_versions"
+  add_foreign_key "qc_results", "qc_assay_types"
   add_foreign_key "requests", "receptions"
 end

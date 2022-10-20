@@ -10,6 +10,8 @@ Rails.application.routes.draw do
     jsonapi_resources :library_types, only: %i[index create update]
     jsonapi_resources :data_types, only: %i[index create update]
     jsonapi_resources :receptions, only: %i[index create show]
+    jsonapi_resources :qc_assay_types, only: %i[index show]
+    jsonapi_resources :qc_results, only: %i[index create show]
 
     namespace :saphyr do
       jsonapi_resources :runs,          only: %i[index create show update destroy]
@@ -47,10 +49,12 @@ Rails.application.routes.draw do
         # rubocop:enable Lint/EmptyBlock
       end
 
-      jsonapi_resources :libraries,       only: %i[index update destroy]
-      jsonapi_resources :requests,        only: %i[index create update destroy]
-      jsonapi_resources :tubes,           only: %i[index]
-      jsonapi_resources :pools,           except: %i[destroy]
+      jsonapi_resources :libraries,           only: %i[index update destroy]
+      jsonapi_resources :requests,            only: %i[index create update destroy]
+      jsonapi_resources :tubes,               only: %i[index]
+      jsonapi_resources :pools,               except: %i[destroy]
+      jsonapi_resources :smrt_link_versions,  only: %i[index show]
+      jsonapi_resources :smrt_link_options,   only: %i[index show]
     end
 
     namespace :ont do

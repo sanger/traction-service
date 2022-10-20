@@ -19,33 +19,31 @@ module Pacbio
     has_many :libraries, through: :pools
     has_many :tag_sets, through: :libraries
 
-    # Before we were adding SMRT Link options as columns.
-    # This is brittle as due to v11 options are canned
-    # With a json column it means different versions can have different options
-    # Downside is they need to be validated differently
-    # This is done with a specific validator
+    # pacbio smrt link options for a well are kept in store field of the well
+    # which is mapped to smrt_link_options column (JSON) of pacbio_wells table.
+    # They are accessible on the model as well.
+    # See https://api.rubyonrails.org/classes/ActiveRecord/Store.html
+
     store :smrt_link_options,
-          accessors: %i[ccs_analysis_output generate_hifi
+          accessors: %i[ccs_analysis_output
+                        generate_hifi
                         ccs_analysis_output_include_low_quality_reads
                         fivemc_calls_in_cpg_motifs
                         ccs_analysis_output_include_kinetics_information
-                        demultiplex_barcodes]
+                        demultiplex_barcodes
+                        on_plate_loading_concentration
+                        binding_kit_box_barcode
+                        pre_extension_time
+                        loading_target_p1_plus_p2
+                        movie_time]
 
-    validates_with SmrtLinkOptionsValidator,
-                   available_smrt_link_versions: SmrtLink::Versions::AVAILABLE,
-                   required_fields_by_version: SmrtLink::Versions.required_fields_by_version
+    # The SmrtLinkOptions validator gives full details on how this works
+    # validations are loaded from the database
+    # See SMRT link versions and SMRT link options for further
+    # explanation
+    validates_with SmrtLinkOptionsValidator
 
-    # The following are all smrt link options
-    # It would make sense to transfer them all to smrt_link_options
-    validates :on_plate_loading_concentration,
-              :row, :column, :binding_kit_box_barcode, presence: true
-    validates :movie_time, presence: true,
-                           numericality: { greater_than_or_equal_to: 0.1,
-                                           less_than_or_equal_to: 30 }
-    validates :pre_extension_time, numericality: true, allow_blank: true
-    validates :loading_target_p1_plus_p2,
-              allow_blank: true,
-              numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
+    validates :row, :column, presence: true
 
     delegate :run, to: :plate, allow_nil: true
 

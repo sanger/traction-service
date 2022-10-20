@@ -2,8 +2,8 @@
 
 FactoryBot.define do
   factory :pacbio_well, class: 'Pacbio::Well' do
-    movie_time { 10 }
-    sequence(:on_plate_loading_concentration) { |n| "10.#{n}" }
+    movie_time { 15 }
+    sequence(:on_plate_loading_concentration) { |n| "10.#{n}".to_f }
     row { 'A' }
     sequence(:column) { |n| "0#{n}" }
     plate { create(:pacbio_plate) }
@@ -23,6 +23,7 @@ FactoryBot.define do
     ccs_analysis_output_include_kinetics_information { 'Yes' }
     fivemc_calls_in_cpg_motifs { 'Yes' }
     demultiplex_barcodes { 'In SMRT Link' }
+    loading_target_p1_plus_p2 { 0.85 }
 
     factory :pacbio_well_with_pools do
       after(:create) do |well, evaluator|
