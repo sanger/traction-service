@@ -2,7 +2,23 @@
 
 require 'rails_helper'
 
+# These tests may end up being redundant but we need to make sure existing validations still work
+# when this work is merged with yaml file for validations it would be better to load those
+# validations rather than setting them here
 RSpec.describe Pacbio::Well, type: :model, pacbio: true do
+  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
+  let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
+  let!(:plate_v10) { create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version10)) }
+
+  before do
+    # v10 and v11 validations
+    create(:pacbio_smrt_link_option, key: :movie_time, validations: { presence: {}, numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 } }, smrt_link_versions: [version10, version11])
+    create(:pacbio_smrt_link_option, key: :binding_kit_box_barcode, validations: { presence: {} }, smrt_link_versions: [version10, version11])
+    create(:pacbio_smrt_link_option, key: :on_plate_loading_concentration, validations: { presence: {} }, smrt_link_versions: [version10, version11])
+    create(:pacbio_smrt_link_option, key: :pre_extension_time, validations: { numericality: { allow_blank: true } }, smrt_link_versions: [version10, version11])
+    create(:pacbio_smrt_link_option, key: :loading_target_p1_plus_p2, validations: { numericality: { allow_blank: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 1 } }, smrt_link_versions: [version10, version11])
+  end
+
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_well }
 
@@ -23,7 +39,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
   context 'movie time' do
     it 'must be present' do
-      expect(build(:pacbio_well, movie_time: nil)).not_to be_valid
+      expect(build(:pacbio_well, plate: plate_v10, movie_time: nil)).not_to be_valid
     end
 
     it 'can be a decimal' do
@@ -31,9 +47,9 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
 
     it 'must be within range' do
-      expect(build(:pacbio_well, movie_time: 15)).to be_valid
-      expect(build(:pacbio_well, movie_time: 31)).not_to be_valid
-      expect(build(:pacbio_well, movie_time: 0)).not_to be_valid
+      expect(build(:pacbio_well, plate: plate_v10, movie_time: 15)).to be_valid
+      expect(build(:pacbio_well, plate: plate_v10, movie_time: 31)).not_to be_valid
+      expect(build(:pacbio_well, plate: plate_v10, movie_time: 0)).not_to be_valid
     end
   end
 
@@ -181,15 +197,31 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
 
   context 'Smrt Link Options' do
     let(:well)  { create(:pacbio_well) }
-    let(:options) { SmrtLink::Versions.required_fields_by_version }
+    let(:generate_in) { Pacbio::GENERATE }
+    let(:yes_no) { Pacbio::YES_NO }
 
     it 'will include the relevant options' do
-      expect(described_class.stored_attributes[:smrt_link_options]).to eq(%i[ccs_analysis_output generate_hifi ccs_analysis_output_include_low_quality_reads fivemc_calls_in_cpg_motifs ccs_analysis_output_include_kinetics_information demultiplex_barcodes])
+      expect(described_class.stored_attributes[:smrt_link_options]).to eq(%i[
+        ccs_analysis_output
+        generate_hifi
+        ccs_analysis_output_include_low_quality_reads
+        fivemc_calls_in_cpg_motifs
+        ccs_analysis_output_include_kinetics_information
+        demultiplex_barcodes
+        on_plate_loading_concentration
+        binding_kit_box_barcode
+        pre_extension_time
+        loading_target_p1_plus_p2 movie_time
+      ])
     end
 
     context 'v10' do
-      let(:well) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: 'v10'))) }
-      let(:v10_options) { options[:v10] }
+      let(:well) { build(:pacbio_well, plate: plate_v10) }
+
+      before do
+        create(:pacbio_smrt_link_option, key: 'generate_hifi', validations: { presence: {}, inclusion: { in: generate_in } }, smrt_link_versions: [version10])
+        create(:pacbio_smrt_link_option, key: 'ccs_analysis_output', validations: { presence: {}, inclusion: { in: yes_no } }, smrt_link_versions: [version10])
+      end
 
       context 'generate hifi' do
         it 'must be present' do
@@ -198,7 +230,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
         end
 
         it 'must be a valid value' do
-          v10_options['generate_hifi'].each do |option|
+          generate_in.each do |option|
             well.generate_hifi = option
             expect(well).to be_valid
           end
@@ -215,7 +247,7 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
         end
 
         it 'must be a valid value' do
-          v10_options['ccs_analysis_output'].each do |option|
+          yes_no.each do |option|
             well.ccs_analysis_output = option
             expect(well).to be_valid
           end
@@ -227,8 +259,13 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
     end
 
     context 'v11' do
-      let(:well) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: 'v11'))) }
-      let(:v11_options) { options[:v11] }
+      let(:well) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version11))) }
+
+      before do
+        create(:pacbio_smrt_link_option, key: 'demultiplex_barcodes', validations: { presence: {}, inclusion: { in: generate_in } }, smrt_link_versions: [version11])
+        create(:pacbio_smrt_link_option, key: 'ccs_analysis_output_include_low_quality_reads', validations: { presence: {}, inclusion: { in: yes_no } }, smrt_link_versions: [version11])
+        create(:pacbio_smrt_link_option, key: 'ccs_analysis_output_include_kinetics_information', validations: { presence: {}, inclusion: { in: yes_no } }, smrt_link_versions: [version11])
+      end
 
       context 'CCS Analysis Output - Include Low Quality Reads' do
         it 'must be present' do
@@ -237,8 +274,8 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
         end
 
         it 'must be a valid value' do
-          v11_options['ccs_analysis_output_include_low_quality_reads'].each do |option|
-            well.generate_hifi = option
+          yes_no.each do |option|
+            well.ccs_analysis_output_include_low_quality_reads = option
             expect(well).to be_valid
           end
 
@@ -254,8 +291,8 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
         end
 
         it 'must be a valid value' do
-          v11_options['ccs_analysis_output_include_kinetics_information'].each do |option|
-            well.generate_hifi = option
+          yes_no.each do |option|
+            well.ccs_analysis_output_include_kinetics_information = option
             expect(well).to be_valid
           end
 
@@ -270,8 +307,8 @@ RSpec.describe Pacbio::Well, type: :model, pacbio: true do
         end
 
         it 'must be a valid value' do
-          v11_options['demultiplex_barcodes'].each do |option|
-            well.generate_hifi = option
+          generate_in.each do |option|
+            well.demultiplex_barcodes = option
             expect(well).to be_valid
           end
 

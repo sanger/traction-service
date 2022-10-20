@@ -3,12 +3,16 @@
 require 'rails_helper'
 
 RSpec.describe CsvGenerator, type: :model do
+  before do
+    create(:pacbio_smrt_link_version, name: 'v10', default: true)
+  end
+
   describe '#generate_sample_sheet' do
     subject(:csv_string) { csv.generate_sample_sheet }
 
     let(:run) { create(:pacbio_run, plate:) }
     let(:parsed_csv) { CSV.parse(csv_string) }
-    let(:csv) { ::CsvGenerator.new(run:, configuration: Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version)) }
+    let(:csv) { ::CsvGenerator.new(run:, configuration: Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name)) }
 
     context 'when the libraries are tagged' do
       let(:well1) do
@@ -58,7 +62,7 @@ RSpec.describe CsvGenerator, type: :model do
           well1.automation_parameters,
           well1.generate_hifi,
           well1.ccs_analysis_output,
-          well1.loading_target_p1_plus_p2,
+          well1.loading_target_p1_plus_p2.to_s,
           well1.adaptive_loading_check.to_s
         ])
 
@@ -84,7 +88,7 @@ RSpec.describe CsvGenerator, type: :model do
           well2.automation_parameters,
           well2.generate_hifi,
           well2.ccs_analysis_output,
-          well2.loading_target_p1_plus_p2,
+          well2.loading_target_p1_plus_p2.to_s,
           well2.adaptive_loading_check.to_s
         ])
       end
@@ -197,7 +201,7 @@ RSpec.describe CsvGenerator, type: :model do
           well1.automation_parameters,
           well1.generate_hifi,
           well1.ccs_analysis_output,
-          well1.loading_target_p1_plus_p2,
+          well1.loading_target_p1_plus_p2.to_s,
           well1.adaptive_loading_check.to_s
         ])
 
@@ -223,7 +227,7 @@ RSpec.describe CsvGenerator, type: :model do
           well2.automation_parameters,
           well2.generate_hifi,
           well2.ccs_analysis_output,
-          well2.loading_target_p1_plus_p2,
+          well2.loading_target_p1_plus_p2.to_s,
           well2.adaptive_loading_check.to_s
         ])
       end

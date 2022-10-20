@@ -8,3 +8,5 @@ Rake::Task['library_types:create'].invoke
 Rake::Task['data_types:create'].invoke
 Rake::Task['enzymes:create'].invoke
 Rake::Task['tags:create:pacbio_all'].invoke
+Rake::Task['qc_assay_types:create'].invoke
+Rake::Task['smrt_link_versions:create'].invoke

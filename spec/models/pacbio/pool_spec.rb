@@ -5,6 +5,11 @@ require 'rails_helper'
 RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
   subject(:pool) { build(:pacbio_pool, params) }
 
+  before do
+    # Create a default pacbio smrt link version for pacbio runs.
+    create(:pacbio_smrt_link_version, name: 'v10', default: true)
+  end
+
   let(:libraries) { create_list(:pacbio_library, 5) }
   let(:params) { {} }
 
