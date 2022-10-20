@@ -3,6 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe SampleSheet do
+  before do
+    # Create a default pacbio smrt link version for pacbio runs.
+    create(:pacbio_smrt_link_version, name: 'v10', default: true)
+  end
+
   let(:well) { create(:pacbio_well_with_pools, pool_count: 5) }
   let(:empty_well) { create(:pacbio_well) }
 

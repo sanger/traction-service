@@ -3,6 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe 'PacBio', type: :model, pacbio: true do
+  before do
+    # Create a default pacbio smrt link version for pacbio runs.
+    create(:pacbio_smrt_link_version, name: 'v10', default: true)
+  end
+
   let(:config)        { Pipelines.configure(Pipelines.load_yaml) }
   let(:pacbio_config) { config.pacbio }
   let(:plate)         { create(:pacbio_plate_with_wells) }

@@ -1,0 +1,159 @@
+---
+default: &default
+
+  yes_no: &yes_no ['Yes','No']
+  generate: &generate [In SMRT Link,Do Not Generate,On Instrument]
+
+  select_yes_no: &select_yes_no Yes,No
+  select_generate: &select_generate In SMRT Link,Do Not Generate,On Instrument
+  select_times: &select_times 10.0,15.0,20.0,24.0,30.0
+  
+  versions:
+    v10:
+      name: v10
+      active: true
+      default: true
+    v11:
+      name: v11
+      active: true
+      default: false
+
+  options:
+    ccs_analysis_output:
+      key: ccs_analysis_output
+      label: 'CCS Analysis Output'
+      default_value: 'Yes'
+      validations:
+        presence: {}
+        inclusion:
+          in: *yes_no
+      data_type: list
+      select_options: *select_yes_no
+      versions:
+        - v10
+    generate_hifi:
+      key: generate_hifi
+      label: 'Generate HiFi'
+      default_value: On Instrument      
+      validations:
+        presence: {}
+        inclusion:
+          in: *generate
+      data_type: list
+      select_options: *select_generate
+      versions: 
+        - v10
+    ccs_analysis_output_include_kinetics_information:
+      key: ccs_analysis_output_include_kinetics_information
+      label: 'Include Kinetics Information'
+      default_value: 'Yes'
+      validations:
+        presence: {}
+        inclusion:
+          in: *yes_no
+      data_type: list
+      select_options: *select_yes_no
+      versions:
+        - v11
+    ccs_analysis_output_include_low_quality_reads:
+      key: ccs_analysis_output_include_low_quality_reads
+      label: 'Include Low Quality Reads'
+      default_value: 'Yes'
+      validations:
+        presence: {}
+        inclusion:
+          in: *yes_no
+      data_type: list
+      select_options: *select_yes_no
+      versions:
+        - v11
+    fivemc_calls_in_cpg_motifs:
+      key: fivemc_calls_in_cpg_motifs
+      label: '5mC Calls In CpG Motifs'
+      default_value: 'Yes'
+      validations:
+        presence: {}
+        inclusion:
+          in: *yes_no
+      data_type: list
+      select_options: *select_yes_no
+      versions:
+        - v11
+    demultiplex_barcodes:
+      key: demultiplex_barcodes
+      label: 'Demultiplex Barcodes'
+      default_value: 'In SMRT Link'
+      validations:
+        presence: {}
+        inclusion:
+          in: *generate
+      data_type: list
+      select_options: *select_generate
+      versions:
+        - v11
+    on_plate_loading_concentration:
+      key: on_plate_loading_concentration
+      label: 'On Plate Loading Concentration (mP)'
+      default_value:
+      validations:
+        presence: {}
+      data_type: number
+      versions:
+        - v10
+        - v11
+    binding_kit_box_barcode:
+      key: binding_kit_box_barcode
+      label: 'Binding Kit Box Barcode'
+      default_value:
+      validations:
+        presence: {}
+      data_type: number
+      versions:
+        - v10
+        - v11
+    pre_extension_time:
+      key: pre_extension_time
+      label: 'Pre-extension time'
+      default_value: '2'
+      validations:
+        numericality:
+          allow_blank: true
+      data_type: number
+      versions:
+        - v10
+        - v11
+    loading_target_p1_plus_p2:
+      key: loading_target_p1_plus_p2
+      label: 'Loading Target (P1 + P2)'
+      default_value: '0.85'
+      validations:
+        numericality:
+          allow_blank: true
+          less_than_or_equal_to: 1.0
+          greater_than_or_equal_to: 0.0
+      data_type: number
+      versions:
+        - v10
+        - v11
+    movie_time:
+      key: movie_time
+      label: 'Movie Time (hrs)'
+      default_value:
+      validations:
+        presence: {}
+        numericality:
+          less_than_or_equal_to: 30
+          greater_than_or_equal_to: 0.1
+      select_options: *select_times
+      data_type: number
+      versions:
+        - v10
+        - v11
+
+development: *default
+
+test: *default
+
+production: *default
+
+uat: *default
