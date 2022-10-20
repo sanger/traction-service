@@ -48,6 +48,7 @@ setup process
 - To create all of the pacbio tags (needed for pacbio dummy runs): `bundle exec rails tags:create:pacbio_all`
 - To create all the supported library types: `bundle exec rails library_types:create`
 - To create all the supported data types: `bundle exec rails data_types:create`
+- To create pacbio smrt link versions: `bundle exec rails smrt_link_versions:create`
 
 ### Useful support data
 

@@ -3,6 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe 'RunsController', type: :request do
+  # Create default and non-default smrt link versions for runs
+  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
+  let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
+
   describe '#get' do
     let!(:run1) { create(:pacbio_run, state: 'pending') }
     let!(:run2) { create(:pacbio_run, state: 'started') }
@@ -20,12 +24,10 @@ RSpec.describe 'RunsController', type: :request do
       get v1_pacbio_runs_path, headers: json_api_headers
 
       json = ActiveSupport::JSON.decode(response.body)
-
       expect(json['data'][0]['attributes']['name']).to eq(run1.name)
       expect(json['data'][0]['attributes']['sequencing_kit_box_barcode']).to eq(run1.sequencing_kit_box_barcode)
       expect(json['data'][0]['attributes']['dna_control_complex_box_barcode']).to eq(run1.dna_control_complex_box_barcode)
       expect(json['data'][0]['attributes']['system_name']).to eq(run1.system_name)
-      expect(json['data'][0]['attributes']['smrt_link_version']).to eq(run1.smrt_link_version)
       expect(json['data'][0]['attributes']['created_at']).to eq(run1.created_at.to_fs(:us))
       expect(json['data'][0]['attributes']['state']).to eq(run1.state)
       expect(json['data'][0]['attributes']['comments']).to eq(run1.comments)
@@ -34,7 +36,7 @@ RSpec.describe 'RunsController', type: :request do
     end
 
     it 'returns the correct relationships', aggregate_failures: true do
-      get "#{v1_pacbio_runs_path}?include=plate", headers: json_api_headers
+      get "#{v1_pacbio_runs_path}?include=plate,smrt_link_version", headers: json_api_headers
 
       expect(response).to have_http_status(:success), response.body
       json = ActiveSupport::JSON.decode(response.body)
@@ -46,15 +48,20 @@ RSpec.describe 'RunsController', type: :request do
       expect(json['data'][1]['relationships']['plate']).to be_present
       expect(json['data'][1]['relationships']['plate']['data']['type']).to eq 'plates'
       expect(json['data'][1]['relationships']['plate']['data']['id']).to eq plate2.id.to_s
+
+      expect(json['data'][0]['relationships']['smrt_link_version']).to be_present
+      expect(json['data'][0]['relationships']['smrt_link_version']['data']['type']).to eq 'smrt_link_versions'
+      expect(json['data'][0]['relationships']['smrt_link_version']['data']['id']).to eq run1.smrt_link_version.id.to_s
     end
   end
 
   describe '#create' do
+    # Set a non-default smrt link version id in request body.
     let(:body) do
       {
         data: {
           type: 'runs',
-          attributes: attributes_for(:pacbio_run)
+          attributes: attributes_for(:pacbio_run, pacbio_smrt_link_version_id: version11.id)
         }
       }.to_json
     end
@@ -71,17 +78,24 @@ RSpec.describe 'RunsController', type: :request do
 
       it 'creates a run with the correct attributes' do
         post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
         run = Pacbio::Run.first
+
+        expect(run.id).to eq(json['data']['id'].to_i)
         expect(run.name).to be_present
         expect(run.state).to be_present
         expect(run.sequencing_kit_box_barcode).to be_present
         expect(run.dna_control_complex_box_barcode).to be_present
         expect(run.system_name).to be_present
         expect(run.comments).to be_present
+        expect(run.smrt_link_version).to be_present
+        expect(run.smrt_link_version).to eq(version11)
+        expect(run.pacbio_smrt_link_version_id).to eq(version11.id)
       end
     end
 
     context 'on failure' do
+      # We send an empty request body.
       let(:body) do
         {
           data: {
@@ -109,6 +123,60 @@ RSpec.describe 'RunsController', type: :request do
         errors = json['data']['errors']
         expect(errors['sequencing_kit_box_barcode']).to be_present
         expect(errors['dna_control_complex_box_barcode']).to be_present
+      end
+    end
+  end
+
+  describe '#create run with default smrt link version implicitly' do
+    # Set no smrt link version id in request body.
+    let(:body) do
+      {
+        data: {
+          type: 'runs',
+          attributes: attributes_for(:pacbio_run)
+        }
+      }.to_json
+    end
+
+    context 'on success' do
+      it 'creates a run with the correct attributes' do
+        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+        run = Pacbio::Run.first
+        version = Pacbio::SmrtLinkVersion.find_by(default: true)
+
+        expect(run.id).to eq(json['data']['id'].to_i)
+        expect(version).to eq(version10)
+        expect(run.smrt_link_version).to be_present
+        expect(run.smrt_link_version).to eq(version)
+        expect(run.pacbio_smrt_link_version_id).to eq(version.id)
+      end
+    end
+  end
+
+  describe '#create run with default smrt link version explicitly' do
+    # Set default smrt link version id in request body.
+    let(:body) do
+      {
+        data: {
+          type: 'runs',
+          attributes: attributes_for(:pacbio_run, pacbio_smrt_link_version_id: version10.id)
+        }
+      }.to_json
+    end
+
+    context 'on success' do
+      it 'creates a run with the correct attributes' do
+        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+        run = Pacbio::Run.first
+        version = Pacbio::SmrtLinkVersion.find_by(default: true)
+
+        expect(run.id).to eq(json['data']['id'].to_i)
+        expect(version).to eq(version10)
+        expect(run.smrt_link_version).to be_present
+        expect(run.smrt_link_version).to eq(version)
+        expect(run.pacbio_smrt_link_version_id).to eq(version.id)
       end
     end
   end
@@ -265,9 +333,9 @@ RSpec.describe 'RunsController', type: :request do
     let(:well1)   { create(:pacbio_well_with_pools) }
     let(:well2)   { create(:pacbio_well_with_pools) }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
-    let(:run)     { create(:pacbio_run, plate:) }
+    let(:run)     { create(:pacbio_run, smrt_link_version: version10, plate:) }
 
-    after { FileUtils.rm_rf("#{run.name}.csv")  }
+    after { FileUtils.rm_rf("#{run.name}.csv") }
 
     it 'returns the correct status' do
       get v1_pacbio_run_sample_sheet_path(run).to_s, headers: json_api_headers

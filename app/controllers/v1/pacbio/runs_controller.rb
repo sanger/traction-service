@@ -50,7 +50,7 @@ module V1
                                                    :system_name,
                                                    :state,
                                                    :comments,
-                                                   :smrt_link_version)
+                                                   :pacbio_smrt_link_version_id)
       end
 
       def render_json(status)

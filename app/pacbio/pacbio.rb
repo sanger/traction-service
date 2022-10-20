@@ -36,4 +36,9 @@ module Pacbio
     )
   end
   # rubocop:enable Lint/UnusedMethodArgument
+
+  # Valid values for smrt link options. These are used by several tests, but we
+  # removed the old Pacbio::SmrtLink::Versions module.
+  YES_NO = %w[Yes No].freeze
+  GENERATE = ['In SMRT Link', 'On Instrument', 'Do Not Generate'].freeze
 end

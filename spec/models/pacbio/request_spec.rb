@@ -3,6 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Pacbio::Request, type: :model, pacbio: true do
+  before do
+    # Create a default pacbio smrt link version for pacbio runs.
+    create(:pacbio_smrt_link_version, name: 'v10', default: true)
+  end
+
   it_behaves_like 'requestor model'
 
   context 'cost_code default value' do
