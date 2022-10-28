@@ -28,7 +28,7 @@ module Pacbio
           accessors: %i[ccs_analysis_output
                         generate_hifi
                         ccs_analysis_output_include_low_quality_reads
-                        fivemc_calls_in_cpg_motifs
+                        include_fivemc_calls_in_cpg_motifs
                         ccs_analysis_output_include_kinetics_information
                         demultiplex_barcodes
                         on_plate_loading_concentration
