@@ -164,7 +164,7 @@ RSpec.describe 'RakeTasks' do
       keys = %w[
         ccs_analysis_output_include_low_quality_reads
         ccs_analysis_output_include_kinetics_information
-        fivemc_calls_in_cpg_motifs
+        include_fivemc_calls_in_cpg_motifs
         demultiplex_barcodes
         on_plate_loading_concentration
         binding_kit_box_barcode

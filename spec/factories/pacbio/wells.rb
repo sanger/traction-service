@@ -21,7 +21,7 @@ FactoryBot.define do
     # v11
     ccs_analysis_output_include_low_quality_reads { 'Yes' }
     ccs_analysis_output_include_kinetics_information { 'Yes' }
-    fivemc_calls_in_cpg_motifs { 'Yes' }
+    include_fivemc_calls_in_cpg_motifs { 'Yes' }
     demultiplex_barcodes { 'In SMRT Link' }
     loading_target_p1_plus_p2 { 0.85 }
 
