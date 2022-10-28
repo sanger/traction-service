@@ -16,11 +16,11 @@ RSpec.describe 'SampleSheet', type: :model do
       expect(column.fetch('populate')).to eq(populate)
     end
 
-    it 'must have 5mC Calls in CpG Motifs' do
-      column = sample_sheet_configuration.columns.children['5mC Calls in CpG Motifs']
+    it 'must have Include 5mC Calls in CpG Motifs' do
+      column = sample_sheet_configuration.columns.children['Include 5mC Calls in CpG Motifs']
       expect(column).to be_present
       expect(column.fetch('type')).to eq(:model)
-      expect(column.fetch('value')).to eq('fivemc_calls_in_cpg_motifs')
+      expect(column.fetch('value')).to eq('include_fivemc_calls_in_cpg_motifs')
       expect(column.fetch('populate')).to eq(populate)
     end
 
