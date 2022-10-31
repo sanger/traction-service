@@ -269,7 +269,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_31_122858) do
     t.string "value", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "status"
+    t.string "status"
     t.integer "decision_made_by", null: false
     t.index ["qc_assay_type_id"], name: "index_qc_results_on_qc_assay_type_id"
   end

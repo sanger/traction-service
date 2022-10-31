@@ -55,7 +55,12 @@ RSpec.describe QcResult, type: :model do
   end
 
   describe '#status' do
-    it { is_expected.to define_enum_for(:status).with(%i[pass fail failed_profile on_hold_uli review na_control]) }
+    let(:result) { create :qc_result }
+
+    it 'has a status' do
+      expect(result.status).to be_present
+      expect(result.status).to eq 'pass'
+    end
   end
 
   describe '#decision_made_by' do
@@ -70,7 +75,7 @@ RSpec.describe QcResult, type: :model do
           value: 'the result',
           status: :pass
         )
-      end.to raise_error(ActiveRecord::NotNullViolation)
+      end.to raise_error(ActiveRecord::RecordInvalid)
     end
   end
 end
