@@ -13,13 +13,14 @@ namespace :tags do
       Rake::Task['tags:create:pacbio_sequel_96'].invoke
       Rake::Task['tags:create:pacbio_isoseq'].invoke
       Rake::Task['tags:create:nextera_ud'].invoke
+      Rake::Task['tags:create:pacbio_96_barcode_plate_v3'].invoke
     end
 
     desc 'Create pacbio sequel tags'
     task pacbio_sequel: :environment do
       puts '-> Creating Sequel_16_barcodes_v3 tag set and tags'
       set = TagSet.pacbio_pipeline
-                  .find_or_create_by!(name: 'Sequel_16_barcodes_v3', uuid: '4d87a8ab-4d16-f0b0-77e5-0f467dba442e')
+                  .find_or_create_by!(name: 'Sequel_16_barcodes_v3', uuid: '244d96c6-f3b2-4997-5ae3-23ed33ab925f')
       puts '-> Tag Set successfully created'
       [
         { oligo: 'CACATATCAGAGTGCGT', group_id: 'bc1001_BAK8A_OA' },
@@ -387,6 +388,116 @@ namespace :tags do
         set.tags.find_or_create_by!(tag_attributes)
       end
       puts '-> Nextera_UD_Index_PlateA tags successfully created'
+    end
+
+    desc 'Create 96 barcode plate tags'
+    task pacbio_96_barcode_plate_v3: :environment do
+      puts '-> Creating Pacbio_96_barcode_plate_v3 tag set and tags'
+      set = TagSet.pacbio_pipeline
+                  .find_or_create_by!(name: 'Pacbio_96_barcode_plate_v3', uuid: '7a7f33e6-4912-4505-0d1e-3ceef7c93695')
+      puts '-> Tag Set successfully created'
+      [
+        { oligo: 'ATCGTGCGACGAGTAT', group_id: 'bc2001' },
+        { oligo: 'TGCATGTCATGAGTAT', group_id: 'bc2002' },
+        { oligo: 'ACGAGTGCTCGAGTAT', group_id: 'bc2003' },
+        { oligo: 'TGCAGTGCTCGAGTAT', group_id: 'bc2004' },
+        { oligo: 'TGACTCGATCGAGTAT', group_id: 'bc2005' },
+        { oligo: 'CATGCGATCTGAGTAT', group_id: 'bc2006' },
+        { oligo: 'ACTAGCATCTGAGTAT', group_id: 'bc2007' },
+        { oligo: 'ACGCTAGTCTGAGTAT', group_id: 'bc2008' },
+        { oligo: 'CGATCGCACTGAGTAT', group_id: 'bc2009' },
+        { oligo: 'TACGTAGTATGAGTAT', group_id: 'bc2010' },
+        { oligo: 'CTGACAGTACGAGTAT', group_id: 'bc2011' },
+        { oligo: 'TCGTACTACTGAGTAT', group_id: 'bc2012' },
+        { oligo: 'CTGCGTAGACGAGTAT', group_id: 'bc2013' },
+        { oligo: 'ATACATGCACGAGTAT', group_id: 'bc2014' },
+        { oligo: 'CGACATAGATGAGTAT', group_id: 'bc2015' },
+        { oligo: 'ATCTGCACGTGAGTAT', group_id: 'bc2016' },
+        { oligo: 'CTATGATAGCGAGTAT', group_id: 'bc2017' },
+        { oligo: 'CGATCAGTGCGAGTAT', group_id: 'bc2018' },
+        { oligo: 'CGTCATAGTCGAGTAT', group_id: 'bc2019' },
+        { oligo: 'ACTATGCGTCGAGTAT', group_id: 'bc2020' },
+        { oligo: 'CGTACATGCTGAGTAT', group_id: 'bc2021' },
+        { oligo: 'TCATCGACGTGAGTAT', group_id: 'bc2022' },
+        { oligo: 'TCGCATGACTGAGTAT', group_id: 'bc2023' },
+        { oligo: 'CATGATCGACGAGTAT', group_id: 'bc2024' },
+        { oligo: 'ACGCACGTACGAGTAT', group_id: 'bc2025' },
+        { oligo: 'CAGTAGCGTCGAGTAT', group_id: 'bc2026' },
+        { oligo: 'TGACTGTAGCGAGTAT', group_id: 'bc2027' },
+        { oligo: 'ACTGCAGCACGAGTAT', group_id: 'bc2028' },
+        { oligo: 'TAGCAGTATCGAGTAT', group_id: 'bc2029' },
+        { oligo: 'CATACAGCATGAGTAT', group_id: 'bc2030' },
+        { oligo: 'ATAGCGTACTGAGTAT', group_id: 'bc2031' },
+        { oligo: 'ATAGACGAGTGAGTAT', group_id: 'bc2032' },
+        { oligo: 'CGACTCGTATGAGTAT', group_id: 'bc2033' },
+        { oligo: 'TACTAGTGACGAGTAT', group_id: 'bc2034' },
+        { oligo: 'CAGCTGACATGAGTAT', group_id: 'bc2035' },
+        { oligo: 'ACGTCGCTGCGAGTAT', group_id: 'bc2036' },
+        { oligo: 'CAGTATGAGCGAGTAT', group_id: 'bc2037' },
+        { oligo: 'TCACGACGACGAGTAT', group_id: 'bc2038' },
+        { oligo: 'CATGTATGTCGAGTAT', group_id: 'bc2039' },
+        { oligo: 'TGCTGCGACTGAGTAT', group_id: 'bc2040' },
+        { oligo: 'TATGATCACTGAGTAT', group_id: 'bc2041' },
+        { oligo: 'TCTGCACTGCGAGTAT', group_id: 'bc2042' },
+        { oligo: 'ACGATGACGTGAGTAT', group_id: 'bc2043' },
+        { oligo: 'CGATGATGCTGAGTAT', group_id: 'bc2044' },
+        { oligo: 'TACGACAGTCGAGTAT', group_id: 'bc2045' },
+        { oligo: 'ATAGCATGTCGAGTAT', group_id: 'bc2046' },
+        { oligo: 'CATAGTACTCGAGTAT', group_id: 'bc2047' },
+        { oligo: 'TGATGCTAGTGAGTAT', group_id: 'bc2048' },
+        { oligo: 'TAGTCTGCGTGAGTAT', group_id: 'bc2049' },
+        { oligo: 'CTCATCTATCGAGTAT', group_id: 'bc2050' },
+        { oligo: 'TGCATACTGCGAGTAT', group_id: 'bc2051' },
+        { oligo: 'CAGACTAGTCGAGTAT', group_id: 'bc2052' },
+        { oligo: 'ATCGTGATCTGAGTAT', group_id: 'bc2053' },
+        { oligo: 'CTGCGATCACGAGTAT', group_id: 'bc2054' },
+        { oligo: 'CTCAGCATACGAGTAT', group_id: 'bc2055' },
+        { oligo: 'TCGCAGCGTCGAGTAT', group_id: 'bc2056' },
+        { oligo: 'TAGCACGCATGAGTAT', group_id: 'bc2057' },
+        { oligo: 'TACTGACGCTGAGTAT', group_id: 'bc2058' },
+        { oligo: 'ATCTGACTATGAGTAT', group_id: 'bc2059' },
+        { oligo: 'ATACGAGCTCGAGTAT', group_id: 'bc2060' },
+        { oligo: 'CGAGCACGCTGAGTAT', group_id: 'bc2061' },
+        { oligo: 'TCTGCGTATCGAGTAT', group_id: 'bc2062' },
+        { oligo: 'TCTGCATCATGAGTAT', group_id: 'bc2063' },
+        { oligo: 'TGCGTGATGCGAGTAT', group_id: 'bc2064' },
+        { oligo: 'TGAGCTATGCGAGTAT', group_id: 'bc2065' },
+        { oligo: 'CTGTCGTAGTGAGTAT', group_id: 'bc2066' },
+        { oligo: 'ATCGATGCATGAGTAT', group_id: 'bc2067' },
+        { oligo: 'ACTACGTGATGAGTAT', group_id: 'bc2068' },
+        { oligo: 'TCTATGACATGAGTAT', group_id: 'bc2069' },
+        { oligo: 'TACTGCTCACGAGTAT', group_id: 'bc2070' },
+        { oligo: 'CGAGTCTAGCGAGTAT', group_id: 'bc2071' },
+        { oligo: 'TATCAGTAGTGAGTAT', group_id: 'bc2072' },
+        { oligo: 'ATCACTAGTCGAGTAT', group_id: 'bc2073' },
+        { oligo: 'TATCACGACTGAGTAT', group_id: 'bc2074' },
+        { oligo: 'CTCGTCAGATGAGTAT', group_id: 'bc2075' },
+        { oligo: 'CAGCAGTGACGAGTAT', group_id: 'bc2076' },
+        { oligo: 'TGCGACGTGCGAGTAT', group_id: 'bc2077' },
+        { oligo: 'CTCACTGAGTGAGTAT', group_id: 'bc2078' },
+        { oligo: 'CACTGAGCGTGAGTAT', group_id: 'bc2079' },
+        { oligo: 'CAGCGTCTACGAGTAT', group_id: 'bc2080' },
+        { oligo: 'CTACTATGTCGAGTAT', group_id: 'bc2081' },
+        { oligo: 'ATGTACAGACGAGTAT', group_id: 'bc2082' },
+        { oligo: 'ACTCATCAGTGAGTAT', group_id: 'bc2083' },
+        { oligo: 'CTGAGCACTCGAGTAT', group_id: 'bc2084' },
+        { oligo: 'ATCATCTACTGAGTAT', group_id: 'bc2085' },
+        { oligo: 'TACATGCGATGAGTAT', group_id: 'bc2086' },
+        { oligo: 'TCGCTGTCACGAGTAT', group_id: 'bc2087' },
+        { oligo: 'ACGCTCATGCGAGTAT', group_id: 'bc2088' },
+        { oligo: 'TACTAGCAGCGAGTAT', group_id: 'bc2089' },
+        { oligo: 'CGTAGCAGATGAGTAT', group_id: 'bc2090' },
+        { oligo: 'CGTGCTCGTCGAGTAT', group_id: 'bc2091' },
+        { oligo: 'ACAGCTGTACGAGTAT', group_id: 'bc2092' },
+        { oligo: 'TCGATGCTACGAGTAT', group_id: 'bc2093' },
+        { oligo: 'TAGATACAGCGAGTAT', group_id: 'bc2094' },
+        { oligo: 'CTACTCATACGAGTAT', group_id: 'bc2095' },
+        { oligo: 'ATGTACTAGTGAGTAT', group_id: 'bc2096' }
+      ]
+        .each do |tag_attributes|
+        set.tags.find_or_create_by!(tag_attributes)
+      end
+      puts '-> Pacbio_96_barcode_plate_v3 tags successfully created'
     end
   end
 
