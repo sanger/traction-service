@@ -13,7 +13,7 @@ RSpec.describe 'RakeTasks' do
   describe 'create tags' do
     it 'creates all of the tag sets' do
       Rake::Task['tags:create:pacbio_all'].invoke
-      expect(TagSet.count).to eq(6)
+      expect(TagSet.count).to eq(7)
     end
   end
 
