@@ -11,9 +11,15 @@
   Long Read
   ToL
 
+- Agree CSV format from UI -> Service
+  CSV string
+
 ## Tasks To Do
 
-- Research: Confirm QC Assay Types in rake task, matching Google Sheet for below step
+- Add presence validation test for csv_data to QcResultsUpload spec
+
+- Wipe and add QC Assay Types in rake task, matching Google Sheet for below step
 
 - Update `lib/tasks/create_qc_assay_types.rake` so key/ label values are up to date, based on Google sheet "DPL-478 - long read QC results heading vs system field name"
+
 - Expose `status` and `decision_made_by` to QcResultResource, if required?

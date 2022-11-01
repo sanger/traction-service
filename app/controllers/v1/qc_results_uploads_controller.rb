@@ -20,7 +20,7 @@ module V1
 
     # # Only allow a list of trusted parameters through.
     # def qc_results_upload_params
-    #   params.require(:qc_results_upload).permit(:csv_data)
+    #   params.require(:csv_data)
     # end
   end
 end
