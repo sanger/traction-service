@@ -3,47 +3,25 @@
 module Ont
   # Ont::Library
   class Library < ApplicationRecord
-    include Material
+    include TubeMaterial
+    include Uuidable
+    include Librarian
+    include DualSourcedLibrary
 
-    has_one :flowcell, foreign_key: :ont_library_id, inverse_of: :library, dependent: :destroy
+    validates :volume, :kit_number, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
 
-    # This is dependent on the requests association, so needs to be included
-    # after that is defined
-    include PlateSourcedLibrary
+    belongs_to :request, class_name: 'Ont::Request', foreign_key: :ont_request_id
+    belongs_to :tag, optional: true
+    belongs_to :pool, class_name: 'Ont::Pool', foreign_key: :ont_pool_id,
+                      inverse_of: :libraries
 
-    validates :name, :pool, :pool_size, presence: true
-    validates :name, uniqueness: { case_sensitive: false,
-                                   message: :duplicated_in_plate }
+    has_one :sample, through: :request
+    has_one :tube, through: :pool
+    has_one :tag_set, through: :tag
+    has_one :source_plate, through: :source_well, source: :plate, class_name: '::Plate'
 
-    def self.library_name(plate_barcode, pool)
-      return nil if plate_barcode.nil? || pool.nil?
-
-      "#{plate_barcode}-#{pool}"
-    end
-
-    def plate_barcode
-      name.delete_suffix("-#{pool}")
-    end
-
-    def tube_barcode
-      return nil if container_material.nil? || !container_material.container.is_a?(::Tube)
-
-      container_material.container.barcode
-    end
-
-    def assigned_to_flowcell
-      !!flowcell
-    end
-
-    # Make table read only. We don't want anything pushing to it.
-    def readonly?
-      true
-    end
-
-    # Temporary dummy methods to try and assist migration to
-    # new schema
-    def requests
-      Ont::Request.none
+    def collection?
+      false
     end
   end
 end

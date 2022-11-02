@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
-  create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
+ActiveRecord::Schema[7.0].define(version: 2022_11_02_110343) do
+  create_table "container_materials", charset: "utf8", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
     t.string "material_type"
@@ -22,7 +22,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["material_type", "material_id"], name: "index_container_materials_on_material_type_and_material_id"
   end
 
-  create_table "data_types", charset: "utf8mb3", force: :cascade do |t|
+  create_table "data_types", charset: "utf8", force: :cascade do |t|
     t.string "name", null: false
     t.integer "pipeline", null: false
     t.datetime "created_at", null: false
@@ -31,14 +31,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["pipeline"], name: "index_data_types_on_pipeline"
   end
 
-  create_table "flipper_features", charset: "utf8mb3", force: :cascade do |t|
+  create_table "flipper_features", charset: "utf8", force: :cascade do |t|
     t.string "key", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_flipper_features_on_key", unique: true
   end
 
-  create_table "flipper_gates", charset: "utf8mb3", force: :cascade do |t|
+  create_table "flipper_gates", charset: "utf8", force: :cascade do |t|
     t.string "feature_key", null: false
     t.string "key", null: false
     t.string "value"
@@ -47,7 +47,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
   end
 
-  create_table "heron_ont_requests", charset: "utf8mb3", force: :cascade do |t|
+  create_table "heron_ont_requests", charset: "utf8", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "ont_library_id"
@@ -57,7 +57,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["ont_library_id"], name: "index_heron_ont_requests_on_ont_library_id"
   end
 
-  create_table "library_types", charset: "utf8mb3", force: :cascade do |t|
+  create_table "library_types", charset: "utf8", force: :cascade do |t|
     t.string "name", null: false
     t.integer "pipeline", null: false
     t.datetime "created_at", null: false
@@ -68,28 +68,30 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["pipeline"], name: "index_library_types_on_pipeline"
   end
 
-  create_table "ont_flowcells", charset: "utf8mb3", force: :cascade do |t|
-    t.integer "position"
+  create_table "ont_libraries", charset: "utf8", force: :cascade do |t|
+    t.float "volume"
+    t.integer "kit_number"
     t.string "uuid"
-    t.bigint "ont_run_id"
-    t.bigint "ont_library_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["ont_library_id"], name: "index_ont_flowcells_on_ont_library_id"
-    t.index ["ont_run_id"], name: "index_ont_flowcells_on_ont_run_id"
-    t.index ["position", "ont_run_id"], name: "index_ont_flowcells_on_position_and_ont_run_id", unique: true
+    t.bigint "ont_request_id", null: false
+    t.bigint "tag_id"
+    t.bigint "ont_pool_id"
+    t.index ["ont_pool_id"], name: "index_ont_libraries_on_ont_pool_id"
+    t.index ["ont_request_id"], name: "index_ont_libraries_on_ont_request_id"
+    t.index ["tag_id"], name: "index_ont_libraries_on_tag_id"
   end
 
-  create_table "ont_libraries", charset: "utf8mb3", force: :cascade do |t|
-    t.string "name"
-    t.integer "pool"
-    t.integer "pool_size"
+  create_table "ont_pools", charset: "utf8", force: :cascade do |t|
+    t.float "volume"
+    t.integer "kit_number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name"], name: "index_ont_libraries_on_name", unique: true
+    t.bigint "tube_id"
+    t.index ["tube_id"], name: "index_ont_pools_on_tube_id"
   end
 
-  create_table "ont_requests", charset: "utf8mb3", force: :cascade do |t|
+  create_table "ont_requests", charset: "utf8", force: :cascade do |t|
     t.bigint "library_type_id", null: false
     t.bigint "data_type_id", null: false
     t.integer "number_of_flowcells", default: 1, null: false
@@ -101,14 +103,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["library_type_id"], name: "index_ont_requests_on_library_type_id"
   end
 
-  create_table "ont_runs", charset: "utf8mb3", force: :cascade do |t|
-    t.integer "state", default: 0
-    t.datetime "deactivated_at", precision: nil
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "pacbio_libraries", charset: "utf8mb3", force: :cascade do |t|
+  create_table "pacbio_libraries", charset: "utf8", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
     t.string "template_prep_kit_box_barcode"
@@ -126,7 +121,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["tag_id"], name: "index_pacbio_libraries_on_tag_id"
   end
 
-  create_table "pacbio_plates", charset: "utf8mb3", force: :cascade do |t|
+  create_table "pacbio_plates", charset: "utf8", force: :cascade do |t|
     t.bigint "pacbio_run_id"
     t.string "uuid"
     t.datetime "created_at", precision: nil, null: false
@@ -134,7 +129,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["pacbio_run_id"], name: "index_pacbio_plates_on_pacbio_run_id"
   end
 
-  create_table "pacbio_pools", charset: "utf8mb3", force: :cascade do |t|
+  create_table "pacbio_pools", charset: "utf8", force: :cascade do |t|
     t.bigint "tube_id", null: false
     t.float "volume"
     t.float "concentration"
@@ -145,7 +140,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["tube_id"], name: "index_pacbio_pools_on_tube_id"
   end
 
-  create_table "pacbio_request_libraries", charset: "utf8mb3", force: :cascade do |t|
+  create_table "pacbio_request_libraries", charset: "utf8", force: :cascade do |t|
     t.bigint "pacbio_request_id"
     t.bigint "pacbio_library_id"
     t.bigint "tag_id"
@@ -156,7 +151,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["tag_id"], name: "index_pacbio_request_libraries_on_tag_id"
   end
 
-  create_table "pacbio_requests", charset: "utf8mb3", force: :cascade do |t|
+  create_table "pacbio_requests", charset: "utf8", force: :cascade do |t|
     t.string "library_type"
     t.integer "estimate_of_gb_required"
     t.integer "number_of_smrt_cells"
@@ -167,7 +162,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.string "source_barcode"
   end
 
-  create_table "pacbio_runs", charset: "utf8mb3", force: :cascade do |t|
+  create_table "pacbio_runs", charset: "utf8", force: :cascade do |t|
     t.string "name"
     t.string "sequencing_kit_box_barcode"
     t.string "dna_control_complex_box_barcode"
@@ -184,7 +179,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["pacbio_smrt_link_version_id"], name: "index_pacbio_runs_on_pacbio_smrt_link_version_id"
   end
 
-  create_table "pacbio_smrt_link_option_versions", charset: "utf8mb3", force: :cascade do |t|
+  create_table "pacbio_smrt_link_option_versions", charset: "utf8", force: :cascade do |t|
     t.bigint "pacbio_smrt_link_version_id"
     t.bigint "pacbio_smrt_link_option_id"
     t.datetime "created_at", null: false
@@ -193,7 +188,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["pacbio_smrt_link_version_id"], name: "index_smrt_link_option_versions_on_version_id"
   end
 
-  create_table "pacbio_smrt_link_options", charset: "utf8mb3", force: :cascade do |t|
+  create_table "pacbio_smrt_link_options", charset: "utf8", force: :cascade do |t|
     t.string "key", null: false
     t.string "label", null: false
     t.string "default_value"
@@ -205,7 +200,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["key"], name: "index_pacbio_smrt_link_options_on_key", unique: true
   end
 
-  create_table "pacbio_smrt_link_versions", charset: "utf8mb3", force: :cascade do |t|
+  create_table "pacbio_smrt_link_versions", charset: "utf8", force: :cascade do |t|
     t.string "name", null: false
     t.boolean "default", default: false
     t.boolean "active", default: true
@@ -214,21 +209,21 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["name"], name: "index_pacbio_smrt_link_versions_on_name", unique: true
   end
 
-  create_table "pacbio_well_libraries", charset: "utf8mb3", force: :cascade do |t|
+  create_table "pacbio_well_libraries", charset: "utf8", force: :cascade do |t|
     t.bigint "pacbio_well_id"
     t.bigint "pacbio_library_id"
     t.index ["pacbio_library_id"], name: "index_pacbio_well_libraries_on_pacbio_library_id"
     t.index ["pacbio_well_id"], name: "index_pacbio_well_libraries_on_pacbio_well_id"
   end
 
-  create_table "pacbio_well_pools", charset: "utf8mb3", force: :cascade do |t|
+  create_table "pacbio_well_pools", charset: "utf8", force: :cascade do |t|
     t.bigint "pacbio_well_id"
     t.bigint "pacbio_pool_id"
     t.index ["pacbio_pool_id"], name: "index_pacbio_well_pools_on_pacbio_pool_id"
     t.index ["pacbio_well_id"], name: "index_pacbio_well_pools_on_pacbio_well_id"
   end
 
-  create_table "pacbio_wells", charset: "utf8mb3", force: :cascade do |t|
+  create_table "pacbio_wells", charset: "utf8", force: :cascade do |t|
     t.bigint "pacbio_plate_id"
     t.string "row"
     t.string "column"
@@ -247,14 +242,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
 
-  create_table "plates", charset: "utf8mb3", force: :cascade do |t|
+  create_table "plates", charset: "utf8", force: :cascade do |t|
     t.string "barcode"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["barcode"], name: "index_plates_on_barcode", unique: true
   end
 
-  create_table "qc_assay_types", charset: "utf8mb3", force: :cascade do |t|
+  create_table "qc_assay_types", charset: "utf8", force: :cascade do |t|
     t.string "key", null: false
     t.string "label", null: false
     t.string "units"
@@ -262,7 +257,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "qc_results", charset: "utf8mb3", force: :cascade do |t|
+  create_table "qc_results", charset: "utf8", force: :cascade do |t|
     t.string "labware_barcode", null: false
     t.string "sample_external_id", null: false
     t.bigint "qc_assay_type_id", null: false
@@ -272,13 +267,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["qc_assay_type_id"], name: "index_qc_results_on_qc_assay_type_id"
   end
 
-  create_table "receptions", charset: "utf8mb3", force: :cascade do |t|
+  create_table "receptions", charset: "utf8", force: :cascade do |t|
     t.string "source", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "requests", charset: "utf8mb3", force: :cascade do |t|
+  create_table "requests", charset: "utf8", force: :cascade do |t|
     t.bigint "sample_id"
     t.string "requestable_type"
     t.bigint "requestable_id"
@@ -290,7 +285,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["sample_id"], name: "index_requests_on_sample_id"
   end
 
-  create_table "samples", charset: "utf8mb3", force: :cascade do |t|
+  create_table "samples", charset: "utf8", force: :cascade do |t|
     t.string "name"
     t.datetime "deactivated_at", precision: nil
     t.string "external_id"
@@ -302,7 +297,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["name"], name: "index_samples_on_name", unique: true
   end
 
-  create_table "saphyr_chips", charset: "utf8mb3", force: :cascade do |t|
+  create_table "saphyr_chips", charset: "utf8", force: :cascade do |t|
     t.string "barcode"
     t.string "serial_number"
     t.datetime "created_at", precision: nil, null: false
@@ -311,14 +306,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["saphyr_run_id"], name: "index_saphyr_chips_on_saphyr_run_id"
   end
 
-  create_table "saphyr_enzymes", charset: "utf8mb3", force: :cascade do |t|
+  create_table "saphyr_enzymes", charset: "utf8", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.index ["name"], name: "index_saphyr_enzymes_on_name", unique: true
   end
 
-  create_table "saphyr_flowcells", charset: "utf8mb3", force: :cascade do |t|
+  create_table "saphyr_flowcells", charset: "utf8", force: :cascade do |t|
     t.integer "position"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
@@ -328,7 +323,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["saphyr_library_id"], name: "index_saphyr_flowcells_on_saphyr_library_id"
   end
 
-  create_table "saphyr_libraries", charset: "utf8mb3", force: :cascade do |t|
+  create_table "saphyr_libraries", charset: "utf8", force: :cascade do |t|
     t.string "state"
     t.datetime "deactivated_at", precision: nil
     t.datetime "created_at", precision: nil, null: false
@@ -339,13 +334,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["saphyr_request_id"], name: "index_saphyr_libraries_on_saphyr_request_id"
   end
 
-  create_table "saphyr_requests", charset: "utf8mb3", force: :cascade do |t|
+  create_table "saphyr_requests", charset: "utf8", force: :cascade do |t|
     t.string "external_study_id"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
   end
 
-  create_table "saphyr_runs", charset: "utf8mb3", force: :cascade do |t|
+  create_table "saphyr_runs", charset: "utf8", force: :cascade do |t|
     t.integer "state", default: 0
     t.string "name"
     t.datetime "deactivated_at", precision: nil
@@ -353,7 +348,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.datetime "updated_at", precision: nil, null: false
   end
 
-  create_table "tag_sets", charset: "utf8mb3", force: :cascade do |t|
+  create_table "tag_sets", charset: "utf8", force: :cascade do |t|
     t.string "name"
     t.string "uuid"
     t.datetime "created_at", precision: nil, null: false
@@ -362,7 +357,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.integer "sample_sheet_behaviour", default: 0, null: false
   end
 
-  create_table "tag_taggables", charset: "utf8mb3", force: :cascade do |t|
+  create_table "tag_taggables", charset: "utf8", force: :cascade do |t|
     t.string "taggable_type"
     t.bigint "taggable_id"
     t.bigint "tag_id"
@@ -372,7 +367,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["taggable_type", "taggable_id"], name: "index_tag_taggables_on_taggable_type_and_taggable_id"
   end
 
-  create_table "tags", charset: "utf8mb3", force: :cascade do |t|
+  create_table "tags", charset: "utf8", force: :cascade do |t|
     t.string "oligo"
     t.string "group_id"
     t.datetime "created_at", precision: nil, null: false
@@ -383,14 +378,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["tag_set_id"], name: "index_tags_on_tag_set_id"
   end
 
-  create_table "tubes", charset: "utf8mb3", force: :cascade do |t|
+  create_table "tubes", charset: "utf8", force: :cascade do |t|
     t.string "barcode"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.index ["barcode"], name: "index_tubes_on_barcode", unique: true
   end
 
-  create_table "wells", charset: "utf8mb3", force: :cascade do |t|
+  create_table "wells", charset: "utf8", force: :cascade do |t|
     t.string "position"
     t.bigint "plate_id"
     t.datetime "created_at", null: false
