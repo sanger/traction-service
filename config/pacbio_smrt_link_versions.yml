@@ -67,9 +67,9 @@ default: &default
       select_options: *select_yes_no
       versions:
         - v11
-    fivemc_calls_in_cpg_motifs:
-      key: fivemc_calls_in_cpg_motifs
-      label: '5mC Calls In CpG Motifs'
+    include_fivemc_calls_in_cpg_motifs:
+      key: include_fivemc_calls_in_cpg_motifs
+      label: 'Include 5mC Calls In CpG Motifs'
       default_value: 'Yes'
       validations:
         presence: {}
