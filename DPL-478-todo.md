@@ -20,4 +20,10 @@
 
 ## Tasks To Do
 
+- Add `decision_made_by` enum (LR or TOL) to model
+
+- Confirm qc_results table columns for LR and TOL
+
+- Design factory and methods etc
+
 - Expose `status` and `decision_made_by` to QcResultResource, if required?
