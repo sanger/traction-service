@@ -3,6 +3,7 @@
 module Ont
   # Ont::Flowcell
   class Flowcell < ApplicationRecord
+    # Currently redundant, will need to be re-implemented soon
     include Uuidable
 
     belongs_to :run, foreign_key: :ont_run_id, inverse_of: :flowcells
