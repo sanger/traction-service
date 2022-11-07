@@ -5,6 +5,8 @@ class AddNewOntTables < ActiveRecord::Migration[7.0]
       t.integer :kit_number
       t.string :uuid
       t.timestamps
+      t.string :state
+      t.datetime :deactivated_at, precision: nil
       t.belongs_to :ont_request, index: true, null: false
       t.belongs_to :tag, index: true
       t.belongs_to :ont_pool, index: true
