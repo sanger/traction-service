@@ -13,8 +13,11 @@ module V1
         has_one :tube, relation_name: :tube
         has_many :libraries
   
-        attributes :volume, :kit_number
+        attributes :volume, :kit_number, :created_at, :updated_at,
+                   :library_attributes
         attribute :source_identifier, readonly: true
+
+        paginator :paged
   
         # # When a pool is updated and it is attached to a run we need
         # # to republish the messages for the run
@@ -22,7 +25,7 @@ module V1
   
         def library_attributes=(library_parameters)
           @model.library_attributes = library_parameters.map do |library|
-            library.permit(:id, :volume, :kit_number)
+            library.permit(:id, :volume, :kit_number, :ont_request_id, :tag_id)
           end
         end
   

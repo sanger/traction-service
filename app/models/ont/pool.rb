@@ -4,17 +4,16 @@ module Ont
   # Pool
   class Pool < ApplicationRecord
     belongs_to :tube, default: -> { Tube.new }
+
     has_many :libraries, class_name: 'Ont::Library', foreign_key: :ont_pool_id,
                           dependent: :destroy, inverse_of: :pool
-
+    has_many :requests, through: :libraries
     # This is dependent on the requests association, so needs to be included
     # after that is defined
     include PlateSourcedLibrary
-    validates :volume, :kit_number, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
+    validates :volume, :kit_number, numericality: { greater_than_or_equal_to: 0, allow_nil: true }, presence: true
     validates :libraries, presence: true
     validates_with TagValidator
-
-    validates :volume, :kit_number, presence: true
 
     def library_attributes=(library_options)
       self.libraries = library_options.map do |attributes|

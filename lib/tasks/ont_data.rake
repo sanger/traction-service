@@ -54,5 +54,50 @@ namespace :ont_data do
     ).construct_resources!
 
     puts "-> Created requests for #{number_of_plates} plates and #{number_of_tubes} tubes"
+
+    # Creating ONT pools and libraries
+    # Create 10 untagged single plexed pools
+
+    # ont_tag_sets = TagSet.find_by_pipeline("ont")
+    # if ont_tag_sets.nil?
+    #   puts "-> Creating ONT tag sets"
+    #   Rake::Task['tags:create:ont_all'].invoke
+    # end
+    temp_use_pacbio_tag_set = TagSet.find_by_pipeline("pacbio").tags
+    requests = Ont::Request.all.limit(5)
+    requests.each_with_index { |req, i| 
+      Ont::Pool.create!(
+        kit_number: i,
+        volume: i,
+        library_attributes: [
+          {
+            kit_number: i,
+            volume: i,
+            ont_request_id: requests.sample.id,
+            tag_id: nil
+          }
+        ]
+      )
+    }
+
+    puts "-> Created #{requests.length} single plexed pools"
+
+    requests = Ont::Request.all.limit(10).offset(5)
+    requests.each_with_index { |req, i| 
+      Ont::Pool.create!(
+        kit_number: i,
+        volume: i,
+        library_attributes: (0...rand(1..10)).map { |j|
+          {
+            kit_number: j,
+            volume: j,
+            ont_request_id: requests.sample.id,
+            tag_id: temp_use_pacbio_tag_set[j].id
+          }
+        }
+      )
+    }
+
+    puts "-> Created #{requests.length} multiplexed pools"
   end
 end
