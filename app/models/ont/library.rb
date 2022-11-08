@@ -10,7 +10,7 @@ module Ont
     validates :volume, :kit_number, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
 
     belongs_to :request, class_name: 'Ont::Request', foreign_key: :ont_request_id,
-                          inverse_of: :libraries
+                         inverse_of: :libraries
     belongs_to :tag, optional: true
     belongs_to :pool, class_name: 'Ont::Pool', foreign_key: :ont_pool_id,
                       inverse_of: :libraries

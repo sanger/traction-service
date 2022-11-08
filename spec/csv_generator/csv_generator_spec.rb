@@ -247,7 +247,7 @@ RSpec.describe CsvGenerator, type: :model do
       let(:plate)   { create(:pacbio_plate, wells: [well1, well2, well3]) }
 
       it 'sorts the wells by column' do
-        sorted_well_positions = parsed_csv[1..].map { |row| row[3] }
+        sorted_well_positions = parsed_csv[1..].pluck(3)
         expect(sorted_well_positions).to eq(%w[B01 A05 A10])
       end
     end
