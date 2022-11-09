@@ -504,12 +504,10 @@ namespace :tags do
         { group_id: 'NB95', oligo: 'CCTGTCTGGAAGAAGAATGGACTT' },
         { group_id: 'NB96', oligo: 'CTGAACGGTCATAGAGTCCACCAT' }
       ].each do |tag_attributes|
-        #
         set.tags.find_or_create_by!(tag_attributes)
       end
       puts '-> ONT_native tags successfully created'
     end
-
   end
 
   task destroy: :environment do

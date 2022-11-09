@@ -55,25 +55,26 @@ namespace :ont_data do
 
     puts "-> Created requests for #{number_of_plates} plates and #{number_of_tubes} tubes"
 
-    # Creating ONT pools and libraries
-    # Create 10 untagged single plexed pools
+    ont_tag_set = TagSet.find_by(pipeline: 'ont')
+    if ont_tag_set.nil?
+      Rake::Task['tags:create:ont_all'].invoke
+    end
+    ont_tag_set = TagSet.find_by(pipeline: 'ont')
 
-    # ont_tag_sets = TagSet.find_by_pipeline("ont")
-    # if ont_tag_sets.nil?
-    #   puts "-> Creating ONT tag sets"
-    #   Rake::Task['tags:create:ont_all'].invoke
-    # end
-    temp_use_pacbio_tag_set = TagSet.find_by(pipeline: 'pacbio').tags
     requests = Ont::Request.all.limit(5)
-    requests.each_with_index do |_req, i|
+    requests.each_with_index do |req, i|
       Ont::Pool.create!(
-        kit_number: i,
-        volume: i,
+        kit_barcode: "barcode-#{i}",
+        volume: rand(1..10),
+        concentration: rand(1..10),
+        insert_size: rand(1000..10000),
         library_attributes: [
           {
-            kit_number: i,
-            volume: i,
-            ont_request_id: requests.sample.id,
+            kit_barcode: "barcode-#{i}",
+            volume: rand(1..10),
+            concentration: rand(1..10),
+            insert_size: rand(1000..10000),
+            ont_request_id: req.id,
             tag_id: nil
           }
         ]
@@ -81,18 +82,21 @@ namespace :ont_data do
     end
 
     puts "-> Created #{requests.length} single plexed pools"
-
     requests = Ont::Request.all.limit(10).offset(5)
     requests.each_with_index do |_req, i|
       Ont::Pool.create!(
-        kit_number: i,
-        volume: i,
+        kit_barcode: "barcode-#{i}",
+        volume: rand(1..10),
+        concentration: rand(1..10),
+        insert_size: rand(1000..10000),
         library_attributes: (0...rand(1..10)).map do |j|
           {
-            kit_number: j,
-            volume: j,
+            kit_barcode: "barcode-#{i}",
+            volume: rand(1..10),
+            concentration: rand(1..10),
+            insert_size: rand(1000..10000),
             ont_request_id: requests.sample.id,
-            tag_id: temp_use_pacbio_tag_set[j].id
+            tag_id: ont_tag_set.tags[j].id
           }
         end
       )
