@@ -3,6 +3,24 @@
 class QcResultsUploadFactory
   include ActiveModel::Model
 
+  # isolate complexity: CSV stuff, qc_result stuff
+  # qc_results table simple, logic for speadsheet,
+  # lib / support
+  # upload csv always going to be the same
+  # qc result handling
+
+  # qc assay type headings
+  # flag
+  # samples extraction
+  # ten headings
+  # new column in assay table
+  # exactractions
+  # pass from UI to service (this is for long read extraction)
+  # type_of_qc_results
+  # "type"
+  # future proofing
+  # what kind of qc results
+
   # return the whole csv_data as a string
   def csv_data
     # .e.g
