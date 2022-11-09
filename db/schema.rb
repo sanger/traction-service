@@ -69,7 +69,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_02_110343) do
   end
 
   create_table "ont_libraries", charset: "utf8mb3", force: :cascade do |t|
-    t.integer "kit_barcode"
+    t.string "kit_barcode"
     t.float "volume"
     t.float "concentration"
     t.integer "insert_size"
@@ -87,7 +87,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_02_110343) do
   end
 
   create_table "ont_pools", charset: "utf8mb3", force: :cascade do |t|
-    t.integer "kit_barcode"
+    t.string "kit_barcode"
     t.float "volume"
     t.float "concentration"
     t.integer "insert_size"

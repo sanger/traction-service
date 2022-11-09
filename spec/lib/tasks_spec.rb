@@ -22,6 +22,8 @@ RSpec.describe 'RakeTasks' do
     end
 
     it 'creates all of the tag sets' do
+      # We need to reenable all tag tasks because they have all already been invoked by this point
+      Rake.application.in_namespace(:tags) { |namespace| namespace.tasks.each(&:reenable) }
       Rake::Task['tags:create:traction_all'].invoke
       expect(TagSet.count).to eq(7)
     end
@@ -52,27 +54,36 @@ RSpec.describe 'RakeTasks' do
     let(:expected_plates) { 2 }
     let(:filled_wells_per_plate) { 95 }
     let(:expected_tubes) { 2 }
-    let(:expected_pools) { 15 }
+    let(:expected_single_plexed_pools) { 5 }
+    let(:expected_multi_plexed_pools) { 10 }
+    let(:expected_tag_sets) { 1 }
     let(:expected_wells) { expected_plates * filled_wells_per_plate }
     let(:expected_requests) { expected_tubes + expected_wells }
 
     before do
       create :library_type, :ont
       create :data_type, :ont
+      # We need to reenable all tag tasks because they have all already been invoked by this point
+      # And ont tags can be called from ont_data:create
+      Rake.application.in_namespace(:tags) { |namespace| namespace.tasks.each(&:reenable) }
     end
 
     it 'creates plates and tubes' do
       expect { Rake::Task['ont_data:create'].invoke }
         .to change(Reception, :count).by(1)
-                                     .and change(Ont::Request, :count).by(expected_requests)
-                                                                      .and change(Ont::Pool, :count).by(expected_pools)
-                                                                                                    # Since we randomise the number of libraries in a pool we don't know how many we create
-                                                                                                    .and change(Ont::Library, :count)
         .and change(Sample, :count).by(expected_requests)
-                                   .and change(Plate, :count).by(expected_plates)
-                                                             .and change(Well, :count).by(expected_wells)
-                                                                                      .and change(Tube, :count).by(expected_tubes)
-                                                                                                               .and output("-> Created requests for #{expected_plates} plates and #{expected_tubes} tubes\n").to_stdout
+        .and change(Plate, :count).by(expected_plates)
+        .and change(Well, :count).by(expected_wells)
+                                 # Each pool also has a tube so we create tubes then we create pools with tubes (17)
+                                 .and change(Tube, :count).by(expected_tubes + expected_single_plexed_pools + expected_multi_plexed_pools)
+                                                          .and change(Ont::Request, :count).by(expected_requests)
+                                                                                           .and change(Ont::Pool, :count).by(expected_single_plexed_pools + expected_multi_plexed_pools)
+                                                                                                                         .and change(TagSet, :count).by(expected_tag_sets)
+                                                                                                                                                    # Since we randomise the number of libraries in a pool we don't know how many we create
+                                                                                                                                                    .and change(Ont::Library, :count)
+        .and output(
+          "-> Created requests for #{expected_plates} plates and #{expected_tubes} tubes\n-> Creating ONT Native tag set and tags\n-> Tag Set successfully created\n-> ONT_native tags successfully created\n-> Created #{expected_single_plexed_pools} single plexed pools\n-> Created #{expected_multi_plexed_pools} multiplexed pools\n"
+        ).to_stdout
     end
   end
 

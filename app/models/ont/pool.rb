@@ -45,7 +45,7 @@ module Ont
     end
 
     def calculate_final_library_amount
-      if !concentration.nil? && !volume.nil? && !insert_size.nil?
+      if concentration.present? && volume.present? && insert_size.present?
         return ((concentration * volume * (10**6)) / (insert_size * 660)).round(1)
       end
 
