@@ -18,12 +18,25 @@
 
 - Update `lib/tasks/create_qc_assay_types.rake` so key/ label values are up to date, based on Google sheet "DPL-478 - long read QC results heading vs system field name"
 
+- Add column `type` to `qc_assay_types` table, which is nullable, type String/enum(values: Long Read Extraction, ToL etc)
+
 ## Tasks To Do
 
-- Add `decision_made_by` enum (LR or TOL) to model
+### Database changes
 
-- Confirm qc_results table columns for LR and TOL
+- Update column `type` to `qc_assay_types` table, to Enum (values: `Long Read Extraction`, `ToL`)
+
+- Update `qc_results`. Remove `status` and `decision_made_by` columns (possible rollback migration) and remove associated code
+
+- Create new `qc_decisons` table, with `barcode`, `status` and `decision_made_by`. (Is `barcode` needed?). Add model code and tests
+
+- Create new `qc_results_decisons` joining table between `qc_results` and `qc_decisons`. And model code, relationship associations, and tests. 
+
+- Update `qc_results`. Add reference to new `qc_decisons` table (foriegn key)
+
+
+### Factory
 
 - Design factory and methods etc
 
-- Expose `status` and `decision_made_by` to QcResultResource, if required?
+
