@@ -7,7 +7,8 @@ module Ont
     include Uuidable
     include Librarian
 
-    validates :volume, :kit_number, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
+    validates :volume, :concentration,
+              :insert_size,  numericality: { greater_than_or_equal_to: 0, allow_nil: true }
 
     belongs_to :request, class_name: 'Ont::Request', foreign_key: :ont_request_id,
                          inverse_of: :libraries

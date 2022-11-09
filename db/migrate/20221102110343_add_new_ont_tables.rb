@@ -1,8 +1,10 @@
 class AddNewOntTables < ActiveRecord::Migration[7.0]
   def change
     create_table :ont_libraries do |t|
+      t.integer :kit_barcode
       t.float :volume
-      t.integer :kit_number
+      t.float :concentration
+      t.integer :insert_size
       t.string :uuid
       t.timestamps
       t.string :state
@@ -13,8 +15,11 @@ class AddNewOntTables < ActiveRecord::Migration[7.0]
     end
 
     create_table :ont_pools do |t|
+      t.integer :kit_barcode
       t.float :volume
-      t.integer :kit_number
+      t.float :concentration
+      t.integer :insert_size
+      t.float :final_library_amount
       t.timestamps
       t.belongs_to :tube, index: true
     end

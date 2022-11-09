@@ -11,10 +11,12 @@ module Ont
     # This is dependent on the requests association, so needs to be included
     # after that is defined
     include PlateSourcedLibrary
-    validates :volume, :kit_number, numericality: { greater_than_or_equal_to: 0, allow_nil: true },
-                                    presence: true
+    validates :volume, :concentration,
+              :insert_size, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
     validates :libraries, presence: true
     validates_with TagValidator
+
+    before_save { self.final_library_amount = calculate_final_library_amount }
 
     def library_attributes=(library_options)
       self.libraries = library_options.map do |attributes|
@@ -40,6 +42,14 @@ module Ont
 
     def indexed_libraries
       @indexed_libraries ||= libraries.index_by { |lib| lib.id.to_s }
+    end
+
+    def calculate_final_library_amount
+      if !concentration.nil? && !volume.nil? && !insert_size.nil?
+        return ((concentration * volume * (10**6)) / (insert_size * 660)).round(1)
+      end
+
+      nil
     end
   end
 end
