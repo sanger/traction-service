@@ -13,7 +13,7 @@ RSpec.describe 'RakeTasks' do
   describe 'create tags' do
     it 'creates all of the pacbio tag sets' do
       Rake::Task['tags:create:pacbio_all'].invoke
-      expect(TagSet.count).to eq(6)
+      expect(TagSet.count).to eq(7)
     end
 
     it 'creates all of the ont tag sets' do
@@ -196,7 +196,7 @@ RSpec.describe 'RakeTasks' do
       keys = %w[
         ccs_analysis_output_include_low_quality_reads
         ccs_analysis_output_include_kinetics_information
-        fivemc_calls_in_cpg_motifs
+        include_fivemc_calls_in_cpg_motifs
         demultiplex_barcodes
         on_plate_loading_concentration
         binding_kit_box_barcode
