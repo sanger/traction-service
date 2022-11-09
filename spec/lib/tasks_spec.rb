@@ -11,9 +11,19 @@ RSpec.describe 'RakeTasks' do
   end
 
   describe 'create tags' do
-    it 'creates all of the tag sets' do
+    it 'creates all of the pacbio tag sets' do
       Rake::Task['tags:create:pacbio_all'].invoke
       expect(TagSet.count).to eq(6)
+    end
+
+    it 'creates all of the ont tag sets' do
+      Rake::Task['tags:create:ont_all'].invoke
+      expect(TagSet.count).to eq(1)
+    end
+
+    it 'creates all of the tag sets' do
+      Rake::Task['tags:create:traction_all'].invoke
+      expect(TagSet.count).to eq(7)
     end
   end
 
