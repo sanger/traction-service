@@ -25,7 +25,7 @@ RSpec.describe 'RakeTasks' do
       # We need to reenable all tag tasks because they have all already been invoked by this point
       Rake.application.in_namespace(:tags) { |namespace| namespace.tasks.each(&:reenable) }
       Rake::Task['tags:create:traction_all'].invoke
-      expect(TagSet.count).to eq(7)
+      expect(TagSet.count).to eq(8)
     end
   end
 

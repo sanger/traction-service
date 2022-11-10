@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Ont::Library, type: :model, ont: true do
-  subject { build(:ont_library, params)}
+  subject { build(:ont_library, params) }
 
   context 'material' do
     let(:material_model) { :ont_library }
@@ -17,7 +17,7 @@ RSpec.describe Ont::Library, type: :model, ont: true do
   end
 
   context 'uuidable' do
-    let(:uuidable_model) { :pacbio_library }
+    let(:uuidable_model) { :ont_library }
 
     it_behaves_like 'uuidable'
   end
@@ -94,10 +94,10 @@ RSpec.describe Ont::Library, type: :model, ont: true do
     it { is_expected.not_to be_valid }
   end
 
-  # it 'can have a kit box barcode' do
-  #   expect(build(:ont_library, kit_barcode: nil)).to be_valid
-  #   expect(create(:ont_library).kit_barcode).to be_present
-  # end
+  it 'can have a kit barcode' do
+    expect(build(:ont_library, kit_barcode: nil)).to be_valid
+    expect(create(:ont_library).kit_barcode).to be_present
+  end
 
   it 'can have a request' do
     request = build(:ont_request)
@@ -107,6 +107,12 @@ RSpec.describe Ont::Library, type: :model, ont: true do
   it 'can have a tag' do
     tag = build(:tag)
     expect(build(:ont_library, tag:).tag).to eq(tag)
+  end
+
+  it 'can have a tagset through tag' do
+    tag = create(:ont_tag)
+
+    expect(create(:ont_library, tag:).tag_set).to eq(tag.tag_set)
   end
 
   it 'can have a pool' do
@@ -138,51 +144,29 @@ RSpec.describe Ont::Library, type: :model, ont: true do
     it_behaves_like 'library'
   end
 
-  # describe '#source_identifier' do
-  #   let(:library) { create(:ont_library, :tagged) }
-  #
-  #   context 'from a well' do
-  #     before do
-  #       create(:plate_with_wells_and_requests, pipeline: 'pacbio',
-  #              row_count: 1, column_count: 1, barcode: 'BC12',
-  #              requests: [library.request])
-  #     end
-  #
-  #     it 'returns the plate barcode and well' do
-  #       expect(library.source_identifier).to eq('BC12:A1')
-  #     end
-  #   end
-  #
-  #   context 'from a tube' do
-  #     before do
-  #       create(:tube_with_pacbio_request, requests: [library.request], barcode: 'TRAC-2-757')
-  #     end
-  #
-  #     it 'returns the plate barcode and well' do
-  #       expect(library.source_identifier).to eq('TRAC-2-757')
-  #     end
-  #   end
-  # end
+  describe '#source_identifier' do
+    let(:library) { create(:ont_library, :tagged) }
 
-  # describe '#sequencing_plates' do
-  #   it 'when there is no run' do
-  #     library = create(:pacbio_library)
-  #     expect(library.sequencing_plates).to be_empty
-  #   end
-  #
-  #   it 'when there is a single run' do
-  #     plate = create(:pacbio_plate_with_wells, :pooled)
-  #     library = plate.wells.first.pools.first.libraries.first
-  #     expect(library.sequencing_plates).to eq([plate])
-  #   end
-  #
-  #   it 'when there are multiple runs' do
-  #     plate1 = create(:pacbio_plate)
-  #     plate2 = create(:pacbio_plate)
-  #     pool = create(:pacbio_pool)
-  #     create(:pacbio_well, pools: [pool], plate: plate1)
-  #     create(:pacbio_well, pools: [pool], plate: plate2)
-  #     expect(pool.libraries.first.sequencing_plates).to eq([plate1, plate2])
-  #   end
-  # end
+    context 'from a well' do
+      before do
+        create(:plate_with_wells_and_requests, pipeline: 'ont',
+                                               row_count: 1, column_count: 1, barcode: 'BC12',
+                                               requests: [library.request])
+      end
+
+      it 'returns the plate barcode and well' do
+        expect(library.source_identifier).to eq('BC12:A1')
+      end
+    end
+
+    context 'from a tube' do
+      before do
+        create(:tube_with_ont_request, requests: [library.request], barcode: 'TRAC-2-757')
+      end
+
+      it 'returns the plate barcode and well' do
+        expect(library.source_identifier).to eq('TRAC-2-757')
+      end
+    end
+  end
 end
