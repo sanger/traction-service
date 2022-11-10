@@ -3,7 +3,9 @@
 FactoryBot.define do
   factory :ont_library, class: 'Ont::Library' do
     volume { 1.111 }
-    kit_number { 5 }
+    concentration { 10.0 }
+    insert_size { 10000 }
+    kit_barcode { 'kit_barcode' }
     request { create(:ont_request) }
     tag { create(:tag) }
     pool { association :ont_pool, libraries: [instance] }
