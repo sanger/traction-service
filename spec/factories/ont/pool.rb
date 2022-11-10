@@ -9,7 +9,9 @@ FactoryBot.define do
 
     libraries { build_list(library_factory, library_count, pool: instance) }
     volume { 10 }
-    kit_number { 100 }
+    concentration { 10.0 }
+    insert_size { 10000 }
+    kit_barcode { 'kit_barcode' }
 
     trait :tagged do
       transient do
