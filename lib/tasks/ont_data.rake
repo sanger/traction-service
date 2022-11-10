@@ -55,10 +55,7 @@ namespace :ont_data do
 
     puts "-> Created requests for #{number_of_plates} plates and #{number_of_tubes} tubes"
 
-    ont_tag_set = TagSet.find_by(pipeline: 'ont')
-    if ont_tag_set.nil?
-      Rake::Task['tags:create:ont_all'].invoke
-    end
+    Rake::Task['tags:create:ont_all'].invoke
     ont_tag_set = TagSet.find_by(pipeline: 'ont')
 
     requests = Ont::Request.all.limit(5)

@@ -6,7 +6,8 @@ module V1
     class LibraryResource < JSONAPI::Resource
       model_name 'Ont::Library'
 
-      attributes :volume, :kit_number
+      attributes :volume, :kit_barcode, :concentration, :insert_size,
+                 :created_at, :deactivated_at, :state
 
       has_one :request, always_include_optional_linkage_data: true
       # If we don't specify the relation_name here, jsonapi-resources

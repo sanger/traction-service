@@ -13,7 +13,7 @@ module V1
       has_one :tube, relation_name: :tube
       has_many :libraries
 
-      attributes :volume, :kit_number, :created_at, :updated_at,
+      attributes :volume, :kit_barcode, :concentration, :insert_size, :created_at, :updated_at,
                  :library_attributes
       attribute :source_identifier, readonly: true
 
@@ -25,7 +25,8 @@ module V1
 
       def library_attributes=(library_parameters)
         @model.library_attributes = library_parameters.map do |library|
-          library.permit(:id, :volume, :kit_number, :ont_request_id, :tag_id)
+          library.permit(:id, :volume, :kit_number, :concentration, :insert_size, :ont_request_id,
+                         :tag_id)
         end
       end
 
