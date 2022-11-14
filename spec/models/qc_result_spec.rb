@@ -13,8 +13,6 @@ RSpec.describe QcResult, type: :model do
           sample_external_id: 'any_id',
           qc_assay_type:,
           value: 'the result',
-          status: :pass,
-          decision_made_by: :tol
         )
       end.to change(described_class, :count).by(1)
     end
@@ -25,8 +23,6 @@ RSpec.describe QcResult, type: :model do
           labware_barcode: 'YZ1234',
           sample_external_id: 'any_id',
           value: 'the result',
-          status: :pass,
-          decision_made_by: :tol
         )
       end.to raise_error(ActiveRecord::RecordInvalid)
     end
@@ -51,31 +47,6 @@ RSpec.describe QcResult, type: :model do
 
     it 'is possible to destroy a record' do
       expect { result.destroy! }.to change(described_class, :count).by(-1)
-    end
-  end
-
-  describe '#status' do
-    let(:result) { create :qc_result }
-
-    it 'has a status' do
-      expect(result.status).to be_present
-      expect(result.status).to eq 'pass'
-    end
-  end
-
-  describe '#decision_made_by' do
-    it { is_expected.to define_enum_for(:decision_made_by).with(%i[long_read tol]) }
-
-    it 'errors if missing required decision_made_by' do
-      expect do
-        described_class.create!(
-          labware_barcode: 'YZ1234',
-          sample_external_id: 'any_id',
-          qc_assay_type:,
-          value: 'the result',
-          status: :pass
-        )
-      end.to raise_error(ActiveRecord::RecordInvalid)
     end
   end
 end

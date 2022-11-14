@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_09_132509) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_14_072027) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -22,7 +22,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_09_132509) do
     t.index ["material_type", "material_id"], name: "index_container_materials_on_material_type_and_material_id"
   end
 
-  create_table "data_types", charset: "utf8mb3", force: :cascade do |t|
+  create_table "data_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.integer "pipeline", null: false
     t.datetime "created_at", null: false
@@ -31,14 +31,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_09_132509) do
     t.index ["pipeline"], name: "index_data_types_on_pipeline"
   end
 
-  create_table "flipper_features", charset: "utf8mb3", force: :cascade do |t|
+  create_table "flipper_features", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "key", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_flipper_features_on_key", unique: true
   end
 
-  create_table "flipper_gates", charset: "utf8mb3", force: :cascade do |t|
+  create_table "flipper_gates", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "feature_key", null: false
     t.string "key", null: false
     t.string "value"
@@ -57,7 +57,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_09_132509) do
     t.index ["ont_library_id"], name: "index_heron_ont_requests_on_ont_library_id"
   end
 
-  create_table "library_types", charset: "utf8mb3", force: :cascade do |t|
+  create_table "library_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.integer "pipeline", null: false
     t.datetime "created_at", null: false
@@ -89,7 +89,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_09_132509) do
     t.index ["name"], name: "index_ont_libraries_on_name", unique: true
   end
 
-  create_table "ont_requests", charset: "utf8mb3", force: :cascade do |t|
+  create_table "ont_requests", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "library_type_id", null: false
     t.bigint "data_type_id", null: false
     t.integer "number_of_flowcells", default: 1, null: false
@@ -184,7 +184,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_09_132509) do
     t.index ["pacbio_smrt_link_version_id"], name: "index_pacbio_runs_on_pacbio_smrt_link_version_id"
   end
 
-  create_table "pacbio_smrt_link_option_versions", charset: "utf8mb3", force: :cascade do |t|
+  create_table "pacbio_smrt_link_option_versions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "pacbio_smrt_link_version_id"
     t.bigint "pacbio_smrt_link_option_id"
     t.datetime "created_at", null: false
@@ -193,7 +193,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_09_132509) do
     t.index ["pacbio_smrt_link_version_id"], name: "index_smrt_link_option_versions_on_version_id"
   end
 
-  create_table "pacbio_smrt_link_options", charset: "utf8mb3", force: :cascade do |t|
+  create_table "pacbio_smrt_link_options", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "key", null: false
     t.string "label", null: false
     t.string "default_value"
@@ -205,7 +205,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_09_132509) do
     t.index ["key"], name: "index_pacbio_smrt_link_options_on_key", unique: true
   end
 
-  create_table "pacbio_smrt_link_versions", charset: "utf8mb3", force: :cascade do |t|
+  create_table "pacbio_smrt_link_versions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.boolean "default", default: false
     t.boolean "active", default: true
@@ -254,34 +254,42 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_09_132509) do
     t.index ["barcode"], name: "index_plates_on_barcode", unique: true
   end
 
-  create_table "qc_assay_types", charset: "utf8mb3", force: :cascade do |t|
+  create_table "qc_assay_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "key", null: false
     t.string "label", null: false
     t.string "units"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "type"
+    t.integer "used_by"
   end
 
-  create_table "qc_results", charset: "utf8mb3", force: :cascade do |t|
+  create_table "qc_decisions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "barcode"
+    t.string "status"
+    t.integer "decision_made_by"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "qc_results", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "labware_barcode", null: false
     t.string "sample_external_id", null: false
     t.bigint "qc_assay_type_id", null: false
     t.string "value", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "status"
-    t.integer "decision_made_by", null: false
+    t.bigint "qc_decisions_id", null: false
     t.index ["qc_assay_type_id"], name: "index_qc_results_on_qc_assay_type_id"
+    t.index ["qc_decisions_id"], name: "index_qc_results_on_qc_decisions_id"
   end
 
-  create_table "qc_results_uploads", charset: "utf8mb3", force: :cascade do |t|
+  create_table "qc_results_uploads", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "csv_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "receptions", charset: "utf8mb3", force: :cascade do |t|
+  create_table "receptions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "source", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -417,5 +425,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_09_132509) do
   add_foreign_key "pacbio_smrt_link_option_versions", "pacbio_smrt_link_options"
   add_foreign_key "pacbio_smrt_link_option_versions", "pacbio_smrt_link_versions"
   add_foreign_key "qc_results", "qc_assay_types"
+  add_foreign_key "qc_results", "qc_decisions", column: "qc_decisions_id"
   add_foreign_key "requests", "receptions"
 end
