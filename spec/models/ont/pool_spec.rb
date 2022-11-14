@@ -44,58 +44,6 @@ RSpec.describe Ont::Pool, type: :model, ont: true do
     expect(build(:ont_pool, libraries: libraries + [dodgy_library])).not_to be_valid
   end
 
-  describe '#valid?(:run_creation)' do
-    subject { pool.valid?(:run_creation) }
-
-    context 'when volume is nil' do
-      let(:params) { { volume: nil } }
-
-      it { is_expected.to be false }
-    end
-
-    context 'when concentration is nil' do
-      let(:params) { { concentration: nil } }
-
-      it { is_expected.to be false }
-    end
-
-    context 'when insert_size is nil' do
-      let(:params) { { insert_size: nil } }
-
-      it { is_expected.to be false }
-    end
-
-    context 'when kit_barcode is nil' do
-      let(:params) { { kit_barcode: nil } }
-
-      it { is_expected.to be false }
-    end
-
-    context 'when volume is 12.0' do
-      let(:params) { { volume: 12.0 } }
-
-      it { is_expected.to be true }
-    end
-
-    context 'when concentration is 12.0' do
-      let(:params) { { concentration: 12.0 } }
-
-      it { is_expected.to be true }
-    end
-
-    context 'when insert_size is 12.0' do
-      let(:params) { { insert_size: 12.0 } }
-
-      it { is_expected.to be true }
-    end
-
-    context 'when kit_barcode is "1234"' do
-      let(:params) { { kit_barcode: '1234' } }
-
-      it { is_expected.to be true }
-    end
-  end
-
   context 'when volume is nil' do
     let(:params) { { volume: nil } }
 
@@ -221,11 +169,28 @@ RSpec.describe Ont::Pool, type: :model, ont: true do
     end
   end
 
-  context 'wells' do
-    it 'can have one or more' do
-      pool = create(:ont_pool)
-      pool.wells << create_list(:ont_well, 5)
-      expect(pool.wells.count).to eq(5)
+  context 'calculate final library amount' do
+    it 'is called when a pool is saved and calculates the correct final_library_amount' do
+      pool = build(:ont_pool, concentration: 20.0, volume: 24, insert_size: 20000)
+      expect(pool.final_library_amount).to eq(nil)
+      pool.save
+      expect(pool.final_library_amount).to eq(36.4)
+    end
+
+    it 'returns nil when concentration doesnt exist' do
+      pool = create(:ont_pool, concentration: nil)
+      expect(pool.final_library_amount).to eq(nil)
+    end
+
+    it 'returns nil when volume doesnt exist' do
+      pool = create(:ont_pool, volume: nil)
+      expect(pool.final_library_amount).to eq(nil)
+    end
+
+    it 'returns nil when insert size doesnt exist' do
+      pool = create(:ont_pool, insert_size: nil)
+      expect(pool.final_library_amount).to eq(nil)
     end
   end
+
 end
