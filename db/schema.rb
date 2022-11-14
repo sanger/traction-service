@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_14_072027) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_14_165316) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -263,8 +263,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_14_072027) do
     t.integer "used_by"
   end
 
+  create_table "qc_decision_results", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "qc_results_id", null: false
+    t.bigint "qc_decisions_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["qc_decisions_id"], name: "index_qc_decision_results_on_qc_decisions_id"
+    t.index ["qc_results_id"], name: "index_qc_decision_results_on_qc_results_id"
+  end
+
   create_table "qc_decisions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "barcode"
     t.string "status"
     t.integer "decision_made_by"
     t.datetime "created_at", null: false
@@ -278,9 +286,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_14_072027) do
     t.string "value", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "qc_decisions_id", null: false
     t.index ["qc_assay_type_id"], name: "index_qc_results_on_qc_assay_type_id"
-    t.index ["qc_decisions_id"], name: "index_qc_results_on_qc_decisions_id"
   end
 
   create_table "qc_results_uploads", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -424,7 +430,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_14_072027) do
   add_foreign_key "pacbio_runs", "pacbio_smrt_link_versions"
   add_foreign_key "pacbio_smrt_link_option_versions", "pacbio_smrt_link_options"
   add_foreign_key "pacbio_smrt_link_option_versions", "pacbio_smrt_link_versions"
+  add_foreign_key "qc_decision_results", "qc_decisions", column: "qc_decisions_id"
+  add_foreign_key "qc_decision_results", "qc_results", column: "qc_results_id"
   add_foreign_key "qc_results", "qc_assay_types"
-  add_foreign_key "qc_results", "qc_decisions", column: "qc_decisions_id"
   add_foreign_key "requests", "receptions"
 end
