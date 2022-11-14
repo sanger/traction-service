@@ -20,6 +20,8 @@ module V1
       has_one :source_well, relation_name: :source_well, class_name: 'Well'
       has_one :source_plate, relation_name: :source_plate, class_name: 'Plate'
 
+      paginator :paged
+
       def self.records_for_populate(*_args)
         super.preload(source_well: :plate, request: :sample,
                       tag: :tag_set,
