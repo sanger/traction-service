@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe QcAssayType, type: :model do
   describe '#create' do
     it 'is possible to create a new record' do
-      expect { described_class.create!(key: 'qubit', label: 'Qubit', units: 'ng/μl') }.to change(described_class, :count).by(1)
+      expect { described_class.create!(key: 'qubit', label: 'Qubit', units: 'ng/μl', used_by: :long_read) }.to change(described_class, :count).by(1)
     end
 
     it 'errors if missing required fields' do

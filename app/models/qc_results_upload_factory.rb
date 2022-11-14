@@ -99,8 +99,6 @@ class QcResultsUploadFactory
     # barcode and sample will be the same for each qc_result record
     # labware_barcode =
     # sample_external_id =
-    # lr_status
-    # tol_status
 
     # get_qc_assay_type_headers_from_config
     # loop qc_assay_types_headers
@@ -110,12 +108,12 @@ class QcResultsUploadFactory
     # get_qc_assay_type_id_for_label
     # get the value for each of that headers
 
-    # first, create a record for LR
+    # Create one record for each qc_assay_type
 
-    # if row[TOL Decision] exists
-    # also create record for TOL
-    # create the same qc_result record
-    # with decision_made_by (TOL)
+    # call create_qc_decision_records function
+    # to create one record for each decision 
+    # - Long read 
+    # - TOL (if TOL Decision exists in CSV)
   end
 
   # create qc_result record with
@@ -123,9 +121,8 @@ class QcResultsUploadFactory
   # sample_external_id
   # qc_assay_type_id
   # value
-  # decision_made_by (LR)
   # date?
-  def create(labware_barcode, sample_external_id, qc_assay_type_id, value, decision_made_by, status)
+  def create(labware_barcode, sample_external_id, qc_assay_type_id, value)
     # date?
     # QCResult.create!()
   end
