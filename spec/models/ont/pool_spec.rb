@@ -172,25 +172,24 @@ RSpec.describe Ont::Pool, type: :model, ont: true do
   context 'calculate final library amount' do
     it 'is called when a pool is saved and calculates the correct final_library_amount' do
       pool = build(:ont_pool, concentration: 20.0, volume: 24, insert_size: 20000)
-      expect(pool.final_library_amount).to eq(nil)
+      expect(pool.final_library_amount).to be_nil
       pool.save
       expect(pool.final_library_amount).to eq(36.4)
     end
 
     it 'returns nil when concentration doesnt exist' do
       pool = create(:ont_pool, concentration: nil)
-      expect(pool.final_library_amount).to eq(nil)
+      expect(pool.final_library_amount).to be_nil
     end
 
     it 'returns nil when volume doesnt exist' do
       pool = create(:ont_pool, volume: nil)
-      expect(pool.final_library_amount).to eq(nil)
+      expect(pool.final_library_amount).to be_nil
     end
 
     it 'returns nil when insert size doesnt exist' do
       pool = create(:ont_pool, insert_size: nil)
-      expect(pool.final_library_amount).to eq(nil)
+      expect(pool.final_library_amount).to be_nil
     end
   end
-
 end
