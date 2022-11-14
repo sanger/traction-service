@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe QcResult, type: :model do
   let(:qc_assay_type) { create :qc_assay_type }
+  let(:qc_results_decision) { create :qc_results_decision }
 
   describe '#create' do
     it 'is possible to create a new record' do
@@ -13,6 +14,7 @@ RSpec.describe QcResult, type: :model do
           sample_external_id: 'any_id',
           qc_assay_type:,
           value: 'the result',
+          qc_results_decision:,
         )
       end.to change(described_class, :count).by(1)
     end
