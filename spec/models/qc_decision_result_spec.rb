@@ -43,6 +43,8 @@ RSpec.describe QcDecisionResult, type: :model do
       expect(qc_decision_result.qc_decision).to be_present
       expect(qc_decision_result.qc_result).to be_present
     end
+
+    # when there is more than one
   end
 
   describe '#qc_decision_id' do

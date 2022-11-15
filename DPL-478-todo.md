@@ -36,4 +36,6 @@
 
 ### Factory
 
+- Add `used_by` to Controller/ resource
+
 - Design factory and methods etc

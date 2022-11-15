@@ -75,5 +75,7 @@ RSpec.describe QcDecision, type: :model do
       expect(qc_decision.qc_decision_results).to eq [qc_decision_result]
       expect(qc_decision.qc_results).to eq [qc_result]
     end
+
+    # when there is more than one
   end
 end
