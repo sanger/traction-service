@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe QcDecision, type: :model do
-
   describe '#create' do
     it 'is possible to create a new record' do
       expect do
@@ -21,6 +20,14 @@ RSpec.describe QcDecision, type: :model do
     it 'has a status' do
       expect(result.status).to be_present
       expect(result.status).to eq 'pass'
+    end
+
+    it 'errors if missing required status' do
+      expect do
+        described_class.create!(
+          decision_made_by: :tol
+        )
+      end.to raise_error(ActiveRecord::RecordInvalid)
     end
   end
 

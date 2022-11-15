@@ -22,7 +22,7 @@ RSpec.describe QcResult, type: :model do
         described_class.create!(
           labware_barcode: 'YZ1234',
           sample_external_id: 'any_id',
-          value: 'the result',
+          value: 'the result'
         )
       end.to raise_error(ActiveRecord::RecordInvalid)
     end

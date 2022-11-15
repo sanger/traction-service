@@ -111,8 +111,8 @@ class QcResultsUploadFactory
     # Create one record for each qc_assay_type
 
     # call create_qc_decision_records function
-    # to create one record for each decision 
-    # - Long read 
+    # to create one record for each decision
+    # - Long read
     # - TOL (if TOL Decision exists in CSV)
   end
 
