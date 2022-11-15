@@ -26,6 +26,25 @@ RSpec.describe QcDecisionResult, type: :model do
     end
   end
 
+  describe '#destroy' do
+    it 'is possible to destroy a record' do
+      qc_decision = create(:qc_decision)
+      qc_result = create(:qc_result)
+      qc_decision_result = create(:qc_decision_result, qc_decision:, qc_result:)
+      expect { qc_decision_result.destroy! }.to change(described_class, :count).by(-1)
+    end
+  end
+
+  describe 'associations' do
+    it { is_expected.to belong_to :qc_result }
+    it { is_expected.to belong_to :qc_decision }
+
+    it 'is created with a qc_decision and qc_result' do
+      expect(qc_decision_result.qc_decision).to be_present
+      expect(qc_decision_result.qc_result).to be_present
+    end
+  end
+
   describe '#qc_decision_id' do
     it 'errors if foreign key constraint is null' do
       expect do

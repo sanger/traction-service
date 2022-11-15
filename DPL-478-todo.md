@@ -2,6 +2,8 @@
 
 ## Tasks done
 
+### Database changes
+
 - Create Scaffold for qcResultsUpload with field `csv_data`
   `rails g scaffold QcResultsUpload csv_data:text --api --pretend`
 
@@ -24,17 +26,14 @@
 
 - Create new `qc_results_decisons` joining table between `qc_results` and `qc_decisons`.
 
+- Update model code and tests for `qc_result`
+
+- Add model code and tests for `qc_decision`
+
+- And model code, relationship associations, and tests for `qc_results_decison`
+
 ## Tasks To Do
-
-### Database changes
-
--  Add model code and tests for `qc_decisions`
-
-- And model code, relationship associations, and tests for `qc_results_decisons`
-
 
 ### Factory
 
 - Design factory and methods etc
-
-
