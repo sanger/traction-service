@@ -43,10 +43,36 @@ RSpec.describe QcResult, type: :model do
   end
 
   describe '#destroy' do
-    let!(:result) { create :qc_result }
-
     it 'is possible to destroy a record' do
-      expect { result.destroy! }.to change(described_class, :count).by(-1)
+      qc_result = create(:qc_result)
+      expect { qc_result.destroy! }.to change(described_class, :count).by(-1)
+    end
+
+    it 'can be destroyed if there are no associated qc_decision_results' do
+      qc_result = create(:qc_result)
+      expect do
+        qc_result.destroy!
+      end.not_to raise_error(ActiveRecord::RecordNotDestroyed)
+    end
+
+    it 'cannot be destroyed if there are any associated qc_decision_results' do
+      qc_result = create(:qc_result)
+      qc_decision = create(:qc_decision)
+      create(:qc_decision_result, qc_decision:, qc_result:)
+      expect do
+        qc_result.destroy!
+      end.to raise_error(ActiveRecord::RecordNotDestroyed)
+    end
+  end
+
+  describe 'associations' do
+    let(:qc_result) { create(:qc_result) }
+    let(:qc_decision) { create(:qc_decision) }
+    let(:qc_decision_result) { create(:qc_decision_result, qc_decision:, qc_result:) }
+
+    it 'has the correct associations' do
+      expect(qc_result.qc_decision_results).to eq [qc_decision_result]
+      expect(qc_result.qc_decisions).to eq [qc_decision]
     end
   end
 end
