@@ -8,7 +8,6 @@ RSpec.describe QcDecision, type: :model do
     it 'is possible to create a new record' do
       expect do
         described_class.create!(
-          barcode: 'YZ1234',
           status: :pass,
           decision_made_by: :tol
         )
@@ -31,7 +30,6 @@ RSpec.describe QcDecision, type: :model do
     it 'errors if missing required decision_made_by' do
       expect do
         described_class.create!(
-          barcode: 'YZ1234',
           status: :pass
         )
       end.to raise_error(ActiveRecord::RecordInvalid)
