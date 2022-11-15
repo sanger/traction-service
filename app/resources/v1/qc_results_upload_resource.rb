@@ -6,6 +6,6 @@ module V1
     model_name 'QcResultsUpload', add_model_hint: false
 
     # By default all attributes are assumed to be fetchable.
-    attributes :csv_data
+    attributes :csv_data, :used_by
   end
 end
