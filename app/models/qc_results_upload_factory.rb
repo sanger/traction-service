@@ -19,15 +19,27 @@ class QcResultsUploadFactory
   # - Filter headers by assay type
   # - Remove top row
   # - Convert body to json
-  # - Create qc_decisions
-  # - Create qc_results
-  # - Create qc_decision_results
+  # - create_qc_decisions
+  # - create_qc_results
+  # - create_qc_decision_results
 
 
 
   def create_entities!
     # debugger
     true
+  end
+
+  def create_qc_decision!(status, decision_made_by)
+    QcDecision.create!(status:, decision_made_by:)
+  end
+
+  def create_qc_result!(labware_barcode, sample_external_id, qc_assay_type_id, value)
+    QcResult.create!(labware_barcode:, sample_external_id:, qc_assay_type_id:, value:)
+  end
+
+  def create_qc_decision_result!(qc_result_id, qc_decision_id)
+    QcDecisionResult.create!(qc_result_id:, qc_decision_id:)
   end
 
   # isolate complexity: CSV stuff, qc_result stuff
