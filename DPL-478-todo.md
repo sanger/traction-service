@@ -32,6 +32,8 @@
 
 - And model code, relationship associations, and tests for `qc_results_decison`
 
+- Add `used_by` to `qc_results_upload`
+
 ## Tasks To Do
 
 ### Factory
