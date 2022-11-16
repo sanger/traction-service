@@ -3,6 +3,13 @@
 class QcResultsUploadFactory
   include ActiveModel::Model
 
+  attr_accessor :qc_results_upload
+
+  def create_entities!
+    # debugger
+    true
+  end
+
   # isolate complexity: CSV stuff, qc_result stuff
   # qc_results table simple, logic for speadsheet,
   # lib / support
@@ -70,7 +77,6 @@ class QcResultsUploadFactory
     # ['Batch,Tissue Tube ID,Sanger sample ID,Species','row1col1,row1col2,row1col3', 'row2col1,row2col2,row2col3']
     #   Production 1,FD20709764,DTOL12932860,,0.53,,,04/05/2022,Powermash,7.8,Non-plant,2h@25C,,,NA,Yes,FD38542652,SA00930879,A1,4.78,385,1840.3,18.12,2.38,0.57,14.9,22688,1.5,Extraction.Femto.9764-9765,Pass,,,05/05/2022,,,,,Alan Shearer/Britney Shears,30,,FALSE,,,22.6,45.4,1026.04,89.4,1.92,1.79,33.7,55.8,9772,4.4,Sheared.Femto.9764-6843,,Pass,,,idCheUrba1,SE293337P,24/06/2022,20.18
 
-
     # body.each do |row|
     #   create_qc_result_records(row)
     # end
@@ -82,10 +88,10 @@ class QcResultsUploadFactory
     [
       # per row
       {
-        'barcode': '',
-        'sample': '',
-        'tol_decision': '',
-        'long_decision': '',
+        barcode: '',
+        sample: '',
+        tol_decision: '',
+        long_decision: '',
         'DNA vol (ul)': 385,
         'Femto dilution': 18.12
       },
@@ -102,8 +108,7 @@ class QcResultsUploadFactory
     # row_str.split(",")
   end
 
-  def create_qc_decision_records(row)
-  end
+  def create_qc_decision_records(row); end
 
   # params: row_str e.g ['row1col1','row1col2','row1col3']
   def create_qc_result_records(row)
@@ -138,8 +143,7 @@ class QcResultsUploadFactory
     # QCResult.create!()
   end
 
-  def create_qc_decision_records
-  end
+  def create_qc_decision_records; end
 
   def create_qc_decision_result(*attr)
     QcDecisionResult.create(*attr)

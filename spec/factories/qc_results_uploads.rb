@@ -5,4 +5,8 @@ FactoryBot.define do
     csv_data { 'MyText' }
     used_by { 'extraction' }
   end
+
+  factory :qc_results_upload_factory do
+    qc_results_upload
+  end
 end

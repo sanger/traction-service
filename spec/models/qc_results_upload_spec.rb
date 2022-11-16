@@ -3,8 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe QcResultsUpload, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
-
   describe '#create' do
     it 'is possible to create a new record' do
       expect do
@@ -26,5 +24,9 @@ RSpec.describe QcResultsUpload, type: :model do
         described_class.create!(csv_data: 'a,b,c\n')
       end.to raise_error(ActiveRecord::RecordInvalid)
     end
+  end
+
+  describe '#create_entities!' do
+    it { is_expected.to delegate_method(:create_entities!).to(:qc_results_upload_factory) }
   end
 end

@@ -44,6 +44,26 @@ RSpec.describe '/qc_results_uploads', type: :request do
         post v1_qc_results_uploads_url, params: body, headers: json_api_headers
         expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
       end
+
+      # Can this be done?
+      xit 'calls create_entities!' do
+        expect(QcResultsUpload).to receive(:test)
+        post v1_qc_results_uploads_url, params: body, headers: json_api_headers
+      end
+
+      # To Do
+      # Final test here - update counts!
+      xit 'creates the relevant entities' do
+        expect do
+          post v1_qc_results_uploads_url, params: body, headers: json_api_headers
+        end.to change(QcResult, :count).by(1)
+        expect do
+          post v1_qc_results_uploads_url, params: body, headers: json_api_headers
+        end.to change(QcDecision, :count).by(1)
+        expect do
+          post v1_qc_results_uploads_url, params: body, headers: json_api_headers
+        end.to change(QcDecisionResults, :count).by(1)
+      end
     end
 
     context 'with invalid parameters' do
@@ -69,16 +89,17 @@ RSpec.describe '/qc_results_uploads', type: :request do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-          expect(JSON.parse(response.parsed_body)["errors"][0]["detail"]).to eq "csv_data - can't be blank"
+          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "csv_data - can't be blank"
         end
       end
+
       context 'when csv_data is empty' do
         let(:invalid_body) do
           {
             data: {
               type: 'qc_results_uploads',
               attributes: {
-                csv_data: "",
+                csv_data: '',
                 used_by: 'extraction'
               }
             }
@@ -95,16 +116,17 @@ RSpec.describe '/qc_results_uploads', type: :request do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-          expect(JSON.parse(response.parsed_body)["errors"][0]["detail"]).to eq "csv_data - can't be blank"
+          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "csv_data - can't be blank"
         end
       end
+
       context 'when used_by is missing' do
         let(:invalid_body) do
           {
             data: {
               type: 'qc_results_uploads',
               attributes: {
-                csv_data: "xx",
+                csv_data: 'xx'
               }
             }
           }.to_json
@@ -120,17 +142,18 @@ RSpec.describe '/qc_results_uploads', type: :request do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-          expect(JSON.parse(response.parsed_body)["errors"][0]["detail"]).to eq "used_by - can't be blank"
+          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "used_by - can't be blank"
         end
       end
+
       context 'when used_by is empty' do
         let(:invalid_body) do
           {
             data: {
               type: 'qc_results_uploads',
               attributes: {
-                csv_data: "xx",
-                used_by: ""
+                csv_data: 'xx',
+                used_by: ''
               }
             }
           }.to_json
@@ -146,7 +169,7 @@ RSpec.describe '/qc_results_uploads', type: :request do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-          expect(JSON.parse(response.parsed_body)["errors"][0]["detail"]).to eq "used_by - can't be blank"
+          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "used_by - can't be blank"
         end
       end
     end
@@ -155,6 +178,7 @@ RSpec.describe '/qc_results_uploads', type: :request do
       let(:invalid_body) do
         {}.to_json
       end
+
       it 'does not create a new QcResultsUpload' do
         expect do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
@@ -166,7 +190,7 @@ RSpec.describe '/qc_results_uploads', type: :request do
         expect(response).to have_http_status(:bad_request)
         expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
         # can this be refactored?
-        expect(JSON.parse(response.parsed_body)["errors"][0]["detail"]).to eq "The required parameter, data, is missing."
+        expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'The required parameter, data, is missing.'
       end
     end
   end
