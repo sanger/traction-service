@@ -5,7 +5,12 @@ module V1
   class QcResultsUploadResource < JSONAPI::Resource
     model_name 'QcResultsUpload', add_model_hint: false
 
-    # By default all attributes are assumed to be fetchable.
     attributes :csv_data, :used_by
+
+    after_create :create_entities!
+
+    def create_entities!
+      @model.create_entities!
+    end
   end
 end
