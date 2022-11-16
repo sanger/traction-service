@@ -13,6 +13,7 @@ RSpec.describe QcResultsUploadFactory, type: :model do
 
   describe '#get_csv_data' do
     let(:factory) { build(:qc_results_upload_factory) }
+
     it 'returns csv data' do
       expect(factory.get_csv_data).to eq factory.qc_results_upload.csv_data
     end
@@ -20,8 +21,33 @@ RSpec.describe QcResultsUploadFactory, type: :model do
 
   describe '#get_used_by' do
     let(:factory) { build(:qc_results_upload_factory) }
+
     it 'returns used_by' do
       expect(factory.get_used_by).to eq factory.qc_results_upload.used_by
+    end
+  end
+
+  describe '#csv_rows' do
+    let(:factory) { build(:qc_results_upload_factory) }
+
+    it 'returns the rows of the csv' do
+      expect(factory.csv_rows.length).to eq 4
+    end
+  end
+
+  describe '#csv_headers' do
+    let(:factory) { build(:qc_results_upload_factory) }
+
+    it 'returns the csv header row' do
+      expect(factory.csv_headers.length).to eq 62
+    end
+  end
+
+  describe '#csv_body' do
+    let(:factory) { build(:qc_results_upload_factory) }
+
+    it 'returns the csv header row' do
+      expect(factory.csv_body.length).to eq 2
     end
   end
 
