@@ -11,6 +11,20 @@ RSpec.describe QcResultsUploadFactory, type: :model do
     end
   end
 
+  describe '#get_csv_data' do
+    let(:factory) { build(:qc_results_upload_factory) }
+    it 'returns csv data' do
+      expect(factory.get_csv_data).to eq factory.qc_results_upload.csv_data
+    end
+  end
+
+  describe '#get_used_by' do
+    let(:factory) { build(:qc_results_upload_factory) }
+    it 'returns used_by' do
+      expect(factory.get_used_by).to eq factory.qc_results_upload.used_by
+    end
+  end
+
   describe '#create_qc_decision!' do
     let(:factory) { build(:qc_results_upload_factory) }
 

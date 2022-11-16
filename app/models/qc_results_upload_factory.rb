@@ -60,6 +60,14 @@ class QcResultsUploadFactory
   # future proofing
   # what kind of qc results
 
+  def get_csv_data
+    qc_results_upload.csv_data
+  end
+
+  def get_used_by
+    qc_results_upload.used_by
+  end
+
   # return the whole csv_data as a string
   def csv_data_as_string
     # .e.g
