@@ -291,6 +291,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_14_165316) do
 
   create_table "qc_results_uploads", charset: "utf8mb3", force: :cascade do |t|
     t.text "csv_data"
+    t.string "used_by"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

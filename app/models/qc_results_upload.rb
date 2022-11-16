@@ -2,5 +2,5 @@
 
 # QcResultsUpload
 class QcResultsUpload < ApplicationRecord
-  validates :csv_data, presence: true
+  validates :csv_data, :used_by, presence: true
 end

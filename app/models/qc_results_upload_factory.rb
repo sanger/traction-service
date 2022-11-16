@@ -82,10 +82,10 @@ class QcResultsUploadFactory
     [
       # per row
       {
-        'barcode':,
-        'sample':,
-        'tol_decision':,
-        'long_decision':,
+        'barcode': '',
+        'sample': '',
+        'tol_decision': '',
+        'long_decision': '',
         'DNA vol (ul)': 385,
         'Femto dilution': 18.12
       },

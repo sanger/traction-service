@@ -9,14 +9,21 @@ RSpec.describe QcResultsUpload, type: :model do
     it 'is possible to create a new record' do
       expect do
         described_class.create!(
-          csv_data: 'a,b,c\n'
+          csv_data: 'a,b,c\n',
+          used_by: 'extraction'
         )
       end.to change(described_class, :count).by(1)
     end
 
     it 'errors if missing required csv_data field' do
       expect do
-        described_class.create!
+        described_class.create!(used_by: 'extraction')
+      end.to raise_error(ActiveRecord::RecordInvalid)
+    end
+
+    it 'errors if missing required used_by field' do
+      expect do
+        described_class.create!(csv_data: 'a,b,c\n')
       end.to raise_error(ActiveRecord::RecordInvalid)
     end
   end
