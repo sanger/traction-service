@@ -57,9 +57,28 @@ RSpec.describe QcResultsUploadFactory, type: :model do
   describe '#build' do
     let(:factory) { build(:qc_results_upload_factory) }
 
-    it 'returns ' do
-      factory.build
-      # TODO!
+    context 'when there is only long read decisions' do
+      it 'creates entities ' do
+        # 7 = 7 rows
+        expect do
+          factory.build
+        end.to change(QcDecision, :count).by(7)
+
+        # 63 = 9 assay types x 7 rows
+        expect do
+          factory.build
+        end.to change(QcResult, :count).by(63)
+
+        # 63 = 9 assay types x 7 rows
+        expect do
+          factory.build
+        end.to change(QcDecisionResult, :count).by(63)
+      end
+    end
+
+    context 'when there is both long read and tol decisions' do
+      # TODO
+      # Update csv_data
     end
   end
 
