@@ -50,24 +50,21 @@ RSpec.describe '/qc_results_uploads', type: :request do
         expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
       end
 
-      # Can this be done?
-      xit 'calls create_entities!' do
-        expect(QcResultsUpload).to receive(:test)
-        post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-      end
+      it 'creates the relevant entities' do
+        # 7 = 7 rows
+        expect do
+          post v1_qc_results_uploads_url, params: body, headers: json_api_headers
+        end.to change(QcDecision, :count).by(7)
 
-      # To Do
-      # Final test here - update counts!
-      xit 'creates the relevant entities' do
+        # 63 = 9 assay types x 7 rows
         expect do
           post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        end.to change(QcResult, :count).by(1)
+        end.to change(QcResult, :count).by(63)
+
+        # 63 = 9 assay types x 7 rows
         expect do
           post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        end.to change(QcDecision, :count).by(1)
-        expect do
-          post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        end.to change(QcDecisionResults, :count).by(1)
+        end.to change(QcDecisionResult, :count).by(63)
       end
     end
 
