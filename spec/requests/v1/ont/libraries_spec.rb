@@ -105,6 +105,37 @@ RSpec.describe 'LibrariesController', type: :request, ont: true do
         expect(library_relationships['source_plate']).to be_present
       end
     end
+
+    context 'pagination' do
+      let!(:expected_libraries) { create_list(:ont_library, 5, :tagged) }
+
+      before do
+        # There should be 10 libraries total so we should get the 5 we just created
+        get "#{v1_ont_libraries_path}?page[number]=2&page[size]=5",
+            headers: json_api_headers
+      end
+
+      it 'has a success status' do
+        expect(response).to have_http_status(:success), response.body
+      end
+
+      it 'returns a list of libraries' do
+        expect(json['data'].length).to eq(5)
+      end
+
+      it 'returns the correct attributes', aggregate_failures: true do
+        expected_libraries.each do |library|
+          library_attributes = find_resource(type: 'libraries', id: library.id)['attributes']
+          expect(library_attributes['volume']).to eq(library.volume)
+          expect(library_attributes['concentration']).to eq(library.concentration)
+          expect(library_attributes['kit_barcode']).to eq(library.kit_barcode)
+          expect(library_attributes['insert_size']).to eq(library.insert_size)
+          expect(library_attributes['state']).to eq(library.state)
+          expect(library_attributes['created_at']).to eq(library.created_at.to_fs(:us))
+          expect(library_attributes['deactivated_at']).to be_nil
+        end
+      end
+    end
   end
 
   describe '#destroy' do

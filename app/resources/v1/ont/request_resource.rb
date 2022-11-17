@@ -8,6 +8,12 @@ module V1
 
       attributes(*::Ont.request_attributes, :created_at)
 
+      paginator :paged
+
+      def self.default_sort
+        [{ field: 'created_at', direction: :desc }]
+      end
+
       def created_at
         @model.created_at.to_fs(:us)
       end

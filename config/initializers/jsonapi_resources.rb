@@ -4,8 +4,7 @@ JSONAPI.configure do |config|
   # :underscored_key, :camelized_key, :dasherized_key, or custom
   config.json_key_format = :underscored_key
   config.route_format = :underscored_route
-  config.top_level_meta_include_page_count = true
-  config.default_page_size = 10
+  config.default_page_size = 100
   config.maximum_page_size = 100
 
   # TODO: we have to set this to false for tests. Why?

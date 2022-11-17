@@ -16,6 +16,9 @@ module Ont
     validates :libraries, presence: true
     validates_with TagValidator
 
+    # Constants used in final_library_amount calculation
+    VOLUME_CONCENTRATION_MULTIPLIER = 1_000_000
+    INSERT_SIZE_MULTIPLIER = 660
     before_save { self.final_library_amount = calculate_final_library_amount }
 
     def library_attributes=(library_options)
@@ -45,8 +48,13 @@ module Ont
     end
 
     def calculate_final_library_amount
+      # This method calculates the resultant number of fmol in a pool
+      # This saves the labs manually calculating the formula
       if concentration.present? && volume.present? && insert_size.present?
-        return ((concentration * volume * (10**6)) / (insert_size * 660)).round(1)
+        return (
+          (concentration * volume * VOLUME_CONCENTRATION_MULTIPLIER) /
+          (insert_size * INSERT_SIZE_MULTIPLIER)
+        ).round(1)
       end
 
       nil
