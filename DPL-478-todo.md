@@ -40,6 +40,16 @@
 
 ## Tasks To Do
 
-- Send csv string to controller, and pass through to the factory
+- Send CSV string via API, to controller, and pass through to the factory
+
+- Make field constants
+
+- Adding comments to the factory methods
 
 - Test factory logic `build` method
+
+- Validation to ensure that the qc results are correct
+- JSON API resource which will provide feedback on success or provide errors
+- An agreed message format to send the qc results to the warehouse
+- A handler to send the message to the warehouse
+- modification of qc type column so that it can recognise different label (OPTIONAL - to decide)
