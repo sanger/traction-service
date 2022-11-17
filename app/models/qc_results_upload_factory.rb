@@ -17,8 +17,7 @@ class QcResultsUploadFactory
   Production 1,FD20706843,DTOL12932856,,0.93,,,04/05/2022,Powermash,12.5,Non-plant,2h@25C,,,,Yes,FD38542658,SA00930879,G1,7.62,385,2933.7,29.48,1.83,0.46,18.6,27600,2.9,Extraction.Femto.9764-9765,Pass,,,05/05/2022,,,,,Alan Shearer/Britney Shears,30,,FALSE,,,34.4,45.4,1561.76,136.6,1.83,1.41,49.2,53.2,11169,6.6,Sheared.Femto.9764-6843,,Pass,,,ihElaGris1,0.931,ihElaGris1,SE293343N,PASS"
 
   def create_entities!
-    true
-    # build
+    build
   end
 
   def get_csv_string
