@@ -53,6 +53,39 @@ RSpec.describe 'PoolsController', type: :request, ont: true do
       expect(library_attributes['kit_barcode']).to eq(library.kit_barcode)
       expect(library_attributes['insert_size']).to eq(library.insert_size)
     end
+
+    context 'pagination' do
+      let!(:expected_pools) { create_list(:ont_pool, 2) }
+
+      before do
+        # There should be 4 pools total so we should get the 2 we just created
+        get "#{v1_ont_pools_path}?page[number]=2&page[size]=2",
+            headers: json_api_headers
+      end
+
+      it 'has a success status' do
+        expect(response).to have_http_status(:success), response.body
+      end
+
+      it 'returns a list of pools' do
+        expect(json['data'].length).to eq(2)
+      end
+
+      it 'returns the correct attributes', aggregate_failures: true do
+        expected_pools.each do |pool|
+          pool_attributes = find_resource(type: 'pools', id: pool.id)['attributes']
+          expect(pool_attributes).to include(
+            'source_identifier' => pool.source_identifier,
+            'volume' => pool.volume,
+            'concentration' => pool.concentration,
+            'kit_barcode' => pool.kit_barcode,
+            'insert_size' => pool.insert_size,
+            'updated_at' => pool.updated_at.to_fs(:us),
+            'created_at' => pool.created_at.to_fs(:us)
+          )
+        end
+      end
+    end
   end
 
   describe '#create' do
