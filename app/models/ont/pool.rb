@@ -19,6 +19,12 @@ module Ont
     # Constants used in final_library_amount calculation
     VOLUME_CONCENTRATION_MULTIPLIER = 1_000_000
     INSERT_SIZE_MULTIPLIER = 660
+
+    # Instead of before save we could use:
+    # 'attribute :final_library_amount, default: calculate_final_library_amount'
+    # But when this was tried calculate_final_library_amount wasn't accessible from the scope
+    # In future this would be nice to change to use this
+
     before_save { self.final_library_amount = calculate_final_library_amount }
 
     def library_attributes=(library_options)
