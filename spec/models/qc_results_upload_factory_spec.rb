@@ -11,19 +11,19 @@ RSpec.describe QcResultsUploadFactory, type: :model do
     end
   end
 
-  describe '#get_csv_string' do
+  describe '#csv_data' do
     let(:factory) { build(:qc_results_upload_factory) }
 
     it 'returns csv data' do
-      expect(factory.get_csv_string).to eq factory.qc_results_upload.csv_data
+      expect(factory.csv_data).to eq factory.qc_results_upload.csv_data
     end
   end
 
-  describe '#get_used_by' do
+  describe '#used_by' do
     let(:factory) { build(:qc_results_upload_factory) }
 
     it 'returns used_by' do
-      expect(factory.get_used_by).to eq factory.qc_results_upload.used_by
+      expect(factory.used_by).to eq factory.qc_results_upload.used_by
     end
   end
 
@@ -42,15 +42,15 @@ RSpec.describe QcResultsUploadFactory, type: :model do
     it 'returns the csv header row' do
       expect(factory.csv_data_to_json).to be_a Array
       expect(factory.csv_data_to_json[0]).to be_a Object
-      expect(factory.csv_data_to_json[0]["qubit_concentration_ngul"]).to eq 4.78
-      expect(factory.csv_data_to_json[0]["volume_si"]).to eq 385
-      expect(factory.csv_data_to_json[0]["yield"]).to eq 1840.3
-      expect(factory.csv_data_to_json[0]["_260_230_ratio"]).to eq 0.57
-      expect(factory.csv_data_to_json[0]["_260_280_ratio"]).to eq 2.38
-      expect(factory.csv_data_to_json[0]["nanodrop_concentration_ngul"]).to eq 14.9
-      expect(factory.csv_data_to_json[0]["_tbc_"]).to eq 22688
-      expect(factory.csv_data_to_json[0]["gqn_dnaex"]).to eq 1.5
-      expect(factory.csv_data_to_json[0]["results_pdf"]).to eq "Extraction.Femto.9764-9765"
+      expect(factory.csv_data_to_json[0]['qubit_concentration_ngul']).to eq 4.78
+      expect(factory.csv_data_to_json[0]['volume_si']).to eq 385
+      expect(factory.csv_data_to_json[0]['yield']).to eq 1840.3
+      expect(factory.csv_data_to_json[0]['_260_230_ratio']).to eq 0.57
+      expect(factory.csv_data_to_json[0]['_260_280_ratio']).to eq 2.38
+      expect(factory.csv_data_to_json[0]['nanodrop_concentration_ngul']).to eq 14.9
+      expect(factory.csv_data_to_json[0]['_tbc_']).to eq 22688
+      expect(factory.csv_data_to_json[0]['gqn_dnaex']).to eq 1.5
+      expect(factory.csv_data_to_json[0]['results_pdf']).to eq 'Extraction.Femto.9764-9765'
     end
   end
 
@@ -58,7 +58,7 @@ RSpec.describe QcResultsUploadFactory, type: :model do
     let(:factory) { build(:qc_results_upload_factory) }
 
     context 'when there is only long read decisions' do
-      it 'creates entities ' do
+      it 'creates entities' do
         # 7 = 7 rows
         expect do
           factory.build
@@ -74,11 +74,6 @@ RSpec.describe QcResultsUploadFactory, type: :model do
           factory.build
         end.to change(QcDecisionResult, :count).by(63)
       end
-    end
-
-    context 'when there is both long read and tol decisions' do
-      # TODO
-      # Update csv_data
     end
   end
 

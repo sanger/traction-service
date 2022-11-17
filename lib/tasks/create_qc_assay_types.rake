@@ -3,7 +3,6 @@
 namespace :qc_assay_types do
   desc 'Create QC Assay Types'
   task create: :environment do
-
     QcAssayType.destroy_all
 
     [
