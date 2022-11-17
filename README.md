@@ -49,6 +49,7 @@ setup process
 - To create all the supported library types: `bundle exec rails library_types:create`
 - To create all the supported data types: `bundle exec rails data_types:create`
 - To create pacbio smrt link versions: `bundle exec rails smrt_link_versions:create`
+- To create pacbio Qc Assay Types: `bundle exec rails qc_assay_types:create`
 
 ### Useful support data
 

@@ -11,11 +11,11 @@ RSpec.describe QcResultsUploadFactory, type: :model do
     end
   end
 
-  describe '#get_csv_data' do
+  describe '#get_csv_string' do
     let(:factory) { build(:qc_results_upload_factory) }
 
     it 'returns csv data' do
-      expect(factory.get_csv_data).to eq factory.qc_results_upload.csv_data
+      expect(factory.get_csv_string).to eq factory.qc_results_upload.csv_data
     end
   end
 
@@ -27,27 +27,39 @@ RSpec.describe QcResultsUploadFactory, type: :model do
     end
   end
 
-  describe '#csv_rows' do
-    let(:factory) { build(:qc_results_upload_factory) }
-
-    it 'returns the rows of the csv' do
-      expect(factory.csv_rows.length).to eq 4
-    end
-  end
-
-  describe '#csv_headers' do
+  describe '#csv_string_without_groups' do
     let(:factory) { build(:qc_results_upload_factory) }
 
     it 'returns the csv header row' do
-      expect(factory.csv_headers.length).to eq 62
+      expect(factory.csv_string_without_groups).to be_a String
     end
   end
 
-  describe '#csv_body' do
+  # create assay types
+  describe '#csv_data_to_json' do
     let(:factory) { build(:qc_results_upload_factory) }
 
     it 'returns the csv header row' do
-      expect(factory.csv_body.length).to eq 2
+      expect(factory.csv_data_to_json).to be_a Array
+      expect(factory.csv_data_to_json[0]).to be_a Object
+      expect(factory.csv_data_to_json[0]["qubit_concentration_ngul"]).to eq 4.78
+      expect(factory.csv_data_to_json[0]["volume_si"]).to eq 385
+      expect(factory.csv_data_to_json[0]["yield"]).to eq 1840.3
+      expect(factory.csv_data_to_json[0]["_260_230_ratio"]).to eq 0.57
+      expect(factory.csv_data_to_json[0]["_260_280_ratio"]).to eq 2.38
+      expect(factory.csv_data_to_json[0]["nanodrop_concentration_ngul"]).to eq 14.9
+      expect(factory.csv_data_to_json[0]["_tbc_"]).to eq 22688
+      expect(factory.csv_data_to_json[0]["gqn_dnaex"]).to eq 1.5
+      expect(factory.csv_data_to_json[0]["results_pdf"]).to eq "Extraction.Femto.9764-9765"
+    end
+  end
+
+  describe '#build' do
+    let(:factory) { build(:qc_results_upload_factory) }
+
+    it 'returns ' do
+      factory.build
+      # TODO!
     end
   end
 
