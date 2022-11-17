@@ -32,12 +32,14 @@
 
 - And model code, relationship associations, and tests for `qc_results_decison`
 
-- Add `used_by` to `qc_results_upload`
+- Add `used_by` to `qc_results_upload`, controller and resource
+
+- Design factory and methods etc
+
+- Create Factory logic
 
 ## Tasks To Do
 
-### Factory
+- Send csv string to controller, and pass through to the factory
 
-- Add `used_by` to Controller/ resource
-
-- Design factory and methods etc
+- Test factory logic `build` method
