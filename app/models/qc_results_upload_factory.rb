@@ -26,7 +26,7 @@ class QcResultsUploadFactory
   # remove the first row from the csv
   # return string of csv, not including groups
   def csv_string_without_groups
-    get_csv_string.split("\n")[1..].join("\n")
+    csv_data.split("\n")[1..].join("\n")
   end
 
   # this returns a list of objects
@@ -60,7 +60,6 @@ class QcResultsUploadFactory
       end
 
       # 3. Get relevant QcAssayTypes for used_by
-      used_by = qc_results_upload.used_by # (from UI)
       qc_assay_types = QcAssayType.where(used_by:)
 
       # 4. Loop through QcAssayTypes, to create qc_results
