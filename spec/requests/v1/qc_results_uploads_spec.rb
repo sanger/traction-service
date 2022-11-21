@@ -4,6 +4,15 @@ require 'rails_helper'
 
 RSpec.describe '/qc_results_uploads', type: :request do
   describe '#post' do
+    before do
+      create(:qc_assay_type, key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul)', used_by: 0)
+      create(:qc_assay_type, key: 'volume_si', label: 'DNA vol (ul)', used_by: 0)
+      create(:qc_assay_type, key: '_260_230_ratio', label: 'ND 260/230', used_by: 0)
+      create(:qc_assay_type, key: '_260_280_ratio', label: 'ND 260/280', used_by: 0)
+      create(:qc_assay_type, key: '_tbc_', label: 'Femto Frag Size', used_by: 0)
+      create(:qc_assay_type, key: 'results_pdf', label: 'Femto pdf [post-extraction]', used_by: 0)
+    end
+
     context 'with valid parameters' do
       let(:csv) do
         ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,Shear & SPRI QC,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,,SEQUENCING DATA,
@@ -56,15 +65,15 @@ RSpec.describe '/qc_results_uploads', type: :request do
           post v1_qc_results_uploads_url, params: body, headers: json_api_headers
         end.to change(QcDecision, :count).by(7)
 
-        # 63 = 9 assay types x 7 rows
+        # 42 = 6 assay types x 7 rows
         expect do
           post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        end.to change(QcResult, :count).by(63)
+        end.to change(QcResult, :count).by(42)
 
-        # 63 = 9 assay types x 7 rows
+        # 42 = 6 assay types x 7 rows
         expect do
           post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        end.to change(QcDecisionResult, :count).by(63)
+        end.to change(QcDecisionResult, :count).by(42)
       end
     end
 
