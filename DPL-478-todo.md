@@ -51,11 +51,11 @@
 ## Tasks To Do
 
 - Dont hard code test data
+- Validation to ensure that the qc results are correct
 - Check: if there are duplicate columns
 - Check: when there is a blanc row
 - Check: when either decision is nil
 - Replace `_tbc_` for 'Femto Frag Size'
-- Validation to ensure that the qc results are correct
 - Check when deleting qc result, what happens
 - JSON API resource which will provide feedback on success or provide errors
 - Error handling
