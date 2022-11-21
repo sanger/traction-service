@@ -64,20 +64,29 @@ RSpec.describe QcResultsUploadFactory, type: :model do
 
     context 'when there is only long read decisions' do
       it 'creates entities' do
-        # 7 = 7 rows
+        # 14 = 8 LR + 6 TOL
         expect do
           factory.build
-        end.to change(QcDecision, :count).by(7)
+        end.to change(QcDecision, :count).by(14)
 
-        # 42 = 6 assay types x 7 rows
+        # 42 = 6 assay types x 8 rows
         expect do
           factory.build
-        end.to change(QcResult, :count).by(42)
+        end.to change(QcResult, :count).by(48)
 
-        # 42 = 6 assay types x 7 rows
+        # row	dec	results	dec_res
+        # 1	  2   6	      12
+        # 2	  2   6	      12
+        # 3	  2   6	      12
+        # 4	  2   6	      12
+        # 5	  1   6	      6
+        # 6	  2   6	      12
+        # 7	  1   6	      6
+        # 8	  2   6	      12
+        #                 84
         expect do
           factory.build
-        end.to change(QcDecisionResult, :count).by(42)
+        end.to change(QcDecisionResult, :count).by(84)
       end
     end
   end

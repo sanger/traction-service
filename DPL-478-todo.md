@@ -44,11 +44,16 @@
 
 - Test factory logic `build` method
 
+- Adding comments to the factory methods
+
+- Test with a tol decision
+
 ## Tasks To Do
 
-- Adding comments to the factory methods
 - Dont hard code test data
-- Test with a tol decision
+- Check: if there are duplicate columns
+- Check: when there is a blanc row
+- Check: when either decision is nil
 - Replace `_tbc_` for 'Femto Frag Size'
 - Validation to ensure that the qc results are correct
 - Check when deleting qc result, what happens
