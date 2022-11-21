@@ -16,16 +16,15 @@ class QcResultsUploadFactory
     build
   end
 
-  # Removes the first row from the CSV
-  # @return [String] CSV, excluding the first line (groups)
+  # Returns the CSV, with the first row (groupings) removed
+  # @return [String] CSV
   def csv_string_without_groups
     csv_data.split("\n")[1..].join("\n")
   end
 
   # Pivots the CSV data
   # Returns a list of objects, where each object is a CSV row
-  # where the key is the column header, and the value is the cell
-  # @return [List]
+  # @return [List] e.g. [{ col_header_1: row_1_col_1, col_header_2: row_1_col_2 }, ...]
   def pivot_csv_data_to_obj
     header_converter = proc do |header|
       assay_type = QcAssayType.find_by(label: header.strip)
@@ -39,14 +38,13 @@ class QcResultsUploadFactory
   end
 
   # Loops through the Pivotted CSV data
-  # Creating the QC entities
   def build
     pivot_csv_data_to_obj.each do |row_object|
       create_data(row_object)
     end
   end
 
-  # @param [Object] CSV row e.g. { col_header: row_value }
+  # @param [Object] CSV row e.g. { col_header_1: row_1_col_1 }
   def create_data(row_object)
     # 1. Always create Long Read QC Decision
     lr_qc_decison_id = create_qc_decision!(row_object[LR_DECISION_FIELD], :long_read).id
@@ -73,13 +71,14 @@ class QcResultsUploadFactory
     end
   end
 
-  # @returns [List] of ids, for created QcResults
-  # @param [Object] CSV row e.g. { col_header: row_value }
+  # @returns [List] of created QcResult id's
+  # @param [Object] CSV row e.g. { col_header_1: row_1_col_1 }
   def create_qc_results(row_object)
     # Get relevant QcAssayTypes, for used_by
     qc_assay_types = QcAssayType.where(used_by:)
 
-    # Loop through QcAssayTypes, to create qc_results
+    # Loop through QcAssayTypes
+    # Create a QcResult for each QcAssayType
     qc_assay_types.map do |qc_assay_type|
       create_qc_result!(row_object['Tissue Tube ID'], row_object['Sanger sample ID'],
                         qc_assay_type.id, row_object[qc_assay_type.key]).id
