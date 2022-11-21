@@ -38,11 +38,11 @@
 
 - Create Factory logic
 
-## Tasks To Do
-
 - Send CSV string via API, to controller, and pass through to the factory
 
 - Make field constants
+
+## Tasks To Do
 
 - Adding comments to the factory methods
 
