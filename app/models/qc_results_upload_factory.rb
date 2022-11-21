@@ -8,6 +8,9 @@ class QcResultsUploadFactory
   delegate :csv_data, to: :qc_results_upload
   delegate :used_by, to: :qc_results_upload
 
+  LR_DECISION_FIELD = 'LR EXTRACTION DECISION'
+  TOL_DECISION_FIELD = 'TOL DECISION [Post-Extraction]'
+
   # Input
   # ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,Shear & SPRI QC,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,,SEQUENCING DATA,
   # Batch ,Tissue Tube ID,Sanger sample ID,Species,Genome Size,Tissue FluidX rack ID,Rack well location,Date,Crush Method,Tissue Mass (mg),Tissue type,Lysis ,DNA tube ID,DNAext FluidX Rack ID,Rack position,Voucher?,Voucher Tube ID,Voucher Rack ID,Sample Location,Qubit DNA Quant (ng/ul),DNA vol (ul),DNA total ng,Femto dilution,ND 260/280,ND 260/230,ND Quant (ng/ul),Femto Frag Size,GQN >30000,Femto pdf [post-extraction],Pass,LMW Peak PE,TOL DECISION [Post-Extraction],Date started,Pre-shear SPRI Vol input (uL),SPRI Volume (x0.6),Final Elution (uL),DNA Fluid+ MR kit for viscous DNA?,MR Machine ID,MR speed,Vol Input DNA MR3 (uL),Save 1uL post shear,Vol Input SPRI (uL),SPRI volume (x0.6),Qubit Quant (ng/ul),Final Elution Volume (ul),Total DNA ng,Femto Dil (ul),ND 260/280,ND 260/230,ND Quant (ng/uL),% DNA Recovery,Femto Fragment size (post-shear),GQN 10kb threshold,Femto pdf [post-shear],LMW Peak PS,LR SHEARING DECISION ,Date Complete,TOL DECISION [Post-Shearing],ToL ID ,Genome size,ToL ID,PB comments/yields,PB Run Status
@@ -48,14 +51,12 @@ class QcResultsUploadFactory
   def build
     csv_data_to_json.each do |row_object|
       # 1. Always create Long Read qc_decision
-      # Todo: LR EXTRACTION DECISION a constant
-      lr_status = row_object['LR EXTRACTION DECISION']
+      lr_status = row_object[LR_DECISION_FIELD]
       lr_qc_decison_id = create_qc_decision!(lr_status, :long_read).id
 
       # 1. Create TOL qc_decision, if required
-      if row_object['TOL DECISION [Post-Extraction]']
-        # TODO: TOL DECISION [Post-Extraction] a constant
-        tol_status = row_object['TOL DECISION [Post-Extraction]']
+      if row_object[TOL_DECISION_FIELD]
+        tol_status = row_object[TOL_DECISION_FIELD]
         tol_qc_decison_id = create_qc_decision!(tol_status, :tol).id
       end
 
