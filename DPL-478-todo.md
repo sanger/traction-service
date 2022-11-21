@@ -42,17 +42,20 @@
 
 - Make field constants
 
+- Test factory logic `build` method
+
 ## Tasks To Do
 
 - Adding comments to the factory methods
 - Dont hard code test data
-- Test with tol decision
-- Test factory logic `build` method
+- Test with a tol decision
 - Replace `_tbc_` for 'Femto Frag Size'
-- Check all CSV columns are unique
 - Validation to ensure that the qc results are correct
 - Check when deleting qc result, what happens
 - JSON API resource which will provide feedback on success or provide errors
+- Error handling
+- Check all CSV columns are unique
+
 - An agreed message format to send the qc results to the warehouse
 - A handler to send the message to the warehouse
 - modification of qc type column so that it can recognise different label (OPTIONAL - to decide)
