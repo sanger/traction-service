@@ -79,17 +79,10 @@ class QcResultsUploadFactory
     qc_assay_types = QcAssayType.where(used_by:)
 
     # Loop through QcAssayTypes, to create qc_results
-    qc_result_ids = []
-    qc_assay_types.each do |qc_assay_type|
-      labware_barcode = row_object['Tissue Tube ID']
-      sample_external_id = row_object['Sanger sample ID']
-      qc_assay_type_id = qc_assay_type.id
-      value = row_object[qc_assay_type.key]
-
-      qc_result = create_qc_result!(labware_barcode, sample_external_id, qc_assay_type_id, value)
-      qc_result_ids << qc_result.id
+    qc_assay_types.map do |qc_assay_type|
+      create_qc_result!(row_object['Tissue Tube ID'], row_object['Sanger sample ID'],
+                        qc_assay_type.id, row_object[qc_assay_type.key]).id
     end
-    qc_result_ids
   end
 
   # @return [QcDecision]
