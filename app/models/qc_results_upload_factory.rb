@@ -73,6 +73,7 @@ class QcResultsUploadFactory
     end
   end
 
+  # @returns [List] of ids, for created QcResults
   # @param [Object] CSV row e.g. { col_header: row_value }
   def create_qc_results(row_object)
     # Get relevant QcAssayTypes, for used_by
