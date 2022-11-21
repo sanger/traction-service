@@ -12,8 +12,27 @@ class QcResultsUploadFactory
   LR_DECISION_FIELD = 'LR EXTRACTION DECISION'
   TOL_DECISION_FIELD = 'TOL DECISION [Post-Extraction]'
 
+  # Could validate required headers are present
+  # validates :size, inclusion: { in: %w(small medium large),
+  #   message: "%{value} is not a valid size" }
+
+  validate :validate_headers_unique, :another_validation
+
   def create_entities!
     build
+    true
+  end
+
+  def validate_headers_unique
+    headers = csv_data.split("\n")[1].split(",")
+
+    if headers.count != headers.uniq.count
+      errors.add :csv_data, "Contains duplicated headers"
+    end
+  end
+
+  def another_validation
+    errors.add :csv_data, "Another error"
   end
 
   # Returns the CSV, with the first row (groupings) removed

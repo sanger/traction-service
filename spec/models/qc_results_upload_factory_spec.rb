@@ -20,6 +20,20 @@ RSpec.describe QcResultsUploadFactory, type: :model do
     end
   end
 
+  describe 'validation' do
+    let(:csv_dupl_headers) { ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,#REF!,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,,SEQUENCING DATA,
+    Batch,Tissue Tube ID,Sanger sample ID,Species,Genome Size,Tissue FluidX rack ID,Rack well location,Date,Crush Method,Tissue Mass (mg),Tissue type,Lysis,DNA tube ID,DNAext FluidX Rack ID,Rack position,Voucher?,Voucher Tube ID,Voucher Rack ID,Sample Location,Qubit DNA Quant (ng/ul),DNA vol (ul),DNA total ng,Femto dilution,ND 260/280,ND 260/230,ND Quant (ng/ul),Femto Frag Size,GQN >30000,Femto pdf [post-extraction],LR EXTRACTION DECISION,Sample Well Position in Plate,TOL DECISION [Post-Extraction],Operator,Pre-shear SPRI Vol input (uL),SPRI Volume (x0.6),Final Elution (uL),DNA Fluid+ MR kit for viscous DNA?,MR Machine ID,MR speed,Vol Input DNA MR3 (uL),Save 1uL post shear,Vol Input SPRI (uL),SPRI volume (x0.6),Qubit Quant (ng/ul),Final Elution Volume (ul),Total DNA ng,Femto Dil (ul),ND 260/280,ND 260/230,ND Quant (ng/uL),% DNA Recovery,Femto Fragment size (post-shear),GQN 10kb threshold,Femto pdf [post-shear],LMW Peak PS,Comments,Date Complete,TOL DECISION [Post-Shearing],ToL ID,ToL ID,PB comments/yields,Traction ID
+    Production 1,FD20709764,DTOL12932860,,0.53,,,04/05/2022,Powermash,7.8,Non-plant,2h@25C,,,NA,Yes,FD38542652,SA00930879,A1,4.78,385,1840.3,18.12,2.38,0.57,14.9,22688,1.5,Extraction.Femto.9764-9765,Pass,,Pass,lk11,,,,,Alan Shearer/Britney Shears,30,,FALSE,,,22.6,45.4,1026.04,89.4,1.92,1.79,33.7,55.8,9772,4.4,Sheared.Femto.9764-6843,,low fragment size,,,idCheUrba1,idCheUrba1,," }
+
+    let(:qc_results_upload) { build(:qc_results_upload, csv_data: csv_dupl_headers) }
+    let(:factory) { build(:qc_results_upload_factory, qc_results_upload: ) }
+
+    it 'errors when there are duplicate headers' do
+      expect(factory.valid?).to be false
+      expect(factory.errors.messages[:csv_data]).to eq ["Contains duplicated headers", "Another error"]
+    end
+  end
+
   describe '#csv_data' do
     let(:factory) { build(:qc_results_upload_factory) }
 
