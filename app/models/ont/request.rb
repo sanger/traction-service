@@ -14,6 +14,7 @@ module Ont
     has_one :plate, through: :well, class_name: '::Plate'
     has_one :request, class_name: '::Request', as: :requestable, dependent: :nullify
     has_one :sample, through: :request
+    delegate :name, to: :sample, prefix: :sample
 
     validates :cost_code, presence: true
     validates :number_of_flowcells, numericality: { only_integer: true, greater_than: 0 }
@@ -21,5 +22,13 @@ module Ont
 
     validates :library_type, pipeline: :ont
     validates :data_type, pipeline: :ont
+
+    def container
+      tube || well
+    end
+
+    def source_identifier
+      container&.identifier
+    end
   end
 end

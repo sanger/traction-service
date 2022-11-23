@@ -89,7 +89,9 @@ RSpec.describe 'Ont::RequestsController', type: :request, ont: true do
               'external_study_id' => request.external_study_id,
               'library_type' => request.library_type.name,
               'data_type' => request.data_type.name,
-              'created_at' => request.created_at.to_fs(:us)
+              'created_at' => request.created_at.to_fs(:us),
+              'sample_name' => request.sample_name,
+              'source_identifier' => request.source_identifier
             )
           end
         end

@@ -6,7 +6,7 @@ module V1
     class RequestResource < JSONAPI::Resource
       model_name 'Ont::Request', add_model_hint: false
 
-      attributes(*::Ont.request_attributes, :created_at)
+      attributes(*::Ont.request_attributes, :sample_name, :source_identifier, :created_at)
 
       paginator :paged
 
