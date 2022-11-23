@@ -10,7 +10,8 @@ module V1
       has_many :materials, class_name: 'ContainerMaterial', relation_name: :container_materials,
                            foreign_key_on: :related
 
-      has_many :requests, relation_name: :ont_requests
+      has_many :requests, class_name: 'Request', relation_name: :ont_requests,
+                          foreign_key_on: :related
       has_one :plate, relation_name: :plate
     end
   end
