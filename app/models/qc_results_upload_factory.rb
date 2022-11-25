@@ -114,6 +114,9 @@ class QcResultsUploadFactory
     # Loop through QcAssayTypes
     # Create a QcResult for each QcAssayType
     qc_assay_types.map do |qc_assay_type|
+      # Skip, to not errro,  if the row is missing the QC Assay Type data
+      next unless row_object[qc_assay_type.key]
+
       create_qc_result!(row_object['Tissue Tube ID'], row_object['Sanger sample ID'],
                         qc_assay_type.id, row_object[qc_assay_type.key]).id
     end
