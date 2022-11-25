@@ -9,13 +9,11 @@ class QcResultsUploadFactory
   delegate :csv_data, to: :qc_results_upload
   delegate :used_by, to: :qc_results_upload
 
+  # These have to match the CSV LR and TOL decision column headers
   LR_DECISION_FIELD = 'LR EXTRACTION DECISION [ESP1]'
   TOL_DECISION_FIELD = 'TOL DECISION [ESP1]'
 
-  # Could validate required headers are present
-  # validates :size, inclusion: { in: %w(small medium large),
-  #   message: "%{value} is not a valid size" }
-
+  # Validations return unprocessable_entity if not present
   validates :csv_data, :used_by, presence: true
   validate :validate_headers, :validate_body
 
@@ -94,14 +92,9 @@ class QcResultsUploadFactory
     # 4. Always create Long Read QC Decision Results
     qc_result_ids.each do |qc_result_id|
       create_qc_decision_result!(qc_result_id, lr_qc_decison_id)
-    end
 
-    # ?? Refactor this so only 1 loop over qc_result_ids
-    # 5. If required, create TOL QC Decision Results
-    return unless tol_qc_decison_id
-
-    qc_result_ids.each do |qc_result_id|
-      create_qc_decision_result!(qc_result_id, tol_qc_decison_id)
+      # 5. If required, create TOL QC Decision Results
+      create_qc_decision_result!(qc_result_id, tol_qc_decison_id) if tol_qc_decison_id
     end
   end
 
@@ -123,16 +116,19 @@ class QcResultsUploadFactory
   end
 
   # @return [QcDecision]
+  # Returns status code: 500 if fail to create
   def create_qc_decision!(status, decision_made_by)
     QcDecision.create!(status:, decision_made_by:)
   end
 
   # @return [QcResult]
+  # Returns status code: 500 if fail to create
   def create_qc_result!(labware_barcode, sample_external_id, qc_assay_type_id, value)
     QcResult.create!(labware_barcode:, sample_external_id:, qc_assay_type_id:, value:)
   end
 
   # @return [QcDecisionResult]
+  # Returns status code: 500 if fail to create
   def create_qc_decision_result!(qc_result_id, qc_decision_id)
     QcDecisionResult.create!(qc_result_id:, qc_decision_id:)
   end
