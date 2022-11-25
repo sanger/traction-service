@@ -35,24 +35,13 @@
 - Validate: when there is missing require lr decision
 - Replace `_tbc_` for 'Femto Frag Size'
 - Error handling
+- Future proof: add other used_by, and more QC Assay Types, and ensure only wanted are created
+- JSON API resource which will provide feedback on success or provide errors
+- Add documentation
 
 ## Tasks To Do
 
-- JSON API resource which will provide feedback on success or provide errors
 - Refactor test data
 - Check when deleting QC Result, what happens
-- modification of qc type column so that it can recognise different label (OPTIONAL - to decide)
-- Future proof: add other used_by, and more QC Assay Types, and ensure only wanted are created
-- Docs
 - An agreed message format to send the qc results to the warehouse
 - A handler to send the message to the warehouse
-
-## Docs
-
-When CSV is updated, check:
-
-- LR and TOL DECISION constants in factory
-- check assay type rake task
-
-Handle missing csv_data and status nicely
-Throw error if missing LR Decision, as this should be there

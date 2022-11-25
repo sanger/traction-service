@@ -11,6 +11,7 @@ RSpec.describe '/qc_results_uploads', type: :request do
       create(:qc_assay_type, key: '_260_280_ratio', label: 'ND 260/280 [ESP1]', used_by: 0)
       create(:qc_assay_type, key: 'average_fragment_size', label: 'Femto Frag Size [ESP1]', used_by: 0)
       create(:qc_assay_type, key: 'results_pdf', label: 'Femto pdf [ESP1]', used_by: 0)
+      create(:qc_assay_type, key: 'a_future_key', label: 'A Future Label', used_by: 1)
     end
 
     context 'with valid parameters' do
@@ -30,7 +31,7 @@ RSpec.describe '/qc_results_uploads', type: :request do
 
       it 'returns a created status' do
         post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:created), response.body
+        expect(response).to have_http_status(:created)
       end
 
       it 'creates a new QcResultsUpload' do
@@ -49,7 +50,7 @@ RSpec.describe '/qc_results_uploads', type: :request do
         expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
       end
 
-      it 'creates the relevant entities' do
+      it 'creates the relevant QC entities' do
         # 14 = 8 LR + 6 TOL
         expect do
           post v1_qc_results_uploads_url, params: body, headers: json_api_headers
@@ -198,12 +199,74 @@ RSpec.describe '/qc_results_uploads', type: :request do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:bad_request)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-          # can this be refactored?
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'The required parameter, data, is missing.'
         end
       end
 
-      context 'when some row data is invalid' do
+      context 'when csv_data headers is missing' do
+        let(:csv_missing_headers) do
+          ',,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,'
+        end
+
+        let(:invalid_body) do
+          {
+            data: {
+              type: 'qc_results_uploads',
+              attributes: {
+                csv_data: csv_missing_headers,
+                used_by: 'extraction'
+              }
+            }
+          }.to_json
+        end
+
+        it 'does not create a new QcResultsUpload' do
+          expect do
+            post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+          end.not_to change(QcResultsUpload, :count)
+        end
+
+        it 'renders a JSON response with errors for the new qc_results_upload' do
+          post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
+          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'csv_data - Missing headers'
+        end
+      end
+
+      context 'when csv_data body data is missing' do
+        let(:csv_missing_body) do
+          ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,
+          Batch ,Tissue Tube ID,Sanger sample ID,Species,Genome Size,Tissue FluidX rack ID,Rack well location,Date,Crush Method,Tissue Mass (mg),Tissue type,Lysis ,DNA tube ID,DNAext FluidX Rack ID,Rack position,Voucher?,Voucher Tube ID,Voucher Rack ID,Sample Location,Qubit DNA Quant (ng/ul) [ESP1],DNA vol (ul),DNA total ng [ESP1],Femto dilution [ESP1],ND 260/280 [ESP1],ND 260/230 [ESP1],ND Quant (ng/ul) [ESP1],Femto Frag Size [ESP1],GQN >30000 [ESP1],Femto pdf [ESP1],LR EXTRACTION DECISION [ESP1],Sample Well Position in Plate,TOL DECISION [ESP1],DNA Fluid+ MR kit for viscous DNA?,MR Machine ID,MR speed,Vol Input DNA MR3 (uL),Save 1uL post shear,Vol Input SPRI (uL),SPRI volume (x0.6),Qubit Quant (ng/ul) [ESP2],Final Elution Volume (ul),Total DNA ng [ESP2],Femto Dil (ul) [ESP2],ND 260/280 [ESP2],ND 260/230 [ESP2],ND Quant (ng/uL) [ESP2],% DNA Recovery,Femto Fragment size [ESP2],GQN 10kb threshold [ESP2],Femto pdf [ESP2],LR SHEARING DECISION [ESP2],TOL DECISION [ESP2],ToL ID ,Genome size (TOL),SE Number,Date in PB Lab (Auto)"
+        end
+
+        let(:invalid_body) do
+          {
+            data: {
+              type: 'qc_results_uploads',
+              attributes: {
+                csv_data: csv_missing_body,
+                used_by: 'extraction'
+              }
+            }
+          }.to_json
+        end
+
+        it 'does not create a new QcResultsUpload' do
+          expect do
+            post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+          end.not_to change(QcResultsUpload, :count)
+        end
+
+        it 'renders a JSON response with errors for the new qc_results_upload' do
+          post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
+          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'csv_data - Missing data'
+        end
+      end
+
+      context 'when required row data is missing' do
         let(:csv_missing_lr_decision) do
           ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,
           Batch ,Tissue Tube ID,Sanger sample ID,Species,Genome Size,Tissue FluidX rack ID,Rack well location,Date,Crush Method,Tissue Mass (mg),Tissue type,Lysis ,DNA tube ID,DNAext FluidX Rack ID,Rack position,Voucher?,Voucher Tube ID,Voucher Rack ID,Sample Location,Qubit DNA Quant (ng/ul) [ESP1],DNA vol (ul),DNA total ng [ESP1],Femto dilution [ESP1],ND 260/280 [ESP1],ND 260/230 [ESP1],ND Quant (ng/ul) [ESP1],Femto Frag Size [ESP1],GQN >30000 [ESP1],Femto pdf [ESP1],LR EXTRACTION DECISION [ESP1],Sample Well Position in Plate,TOL DECISION [ESP1],DNA Fluid+ MR kit for viscous DNA?,MR Machine ID,MR speed,Vol Input DNA MR3 (uL),Save 1uL post shear,Vol Input SPRI (uL),SPRI volume (x0.6),Qubit Quant (ng/ul) [ESP2],Final Elution Volume (ul),Total DNA ng [ESP2],Femto Dil (ul) [ESP2],ND 260/280 [ESP2],ND 260/230 [ESP2],ND Quant (ng/uL) [ESP2],% DNA Recovery,Femto Fragment size [ESP2],GQN 10kb threshold [ESP2],Femto pdf [ESP2],LR SHEARING DECISION [ESP2],TOL DECISION [ESP2],ToL ID ,Genome size (TOL),SE Number,Date in PB Lab (Auto)
