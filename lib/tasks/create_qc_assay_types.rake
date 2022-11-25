@@ -13,7 +13,7 @@ namespace :qc_assay_types do
       { key: '_260_230_ratio', label: 'ND 260/230 [ESP1]', used_by: 0 },
       { key: '_260_280_ratio', label: 'ND 260/280 [ESP1]', used_by: 0 },
       { key: 'nanodrop_concentration_ngul', label: 'ND Quant (ng/ul) [ESP1]', used_by: 0 },
-      { key: '_tbc_', label: 'Femto Frag Size [ESP1]', used_by: 0 },
+      { key: 'average_fragment_size', label: 'Femto Frag Size [ESP1]', used_by: 0 },
       { key: 'gqn_dnaex', label: 'GQN >30000 [ESP1]', used_by: 0 },
       { key: 'results_pdf', label: 'Femto pdf [ESP1]', used_by: 0 }
       # ......
