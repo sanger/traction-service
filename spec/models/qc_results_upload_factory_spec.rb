@@ -4,12 +4,12 @@ require 'rails_helper'
 
 RSpec.describe QcResultsUploadFactory, type: :model do
   before do
-    create(:qc_assay_type, key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul)', used_by: 0)
+    create(:qc_assay_type, key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul) [ESP1]', used_by: 0)
     create(:qc_assay_type, key: 'volume_si', label: 'DNA vol (ul)', used_by: 0)
-    create(:qc_assay_type, key: '_260_230_ratio', label: 'ND 260/230', used_by: 0)
-    create(:qc_assay_type, key: '_260_280_ratio', label: 'ND 260/280', used_by: 0)
-    create(:qc_assay_type, key: '_tbc_', label: 'Femto Frag Size', used_by: 0)
-    create(:qc_assay_type, key: 'results_pdf', label: 'Femto pdf [post-extraction]', used_by: 0)
+    create(:qc_assay_type, key: '_260_230_ratio', label: 'ND 260/230 [ESP1]', used_by: 0)
+    create(:qc_assay_type, key: '_260_280_ratio', label: 'ND 260/280 [ESP1]', used_by: 0)
+    create(:qc_assay_type, key: '_tbc_', label: 'Femto Frag Size [ESP1]', used_by: 0)
+    create(:qc_assay_type, key: 'results_pdf', label: 'Femto pdf [ESP1]', used_by: 0)
   end
 
   describe '#create_entities!' do
@@ -21,16 +21,48 @@ RSpec.describe QcResultsUploadFactory, type: :model do
   end
 
   describe 'validation' do
-    let(:csv_dupl_headers) { ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,#REF!,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,,SEQUENCING DATA,
-    Batch,Tissue Tube ID,Sanger sample ID,Species,Genome Size,Tissue FluidX rack ID,Rack well location,Date,Crush Method,Tissue Mass (mg),Tissue type,Lysis,DNA tube ID,DNAext FluidX Rack ID,Rack position,Voucher?,Voucher Tube ID,Voucher Rack ID,Sample Location,Qubit DNA Quant (ng/ul),DNA vol (ul),DNA total ng,Femto dilution,ND 260/280,ND 260/230,ND Quant (ng/ul),Femto Frag Size,GQN >30000,Femto pdf [post-extraction],LR EXTRACTION DECISION,Sample Well Position in Plate,TOL DECISION [Post-Extraction],Operator,Pre-shear SPRI Vol input (uL),SPRI Volume (x0.6),Final Elution (uL),DNA Fluid+ MR kit for viscous DNA?,MR Machine ID,MR speed,Vol Input DNA MR3 (uL),Save 1uL post shear,Vol Input SPRI (uL),SPRI volume (x0.6),Qubit Quant (ng/ul),Final Elution Volume (ul),Total DNA ng,Femto Dil (ul),ND 260/280,ND 260/230,ND Quant (ng/uL),% DNA Recovery,Femto Fragment size (post-shear),GQN 10kb threshold,Femto pdf [post-shear],LMW Peak PS,Comments,Date Complete,TOL DECISION [Post-Shearing],ToL ID,ToL ID,PB comments/yields,Traction ID
-    Production 1,FD20709764,DTOL12932860,,0.53,,,04/05/2022,Powermash,7.8,Non-plant,2h@25C,,,NA,Yes,FD38542652,SA00930879,A1,4.78,385,1840.3,18.12,2.38,0.57,14.9,22688,1.5,Extraction.Femto.9764-9765,Pass,,Pass,lk11,,,,,Alan Shearer/Britney Shears,30,,FALSE,,,22.6,45.4,1026.04,89.4,1.92,1.79,33.7,55.8,9772,4.4,Sheared.Femto.9764-6843,,low fragment size,,,idCheUrba1,idCheUrba1,," }
+    context 'when there are missing headers' do
+      let(:csv_dupl_headers) { ',,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,' }
 
-    let(:qc_results_upload) { build(:qc_results_upload, csv_data: csv_dupl_headers) }
-    let(:factory) { build(:qc_results_upload_factory, qc_results_upload: ) }
+      let(:qc_results_upload) { build(:qc_results_upload, csv_data: csv_dupl_headers) }
+      let(:factory) { build(:qc_results_upload_factory, qc_results_upload:) }
 
-    it 'errors when there are duplicate headers' do
-      expect(factory.valid?).to be false
-      expect(factory.errors.messages[:csv_data]).to eq ["Contains duplicated headers", "Another error"]
+      it 'errors' do
+        expect(factory.valid?).to be false
+        expect(factory.errors.messages[:csv_data]).to eq ['Missing headers', 'Missing data']
+      end
+    end
+
+    context 'when there are duplicate headers' do
+      # Here "Genome Size" is duplicated
+      let(:csv_dupl_headers) do
+        ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,
+        Batch ,Tissue Tube ID,Sanger sample ID,Species,Genome Size,Tissue FluidX rack ID,Rack well location,Date,Crush Method,Tissue Mass (mg),Tissue type,Lysis ,DNA tube ID,DNAext FluidX Rack ID,Rack position,Voucher?,Voucher Tube ID,Voucher Rack ID,Sample Location,Qubit DNA Quant (ng/ul) [ESP1],DNA vol (ul),DNA total ng [ESP1],Femto dilution [ESP1],ND 260/280 [ESP1],ND 260/230 [ESP1],ND Quant (ng/ul) [ESP1],Femto Frag Size [ESP1],GQN >30000 [ESP1],Femto pdf [ESP1],LR EXTRACTION DECISION [ESP1],Sample Well Position in Plate,TOL DECISION [ESP1],DNA Fluid+ MR kit for viscous DNA?,MR Machine ID,MR speed,Vol Input DNA MR3 (uL),Save 1uL post shear,Vol Input SPRI (uL),SPRI volume (x0.6),Qubit Quant (ng/ul) [ESP2],Final Elution Volume (ul),Total DNA ng [ESP2],Femto Dil (ul) [ESP2],ND 260/280 [ESP2],ND 260/230 [ESP2],ND Quant (ng/uL) [ESP2],% DNA Recovery,Femto Fragment size [ESP2],GQN 10kb threshold [ESP2],Femto pdf [ESP2] ,LR SHEARING DECISION [ESP2],TOL DECISION [ESP2],ToL ID ,Genome Size,SE Number,Date in PB Lab (Auto)
+        Production 1,FD20709764,DTOL12932860,,0.53,,,04/05/2022,Powermash,7.8,Non-plant,2h@25C,,,NA,Yes,FD38542652,SA00930879,A1,4.78,385,1840.3,18.12,2.38,0.57,14.9,22688,1.5,Extraction.Femto.9764-9765,Pass,,,,Alan Shearer/Britney Shears,30,,FALSE,,,22.6,45.4,1026.04,89.4,1.92,1.79,33.7,55.8,9772,4.4,Sheared.Femto.9764-6843,Pass,,idCheUrba1,0.52725,SE293337P,24/06/2022"
+      end
+
+      let(:qc_results_upload) { build(:qc_results_upload, csv_data: csv_dupl_headers) }
+      let(:factory) { build(:qc_results_upload_factory, qc_results_upload:) }
+
+      it 'errors' do
+        expect(factory.valid?).to be false
+        expect(factory.errors.messages[:csv_data]).to eq ['Contains duplicated headers']
+      end
+
+      context 'when there is missing data' do
+        let(:csv_dupl_headers) do
+          ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,
+          Batch ,Tissue Tube ID,Sanger sample ID,Species,Genome Size,Tissue FluidX rack ID,Rack well location,Date,Crush Method,Tissue Mass (mg),Tissue type,Lysis ,DNA tube ID,DNAext FluidX Rack ID,Rack position,Voucher?,Voucher Tube ID,Voucher Rack ID,Sample Location,Qubit DNA Quant (ng/ul) [ESP1],DNA vol (ul),DNA total ng [ESP1],Femto dilution [ESP1],ND 260/280 [ESP1],ND 260/230 [ESP1],ND Quant (ng/ul) [ESP1],Femto Frag Size [ESP1],GQN >30000 [ESP1],Femto pdf [ESP1],LR EXTRACTION DECISION [ESP1],Sample Well Position in Plate,TOL DECISION [ESP1],DNA Fluid+ MR kit for viscous DNA?,MR Machine ID,MR speed,Vol Input DNA MR3 (uL),Save 1uL post shear,Vol Input SPRI (uL),SPRI volume (x0.6),Qubit Quant (ng/ul) [ESP2],Final Elution Volume (ul),Total DNA ng [ESP2],Femto Dil (ul) [ESP2],ND 260/280 [ESP2],ND 260/230 [ESP2],ND Quant (ng/uL) [ESP2],% DNA Recovery,Femto Fragment size [ESP2],GQN 10kb threshold [ESP2],Femto pdf [ESP2],LR SHEARING DECISION [ESP2],TOL DECISION [ESP2],ToL ID ,Genome size (TOL),SE Number,Date in PB Lab (Auto)"
+        end
+
+        let(:qc_results_upload) { build(:qc_results_upload, csv_data: csv_dupl_headers) }
+        let(:factory) { build(:qc_results_upload_factory, qc_results_upload:) }
+
+        it 'errors' do
+          expect(factory.valid?).to be false
+          expect(factory.errors.messages[:csv_data]).to eq ['Missing data']
+        end
+      end
     end
   end
 
