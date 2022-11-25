@@ -5,12 +5,12 @@ require 'rails_helper'
 RSpec.describe '/qc_results_uploads', type: :request do
   describe '#post' do
     before do
-      create(:qc_assay_type, key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul)', used_by: 0)
+      create(:qc_assay_type, key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul) [ESP1]', used_by: 0)
       create(:qc_assay_type, key: 'volume_si', label: 'DNA vol (ul)', used_by: 0)
-      create(:qc_assay_type, key: '_260_230_ratio', label: 'ND 260/230', used_by: 0)
-      create(:qc_assay_type, key: '_260_280_ratio', label: 'ND 260/280', used_by: 0)
-      create(:qc_assay_type, key: '_tbc_', label: 'Femto Frag Size', used_by: 0)
-      create(:qc_assay_type, key: 'results_pdf', label: 'Femto pdf [post-extraction]', used_by: 0)
+      create(:qc_assay_type, key: '_260_230_ratio', label: 'ND 260/230 [ESP1]', used_by: 0)
+      create(:qc_assay_type, key: '_260_280_ratio', label: 'ND 260/280 [ESP1]', used_by: 0)
+      create(:qc_assay_type, key: '_tbc_', label: 'Femto Frag Size [ESP1]', used_by: 0)
+      create(:qc_assay_type, key: 'results_pdf', label: 'Femto pdf [ESP1]', used_by: 0)
     end
 
     context 'with valid parameters' do

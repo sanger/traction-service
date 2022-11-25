@@ -9,30 +9,45 @@ class QcResultsUploadFactory
   delegate :csv_data, to: :qc_results_upload
   delegate :used_by, to: :qc_results_upload
 
-  LR_DECISION_FIELD = 'LR EXTRACTION DECISION'
-  TOL_DECISION_FIELD = 'TOL DECISION [Post-Extraction]'
+  LR_DECISION_FIELD = 'LR EXTRACTION DECISION [ESP1]'
+  TOL_DECISION_FIELD = 'TOL DECISION [ESP1]'
 
   # Could validate required headers are present
   # validates :size, inclusion: { in: %w(small medium large),
   #   message: "%{value} is not a valid size" }
 
-  validate :validate_headers_unique, :another_validation
+  validates :csv_data, :used_by, presence: true
+  validate :validate_headers, :validate_body
 
   def create_entities!
     build
     true
   end
 
-  def validate_headers_unique
-    headers = csv_data.split("\n")[1].split(",")
+  def validate_headers
+    return if csv_data.blank?
 
-    if headers.count != headers.uniq.count
-      errors.add :csv_data, "Contains duplicated headers"
+    header_row = csv_data.split("\n")[1]
+    unless header_row
+      errors.add :csv_data, 'Missing headers'
+      return
     end
+
+    headers = header_row.split(',')
+
+    # Case sensitive
+    # e.g. "Genome Size" != "Genome size"
+    return if headers.count == headers.uniq.count
+
+    errors.add :csv_data, 'Contains duplicated headers'
+    nil
   end
 
-  def another_validation
-    errors.add :csv_data, "Another error"
+  def validate_body
+    return if csv_data.blank?
+
+    data_rows = csv_data.split("\n")[2..]
+    errors.add :csv_data, 'Missing data' if data_rows.blank?
   end
 
   # Returns the CSV, with the first row (groupings) removed
