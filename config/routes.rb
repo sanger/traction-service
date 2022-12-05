@@ -62,6 +62,7 @@ Rails.application.routes.draw do
       jsonapi_resources :libraries,           only: %i[index update destroy]
       jsonapi_resources :pools,               except: %i[destroy]
       jsonapi_resources :plates,              only: %i[index]
+      jsonapi_resources :tubes,               only: %i[index]
       jsonapi_resources :tag_sets
     end
   end
