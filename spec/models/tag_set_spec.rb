@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe TagSet, type: :model do
+RSpec.describe TagSet do
   it 'is valid with all params' do
     expect(build(:tag_set, name: 'Test Tag Set Custom', uuid: '11111')).to be_valid
   end

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Plate, type: :model do
+RSpec.describe Plate do
   context 'labware' do
     let(:labware_model) { :plate }
 

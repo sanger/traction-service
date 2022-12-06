@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Pacbio::WellPool, type: :model, pacbio: true do
+RSpec.describe Pacbio::WellPool, pacbio: true do
   it 'must have a well' do
     expect(build(:pacbio_well_pool, well: nil)).not_to be_valid
   end

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe TagTaggable, type: :model do
+RSpec.describe TagTaggable do
   it 'is not valid without a tag' do
     expect(build(:tag_taggable, tag: nil)).not_to be_valid
   end
