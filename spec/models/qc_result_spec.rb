@@ -2,8 +2,8 @@
 
 require 'rails_helper'
 
-RSpec.describe QcResult, type: :model do
-  let(:qc_assay_type) { create :qc_assay_type }
+RSpec.describe QcResult do
+  let(:qc_assay_type) { create(:qc_assay_type) }
 
   describe '#create' do
     it 'is possible to create a new record' do
@@ -33,7 +33,7 @@ RSpec.describe QcResult, type: :model do
   end
 
   describe '#update' do
-    let(:result) { create :qc_result }
+    let(:result) { create(:qc_result) }
 
     it 'is possible to update a record' do
       expect(result.value).not_to eq('a new value')
@@ -43,7 +43,7 @@ RSpec.describe QcResult, type: :model do
   end
 
   describe '#destroy' do
-    let!(:result) { create :qc_result }
+    let!(:result) { create(:qc_result) }
 
     it 'is possible to destroy a record' do
       expect { result.destroy! }.to change(described_class, :count).by(-1)

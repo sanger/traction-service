@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Pacbio::PlateCreator, type: :model, pacbio: true do
+RSpec.describe Pacbio::PlateCreator, pacbio: true do
   let(:external_plates) { build_list(:external_plate, 5) }
   let(:external_plate) { external_plates.first }
 
