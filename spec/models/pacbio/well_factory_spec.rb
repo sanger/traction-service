@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
+RSpec.describe Pacbio::WellFactory, pacbio: true do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
   let(:plate)           { create(:pacbio_plate) }
   let(:pools)           { create_list(:pacbio_pool, 3) }
@@ -296,7 +296,7 @@ RSpec.describe Pacbio::WellFactory, type: :model, pacbio: true do
       end
 
       context 'if tags are the same' do
-        let(:shared_tag) { create :tag }
+        let(:shared_tag) { create(:tag) }
         let(:pool1) do
           create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, tag: shared_tag))
         end

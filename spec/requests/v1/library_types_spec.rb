@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'LibraryTypesController', type: :request do
+RSpec.describe 'LibraryTypesController' do
   describe '#get' do
     before { create(:library_type, active: false) }
 

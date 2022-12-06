@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'PlatesController', type: :request do
+RSpec.describe 'PlatesController' do
   describe '#get' do
     let!(:pacbio_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'pacbio') }
 

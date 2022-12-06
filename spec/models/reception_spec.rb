@@ -2,8 +2,8 @@
 
 require 'rails_helper'
 
-RSpec.describe Reception, type: :model do
-  subject { build :reception, attributes }
+RSpec.describe Reception do
+  subject { build(:reception, attributes) }
 
   context 'without a source' do
     let(:attributes) { { source: nil } }

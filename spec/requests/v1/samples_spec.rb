@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'SamplesController', type: :request do
+RSpec.describe 'SamplesController' do
   describe '#get' do
     let!(:sample1) { create(:sample) }
     let!(:sample2) { create(:sample) }
