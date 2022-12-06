@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'LibrariesController', type: :request, pacbio: true do
+RSpec.describe 'LibrariesController', pacbio: true do
   describe '#get' do
     let!(:libraries) { create_list(:pacbio_library_in_tube, 5, :tagged) }
 

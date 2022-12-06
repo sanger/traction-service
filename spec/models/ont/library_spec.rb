@@ -3,7 +3,7 @@
 require 'rails_helper'
 require './spec/support/read_only'
 
-RSpec.describe Ont::Library, type: :model, ont: true do
+RSpec.describe Ont::Library, ont: true do
   before do
     set_read_only([described_class, Ont::Request], false)
   end

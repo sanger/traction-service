@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Tag, type: :model do
+RSpec.describe Tag do
   it 'is valid with all params' do
     expect(create(:tag, oligo: 'CGATCGAATAT', group_id: '1')).to be_valid
   end
