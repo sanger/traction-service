@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'EnzymesController', type: :request do
+RSpec.describe 'EnzymesController' do
   describe '#get' do
     let!(:saphyr_enzyme1) { create(:saphyr_enzyme) }
     let!(:saphyr_enzyme2) { create(:saphyr_enzyme) }

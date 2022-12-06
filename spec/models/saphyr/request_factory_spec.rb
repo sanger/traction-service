@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Saphyr::RequestFactory, type: :model, saphyr: true do
+RSpec.describe Saphyr::RequestFactory, saphyr: true do
   let(:attributes) do
     [
       { sample: attributes_for(:sample), request: attributes_for(:saphyr_request) },

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'RunsController', type: :request do
+RSpec.describe 'RunsController' do
   describe '#get' do
     let!(:run1) { create(:saphyr_run, state: 'pending', name: 'run1') }
     let!(:run2) { create(:saphyr_run, state: 'started') }

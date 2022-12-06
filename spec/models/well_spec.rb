@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Well, type: :model do
+RSpec.describe Well do
   it_behaves_like 'container'
 
   it 'must have plate' do

@@ -5,7 +5,7 @@ require 'rails_helper'
 # These tests may end up being redundant but we need to make sure existing validations still work
 # when this work is merged with yaml file for validations it would be better to load those
 # validations rather than setting them here
-RSpec.describe Pacbio::Well, type: :model, pacbio: true do
+RSpec.describe Pacbio::Well, pacbio: true do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
   let!(:plate_v10) { create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version10)) }

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'WellsController', type: :request do
+RSpec.describe 'WellsController' do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
 
