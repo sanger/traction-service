@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'PoolsController', type: :request, pacbio: true do
+RSpec.describe 'PoolsController', pacbio: true do
   before do
     # Create a default smrt link version for pacbio runs.
     create(:pacbio_smrt_link_version_default)

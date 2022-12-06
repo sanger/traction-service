@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'SmrtLinkVersionsController', type: :request do
+RSpec.describe 'SmrtLinkVersionsController' do
   def json
     ActiveSupport::JSON.decode(response.body)
   end

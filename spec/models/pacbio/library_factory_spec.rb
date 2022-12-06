@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Pacbio::LibraryFactory, type: :model, pacbio: true do
+RSpec.describe Pacbio::LibraryFactory, pacbio: true do
   let(:tags)                    { create_list(:tag, 3) }
   let(:requests)                { create_list(:pacbio_request, 3) }
   let(:request_attributes)      do

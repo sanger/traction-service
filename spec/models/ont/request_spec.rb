@@ -3,9 +3,9 @@
 require 'rails_helper'
 require './spec/support/read_only'
 
-RSpec.describe Ont::Request, type: :model, ont: true do
+RSpec.describe Ont::Request, ont: true do
   describe '#valid?' do
-    subject { build :ont_request, attributes }
+    subject { build(:ont_request, attributes) }
 
     context 'with all required attributes' do
       let(:attributes) { {} }
@@ -54,7 +54,7 @@ RSpec.describe Ont::Request, type: :model, ont: true do
     subject(:request) { build(:ont_request, attributes) }
 
     context 'when set' do
-      let(:library_type) { build :library_type, :ont }
+      let(:library_type) { build(:library_type, :ont) }
       let(:attributes) { { library_type: } }
 
       it { expect(request.library_type).to eq library_type }
@@ -62,7 +62,7 @@ RSpec.describe Ont::Request, type: :model, ont: true do
     end
 
     context 'when from a different pipeline' do
-      let(:library_type) { build :library_type, :pacbio }
+      let(:library_type) { build(:library_type, :pacbio) }
       let(:attributes) { { library_type: } }
 
       it { is_expected.not_to be_valid }
@@ -73,7 +73,7 @@ RSpec.describe Ont::Request, type: :model, ont: true do
     subject { build(:ont_request, attributes).data_type }
 
     context 'when set' do
-      let(:data_type) { build :data_type, :ont }
+      let(:data_type) { build(:data_type, :ont) }
       let(:attributes) { { data_type: } }
 
       it { is_expected.to eq data_type }

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe ContainerMaterial, type: :model do
+RSpec.describe ContainerMaterial do
   it 'is not valid without a container' do
     expect(build(:container_material, container: nil)).not_to be_valid
   end

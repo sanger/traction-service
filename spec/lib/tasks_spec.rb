@@ -46,8 +46,8 @@ RSpec.describe 'RakeTasks' do
     let(:expected_requests) { expected_tubes + expected_wells }
 
     before do
-      create :library_type, :ont
-      create :data_type, :ont
+      create(:library_type, :ont)
+      create(:data_type, :ont)
     end
 
     it 'creates plates and tubes' do

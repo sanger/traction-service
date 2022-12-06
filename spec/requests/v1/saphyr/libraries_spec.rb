@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'LibrariesController', type: :request do
+RSpec.describe 'LibrariesController' do
   describe '#get' do
     let!(:library1) { create(:saphyr_library_in_tube) }
     let!(:library2) { create(:saphyr_library_in_tube) }

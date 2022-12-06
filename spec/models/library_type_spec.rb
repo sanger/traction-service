@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe LibraryType, type: :model do
+RSpec.describe LibraryType do
   describe '#name' do
     it 'must be present' do
       expect(build(:library_type, name: nil)).not_to be_valid
@@ -26,8 +26,8 @@ RSpec.describe LibraryType, type: :model do
   describe '::active' do
     subject { described_class.active }
 
-    let!(:active_library_type) { create :library_type, active: true }
-    let!(:inactive_library_type) { create :library_type, active: false }
+    let!(:active_library_type) { create(:library_type, active: true) }
+    let!(:inactive_library_type) { create(:library_type, active: false) }
 
     it { is_expected.to include(active_library_type) }
     it { is_expected.not_to include(inactive_library_type) }
