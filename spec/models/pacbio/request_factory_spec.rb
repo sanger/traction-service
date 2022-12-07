@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Pacbio::RequestFactory, type: :model, pacbio: true do
+RSpec.describe Pacbio::RequestFactory, pacbio: true do
   let(:attributes) do
     [
       { sample: attributes_for(:sample),

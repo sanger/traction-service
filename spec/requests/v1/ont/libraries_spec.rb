@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'LibrariesController', type: :request, ont: true do
+RSpec.describe 'LibrariesController', ont: true do
   before do
     Flipper.enable(:dpl_279_ont_libraries_and_pools)
   end

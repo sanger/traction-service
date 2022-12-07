@@ -61,8 +61,8 @@ RSpec.describe 'RakeTasks' do
     let(:expected_requests) { expected_tubes + expected_wells }
 
     before do
-      create :library_type, :ont
-      create :data_type, :ont
+      create(:library_type, :ont)
+      create(:data_type, :ont)
       # We need to reenable all tag tasks because they have all already been invoked by this point
       # And ont tags can be called from ont_data:create
       Rake.application.in_namespace(:tags) { |namespace| namespace.tasks.each(&:reenable) }

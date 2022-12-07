@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Ont::Library, type: :model, ont: true do
+RSpec.describe Ont::Library, ont: true do
   subject { build(:ont_library, params) }
 
   context 'material' do

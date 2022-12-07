@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'FlowcellsController', type: :request do
+RSpec.describe 'FlowcellsController' do
   let(:library) { create(:saphyr_library) }
 
   describe '#create' do
