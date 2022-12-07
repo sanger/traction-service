@@ -92,9 +92,13 @@ class QcResultsUploadFactory
     # 4. Always create Long Read QC Decision Results
     qc_result_ids.each do |qc_result_id|
       create_qc_decision_result!(qc_result_id, lr_qc_decison_id)
+      # 4.1. Always send message to warehouse for Long Read QC Decision Results
+      publish_message(qc_result_id)
 
       # 5. If required, create TOL QC Decision Results
       create_qc_decision_result!(qc_result_id, tol_qc_decison_id) if tol_qc_decison_id
+      # 5.1. If required, Send message to warehouse for TOL QC Decision Results
+      publish_message(qc_result_id) if tol_qc_decison_id
     end
   end
 
@@ -131,5 +135,10 @@ class QcResultsUploadFactory
   # Returns status code: 500 if fail to create
   def create_qc_decision_result!(qc_result_id, qc_decision_id)
     QcDecisionResult.create!(qc_result_id:, qc_decision_id:)
+  end
+
+  def publish_message(qc_result_id)
+    qc_result = QcResult.find(qc_result_id)
+    Messages.publish(qc_result, Pipelines.qc_result.message)
   end
 end
