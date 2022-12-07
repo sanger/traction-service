@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Request, type: :model do
+RSpec.describe Request do
   it 'must have a sample' do
     expect(build(:request, sample: nil)).not_to be_valid
   end

@@ -3,7 +3,7 @@
 require 'rails_helper'
 require './spec/support/read_only'
 
-RSpec.describe 'Ont', :skip, type: :model, ont: true do
+RSpec.describe 'Ont', :skip, ont: true, type: :model do
   let(:config)            { Pipelines.configure(Pipelines.load_yaml) }
   let(:pipeline_config)   { config.ont.message }
   let(:run)               { create(:ont_run_with_flowcells) }

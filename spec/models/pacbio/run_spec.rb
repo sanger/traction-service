@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Pacbio::Run, type: :model, pacbio: true do
+RSpec.describe Pacbio::Run, pacbio: true do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
 
   context 'uuidable' do

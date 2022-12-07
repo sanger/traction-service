@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'PoolsController', type: :request, ont: true do
+RSpec.describe 'PoolsController', ont: true do
   let!(:request) { create(:ont_request) }
   let!(:tag) { create(:tag) }
   let!(:request2) { create(:ont_request) }

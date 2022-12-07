@@ -2,13 +2,13 @@
 
 require 'rails_helper'
 
-RSpec.describe 'TubesController', type: :request do
+RSpec.describe 'TubesController' do
   let(:pipeline_name)       { 'ont' }
   let(:other_pipeline_name) { 'pacbio' }
 
   context 'tubes' do
     it 'returns a list' do
-      create_list(:tube_with_ont_library, 3) 
+      create_list(:tube_with_ont_library, 3)
       create_list(:tube_with_pacbio_library, 4)
 
       get v1_ont_tubes_path, headers: json_api_headers
@@ -53,7 +53,7 @@ RSpec.describe 'TubesController', type: :request do
       get "#{v1_ont_tubes_path}?include=pools", headers: json_api_headers
     end
 
-    let(:ont_pool) { create :ont_pool, tube: create(:tube_with_ont_library) }
+    let(:ont_pool) { create(:ont_pool, tube: create(:tube_with_ont_library)) }
 
     it 'returns a response' do
       expect(response).to have_http_status(:success)
@@ -70,7 +70,7 @@ RSpec.describe 'TubesController', type: :request do
       get "#{v1_ont_tubes_path}?include=requests", headers: json_api_headers
     end
 
-    let(:ont_tube) { create :tube_with_ont_request }
+    let(:ont_tube) { create(:tube_with_ont_request) }
 
     it 'returns a response' do
       expect(response).to have_http_status(:success)

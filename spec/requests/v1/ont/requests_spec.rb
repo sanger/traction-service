@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Ont::RequestsController', type: :request, ont: true do
+RSpec.describe 'Ont::RequestsController', ont: true do
   let(:request_resource_attributes) do
     {
       ** request.attributes.slice(Ont.direct_request_attributes),
