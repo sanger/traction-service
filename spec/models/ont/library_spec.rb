@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require './spec/support/read_only'
 
 RSpec.describe Ont::Library, ont: true do
-  before do
-    set_read_only([described_class, Ont::Request], false)
-  end
+  subject { build(:ont_library, params) }
 
   context 'material' do
     let(:material_model) { :ont_library }
@@ -14,69 +11,162 @@ RSpec.describe Ont::Library, ont: true do
     it_behaves_like 'material'
   end
 
-  it 'must have a name' do
-    library = build(:ont_library, name: nil)
-    expect(library).not_to be_valid
-  end
-
   it 'must have a pool' do
     library = build(:ont_library, pool: nil)
     expect(library).not_to be_valid
   end
 
-  it 'must have a pool_size' do
-    library = build(:ont_library, pool_size: nil)
-    expect(library).not_to be_valid
+  context 'uuidable' do
+    let(:uuidable_model) { :ont_library }
+
+    it_behaves_like 'uuidable'
   end
 
-  it 'name must be unique' do
-    library = create(:ont_library)
-    new_library = build(:ont_library, name: library.name)
-    expect(new_library).not_to be_valid
-    expect(new_library.errors.full_messages).not_to be_empty
+  context 'when volume is nil' do
+    let(:params) { { volume: nil } }
+
+    it { is_expected.to be_valid }
   end
 
-  context 'library name' do
-    it 'returns nil with nil plate_barcode' do
-      name = described_class.library_name(nil, 2)
-      expect(name).to be_nil
+  context 'when volume is positive' do
+    let(:params) { { volume: 23 } }
+
+    it { is_expected.to be_valid }
+  end
+
+  context 'when volume is negative' do
+    let(:params) { { volume: -23 } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context 'when volume is "a word"' do
+    let(:params) { { volume: 'a word' } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context 'when concentration is nil' do
+    let(:params) { { concentration: nil } }
+
+    it { is_expected.to be_valid }
+  end
+
+  context 'when concentration is positive' do
+    let(:params) { { concentration: 23 } }
+
+    it { is_expected.to be_valid }
+  end
+
+  context 'when concentration is negative' do
+    let(:params) { { concentration: -23 } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context 'when concentration is "a word"' do
+    let(:params) { { concentration: 'a word' } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context 'when insert_size is nil' do
+    let(:params) { { insert_size: nil } }
+
+    it { is_expected.to be_valid }
+  end
+
+  context 'when insert_size is positive' do
+    let(:params) { { insert_size: 23 } }
+
+    it { is_expected.to be_valid }
+  end
+
+  context 'when insert_size is negative' do
+    let(:params) { { insert_size: -23 } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context 'when insert_size is "a word"' do
+    let(:params) { { insert_size: 'a word' } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  it 'can have a kit barcode' do
+    expect(build(:ont_library, kit_barcode: nil)).to be_valid
+    expect(create(:ont_library).kit_barcode).to be_present
+  end
+
+  it 'can have a request' do
+    request = build(:ont_request)
+    expect(build(:ont_library, request:).request).to eq(request)
+  end
+
+  it 'can have a tag' do
+    tag = build(:tag)
+    expect(build(:ont_library, tag:).tag).to eq(tag)
+  end
+
+  it 'can have a tagset through tag' do
+    tag = create(:ont_tag)
+
+    expect(create(:ont_library, tag:).tag_set).to eq(tag.tag_set)
+  end
+
+  it 'can have a pool' do
+    pool = build(:ont_pool)
+    expect(build(:ont_library, pool:).pool).to eq(pool)
+  end
+
+  it 'can have a tube through pool' do
+    pool = build(:ont_pool)
+    expect(build(:ont_library, pool:).tube).to eq(pool.tube)
+  end
+
+  describe '#request' do
+    let!(:library) { create(:ont_library, tag: create(:tag)) }
+
+    it 'can have one' do
+      expect(library.request).to be_present
     end
 
-    it 'returns nil with nil pool' do
-      name = described_class.library_name('PLATE-1234', nil)
-      expect(name).to be_nil
-    end
-
-    it 'returns expected name' do
-      name = described_class.library_name('PLATE-1234', 2)
-      expect(name).to eq('PLATE-1234-2')
+    it 'will not delete the requests when the library is deleted' do
+      expect { library.destroy }.not_to change(Ont::Request, :count)
     end
   end
 
-  context 'plate barcode' do
-    it 'returns expected plate barcode' do
-      library = create(:ont_library)
-      expect(library.plate_barcode).to eq('PLATE-1-123456')
-    end
+  context 'library' do
+    let(:library_factory) { :ont_library }
+    let(:library_model) { described_class }
+
+    it_behaves_like 'library'
   end
 
-  context 'tube barcode' do
-    it 'returns nil for no container material' do
-      library = create(:ont_library)
-      expect(library.tube_barcode).to be_nil
+  describe '#source_identifier' do
+    let(:library) { create(:ont_library, :tagged) }
+
+    context 'from a well' do
+      before do
+        create(:plate_with_wells_and_requests, pipeline: 'ont',
+                                               row_count: 1, column_count: 1, barcode: 'BC12',
+                                               requests: [library.request])
+      end
+
+      it 'returns the plate barcode and well' do
+        expect(library.source_identifier).to eq('BC12:A1')
+      end
     end
 
-    it 'returns nil if container is not a tube' do
-      library = create(:ont_library)
-      create(:container_material, container: create(:well), material: library)
-      expect(library.tube_barcode).to be_nil
-    end
+    context 'from a tube' do
+      before do
+        create(:tube_with_ont_request, requests: [library.request], barcode: 'TRAC-2-757')
+      end
 
-    it 'returns tube barcode' do
-      library = create(:ont_library)
-      tube = create(:tube)
-      create(:container_material, container: tube, material: library)
-      expect(library.tube_barcode).to eq(tube.barcode)
+      it 'returns the plate barcode and well' do
+        expect(library.source_identifier).to eq('TRAC-2-757')
+      end
     end
   end
 end
