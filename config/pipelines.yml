@@ -445,9 +445,9 @@ default: &default
               for:
                 - :well
               with: :well
-          5mC Calls in CpG Motifs:
+          Include 5mC Calls in CpG Motifs:
             type: :model
-            value: fivemc_calls_in_cpg_motifs
+            value: include_fivemc_calls_in_cpg_motifs
             populate:
               for:
                 - :well

@@ -40,7 +40,6 @@ RSpec.describe SmrtLinkOptionsValidator do
         it 'when the value is missing' do
           well = build(:pacbio_well, plate:, demultiplex_barcodes: nil)
           described_class.new.validate(well)
-          p well.errors.full_messages
           expect(well.errors.full_messages.length).to eq(2)
           expect(well.errors.full_messages).to include("Demultiplex barcodes can't be blank")
           expect(well.errors.full_messages).to include('Demultiplex barcodes is not included in the list')

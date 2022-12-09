@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Pacbio::TagSetsController', type: :request do
+RSpec.describe 'Pacbio::TagSetsController' do
   def json
     ActiveSupport::JSON.decode(response.body)
   end

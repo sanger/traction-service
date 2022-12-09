@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'DataTypesController', type: :request do
+RSpec.describe 'DataTypesController' do
   describe '#get' do
     let!(:data_type1) { create(:data_type) }
     let!(:data_type2) { create(:data_type) }

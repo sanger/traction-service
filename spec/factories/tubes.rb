@@ -43,5 +43,17 @@ FactoryBot.define do
         requests { create_list(:pacbio_request, 1) }
       end
     end
+
+    factory :tube_with_ont_library do
+      transient do
+        libraries { create_list(:ont_library, 1) }
+      end
+    end
+
+    factory :tube_with_ont_request do
+      transient do
+        requests { create_list(:ont_request, 1) }
+      end
+    end
   end
 end

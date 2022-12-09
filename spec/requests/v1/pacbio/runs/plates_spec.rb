@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'PlatesController', type: :request do
+RSpec.describe 'PlatesController' do
   before do
     # Create a default smrt link version for pacbio runs.
     create(:pacbio_smrt_link_version, name: 'v10', default: true)
