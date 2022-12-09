@@ -52,7 +52,7 @@ RSpec.describe QcResult, type: :model do
       qc_result = create(:qc_result)
       expect do
         qc_result.destroy!
-      end.not_to raise_error(ActiveRecord::RecordNotDestroyed)
+      end.not_to raise_error
     end
 
     it 'cannot be destroyed if there are any associated qc_decision_results' do

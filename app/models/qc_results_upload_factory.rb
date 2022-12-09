@@ -87,18 +87,18 @@ class QcResultsUploadFactory
     end
 
     # 3. Create QC Results
-    qc_result_ids = create_qc_results(row_object)
+    qc_results = create_qc_results(row_object)
 
     # 4. Always create Long Read QC Decision Results
-    qc_result_ids.each do |qc_result_id|
-      create_qc_decision_result!(qc_result_id, lr_qc_decison_id)
-      # 4.1. Always send message to warehouse for Long Read QC Decision Results
-      publish_message(qc_result_id)
+    qc_results.each do |qc_result|
+      create_qc_decision_result!(qc_result.id, lr_qc_decison_id)
+      messages << QcResultMessage.new(qc_result:, decision_made_by: :long_read)
 
       # 5. If required, create TOL QC Decision Results
-      create_qc_decision_result!(qc_result_id, tol_qc_decison_id) if tol_qc_decison_id
-      # 5.1. If required, Send message to warehouse for TOL QC Decision Results
-      publish_message(qc_result_id) if tol_qc_decison_id
+      if tol_qc_decison_id
+        create_qc_decision_result!(qc_result.id, tol_qc_decison_id)
+        messages << QcResultMessage.new(qc_result:, decision_made_by: :tol)
+      end
     end
   end
 
@@ -115,7 +115,7 @@ class QcResultsUploadFactory
       next unless row_object[qc_assay_type.key]
 
       create_qc_result!(row_object['Tissue Tube ID'], row_object['Sanger sample ID'],
-                        qc_assay_type.id, row_object[qc_assay_type.key]).id
+                        qc_assay_type.id, row_object[qc_assay_type.key])
     end
   end
 
@@ -137,8 +137,24 @@ class QcResultsUploadFactory
     QcDecisionResult.create!(qc_result_id:, qc_decision_id:)
   end
 
-  def publish_message(qc_result_id)
-    qc_result = QcResult.find(qc_result_id)
-    Messages.publish(qc_result, Pipelines.qc_result.message)
+  # @returns [List] of all QcResultMessages - a different one is needed for each decision point
+  def messages
+    @messages ||= []
+  end
+
+  # A small wrapper class around QcResult for sending messages
+  # It will return the qc result along with a decision determined by who has made the decision
+  class QcResultMessage
+    include ActiveModel::Model
+
+    attr_accessor :qc_result, :decision_made_by
+
+    delegate_missing_to :qc_result
+
+    # @return [QcResult]
+    # Returns the decision based on decision_made_by
+    def qc_decision
+      qc_result.qc_decisions.find_by(decision_made_by:)
+    end
   end
 end

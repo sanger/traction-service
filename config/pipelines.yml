@@ -538,10 +538,10 @@ default: &default
           value: Time.current
         qc_status:
           type: :model
-          value: qc_decisions.last.status
+          value: qc_decision.status
         qc_status_decision_by:
           type: :model
-          value: qc_decisions.last.decision_made_by
+          value: qc_decision.decision_made_by
 
 development: *default
 test: *default

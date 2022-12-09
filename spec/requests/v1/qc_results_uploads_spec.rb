@@ -75,6 +75,12 @@ RSpec.describe '/qc_results_uploads', type: :request do
           post v1_qc_results_uploads_url, params: body, headers: json_api_headers
         end.to change(QcDecisionResult, :count).by(84)
       end
+
+      it 'sends the messages' do
+        # Not entirely sure how to get the correct arguments
+        expect(Messages).to receive(:publish)
+        post v1_qc_results_uploads_url, params: body, headers: json_api_headers
+      end
     end
 
     context 'with invalid parameters' do

@@ -24,7 +24,7 @@ RSpec.describe QcDecision, type: :model do
       qc_decision = create(:qc_decision)
       expect do
         qc_decision.destroy!
-      end.not_to raise_error(ActiveRecord::RecordNotDestroyed)
+      end.not_to raise_error
     end
 
     it 'cannot be destroyed if there are any associated qc_decision_results' do
@@ -55,7 +55,7 @@ RSpec.describe QcDecision, type: :model do
   end
 
   describe '#decision_made_by' do
-    it { is_expected.to define_enum_for(:decision_made_by).with(%i[long_read tol]) }
+    it { is_expected.to define_enum_for(:decision_made_by).with_values(%i[long_read tol]) }
 
     it 'errors if missing required decision_made_by' do
       expect do

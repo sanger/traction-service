@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe QcResultsUploadFactory, type: :model do
+RSpec.describe QcResultsUploadFactory do
   before do
     create(:qc_assay_type, key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul) [ESP1]', used_by: 0)
     create(:qc_assay_type, key: 'volume_si', label: 'DNA vol (ul)', used_by: 0)
@@ -135,6 +135,11 @@ RSpec.describe QcResultsUploadFactory, type: :model do
           factory.build
         end.to change(QcDecisionResult, :count).by(84)
       end
+
+      it 'messages' do
+        factory.build
+        expect(factory.messages.count).to eq(84)
+      end
     end
 
     context 'when there is a missing LR decision' do
@@ -169,21 +174,21 @@ RSpec.describe QcResultsUploadFactory, type: :model do
 
       it 'creates QC Results with the correct data' do
         row_object = factory.pivot_csv_data_to_obj[0]
-        qc_result_ids = factory.create_qc_results(row_object)
+        qc_results = factory.create_qc_results(row_object)
 
-        expect(qc_result_ids.count).to eq 6
-        expect(QcResult.find(qc_result_ids[0]).qc_assay_type.key).to eq 'qubit_concentration_ngul'
-        expect(QcResult.find(qc_result_ids[0]).value).to eq '4.78'
-        expect(QcResult.find(qc_result_ids[1]).qc_assay_type.key).to eq 'volume_si'
-        expect(QcResult.find(qc_result_ids[1]).value).to eq '385'
-        expect(QcResult.find(qc_result_ids[2]).qc_assay_type.key).to eq '_260_230_ratio'
-        expect(QcResult.find(qc_result_ids[2]).value).to eq '0.57'
-        expect(QcResult.find(qc_result_ids[3]).qc_assay_type.key).to eq '_260_280_ratio'
-        expect(QcResult.find(qc_result_ids[3]).value).to eq '2.38'
-        expect(QcResult.find(qc_result_ids[4]).qc_assay_type.key).to eq 'average_fragment_size'
-        expect(QcResult.find(qc_result_ids[4]).value).to eq '22688'
-        expect(QcResult.find(qc_result_ids[5]).qc_assay_type.key).to eq 'results_pdf'
-        expect(QcResult.find(qc_result_ids[5]).value).to eq 'Extraction.Femto.9764-9765'
+        expect(qc_results.count).to eq 6
+        expect(QcResult.find(qc_results[0].id).qc_assay_type.key).to eq 'qubit_concentration_ngul'
+        expect(QcResult.find(qc_results[0].id).value).to eq '4.78'
+        expect(QcResult.find(qc_results[1].id).qc_assay_type.key).to eq 'volume_si'
+        expect(QcResult.find(qc_results[1].id).value).to eq '385'
+        expect(QcResult.find(qc_results[2].id).qc_assay_type.key).to eq '_260_230_ratio'
+        expect(QcResult.find(qc_results[2].id).value).to eq '0.57'
+        expect(QcResult.find(qc_results[3].id).qc_assay_type.key).to eq '_260_280_ratio'
+        expect(QcResult.find(qc_results[3].id).value).to eq '2.38'
+        expect(QcResult.find(qc_results[4].id).qc_assay_type.key).to eq 'average_fragment_size'
+        expect(QcResult.find(qc_results[4].id).value).to eq '22688'
+        expect(QcResult.find(qc_results[5].id).qc_assay_type.key).to eq 'results_pdf'
+        expect(QcResult.find(qc_results[5].id).value).to eq 'Extraction.Femto.9764-9765'
       end
     end
 
@@ -256,7 +261,7 @@ RSpec.describe QcResultsUploadFactory, type: :model do
       end
     end
 
-    context 'when there is missing LR deci' do
+    context 'when there is missing LR decision' do
       let(:csv_missing_data) do
         ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,
         Batch ,Tissue Tube ID,Sanger sample ID,Species,Genome Size,Tissue FluidX rack ID,Rack well location,Date,Crush Method,Tissue Mass (mg),Tissue type,Lysis ,DNA tube ID,DNAext FluidX Rack ID,Rack position,Voucher?,Voucher Tube ID,Voucher Rack ID,Sample Location,Qubit DNA Quant (ng/ul) [ESP1],DNA vol (ul),DNA total ng [ESP1],Femto dilution [ESP1],ND 260/280 [ESP1],ND 260/230 [ESP1],ND Quant (ng/ul) [ESP1],Femto Frag Size [ESP1],GQN >30000 [ESP1],Femto pdf [ESP1],LR EXTRACTION DECISION [ESP1],Sample Well Position in Plate,TOL DECISION [ESP1],DNA Fluid+ MR kit for viscous DNA?,MR Machine ID,MR speed,Vol Input DNA MR3 (uL),Save 1uL post shear,Vol Input SPRI (uL),SPRI volume (x0.6),Qubit Quant (ng/ul) [ESP2],Final Elution Volume (ul),Total DNA ng [ESP2],Femto Dil (ul) [ESP2],ND 260/280 [ESP2],ND 260/230 [ESP2],ND Quant (ng/uL) [ESP2],% DNA Recovery,Femto Fragment size [ESP2],GQN 10kb threshold [ESP2],Femto pdf [ESP2],LR SHEARING DECISION [ESP2],TOL DECISION [ESP2],ToL ID ,Genome size (TOL),SE Number,Date in PB Lab (Auto)
@@ -345,6 +350,46 @@ RSpec.describe QcResultsUploadFactory, type: :model do
         expect do
           factory.build
         end.to change(QcDecisionResult, :count).by(1)
+      end
+    end
+  end
+
+  describe 'QcResultMessage' do
+    let!(:qc_result)                     { create(:qc_result) }
+    let!(:qc_decision_long_read)         { create(:qc_decision, decision_made_by: :long_read) }
+    let!(:qc_decision_tol)               { create(:qc_decision, decision_made_by: :tol) }
+    let!(:qc_decision_result_long_read)  { create(:qc_decision_result, qc_result:, qc_decision: qc_decision_long_read) }
+    let!(:qc_decision_result_tol)        { create(:qc_decision_result, qc_result:, qc_decision: qc_decision_tol) }
+
+    context 'long read' do
+      let(:qc_result_message) { QcResultsUploadFactory::QcResultMessage.new(qc_result:, decision_made_by: qc_decision_long_read.decision_made_by) }
+
+      it 'has the correct qc result data' do
+        expect(qc_result_message.labware_barcode).to eq(qc_result.labware_barcode)
+        expect(qc_result_message.sample_external_id).to eq(qc_result.sample_external_id)
+        expect(qc_result_message.value).to eq(qc_result.value)
+        expect(qc_result_message.qc_assay_type).to eq(qc_result.qc_assay_type)
+      end
+
+      it 'returns the correct decision' do
+        expect(qc_result_message.qc_decision.decision_made_by).to eq(qc_decision_long_read.decision_made_by)
+        expect(qc_result_message.qc_decision.status).to eq(qc_decision_long_read.status)
+      end
+    end
+
+    context 'tol' do
+      let(:qc_result_message) { QcResultsUploadFactory::QcResultMessage.new(qc_result:, decision_made_by: qc_decision_tol.decision_made_by) }
+
+      it 'has the correct qc result data' do
+        expect(qc_result_message.labware_barcode).to eq(qc_result.labware_barcode)
+        expect(qc_result_message.sample_external_id).to eq(qc_result.sample_external_id)
+        expect(qc_result_message.value).to eq(qc_result.value)
+        expect(qc_result_message.qc_assay_type).to eq(qc_result.qc_assay_type)
+      end
+
+      it 'returns the correct decision' do
+        expect(qc_result_message.qc_decision.decision_made_by).to eq(qc_decision_tol.decision_made_by)
+        expect(qc_result_message.qc_decision.status).to eq(qc_decision_tol.status)
       end
     end
   end
