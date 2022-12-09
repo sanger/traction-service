@@ -2,11 +2,11 @@
 
 require 'rails_helper'
 
-RSpec.describe Reception::ResourceFactory, type: :model do
-  subject { build :reception_resource_factory, request_attributes: }
+RSpec.describe Reception::ResourceFactory do
+  subject { build(:reception_resource_factory, request_attributes:) }
 
-  let(:library_type) { create :library_type, :ont }
-  let(:data_type) { create :data_type, :ont }
+  let(:library_type) { create(:library_type, :ont) }
+  let(:data_type) { create(:data_type, :ont) }
 
   describe '#valid?' do
     context 'with invalid samples' do
@@ -189,11 +189,11 @@ RSpec.describe Reception::ResourceFactory, type: :model do
     let(:reception) { resource_factory.reception }
 
     before do
-      create :tube, existing_tube
-      exists = create :plate, existing_plate
-      create :well, **existing_well_a1.except(:barcode), plate: exists
-      create :sample, existing_sample_a1
-      create :sample, existing_sample_b1
+      create(:tube, existing_tube)
+      exists = create(:plate, existing_plate)
+      create(:well, **existing_well_a1.except(:barcode), plate: exists)
+      create(:sample, existing_sample_a1)
+      create(:sample, existing_sample_b1)
     end
 
     context 'ont' do
@@ -235,7 +235,7 @@ RSpec.describe Reception::ResourceFactory, type: :model do
     end
 
     context 'pacbio' do
-      let(:library_type) { create :library_type, :pacbio }
+      let(:library_type) { create(:library_type, :pacbio) }
       let(:request_parameters) do
         attributes_for(:pacbio_request).merge(
           library_type: library_type.name
@@ -273,7 +273,7 @@ RSpec.describe Reception::ResourceFactory, type: :model do
     end
 
     context 'saphyr' do
-      let(:library_type) { create :library_type, :saphyr }
+      let(:library_type) { create(:library_type, :saphyr) }
       let(:request_parameters) do
         attributes_for(:saphyr_request).merge(
           library_type: library_type.name

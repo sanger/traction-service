@@ -3,7 +3,7 @@
 require 'rails_helper'
 require './spec/support/read_only'
 
-RSpec.describe Ont::Run, type: :model, ont: true do
+RSpec.describe Ont::Run, :skip, ont: true do
   before do
     set_read_only(described_class, false)
   end

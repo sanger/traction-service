@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'RunsController', type: :request do
+RSpec.describe 'RunsController' do
   # Create default and non-default smrt link versions for runs
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }

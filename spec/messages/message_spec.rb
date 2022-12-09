@@ -99,7 +99,7 @@ RSpec.describe Messages::Message, type: :model do
     let(:config) { OpenStruct.new(params) }
     let(:message) { described_class.new(object: object_c, configuration: config) }
 
-    it 'works' do
+    it 'has the correct content' do
       expect(message.content).to eq(
         { config[:key] => {
             field_e: 'another attribute',

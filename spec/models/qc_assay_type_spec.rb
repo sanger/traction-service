@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe QcAssayType, type: :model do
+RSpec.describe QcAssayType do
   describe '#create' do
     it 'is possible to create a new record' do
       expect { described_class.create!(key: 'qubit', label: 'Qubit', units: 'ng/μl', used_by: :extraction) }.to change(described_class, :count).by(1)
@@ -14,7 +14,7 @@ RSpec.describe QcAssayType, type: :model do
   end
 
   describe '#update' do
-    let(:assay_type) { create :qc_assay_type }
+    let(:assay_type) { create(:qc_assay_type) }
 
     it 'is possible to update a record' do
       expect(assay_type.units).not_to eq('fakeunit')
@@ -24,7 +24,7 @@ RSpec.describe QcAssayType, type: :model do
   end
 
   describe '#destroy' do
-    let!(:assay_type) { create :qc_assay_type }
+    let!(:assay_type) { create(:qc_assay_type) }
 
     it 'is possible to destroy a record' do
       expect { assay_type.destroy! }.to change(described_class, :count).by(-1)

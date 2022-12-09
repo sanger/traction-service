@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Pacbio::SmrtLinkVersion, type: :model, pacbio: true do
+RSpec.describe Pacbio::SmrtLinkVersion, pacbio: true do
   describe '#create' do
     it 'is possible to create a new record' do
       expect { create(:pacbio_smrt_link_version) }.to change(described_class, :count).by(1)
