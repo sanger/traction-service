@@ -355,11 +355,14 @@ RSpec.describe QcResultsUploadFactory do
   end
 
   describe 'QcResultMessage' do
-    let!(:qc_result)                     { create(:qc_result) }
-    let!(:qc_decision_long_read)         { create(:qc_decision, decision_made_by: :long_read) }
-    let!(:qc_decision_tol)               { create(:qc_decision, decision_made_by: :tol) }
-    let!(:qc_decision_result_long_read)  { create(:qc_decision_result, qc_result:, qc_decision: qc_decision_long_read) }
-    let!(:qc_decision_result_tol)        { create(:qc_decision_result, qc_result:, qc_decision: qc_decision_tol) }
+    let(:qc_result)                     { create(:qc_result) }
+    let(:qc_decision_long_read)         { create(:qc_decision, decision_made_by: :long_read) }
+    let(:qc_decision_tol)               { create(:qc_decision, decision_made_by: :tol) }
+
+    before do
+      create(:qc_decision_result, qc_result:, qc_decision: qc_decision_long_read)
+      create(:qc_decision_result, qc_result:, qc_decision: qc_decision_tol)
+    end
 
     context 'long read' do
       let(:qc_result_message) { QcResultsUploadFactory::QcResultMessage.new(qc_result:, decision_made_by: qc_decision_long_read.decision_made_by) }

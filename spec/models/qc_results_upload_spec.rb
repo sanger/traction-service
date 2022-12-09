@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe QcResultsUpload, type: :model do
+RSpec.describe QcResultsUpload do
   describe '#create' do
     let(:qc_results_upload) { build(:qc_results_upload) }
 
