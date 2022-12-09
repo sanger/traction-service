@@ -3,14 +3,16 @@
 require 'rails_helper'
 
 RSpec.describe 'QcResult Message', type: :model do
-
   let(:config)              { Pipelines.configure(Pipelines.load_yaml) }
   let(:qc_result_config)    { config.qc_result }
   let(:qc_result)           { create(:qc_result) }
   let(:qc_decision)         { create(:qc_decision) }
-  let!(:qc_decision_result) { create(:qc_decision_result, qc_result:, qc_decision:) }
-  let(:qc_result_message)   { QcResultsUploadFactory::QcResultMessage.new(qc_result:, decision_made_by: qc_decision.decision_made_by)}
+  let(:qc_result_message)   { QcResultsUploadFactory::QcResultMessage.new(qc_result:, decision_made_by: qc_decision.decision_made_by) }
   let(:message)             { Messages::Message.new(object: qc_result_message, configuration: qc_result_config.message) }
+
+  before do
+    create(:qc_decision_result, qc_result:, qc_decision:)
+  end
 
   it 'has a lims' do
     expect(message.content[:lims]).to eq(qc_result_config.lims)
@@ -72,6 +74,5 @@ RSpec.describe 'QcResult Message', type: :model do
     it 'must have a qc_status_decision_by' do
       expect(key[:qc_status_decision_by]).to eq(qc_result_message.qc_decision.decision_made_by)
     end
-
   end
 end

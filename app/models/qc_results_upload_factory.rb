@@ -89,12 +89,18 @@ class QcResultsUploadFactory
     # 3. Create QC Results
     qc_results = create_qc_results(row_object)
 
-    # 4. Always create Long Read QC Decision Results
+    # 4 Create QC decisions
+    create_qc_decisions(qc_results, lr_qc_decison_id, tol_qc_decison_id)
+  end
+
+  # create a qc decision for each decision maker and create a message
+  def create_qc_decisions(qc_results, lr_qc_decison_id, tol_qc_decison_id)
+    # 5. Always create Long Read QC Decision Results
     qc_results.each do |qc_result|
       create_qc_decision_result!(qc_result.id, lr_qc_decison_id)
       messages << QcResultMessage.new(qc_result:, decision_made_by: :long_read)
 
-      # 5. If required, create TOL QC Decision Results
+      # 6. If required, create TOL QC Decision Results
       if tol_qc_decison_id
         create_qc_decision_result!(qc_result.id, tol_qc_decison_id)
         messages << QcResultMessage.new(qc_result:, decision_made_by: :tol)

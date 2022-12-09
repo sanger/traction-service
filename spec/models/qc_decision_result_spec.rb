@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe QcDecisionResult, type: :model do
+RSpec.describe QcDecisionResult do
   let(:qc_decision) { create(:qc_decision) }
   let(:qc_result) { create(:qc_result) }
   let(:qc_decision_result) { create(:qc_decision_result) }

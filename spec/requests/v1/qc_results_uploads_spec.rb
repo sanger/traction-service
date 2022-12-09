@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe '/qc_results_uploads', type: :request do
+RSpec.describe '/qc_results_uploads' do
   describe '#post' do
     before do
       create(:qc_assay_type, key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul) [ESP1]', used_by: 0)

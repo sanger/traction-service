@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe QcDecision, type: :model do
+RSpec.describe QcDecision do
   describe '#create' do
     it 'is possible to create a new record' do
       expect do
@@ -38,7 +38,7 @@ RSpec.describe QcDecision, type: :model do
   end
 
   describe '#status' do
-    let(:result) { create :qc_decision }
+    let(:result) { create(:qc_decision) }
 
     it 'has a status' do
       expect(result.status).to be_present
