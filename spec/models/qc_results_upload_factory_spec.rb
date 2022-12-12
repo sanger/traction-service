@@ -4,6 +4,8 @@ require 'rails_helper'
 
 RSpec.describe QcResultsUploadFactory do
   before do
+    Flipper.enable(:dpl_478_enable_qc_results_upload)
+
     create(:qc_assay_type, key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul) [ESP1]', used_by: 0)
     create(:qc_assay_type, key: 'volume_si', label: 'DNA vol (ul)', used_by: 0)
     create(:qc_assay_type, key: '_260_230_ratio', label: 'ND 260/230 [ESP1]', used_by: 0)
