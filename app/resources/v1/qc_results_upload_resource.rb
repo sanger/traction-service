@@ -2,6 +2,13 @@
 
 module V1
   # QcResultsUploadResource
+
+  # Steps:
+  # 1. Validate QcResultsUpload data (via QcResultsUploadFactory validation)
+  # 2. Create QcResultsUpload entity
+  # 3. Create QcDecisions, QcResults, QcDecisionResult entities
+  # 4. Build QcResultMessages
+  # 5. Publish QcResultMessages
   class QcResultsUploadResource < JSONAPI::Resource
     model_name 'QcResultsUpload', add_model_hint: false
 

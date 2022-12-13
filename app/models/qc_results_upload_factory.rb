@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Handles the logic of recieving a CSV and creating QC entities
+# Handles the logic of receiving a CSV and creating QC entities
 class QcResultsUploadFactory
   include ActiveModel::Model
 
@@ -9,69 +9,23 @@ class QcResultsUploadFactory
   delegate :csv_data, to: :qc_results_upload
   delegate :used_by, to: :qc_results_upload
 
-  # These have to match the CSV LR and TOL decision column headers
+  # These are the required headers, for which data must exist
   LR_DECISION_FIELD = 'LR EXTRACTION DECISION [ESP1]'
   TOL_DECISION_FIELD = 'TOL DECISION [ESP1]'
+  TISSUE_TUBE_ID_FIELD = "Tissue Tube ID"
+  SANGER_SAMPLE_ID_FIELD = 'Sanger sample ID'
 
-  # Validations return unprocessable_entity if not present
+  # Failed validations return unprocessable_entity
+  # These are being validated before any QC entity is created
   validates :csv_data, :used_by, presence: true
-  validate :validate_headers, :validate_body
+  validate :validate_used_by, :validate_headers, :validate_fields, :validate_body
 
   def create_entities!
     build
-    true
   end
 
-  def validate_headers
-    return if csv_data.blank?
-
-    header_row = csv_data.split("\n")[1]
-    unless header_row
-      errors.add :csv_data, 'Missing headers'
-      return
-    end
-
-    headers = header_row.split(',')
-
-    # Case sensitive
-    # e.g. "Genome Size" != "Genome size"
-    return if headers.count == headers.uniq.count
-
-    errors.add :csv_data, 'Contains duplicated headers'
-    nil
-  end
-
-  def validate_body
-    return if csv_data.blank?
-
-    data_rows = csv_data.split("\n")[2..]
-    errors.add :csv_data, 'Missing data' if data_rows.blank?
-  end
-
-  # Returns the CSV, with the first row (groupings) removed
-  # @return [String] CSV
-  def csv_string_without_groups
-    csv_data.split("\n")[1..].join("\n")
-  end
-
-  # Pivots the CSV data
-  # Returns a list of objects, where each object is a CSV row
-  # @return [List] e.g. [{ col_header_1: row_1_col_1, col_header_2: row_1_col_2 }, ...]
-  def pivot_csv_data_to_obj
-    header_converter = proc do |header|
-      assay_type = QcAssayType.find_by(label: header.strip)
-      assay_type ? assay_type.key : header
-    end
-
-    csv = CSV.new(csv_string_without_groups, headers: true, header_converters: header_converter,
-                                             converters: :all)
-
-    csv.to_a.map(&:to_hash)
-  end
-
-  # Loops through the Pivotted CSV data
   def build
-    pivot_csv_data_to_obj.each do |row_object|
+    @rows.each do |row_object|
       create_data(row_object)
     end
   end
@@ -79,68 +33,81 @@ class QcResultsUploadFactory
   # @param [Object] CSV row e.g. { col_header_1: row_1_col_1 }
   def create_data(row_object)
     # 1. Always create Long Read QC Decision
-    lr_qc_decison_id = create_qc_decision!(row_object[LR_DECISION_FIELD], :long_read).id
+    @lr_qc_decison = create_qc_decision!(row_object[LR_DECISION_FIELD], :long_read)
 
     # 2. If required, create TOL QC Decision
     if row_object[TOL_DECISION_FIELD]
-      tol_qc_decison_id = create_qc_decision!(row_object[TOL_DECISION_FIELD], :tol).id
+      @tol_qc_decison = create_qc_decision!(row_object[TOL_DECISION_FIELD], :tol)
     end
 
     # 3. Create QC Results
-    qc_results = create_qc_results(row_object)
+    @qc_results = create_qc_results(row_object)
 
-    # 4 Create QC decisions
-    create_qc_decisions(qc_results, lr_qc_decison_id, tol_qc_decison_id)
+    # 4. Create QC decisions
+    create_qc_decisions
   end
 
-  # create a qc decision for each decision maker and create a message
-  def create_qc_decisions(qc_results, lr_qc_decison_id, tol_qc_decison_id)
-    # 5. Always create Long Read QC Decision Results
-    qc_results.each do |qc_result|
-      create_qc_decision_result!(qc_result.id, lr_qc_decison_id)
-      messages << QcResultMessage.new(qc_result:, decision_made_by: :long_read)
-
-      # 6. If required, create TOL QC Decision Results
-      if tol_qc_decison_id
-        create_qc_decision_result!(qc_result.id, tol_qc_decison_id)
-        messages << QcResultMessage.new(qc_result:, decision_made_by: :tol)
-      end
-    end
-  end
-
-  # @returns [List] of created QcResult id's
+  # @returns [List] of created QcResults
   # @param [Object] CSV row e.g. { col_header_1: row_1_col_1 }
   def create_qc_results(row_object)
     # Get relevant QcAssayTypes, for used_by
     qc_assay_types = QcAssayType.where(used_by:)
 
+    # Get the common data for each row
+    tissue_tube_id = row_object[TISSUE_TUBE_ID_FIELD]
+    sanger_sample_id = row_object[SANGER_SAMPLE_ID_FIELD]
+
     # Loop through QcAssayTypes
-    # Create a QcResult for each QcAssayType
     qc_assay_types.map do |qc_assay_type|
-      # Skip, to not errro,  if the row is missing the QC Assay Type data
+
+      # todo: clean up below comment
+      # next returns nil if row is missing QcAssayType data
+      # method retuns list.compact, as create_qc_results may contain nil objects
+      # ingnore the value?
       next unless row_object[qc_assay_type.key]
 
-      create_qc_result!(row_object['Tissue Tube ID'], row_object['Sanger sample ID'],
-                        qc_assay_type.id, row_object[qc_assay_type.key])
+      # Create a QcResult for each QcAssayType
+      create_qc_result!(tissue_tube_id, sanger_sample_id, qc_assay_type.id, row_object[qc_assay_type.key])
+    end.compact
+  end
+
+  # create a qc decision for each decision maker
+  def create_qc_decisions
+    # Always create Long Read QC Decision Results
+    @qc_results.each do |qc_result|
+      @lr_qc_decison_result = create_qc_decision_result!(qc_result, @lr_qc_decison)
+      build_qc_result_message(qc_result, :long_read)
+
+      # If required, create TOL QC Decision Results
+      if @tol_qc_decison
+        @tol_qc_decison_result = create_qc_decision_result!(qc_result, @tol_qc_decison)
+        build_qc_result_message(qc_result, :tol)
+      end
     end
   end
 
+  def build_qc_result_message(qc_result, decision_made_by)
+    messages << QcResultMessage.new(qc_result:, decision_made_by:)
+  end
+
   # @return [QcDecision]
-  # Returns status code: 500 if fail to create
   def create_qc_decision!(status, decision_made_by)
     QcDecision.create!(status:, decision_made_by:)
   end
 
   # @return [QcResult]
-  # Returns status code: 500 if fail to create
   def create_qc_result!(labware_barcode, sample_external_id, qc_assay_type_id, value)
-    QcResult.create!(labware_barcode:, sample_external_id:, qc_assay_type_id:, value:)
+    begin
+      QcResult.create!(labware_barcode:, sample_external_id:, qc_assay_type_id:, value:)
+    rescue ActiveRecord::RecordInvalid => e
+      errors.add :qc_result, e
+      return
+    end
   end
 
   # @return [QcDecisionResult]
-  # Returns status code: 500 if fail to create
-  def create_qc_decision_result!(qc_result_id, qc_decision_id)
-    QcDecisionResult.create!(qc_result_id:, qc_decision_id:)
+  def create_qc_decision_result!(qc_result, qc_decision)
+    QcDecisionResult.create!(qc_result:, qc_decision:)
   end
 
   # @returns [List] of all QcResultMessages - a different one is needed for each decision point
@@ -161,6 +128,82 @@ class QcResultsUploadFactory
     # Returns the decision based on decision_made_by
     def qc_decision
       qc_result.qc_decisions.find_by(decision_made_by:)
+    end
+  end
+
+  # Pivots the CSV data
+  # Returns a list of objects, where each object is a CSV row
+  # @return [List] e.g. [{ col_header_1: row_1_col_1, col_header_2: row_1_col_2 }, ...]
+  def pivot_csv_data_to_obj
+    header_converter = proc do |header|
+      assay_type = QcAssayType.find_by(label: header.strip)
+      assay_type ? assay_type.key : header
+    end
+
+    csv = CSV.new(csv_string_without_groups, headers: true, header_converters: header_converter,
+                                             converters: :all)
+
+    @rows = csv.to_a.map(&:to_hash)
+  end
+
+  # Returns the CSV, with the first row (groupings) removed
+  # @return [String] CSV
+  def csv_string_without_groups
+    csv_data.split("\n")[1..].join("\n")
+  end
+
+  private
+
+  def validate_used_by
+    qc_assay_types = QcAssayType.where(used_by:)
+
+    if qc_assay_types.size === 0
+      errors.add :used_by, "No QcAssayTypes belong to used_by value"
+      return
+    end
+  end
+
+  def validate_headers
+    return if csv_data.blank?
+
+    header_row = csv_data.split("\n")[1]
+    unless header_row
+      errors.add :csv_data, 'Missing headers'
+      return
+    end
+
+    # Remove whitespace and empty headers
+    @headers = header_row.split(',').map(&:strip).compact_blank
+
+    # Case sensitive
+    # e.g. "Genome Size" != "Genome size"
+    return if @headers.count == @headers.uniq.count
+
+    errors.add :csv_data, 'Contains duplicated headers'
+    nil
+  end
+
+  def validate_fields
+    required_headers = [LR_DECISION_FIELD, TOL_DECISION_FIELD, TISSUE_TUBE_ID_FIELD, SANGER_SAMPLE_ID_FIELD]
+
+    return if (required_headers - @headers).empty?
+
+    errors.add :csv_data, "Missing required header: #{(required_headers - @headers)}"
+  end
+
+  def validate_body
+    return if csv_data.blank?
+
+    data_rows = csv_data.split("\n")[2..]
+    errors.add :csv_data, 'Missing data' if data_rows.blank?
+
+    # Ensure each row has required data
+    pivot_csv_data_to_obj.each do |row_object|
+      required_data = [LR_DECISION_FIELD, TISSUE_TUBE_ID_FIELD, SANGER_SAMPLE_ID_FIELD]
+
+      required_data.each do | header|
+        errors.add :csv_data, "Missing data: #{header}" if row_object[header].blank?
+      end
     end
   end
 end
