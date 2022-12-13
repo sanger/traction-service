@@ -244,6 +244,40 @@ RSpec.describe '/qc_results_uploads' do
         end
       end
 
+      context 'when missed required header' do
+        let(:csv_missing_header) do
+          ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,
+          Batch ,,Sanger sample ID,Species,Genome Size,Tissue FluidX rack ID,Rack well location,Date,Crush Method,Tissue Mass (mg),Tissue type,Lysis ,DNA tube ID,DNAext FluidX Rack ID,Rack position,Voucher?,Voucher Tube ID,Voucher Rack ID,Sample Location,Qubit DNA Quant (ng/ul) [ESP1],DNA vol (ul),DNA total ng [ESP1],Femto dilution [ESP1],ND 260/280 [ESP1],ND 260/230 [ESP1],ND Quant (ng/ul) [ESP1],Femto Frag Size [ESP1],GQN >30000 [ESP1],Femto pdf [ESP1],LR EXTRACTION DECISION [ESP1],Sample Well Position in Plate,TOL DECISION [ESP1],DNA Fluid+ MR kit for viscous DNA?,MR Machine ID,MR speed,Vol Input DNA MR3 (uL),Save 1uL post shear,Vol Input SPRI (uL),SPRI volume (x0.6),Qubit Quant (ng/ul) [ESP2],Final Elution Volume (ul),Total DNA ng [ESP2],Femto Dil (ul) [ESP2],ND 260/280 [ESP2],ND 260/230 [ESP2],ND Quant (ng/uL) [ESP2],% DNA Recovery,Femto Fragment size [ESP2],GQN 10kb threshold [ESP2],Femto pdf [ESP2],LR SHEARING DECISION [ESP2],TOL DECISION [ESP2],ToL ID ,Genome size (TOL),SE Number,Date in PB Lab (Auto)
+          Production 17,FS41960432,DTOL13024294,,1.85,,,25/07/2022,Cryoprep,71.8,Plant,1h@55C,FD32230264,fk00223822,D11,Yes,FD3852455,SA01034046,G11,0.648,380,246.24,1.592,1.41,2.71,1.41,35803,2.8,2022 07 25 15H 57M,Fail,,Fail,,Gtube,4500,,FALSE,,,1.896,46,87.216,6.584,,,,35.4,9666,,2022 11 09 13H 12M,Pass,Proceed to ULI,dcSuaMari1,1.84842,SE306609Q,11/11/2022"
+        end
+
+        let(:invalid_body) do
+          {
+            data: {
+              type: 'qc_results_uploads',
+              attributes: {
+                csv_data: csv_missing_header,
+                used_by: 'extraction'
+              }
+            }
+          }.to_json
+        end
+
+        it 'does create a new QcResultsUpload' do
+          expect do
+            post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+          end.not_to change(QcResultsUpload, :count)
+        end
+
+        # There should always be a LR Decision, throw a 500 if not
+        it 'renders a JSON response with errors for the new qc_results_upload' do
+          post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+          expect(response).to have_http_status(:internal_server_error)
+          expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
+          expect(JSON.parse(response.parsed_body)['errors'][0]['meta']['exception']).to eq "Validation failed: Labware barcode can't be blank"
+        end
+      end
+
       context 'when csv_data body data is missing' do
         let(:csv_missing_body) do
           ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,
