@@ -9,7 +9,7 @@ class QcResultsUploadFactory
   delegate :csv_data, to: :qc_results_upload
   delegate :used_by, to: :qc_results_upload
 
-  # These are the required headers, for which data must exist
+  # These are required headers
   LR_DECISION_FIELD = 'LR EXTRACTION DECISION [ESP1]'
   TOL_DECISION_FIELD = 'TOL DECISION [ESP1]'
   TISSUE_TUBE_ID_FIELD = "Tissue Tube ID"
