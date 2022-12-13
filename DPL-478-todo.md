@@ -47,6 +47,8 @@
 
 ## Tasks To Do
 
+- Refactor CSV conversion
+- Refactor Validation
 - Add tests
 - Check deleting QC Result, what happens/ should happen
 - If the upload is successful there should be some feedback indicating that it is a success along with an indication of how many qc results have been created
