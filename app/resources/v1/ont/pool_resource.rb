@@ -16,6 +16,7 @@ module V1
       attributes :volume, :kit_barcode, :concentration, :insert_size, :created_at, :updated_at,
                  :library_attributes
       attribute :source_identifier, readonly: true
+      attribute :final_library_amount, readonly: true
 
       paginator :paged
 
@@ -25,7 +26,7 @@ module V1
 
       def library_attributes=(library_parameters)
         @model.library_attributes = library_parameters.map do |library|
-          library.permit(:id, :volume, :kit_number, :concentration, :insert_size, :ont_request_id,
+          library.permit(:id, :volume, :kit_barcode, :concentration, :insert_size, :ont_request_id,
                          :tag_id)
         end
       end
