@@ -9,6 +9,7 @@ class QcResultsUploadFactory
   delegate :csv_data, to: :qc_results_upload
   delegate :used_by, to: :qc_results_upload
 
+  # Refactor/ pull out
   # These are required headers
   LR_DECISION_FIELD = 'LR EXTRACTION DECISION [ESP1]'
   TOL_DECISION_FIELD = 'TOL DECISION [ESP1]'
@@ -20,11 +21,12 @@ class QcResultsUploadFactory
   validates :csv_data, :used_by, presence: true
   validate :validate_used_by, :validate_headers, :validate_fields, :validate_body
 
-  def create_entities!
-    build
+  def initialize(attr)
+    super
+    @rows = pivot_csv_data_to_obj
   end
 
-  def build
+  def create_entities!
     @rows.each do |row_object|
       create_data(row_object)
     end
@@ -198,7 +200,7 @@ class QcResultsUploadFactory
     errors.add :csv_data, 'Missing data' if data_rows.blank?
 
     # Ensure each row has required data
-    pivot_csv_data_to_obj.each do |row_object|
+    @rows.each do |row_object|
       required_data = [LR_DECISION_FIELD, TISSUE_TUBE_ID_FIELD, SANGER_SAMPLE_ID_FIELD]
 
       required_data.each do | header|
