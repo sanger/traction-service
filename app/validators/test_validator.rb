@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-# WIP
-# validate_body requires @rows
+# Move validation to Validator
+# Failed validations return unprocessable_entity
+# These are being validated before any QC entity is created
 
 # To use, include validates_with TestValidator in class
 class TestValidator < ActiveModel::Validator
@@ -9,10 +10,10 @@ class TestValidator < ActiveModel::Validator
 
   # Refactor
   # These are required headers
-  # LR_DECISION_FIELD = 'LR EXTRACTION DECISION [ESP1]'
-  # TOL_DECISION_FIELD = 'TOL DECISION [ESP1]'
-  # TISSUE_TUBE_ID_FIELD = "Tissue Tube ID"
-  # SANGER_SAMPLE_ID_FIELD = 'Sanger sample ID'
+  LR_DECISION_FIELD = 'LR EXTRACTION DECISION [ESP1]'
+  TOL_DECISION_FIELD = 'TOL DECISION [ESP1]'
+  TISSUE_TUBE_ID_FIELD = "Tissue Tube ID"
+  SANGER_SAMPLE_ID_FIELD = 'Sanger sample ID'
 
   # def init(option)
   # end
@@ -72,7 +73,7 @@ class TestValidator < ActiveModel::Validator
 
     # Ensure each row has required data
     # record.
-    record.@rows.each do |row_object|
+    record.rows.each do |row_object|
       # record.LR_DECISION_FIELD
       required_data = [LR_DECISION_FIELD, TISSUE_TUBE_ID_FIELD, SANGER_SAMPLE_ID_FIELD]
 
