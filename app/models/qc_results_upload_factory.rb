@@ -22,8 +22,7 @@ class QcResultsUploadFactory
 
   validates_with QcResultsUploadValidator, required_headers: LIST
 
-  delegate :csv_data, to: :qc_results_upload
-  delegate :used_by, to: :qc_results_upload
+  delegate :csv_data, :used_by, to: :qc_results_upload
 
   # @param [csv] csv rows
   # creates data from the initial csv
