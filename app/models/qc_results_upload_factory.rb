@@ -4,7 +4,9 @@
 class QcResultsUploadFactory
   include ActiveModel::Model
 
-  attr_accessor :qc_results_upload
+  attr_accessor :qc_results_upload, :rows
+
+  validates_with TestValidator
 
   delegate :csv_data, to: :qc_results_upload
   delegate :used_by, to: :qc_results_upload
@@ -17,12 +19,6 @@ class QcResultsUploadFactory
   TOL_DECISION_FIELD = 'TOL DECISION [ESP1]'
   TISSUE_TUBE_ID_FIELD = "Tissue Tube ID"
   SANGER_SAMPLE_ID_FIELD = 'Sanger sample ID'
-
-  # Move validation to Validator
-  # Failed validations return unprocessable_entity
-  # These are being validated before any QC entity is created
-  validates :csv_data, :used_by, presence: true
-  validate :validate_used_by, :validate_headers, :validate_fields, :validate_body
 
   # Qu: attr not needed, is there a way to not pass in
   def initialize(attr)
@@ -158,64 +154,5 @@ class QcResultsUploadFactory
   # @return [String] CSV
   def csv_string_without_groups
     csv_data.split("\n")[1..].join("\n")
-  end
-
-  private
-
-  # Move validation to Validator
-  def validate_used_by
-    qc_assay_types = QcAssayType.where(used_by:)
-
-    if qc_assay_types.size === 0
-      errors.add :used_by, "No QcAssayTypes belong to used_by value"
-      return
-    end
-  end
-
-  # Move validation to Validator
-  def validate_headers
-    return if csv_data.blank?
-
-    header_row = csv_data.split("\n")[1]
-    unless header_row
-      errors.add :csv_data, 'Missing headers'
-      return
-    end
-
-    # Remove whitespace and empty headers
-    @headers = header_row.split(',').map(&:strip).compact_blank
-
-    # Case sensitive
-    # e.g. "Genome Size" != "Genome size"
-    return if @headers.count == @headers.uniq.count
-
-    errors.add :csv_data, 'Contains duplicated headers'
-    nil
-  end
-
-  # Move validation to Validator
-  def validate_fields
-    required_headers = [LR_DECISION_FIELD, TOL_DECISION_FIELD, TISSUE_TUBE_ID_FIELD, SANGER_SAMPLE_ID_FIELD]
-
-    return if (required_headers - @headers).empty?
-
-    errors.add :csv_data, "Missing required header: #{(required_headers - @headers)}"
-  end
-
-  # Move validation to Validator
-  def validate_body
-    return if csv_data.blank?
-
-    data_rows = csv_data.split("\n")[2..]
-    errors.add :csv_data, 'Missing data' if data_rows.blank?
-
-    # Ensure each row has required data
-    @rows.each do |row_object|
-      required_data = [LR_DECISION_FIELD, TISSUE_TUBE_ID_FIELD, SANGER_SAMPLE_ID_FIELD]
-
-      required_data.each do | header|
-        errors.add :csv_data, "Missing data: #{header}" if row_object[header].blank?
-      end
-    end
   end
 end
