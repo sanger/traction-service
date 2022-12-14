@@ -9,18 +9,22 @@ class QcResultsUploadFactory
   delegate :csv_data, to: :qc_results_upload
   delegate :used_by, to: :qc_results_upload
 
-  # Refactor/ pull out
+  # Qu: Refactor/ pull out
   # These are required headers
+  # hash with flag
+  # freeze
   LR_DECISION_FIELD = 'LR EXTRACTION DECISION [ESP1]'
   TOL_DECISION_FIELD = 'TOL DECISION [ESP1]'
   TISSUE_TUBE_ID_FIELD = "Tissue Tube ID"
   SANGER_SAMPLE_ID_FIELD = 'Sanger sample ID'
 
+  # Move validation to Validator
   # Failed validations return unprocessable_entity
   # These are being validated before any QC entity is created
   validates :csv_data, :used_by, presence: true
   validate :validate_used_by, :validate_headers, :validate_fields, :validate_body
 
+  # Qu: attr not needed, is there a way to not pass in
   def initialize(attr)
     super
     @rows = pivot_csv_data_to_obj
@@ -133,6 +137,8 @@ class QcResultsUploadFactory
     end
   end
 
+  # Qu: move out?
+
   # Pivots the CSV data
   # Returns a list of objects, where each object is a CSV row
   # @return [List] e.g. [{ col_header_1: row_1_col_1, col_header_2: row_1_col_2 }, ...]
@@ -156,6 +162,7 @@ class QcResultsUploadFactory
 
   private
 
+  # Move validation to Validator
   def validate_used_by
     qc_assay_types = QcAssayType.where(used_by:)
 
@@ -165,6 +172,7 @@ class QcResultsUploadFactory
     end
   end
 
+  # Move validation to Validator
   def validate_headers
     return if csv_data.blank?
 
@@ -185,6 +193,7 @@ class QcResultsUploadFactory
     nil
   end
 
+  # Move validation to Validator
   def validate_fields
     required_headers = [LR_DECISION_FIELD, TOL_DECISION_FIELD, TISSUE_TUBE_ID_FIELD, SANGER_SAMPLE_ID_FIELD]
 
@@ -193,6 +202,7 @@ class QcResultsUploadFactory
     errors.add :csv_data, "Missing required header: #{(required_headers - @headers)}"
   end
 
+  # Move validation to Validator
   def validate_body
     return if csv_data.blank?
 

@@ -15,7 +15,11 @@ RSpec.describe QcResultsUpload do
       end.to change(described_class, :count).by(1)
     end
 
+
     describe '#validates_nested' do
+      # DPL-478 todo
+      # it calls the validation before creating entity
+      # if any fail, QcResultsUpload is not created
       it 'errors if missing required csv_data field' do
         expect do
           described_class.create!(used_by: 'extraction')
@@ -32,5 +36,8 @@ RSpec.describe QcResultsUpload do
 
   describe '#create_entities!' do
     it { is_expected.to delegate_method(:create_entities!).to(:qc_results_upload_factory) }
+
+    # DPL-478 todo
+    # delegate messages method
   end
 end

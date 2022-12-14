@@ -9,10 +9,13 @@ class TestValidator < ActiveModel::Validator
 
   # Refactor
   # These are required headers
-  LR_DECISION_FIELD = 'LR EXTRACTION DECISION [ESP1]'
-  TOL_DECISION_FIELD = 'TOL DECISION [ESP1]'
-  TISSUE_TUBE_ID_FIELD = "Tissue Tube ID"
-  SANGER_SAMPLE_ID_FIELD = 'Sanger sample ID'
+  # LR_DECISION_FIELD = 'LR EXTRACTION DECISION [ESP1]'
+  # TOL_DECISION_FIELD = 'TOL DECISION [ESP1]'
+  # TISSUE_TUBE_ID_FIELD = "Tissue Tube ID"
+  # SANGER_SAMPLE_ID_FIELD = 'Sanger sample ID'
+
+  # def init(option)
+  # end
 
   def validate(record)
     validate_used_by(record)
@@ -52,6 +55,7 @@ class TestValidator < ActiveModel::Validator
   end
 
   def validate_fields(record)
+    # pass required headers as an option
     required_headers = [LR_DECISION_FIELD, TOL_DECISION_FIELD, TISSUE_TUBE_ID_FIELD, SANGER_SAMPLE_ID_FIELD]
 
     return if (required_headers - @headers).empty?
@@ -65,8 +69,11 @@ class TestValidator < ActiveModel::Validator
     data_rows = record.csv_data.split("\n")[2..]
     record.errors.add :csv_data, 'Missing data' if data_rows.blank?
 
+
     # Ensure each row has required data
-    @rows.each do |row_object|
+    # record.
+    record.@rows.each do |row_object|
+      # record.LR_DECISION_FIELD
       required_data = [LR_DECISION_FIELD, TISSUE_TUBE_ID_FIELD, SANGER_SAMPLE_ID_FIELD]
 
       required_data.each do | header|

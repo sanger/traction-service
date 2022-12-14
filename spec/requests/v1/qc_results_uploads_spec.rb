@@ -49,11 +49,6 @@ RSpec.describe '/qc_results_uploads' do
         expect(QcResultsUpload.last.csv_data).to eq csv
       end
 
-      it 'renders a JSON response with the new qc_results_upload' do
-        post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-      end
-
       it 'creates the relevant QC entities' do
         # 14 = 8 LR + 6 TOL
         expect do
@@ -81,9 +76,15 @@ RSpec.describe '/qc_results_uploads' do
       end
 
       it 'sends the messages' do
+        # DPL-478 todo
         # Not entirely sure how to get the correct arguments
         expect(Messages).to receive(:publish)
         post v1_qc_results_uploads_url, params: body, headers: json_api_headers
+      end
+
+      it 'renders a JSON response with the new qc_results_upload' do
+        post v1_qc_results_uploads_url, params: body, headers: json_api_headers
+        expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
       end
     end
 
@@ -140,6 +141,9 @@ RSpec.describe '/qc_results_uploads' do
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "csv_data - can't be blank"
         end
       end
+
+      # DPL-478 todo
+      # when extraction is an unknown used_by
 
       context 'when used_by is missing' do
         let(:invalid_body) do
@@ -329,7 +333,7 @@ RSpec.describe '/qc_results_uploads' do
           }.to_json
         end
 
-        it 'does create a new QcResultsUpload' do
+        it 'does not create a new QcResultsUpload' do
           expect do
             post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
           end.not_to change(QcResultsUpload, :count)
