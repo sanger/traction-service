@@ -15,10 +15,13 @@ RSpec.describe QcResultsUploadFactory do
     create(:qc_assay_type, key: 'some_future_key', label: 'Some Future Label', used_by: 1)
   end
 
+  # add Some Future Label to csv data to check it is ignored
+  # make some none requied header fields/ qc assay types missing data
+
   # DPL-478 todo
   # access qc_results_upload attr_accessor
 
- # DPL-478 todo
+  # DPL-478 todo
   # it delegates
   describe '#csv_data' do
     let(:factory) { build(:qc_results_upload_factory) }
@@ -56,21 +59,21 @@ RSpec.describe QcResultsUploadFactory do
       end
 
       it 'creates qc results' do
-        # 42 = 6 assay types x 8 rows
+        # 48 = 6 assay types x 8 rows
         expect do
           factory.create_entities!
         end.to change(QcResult, :count).by(48)
       end
 
-      it 'creates the correct number of qc decision results' do
-          # row	dec	results	dec_res
-        # 1	  2   6	      12
+      it 'creates qc decision results' do
+        # row	dec	results	dec_res
+        # 1	  1   6	      6
         # 2	  2   6	      12
-        # 3	  2   6	      12
+        # 3	  1   6	      6
         # 4	  2   6	      12
-        # 5	  1   6	      6
+        # 5	  2   6	      12
         # 6	  2   6	      12
-        # 7	  1   6	      6
+        # 7	  2   6	      12
         # 8	  2   6	      12
         #                 84
         expect do
@@ -153,43 +156,45 @@ RSpec.describe QcResultsUploadFactory do
       end
     end
 
-    context 'when there is missing Tissue Tube ID' do
-      let(:csv_missing_tube_barcode) do
-        ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,
-        Batch ,Tissue Tube ID,Sanger sample ID,Species,Genome Size,Tissue FluidX rack ID,Rack well location,Date,Crush Method,Tissue Mass (mg),Tissue type,Lysis ,DNA tube ID,DNAext FluidX Rack ID,Rack position,Voucher?,Voucher Tube ID,Voucher Rack ID,Sample Location,Qubit DNA Quant (ng/ul) [ESP1],DNA vol (ul),DNA total ng [ESP1],Femto dilution [ESP1],ND 260/280 [ESP1],ND 260/230 [ESP1],ND Quant (ng/ul) [ESP1],Femto Frag Size [ESP1],GQN >30000 [ESP1],Femto pdf [ESP1],LR EXTRACTION DECISION [ESP1],Sample Well Position in Plate,TOL DECISION [ESP1],DNA Fluid+ MR kit for viscous DNA?,MR Machine ID,MR speed,Vol Input DNA MR3 (uL),Save 1uL post shear,Vol Input SPRI (uL),SPRI volume (x0.6),Qubit Quant (ng/ul) [ESP2],Final Elution Volume (ul),Total DNA ng [ESP2],Femto Dil (ul) [ESP2],ND 260/280 [ESP2],ND 260/230 [ESP2],ND Quant (ng/uL) [ESP2],% DNA Recovery,Femto Fragment size [ESP2],GQN 10kb threshold [ESP2],Femto pdf [ESP2],LR SHEARING DECISION [ESP2],TOL DECISION [ESP2],ToL ID ,Genome size (TOL),SE Number,Date in PB Lab (Auto)
-        Production 1,,DTOL12932860,,0.53,,,04/05/2022,Powermash,7.8,Non-plant,2h@25C,,,NA,Yes,FD38542652,SA00930879,A1,4.78,385,1840.3,18.12,2.38,0.57,14.9,22688,1.5,Extraction.Femto.9764-9765,Pass,,,,Alan Shearer/Britney Shears,30,,FALSE,,,22.6,45.4,1026.04,89.4,1.92,1.79,33.7,55.8,9772,4.4,Sheared.Femto.9764-6843,Pass,,idCheUrba1,0.52725,SE293337P,24/06/2022"
-      end
+    # This should have been caught in validation
+    # context 'when there is missing Tissue Tube ID' do
+    #   let(:csv_missing_tube_barcode) do
+    #     ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,
+    #     Batch ,Tissue Tube ID,Sanger sample ID,Species,Genome Size,Tissue FluidX rack ID,Rack well location,Date,Crush Method,Tissue Mass (mg),Tissue type,Lysis ,DNA tube ID,DNAext FluidX Rack ID,Rack position,Voucher?,Voucher Tube ID,Voucher Rack ID,Sample Location,Qubit DNA Quant (ng/ul) [ESP1],DNA vol (ul),DNA total ng [ESP1],Femto dilution [ESP1],ND 260/280 [ESP1],ND 260/230 [ESP1],ND Quant (ng/ul) [ESP1],Femto Frag Size [ESP1],GQN >30000 [ESP1],Femto pdf [ESP1],LR EXTRACTION DECISION [ESP1],Sample Well Position in Plate,TOL DECISION [ESP1],DNA Fluid+ MR kit for viscous DNA?,MR Machine ID,MR speed,Vol Input DNA MR3 (uL),Save 1uL post shear,Vol Input SPRI (uL),SPRI volume (x0.6),Qubit Quant (ng/ul) [ESP2],Final Elution Volume (ul),Total DNA ng [ESP2],Femto Dil (ul) [ESP2],ND 260/280 [ESP2],ND 260/230 [ESP2],ND Quant (ng/uL) [ESP2],% DNA Recovery,Femto Fragment size [ESP2],GQN 10kb threshold [ESP2],Femto pdf [ESP2],LR SHEARING DECISION [ESP2],TOL DECISION [ESP2],ToL ID ,Genome size (TOL),SE Number,Date in PB Lab (Auto)
+    #     Production 1,,DTOL12932860,,0.53,,,04/05/2022,Powermash,7.8,Non-plant,2h@25C,,,NA,Yes,FD38542652,SA00930879,A1,4.78,385,1840.3,18.12,2.38,0.57,14.9,22688,1.5,Extraction.Femto.9764-9765,Pass,,,,Alan Shearer/Britney Shears,30,,FALSE,,,22.6,45.4,1026.04,89.4,1.92,1.79,33.7,55.8,9772,4.4,Sheared.Femto.9764-6843,Pass,,idCheUrba1,0.52725,SE293337P,24/06/2022"
+    #   end
 
-      let(:qc_results_upload) { build(:qc_results_upload, csv_data: csv_missing_tube_barcode) }
-      let(:factory) { build(:qc_results_upload_factory, qc_results_upload:) }
+    #   let(:qc_results_upload) { build(:qc_results_upload, csv_data: csv_missing_tube_barcode) }
+    #   let(:factory) { build(:qc_results_upload_factory, qc_results_upload:) }
 
-      it 'errors' do
-        row_object = factory.pivot_csv_data_to_obj[0]
+    #   it 'errors' do
+    #     row_object = factory.pivot_csv_data_to_obj[0]
 
-        expect do
-          factory.create_qc_results(row_object)
-        end.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Labware barcode can't be blank")
-      end
-    end
+    #     expect do
+    #       factory.create_qc_results(row_object)
+    #     end.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Labware barcode can't be blank")
+    #   end
+    # end
 
-    context 'when there is missing Sanger sample ID' do
-      let(:csv_missing_sample) do
-        ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,
-        Batch ,Tissue Tube ID,Sanger sample ID,Species,Genome Size,Tissue FluidX rack ID,Rack well location,Date,Crush Method,Tissue Mass (mg),Tissue type,Lysis ,DNA tube ID,DNAext FluidX Rack ID,Rack position,Voucher?,Voucher Tube ID,Voucher Rack ID,Sample Location,Qubit DNA Quant (ng/ul) [ESP1],DNA vol (ul),DNA total ng [ESP1],Femto dilution [ESP1],ND 260/280 [ESP1],ND 260/230 [ESP1],ND Quant (ng/ul) [ESP1],Femto Frag Size [ESP1],GQN >30000 [ESP1],Femto pdf [ESP1],LR EXTRACTION DECISION [ESP1],Sample Well Position in Plate,TOL DECISION [ESP1],DNA Fluid+ MR kit for viscous DNA?,MR Machine ID,MR speed,Vol Input DNA MR3 (uL),Save 1uL post shear,Vol Input SPRI (uL),SPRI volume (x0.6),Qubit Quant (ng/ul) [ESP2],Final Elution Volume (ul),Total DNA ng [ESP2],Femto Dil (ul) [ESP2],ND 260/280 [ESP2],ND 260/230 [ESP2],ND Quant (ng/uL) [ESP2],% DNA Recovery,Femto Fragment size [ESP2],GQN 10kb threshold [ESP2],Femto pdf [ESP2],LR SHEARING DECISION [ESP2],TOL DECISION [ESP2],ToL ID ,Genome size (TOL),SE Number,Date in PB Lab (Auto)
-        Production 1,FD20709764,,,0.53,,,04/05/2022,Powermash,7.8,Non-plant,2h@25C,,,NA,Yes,FD38542652,SA00930879,A1,4.78,385,1840.3,18.12,2.38,0.57,14.9,22688,1.5,Extraction.Femto.9764-9765,Pass,,,,Alan Shearer/Britney Shears,30,,FALSE,,,22.6,45.4,1026.04,89.4,1.92,1.79,33.7,55.8,9772,4.4,Sheared.Femto.9764-6843,Pass,,idCheUrba1,0.52725,SE293337P,24/06/2022"
-      end
+    # This should have been caught in validation
+    # context 'when there is missing Sanger sample ID' do
+    #   let(:csv_missing_sample) do
+    #     ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,
+    #     Batch ,Tissue Tube ID,Sanger sample ID,Species,Genome Size,Tissue FluidX rack ID,Rack well location,Date,Crush Method,Tissue Mass (mg),Tissue type,Lysis ,DNA tube ID,DNAext FluidX Rack ID,Rack position,Voucher?,Voucher Tube ID,Voucher Rack ID,Sample Location,Qubit DNA Quant (ng/ul) [ESP1],DNA vol (ul),DNA total ng [ESP1],Femto dilution [ESP1],ND 260/280 [ESP1],ND 260/230 [ESP1],ND Quant (ng/ul) [ESP1],Femto Frag Size [ESP1],GQN >30000 [ESP1],Femto pdf [ESP1],LR EXTRACTION DECISION [ESP1],Sample Well Position in Plate,TOL DECISION [ESP1],DNA Fluid+ MR kit for viscous DNA?,MR Machine ID,MR speed,Vol Input DNA MR3 (uL),Save 1uL post shear,Vol Input SPRI (uL),SPRI volume (x0.6),Qubit Quant (ng/ul) [ESP2],Final Elution Volume (ul),Total DNA ng [ESP2],Femto Dil (ul) [ESP2],ND 260/280 [ESP2],ND 260/230 [ESP2],ND Quant (ng/uL) [ESP2],% DNA Recovery,Femto Fragment size [ESP2],GQN 10kb threshold [ESP2],Femto pdf [ESP2],LR SHEARING DECISION [ESP2],TOL DECISION [ESP2],ToL ID ,Genome size (TOL),SE Number,Date in PB Lab (Auto)
+    #     Production 1,FD20709764,,,0.53,,,04/05/2022,Powermash,7.8,Non-plant,2h@25C,,,NA,Yes,FD38542652,SA00930879,A1,4.78,385,1840.3,18.12,2.38,0.57,14.9,22688,1.5,Extraction.Femto.9764-9765,Pass,,,,Alan Shearer/Britney Shears,30,,FALSE,,,22.6,45.4,1026.04,89.4,1.92,1.79,33.7,55.8,9772,4.4,Sheared.Femto.9764-6843,Pass,,idCheUrba1,0.52725,SE293337P,24/06/2022"
+    #   end
 
-      let(:qc_results_upload) { build(:qc_results_upload, csv_data: csv_missing_sample) }
-      let(:factory) { build(:qc_results_upload_factory, qc_results_upload:) }
+    #   let(:qc_results_upload) { build(:qc_results_upload, csv_data: csv_missing_sample) }
+    #   let(:factory) { build(:qc_results_upload_factory, qc_results_upload:) }
 
-      it 'errors' do
-        row_object = factory.pivot_csv_data_to_obj[0]
+    #   it 'errors' do
+    #     row_object = factory.pivot_csv_data_to_obj[0]
 
-        expect do
-          factory.create_qc_results(row_object)
-        end.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Sample external can't be blank")
-      end
-    end
+    #     expect do
+    #       factory.create_qc_results(row_object)
+    #     end.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Sample external can't be blank")
+    #   end
+    # end
   end
 
   # DPL-478 todo
@@ -210,7 +215,7 @@ RSpec.describe QcResultsUploadFactory do
 
       it 'errors' do
         expect(factory.valid?).to be false
-        expect(factory.errors.messages[:csv_data]).to eq ['Missing headers', 'Missing data']
+        expect(factory.errors.messages[:csv_data]).to eq ['Missing headers']
       end
     end
 
@@ -312,13 +317,13 @@ RSpec.describe QcResultsUploadFactory do
 
     it 'creates a QcDecisionResult entity' do
       expect do
-        factory.create_qc_decision_result!(qc_result.id, qc_decision.id)
+        factory.create_qc_decision_result!(qc_result, qc_decision)
       end.to change(QcDecisionResult, :count).by(1)
     end
 
     it 'raises an error when invalid' do
       expect do
-        factory.create_qc_decision_result!(1, 2)
+        factory.create_qc_decision_result!(nil, nil)
       end.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Qc decision must exist, Qc result must exist')
     end
   end
