@@ -5,6 +5,14 @@ module Ont
   class Pool < ApplicationRecord
     belongs_to :tube, default: -> { Tube.new }
 
+    # We have one-to-one association between pool and flowcell at the moment.
+    # XXX: We set dependent option to nullify for the moment.
+    has_one :flowcell,
+            class_name: 'Ont::Flowcell',
+            foreign_key: :ont_pool_id,
+            inverse_of: :pool,
+            dependent: :nullify
+
     has_many :libraries, class_name: 'Ont::Library', foreign_key: :ont_pool_id,
                          dependent: :destroy, inverse_of: :pool
     has_many :requests, through: :libraries
