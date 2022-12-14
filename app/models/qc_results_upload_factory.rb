@@ -24,33 +24,37 @@ class QcResultsUploadFactory
   validates :csv_data, :used_by, presence: true
   validate :validate_used_by, :validate_headers, :validate_fields, :validate_body
 
-  # Qu: attr not needed, is there a way to not pass in
-  def initialize(attr)
-    super
-    @rows = pivot_csv_data_to_obj
+  # @param [csv] csv rows
+  # creates data from the initial csv
+  def rows
+    return unless qc_results_upload
+    @rows ||= pivot_csv_data_to_obj
   end
 
   def create_entities!
-    @rows.each do |row_object|
+    rows.each do |row_object|
       create_data(row_object)
     end
+    true
   end
 
   # @param [Object] CSV row e.g. { col_header_1: row_1_col_1 }
   def create_data(row_object)
     # 1. Always create Long Read QC Decision
-    @lr_qc_decison = create_qc_decision!(row_object[LR_DECISION_FIELD], :long_read)
+    lr_qc_decison = create_qc_decision!(row_object[LR_DECISION_FIELD], :long_read)
 
     # 2. If required, create TOL QC Decision
     if row_object[TOL_DECISION_FIELD]
-      @tol_qc_decison = create_qc_decision!(row_object[TOL_DECISION_FIELD], :tol)
+      tol_qc_decision = create_qc_decision!(row_object[TOL_DECISION_FIELD], :tol)
     end
 
+    p tol_qc_decision
+
     # 3. Create QC Results
-    @qc_results = create_qc_results(row_object)
+    qc_results = create_qc_results(row_object)
 
     # 4. Create QC decisions
-    create_qc_decisions
+    create_qc_decisions(qc_results, lr_qc_decison, tol_qc_decision)
   end
 
   # @returns [List] of created QcResults
@@ -78,15 +82,16 @@ class QcResultsUploadFactory
   end
 
   # create a qc decision for each decision maker
-  def create_qc_decisions
+  def create_qc_decisions(qc_results, lr_qc_decision, tol_qc_decision)
     # Always create Long Read QC Decision Results
-    @qc_results.each do |qc_result|
-      @lr_qc_decison_result = create_qc_decision_result!(qc_result, @lr_qc_decison)
+
+    qc_results.each do |qc_result|
+      create_qc_decision_result!(qc_result, lr_qc_decision)
       build_qc_result_message(qc_result, :long_read)
 
       # If required, create TOL QC Decision Results
-      if @tol_qc_decison
-        @tol_qc_decison_result = create_qc_decision_result!(qc_result, @tol_qc_decison)
+      if tol_qc_decision
+        create_qc_decision_result!(qc_result, tol_qc_decision)
         build_qc_result_message(qc_result, :tol)
       end
     end
@@ -151,7 +156,7 @@ class QcResultsUploadFactory
     csv = CSV.new(csv_string_without_groups, headers: true, header_converters: header_converter,
                                              converters: :all)
 
-    @rows = csv.to_a.map(&:to_hash)
+    csv.to_a.map(&:to_hash)
   end
 
   # Returns the CSV, with the first row (groupings) removed
@@ -210,7 +215,7 @@ class QcResultsUploadFactory
     errors.add :csv_data, 'Missing data' if data_rows.blank?
 
     # Ensure each row has required data
-    @rows.each do |row_object|
+    rows.each do |row_object|
       required_data = [LR_DECISION_FIELD, TISSUE_TUBE_ID_FIELD, SANGER_SAMPLE_ID_FIELD]
 
       required_data.each do | header|
