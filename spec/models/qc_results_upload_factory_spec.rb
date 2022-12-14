@@ -42,39 +42,28 @@ RSpec.describe QcResultsUploadFactory do
   # - constants
 
   # DPL-478 todo
-  # - on initialize, call pivot_csv_data_to_obj
-  # - pivot_csv_data_to_obj sets @rows
-
-  # DPL-478 todo
-  # create_entities calls create_data for each row
-  describe '#create_entities!' do
-    let(:factory) { build(:qc_results_upload_factory) }
-
-    # remove
-    it 'returns true' do
-      expect(factory.create_entities!).to be true
-    end
-  end
-
-  # DPL-478 todo
   # rename build to create_data
   # check messages are build
-  describe '#create_data' do
+  describe '#create_entities!' do
     context 'when there is both LR and TOL decsions' do
       let(:factory) { build(:qc_results_upload_factory) }
 
-      it 'creates entities' do
+      it 'creates qc decisions' do
         # 14 = 8 LR + 6 TOL
         expect do
-          factory.build
+          factory.create_entities!
         end.to change(QcDecision, :count).by(14)
+      end
 
+      it 'creates qc results' do
         # 42 = 6 assay types x 8 rows
         expect do
-          factory.build
+          factory.create_entities!
         end.to change(QcResult, :count).by(48)
+      end
 
-        # row	dec	results	dec_res
+      it 'creates the correct number of qc decision results' do
+          # row	dec	results	dec_res
         # 1	  2   6	      12
         # 2	  2   6	      12
         # 3	  2   6	      12
@@ -85,12 +74,12 @@ RSpec.describe QcResultsUploadFactory do
         # 8	  2   6	      12
         #                 84
         expect do
-          factory.build
+          factory.create_entities!
         end.to change(QcDecisionResult, :count).by(84)
       end
 
       it 'messages' do
-        factory.build
+        factory.create_entities!
         expect(factory.messages.count).to eq(84)
       end
     end
@@ -107,7 +96,7 @@ RSpec.describe QcResultsUploadFactory do
 
       it 'does not create any entities' do
         expect do
-          factory.build
+          factory.create_entities!
         end.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Status can't be blank")
       end
     end
@@ -347,11 +336,11 @@ RSpec.describe QcResultsUploadFactory do
 
       it 'creates entities' do
         expect do
-          factory.build
+          factory.create_entities!
         end.to change(QcDecision, :count).by(1)
 
         expect do
-          factory.build
+          factory.create_entities!
         end.to change(QcResult, :count).by(1)
 
         expect(QcResult.last.qc_assay_type.label).to eq 'Some Future Label'
@@ -359,7 +348,7 @@ RSpec.describe QcResultsUploadFactory do
         expect(QcResult.last.value).to eq 'some future data'
 
         expect do
-          factory.build
+          factory.create_entities!
         end.to change(QcDecisionResult, :count).by(1)
       end
     end
