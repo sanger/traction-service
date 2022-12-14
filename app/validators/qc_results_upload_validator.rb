@@ -28,7 +28,6 @@ class QcResultsUploadValidator < ActiveModel::Validator
       return
     end
 
-    # Is this actually checking anything?
     header_row = record.csv_data.split("\n")[1]
     unless header_row
       record.errors.add :csv_data, 'Missing headers'
