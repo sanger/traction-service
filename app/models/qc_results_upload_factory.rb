@@ -4,26 +4,32 @@
 class QcResultsUploadFactory
   include ActiveModel::Model
 
-  attr_accessor :qc_results_upload, :rows
+  attr_accessor :qc_results_upload
 
-  validates_with TestValidator
+  validates :csv_data, :used_by, presence: true
+
+  LR_DECISION_FIELD = 'LR EXTRACTION DECISION [ESP1]'
+  TOL_DECISION_FIELD = 'TOL DECISION [ESP1]'
+  TISSUE_TUBE_ID_FIELD = 'Tissue Tube ID'
+  SANGER_SAMPLE_ID_FIELD = 'Sanger sample ID'
+
+  LIST = [
+    { name: LR_DECISION_FIELD, require_value: true },
+    { name: TOL_DECISION_FIELD, require_value: false },
+    { name: TISSUE_TUBE_ID_FIELD, require_value: true },
+    { name: SANGER_SAMPLE_ID_FIELD, require_value: true }
+  ].freeze
+
+  validates_with QcResultsUploadValidator, required_headers: LIST
 
   delegate :csv_data, to: :qc_results_upload
   delegate :used_by, to: :qc_results_upload
-
-  # Qu: Refactor/ pull out
-  # These are required headers
-  # hash with flag
-  # freeze
-  LR_DECISION_FIELD = 'LR EXTRACTION DECISION [ESP1]'
-  TOL_DECISION_FIELD = 'TOL DECISION [ESP1]'
-  TISSUE_TUBE_ID_FIELD = "Tissue Tube ID"
-  SANGER_SAMPLE_ID_FIELD = 'Sanger sample ID'
 
   # @param [csv] csv rows
   # creates data from the initial csv
   def rows
     return unless qc_results_upload
+
     @rows ||= pivot_csv_data_to_obj
   end
 
@@ -44,8 +50,6 @@ class QcResultsUploadFactory
       tol_qc_decision = create_qc_decision!(row_object[TOL_DECISION_FIELD], :tol)
     end
 
-    p tol_qc_decision
-
     # 3. Create QC Results
     qc_results = create_qc_results(row_object)
 
@@ -65,15 +69,15 @@ class QcResultsUploadFactory
 
     # Loop through QcAssayTypes
     qc_assay_types.map do |qc_assay_type|
-
-      # todo: clean up below comment
+      # TODO: clean up below comment
       # next returns nil if row is missing QcAssayType data
       # method retuns list.compact, as create_qc_results may contain nil objects
       # ingnore the value?
       next unless row_object[qc_assay_type.key]
 
       # Create a QcResult for each QcAssayType
-      create_qc_result!(tissue_tube_id, sanger_sample_id, qc_assay_type.id, row_object[qc_assay_type.key])
+      create_qc_result!(tissue_tube_id, sanger_sample_id, qc_assay_type.id,
+                        row_object[qc_assay_type.key])
     end.compact
   end
 
@@ -104,12 +108,7 @@ class QcResultsUploadFactory
 
   # @return [QcResult]
   def create_qc_result!(labware_barcode, sample_external_id, qc_assay_type_id, value)
-    begin
-      QcResult.create!(labware_barcode:, sample_external_id:, qc_assay_type_id:, value:)
-    rescue ActiveRecord::RecordInvalid => e
-      errors.add :qc_result, e
-      return
-    end
+    QcResult.create!(labware_barcode:, sample_external_id:, qc_assay_type_id:, value:)
   end
 
   # @return [QcDecisionResult]
