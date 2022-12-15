@@ -136,7 +136,7 @@ RSpec.describe QcResultsUploadFactory do
 
       it 'errors' do
         expect(factory.valid?).to be false
-        expect(factory.errors.messages[:csv_data]).to eq ['Missing headers']
+        expect(factory.errors.messages[:csv_data]).to eq ['Missing header row']
       end
     end
   end
