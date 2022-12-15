@@ -24,7 +24,7 @@ module Ont
 
     # Validate number of flowcells against max_number value of instrument
     def check_max_number_of_flowcells
-      return if flowcells.length <= instrument.max_number
+      return if flowcells.length <= instrument.max_number_of_flowcells
 
       errors.add(:flowcells, 'must be less than instrument max number')
     end

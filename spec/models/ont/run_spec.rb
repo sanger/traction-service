@@ -34,13 +34,13 @@ RSpec.describe Ont::Run, ont: true do
     it 'must not have more than max_number flowcells' do
       instrument = create(:ont_promethion)
       run = create(:ont_run, instrument:)
-      (1..run.instrument.max_number).each do |position|
+      (1..run.instrument.max_number_of_flowcells).each do |position|
         create(:ont_flowcell, position:, run:)
       end
       expect(run).to be_valid # max number of flowcells
 
-      create(:ont_flowcell, position: run.instrument.max_number + 1, run:)
-      expect(run).not_to be_valid # one more than max_number
+      create(:ont_flowcell, position: run.instrument.max_number_of_flowcells + 1, run:)
+      expect(run).not_to be_valid # one more than max number of flowcells
     end
   end
 
