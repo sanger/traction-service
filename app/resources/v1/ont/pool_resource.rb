@@ -20,6 +20,11 @@ module V1
 
       paginator :paged
 
+      # This could be changed so a pool has a barcode through tube
+      filter :barcode, apply: lambda { |records, value, _options|
+        records.where(tube: Tube.find_by(barcode: value))
+      }
+
       # # When a pool is updated and it is attached to a run we need
       # # to republish the messages for the run
       # after_update :publish_messages
@@ -46,10 +51,6 @@ module V1
       def updated_at
         @model.updated_at.to_fs(:us)
       end
-
-      # def publish_messages
-      #   Messages.publish(@model.sequencing_plates, Pipelines.pacbio.message)
-      # end
     end
   end
 end
