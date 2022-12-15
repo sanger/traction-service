@@ -31,7 +31,7 @@ RSpec.describe QcResultsUploadValidator do
       end
     end
 
-    context '#validate_used_by' do
+    describe '#validate_used_by' do
       describe 'when used_by is nil' do
         let(:qc_results_upload) { build(:qc_results_upload, used_by: nil) }
         let(:record) { build(:qc_results_upload_factory, qc_results_upload:) }
@@ -39,7 +39,7 @@ RSpec.describe QcResultsUploadValidator do
         it 'will mark the record as invalid' do
           described_class.new({ required_headers: }).validate(record)
           expect(record).not_to be_valid
-          expect(record.errors.messages[:used_by]).to eq ["can't be blank", 'No QcAssayTypes belong to used_by value']
+          expect(record.errors.messages[:used_by]).to eq ["can't be blank"]
         end
       end
 
@@ -55,7 +55,7 @@ RSpec.describe QcResultsUploadValidator do
       end
     end
 
-    context '#validate_headers' do
+    describe '#validate_csv_data' do
       describe 'when csv_data is nil' do
         let(:qc_results_upload) { build(:qc_results_upload, csv_data: nil) }
         let(:record) { build(:qc_results_upload_factory, qc_results_upload:) }
@@ -63,10 +63,12 @@ RSpec.describe QcResultsUploadValidator do
         it 'will mark the record as invalid' do
           described_class.new({ required_headers: }).validate(record)
           expect(record).not_to be_valid
-          expect(record.errors.messages[:csv_data]).to eq ["can't be blank", 'Is missing']
+          expect(record.errors.messages[:csv_data]).to eq ["can't be blank"]
         end
       end
+    end
 
+    describe '#validate_rows' do
       describe 'when csv_data is empty' do
         let(:qc_results_upload) { build(:qc_results_upload, csv_data: 'line one \n') }
         let(:record) { build(:qc_results_upload_factory, qc_results_upload:) }
@@ -74,10 +76,27 @@ RSpec.describe QcResultsUploadValidator do
         it 'will mark the record as invalid' do
           described_class.new({ required_headers: }).validate(record)
           expect(record).not_to be_valid
-          expect(record.errors.messages[:csv_data]).to eq ['Missing headers']
+          expect(record.errors.messages[:csv_data]).to eq ['Missing header row']
         end
       end
 
+      describe 'when data is missing' do
+        let(:csv_dupl_headers) do
+          ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,
+          Batch ,Tissue Tube ID,Sanger sample ID,Species,Genome Size,Tissue FluidX rack ID,Rack well location,Date,Crush Method,Tissue Mass (mg),Tissue type,Lysis ,DNA tube ID,DNAext FluidX Rack ID,Rack position,Voucher?,Voucher Tube ID,Voucher Rack ID,Sample Location,Qubit DNA Quant (ng/ul) [ESP1],DNA vol (ul),DNA total ng [ESP1],Femto dilution [ESP1],ND 260/280 [ESP1],ND 260/230 [ESP1],ND Quant (ng/ul) [ESP1],Femto Frag Size [ESP1],GQN >30000 [ESP1],Femto pdf [ESP1],LR EXTRACTION DECISION [ESP1],Sample Well Position in Plate,TOL DECISION [ESP1],DNA Fluid+ MR kit for viscous DNA?,MR Machine ID,MR speed,Vol Input DNA MR3 (uL),Save 1uL post shear,Vol Input SPRI (uL),SPRI volume (x0.6),Qubit Quant (ng/ul) [ESP2],Final Elution Volume (ul),Total DNA ng [ESP2],Femto Dil (ul) [ESP2],ND 260/280 [ESP2],ND 260/230 [ESP2],ND Quant (ng/uL) [ESP2],% DNA Recovery,Femto Fragment size [ESP2],GQN 10kb threshold [ESP2],Femto pdf [ESP2],LR SHEARING DECISION [ESP2],TOL DECISION [ESP2],ToL ID ,Genome size (TOL),SE Number,Date in PB Lab (Auto)"
+        end
+        let(:qc_results_upload) { build(:qc_results_upload, csv_data: csv_dupl_headers) }
+        let(:record) { build(:qc_results_upload_factory, qc_results_upload:) }
+
+        it 'will mark the record as invalid' do
+          described_class.new({ required_headers: }).validate(record)
+          expect(record).not_to be_valid
+          expect(record.errors.messages[:csv_data]).to eq ['Missing data rows']
+        end
+      end
+    end
+
+    describe '#validate_headers' do
       describe 'when csv_data contains duplicate headers' do
         let(:csv_dupl_headers) do
           ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,
@@ -95,7 +114,7 @@ RSpec.describe QcResultsUploadValidator do
       end
     end
 
-    context '#validate_fields' do
+    describe '#validate_fields' do
       describe 'when required headers are missing' do
         let(:csv_dupl_headers) do
           ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,
@@ -108,27 +127,12 @@ RSpec.describe QcResultsUploadValidator do
         it 'will mark the record as invalid' do
           described_class.new({ required_headers: }).validate(record)
           expect(record).not_to be_valid
-          expect(record.errors.messages[:csv_data]).to eq ["Missing required headers: Tissue Tube ID,Sanger sample ID"]
+          expect(record.errors.messages[:csv_data]).to eq ['Missing required headers: Tissue Tube ID,Sanger sample ID']
         end
       end
     end
 
-    context '#validate_body' do
-      describe 'when data is missing' do
-        let(:csv_dupl_headers) do
-          ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,
-          Batch ,Tissue Tube ID,Sanger sample ID,Species,Genome Size,Tissue FluidX rack ID,Rack well location,Date,Crush Method,Tissue Mass (mg),Tissue type,Lysis ,DNA tube ID,DNAext FluidX Rack ID,Rack position,Voucher?,Voucher Tube ID,Voucher Rack ID,Sample Location,Qubit DNA Quant (ng/ul) [ESP1],DNA vol (ul),DNA total ng [ESP1],Femto dilution [ESP1],ND 260/280 [ESP1],ND 260/230 [ESP1],ND Quant (ng/ul) [ESP1],Femto Frag Size [ESP1],GQN >30000 [ESP1],Femto pdf [ESP1],LR EXTRACTION DECISION [ESP1],Sample Well Position in Plate,TOL DECISION [ESP1],DNA Fluid+ MR kit for viscous DNA?,MR Machine ID,MR speed,Vol Input DNA MR3 (uL),Save 1uL post shear,Vol Input SPRI (uL),SPRI volume (x0.6),Qubit Quant (ng/ul) [ESP2],Final Elution Volume (ul),Total DNA ng [ESP2],Femto Dil (ul) [ESP2],ND 260/280 [ESP2],ND 260/230 [ESP2],ND Quant (ng/uL) [ESP2],% DNA Recovery,Femto Fragment size [ESP2],GQN 10kb threshold [ESP2],Femto pdf [ESP2],LR SHEARING DECISION [ESP2],TOL DECISION [ESP2],ToL ID ,Genome size (TOL),SE Number,Date in PB Lab (Auto)"
-        end
-        let(:qc_results_upload) { build(:qc_results_upload, csv_data: csv_dupl_headers) }
-        let(:record) { build(:qc_results_upload_factory, qc_results_upload:) }
-
-        it 'will mark the record as invalid' do
-          described_class.new({ required_headers: }).validate(record)
-          expect(record).not_to be_valid
-          expect(record.errors.messages[:csv_data]).to eq ["Missing data"]
-        end
-      end
-
+    describe '#validate_body' do
       describe 'when required data is missing' do
         let(:csv_dupl_headers) do
           ",,SAMPLE INFORMATION,,,,,,,,,,,,,VOUCHERING,,,,EXTRACTION/QC,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,COLUMN JUST FOR TOL,COLUMN JUST FOR TOL,SE LIMS,
@@ -141,7 +145,7 @@ RSpec.describe QcResultsUploadValidator do
         it 'will mark the record as invalid' do
           described_class.new({ required_headers: }).validate(record)
           expect(record).not_to be_valid
-          expect(record.errors.messages[:csv_data]).to eq ["Missing data: Tissue Tube ID", "Missing data: Sanger sample ID"]
+          expect(record.errors.messages[:csv_data]).to eq ['Missing data: Tissue Tube ID', 'Missing data: Sanger sample ID']
         end
       end
     end

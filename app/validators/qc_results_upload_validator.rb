@@ -6,65 +6,71 @@ class QcResultsUploadValidator < ActiveModel::Validator
   include ActiveModel::Validations
 
   def validate(record)
-    # DPL-478 Todo
-    # Refactor to call below individually, and exit on any error
-    # validate_used_by(record)
-    # validate_headers(record)
-    # validate_fields(record)
-    # validate_body(record)
+    validations = %i[validate_used_by validate_csv_data validate_rows validate_headers
+                     validate_fields validate_body]
 
-    # 1.
-    # validate_used_by
+    validations.each do |validation|
+      next if record.errors.present?
+
+      send(validation, record)
+    end
+  end
+
+  def validate_used_by(record)
     qc_assay_types = QcAssayType.where(used_by: record.used_by)
-    if qc_assay_types.empty?
-      record.errors.add :used_by, 'No QcAssayTypes belong to used_by value'
+    return unless qc_assay_types.empty?
+
+    record.errors.add :used_by, 'No QcAssayTypes belong to used_by value'
+    nil
+  end
+
+  def validate_csv_data(record)
+    return if record.csv_data.present?
+
+    record.errors.add :csv_data, 'Is missing'
+    nil
+  end
+
+  def validate_rows(record)
+    @header_row = record.csv_data.split("\n")[1]
+    unless @header_row
+      record.errors.add :csv_data, 'Missing header row'
       return
     end
 
-    # 2.
-    # validate_headers
-    if record.csv_data.blank?
-      record.errors.add :csv_data, 'Is missing'
-      return
-    end
+    data_rows = record.csv_data.split("\n")[2..]
+    return if data_rows.present?
 
-    header_row = record.csv_data.split("\n")[1]
-    unless header_row
-      record.errors.add :csv_data, 'Missing headers'
-      return
-    end
+    record.errors.add :csv_data, 'Missing data rows'
+    nil
+  end
 
+  def validate_headers(record)
     # Remove whitespace and empty headers
-    @headers = header_row.split(',').map(&:strip).compact_blank
+    @headers = @header_row.split(',').map(&:strip).compact_blank
 
     # Case sensitive
     # e.g. "Genome Size" != "Genome size"
-    if @headers.count != @headers.uniq.count
-      record.errors.add :csv_data, 'Contains duplicated headers'
-      return
-    end
+    return unless @headers.count != @headers.uniq.count
 
-    # 3.
-    # validate_fields
+    record.errors.add :csv_data, 'Contains duplicated headers'
+    nil
+  end
+
+  def validate_fields(record)
     required_headers = options[:required_headers].pluck(:name)
     missing_headers = (required_headers - @headers)
-    unless missing_headers.empty?
-      record.errors.add :csv_data,
-                        "Missing required headers: #{missing_headers.join(',')}"
-      return
-    end
+    return if missing_headers.empty?
 
-    # 4.
-    # validate_body
+    record.errors.add :csv_data,
+                      "Missing required headers: #{missing_headers.join(',')}"
+    nil
+  end
+
+  def validate_body(record)
     required_data = options[:required_headers].collect do |h|
       h[:name] if h[:require_value] == true
     end.compact
-
-    data_rows = record.csv_data.split("\n")[2..]
-    if data_rows.blank?
-      record.errors.add :csv_data, 'Missing data'
-      return
-    end
 
     # Ensure each row has required data record.
     record.rows.each do |row_object|
@@ -73,71 +79,4 @@ class QcResultsUploadValidator < ActiveModel::Validator
       end
     end
   end
-
-  # def validate_used_by(record)
-  #   # 1.
-  #   # validate_used_by
-  #   qc_assay_types = QcAssayType.where(used_by: record.used_by)
-  #   if qc_assay_types.empty?
-  #     record.errors.add :used_by, 'No QcAssayTypes belong to used_by value'
-  #     return
-  #   end
-  # end
-
-  # def validate_headers(record)
-  #   # 2.
-  #   # validate_headers
-  #   if record.csv_data.blank?
-  #     record.errors.add :csv_data, 'Is missing'
-  #     return
-  #   end
-
-  #   # Is this actually checking anything?
-  #   header_row = record.csv_data.split("\n")[1]
-  #   unless header_row
-  #     record.errors.add :csv_data, 'Missing headers'
-  #     return
-  #   end
-
-  #   # Remove whitespace and empty headers
-  #   @headers = header_row.split(',').map(&:strip).compact_blank
-
-  #   # Case sensitive
-  #   # e.g. "Genome Size" != "Genome size"
-  #   if @headers.count != @headers.uniq.count
-  #     record.errors.add :csv_data, 'Contains duplicated headers'
-  #     return
-  #   end
-  # end
-
-  # def validate_fields(record)
-  #   required_headers = options[:required_headers].pluck(:name)
-  #   missing_headers = (required_headers - @headers)
-  #   unless missing_headers.empty?
-  #     record.errors.add :csv_data,
-  #                       "Missing required headers: #{missing_headers.join(',')}"
-  #     return
-  #   end
-  # end
-
-  # def validate_body(record)
-  #   # 4.
-  #   # validate_body
-  #   required_data = options[:required_headers].collect do |h|
-  #     h[:name] if h[:require_value] == true
-  #   end.compact
-
-  #   data_rows = record.csv_data.split("\n")[2..]
-  #   if data_rows.blank?
-  #     record.errors.add :csv_data, 'Missing data'
-  #     return
-  #   end
-
-  #   # Ensure each row has required data record.
-  #   record.rows.each do |row_object|
-  #     required_data.each do |header|
-  #       record.errors.add :csv_data, "Missing data: #{header}" if row_object[header].blank?
-  #     end
-  #   end
-  # end
 end
