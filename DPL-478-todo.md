@@ -41,14 +41,12 @@
 - Validate used_by known?
 - If the upload fails then there should be some feedback giving reasons as to why it has failed with an indication of where it has failed
 - There should be wiggle room if the use tries to upload previously recorded records. Rather than failing it will just create a new record. The qc results table is idempotent so should not overwrite amend or delete.
-
-* An agreed message format to send the qc results to the warehouse
-* A handler to send the message to the warehouse
+- Add tests
+- Refactor Validation
+- If the upload is successful there should be some feedback indicating that it is a success
+- An agreed message format to send the qc results to the warehouse
+- A handler to send the message to the warehouse
 
 ## Tasks To Do
 
-- Add tests
-- Refactor CSV conversion?
-- Refactor Validation?
 - Check deleting QC Result, what happens/ should happen
-- If the upload is successful there should be some feedback indicating that it is a success along with an indication of how many qc results have been created
