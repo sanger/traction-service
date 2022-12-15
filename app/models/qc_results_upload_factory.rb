@@ -44,8 +44,6 @@ class QcResultsUploadFactory
       tol_qc_decision = create_qc_decision!(row_object[TOL_DECISION_FIELD], :tol)
     end
 
-    p tol_qc_decision
-
     # 3. Create QC Results
     qc_results = create_qc_results(row_object)
 
