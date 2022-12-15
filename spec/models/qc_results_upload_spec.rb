@@ -4,6 +4,10 @@ require 'rails_helper'
 
 RSpec.describe QcResultsUpload do
   describe '#create' do
+    before do
+      create(:qc_assay_type, key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul) [ESP1]', used_by: 0)
+    end
+
     let(:qc_results_upload) { build(:qc_results_upload) }
 
     it 'is possible to create a new record' do
@@ -14,7 +18,6 @@ RSpec.describe QcResultsUpload do
         )
       end.to change(described_class, :count).by(1)
     end
-
 
     describe '#validates_nested' do
       # DPL-478 todo
