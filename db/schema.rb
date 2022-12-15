@@ -69,7 +69,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_14_020747) do
   end
 
   create_table "ont_flowcells", charset: "utf8mb3", force: :cascade do |t|
-    t.string "barcode"
+    t.string "flowcell_id"
     t.integer "position"
     t.string "uuid"
     t.bigint "ont_run_id"
