@@ -244,7 +244,7 @@ RSpec.describe '/qc_results_uploads' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'csv_data - Missing headers'
+          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'csv_data - Missing header row'
         end
       end
 
@@ -311,7 +311,7 @@ RSpec.describe '/qc_results_uploads' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'csv_data - Missing data'
+          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'csv_data - Missing data rows'
         end
       end
 
