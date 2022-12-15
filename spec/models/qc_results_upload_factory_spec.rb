@@ -73,7 +73,6 @@ RSpec.describe QcResultsUploadFactory do
         expect(factory.messages.count).to eq(84)
       end
     end
-
   end
 
   describe '#create_qc_results' do
@@ -140,7 +139,6 @@ RSpec.describe QcResultsUploadFactory do
         expect(factory.errors.messages[:csv_data]).to eq ['Missing headers']
       end
     end
-
   end
 
   describe '#create_qc_decision!' do
