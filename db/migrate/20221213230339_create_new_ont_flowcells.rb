@@ -1,7 +1,7 @@
 class CreateNewOntFlowcells < ActiveRecord::Migration[7.0]
   def change
     create_table :ont_flowcells do |t|
-      t.string :barcode # flowcell_id in traction-legacy
+      t.string :flowcell_id # barcode
       t.integer :position # unique among others of the run
       t.string :uuid  # included in the model
       t.belongs_to :ont_run, index: true
