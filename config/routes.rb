@@ -58,6 +58,7 @@ Rails.application.routes.draw do
     end
 
     namespace :ont do
+      jsonapi_resources :runs,                only: %i[create]
       jsonapi_resources :requests,            except: %i[create destroy]
       jsonapi_resources :libraries,           only: %i[index update destroy]
       jsonapi_resources :pools,               except: %i[destroy]
