@@ -22,6 +22,8 @@ module Ont
     # XXX: Should we check presence of flowcells too?
     validate :check_max_number_of_flowcells
 
+    delegate :create_run!, to: :run_factory
+
     # Validate number of flowcells against max_number value of instrument
     def check_max_number_of_flowcells
       return if flowcells.length <= instrument.max_number_of_flowcells
@@ -45,6 +47,10 @@ module Ont
     # Get experiment name or generate one
     def experiment_name
       @experiment_name || "ONTRUN-#{id}"
+    end
+
+    def run_factory
+      @run_factory ||= RunFactory.new(run: self)
     end
 
     # # Make table read only. We don't want anything pushing to it.
