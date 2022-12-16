@@ -14,7 +14,9 @@ module V1
 
     attributes :csv_data, :used_by
 
-    after_create :create_entities!, :publish_messages
+    # create_entities! needs to be called before publish_messages
+    # which requires the after_create to be ordered this way
+    after_create :publish_messages, :create_entities!
 
     def create_entities!
       @model.create_entities!
