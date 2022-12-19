@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_14_020747) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_19_100356) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -82,7 +82,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_14_020747) do
   end
 
   create_table "ont_instruments", charset: "utf8mb3", force: :cascade do |t|
-    t.integer "name", null: false
+    t.string "name", null: false
+    t.integer "instrument_type", null: false
     t.integer "max_number_of_flowcells", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -132,7 +133,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_14_020747) do
   end
 
   create_table "ont_runs", charset: "utf8mb3", force: :cascade do |t|
-    t.bigint "ont_instrument_id"
+    t.bigint "ont_instrument_id", null: false
     t.string "experiment_name"
     t.integer "state", default: 0
     t.datetime "deactivated_at"
@@ -432,8 +433,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_14_020747) do
     t.index ["plate_id"], name: "index_wells_on_plate_id"
   end
 
+  add_foreign_key "ont_flowcells", "ont_pools"
+  add_foreign_key "ont_flowcells", "ont_runs"
   add_foreign_key "ont_requests", "data_types"
   add_foreign_key "ont_requests", "library_types"
+  add_foreign_key "ont_runs", "ont_instruments"
   add_foreign_key "pacbio_libraries", "pacbio_pools"
   add_foreign_key "pacbio_libraries", "pacbio_requests"
   add_foreign_key "pacbio_pools", "tubes"

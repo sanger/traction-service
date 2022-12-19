@@ -56,7 +56,6 @@ RSpec.describe 'RakeTasks' do
     end
   end
 
-
   describe 'ont_data:create' do
     let(:expected_plates) { 2 }
     let(:filled_wells_per_plate) { 95 }
