@@ -45,15 +45,6 @@ RSpec.describe Ont::Run, ont: true do
   end
 
   context 'experiment name' do
-    it 'persists explicitly set experiment_name' do
-      experiment_name = 'TestExperimentName'
-      run = create(:ont_run, experiment_name:)
-      run.save!
-
-      run.reload
-      expect(run.experiment_name).to eq(experiment_name)
-    end
-
     it 'persists a default experiment_name' do
       run = create(:ont_run)
       experiment_name = run.experiment_name # "ONTRUN-#{id}"

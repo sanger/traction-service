@@ -3,6 +3,7 @@
 module Ont
   # Ont::Run
   class Run < ApplicationRecord
+    NAME_PREFIX = 'ONTRUN-'
     include Stateful
 
     # This association creates a link to the instrument this run belongs to.
@@ -31,8 +32,8 @@ module Ont
       errors.add(:flowcells, 'must be less than instrument max number')
     end
 
-    # Set experiment name explicitly
-    attr_writer :experiment_name
+    # Generate the experiment_name using the id of the run.
+    after_create :generate_experiment_name
 
     def active?
       deactivated_at.nil?
@@ -44,18 +45,16 @@ module Ont
       update(deactivated_at: DateTime.current)
     end
 
-    # Get experiment name or generate one
-    def experiment_name
-      @experiment_name || "ONTRUN-#{id}"
-    end
-
     def run_factory
       @run_factory ||= RunFactory.new(run: self)
     end
 
-    # # Make table read only. We don't want anything pushing to it.
-    # def readonly?
-    #   true
-    # end
+    private
+
+    def generate_experiment_name
+      return if experiment_name.present?
+
+      update(experiment_name: "#{NAME_PREFIX}#{id}")
+    end
   end
 end
