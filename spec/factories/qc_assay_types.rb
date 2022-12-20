@@ -5,5 +5,6 @@ FactoryBot.define do
     key { 'tissueMass' }
     label { 'Tissue Mass' }
     units { 'mg' }
+    used_by { :extraction }
   end
 end

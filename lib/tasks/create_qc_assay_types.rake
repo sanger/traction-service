@@ -1,29 +1,26 @@
 # frozen_string_literal: true
 
+# When wanting to add other QC Results to be stored in the future for different groups:
+# 1. Add `used_by` enum option to QcAssayType
+# 2. Add persist more QcResult's, add fields to `create_qc_assay_types.rake` with the correct `used_by`
+# 3. Ensure the QcAssayType `label` is the expected CSV header column name, and the `key` is expected by TOL
+
 namespace :qc_assay_types do
   desc 'Create QC Assay Types'
   task create: :environment do
+    QcAssayType.destroy_all
+
     [
-      { key: 'tissue_mass', label: 'Tissue mass', units: 'mg' },
-      { key: 'qubit', label: 'Qubit', units: 'ng/μl' },
-      { key: 'extraction_yield', label: 'Extraction yield', units: 'ng' },
-      { key: 'nanodrop_concentration', label: 'Nanodrop concentration', units: 'ng/μl' },
-      { key: '260_230_ratio_extraction', label: '260/ 230 ratio extraction' },
-      { key: '260_280_ratio_extraction', label: '260/ 280 ratio extraction' },
-      { key: 'femto_profile_description', label: 'Femto profile description' },
-      { key: 'femto_profile_link', label: 'Femto profile link' },
-      { key: 'gqn_threshold_30kb', label: 'GQN with threshold at 30Kb' },
-      { key: 'extraction_result', label: 'Extraction result (pass/fail/hold)' },
-      { key: 'yield_post_0.45x_clean_up', label: 'Yield post 0.45X clean up' },
-      { key: 'qubit_post_45x_clean_up', label: 'Qubit post 0.45X clean up', units: 'ng/μl' },
-      { key: 'mode_length_dna_sheared_pacbio', label: 'Mode length of DNA sheared for PacBio', units: 'bp' },
-      { key: 'gqn_threshold_10kb', label: 'GQN with threshold at 10Kb' },
-      { key: 'qubit_post_shear_spri_45.4μl', label: 'Qubit (post shear:SPRI ng/μl in 45.4μl)', units: 'ng/μl' },
-      { key: '260_280_ratio_post_shear_spri', label: '260/280 ratio post shear:SPRI' },
-      { key: '260_230_ratio_post_shear_spri', label: '260/230 ratio post shear:SPRI' },
-      { key: 'pre_library_yield', label: 'Pre-library yield' },
-      { key: 'percent_dna_recovery_post_spri_pre_shear', label: '% DNA recovery (into shear - after SPRI)', units: '%' },
-      { key: 'shear_spri_result', label: 'Shear/SPRI result (pass/fail/hold)' }
+      { key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul) [ESP1]', used_by: 0 },
+      { key: 'volume_si', label: 'DNA vol (ul)', used_by: 0 },
+      { key: 'yield', label: 'DNA total ng [ESP1]', used_by: 0 },
+      { key: '_260_230_ratio', label: 'ND 260/230 [ESP1]', used_by: 0 },
+      { key: '_260_280_ratio', label: 'ND 260/280 [ESP1]', used_by: 0 },
+      { key: 'nanodrop_concentration_ngul', label: 'ND Quant (ng/ul) [ESP1]', used_by: 0 },
+      { key: 'average_fragment_size', label: 'Femto Frag Size [ESP1]', used_by: 0 },
+      { key: 'gqn_dnaex', label: 'GQN >30000 [ESP1]', used_by: 0 },
+      { key: 'results_pdf', label: 'Femto pdf [ESP1]', used_by: 0 },
+      { key: 'some_future_key', label: 'Some Future Label', used_by: 1 }
     ].each do |options|
       QcAssayType.create_with(options).find_or_create_by!(key: options[:key])
     end
