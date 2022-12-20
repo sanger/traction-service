@@ -104,6 +104,10 @@ RSpec.describe 'LibrariesController', ont: true do
       it 'has a relationship with source_plate' do
         expect(library_relationships['source_plate']).to be_present
       end
+
+      it 'has a relationship with source_tube' do
+        expect(library_relationships['source_tube']).to be_present
+      end
     end
 
     context 'pagination' do

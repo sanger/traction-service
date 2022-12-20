@@ -16,8 +16,14 @@ module V1
       attributes :volume, :kit_barcode, :concentration, :insert_size, :created_at, :updated_at,
                  :library_attributes
       attribute :source_identifier, readonly: true
+      attribute :final_library_amount, readonly: true
 
       paginator :paged
+
+      # This could be changed so a pool has a barcode through tube
+      filter :barcode, apply: lambda { |records, value, _options|
+        records.where(tube: Tube.find_by(barcode: value))
+      }
 
       # # When a pool is updated and it is attached to a run we need
       # # to republish the messages for the run
@@ -25,7 +31,7 @@ module V1
 
       def library_attributes=(library_parameters)
         @model.library_attributes = library_parameters.map do |library|
-          library.permit(:id, :volume, :kit_number, :concentration, :insert_size, :ont_request_id,
+          library.permit(:id, :volume, :kit_barcode, :concentration, :insert_size, :ont_request_id,
                          :tag_id)
         end
       end
@@ -45,10 +51,6 @@ module V1
       def updated_at
         @model.updated_at.to_fs(:us)
       end
-
-      # def publish_messages
-      #   Messages.publish(@model.sequencing_plates, Pipelines.pacbio.message)
-      # end
     end
   end
 end

@@ -3,7 +3,8 @@
 class QcResult < ApplicationRecord
   belongs_to :qc_assay_type
 
-  validates :labware_barcode, presence: true
-  validates :sample_external_id, presence: true
-  validates :value, presence: true
+  has_many :qc_decision_results, dependent: :restrict_with_error
+  has_many :qc_decisions, through: :qc_decision_results
+
+  validates :labware_barcode, :sample_external_id, :value, presence: true
 end
