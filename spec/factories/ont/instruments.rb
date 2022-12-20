@@ -2,9 +2,13 @@
 
 FactoryBot.define do
   factory :ont_instrument, class: 'Ont::Instrument' do
-    name { 'G1' }
+    name { 'O1' }
     instrument_type { 'GridIon' }
     max_number_of_flowcells { 5 }
+
+    factory :ont_gridion do
+      name { 'G1' }
+    end
 
     factory :ont_minion do
       name { 'M1' }
