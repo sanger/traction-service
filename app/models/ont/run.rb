@@ -3,8 +3,10 @@
 module Ont
   # Ont::Run
   class Run < ApplicationRecord
-    NAME_PREFIX = 'ONTRUN-'
     include Stateful
+    include Uuidable
+
+    NAME_PREFIX = 'ONTRUN-' # Used for generating a unique experiment name for the run.
 
     # This association creates a link to the instrument this run belongs to.
     # We are setting to avoid automatic detection of inverse association from the instrument.
