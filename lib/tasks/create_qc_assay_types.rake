@@ -14,11 +14,11 @@ namespace :qc_assay_types do
       { key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul) [ESP1]', used_by: 0, units: 'ng/ul' },
       { key: 'volume_si', label: 'DNA vol (ul)', used_by: 0, units: 'ul' },
       { key: 'yield', label: 'DNA total ng [ESP1]', used_by: 0, units: 'ng' },
-      { key: '_260_230_ratio', label: 'ND 260/230 [ESP1]', used_by: 0, units: 'TBC' },
-      { key: '_260_280_ratio', label: 'ND 260/280 [ESP1]', used_by: 0, units: 'TBC' },
+      { key: '_260_230_ratio', label: 'ND 260/230 [ESP1]', used_by: 0, units: '' },
+      { key: '_260_280_ratio', label: 'ND 260/280 [ESP1]', used_by: 0, units: '' },
       { key: 'nanodrop_concentration_ngul', label: 'ND Quant (ng/ul) [ESP1]', used_by: 0, units: 'ng/ul' },
-      { key: 'average_fragment_size', label: 'Femto Frag Size [ESP1]', used_by: 0, units: 'TBC' },
-      { key: 'gqn_dnaex', label: 'GQN >30000 [ESP1]', used_by: 0, units: 'TBC' },
+      { key: 'average_fragment_size', label: 'Femto Frag Size [ESP1]', used_by: 0, units: 'Kb' },
+      { key: 'gqn_dnaex', label: 'GQN >30000 [ESP1]', used_by: 0, units: '' },
       { key: 'results_pdf', label: 'Femto pdf [ESP1]', used_by: 0, units: '' },
       { key: 'some_future_key', label: 'Some Future Label', used_by: 1, units: '' }
     ].each do |options|
