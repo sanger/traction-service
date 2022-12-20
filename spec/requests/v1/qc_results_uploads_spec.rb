@@ -76,7 +76,7 @@ RSpec.describe '/qc_results_uploads' do
       end
 
       it 'sends the messages' do
-        expect(::Broker::Handle).to receive(:publish).exactly(84).times
+        expect(Broker::Handle).to receive(:publish).exactly(84).times
         post v1_qc_results_uploads_url, params: body, headers: json_api_headers
       end
 
