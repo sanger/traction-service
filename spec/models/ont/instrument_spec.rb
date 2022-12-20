@@ -15,4 +15,10 @@ RSpec.describe Ont::Instrument, ont: true do
       expect(build(:ont_instrument, name: existing.name)).not_to be_valid
     end
   end
+
+  it 'has a UUID field' do
+    instrument = create(:ont_instrument)
+    expect(instrument.has_attribute?(:uuid)).to be true
+    expect(instrument.uuid).to be_present
+  end
 end

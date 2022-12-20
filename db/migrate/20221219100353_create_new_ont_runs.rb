@@ -5,6 +5,7 @@ class CreateNewOntRuns < ActiveRecord::Migration[7.0]
       t.string :experiment_name
       t.integer :state, default: 0
       t.datetime :deactivated_at
+      t.string :uuid  # included in the model
       t.timestamps
     end
   end

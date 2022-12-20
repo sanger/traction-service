@@ -85,6 +85,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_19_100356) do
     t.string "name", null: false
     t.integer "instrument_type", null: false
     t.integer "max_number_of_flowcells", null: false
+    t.string "uuid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_ont_instruments_on_name", unique: true
@@ -137,6 +138,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_19_100356) do
     t.string "experiment_name"
     t.integer "state", default: 0
     t.datetime "deactivated_at"
+    t.string "uuid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ont_instrument_id"], name: "index_ont_runs_on_ont_instrument_id"

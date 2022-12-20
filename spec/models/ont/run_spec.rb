@@ -28,6 +28,12 @@ RSpec.describe Ont::Run, ont: true do
       run = create(:ont_run)
       expect(run.experiment_name).to eq("ONTRUN-#{run.id}")
     end
+
+    it 'has a UUID field' do
+      run = create(:ont_run)
+      expect(run.has_attribute?(:uuid)).to be true
+      expect(run.uuid).to be_present
+    end
   end
 
   context 'flowcells' do

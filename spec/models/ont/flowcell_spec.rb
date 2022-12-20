@@ -12,6 +12,12 @@ RSpec.describe Ont::Flowcell, ont: true do
     let(:uuidable_model) { :ont_flowcell }
 
     it_behaves_like 'uuidable'
+
+    it 'has a UUID field' do
+      flowcell = create(:ont_flowcell)
+      expect(flowcell.has_attribute?(:uuid)).to be true
+      expect(flowcell.uuid).to be_present
+    end
   end
 
   it 'must be valid when complete' do
