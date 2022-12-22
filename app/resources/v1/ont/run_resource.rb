@@ -6,7 +6,7 @@ module V1
     class RunResource < JSONAPI::Resource
       model_name 'Ont::Run'
 
-      attributes :experiment_name, :state, :created_at
+      attributes :experiment_name, :state, :created_at, :ont_instrument_id
 
       # Run has an instrument. The foreign key is on this side.
       has_one :instrument, foreign_key: 'ont_instrument_id', class_name: 'Instrument'
