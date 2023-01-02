@@ -25,13 +25,5 @@ module Ont
               uniqueness: { scope: :ont_run_id,
                             message: :duplicated_in_run },
               numericality: { greater_than_or_equal_to: 1 }
-
-    # We should not need to mark the record readonly anymore; hence commented out.
-    # If we still need to have readonly, we should consider returning !new_record?
-
-    # Make table read only. We don't want anything pushing to it.
-    # def readonly?
-    #   true
-    # end
   end
 end
