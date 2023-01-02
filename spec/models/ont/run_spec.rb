@@ -4,10 +4,6 @@ require 'rails_helper'
 require './spec/support/read_only'
 
 RSpec.describe Ont::Run, ont: true do
-  before do
-    set_read_only(described_class, false)
-  end
-
   context 'on creation' do
     it 'state is pending' do
       run = create(:ont_run)
@@ -26,7 +22,8 @@ RSpec.describe Ont::Run, ont: true do
 
     it 'has an experiment name' do
       run = create(:ont_run)
-      expect(run.experiment_name).to eq("ONTRUN-#{run.id}")
+      prefix = described_class::NAME_PREFIX
+      expect(run.experiment_name).to eq("#{prefix}#{run.id}")
     end
 
     it 'has a UUID field' do
@@ -117,6 +114,37 @@ RSpec.describe Ont::Run, ont: true do
         create_list(:ont_run, 2, instrument:)
         create(:ont_run, deactivated_at: DateTime.now, instrument:)
         expect(described_class.active.length).to eq 2
+      end
+    end
+  end
+
+  describe 'flowcell_attributes' do
+    let(:instrument) { create(:ont_instrument) }
+    let(:run) { build(:ont_run, instrument:) }
+    let(:flowcell_attributes) do
+      flowcell1 = build(:ont_flowcell, run:, position: 1)
+      flowcell2 = build(:ont_flowcell, run:, position: 2)
+      [flowcell1.attributes, flowcell2.attributes]
+    end
+
+    context 'with new flowcells' do
+      it 'sets up flowcells' do
+        run.flowcell_attributes = flowcell_attributes
+        expect(run.flowcells.length).to eq(2)
+      end
+
+      it 'persists flowcells' do
+        # before creating run with new flowcells
+        expect(run.id).to be_falsy
+        expect(run.flowcells).to be_empty
+
+        run.flowcell_attributes = flowcell_attributes
+        run.save
+
+        # after creating run with new flowcells
+        expect(run.id).to be_truthy
+        expect(run.flowcells[0].id).to be_truthy
+        expect(run.flowcells[1].id).to be_truthy
       end
     end
   end

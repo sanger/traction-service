@@ -18,16 +18,12 @@ module Ont
 
     has_many :flowcells, foreign_key: :ont_run_id, inverse_of: :run, dependent: :destroy
 
-    # attr_accessor :experiment_name
-
     scope :active, -> { where(deactivated_at: nil) }
 
-    # XXX: Should we check presence of flowcells too?
     validate :check_max_number_of_flowcells
 
-    delegate :create_run!, to: :run_factory
+    # delegate :create_run!, to: :run_factory
 
-    # Validate number of flowcells against max_number value of instrument
     def check_max_number_of_flowcells
       return if flowcells.length <= instrument.max_number_of_flowcells
 
@@ -47,11 +43,35 @@ module Ont
       update(deactivated_at: DateTime.current)
     end
 
-    def run_factory
-      @run_factory ||= RunFactory.new(run: self)
+    def flowcell_attributes=(flowcell_options)
+      self.flowcells = flowcell_options.map do |attributes|
+        if attributes[:id]
+          update_flowcell(attributes)
+        else
+          Ont::Flowcell.new(attributes)
+        end
+      end
     end
 
+    # def run_factory
+    #   @run_factory ||= RunFactory.new(run: self)
+    # end
+
     private
+
+    def update_flowcell(attributes)
+      id = attributes[:id].to_s
+      indexed_flowcells.fetch(id) { missing_flowcell(id) }
+                       .tap { |flowcell| flowcell.update(attributes) }
+    end
+
+    def missing_flowcell(id)
+      raise ActiveRecord::RecordNotFound, "Ont flowcell #{id} is not part of the pool"
+    end
+
+    def indexed_flowcells
+      @indexed_flowcells ||= flowcells.index_by { |flowcell| flowcell.id.to_s }
+    end
 
     def generate_experiment_name
       return if experiment_name.present?

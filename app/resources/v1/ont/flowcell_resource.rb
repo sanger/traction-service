@@ -6,7 +6,7 @@ module V1
     class FlowcellResource < JSONAPI::Resource
       model_name 'Ont::Flowcell'
 
-      attributes :flowcell_id, :position
+      attributes :flowcell_id, :position, :ont_pool_id
 
       has_one :pool, foreign_key: 'ont_pool_id', class_name: 'Pool'
     end
