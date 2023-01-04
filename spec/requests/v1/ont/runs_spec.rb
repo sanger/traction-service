@@ -29,12 +29,14 @@ RSpec.describe 'RunsController' do
 
   describe 'create' do
     context 'on success' do
+      let(:instrument) { create(:ont_instrument) }
       let(:body) do
         {
           data: {
             type: 'runs',
             attributes: {
-              ont_instrument_id: 1,
+              ont_instrument_id: instrument.id,
+              state: 'pending',
               flowcell_attributes: [{
                 flowcell_id: 'F1',
                 position: 1,
