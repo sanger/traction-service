@@ -14,16 +14,58 @@ RSpec.describe 'RequestsController', pacbio: true do
     end
 
     it 'returns the correct attributes' do
-      request = requests.first
-
       get v1_pacbio_requests_path, headers: json_api_headers
-      json = ActiveSupport::JSON.decode(response.body)
 
-      Pacbio.request_attributes.each do |attribute|
-        expect(json['data'][0]['attributes'][attribute.to_s]).to eq(request.send(attribute))
+      requests.each do |request|
+        request_attributes = find_resource(type: 'requests', id: request.id)['attributes']
+        expect(request_attributes).to include(
+          'cost_code' => request.cost_code,
+          'number_of_smrt_cells' => request.number_of_smrt_cells,
+          'external_study_id' => request.external_study_id,
+          'library_type' => request.library_type,
+          'estimate_of_gb_required' => request.estimate_of_gb_required,
+          'sample_name' => request.sample.name,
+          'sample_species' => request.sample.species,
+          'source_identifier' => request.source_identifier,
+          'created_at' => request.created_at.to_fs(:us)
+        )
+      end
+    end
+
+    context 'default' do
+      let!(:expected_requests) { create_list(:pacbio_request, 2, created_at: Time.zone.now + 10) }
+
+      before do
+        # There should be 4 requests total
+        # Since requests sorts by newest first by default they should be on the first page
+        get "#{v1_pacbio_requests_path}?page[number]=1&page[size]=2",
+            headers: json_api_headers
       end
 
-      expect(json['data'][0]['attributes']['sample_name']).to eq(request.sample_name)
+      it 'has a success status' do
+        expect(response).to have_http_status(:success), response.body
+      end
+
+      it 'returns a list of requests' do
+        expect(json['data'].length).to eq(2)
+      end
+
+      it 'returns the correct attributes', aggregate_failures: true do
+        expected_requests.each do |request|
+          request_attributes = find_resource(type: 'requests', id: request.id)['attributes']
+          expect(request_attributes).to include(
+            'cost_code' => request.cost_code,
+            'number_of_smrt_cells' => request.number_of_smrt_cells,
+            'external_study_id' => request.external_study_id,
+            'library_type' => request.library_type,
+            'estimate_of_gb_required' => request.estimate_of_gb_required,
+            'sample_name' => request.sample.name,
+            'sample_species' => request.sample.species,
+            'source_identifier' => request.source_identifier,
+            'created_at' => request.created_at.to_fs(:us)
+          )
+        end
+      end
     end
   end
 

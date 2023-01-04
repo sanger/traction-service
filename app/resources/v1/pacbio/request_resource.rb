@@ -16,6 +16,21 @@ module V1
       has_one :plate, relation_name: :plate
       has_one :tube, relation_name: :tube
 
+      paginator :paged
+      filter :species, apply: lambda { |records, value, _options|
+        # We have to join requests and samples here in order to find by sample name
+        records.joins(:sample).where(sample: { species: value })
+      }
+
+      filter :sample_name, apply: lambda { |records, value, _options|
+        # We have to join requests and samples here in order to find by sample name
+        records.joins(:sample).where(sample: { name: value })
+      }
+
+      def self.default_sort
+        [{ field: 'created_at', direction: :desc }]
+      end
+
       # When a request is updated and it is attached to a run we need
       # to republish the messages for the run
       after_update :publish_messages

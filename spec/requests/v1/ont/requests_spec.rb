@@ -29,7 +29,7 @@ RSpec.describe 'Ont::RequestsController', ont: true do
 
     context 'pagination' do
       context 'default' do
-        let!(:expected_requests) { create_list(:ont_request, 5) }
+        let!(:expected_requests) { create_list(:ont_request, 5, created_at: Time.zone.now + 10) }
 
         before do
           # There should be 10 requests total
@@ -62,7 +62,7 @@ RSpec.describe 'Ont::RequestsController', ont: true do
       end
 
       context 'non default' do
-        let!(:expected_requests) { create_list(:ont_request, 5) }
+        let!(:expected_requests) { create_list(:ont_request, 5, created_at: Time.zone.now + 10) }
 
         before do
           # There should be 10 requests total

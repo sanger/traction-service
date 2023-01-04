@@ -134,6 +134,38 @@ RSpec.describe 'LibrariesController', pacbio: true do
         expect(library_relationships['source_plate']).to be_present
       end
     end
+
+    context 'pagination' do
+      let!(:expected_libraries) { create_list(:pacbio_library, 5, created_at: Time.zone.now + 10) }
+
+      before do
+        # There should be 10 libraries total so we get the 5 we just created
+        get "#{v1_pacbio_libraries_path}?page[number]=1&page[size]=5",
+            headers: json_api_headers
+      end
+
+      it 'has a success status' do
+        expect(response).to have_http_status(:success), response.body
+      end
+
+      it 'returns a list of libraries' do
+        expect(json['data'].length).to eq(5)
+      end
+
+      it 'returns the correct attributes', aggregate_failures: true do
+        expected_libraries.each do |library|
+          library_attributes = find_resource(type: 'libraries', id: library.id)['attributes']
+          expect(library_attributes).to include(
+            'concentration' => library.concentration,
+            'volume' => library.volume,
+            'template_prep_kit_box_barcode' => library.template_prep_kit_box_barcode,
+            'insert_size' => library.insert_size,
+            'state' => library.state,
+            'created_at' => library.created_at.to_fs(:us)
+          )
+        end
+      end
+    end
   end
 
   describe '#destroy' do

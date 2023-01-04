@@ -20,6 +20,10 @@ module V1
 
       paginator :paged
 
+      def self.default_sort
+        [{ field: 'created_at', direction: :desc }]
+      end
+
       # This could be changed so a pool has a barcode through tube
       filter :barcode, apply: lambda { |records, value, _options|
         records.where(tube: Tube.find_by(barcode: value))
