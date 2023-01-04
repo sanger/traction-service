@@ -30,6 +30,7 @@ RSpec.describe 'RunsController' do
   describe 'create' do
     context 'on success' do
       let(:instrument) { create(:ont_instrument) }
+      let(:pool) { create(:ont_pool) }
       let(:body) do
         {
           data: {
@@ -40,7 +41,7 @@ RSpec.describe 'RunsController' do
               flowcell_attributes: [{
                 flowcell_id: 'F1',
                 position: 1,
-                ont_pool_id: 1
+                ont_pool_id: pool.id
               }]
             }
           }
@@ -50,6 +51,8 @@ RSpec.describe 'RunsController' do
       it 'creates a run' do
         post v1_ont_runs_path, params: body, headers: json_api_headers
         expect(response).to have_http_status(:created)
+        # p Ont::Run.last
+        # p Ont::Run.last.flowcells
       end
     end
   end
