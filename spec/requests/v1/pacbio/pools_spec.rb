@@ -83,6 +83,39 @@ RSpec.describe 'PoolsController', pacbio: true do
       expect(library_attributes['template_prep_kit_box_barcode']).to eq(library.template_prep_kit_box_barcode)
       expect(library_attributes['insert_size']).to eq(library.insert_size)
     end
+
+    context 'pagination' do
+      let!(:expected_pools) { create_list(:pacbio_pool, 2, created_at: Time.zone.now + 10) }
+
+      before do
+        # There should be 4 pools total so we should get the 2 we just created
+        get "#{v1_pacbio_pools_path}?page[number]=1&page[size]=2",
+            headers: json_api_headers
+      end
+
+      it 'has a success status' do
+        expect(response).to have_http_status(:success), response.body
+      end
+
+      it 'returns a list of pools' do
+        expect(json['data'].length).to eq(2)
+      end
+
+      it 'returns the correct attributes', aggregate_failures: true do
+        expected_pools.each do |pool|
+          pool_attributes = find_resource(type: 'pools', id: pool.id)['attributes']
+          expect(pool_attributes).to include(
+            'source_identifier' => pool.source_identifier,
+            'volume' => pool.volume,
+            'concentration' => pool.concentration,
+            'template_prep_kit_box_barcode' => pool.template_prep_kit_box_barcode,
+            'insert_size' => pool.insert_size,
+            'updated_at' => pool.updated_at.to_fs(:us),
+            'created_at' => pool.created_at.to_fs(:us)
+          )
+        end
+      end
+    end
   end
 
   describe '#create' do

@@ -15,6 +15,13 @@ module V1
 
       has_one :smrt_link_version, foreign_key: 'pacbio_smrt_link_version_id'
 
+      filter :name
+      paginator :paged
+
+      def self.default_sort
+        [{ field: 'created_at', direction: :desc }]
+      end
+
       def self.records_for_populate(*_args)
         super.preload(plate: {
                         wells: {
