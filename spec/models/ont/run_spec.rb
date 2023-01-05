@@ -87,6 +87,8 @@ RSpec.describe Ont::Run, ont: true do
       instrument = create(:ont_instrument)
       create_list(:ont_run, 2, instrument:)
       create(:ont_run, state: :started, instrument:)
+      # bad cop. This is state. Nothing to do with RSpec
+      # rubocop:disable RSpec/PendingWithoutReason
       expect(described_class.pending.length).to eq 2
       # rubocop:enable RSpec/PendingWithoutReason
       expect(described_class.started.length).to eq 1
