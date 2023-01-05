@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_14_165316) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_19_100356) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -68,6 +68,29 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_14_165316) do
     t.index ["pipeline"], name: "index_library_types_on_pipeline"
   end
 
+  create_table "ont_flowcells", charset: "utf8mb3", force: :cascade do |t|
+    t.string "flowcell_id"
+    t.integer "position"
+    t.string "uuid"
+    t.bigint "ont_run_id"
+    t.bigint "ont_pool_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ont_pool_id"], name: "index_ont_flowcells_on_ont_pool_id"
+    t.index ["ont_run_id", "position"], name: "index_ont_flowcells_on_ont_run_id_and_position", unique: true
+    t.index ["ont_run_id"], name: "index_ont_flowcells_on_ont_run_id"
+  end
+
+  create_table "ont_instruments", charset: "utf8mb3", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "instrument_type", null: false
+    t.integer "max_number_of_flowcells", null: false
+    t.string "uuid"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_ont_instruments_on_name", unique: true
+  end
+
   create_table "ont_libraries", charset: "utf8mb3", force: :cascade do |t|
     t.string "kit_barcode"
     t.float "volume"
@@ -108,6 +131,17 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_14_165316) do
     t.string "cost_code", null: false
     t.index ["data_type_id"], name: "index_ont_requests_on_data_type_id"
     t.index ["library_type_id"], name: "index_ont_requests_on_library_type_id"
+  end
+
+  create_table "ont_runs", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "ont_instrument_id", null: false
+    t.string "experiment_name"
+    t.integer "state", default: 0
+    t.datetime "deactivated_at"
+    t.string "uuid"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ont_instrument_id"], name: "index_ont_runs_on_ont_instrument_id"
   end
 
   create_table "pacbio_libraries", charset: "utf8mb3", force: :cascade do |t|
@@ -425,8 +459,11 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_14_165316) do
     t.index ["plate_id"], name: "index_wells_on_plate_id"
   end
 
+  add_foreign_key "ont_flowcells", "ont_pools"
+  add_foreign_key "ont_flowcells", "ont_runs"
   add_foreign_key "ont_requests", "data_types"
   add_foreign_key "ont_requests", "library_types"
+  add_foreign_key "ont_runs", "ont_instruments"
   add_foreign_key "pacbio_libraries", "pacbio_pools"
   add_foreign_key "pacbio_libraries", "pacbio_requests"
   add_foreign_key "pacbio_pools", "tubes"

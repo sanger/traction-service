@@ -3,7 +3,7 @@
 require 'rails_helper'
 require './spec/support/read_only'
 
-RSpec.describe Ont::Flowcell, :skip, ont: true do
+RSpec.describe Ont::Flowcell, ont: true do
   before do
     set_read_only([described_class, Ont::Run, Ont::Request, Ont::Library], false)
   end
@@ -12,6 +12,18 @@ RSpec.describe Ont::Flowcell, :skip, ont: true do
     let(:uuidable_model) { :ont_flowcell }
 
     it_behaves_like 'uuidable'
+
+    it 'has a UUID field' do
+      flowcell = create(:ont_flowcell)
+      expect(flowcell.has_attribute?(:uuid)).to be true
+      expect(flowcell.uuid).to be_present
+    end
+  end
+
+  it 'must be valid when complete' do
+    # Added this test to make sure other tests are not false positives
+    flowcell = build(:ont_flowcell)
+    expect(flowcell).to be_valid
   end
 
   it 'must have a position' do
@@ -24,8 +36,8 @@ RSpec.describe Ont::Flowcell, :skip, ont: true do
     expect(flowcell).not_to be_valid
   end
 
-  it 'must have a library' do
-    flowcell = build(:ont_flowcell, library: nil)
+  it 'must have a pool' do
+    flowcell = build(:ont_flowcell, pool: nil)
     expect(flowcell).not_to be_valid
   end
 
@@ -35,9 +47,9 @@ RSpec.describe Ont::Flowcell, :skip, ont: true do
     expect(new_flowcell).not_to be_valid
   end
 
-  it 'returns library requests' do
+  it 'returns pool requests' do
     flowcell = create(:ont_flowcell)
-    expect(flowcell.requests).to eq(flowcell.library.requests)
+    expect(flowcell.requests).to eq(flowcell.pool.requests)
   end
 
   context 'on #destroy' do

@@ -50,6 +50,12 @@ RSpec.describe 'RakeTasks' do
     end
   end
 
+  describe 'ont_instruments:create' do
+    it 'creates the correct instrument data' do
+      expect { Rake::Task['ont_instruments:create'].invoke }.to change(Ont::Instrument, :count).and output("-> Instrument names added\n").to_stdout
+    end
+  end
+
   describe 'ont_data:create' do
     let(:expected_plates) { 2 }
     let(:filled_wells_per_plate) { 95 }
