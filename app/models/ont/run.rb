@@ -53,10 +53,6 @@ module Ont
       end
     end
 
-    # def run_factory
-    #   @run_factory ||= RunFactory.new(run: self)
-    # end
-
     private
 
     def update_flowcell(attributes)
