@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
+# Examples:
+# flowcell = build(:ont_flowcell, position: 2)
 FactoryBot.define do
   factory :ont_flowcell, class: 'Ont::Flowcell' do
-    position { 3 }
-    run { create(:ont_run) }
-    # We have changed it to use pool rather than library.
-    # library { create(:ont_library) }
+    position { 1 }
+    flowcell_id { "F#{position}" }
     pool { create(:ont_pool) }
+    run { build(:ont_run, flowcells: [instance]) }
   end
 end
