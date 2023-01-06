@@ -18,11 +18,11 @@ module Ont
 
     has_many :flowcells, foreign_key: :ont_run_id, inverse_of: :run, dependent: :destroy
 
+    accepts_nested_attributes_for :flowcells, :allow_destroy => true
+
     scope :active, -> { where(deactivated_at: nil) }
 
     validate :check_max_number_of_flowcells
-
-    # delegate :create_run!, to: :run_factory
 
     def check_max_number_of_flowcells
       return if flowcells.length <= instrument.max_number_of_flowcells
