@@ -17,7 +17,6 @@ module Ont
     # XXX: How/where are we associating requests?
     # delegate :requests, to: :library
     delegate :requests, to: :pool
-    validates :pool, presence: { message: "Pool does not exist" }
 
     # Validate uniqueness of the position of flowcell among others of the same run.
     # Validate the position to be a positive integer.
