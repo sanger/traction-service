@@ -16,7 +16,7 @@ module Ont
     # We have changed the delegation to expose public methods of pool rather than library.
     # XXX: How/where are we associating requests?
     # delegate :requests, to: :library
-    delegate :requests, to: :pool
+    delegate :requests, :libraries, to: :pool
 
     # Validate uniqueness of the position of flowcell among others of the same run.
     # Validate the position to be a positive integer.
