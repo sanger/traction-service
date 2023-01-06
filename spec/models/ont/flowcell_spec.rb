@@ -36,6 +36,11 @@ RSpec.describe Ont::Flowcell, ont: true do
     expect(flowcell).not_to be_valid
   end
 
+  it 'must have a flowcell_id' do
+    flowcell = build(:ont_flowcell, flowcell_id: nil)
+    expect(flowcell).not_to be_valid
+  end
+
   it 'must have a pool' do
     flowcell = build(:ont_flowcell, pool: nil)
     expect(flowcell).not_to be_valid
