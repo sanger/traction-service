@@ -1,18 +1,13 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require './spec/support/read_only'
 
-RSpec.describe 'Ont', :skip, ont: true, type: :model do
+RSpec.describe 'Ont', ont: true, type: :model do
   let(:config)            { Pipelines.configure(Pipelines.load_yaml) }
   let(:pipeline_config)   { config.ont.message }
   let(:run)               { create(:ont_run_with_flowcells) }
   let(:message) do
     Messages::Message.new(object: run, configuration: pipeline_config.message)
-  end
-
-  before do
-    set_read_only([Ont::Flowcell, Ont::Library, Ont::Request, Ont::Run], false)
   end
 
   it 'has a lims' do
@@ -41,15 +36,11 @@ RSpec.describe 'Ont', :skip, ont: true, type: :model do
     end
 
     it 'must have an instrument_name' do
-      expect(key[:instrument_name]).to eq('GXB02004')
+      expect(key[:instrument_name]).to eq(run.instrument.name)
     end
 
-    it 'passes pipeline_id_lims as nil' do
-      expect(key[:pipeline_id_lims]).to be_nil
-    end
-
-    it 'passes requested_data_type as nil' do
-      expect(key[:requested_data_type]).to be_nil
+    it 'must have a run_uuid' do
+      expect(key[:run_uuid]).to eq(run.uuid)
     end
 
     context 'flowcells' do
@@ -68,47 +59,61 @@ RSpec.describe 'Ont', :skip, ont: true, type: :model do
         it 'must have an instrument_slot' do
           expect(message_flowcell[:instrument_slot]).to eq(flowcell.position)
         end
+
+        it 'must have a flowcell_id' do
+          expect(message_flowcell[:flowcell_id]).to eq(flowcell.flowcell_id)
+        end
       end
 
       context 'samples' do
-        let(:requests) { flowcell.requests }
+        let(:libraries) { flowcell.libraries }
 
         it 'will have the correct number' do
-          expect(message_flowcell[:samples].length).to eq(requests.length)
+          expect(message_flowcell[:samples].length).to eq(libraries.length)
         end
 
         context 'each' do
-          # We are in the process of re-implementing the ONT pipeline
-          # to follow the same patterns as PacBio. However during this
-          # time flowcell messages will be broken. I'm leaving the tests
-          # in place, as we expect the same eventual behaviour.
-          before { skip('Awaiting re-implementation of other ONT work') }
-
           let(:message_sample) { message_flowcell[:samples].first }
-          let(:request) { requests.first }
+          let(:library) { libraries.first }
 
           it 'must have a sample_uuid' do
-            expect(message_sample[:sample_uuid]).to eq(request.external_id)
+            expect(message_sample[:sample_uuid]).to eq(library.request.sample.external_id)
           end
 
           it 'must have a study_uuid' do
-            expect(message_sample[:study_uuid]).to be_present
+            expect(message_sample[:study_uuid]).to eq(library.request.external_study_id)
+          end
+
+          it 'must have a pipeline_id_lims' do
+            expect(message_sample[:pipeline_id_lims]).to eq(library.request.library_type.name)
+          end
+
+          it 'must have a requested_data_type' do
+            expect(message_sample[:requested_data_type]).to eq(library.request.data_type.name)
+          end
+
+          it 'must have a library_tube_uuid' do
+            expect(message_sample[:library_tube_uuid]).to eq(library.pool.uuid)
+          end
+
+          it 'must have a library_tube_barcode' do
+            expect(message_sample[:library_tube_barcode]).to eq(library.pool.tube.barcode)
           end
 
           it 'must have a tag_identifier' do
-            expect(message_sample[:tag_identifier]).to eq(request.tags.first.group_id)
+            expect(message_sample[:tag_identifier]).to eq(library.tag.group_id)
           end
 
           it 'must have a tag_sequence' do
-            expect(message_sample[:tag_sequence]).to eq(request.tags.first.oligo)
+            expect(message_sample[:tag_sequence]).to eq(library.tag.oligo)
           end
 
           it 'must have a tag_set_id_lims' do
-            expect(message_sample[:tag_set_id_lims]).to eq(request.tags.first.tag_set.id)
+            expect(message_sample[:tag_set_id_lims]).to eq(library.tag.tag_set.id)
           end
 
-          it 'must have a tag_set_id_lims' do
-            expect(message_sample[:tag_set_name]).to eq(request.tags.first.tag_set.name)
+          it 'must have a tag_set_id_name' do
+            expect(message_sample[:tag_set_name]).to eq(library.tag.tag_set.name)
           end
 
           it 'passes tag2_identifier as nil' do
