@@ -1,3 +1,5 @@
+# Tasks
+
 - [ ] Update rake to read instrument (name, type, max_number_of_flowcells) config into database
 - [ ] Add test for update functionality and max flowcells validation
 - [ ] Test update requests on the run for flowcells
