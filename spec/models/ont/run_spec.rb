@@ -35,14 +35,10 @@ RSpec.describe Ont::Run, ont: true do
 
   context 'flowcells' do
     it 'must not have more than max_number flowcells' do
-      instrument = create(:ont_promethion)
-      run = create(:ont_run, instrument:)
-      (1..run.instrument.max_number_of_flowcells).each do |position|
-        create(:ont_flowcell, position:, run:)
-      end
+      run = build(:ont_gridion_run, flowcell_count: 5)
       expect(run).to be_valid # max number of flowcells
 
-      create(:ont_flowcell, position: run.instrument.max_number_of_flowcells + 1, run:)
+      build(:ont_flowcell, run:)
       expect(run).not_to be_valid # one more than max number of flowcells
     end
   end
@@ -122,29 +118,38 @@ RSpec.describe Ont::Run, ont: true do
   end
 
   describe 'flowcell_attributes' do
-    let(:instrument) { create(:ont_instrument) }
-    let(:run) { build(:ont_run, instrument:) }
+    let(:run) { build(:ont_gridion_run, flowcell_count: 0) } # no flowcells
+    let(:pool1) { create(:ont_pool) }
+    let(:pool2) { create(:ont_pool) }
     let(:flowcell_attributes) do
-      flowcell1 = build(:ont_flowcell, run:, position: 1)
-      flowcell2 = build(:ont_flowcell, run:, position: 2)
-      [flowcell1.attributes, flowcell2.attributes]
+      [
+        { flowcell_id: 'F1', position: 1, ont_pool_id: pool1.id },
+        { flowcell_id: 'F2', position: 2, ont_pool_id: pool2.id }
+      ]
     end
 
     context 'with new flowcells' do
       it 'sets up flowcells' do
+        # Before creating run with new flowcells
+        expect(run.flowcells.length).to eq(0)
+
+        # Assign flowcell attributes
         run.flowcell_attributes = flowcell_attributes
+
+        # After creating run with new flowcells
         expect(run.flowcells.length).to eq(2)
       end
 
       it 'persists flowcells' do
-        # before creating run with new flowcells
+        # Before creating run with new flowcells
         expect(run.id).to be_falsy
         expect(run.flowcells).to be_empty
 
+        # Assign flowcell attributes
         run.flowcell_attributes = flowcell_attributes
-        run.save
+        run.save!
 
-        # after creating run with new flowcells
+        # After creating run with new flowcells
         expect(run.id).to be_truthy
         expect(run.flowcells[0].id).to be_truthy
         expect(run.flowcells[1].id).to be_truthy
