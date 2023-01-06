@@ -18,7 +18,7 @@ module Ont
 
     has_many :flowcells, foreign_key: :ont_run_id, inverse_of: :run, dependent: :destroy
 
-    accepts_nested_attributes_for :flowcells, :allow_destroy => true
+    accepts_nested_attributes_for :flowcells, allow_destroy: true
 
     scope :active, -> { where(deactivated_at: nil) }
 

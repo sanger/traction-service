@@ -115,17 +115,18 @@ RSpec.describe Ont::Run, ont: true do
   end
 
   describe 'flowcell_attributes' do
-    let(:run) { build(:ont_gridion_run, flowcell_count: 0) } # no flowcells
-    let(:pool1) { create(:ont_pool) }
-    let(:pool2) { create(:ont_pool) }
-    let(:flowcell_attributes) do
-      [
-        { flowcell_id: 'F1', position: 1, ont_pool_id: pool1.id },
-        { flowcell_id: 'F2', position: 2, ont_pool_id: pool2.id }
-      ]
-    end
-
     context 'with new flowcells' do
+      # new run; no flowcells added yet
+      let(:run) { build(:ont_gridion_run, flowcell_count: 0) }
+      let(:pool1) { create(:ont_pool) }
+      let(:pool2) { create(:ont_pool) }
+      let(:flowcell_attributes) do
+        [
+          { flowcell_id: 'F1', position: 1, ont_pool_id: pool1.id },
+          { flowcell_id: 'F2', position: 2, ont_pool_id: pool2.id }
+        ]
+      end
+
       it 'sets up flowcells' do
         # Before creating run with new flowcells
         expect(run.flowcells.length).to eq(0)
@@ -152,5 +153,4 @@ RSpec.describe Ont::Run, ont: true do
         expect(run.flowcells[1].id).to be_truthy
       end
     end
-  end
-end
+  
