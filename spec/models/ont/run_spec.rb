@@ -153,4 +153,103 @@ RSpec.describe Ont::Run, ont: true do
         expect(run.flowcells[1].id).to be_truthy
       end
     end
-  
+
+    context 'with existing flowcells' do
+      # existing run with two flowcells; already persisted
+      let(:run) { create(:ont_gridion_run, flowcell_count: 2) }
+      let(:fc1) { run.flowcells[0] }
+      let(:fc2) { run.flowcells[1] }
+
+      it 'can change existing flowcells' do
+        # Second flowcell pool will be changed.
+        pool1 = fc1.pool
+        pool2 = create(:ont_pool)
+
+        # Second flowcell attributes will be changed.
+        attr1 = { id: fc1.id, flowcell_id: fc1.flowcell_id, position: fc1.position, ont_pool_id: fc1.ont_pool_id }
+        attr2 = { id: fc2.id, flowcell_id: 'fc2-updated', position: 4, ont_pool_id: pool2.id }
+        flowcell_attributes = [attr1, attr2]
+
+        # Update flowcells
+        run.flowcell_attributes = flowcell_attributes
+        run.save!
+
+        expect(run.flowcells.length).to eq(2)
+        expect(run.flowcells).to include(fc1)
+        expect(run.flowcells).to include(fc2)
+
+        # First flowcell stays the same.
+        expect(fc1.flowcell_id).to eq(attr1[:flowcell_id])
+        expect(fc1.position).to eq(attr1[:position])
+        expect(fc1.ont_pool_id).to eq(attr1[:ont_pool_id])
+        expect(fc1.pool).to eq(pool1)
+
+        # Second flowcell has been changed.
+        expect(fc2.flowcell_id).to eq(attr2[:flowcell_id])
+        expect(fc2.position).to eq(attr2[:position])
+        expect(fc2.ont_pool_id).to eq(attr2[:ont_pool_id])
+        expect(fc2.pool).to eq(pool2)
+      end
+
+      it 'can remove existing flowcells' do
+        # Keep the first flowcell attributes
+        attr1 = { id: fc1.id, flowcell_id: fc1.flowcell_id, position: fc1.position, ont_pool_id: fc1.ont_pool_id }
+        # Exclude the second flowcell for removing
+        flowcell_attributes = [attr1]
+
+        # Update flowcells
+        run.flowcell_attributes = flowcell_attributes
+        run.save!
+
+        # First flowcell stays the same
+        expect(run.flowcells).to include(fc1)
+        expect(fc1.flowcell_id).to eq(attr1[:flowcell_id])
+        expect(fc1.position).to eq(attr1[:position])
+        expect(fc1.ont_pool_id).to eq(attr1[:ont_pool_id])
+
+        # Second flowcell has been removed
+        expect(run.flowcells.length).to eq(1)
+        expect(run.flowcells).not_to include(fc2)
+      end
+
+      it 'can add new flowcells' do
+        pool1 = fc1.pool
+        pool2 = fc2.pool
+        pool3 = create(:ont_pool)
+
+        # Add a third flowcell
+        attr1 = { id: fc1.id, flowcell_id: fc1.flowcell_id, position: fc1.position, ont_pool_id: fc1.ont_pool_id }
+        attr2 = { id: fc2.id, flowcell_id: fc2.flowcell_id, position: fc2.position, ont_pool_id: fc2.ont_pool_id }
+        attr3 = { flowcell_id: 'F3', position: 3, ont_pool_id: pool3.id }
+        flowcell_attributes = [attr1, attr2, attr3]
+
+        # Update flowcells
+        run.flowcell_attributes = flowcell_attributes
+        run.save!
+
+        # First flowcell stays the same
+        expect(fc1.flowcell_id).to eq(attr1[:flowcell_id])
+        expect(fc1.position).to eq(attr1[:position])
+        expect(fc1.ont_pool_id).to eq(attr1[:ont_pool_id])
+        expect(fc1.pool).to eq(pool1)
+
+        # Second flowcell stays the same
+        expect(fc2.flowcell_id).to eq(attr2[:flowcell_id])
+        expect(fc2.position).to eq(attr2[:position])
+        expect(fc2.ont_pool_id).to eq(attr2[:ont_pool_id])
+        expect(fc2.pool).to eq(pool2)
+
+        # Third flowcell has been added.
+        expect(run.flowcells.length).to eq(3)
+
+        fc3 = run.flowcells.find_by(position: 3)
+        expect(fc3).to be_truthy
+        expect(fc3.id).to be_truthy
+        expect(fc3.flowcell_id).to eq(attr3[:flowcell_id])
+        expect(fc3.position).to eq(attr3[:position])
+        expect(fc3.ont_pool_id).to eq(attr3[:ont_pool_id])
+        expect(fc3.pool).to eq(pool3)
+      end
+    end
+  end
+end
