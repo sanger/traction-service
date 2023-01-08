@@ -7,6 +7,10 @@ RSpec.describe 'InstrumentsController' do
     ActiveSupport::JSON.decode(response.body)
   end
 
+  before do
+    Flipper.enable(:dpl_281_ont_create_sequencing_runs)
+  end
+
   let!(:minion) { create(:ont_minion) }
   let!(:gridion) { create(:ont_gridion) }
   let!(:promethion) { create(:ont_promethion) }
