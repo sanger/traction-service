@@ -1,0 +1,16 @@
+default: &default
+
+instruments:
+  GXB02004:
+    name: GXB02004
+    instrument_type: GridION
+    max_number_of_flowcells: 5
+  PC24B148:
+    name: PC24B148
+    instrument_type: PromethION
+    max_number_of_flowcells: 24
+
+development: *default
+test: *default
+production: *default
+uat: *default
