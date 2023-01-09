@@ -22,8 +22,6 @@ module Ont
     # Validate the position to be a positive integer.
     validates :position,
               presence: true,
-              uniqueness: { scope: :ont_run_id,
-                            message: 'must be unique in run' },
               numericality: { greater_than_or_equal_to: 1 }
     validates :flowcell_id, presence: true
   end

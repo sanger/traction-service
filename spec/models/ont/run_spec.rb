@@ -54,6 +54,24 @@ RSpec.describe Ont::Run, ont: true do
 
       build(:ont_flowcell, run:)
       expect(run).not_to be_valid # one more than max number of flowcells
+      expect(run.errors[:flowcells]).to include 'must be less than instrument max number'
+    end
+
+    it 'must have unique flowcell position for a run' do
+      run = build(:ont_gridion_run, flowcell_count: 2)
+      run.flowcells[0].position = 2
+      run.flowcells[1].position = 2
+
+      expect(run).not_to be_valid
+      expect(run.errors[:flowcells]).to include 'position 2 is duplicated in the same run'
+    end
+
+    it 'must have unique flowcell pool id for a run' do
+      run = build(:ont_gridion_run, flowcell_count: 2)
+      ont_pool_id = run.flowcells[0].ont_pool_id = run.flowcells[1].ont_pool_id
+
+      expect(run).not_to be_valid
+      expect(run.errors[:flowcells]).to include "pool #{ont_pool_id} is duplicated in the same run"
     end
   end
 
