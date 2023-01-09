@@ -20,11 +20,14 @@ module V1
                  :library_attributes
       attribute :source_identifier, readonly: true
 
-      paginator :paged
+      # We can only make this endpoint paginated when pacbio run create/edit page
+      # No longer requires all records to be pulled back
+      #
+      # paginator :paged
 
-      def self.default_sort
-        [{ field: 'created_at', direction: :desc }]
-      end
+      # def self.default_sort
+      #   [{ field: 'created_at', direction: :desc }]
+      # end
 
       # This could be changed so a pool has a barcode through tube
       filter :barcode, apply: lambda { |records, value, _options|
