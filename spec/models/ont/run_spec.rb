@@ -33,6 +33,20 @@ RSpec.describe Ont::Run, ont: true do
     end
   end
 
+  context 'run' do
+    it 'must have a valid instrument' do
+      run = build(:ont_run, instrument: nil)
+      expect(run).not_to be_valid
+    end
+
+    it 'must have a valid instrument id' do
+      run = build(:ont_run, instrument: nil)
+      run.ont_instrument_id = -1
+      expect(run).not_to be_valid
+      expect(run.errors.full_messages_for(:instrument)[0]).to eq('Instrument must exist')
+    end
+  end
+
   context 'flowcells' do
     it 'must not have more than max_number flowcells' do
       run = build(:ont_gridion_run, flowcell_count: 5)
