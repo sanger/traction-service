@@ -25,7 +25,7 @@ module Ont
     validate :check_max_number_of_flowcells
 
     def check_max_number_of_flowcells
-      return unless instrument.present?
+      return if instrument.blank?
 
       return if flowcells.length <= instrument.max_number_of_flowcells
 
