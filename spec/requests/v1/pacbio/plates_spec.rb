@@ -92,7 +92,7 @@ RSpec.describe 'PlatesController' do
       end
     end
 
-    context 'pagination' do
+    context 'pagination', skip: 'Pagination is disabled until pacbio pool/new page is changed' do
       let!(:expected_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'pacbio', created_at: Time.zone.now + 10) }
 
       before do
