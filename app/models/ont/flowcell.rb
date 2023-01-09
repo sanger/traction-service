@@ -23,7 +23,7 @@ module Ont
     validates :position,
               presence: true,
               uniqueness: { scope: :ont_run_id,
-                            message: :duplicated_in_run },
+                            message: 'must be unique in run' },
               numericality: { greater_than_or_equal_to: 1 }
     validates :flowcell_id, presence: true
   end
