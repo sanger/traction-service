@@ -94,7 +94,7 @@ module Ont
     end
 
     def missing_flowcell(id)
-      raise ActiveRecord::RecordNotFound, "Ont flowcell #{id} is not part of the pool"
+      raise ActiveRecord::RecordNotFound, "Ont flowcell #{id} does not exist"
     end
 
     def indexed_flowcells
