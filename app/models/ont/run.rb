@@ -22,7 +22,37 @@ module Ont
 
     scope :active, -> { where(deactivated_at: nil) }
 
-    validate :check_max_number_of_flowcells
+    validate :check_max_number_of_flowcells, :check_flowcell_position, :check_flowcell_pool
+
+    def check_flowcell_position
+      return if instrument.blank?
+
+      position_set = Set.new
+      flowcells.each do |flowcell|
+        next if flowcell.position.blank?
+
+        if flowcell.position < 1 || flowcell.position > instrument.max_number_of_flowcells
+          errors.add(:flowcells, "position #{flowcell.position} is out of range for the instrument")
+        elsif position_set.include? flowcell.position
+          errors.add(:flowcells, "position #{flowcell.position} is duplicated in the same run")
+        else
+          position_set.add(flowcell.position)
+        end
+      end
+    end
+
+    def check_flowcell_pool
+      pool_set = Set.new
+      flowcells.each do |flowcell|
+        next if flowcell.ont_pool_id.blank?
+
+        if pool_set.include? flowcell.ont_pool_id
+          errors.add(:flowcells, "pool #{flowcell.ont_pool_id} is duplicated in the same run")
+        else
+          pool_set.add(flowcell.ont_pool_id)
+        end
+      end
+    end
 
     def check_max_number_of_flowcells
       return if instrument.blank?
