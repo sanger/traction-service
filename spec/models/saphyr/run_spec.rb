@@ -56,7 +56,9 @@ RSpec.describe Saphyr::Run, saphyr: true do
     it 'can filter runs based on state' do
       create_list(:saphyr_run, 2)
       create(:saphyr_run, state: :started)
+      # rubocop:disable RSpec/PendingWithoutReason
       expect(described_class.pending.length).to eq 2
+      # rubocop:enable RSpec/PendingWithoutReason
       expect(described_class.started.length).to eq 1
     end
   end

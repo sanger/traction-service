@@ -296,6 +296,23 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_19_100356) do
     t.string "units"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "used_by"
+  end
+
+  create_table "qc_decision_results", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "qc_result_id", null: false
+    t.bigint "qc_decision_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["qc_decision_id"], name: "index_qc_decision_results_on_qc_decision_id"
+    t.index ["qc_result_id"], name: "index_qc_decision_results_on_qc_result_id"
+  end
+
+  create_table "qc_decisions", charset: "utf8mb3", force: :cascade do |t|
+    t.string "status"
+    t.integer "decision_made_by"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "qc_results", charset: "utf8mb3", force: :cascade do |t|
@@ -306,6 +323,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_19_100356) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["qc_assay_type_id"], name: "index_qc_results_on_qc_assay_type_id"
+  end
+
+  create_table "qc_results_uploads", charset: "utf8mb3", force: :cascade do |t|
+    t.text "csv_data"
+    t.string "used_by"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "receptions", charset: "utf8mb3", force: :cascade do |t|
@@ -446,6 +470,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_19_100356) do
   add_foreign_key "pacbio_runs", "pacbio_smrt_link_versions"
   add_foreign_key "pacbio_smrt_link_option_versions", "pacbio_smrt_link_options"
   add_foreign_key "pacbio_smrt_link_option_versions", "pacbio_smrt_link_versions"
+  add_foreign_key "qc_decision_results", "qc_decisions"
+  add_foreign_key "qc_decision_results", "qc_results"
   add_foreign_key "qc_results", "qc_assay_types"
   add_foreign_key "requests", "receptions"
 end
