@@ -3,8 +3,9 @@
 module Ont
   # Ont::Run
   class Run < ApplicationRecord
-    include Stateful
     include Uuidable
+
+    enum state: { pending: 0, completed: 1, user_terminated: 2, instrument_crashed: 3, restart: 4 }
 
     NAME_PREFIX = 'ONTRUN-' # Used for generating a unique experiment name for the run.
 

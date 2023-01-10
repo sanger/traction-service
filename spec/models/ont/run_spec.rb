@@ -93,30 +93,36 @@ RSpec.describe Ont::Run, ont: true do
       expect(run).to be_pending
     end
 
-    it 'can change the state to started' do
-      run = create(:ont_run)
-      run.started!
-      expect(run).to be_started
-    end
-
     it 'can change the state to completed' do
       run = create(:ont_run)
       run.completed!
       expect(run).to be_completed
     end
 
-    it 'can change the state to cancelled' do
+    it 'can change the state to user_terminated' do
       run = create(:ont_run)
-      run.cancelled!
-      expect(run).to be_cancelled
+      run.user_terminated!
+      expect(run).to be_user_terminated
+    end
+
+    it 'can change the state to instrument_crashed' do
+      run = create(:ont_run)
+      run.instrument_crashed!
+      expect(run).to be_instrument_crashed
+    end
+
+    it 'can change the state to restart' do
+      run = create(:ont_run)
+      run.restart!
+      expect(run).to be_restart
     end
 
     it 'can filter runs based on state' do
       instrument = create(:ont_instrument)
       create_list(:ont_run, 2, instrument:)
-      create(:ont_run, state: :started, instrument:)
+      create(:ont_run, state: :completed, instrument:)
       expect(described_class.pending.length).to eq 2
-      expect(described_class.started.length).to eq 1
+      expect(described_class.completed.length).to eq 1
     end
   end
 
