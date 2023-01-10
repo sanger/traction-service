@@ -119,9 +119,9 @@ RSpec.describe Ont::Run, ont: true do
 
     it 'can filter runs based on state' do
       instrument = create(:ont_instrument)
-      create_list(:ont_run, 2, instrument:)
+      create_list(:ont_run, 2, state: :user_terminated, instrument:)
       create(:ont_run, state: :completed, instrument:)
-      expect(described_class.pending.length).to eq 2
+      expect(described_class.user_terminated.length).to eq 2
       expect(described_class.completed.length).to eq 1
     end
   end
