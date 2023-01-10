@@ -266,11 +266,11 @@ RSpec.describe QcResultsUploadFactory do
     it 'returns the csv header row' do
       expect(factory.pivot_csv_data_to_obj).to be_a Array
       expect(factory.pivot_csv_data_to_obj[0]).to be_a Object
-      expect(factory.pivot_csv_data_to_obj[0]['qubit_concentration_ngul']).to eq 4.78
-      expect(factory.pivot_csv_data_to_obj[0]['volume_si']).to eq 385
-      expect(factory.pivot_csv_data_to_obj[0]['_260_230_ratio']).to eq 0.57
-      expect(factory.pivot_csv_data_to_obj[0]['_260_280_ratio']).to eq 2.38
-      expect(factory.pivot_csv_data_to_obj[0]['average_fragment_size']).to eq 22688
+      expect(factory.pivot_csv_data_to_obj[0]['qubit_concentration_ngul']).to eq '4.78'
+      expect(factory.pivot_csv_data_to_obj[0]['volume_si']).to eq '385'
+      expect(factory.pivot_csv_data_to_obj[0]['_260_230_ratio']).to eq '0.57'
+      expect(factory.pivot_csv_data_to_obj[0]['_260_280_ratio']).to eq '2.38'
+      expect(factory.pivot_csv_data_to_obj[0]['average_fragment_size']).to eq '22688'
       expect(factory.pivot_csv_data_to_obj[0]['results_pdf']).to eq 'Extraction.Femto.9764-9765'
     end
   end

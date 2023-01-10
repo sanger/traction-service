@@ -7,7 +7,7 @@ class QcResultsUploadValidator < ActiveModel::Validator
 
   def validate(record)
     validations = %i[validate_used_by validate_csv_data validate_rows validate_headers
-                     validate_fields validate_body]
+                     validate_fields]
 
     validations.each do |validation|
       next if record.errors.present?
@@ -51,32 +51,18 @@ class QcResultsUploadValidator < ActiveModel::Validator
 
     # Case sensitive
     # e.g. "Genome Size" != "Genome size"
-    return unless @headers.count != @headers.uniq.count
+    return if @headers.count == @headers.uniq.count
 
     record.errors.add :csv_data, 'Contains duplicated headers'
     nil
   end
 
   def validate_fields(record)
-    required_headers = options[:required_headers].pluck(:name)
-    missing_headers = (required_headers - @headers)
+    missing_headers = (options[:required_headers] - @headers)
     return if missing_headers.empty?
 
     record.errors.add :csv_data,
                       "Missing required headers: #{missing_headers.join(',')}"
     nil
-  end
-
-  def validate_body(record)
-    required_data = options[:required_headers].collect do |h|
-      h[:name] if h[:require_value] == true
-    end.compact
-
-    # Ensure each row has required data record.
-    record.rows.each do |row_object|
-      required_data.each do |header|
-        record.errors.add :csv_data, "Missing data: #{header}" if row_object[header].blank?
-      end
-    end
   end
 end

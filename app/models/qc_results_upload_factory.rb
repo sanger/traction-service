@@ -14,10 +14,10 @@ class QcResultsUploadFactory
   SANGER_SAMPLE_ID_FIELD = 'Sanger sample ID'
 
   LIST = [
-    { name: LR_DECISION_FIELD, require_value: true },
-    { name: TOL_DECISION_FIELD, require_value: false },
-    { name: TISSUE_TUBE_ID_FIELD, require_value: true },
-    { name: SANGER_SAMPLE_ID_FIELD, require_value: true }
+    LR_DECISION_FIELD,
+    TOL_DECISION_FIELD,
+    TISSUE_TUBE_ID_FIELD,
+    SANGER_SAMPLE_ID_FIELD
   ].freeze
 
   validates_with QcResultsUploadValidator, required_headers: LIST
@@ -41,8 +41,10 @@ class QcResultsUploadFactory
 
   # @param [Object] CSV row e.g. { col_header_1: row_1_col_1 }
   def create_data(row_object)
-    # 1. Always create Long Read QC Decision
-    lr_qc_decison = create_qc_decision!(row_object[LR_DECISION_FIELD], :long_read)
+    # 1. If required, create Long Read QC Decision
+    if row_object[LR_DECISION_FIELD]
+      lr_qc_decison = create_qc_decision!(row_object[LR_DECISION_FIELD], :long_read)
+    end
 
     # 2. If required, create TOL QC Decision
     if row_object[TOL_DECISION_FIELD]
@@ -85,8 +87,11 @@ class QcResultsUploadFactory
     # Always create Long Read QC Decision Results
 
     qc_results.each do |qc_result|
-      create_qc_decision_result!(qc_result, lr_qc_decision)
-      build_qc_result_message(qc_result, :long_read)
+      # If required, create LR QC Decision Results
+      if lr_qc_decision
+        create_qc_decision_result!(qc_result, lr_qc_decision)
+        build_qc_result_message(qc_result, :long_read)
+      end
 
       # If required, create TOL QC Decision Results
       if tol_qc_decision
@@ -144,13 +149,16 @@ class QcResultsUploadFactory
   def pivot_csv_data_to_obj
     header_converter = proc do |header|
       assay_type = QcAssayType.find_by(label: header.strip)
-      assay_type ? assay_type.key : header
+      assay_type ? assay_type.key : header.strip
     end
 
-    csv = CSV.new(csv_string_without_groups, headers: true, header_converters: header_converter,
-                                             converters: :all)
+    csv = CSV.new(csv_string_without_groups, headers: true, header_converters: header_converter)
 
-    csv.to_a.map(&:to_hash)
+    arr_of_hashes = csv.to_a.map(&:to_hash)
+    arr_of_hashes.reject! do |row|
+      row[TISSUE_TUBE_ID_FIELD].nil? || row[TISSUE_TUBE_ID_FIELD].match(/control/i)
+    end
+    arr_of_hashes
   end
 
   # Returns the CSV, with the first row (groupings) removed
