@@ -19,6 +19,7 @@ module V1
       has_one :pool, always_include_optional_linkage_data: true
       has_one :source_well, relation_name: :source_well, class_name: 'Well'
       has_one :source_plate, relation_name: :source_plate, class_name: 'Plate'
+      has_one :source_tube, relation_name: :source_tube, class_name: 'Tube'
 
       paginator :paged
 

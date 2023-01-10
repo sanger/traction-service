@@ -80,6 +80,7 @@ RSpec.describe 'PoolsController', ont: true do
             'concentration' => pool.concentration,
             'kit_barcode' => pool.kit_barcode,
             'insert_size' => pool.insert_size,
+            'final_library_amount' => pool.final_library_amount,
             'updated_at' => pool.updated_at.to_fs(:us),
             'created_at' => pool.created_at.to_fs(:us)
           )
@@ -318,7 +319,7 @@ RSpec.describe 'PoolsController', ont: true do
 
         it 'update libraries' do
           updated_library.reload
-          expect(updated_library.kit_barcode).to eq('kit_barcode')
+          expect(updated_library.kit_barcode).to eq('LK12345')
         end
 
         it 'destroys removed libraries' do
