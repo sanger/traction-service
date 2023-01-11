@@ -16,8 +16,7 @@ FactoryBot.define do
 
     flowcells do
       build_list(flowcell_factory, flowcell_count, run: instance) do |fc, idx|
-        number = (idx % flowcell_max) + 1
-        fc.position = number.nonzero? || 1
+        fc.position = (idx % flowcell_max) + 1
         fc.flowcell_id = "F#{fc.position}"
       end
     end
