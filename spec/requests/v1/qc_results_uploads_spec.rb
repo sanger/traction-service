@@ -9,71 +9,16 @@ RSpec.describe '/qc_results_uploads' do
 
   describe '#post' do
     before do
-      create(:qc_assay_type, key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul) [ESP1]', used_by: 0)
-      create(:qc_assay_type, key: 'volume_si', label: 'DNA vol (ul)', used_by: 0)
-      create(:qc_assay_type, key: '_260_230_ratio', label: 'ND 260/230 [ESP1]', used_by: 0)
-      create(:qc_assay_type, key: '_260_280_ratio', label: 'ND 260/280 [ESP1]', used_by: 0)
-      create(:qc_assay_type, key: 'average_fragment_size', label: 'Femto Frag Size [ESP1]', used_by: 0)
-      create(:qc_assay_type, key: 'results_pdf', label: 'Femto pdf [ESP1]', used_by: 0)
-      create(:qc_assay_type, key: 'a_future_key', label: 'A Future Label', used_by: 1)
-    end
-
-    context 'with full example file' do
-      let(:csv) { build(:qc_results_upload_full_example).csv_data }
-
-      let(:body) do
-        {
-          data: {
-            type: 'qc_results_uploads',
-            attributes: {
-              csv_data: csv,
-              used_by: 'extraction'
-            }
-          }
-        }.to_json
-      end
-
-      it 'returns a created status' do
-        post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:created)
-      end
-
-      it 'creates a new QcResultsUpload' do
-        expect do
-          post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        end.to change(QcResultsUpload, :count).by(1)
-      end
-
-      it 'creates a new QcResultsUpload with the given csv_data' do
-        post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        expect(QcResultsUpload.last.csv_data).to eq csv
-      end
-
-      it 'creates the relevant QC entities' do
-        expect do
-          post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        end.to change(QcDecision, :count)
-
-        expect do
-          post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        end.to change(QcResult, :count)
-
-        expect do
-          post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        end.to change(QcDecisionResult, :count)
-      end
-
-      it 'sends the messages' do
-        # DPL-478 todo
-        # Not entirely sure how to get the correct arguments
-        expect(Messages).to receive(:publish)
-        post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-      end
-
-      it 'renders a JSON response with the new qc_results_upload' do
-        post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-      end
+      create(:qc_assay_type, key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul) [ESP1]', used_by: 0, units: 'ng/ul')
+      create(:qc_assay_type, key: 'volume_si', label: 'DNA vol (ul)', used_by: 0, units: 'ul')
+      create(:qc_assay_type, key: 'yield', label: 'DNA total ng [ESP1]', used_by: 0, units: 'ng')
+      create(:qc_assay_type, key: '_260_230_ratio', label: 'ND 260/230 [ESP1]', used_by: 0, units: '')
+      create(:qc_assay_type, key: '_260_280_ratio', label: 'ND 260/280 [ESP1]', used_by: 0, units: '')
+      create(:qc_assay_type, key: 'nanodrop_concentration_ngul', label: 'ND Quant (ng/ul) [ESP1]', used_by: 0, units: 'ng/ul')
+      create(:qc_assay_type, key: 'average_fragment_size', label: 'Femto Frag Size [ESP1]', used_by: 0, units: 'Kb')
+      create(:qc_assay_type, key: 'gqn_dnaex', label: 'GQN >30000 [ESP1]', used_by: 0, units: '')
+      create(:qc_assay_type, key: 'results_pdf', label: 'Femto pdf [ESP1]', used_by: 0, units: '')
+      create(:qc_assay_type, key: 'some_future_key', label: 'Some Future Label', used_by: 1, units: '')
     end
 
     context 'with valid parameters' do
@@ -108,33 +53,21 @@ RSpec.describe '/qc_results_uploads' do
       end
 
       it 'creates the relevant QC entities' do
-        # 14 = 8 LR + 6 TOL
         expect do
           post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        end.to change(QcDecision, :count).by(14)
+        end.to change(QcDecision, :count).by(2)
 
-        # 42 = 6 assay types x 8 rows
         expect do
           post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        end.to change(QcResult, :count).by(48)
+        end.to change(QcResult, :count).by(20)
 
-        # row	dec	results	dec_res
-        # 1	  2   6	      12
-        # 2	  2   6	      12
-        # 3	  2   6	      12
-        # 4	  2   6	      12
-        # 5	  1   6	      6
-        # 6	  2   6	      12
-        # 7	  1   6	      6
-        # 8	  2   6	      12
-        #                 84
         expect do
           post v1_qc_results_uploads_url, params: body, headers: json_api_headers
-        end.to change(QcDecisionResult, :count).by(84)
+        end.to change(QcDecisionResult, :count).by(18)
       end
 
       it 'sends the messages' do
-        expect(Broker::Handle).to receive(:publish).exactly(84).times
+        expect(Broker::Handle).to receive(:publish).exactly(18).times
         post v1_qc_results_uploads_url, params: body, headers: json_api_headers
       end
 
