@@ -26,12 +26,6 @@ module V1
       def fetchable_fields
         super - [:flowcell_attributes]
       end
-
-      # after_create :create_run!
-
-      # def create_run!
-      #   @model.create_run!
-      # end
     end
   end
 end

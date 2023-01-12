@@ -7,6 +7,10 @@ RSpec.describe 'InstrumentsController' do
     ActiveSupport::JSON.decode(response.body)
   end
 
+  before do
+    Flipper.enable(:dpl_281_ont_create_sequencing_runs)
+  end
+
   let!(:minion) { create(:ont_minion) }
   let!(:gridion) { create(:ont_gridion) }
   let!(:promethion) { create(:ont_promethion) }
@@ -24,7 +28,7 @@ RSpec.describe 'InstrumentsController' do
       expect(json['data'].length).to eq(3)
     end
 
-    it 'includes MinIon instrument type' do
+    it 'includes MinION instrument type' do
       expect(json['data'][0]['id'].to_i).to eq(minion.id)
       expect(json['data'][0]['attributes']['name']).to eq(minion.name)
       expect(json['data'][0]['attributes']['instrument_type']).to eq(minion.instrument_type)
@@ -47,7 +51,7 @@ RSpec.describe 'InstrumentsController' do
   end
 
   describe 'show' do
-    it 'returns MinIon instrument type' do
+    it 'returns MinION instrument type' do
       get "#{v1_ont_instruments_path}/#{minion.id}", headers: json_api_headers
       expect(json['data']['id'].to_i).to eq(minion.id)
       expect(json['data']['attributes']['name']).to eq(minion.name)
@@ -55,7 +59,7 @@ RSpec.describe 'InstrumentsController' do
       expect(json['data']['attributes']['max_number_of_flowcells']).to eq(minion.max_number_of_flowcells)
     end
 
-    it 'returns GridIon instrument type' do
+    it 'returns GridION instrument type' do
       get "#{v1_ont_instruments_path}/#{gridion.id}", headers: json_api_headers
       expect(json['data']['id'].to_i).to eq(gridion.id)
       expect(json['data']['attributes']['name']).to eq(gridion.name)
@@ -63,7 +67,7 @@ RSpec.describe 'InstrumentsController' do
       expect(json['data']['attributes']['max_number_of_flowcells']).to eq(gridion.max_number_of_flowcells)
     end
 
-    it 'returns PromethIon instrument type' do
+    it 'returns PromethION instrument type' do
       get "#{v1_ont_instruments_path}/#{promethion.id}", headers: json_api_headers
       expect(json['data']['id'].to_i).to eq(promethion.id)
       expect(json['data']['attributes']['name']).to eq(promethion.name)

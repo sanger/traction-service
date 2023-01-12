@@ -5,5 +5,5 @@ dpl_277_enable_general_reception: Enables the general reception endpoints
 dpl_277_disable_pacbio_specific_reception: Enables the general reception endpoints
 dpl_277_disable_saphyr_specific_reception: Enables the general reception endpoints
 dpl_279_ont_libraries_and_pools: Enables ont library and pool endpoints
-dpl_478_enable_qc_results_upload: Enables API endpoint to allow users to upload qc results spreadsheet
 dpl_281_ont_create_sequencing_runs: Enables run creation endpoint for ont 
+dpl_478_enable_qc_results_upload: Enables API endpoint to allow users to upload qc results spreadsheet
