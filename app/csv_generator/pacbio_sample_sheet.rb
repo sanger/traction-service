@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-# CSVGenerator
-class CsvGenerator
+# PacbioSampleSheet
+# Used to generate sample sheets specific to the Pacbio pipeline
+class PacbioSampleSheet
   include ActiveModel::Model
 
   # run           => Pacbio::Run
@@ -11,7 +12,7 @@ class CsvGenerator
   # return a CSV String
   # using run and configuration attributes
   # to generate headers and data
-  def generate_sample_sheet
+  def generate
     CSV.generate do |csv|
       csv << csv_headers
 

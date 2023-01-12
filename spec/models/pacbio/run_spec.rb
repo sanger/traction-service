@@ -70,14 +70,14 @@ RSpec.describe Pacbio::Run, pacbio: true do
   end
 
   describe '#generate_sample_sheet' do
-    it 'must call CsvGenerator' do
+    it 'must call PacbioSampleSheet' do
       well1 = create(:pacbio_well_with_pools)
       well2 = create(:pacbio_well_with_pools)
 
       plate = create(:pacbio_plate, wells: [well1, well2])
       run = create(:pacbio_run, plate:)
 
-      expect_any_instance_of(CsvGenerator).to receive(:generate_sample_sheet)
+      expect_any_instance_of(PacbioSampleSheet).to receive(:generate)
       run.generate_sample_sheet
     end
 
