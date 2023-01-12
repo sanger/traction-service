@@ -503,6 +503,58 @@ default: &default
                 tag_set_name:
                   type: :model
                   value: tags.first.tag_set.name
+    
+    sample_sheet:
+      columns:
+        flow_cell_id:
+          type: :model
+          value: flowcell_id
+          populate:
+            for:
+              - :sample
+            with: :flowcell
+        kit:
+          type: :model
+          value: pool.kit_barcode
+          populate:
+            for:
+              - :sample
+            with: :flowcell
+        sample_id:
+          type: :model
+          value: pool.tube.barcode
+          populate:
+            for:
+              - :sample
+            with: :flowcell
+        experiment_id:
+          type: :model
+          value: run.experiment_name
+          populate:
+            for:
+              - :sample
+            with: :flowcell
+        barcode: 
+          type: :model
+          value: tag.group_id
+          populate:
+            for:
+              - :sample
+            with: :sample
+        alias: 
+          type: :model
+          value: sample.name
+          populate:
+            for:
+              - :sample
+            with: :sample
+        type:
+          type: :model
+          value: request.data_type.name
+          populate:
+            for:
+              - :sample
+            with: :sample
 
   qc_result:
     message:

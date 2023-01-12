@@ -86,6 +86,13 @@ module Ont
       end
     end
 
+    # returns sample sheet csv for a Ont::Run
+    # using pipelines.yml configuration to generate data
+    def generate_sample_sheet
+      sample_sheet = OntSampleSheet.new(run: self, configuration: Pipelines.ont.sample_sheet)
+      sample_sheet.generate
+    end
+
     private
 
     def update_flowcell(attributes)
