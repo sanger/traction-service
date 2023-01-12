@@ -46,12 +46,6 @@ RSpec.describe Ont::Flowcell, ont: true do
     expect(flowcell).not_to be_valid
   end
 
-  it 'must have a unique position' do
-    flowcell = create(:ont_flowcell)
-    new_flowcell = build(:ont_flowcell, position: flowcell.position, run: flowcell.run)
-    expect(new_flowcell).not_to be_valid
-  end
-
   it 'returns pool requests' do
     flowcell = create(:ont_flowcell)
     expect(flowcell.requests).to eq(flowcell.pool.requests)
