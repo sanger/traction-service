@@ -100,5 +100,54 @@ namespace :ont_data do
     end
 
     puts "-> Created #{requests.length} multiplexed pools"
+
+    # Peek helper that returns nil from enumerator instead of raising StopIteration
+    def safe_peek(enumerator)
+      enumerator.peek
+    rescue StopIteration
+      nil
+    end
+
+    # Run helper that creates runs for the specified instrument and flowcell count.
+    # pool_enum enumerates available pools, state_enum enumerates run states, and
+    # position_cycle enumerates flowcell positions for an instrument.
+    def create_run(instrument, flowcell_count, pool_enum, state_enum, position_cycle)
+      return if flowcell_count < 1
+      return if flowcell_count > instrument.max_number_of_flowcells
+      return if safe_peek(pool_enum).blank?
+
+      run = Ont::Run.new(instrument:, state: state_enum.next)
+      flowcell_count.times do
+        break if safe_peek(pool_enum).blank?
+
+        position = position_cycle.next
+        flowcell_id = format('F%05d', position)
+        Ont::Flowcell.new(flowcell_id:, position:, run:, pool: pool_enum.next)
+      end
+      run.save!
+    end
+
+    # Instruments
+    Rake::Task['ont_instruments:create'].invoke
+    gridion = Ont::Instrument.GridION.first
+    promethion = Ont::Instrument.PromethION.first
+
+    # Enumerations
+    pool_enum = Ont::Pool.where.missing(:flowcell).to_enum # Pools available
+    state_enum = Ont::Run.states.keys.cycle # Run states
+    gridion_cycle = (1..gridion.max_number_of_flowcells).cycle
+    promethion_cycle = (1..promethion.max_number_of_flowcells).cycle
+
+    # Create runs with the specified instrument and flowcell counts
+    [1, 2, 2].each do |flowcell_count|
+      create_run(gridion, flowcell_count, pool_enum, state_enum, gridion_cycle)
+    end
+
+    [1, 2, 4].each do |flowcell_count|
+      create_run(promethion, flowcell_count, pool_enum, state_enum, promethion_cycle)
+    end
+
+    puts "-> Created #{Ont::Run.count} sequencing runs"
+    puts "-> Created #{Ont::Flowcell.count} flowcells"
   end
 end
