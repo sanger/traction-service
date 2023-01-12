@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_19_100356) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_09_154242) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -326,7 +326,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_19_100356) do
   end
 
   create_table "qc_results_uploads", charset: "utf8mb3", force: :cascade do |t|
-    t.text "csv_data"
+    t.text "csv_data", size: :long
     t.string "used_by"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
