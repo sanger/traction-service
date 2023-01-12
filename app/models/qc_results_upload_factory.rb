@@ -41,21 +41,29 @@ class QcResultsUploadFactory
 
   # @param [Object] CSV row e.g. { col_header_1: row_1_col_1 }
   def create_data(row_object)
-    # 1. If required, create Long Read QC Decision
+    # 1. Create QC Decisions
+    qc_decisions = create_qc_decisions(row_object)
+
+    # 2. Create QC Results
+    qc_results = create_qc_results(row_object)
+
+    # 3. Create QC Decision Results
+    create_qc_decision_results(qc_results, qc_decisions[:lr_qc_decision],
+                               qc_decisions[:tol_qc_decision])
+  end
+
+  def create_qc_decisions(row_object)
+    # If required, create Long Read QC Decision
     if row_object[LR_DECISION_FIELD]
-      lr_qc_decison = create_qc_decision!(row_object[LR_DECISION_FIELD], :long_read)
+      lr_qc_decision = create_qc_decision!(row_object[LR_DECISION_FIELD], :long_read)
     end
 
-    # 2. If required, create TOL QC Decision
+    # If required, create TOL QC Decision
     if row_object[TOL_DECISION_FIELD]
       tol_qc_decision = create_qc_decision!(row_object[TOL_DECISION_FIELD], :tol)
     end
 
-    # 3. Create QC Results
-    qc_results = create_qc_results(row_object)
-
-    # 4. Create QC decisions
-    create_qc_decisions(qc_results, lr_qc_decison, tol_qc_decision)
+    { lr_qc_decision:, tol_qc_decision: }
   end
 
   # @returns [List] of created QcResults
@@ -83,7 +91,7 @@ class QcResultsUploadFactory
   end
 
   # create a qc decision for each decision maker
-  def create_qc_decisions(qc_results, lr_qc_decision, tol_qc_decision)
+  def create_qc_decision_results(qc_results, lr_qc_decision, tol_qc_decision)
     # Always create Long Read QC Decision Results
 
     qc_results.each do |qc_result|
@@ -155,6 +163,8 @@ class QcResultsUploadFactory
     csv = CSV.new(csv_string_without_groups, headers: true, header_converters: header_converter)
 
     arr_of_hashes = csv.to_a.map(&:to_hash)
+
+    # Remove any rows which are missing the Tissue Tube ID, or which are controls
     arr_of_hashes.reject! do |row|
       row[TISSUE_TUBE_ID_FIELD].nil? || row[TISSUE_TUBE_ID_FIELD].match(/control/i)
     end
