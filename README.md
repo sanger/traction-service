@@ -50,6 +50,7 @@ setup process
 - To create all of the pacbio tags (needed for pacbio dummy runs): `bundle exec rails tags:create:pacbio_all`
 - To create pacbio Qc Assay Types: `bundle exec rails qc_assay_types:create`
 - To create pacbio smrt link versions: `bundle exec rails smrt_link_versions:create`
+- To create ont instruments: `bundle exec rails ont_instruments:create`
 
 ### Useful support data
 
@@ -57,7 +58,7 @@ To create pacbio dummy runs: `bundle exec rails pacbio_data:create`
 
 To create saphyr dummy runs: `bundle exec rails saphyr_runs:create`
 
-To create ont dummy plates and tubes: `bundle exec rails ont_data:create`
+To create ont dummy runs: `bundle exec rails ont_data:create`
 
 ## Database drop
 
