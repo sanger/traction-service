@@ -11,7 +11,7 @@ module Ont
     # We assume one-to-one relationship with pool at the moment.
     belongs_to :pool, foreign_key: :ont_pool_id, inverse_of: :flowcell
 
-    delegate :requests, to: :pool
+    delegate :requests, :libraries, to: :pool
 
     # Validate the position to be a positive integer.
     validates :position,
