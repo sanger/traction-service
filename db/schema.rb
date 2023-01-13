@@ -118,6 +118,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_09_154242) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "tube_id"
+    t.string "uuid", null: false
     t.index ["tube_id"], name: "index_ont_pools_on_tube_id"
   end
 
