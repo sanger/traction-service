@@ -60,6 +60,348 @@ RSpec.describe 'RunsController' do
         expect(fc2.pool.id).to eq(attr2[:ont_pool_id])
       end
     end
+
+    context 'on failure' do
+      let(:instrument) { create(:ont_gridion) }
+      let(:pool1) { create(:ont_pool) }
+      let(:pool2) { create(:ont_pool) }
+      let(:attr1) { { flowcell_id: 'F1', position: 1, ont_pool_id: pool1.id } }
+      let(:attr2) { { flowcell_id: 'F2', position: 2, ont_pool_id: pool2.id } }
+
+      context 'when state is invalid' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                ont_instrument_id: instrument.id,
+                state: 'INVALID_STATE',
+                flowcell_attributes: [attr1]
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns error response' do
+          post v1_ont_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:bad_request)
+          message = json['errors'][0]
+          expect(message['status'].to_i).to eq(400)
+          expect(message['code'].to_i).to eq(103)
+          expect(message['title']).to eq('Invalid field value')
+          expect(message['detail']).to eq('INVALID_STATE is not a valid value for state.')
+        end
+      end
+
+      context 'when instrument is missing' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                state: 'pending',
+                flowcell_attributes: [attr1]
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns error response' do
+          post v1_ont_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          message = json['errors'][0]
+          expect(message['status'].to_i).to eq(422)
+          expect(message['code'].to_i).to eq(100)
+          expect(message['title']).to eq('must exist')
+          expect(message['detail']).to eq('instrument - must exist')
+        end
+      end
+
+      context 'when instrument is invalid' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                state: 'pending',
+                ont_instrument_id: 'INVALID',
+                flowcell_attributes: [attr1]
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns error response' do
+          post v1_ont_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          message = json['errors'][0]
+          expect(message['status'].to_i).to eq(422)
+          expect(message['code'].to_i).to eq(100)
+          expect(message['title']).to eq('must exist')
+          expect(message['detail']).to eq('instrument - must exist')
+        end
+      end
+
+      context 'when flowcell_attributes is missing' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                state: 'pending',
+                ont_instrument_id: instrument.id
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns error response' do
+          post v1_ont_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          message = json['errors'][0]
+          expect(message['status'].to_i).to eq(422)
+          expect(message['code'].to_i).to eq(100)
+          expect(message['title']).to eq('must be at least one')
+          expect(message['detail']).to eq('flowcells - must be at least one')
+        end
+      end
+
+      context 'when flowcell_attributes is empty' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                state: 'pending',
+                ont_instrument_id: instrument.id,
+                flowcell_attributes: []
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns error response' do
+          post v1_ont_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          message = json['errors'][0]
+          expect(message['status'].to_i).to eq(422)
+          expect(message['code'].to_i).to eq(100)
+          expect(message['title']).to eq('must be at least one')
+          expect(message['detail']).to eq('flowcells - must be at least one')
+        end
+      end
+
+      context 'when flowcell pool is missing' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                state: 'pending',
+                ont_instrument_id: instrument.id,
+                flowcell_attributes: [{ flowcell_id: 'F1', position: 1 }]
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns error response' do
+          post v1_ont_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          message = json['errors'][0]
+          expect(message['status'].to_i).to eq(422)
+          expect(message['code'].to_i).to eq(100)
+          expect(message['title']).to eq('must exist')
+          expect(message['detail']).to eq('flowcells.pool - must exist')
+        end
+      end
+
+      context 'when flowcell pool is invalid' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                state: 'pending',
+                ont_instrument_id: instrument.id,
+                flowcell_attributes: [{ flowcell_id: 'F1', position: 1, ont_pool_id: 'INVALID' }]
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns error response' do
+          post v1_ont_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          message = json['errors'][0]
+          expect(message['status'].to_i).to eq(422)
+          expect(message['code'].to_i).to eq(100)
+          expect(message['title']).to eq('must exist')
+          expect(message['detail']).to eq('flowcells.pool - must exist')
+        end
+      end
+
+      context 'when flowcell pool is duplicated' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                state: 'pending',
+                ont_instrument_id: instrument.id,
+                flowcell_attributes: [
+                  { flowcell_id: 'F1', position: 1, ont_pool_id: pool1.id },
+                  { flowcell_id: 'F1', position: 2, ont_pool_id: pool1.id }
+                ]
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns error response' do
+          post v1_ont_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          message = json['errors'][0]
+          expect(message['status'].to_i).to eq(422)
+          expect(message['code'].to_i).to eq(100)
+          expect(message['title']).to eq("pool #{pool1.id} is duplicated in the same run")
+          expect(message['detail']).to eq("flowcells - pool #{pool1.id} is duplicated in the same run")
+        end
+      end
+
+      context 'when flowcell position is missing' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                state: 'pending',
+                ont_instrument_id: instrument.id,
+                flowcell_attributes: [{ flowcell_id: 'F1', ont_pool_id: pool1.id }]
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns error response' do
+          post v1_ont_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          message = json['errors'][0]
+          expect(message['status'].to_i).to eq(422)
+          expect(message['code'].to_i).to eq(100)
+          expect(message['title']).to eq("can't be blank")
+          expect(message['detail']).to eq("flowcells.position - can't be blank")
+        end
+      end
+
+      context 'when flowcell position is less than 1' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                state: 'pending',
+                ont_instrument_id: instrument.id,
+                flowcell_attributes: [{ flowcell_id: 'F1', position: 0, ont_pool_id: pool1.id }]
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns error response' do
+          post v1_ont_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          message = json['errors'][0]
+          expect(message['status'].to_i).to eq(422)
+          expect(message['code'].to_i).to eq(100)
+          expect(message['title']).to eq('must be greater than or equal to 1')
+          expect(message['detail']).to eq('flowcells.position - must be greater than or equal to 1')
+        end
+      end
+
+      context 'when flowcell position is more than instrument max_number_of_flowcells' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                state: 'pending',
+                ont_instrument_id: instrument.id,
+                flowcell_attributes: [{ flowcell_id: 'F1',
+                                        position: instrument.max_number_of_flowcells + 1, ont_pool_id: pool1.id }]
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns error response' do
+          post v1_ont_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          message = json['errors'][0]
+          expect(message['status'].to_i).to eq(422)
+          expect(message['code'].to_i).to eq(100)
+          expect(message['title']).to eq("position #{instrument.max_number_of_flowcells + 1} is out of range for the instrument")
+          expect(message['detail']).to eq("flowcells - position #{instrument.max_number_of_flowcells + 1} is out of range for the instrument")
+        end
+      end
+
+      context 'when flowcell position is duplicated' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                state: 'pending',
+                ont_instrument_id: instrument.id,
+                flowcell_attributes: [
+                  attr1,
+                  attr2.merge({ position: attr1[:position] })
+                ]
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns error response' do
+          post v1_ont_runs_path, params: body, headers: json_api_headers
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          message = json['errors'][0]
+          expect(message['status'].to_i).to eq(422)
+          expect(message['code'].to_i).to eq(100)
+          expect(message['title']).to eq("position #{attr1[:position]} is duplicated in the same run")
+          expect(message['detail']).to eq("flowcells - position #{attr1[:position]} is duplicated in the same run")
+        end
+      end
+
+      context 'when flowcell position is INVALID' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                state: 'pending',
+                ont_instrument_id: instrument.id,
+                flowcell_attributes: [
+                  { flowcell_id: 'F1', position: 1, ont_pool_id: pool1.id },
+                  { flowcell_id: 'F2', position: 'INVALID', ont_pool_id: pool2.id }
+                ]
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns error response' do
+          post v1_ont_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          message = json['errors'][0]
+          expect(message['status'].to_i).to eq(422)
+          expect(message['code'].to_i).to eq(100)
+          expect(message['title']).to eq('is not a number')
+          expect(message['detail']).to eq('flowcells.position - is not a number')
+        end
+      end
+    end
   end
 
   describe 'update flowcells' do
