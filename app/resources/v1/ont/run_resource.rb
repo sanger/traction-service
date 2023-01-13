@@ -17,6 +17,9 @@ module V1
                foreign_key: 'ont_run_id',
                class_name: 'Flowcell'
 
+      after_create :publish_messages
+      after_update :publish_messages
+
       def flowcell_attributes=(flowcell_parameters)
         @model.flowcell_attributes = flowcell_parameters.map do |flowcell|
           flowcell.permit(:id, :flowcell_id, :position, :ont_pool_id)
@@ -25,6 +28,10 @@ module V1
 
       def fetchable_fields
         super - [:flowcell_attributes]
+      end
+
+      def publish_messages
+        Messages.publish(@model, Pipelines.ont.message)
       end
     end
   end
