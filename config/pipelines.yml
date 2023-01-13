@@ -462,7 +462,7 @@ default: &default
   ont:
     message:
       lims: *lims
-      key: oseq_flowcell
+      key: oseq_flowcell_run
       fields:
         last_updated: *timestamp
         experiment_name:
