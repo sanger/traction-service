@@ -96,6 +96,29 @@ RSpec.describe 'RunsController' do
         expect(titles).to include "pool #{pool1.id} is duplicated in the same run"
       end
     end
+
+    context 'messages' do
+      let(:run) { create(:ont_gridion_run, flowcell_count: 3) }
+
+      let(:body) do
+        {
+          data: {
+            type: 'runs',
+            id: run.id,
+            attributes: {
+              ont_instrument_id: nil,
+              state: 'completed'
+            }
+          }
+        }.to_json
+      end
+
+      it 'will not be published' do
+        expect(Messages).not_to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
+        patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: json_api_headers
+        expect(response).to have_http_status(:unprocessable_entity), response.body
+      end
+    end
   end
 
   describe 'update flowcells' do
