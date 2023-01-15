@@ -469,8 +469,11 @@ default: &default
           type: :model
           value: experiment_name
         instrument_name:
-          type: :string
-          value: GXB02004
+          type: :model
+          value: instrument.name
+        run_uuid:
+          type: :model
+          value: uuid
         flowcells:
           type: :array
           value: flowcells
@@ -481,28 +484,43 @@ default: &default
             instrument_slot:
               type: :model
               value: position
+            flowcell_id:
+              type: :model
+              value: flowcell_id
             samples:
               type: :array
-              value: requests
+              value: libraries
               children:
                 sample_uuid:
                   type: :model
-                  value: external_id
+                  value: request.sample.external_id
                 study_uuid:
-                  type: :string
-                  value: 468e0cd0-6a9d-11ea-a04f-fa163e68e77d
+                  type: :model
+                  value: request.external_study_id
+                pipeline_id_lims:
+                  type: :model
+                  value: request.library_type.name
+                requested_data_type:
+                  type: :model
+                  value: request.data_type.name
+                library_tube_uuid:
+                  type: :model
+                  value: pool.uuid
+                library_tube_barcode:
+                  type: :model
+                  value: pool.tube.barcode
                 tag_identifier:
                   type: :model
-                  value: tags.first.group_id
+                  value: tag.group_id
                 tag_sequence:
                   type: :model
-                  value: tags.first.oligo
+                  value: tag.oligo
                 tag_set_id_lims:
                   type: :model
-                  value: tags.first.tag_set.id
+                  value: tag_set.id
                 tag_set_name:
                   type: :model
-                  value: tags.first.tag_set.name
+                  value: tag_set.name
 
   qc_result:
     message:

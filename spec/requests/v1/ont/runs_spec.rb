@@ -59,6 +59,12 @@ RSpec.describe 'RunsController' do
         expect(fc2.position).to eq(attr2[:position])
         expect(fc2.pool.id).to eq(attr2[:ont_pool_id])
       end
+
+      it 'publishes the message' do
+        expect(Messages).to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
+        post v1_ont_runs_path, params: body, headers: json_api_headers
+        expect(response).to have_http_status(:success), response.body
+      end
     end
 
     context 'on failure' do
@@ -200,6 +206,29 @@ RSpec.describe 'RunsController' do
         expect(fc4.flowcell_id).to eq(attr4[:flowcell_id])
         expect(fc4.position).to eq(attr4[:position])
         expect(fc4.ont_pool_id).to eq(attr4[:ont_pool_id])
+      end
+
+      context 'messages' do
+        let(:run) { create(:ont_gridion_run, flowcell_count: 3) }
+
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              id: run.id,
+              attributes: {
+                ont_instrument_id: run.ont_instrument_id,
+                state: 'completed'
+              }
+            }
+          }.to_json
+        end
+
+        it 'will be published' do
+          expect(Messages).to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
+          patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: json_api_headers
+          expect(response).to have_http_status(:success), response.body
+        end
       end
     end
 

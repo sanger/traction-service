@@ -3,6 +3,8 @@
 module Ont
   # Pool
   class Pool < ApplicationRecord
+    include Uuidable
+
     belongs_to :tube, default: -> { Tube.new }
 
     # We have one-to-one association between pool and flowcell at the moment.
