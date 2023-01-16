@@ -15,7 +15,7 @@ module V1
 
       has_one :smrt_link_version, foreign_key: 'pacbio_smrt_link_version_id'
 
-      filter :name
+      filters :name, :state
       paginator :paged
 
       def self.default_sort

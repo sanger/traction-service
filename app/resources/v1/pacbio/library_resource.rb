@@ -43,6 +43,14 @@ module V1
       filter :barcode, apply: lambda { |records, value, _options|
         records.joins(:tube).where(tube: { barcode: value })
       }
+      filter :source_identifier, apply: lambda { |records, value, _options|
+        # First we check tubes to see if there are any given the source identifier
+        recs = records.joins(:source_tube).where(source_tube: { barcode: value })
+        return recs unless recs.empty?
+
+        # If no tubes match the source identifier we check plates
+        return records.joins(:source_plate).where(source_plate: { barcode: value })
+      }
 
       def self.records_for_populate(*_args)
         super.preload(source_well: :plate, request: :sample,
