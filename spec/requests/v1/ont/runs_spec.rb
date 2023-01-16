@@ -102,10 +102,10 @@ RSpec.describe 'RunsController' do
         expect(titles).to include "pool #{pool1.id} is duplicated in the same run"
       end
 
-      it 'publishes the message' do
-        expect(Messages).to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
+      it 'does not publish the message' do
+        expect(Messages).not_to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
         post v1_ont_runs_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:success), response.body
+        expect(response).to have_http_status(:unprocessable_entity), response.body
       end
     end
   end
