@@ -79,7 +79,7 @@ RSpec.describe 'RunsController' do
             type: 'runs',
             attributes: {
               ont_instrument_id: instrument.id,
-              state: 'pending',
+              state: 'completed',
               flowcell_attributes: [attr1, attr2]
             }
           }
@@ -112,7 +112,7 @@ RSpec.describe 'RunsController' do
 
   describe 'update flowcells' do
     context 'on success' do
-      # Whene we update a run successfuly, we are able to keep, change, add, and remove flowcells at once.
+      # When we update a run successfuly, we are able to keep, change, add, and remove flowcells at once.
 
       let(:run) { create(:ont_gridion_run, flowcell_count: 3) }
 
