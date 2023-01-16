@@ -25,6 +25,10 @@ module V1
         records.where(tube: Tube.find_by(barcode: value))
       }
 
+      def self.default_sort
+        [{ field: 'created_at', direction: :desc }]
+      end
+
       # # When a pool is updated and it is attached to a run we need
       # # to republish the messages for the run
       # after_update :publish_messages
