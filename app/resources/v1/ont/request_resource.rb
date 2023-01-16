@@ -10,6 +10,22 @@ module V1
 
       paginator :paged
 
+      filter :sample_name, apply: lambda { |records, value, _options|
+        # We have to join requests and samples here in order to find by sample name
+        records.joins(:sample).where(sample: { name: value })
+      }
+
+      filter :source_identifier, apply: lambda { |records, value, _options|
+        # First we check tubes to see if there are any given the source identifier
+        recs = records.joins(:container_material).joins(:tube)
+                      .where(tube: { barcode: value })
+        return recs unless recs.empty?
+
+        # If no tubes match the source identifier we check plates
+        return records.joins(:container_material).joins(:well).joins(:plate)
+                      .where(plate: { barcode: value })
+      }
+
       def self.default_sort
         [{ field: 'created_at', direction: :desc }]
       end
