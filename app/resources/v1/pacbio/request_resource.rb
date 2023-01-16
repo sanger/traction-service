@@ -27,6 +27,15 @@ module V1
         records.joins(:sample).where(sample: { name: value })
       }
 
+      filter :source_identifier, apply: lambda { |records, value, _options|
+        # First we check tubes to see if there are any given the source identifier
+        recs = records.joins(:tube).where(tube: { barcode: value })
+        return recs unless recs.empty?
+
+        # If no tubes match the source identifier we check plates
+        return records.joins(:well).joins(:plate).where(plate: { barcode: value })
+      }
+
       def self.default_sort
         [{ field: 'created_at', direction: :desc }]
       end
