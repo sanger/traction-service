@@ -10,8 +10,7 @@ module Ont
     NAME_PREFIX = 'ONTRUN-' # Used for generating a unique experiment name for the run.
 
     # This association creates a link to the instrument this run belongs to.
-    # We are setting to avoid automatic detection of inverse association from the instrument.
-    # XXX: Do we need a default instrument to initialise the run with?
+    # We are setting inverse_of to false to avoid detection of inverse association.
     belongs_to :instrument,
                class_name: 'Ont::Instrument',
                foreign_key: :ont_instrument_id,
@@ -23,51 +22,27 @@ module Ont
 
     scope :active, -> { where(deactivated_at: nil) }
 
-    validate :check_min_number_of_flowcells, :check_max_number_of_flowcells,
-             :check_flowcell_position, :check_flowcell_pool
+    # run flowcells validations
+    validates :flowcells, presence: true
+    validates :flowcells,
+              length: {
+                minimum: 1,
+                message: lambda do |_object, _data|
+                           'there must be at least one'
+                         end
+              }
+    validates :flowcells,
+              length: {
+                maximum: :max_number_of_flowcells,
+                if: :max_number_of_flowcells,
+                message: lambda do |_object, _data|
+                  'must be less than instrument max number'
+                end
+              }
 
-    def check_flowcell_position
-      return if instrument.blank? # we can't use this validation without instrument
-
-      position_set = Set.new
-      flowcells.each do |flowcell|
-        next if flowcell.position.blank? # validated separately
-
-        if flowcell.position < 1 || flowcell.position > instrument.max_number_of_flowcells
-          errors.add(:flowcells, "position #{flowcell.position} is out of range for the instrument")
-        elsif position_set.include? flowcell.position
-          errors.add(:flowcells, "position #{flowcell.position} is duplicated in the same run")
-        else
-          position_set.add(flowcell.position)
-        end
-      end
-    end
-
-    def check_flowcell_pool
-      pool_set = Set.new
-      flowcells.each do |flowcell|
-        next if flowcell.ont_pool_id.blank? # validated separately
-
-        if pool_set.include? flowcell.ont_pool_id
-          errors.add(:flowcells, "pool #{flowcell.ont_pool_id} is duplicated in the same run")
-        else
-          pool_set.add(flowcell.ont_pool_id)
-        end
-      end
-    end
-
-    def check_min_number_of_flowcells
-      return unless flowcells.empty?
-
-      errors.add(:flowcells, 'must be at least one')
-    end
-
-    def check_max_number_of_flowcells
-      return if instrument.blank?
-
-      return if flowcells.length <= instrument.max_number_of_flowcells
-
-      errors.add(:flowcells, 'must be less than instrument max number')
+    # Return the max_number of flowcells for the instrument if instrument is present.
+    def max_number_of_flowcells
+      instrument.present? && instrument.max_number_of_flowcells
     end
 
     # Generate the experiment_name using the id of the run.
