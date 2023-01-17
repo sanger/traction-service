@@ -5,7 +5,7 @@
 FactoryBot.define do
   factory :ont_flowcell, class: 'Ont::Flowcell' do
     position { 1 }
-    flowcell_id { "F#{position}" }
+    sequence(:flowcell_id) { |n| "F#{n}" }
     pool { create(:ont_pool) }
     run { build(:ont_run, flowcells: [instance]) }
   end

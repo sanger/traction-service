@@ -94,12 +94,9 @@ RSpec.describe 'RunsController' do
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
-      it 'returns error messages' do
-        errors = json['errors']
-        titles = errors.pluck('title')
+      it 'returns failure response' do
+        titles = json['errors'].pluck('title')
         expect(titles).to include 'must be less than instrument max number'
-        expect(titles).to include 'position 1 is duplicated in the same run'
-        expect(titles).to include "pool #{pool1.id} is duplicated in the same run"
       end
 
       it 'does not publish the message' do
@@ -247,7 +244,8 @@ RSpec.describe 'RunsController' do
       it 'returns error messages' do
         errors = json['errors']
         titles = errors.pluck('title')
-        expect(titles).to include "pool #{fc1.ont_pool_id} is duplicated in the same run"
+        expect(titles).to include "pool with id #{fc1.ont_pool_id} is duplicated in the same run"
+        expect(titles).to include "flowcell_id #{fc1.flowcell_id} has already been taken"
       end
 
       context 'messages' do
@@ -271,6 +269,39 @@ RSpec.describe 'RunsController' do
           patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity), response.body
         end
+      end
+    end
+  end
+
+  context 'validation' do
+    context 'with uniqueness scope' do
+      let(:run) { create(:ont_gridion_run, flowcell_count: 2) }
+      let(:fc1) { run.flowcells.find_by(position: 1) }
+      let(:fc2) { run.flowcells.find_by(position: 2) }
+      let(:body) do
+        {
+          data: {
+            type: 'runs',
+            id: run.id,
+            attributes: {
+              ont_instrument_id: run.ont_instrument_id,
+              state: 'completed',
+              flowcell_attributes: [
+                { id: fc1.id, flowcell_id: fc1.flowcell_id, position: fc1.position, ont_pool_id: fc1.ont_pool_id },
+                { id: fc2.id, flowcell_id: fc1.flowcell_id, position: fc1.position, ont_pool_id: fc1.ont_pool_id }
+              ]
+            }
+          }
+        }.to_json
+      end
+
+      it 'checks position validation and then db constaint' do
+        patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: json_api_headers
+
+        expect(response).to have_http_status(:unprocessable_entity), response.body
+        titles = json['errors'].pluck('title')
+        expect(titles).to include("position #{fc1.position} is duplicated in the same run")
+        expect(titles).to include("pool with id #{fc1.ont_pool_id} is duplicated in the same run")
       end
     end
   end
