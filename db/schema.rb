@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_09_154242) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_17_101012) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -76,7 +76,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_09_154242) do
     t.bigint "ont_pool_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["flowcell_id"], name: "index_ont_flowcells_on_flowcell_id", unique: true
     t.index ["ont_pool_id"], name: "index_ont_flowcells_on_ont_pool_id"
+    t.index ["ont_run_id", "ont_pool_id"], name: "index_ont_flowcells_on_ont_run_id_and_ont_pool_id", unique: true
     t.index ["ont_run_id", "position"], name: "index_ont_flowcells_on_ont_run_id_and_position", unique: true
     t.index ["ont_run_id"], name: "index_ont_flowcells_on_ont_run_id"
   end
