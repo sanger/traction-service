@@ -40,6 +40,42 @@ module Ont
                 end
               }
 
+    validate :flowcells, :position_uniqueness
+    validate :flowcells, :pool_uniqueness
+    validate :flowcells, :flowcell_id_uniqueness
+
+    # Check if positions are duplicated in the run.
+    def position_uniqueness
+      positions = flowcells.collect(&:position)
+      duplicates = positions.group_by { |f| f }.select { |_k, v| v.size > 1 }.map(&:first)
+
+      duplicates.each do |position|
+        errors.add(:flowcells, "position #{position} is duplicated in the same run")
+      end
+    end
+
+    # Check if pools are duplicated in the run.
+    def pool_uniqueness
+      ont_pool_ids = flowcells.collect(&:ont_pool_id)
+      duplicates = ont_pool_ids.group_by { |f| f }.select { |_k, v| v.size > 1 }.map(&:first)
+
+      duplicates.each do |ont_pool_id|
+        errors.add(:flowcells, "pool with id #{ont_pool_id} is duplicated in the same run")
+      end
+    end
+
+    # Check if flowcell_ids are duplicated in the run.
+    def flowcell_id_uniqueness
+      flowcell_ids = flowcells.collect(&:flowcell_id)
+      duplicates = flowcell_ids.group_by { |f| f }.select { |_k, v| v.size > 1 }.map(&:first)
+
+      duplicates.each do |flowcell_id|
+        message = "flowcell_id #{flowcell_id} is duplicated in the same run"
+
+        errors.add(:flowcells, message)
+      end
+    end
+
     # Return the max_number of flowcells for the instrument if instrument is present.
     def max_number_of_flowcells
       instrument.present? && instrument.max_number_of_flowcells
