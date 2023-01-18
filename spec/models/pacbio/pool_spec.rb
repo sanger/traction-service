@@ -254,10 +254,10 @@ RSpec.describe Pacbio::Pool, pacbio: true do
       create(:pacbio_well, pools: [pool], plate: plate2)
       expect(pool.sequencing_plates).to eq([plate1, plate2])
     end
+  end
 
-    context 'labware' do
-      let(:labware_model) { :pool }
-      it_behaves_like 'labware'
-    end
+  it 'filters the tube barcodes while searching for a pool' do 
+    pool1 = create(:pacbio_pool)
+    
   end
 end

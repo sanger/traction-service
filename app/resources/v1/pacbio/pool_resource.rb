@@ -25,7 +25,10 @@ module V1
       after_update :publish_messages
 
       # Filters
-      filter :template_prep_kit_box_barcode, apply: ->(records, value, _options) { records.by_barcode(value) }
+      # join pool with tube as a pool has a barcode through tube
+      filter :barcode, apply: lambda { |records, value, _options|
+      records.joins(:tube).where(tube: { barcode: value }) }
+
 
       def library_attributes=(library_parameters)
         @model.library_attributes = library_parameters.map do |library|
