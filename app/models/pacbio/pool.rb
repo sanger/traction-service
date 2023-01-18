@@ -3,6 +3,8 @@
 module Pacbio
   # Pool
   class Pool < ApplicationRecord
+    include Labware
+
     belongs_to :tube, default: -> { Tube.new }
     has_many :libraries, class_name: 'Pacbio::Library', foreign_key: :pacbio_pool_id,
                          dependent: :destroy, inverse_of: :pool

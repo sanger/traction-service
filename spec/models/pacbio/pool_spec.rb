@@ -254,5 +254,10 @@ RSpec.describe Pacbio::Pool, pacbio: true do
       create(:pacbio_well, pools: [pool], plate: plate2)
       expect(pool.sequencing_plates).to eq([plate1, plate2])
     end
+
+    context 'labware' do
+      let(:labware_model) { :pool }
+      it_behaves_like 'labware'
+    end
   end
 end
