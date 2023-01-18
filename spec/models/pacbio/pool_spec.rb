@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Pacbio::Pool, type: :model, pacbio: true do
+RSpec.describe Pacbio::Pool, pacbio: true do
   subject(:pool) { build(:pacbio_pool, params) }
 
   before do

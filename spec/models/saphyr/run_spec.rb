@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Saphyr::Run, type: :model, saphyr: true do
+RSpec.describe Saphyr::Run, saphyr: true do
   context 'on creation' do
     it 'state is pending' do
       run = create(:saphyr_run)
@@ -56,7 +56,9 @@ RSpec.describe Saphyr::Run, type: :model, saphyr: true do
     it 'can filter runs based on state' do
       create_list(:saphyr_run, 2)
       create(:saphyr_run, state: :started)
+      # rubocop:disable RSpec/PendingWithoutReason
       expect(described_class.pending.length).to eq 2
+      # rubocop:enable RSpec/PendingWithoutReason
       expect(described_class.started.length).to eq 1
     end
   end

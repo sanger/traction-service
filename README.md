@@ -4,16 +4,16 @@ Rails app which exposes a RESTful API for a Long Read LIMS
 
 - Add details aboout traction ui
 - importing samples from external sources currently:
-    - Sequencescape
-    - Samples extraction
+  - Sequencescape
+  - Samples extraction
 - creating libraries
 - creating pools of libraries with support for multiplexing
 - creating sequencing runs
 - printing sample sheets
 - supports the following technologies:
-    - Saphyr
-    - Pacbio
-    - ONT (In progress)
+  - Saphyr
+  - Pacbio
+  - ONT (In progress)
 
 ## Requirements
 
@@ -44,11 +44,13 @@ If you need to create the database afresh: `bundle exec rails db:reset`.
 The following tasks are run automatically by `rails db:seed` at the end of the
 setup process
 
-- To create a set of enzymes (needed for saphyr dummy runs): `bundle exec rails enzymes:create`
-- To create all of the pacbio tags (needed for pacbio dummy runs): `bundle exec rails tags:create:pacbio_all`
 - To create all the supported library types: `bundle exec rails library_types:create`
 - To create all the supported data types: `bundle exec rails data_types:create`
+- To create a set of enzymes (needed for saphyr dummy runs): `bundle exec rails enzymes:create`
+- To create all of the pacbio tags (needed for pacbio dummy runs): `bundle exec rails tags:create:pacbio_all`
+- To create pacbio Qc Assay Types: `bundle exec rails qc_assay_types:create`
 - To create pacbio smrt link versions: `bundle exec rails smrt_link_versions:create`
+- To create ont instruments: `bundle exec rails ont_instruments:create`
 
 ### Useful support data
 
@@ -56,25 +58,23 @@ To create pacbio dummy runs: `bundle exec rails pacbio_data:create`
 
 To create saphyr dummy runs: `bundle exec rails saphyr_runs:create`
 
-To create ont dummy plates and tubes: `bundle exec rails ont_data:create`
+To create ont dummy runs: `bundle exec rails ont_data:create`
 
 ## Database drop
 
 To drop the database `bundle exec rails db:drop`
 
-
 ## Tests
+
 To run the unit tests run rspec. `bundle exec rspec`
 
 We use rubocop to keep the code clean `bundle exec rubocop`
-
 
 ## Running
 
 To run the rails application `bundle exec rails s`
 
 When running with Traction-UI, UI expects the service to be on port 3100. `PORT=3100 rails s`
-
 
 ## Messages - RabbitMQ
 
@@ -110,9 +110,11 @@ An ERD was created using the `rails-erd` gem by executing: `bundle exec erd`
 ## Releases
 
 #### UAT
+
 On merging a pull request into develop, a release will be created with the tag/name `<branch>/<timestamp>`
 
 #### PROD
+
 Update `.release-version` with major/minor/patch. On merging a pull request into master, a release will be created with the release version as the tag/name
 
 See Confluence for further information

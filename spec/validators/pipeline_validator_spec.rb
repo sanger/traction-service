@@ -24,7 +24,7 @@ RSpec.describe PipelineValidator do
     end
 
     context 'with the incorrect pipeline' do
-      let(:value) { build :library_type, :pacbio }
+      let(:value) { build(:library_type, :pacbio) }
 
       it 'adds an error to the record' do
         expect(record.errors.full_messages).to include('Library type is in pacbio not ont pipeline')
@@ -32,7 +32,7 @@ RSpec.describe PipelineValidator do
     end
 
     context 'with the correct pipeline' do
-      let(:value) { build :library_type, pipeline }
+      let(:value) { build(:library_type, pipeline) }
 
       it 'does not add an error to the record' do
         expect(record.errors.full_messages).to be_empty

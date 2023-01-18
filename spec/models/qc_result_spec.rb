@@ -2,8 +2,8 @@
 
 require 'rails_helper'
 
-RSpec.describe QcResult, type: :model do
-  let(:qc_assay_type) { create :qc_assay_type }
+RSpec.describe QcResult do
+  let(:qc_assay_type) { create(:qc_assay_type) }
 
   describe '#create' do
     it 'is possible to create a new record' do
@@ -33,7 +33,7 @@ RSpec.describe QcResult, type: :model do
   end
 
   describe '#update' do
-    let(:result) { create :qc_result }
+    let(:result) { create(:qc_result) }
 
     it 'is possible to update a record' do
       expect(result.value).not_to eq('a new value')
@@ -43,10 +43,38 @@ RSpec.describe QcResult, type: :model do
   end
 
   describe '#destroy' do
-    let!(:result) { create :qc_result }
-
     it 'is possible to destroy a record' do
-      expect { result.destroy! }.to change(described_class, :count).by(-1)
+      qc_result = create(:qc_result)
+      expect { qc_result.destroy! }.to change(described_class, :count).by(-1)
     end
+
+    it 'can be destroyed if there are no associated qc_decision_results' do
+      qc_result = create(:qc_result)
+      expect do
+        qc_result.destroy!
+      end.not_to raise_error
+    end
+
+    it 'cannot be destroyed if there are any associated qc_decision_results' do
+      qc_result = create(:qc_result)
+      qc_decision = create(:qc_decision)
+      create(:qc_decision_result, qc_decision:, qc_result:)
+      expect do
+        qc_result.destroy!
+      end.to raise_error(ActiveRecord::RecordNotDestroyed)
+    end
+  end
+
+  describe 'associations' do
+    let(:qc_result) { create(:qc_result) }
+    let(:qc_decision) { create(:qc_decision) }
+    let(:qc_decision_result) { create(:qc_decision_result, qc_decision:, qc_result:) }
+
+    it 'has the correct associations' do
+      expect(qc_result.qc_decision_results).to eq [qc_decision_result]
+      expect(qc_result.qc_decisions).to eq [qc_decision]
+    end
+
+    # when there is more than one
   end
 end

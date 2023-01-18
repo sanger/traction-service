@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe DataType, type: :model do
+RSpec.describe DataType do
   describe '#name' do
     it 'must be present' do
       expect(build(:data_type, name: nil)).not_to be_valid
