@@ -273,7 +273,7 @@ RSpec.describe 'RunsController' do
     end
   end
 
-  context 'with uniquness validations' do
+  context 'with uniqueness validations' do
     context 'create' do
       let!(:existing_flowcell) { create(:ont_flowcell) }
       let(:instrument) { create(:ont_gridion) }
@@ -341,6 +341,36 @@ RSpec.describe 'RunsController' do
         expect(titles).to include("flowcell_id #{attr2[:flowcell_id]} has already been taken")
         expect(titles).to include("position #{attr2[:position]} is duplicated in the same run")
         expect(titles).to include("pool with id #{attr2[:ont_pool_id]} is duplicated in the same run")
+      end
+    end
+  end
+
+  context 'pagination' do
+    let!(:runs) { create_list(:ont_gridion_run, 6).sort_by(&:created_at).reverse }
+
+    before do
+      get "#{v1_ont_runs_path}?page[number]=2&page[size]=2", headers: json_api_headers
+    end
+
+    it 'has a success status' do
+      expect(response).to have_http_status(:success), response.body
+    end
+
+    it 'returns list of runs' do
+      expect(json['data'].length).to eq(2)
+    end
+
+    it 'returns correct attributes' do
+      expected_runs = runs.each_slice(2).to_a[1] # size: 2, page: 2
+
+      expected_runs.each do |run|
+        run_attributes = find_resource(id: run.id, type: 'runs')['attributes']
+        expect(run_attributes).to include(
+          'ont_instrument_id' => run.ont_instrument_id,
+          'experiment_name' => run.experiment_name,
+          'state' => run.state,
+          'created_at' => run.created_at.to_fs(:us)
+        )
       end
     end
   end
