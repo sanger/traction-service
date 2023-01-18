@@ -32,6 +32,10 @@ module V1
         end
       end
 
+      def created_at
+        @model.created_at.to_fs(:us)
+      end
+
       def fetchable_fields
         super - [:flowcell_attributes]
       end
