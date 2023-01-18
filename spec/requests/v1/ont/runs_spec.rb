@@ -273,11 +273,50 @@ RSpec.describe 'RunsController' do
     end
   end
 
-  context 'validation' do
-    context 'with uniqueness scope update' do
-      let(:run) { create(:ont_gridion_run, flowcell_count: 2) }
+  context 'with uniquness validations' do
+    context 'create' do
+      let!(:existing_flowcell) { create(:ont_flowcell) }
+      let(:instrument) { create(:ont_gridion) }
+      let(:pool1) { create(:ont_pool) }
+      let(:pool2) { create(:ont_pool) }
+      let(:attr1) { { flowcell_id: existing_flowcell.flowcell_id, position: 1, ont_pool_id: pool1.id } }
+      let(:attr2) { { flowcell_id: 'F2', position: 2, ont_pool_id: pool2.id } }
+      let(:attr3) { { flowcell_id: 'F2', position: 2, ont_pool_id: pool2.id } }
+      let(:body) do
+        {
+          data: {
+            type: 'runs',
+            attributes: {
+              ont_instrument_id: instrument.id,
+              state: 'pending',
+              flowcell_attributes: [attr1, attr2, attr3]
+            }
+          }
+        }.to_json
+      end
+
+      it 'returns errors' do
+        post v1_ont_runs_path, params: body, headers: json_api_headers
+
+        expect(response).to have_http_status(:unprocessable_entity), response.body
+
+        titles = json['errors'].pluck('title')
+        expect(titles).to include("flowcell_id #{existing_flowcell.flowcell_id} has already been taken")
+        expect(titles).to include("position #{attr2[:position]} is duplicated in the same run")
+        expect(titles).to include("pool with id #{pool2.id} is duplicated in the same run")
+        expect(titles).to include("flowcell_id #{attr2[:flowcell_id]} is duplicated in the same run")
+      end
+    end
+
+    context 'update' do
+      let!(:existing_flowcell) { create(:ont_flowcell) }
+      let(:run) { create(:ont_gridion_run, flowcell_count: 5) }
       let(:fc1) { run.flowcells.find_by(position: 1) }
       let(:fc2) { run.flowcells.find_by(position: 2) }
+      let(:fc3) { run.flowcells.find_by(position: 3) }
+      let(:attr1) { { id: fc1.id, flowcell_id: existing_flowcell.flowcell_id, position: fc1.position, ont_pool_id: fc1.ont_pool_id } }
+      let(:attr2) { { id: fc2.id, flowcell_id: fc1.flowcell_id, position: fc2.position, ont_pool_id: fc2.ont_pool_id }  }
+      let(:attr3) { { id: fc3.id, flowcell_id: fc1.flowcell_id, position: fc2.position, ont_pool_id: fc2.ont_pool_id }  }
       let(:body) do
         {
           data: {
@@ -286,48 +325,23 @@ RSpec.describe 'RunsController' do
             attributes: {
               ont_instrument_id: run.ont_instrument_id,
               state: 'completed',
-              flowcell_attributes: [
-                { id: fc1.id, flowcell_id: fc1.flowcell_id, position: 0, ont_pool_id: fc1.ont_pool_id },
-                { id: fc2.id, flowcell_id: fc1.flowcell_id, position: fc1.position, ont_pool_id: fc1.ont_pool_id }
-              ]
+              flowcell_attributes: [attr1, attr2, attr3]
             }
           }
         }.to_json
       end
 
-      it 'checks validations and then db constaint' do
+      it 'returns errors' do
         patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: json_api_headers
 
         expect(response).to have_http_status(:unprocessable_entity), response.body
+
         titles = json['errors'].pluck('title')
-        expect(titles).to include("position #{fc1.position} is duplicated in the same run")
-        expect(titles).to include("pool with id #{fc1.ont_pool_id} is duplicated in the same run")
+        expect(titles).to include("flowcell_id #{existing_flowcell.flowcell_id} has already been taken")
+        expect(titles).to include("flowcell_id #{attr2[:flowcell_id]} has already been taken")
+        expect(titles).to include("position #{attr2[:position]} is duplicated in the same run")
+        expect(titles).to include("pool with id #{attr2[:ont_pool_id]} is duplicated in the same run")
       end
-    end
-  end
-
-  context 'with uniqueness scope create' do
-    let(:instrument) { create(:ont_gridion) }
-    let(:pool1) { create(:ont_pool) }
-    let(:pool2) { create(:ont_pool) }
-    let(:attr1) { { flowcell_id: 'F1', position: 0, ont_pool_id: pool1.id } }
-    let(:attr2) { { flowcell_id: 'F2', position: 2, ont_pool_id: pool2.id } }
-    let(:body) do
-      {
-        data: {
-          type: 'runs',
-          attributes: {
-            ont_instrument_id: instrument.id,
-            state: 'pending',
-            flowcell_attributes: [attr1, attr2]
-          }
-        }
-      }.to_json
-    end
-
-    it 'checks validations and then db constaint' do
-      post v1_ont_runs_path, params: body, headers: json_api_headers
-      expect(response).to have_http_status(:unprocessable_entity), response.body
     end
   end
 end
