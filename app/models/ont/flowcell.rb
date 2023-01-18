@@ -18,7 +18,7 @@ module Ont
     validates :position, numericality: { only_integer: true }
     validates :position, numericality: {
       greater_than_or_equal_to: 1,
-      smaller_than_or_equal_to: :max_number_of_flowcells,
+      less_than_or_equal_to: :max_number_of_flowcells,
       if: :max_number_of_flowcells,
       message: lambda do |_object, data|
         "position #{data[:value]} is out of range for the instrument"
