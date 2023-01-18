@@ -11,9 +11,21 @@ RSpec.describe 'RakeTasks' do
   end
 
   describe 'create tags' do
-    it 'creates all of the tag sets' do
+    it 'creates all of the pacbio tag sets' do
       Rake::Task['tags:create:pacbio_all'].invoke
       expect(TagSet.count).to eq(7)
+    end
+
+    it 'creates all of the ont tag sets' do
+      Rake::Task['tags:create:ont_all'].invoke
+      expect(TagSet.count).to eq(1)
+    end
+
+    it 'creates all of the tag sets' do
+      # We need to reenable all tag tasks because they have all already been invoked by this point
+      Rake.application.in_namespace(:tags) { |namespace| namespace.tasks.each(&:reenable) }
+      Rake::Task['tags:create:traction_all'].invoke
+      expect(TagSet.count).to eq(8)
     end
   end
 
@@ -38,20 +50,58 @@ RSpec.describe 'RakeTasks' do
     end
   end
 
+  describe 'ont_instruments:create' do
+    it 'creates the correct instrument data' do
+      Rake::Task['ont_instruments:create'].reenable
+      expect { Rake::Task['ont_instruments:create'].invoke }.to change(Ont::Instrument, :count).and output("-> ONT Instruments successfully created\n").to_stdout
+    end
+  end
+
   describe 'ont_data:create' do
     let(:expected_plates) { 2 }
     let(:filled_wells_per_plate) { 95 }
     let(:expected_tubes) { 2 }
+    let(:expected_single_plexed_pools) { 5 }
+    let(:expected_multi_plexed_pools) { 10 }
+    let(:expected_tag_sets) { 1 }
     let(:expected_wells) { expected_plates * filled_wells_per_plate }
     let(:expected_requests) { expected_tubes + expected_wells }
+    let(:expected_runs) { 6 }
+    let(:expected_flowcells) { 12 }
 
     before do
-      create :library_type, :ont
-      create :data_type, :ont
+      create(:library_type, :ont)
+      create(:data_type, :ont)
+      # We need to reenable all tag tasks because they have all already been invoked by this point
+      # And ont tags can be called from ont_data:create
+      Rake.application.in_namespace(:tags) { |namespace| namespace.tasks.each(&:reenable) }
+      Rake::Task['ont_instruments:create'].reenable
     end
 
     it 'creates plates and tubes' do
-      expect { Rake::Task['ont_data:create'].invoke }.to change(Reception, :count).by(1).and change(Ont::Request, :count).by(expected_requests).and change(Sample, :count).by(expected_requests).and change(Plate, :count).by(expected_plates).and change(Well, :count).by(expected_wells).and change(Tube, :count).by(expected_tubes).and output("-> Created requests for #{expected_plates} plates and #{expected_tubes} tubes\n").to_stdout
+      # Each pool also has a tube so we create tubes then we create pools with tubes (17)
+      expect { Rake::Task['ont_data:create'].invoke }
+        .to change(Reception, :count).by(1)
+        .and change(Sample, :count).by(expected_requests)
+        .and change(Plate, :count).by(expected_plates)
+        .and change(Well, :count).by(expected_wells)
+        .and change(Tube, :count).by(expected_tubes + expected_single_plexed_pools + expected_multi_plexed_pools)
+        .and change(Ont::Request, :count).by(expected_requests)
+        .and change(Ont::Pool, :count).by(expected_single_plexed_pools + expected_multi_plexed_pools)
+        .and change(Ont::Run, :count).by(expected_runs)
+        .and change(Ont::Flowcell, :count).by(expected_flowcells)
+        .and change(Ont::Library, :count)
+        .and output(
+          "-> Created requests for #{expected_plates} plates and #{expected_tubes} tubes\n" \
+          "-> Creating ONT Native tag set and tags\n" \
+          "-> Tag Set successfully created\n" \
+          "-> ONT_native tags successfully created\n" \
+          "-> Created #{expected_single_plexed_pools} single plexed pools\n" \
+          "-> Created #{expected_multi_plexed_pools} multiplexed pools\n" \
+          "-> ONT Instruments successfully created\n" \
+          "-> Created #{expected_runs} sequencing runs\n" \
+          "-> Created #{expected_flowcells} flowcells\n"
+        ).to_stdout
     end
   end
 
@@ -81,7 +131,7 @@ RSpec.describe 'RakeTasks' do
 
   describe 'qc_assay_types:create' do
     it 'creates the correct number of qc assay types' do
-      expect { Rake::Task['qc_assay_types:create'].invoke }.to change(QcAssayType, :count).and output("-> QC Assay Types updated\n").to_stdout
+      expect { Rake::Task['qc_assay_types:create'].invoke }.to change(QcAssayType, :count).by(10).and output("-> QC Assay Types updated\n").to_stdout
     end
   end
 

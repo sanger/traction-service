@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     jsonapi_resources :receptions, only: %i[index create show]
     jsonapi_resources :qc_assay_types, only: %i[index show]
     jsonapi_resources :qc_results, only: %i[index create show]
+    jsonapi_resources :qc_results_uploads, only: %i[create]
 
     namespace :saphyr do
       jsonapi_resources :runs,          only: %i[index create show update destroy]
@@ -58,7 +59,15 @@ Rails.application.routes.draw do
     end
 
     namespace :ont do
-      jsonapi_resources :requests, except: %i[create destroy]
+      jsonapi_resources :instruments,         only: %i[index show]
+      jsonapi_resources :runs,                only: %i[index show create update]
+      jsonapi_resources :flowcells,           only: %i[index show create update]
+      jsonapi_resources :requests,            except: %i[create destroy]
+      jsonapi_resources :libraries,           only: %i[index update destroy]
+      jsonapi_resources :pools,               except: %i[destroy]
+      jsonapi_resources :plates,              only: %i[index]
+      jsonapi_resources :tubes,               only: %i[index]
+      jsonapi_resources :tag_sets
     end
   end
 

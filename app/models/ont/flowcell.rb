@@ -5,18 +5,18 @@ module Ont
   class Flowcell < ApplicationRecord
     include Uuidable
 
+    # Run has many of these flowcells up to the maximum number for the instrument.
     belongs_to :run, foreign_key: :ont_run_id, inverse_of: :flowcells
-    belongs_to :library, foreign_key: :ont_library_id, inverse_of: :flowcell
-    delegate :requests, to: :library
 
+    # We assume one-to-one relationship with pool at the moment.
+    belongs_to :pool, foreign_key: :ont_pool_id, inverse_of: :flowcell
+
+    delegate :requests, :libraries, to: :pool
+
+    # Validate the position to be a positive integer.
     validates :position,
               presence: true,
-              uniqueness: { scope: :ont_run_id,
-                            message: :duplicated_in_run }
-
-    # Make table read only. We don't want anything pushing to it.
-    def readonly?
-      true
-    end
+              numericality: { greater_than_or_equal_to: 1 }
+    validates :flowcell_id, presence: true
   end
 end

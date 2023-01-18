@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Saphyr::Flowcell, type: :model, saphyr: true do
+RSpec.describe Saphyr::Flowcell, saphyr: true do
   context 'on creation' do
     it 'must have a chip' do
       chip = create(:saphyr_chip)

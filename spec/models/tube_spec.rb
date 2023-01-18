@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Tube, type: :model do
+RSpec.describe Tube do
   it_behaves_like 'container'
 
   context 'labware' do

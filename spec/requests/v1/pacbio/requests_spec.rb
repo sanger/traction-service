@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'RequestsController', type: :request, pacbio: true do
+RSpec.describe 'RequestsController', pacbio: true do
   describe '#get' do
     let!(:requests) { create_list(:pacbio_request, 2) }
 
