@@ -17,6 +17,12 @@ module V1
                foreign_key: 'ont_run_id',
                class_name: 'Flowcell'
 
+      paginator :paged
+
+      def self.default_sort
+        [{ field: 'created_at', direction: :desc }]
+      end
+
       after_create :publish_messages
       after_update :publish_messages
 
