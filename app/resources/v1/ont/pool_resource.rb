@@ -14,7 +14,7 @@ module V1
       has_many :libraries
 
       attributes :volume, :kit_barcode, :concentration, :insert_size, :created_at, :updated_at,
-                 :library_attributes
+                 :library_attributes, :tube_barcode
       attribute :source_identifier, readonly: true
       attribute :final_library_amount, readonly: true
 
@@ -50,6 +50,10 @@ module V1
 
       def updated_at
         @model.updated_at.to_fs(:us)
+      end
+
+      def tube_barcode
+        @model.tube.barcode
       end
     end
   end
