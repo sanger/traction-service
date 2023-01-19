@@ -36,7 +36,8 @@ RSpec.describe 'PoolsController', ont: true do
         'kit_barcode' => pool.kit_barcode,
         'insert_size' => pool.insert_size,
         'updated_at' => pool.updated_at.to_fs(:us),
-        'created_at' => pool.created_at.to_fs(:us)
+        'created_at' => pool.created_at.to_fs(:us),
+        'tube_barcode' => pool.tube.barcode
       )
     end
 
@@ -82,7 +83,8 @@ RSpec.describe 'PoolsController', ont: true do
             'insert_size' => pool.insert_size,
             'final_library_amount' => pool.final_library_amount,
             'updated_at' => pool.updated_at.to_fs(:us),
-            'created_at' => pool.created_at.to_fs(:us)
+            'created_at' => pool.created_at.to_fs(:us),
+            'tube_barcode' => pool.tube.barcode
           )
         end
       end
