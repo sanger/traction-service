@@ -65,12 +65,11 @@ RSpec.describe Ont::Run, ont: true do
       expect(run.errors[:flowcells]).to include("position #{position} is duplicated in the same run")
     end
 
-    it 'must have unique flowcell pool id for a run' do
+    it 'can have duplicate flowcell pool id for a run' do
       run = build(:ont_gridion_run, flowcell_count: 2)
-      ont_pool_id = run.flowcells[0].ont_pool_id = run.flowcells[1].ont_pool_id
+      run.flowcells[0].ont_pool_id = run.flowcells[1].ont_pool_id
 
-      expect(run).not_to be_valid
-      expect(run.errors[:flowcells]).to include("pool with id #{ont_pool_id} is duplicated in the same run")
+      expect(run).to be_valid
     end
 
     it 'must have unique flowcell_id barcode' do

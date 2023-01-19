@@ -31,14 +31,6 @@ module Ont
       end
     }
 
-    # flowcell pool validations
-    validates :ont_pool_id, uniqueness: {
-      scope: :ont_run_id,
-      message: lambda do |_object, data|
-        "pool with id #{data[:value]} is duplicated in the same run"
-      end
-    }
-
     # flowcell_id barcode validations
     validates :flowcell_id, presence: true
     validates :flowcell_id,

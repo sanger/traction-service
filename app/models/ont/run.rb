@@ -41,7 +41,6 @@ module Ont
               }
 
     validate :flowcells, :position_uniqueness
-    validate :flowcells, :pool_uniqueness
     validate :flowcells, :flowcell_id_uniqueness
 
     # Check if positions are duplicated in the run.
@@ -51,16 +50,6 @@ module Ont
 
       duplicates.each do |position|
         errors.add(:flowcells, "position #{position} is duplicated in the same run")
-      end
-    end
-
-    # Check if pools are duplicated in the run.
-    def pool_uniqueness
-      ont_pool_ids = flowcells.collect(&:ont_pool_id)
-      duplicates = ont_pool_ids.group_by { |f| f }.select { |_k, v| v.size > 1 }.map(&:first)
-
-      duplicates.each do |ont_pool_id|
-        errors.add(:flowcells, "pool with id #{ont_pool_id} is duplicated in the same run")
       end
     end
 
