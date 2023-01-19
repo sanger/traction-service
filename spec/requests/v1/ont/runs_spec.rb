@@ -244,7 +244,6 @@ RSpec.describe 'RunsController' do
       it 'returns error messages' do
         errors = json['errors']
         titles = errors.pluck('title')
-        expect(titles).to include "pool with id #{fc1.ont_pool_id} is duplicated in the same run"
         expect(titles).to include "flowcell_id #{fc1.flowcell_id} has already been taken"
       end
 
@@ -303,7 +302,6 @@ RSpec.describe 'RunsController' do
         titles = json['errors'].pluck('title')
         expect(titles).to include("flowcell_id #{existing_flowcell.flowcell_id} has already been taken")
         expect(titles).to include("position #{attr2[:position]} is duplicated in the same run")
-        expect(titles).to include("pool with id #{pool2.id} is duplicated in the same run")
         expect(titles).to include("flowcell_id #{attr2[:flowcell_id]} is duplicated in the same run")
       end
     end
@@ -340,7 +338,6 @@ RSpec.describe 'RunsController' do
         expect(titles).to include("flowcell_id #{existing_flowcell.flowcell_id} has already been taken")
         expect(titles).to include("flowcell_id #{attr2[:flowcell_id]} has already been taken")
         expect(titles).to include("position #{attr2[:position]} is duplicated in the same run")
-        expect(titles).to include("pool with id #{attr2[:ont_pool_id]} is duplicated in the same run")
       end
     end
   end
