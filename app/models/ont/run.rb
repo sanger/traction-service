@@ -84,11 +84,16 @@ module Ont
     end
 
     def flowcell_attributes=(flowcell_options)
-      self.flowcells = flowcell_options.map do |attributes|
+      options_ids = flowcell_options.pluck(:id).compact
+      flowcells.each do |flowcell|
+        flowcells.delete(flowcell) if options_ids.exclude? flowcell.id
+      end
+
+      flowcell_options.map do |attributes|
         if attributes[:id]
           update_flowcell(attributes)
         else
-          Ont::Flowcell.new(attributes)
+          create_flowcell(attributes)
         end
       end
     end
@@ -96,17 +101,20 @@ module Ont
     private
 
     def update_flowcell(attributes)
-      id = attributes[:id].to_s
-      indexed_flowcells.fetch(id) { missing_flowcell(id) }
-                       .tap { |flowcell| flowcell.update(attributes) }
+      existing_flowcell = flowcells.select { |flowcell| flowcell.id == attributes[:id] }.first
+      assign_flowcell_attributes(existing_flowcell, attributes)
     end
 
-    def missing_flowcell(id)
-      raise ActiveRecord::RecordNotFound, "Ont flowcell #{id} does not exist"
+    def create_flowcell(attributes)
+      new_flowcell = flowcells.build
+      assign_flowcell_attributes(new_flowcell, attributes)
     end
 
-    def indexed_flowcells
-      @indexed_flowcells ||= flowcells.index_by { |flowcell| flowcell.id.to_s }
+    def assign_flowcell_attributes(flowcell, attributes)
+      attributes.each do |key, value|
+        method = "#{key}="
+        flowcell.send(method, value) if flowcell.respond_to?(method)
+      end
     end
 
     def generate_experiment_name
