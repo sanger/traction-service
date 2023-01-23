@@ -11,10 +11,8 @@ module Ont
 
     # This association creates a link to the instrument this run belongs to.
     # We are setting inverse_of to false to avoid detection of inverse association.
-    belongs_to :instrument,
-               class_name: 'Ont::Instrument',
-               foreign_key: :ont_instrument_id,
-               inverse_of: false
+    belongs_to :instrument, class_name: 'Ont::Instrument', foreign_key: :ont_instrument_id,
+                            inverse_of: false
 
     has_many :flowcells, foreign_key: :ont_run_id, inverse_of: :run, dependent: :destroy
 
@@ -31,8 +29,7 @@ module Ont
                end
     }
     validates :flowcells, length: {
-      maximum: :max_number_of_flowcells,
-      if: :max_number_of_flowcells,
+      maximum: :max_number_of_flowcells, if: :max_number_of_flowcells,
       message: lambda do |_object, _data|
                  'number of flowcells must be less than instrument max number'
                end
@@ -84,8 +81,7 @@ module Ont
     end
 
     def flowcell_attributes=(flowcell_options)
-      # TODO: Enable the following for transforming values
-      # transform_flowcell_attributes(flowcell_options)
+      transform_flowcell_attributes(flowcell_options)
 
       options_ids = flowcell_options.pluck(:id).compact
       flowcells.each do |flowcell|
@@ -105,7 +101,10 @@ module Ont
 
     def transform_flowcell_attributes(flowcell_options)
       flowcell_options.each do |attributes|
-        attributes[:flowcell_id]&.strip!&.upcase!
+        # because it is a frozen string
+        if attributes[:flowcell_id]
+          attributes[:flowcell_id] = attributes[:flowcell_id]&.strip&.upcase
+        end
       end
     end
 

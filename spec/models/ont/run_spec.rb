@@ -296,5 +296,30 @@ RSpec.describe Ont::Run, ont: true do
         expect(fc3.pool).to eq(pool3)
       end
     end
+
+    context 'with transformation' do
+      let(:run) { create(:ont_gridion_run, flowcell_count: 1) }
+      let(:fc1) { run.flowcells[0] }
+
+      it 'converts flowcell_id to uppercase' do
+        flowcell_id_input = 'UpPeRcAseD'
+        attr = { id: fc1.id, flowcell_id: flowcell_id_input, position: fc1.position, ont_pool_id: fc1.ont_pool_id }
+
+        run.flowcell_attributes = [attr]
+        run.save!
+
+        expect(fc1.flowcell_id).to eq(flowcell_id_input.upcase)
+      end
+
+      it 'removes leading and trailing whitespace from flowcell_id' do
+        flowcell_id_input = " \b \v \t   NOWHITESPACE    \n\r  "
+        attr = { id: fc1.id, flowcell_id: flowcell_id_input, position: fc1.position, ont_pool_id: fc1.ont_pool_id }
+
+        run.flowcell_attributes = [attr]
+        run.save!
+
+        expect(fc1.flowcell_id).to eq(flowcell_id_input.strip)
+      end
+    end
   end
 end
