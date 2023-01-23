@@ -394,4 +394,29 @@ RSpec.describe 'PoolsController', ont: true do
       end
     end
   end
+
+  describe 'filter' do
+    let!(:pools) { create_list(:ont_pool, 2) }
+
+    it 'accepts case-insensitive barcode' do
+      pool = pools.first
+      downcased = pool.tube.barcode.downcase
+      get "#{v1_ont_pools_path}?filter[barcode]=#{downcased}", headers: json_api_headers
+
+      expect(response).to have_http_status(:success)
+      expect(json['data'].length).to eq(1)
+      expect(json['data'][0]['attributes']['tube_barcode']).to eq pool.tube.barcode
+    end
+
+    it 'accepts multiple case-insensitive barcodes' do
+      barcodes = pools.map { |pool| pool.tube.barcode }
+      downcased = barcodes.map(&:downcase)
+      get "#{v1_ont_pools_path}?filter[barcode]=#{downcased.join(',')}", headers: json_api_headers
+
+      expect(response).to have_http_status(:success)
+      expect(json['data'].length).to eq(barcodes.length)
+      expect(json['data'][0]['attributes']['tube_barcode']).to eq barcodes[0]
+      expect(json['data'][1]['attributes']['tube_barcode']).to eq barcodes[1]
+    end
+  end
 end

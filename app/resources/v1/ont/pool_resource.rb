@@ -22,7 +22,7 @@ module V1
 
       # This could be changed so a pool has a barcode through tube
       filter :barcode, apply: lambda { |records, value, _options|
-        records.where(tube: Tube.find_by(barcode: value))
+        records.where(tube: Tube.where(barcode: value.map { |bc| bc.strip.upcase }))
       }
 
       # # When a pool is updated and it is attached to a run we need
