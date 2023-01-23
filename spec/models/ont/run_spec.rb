@@ -54,7 +54,7 @@ RSpec.describe Ont::Run, ont: true do
 
       build(:ont_flowcell, run:)
       expect(run).not_to be_valid # one more than max number of flowcells
-      expect(run.errors[:flowcells]).to include('must be less than instrument max number')
+      expect(run.errors[:flowcells]).to include('number of flowcells must be less than instrument max number')
     end
 
     it 'must have unique flowcell position for a run' do

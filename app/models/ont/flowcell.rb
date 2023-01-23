@@ -8,8 +8,9 @@ module Ont
     # Run has many of these flowcells up to the maximum number for the instrument.
     belongs_to :run, foreign_key: :ont_run_id, inverse_of: :flowcells
 
-    # We assume one-to-one relationship with pool.
-    belongs_to :pool, foreign_key: :ont_pool_id, inverse_of: :flowcell
+    # We assume one-to-one relationship with pool. We make it optional here to
+    # customise the validation later.
+    belongs_to :pool, foreign_key: :ont_pool_id, inverse_of: :flowcell, optional: true
 
     delegate :requests, :libraries, to: :pool
 
@@ -31,14 +32,26 @@ module Ont
       end
     }
 
+    # pool validations
+    validates :ont_pool_id, presence: {
+      message: lambda do |object, _data|
+        "pool at position #{object.position} is required"
+      end
+    }
+    validates :pool, presence: {
+      if: -> { ont_pool_id.present? },
+      message: lambda do |object, _data|
+        "pool at position #{object.position} is unknown"
+      end
+    }
+
     # flowcell_id barcode validations
     validates :flowcell_id, presence: true
-    validates :flowcell_id,
-              uniqueness: {
-                message: lambda do |_object, data|
-                  "flowcell_id #{data[:value]} has already been taken"
-                end
-              }
+    validates :flowcell_id, uniqueness: {
+      message: lambda do |object, data|
+        "flowcell_id #{data[:value]} at position #{object.position} has already been taken"
+      end
+    }
 
     # Return the max_number of flowcells for the instrument if run and instrument are present.
     def max_number_of_flowcells
