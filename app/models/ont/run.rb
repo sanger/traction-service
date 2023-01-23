@@ -86,6 +86,9 @@ module Ont
     end
 
     def flowcell_attributes=(flowcell_options)
+      # TODO: Enable the following for transforming values
+      # transform_flowcell_attributes(flowcell_options)
+
       options_ids = flowcell_options.pluck(:id).compact
       flowcells.each do |flowcell|
         flowcells.delete(flowcell) if options_ids.exclude? flowcell.id
@@ -101,6 +104,12 @@ module Ont
     end
 
     private
+
+    def transform_flowcell_attributes(flowcell_options)
+      flowcell_options.each do |attributes|
+        attributes[:flowcell_id]&.strip!&.upcase!
+      end
+    end
 
     def update_flowcell(attributes)
       existing_flowcell = flowcells.select { |flowcell| flowcell.id == attributes[:id] }.first
