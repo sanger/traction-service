@@ -28,7 +28,7 @@ module Ont
               length: {
                 minimum: 1,
                 message: lambda do |_object, _data|
-                           'there must be at least one'
+                           'there must be at least one flowcell'
                          end
               }
     validates :flowcells,
@@ -36,7 +36,7 @@ module Ont
                 maximum: :max_number_of_flowcells,
                 if: :max_number_of_flowcells,
                 message: lambda do |_object, _data|
-                  'must be less than instrument max number'
+                  'number of flowcells must be less than instrument max number'
                 end
               }
 
@@ -49,19 +49,21 @@ module Ont
       duplicates = positions.group_by { |f| f }.select { |_k, v| v.size > 1 }.map(&:first)
 
       duplicates.each do |position|
-        errors.add(:flowcells, "position #{position} is duplicated in the same run")
+        message = "position #{position} is duplicated in the same run"
+
+        errors.add(:flowcells, message) unless errors_messages.include? message
       end
     end
 
     # Check if flowcell_ids are duplicated in the run.
     def flowcell_id_uniqueness
-      flowcell_ids = flowcells.collect(&:flowcell_id)
-      duplicates = flowcell_ids.group_by { |f| f }.select { |_k, v| v.size > 1 }.map(&:first)
+      duplicates = flowcells.group_by(&:flowcell_id).select { |_k, v| v.size > 1 }.values.flatten
 
-      duplicates.each do |flowcell_id|
-        message = "flowcell_id #{flowcell_id} is duplicated in the same run"
+      duplicates.each do |flowcell|
+        message = "flowcell_id #{flowcell.flowcell_id} at position " \
+                  "#{flowcell.position} is duplicated in the same run"
 
-        errors.add(:flowcells, message)
+        errors.add(:flowcells, message) unless errors_messages.include? message
       end
     end
 
@@ -115,6 +117,10 @@ module Ont
         method = "#{key}="
         flowcell.send(method, value) if flowcell.respond_to?(method)
       end
+    end
+
+    def errors_messages
+      errors.messages.values.flatten
     end
 
     def generate_experiment_name

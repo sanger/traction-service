@@ -43,7 +43,17 @@ RSpec.describe Ont::Flowcell, ont: true do
 
   it 'must have a pool' do
     flowcell = build(:ont_flowcell, pool: nil)
+
     expect(flowcell).not_to be_valid
+    expect(flowcell.errors.messages.values.flatten).to include('pool at position 1 is required')
+  end
+
+  it 'must have a correct ont_pool_id' do
+    flowcell = build(:ont_flowcell)
+    flowcell.ont_pool_id = -1
+
+    expect(flowcell).not_to be_valid
+    expect(flowcell.errors.messages.values.flatten).to include('pool at position 1 is unknown')
   end
 
   it 'returns pool requests' do
