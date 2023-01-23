@@ -26,7 +26,7 @@ module Ont
       end
     }
     validates :position, uniqueness: {
-      scope: :ont_run_id,
+      scope: :run,
       message: lambda do |_object, data|
         "position #{data[:value]} is duplicated in the same run"
       end
@@ -35,7 +35,7 @@ module Ont
     # pool validations
     validates :ont_pool_id, presence: {
       message: lambda do |object, _data|
-        "pool at position #{object.position} is required"
+        "pool at position #{object.position} is unknown"
       end
     }
     validates :pool, presence: {
@@ -46,10 +46,15 @@ module Ont
     }
 
     # flowcell_id barcode validations
-    validates :flowcell_id, presence: true
-    validates :flowcell_id, uniqueness: {
+    validates :flowcell_id, presence: {
       message: lambda do |object, data|
-        "flowcell_id #{data[:value]} at position #{object.position} has already been taken"
+        "flowcell_id #{data[:value]} at position #{object.position} is missing"
+      end
+    }
+    validates :flowcell_id, uniqueness: {
+      scope: :run,
+      message: lambda do |object, data|
+        "flowcell_id #{data[:value]} at position #{object.position} is duplicated in the same run"
       end
     }
 

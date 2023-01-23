@@ -72,13 +72,11 @@ RSpec.describe Ont::Run, ont: true do
       expect(run).to be_valid
     end
 
-    it 'must have unique flowcell_id barcode' do
-      run1 = create(:ont_minion_run)
-      run2 = build(:ont_minion_run)
-      run2.flowcells[0].flowcell_id = run1.flowcells[0].flowcell_id
+    it 'must have unique flowcell_id in the run' do
+      run = create(:ont_gridion_run, flowcell_count: 2)
+      run.flowcells[0].flowcell_id = run.flowcells[1].flowcell_id
 
-      expect(run2.flowcells[0]).not_to be_valid
-      expect(run2).not_to be_valid
+      expect(run).not_to be_valid
     end
   end
 
