@@ -24,21 +24,19 @@ module Ont
 
     # run flowcells validations
     validates :flowcells, presence: true
-    validates :flowcells,
-              length: {
-                minimum: 1,
-                message: lambda do |_object, _data|
-                           'there must be at least one flowcell'
-                         end
-              }
-    validates :flowcells,
-              length: {
-                maximum: :max_number_of_flowcells,
-                if: :max_number_of_flowcells,
-                message: lambda do |_object, _data|
-                  'number of flowcells must be less than instrument max number'
-                end
-              }
+    validates :flowcells, length: {
+      minimum: 1,
+      message: lambda do |_object, _data|
+                 'there must be at least one flowcell'
+               end
+    }
+    validates :flowcells, length: {
+      maximum: :max_number_of_flowcells,
+      if: :max_number_of_flowcells,
+      message: lambda do |_object, _data|
+                 'number of flowcells must be less than instrument max number'
+               end
+    }
 
     validate :flowcells, :position_uniqueness
     validate :flowcells, :flowcell_id_uniqueness
@@ -112,8 +110,15 @@ module Ont
     end
 
     def update_flowcell(attributes)
-      existing_flowcell = flowcells.select { |flowcell| flowcell.id == attributes[:id] }.first
-      assign_flowcell_attributes(existing_flowcell, attributes)
+      matching = flowcells.select { |flowcell| flowcell.id == attributes[:id] }
+      case matching.length
+      when 1
+        assign_flowcell_attributes(matching[0], attributes)
+      when 0
+        raise ActiveRecord::RecordNotFound, "Ont flowcell #{id} does not exist"
+      else
+        raise ActiveRecord::RecordNotUnique, "Ont flowcell #{id} is duplicated"
+      end
     end
 
     def create_flowcell(attributes)
