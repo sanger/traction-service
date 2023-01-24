@@ -255,9 +255,4 @@ RSpec.describe Pacbio::Pool, pacbio: true do
       expect(pool.sequencing_plates).to eq([plate1, plate2])
     end
   end
-
-  it 'filters the tube barcodes while searching for a pool' do 
-    pool1 = create(:pacbio_pool)
-    
-  end
 end
