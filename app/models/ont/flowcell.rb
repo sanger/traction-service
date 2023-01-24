@@ -65,7 +65,7 @@ module Ont
 
     # Returns alternative adressing for position
     def device_id
-      map = device_id_map[run&.instrument&.instrument_type&.to_sym]
+      map = device_id_map[run&.instrument&.instrument_type]
       if map
         map[position]
       else
@@ -83,7 +83,7 @@ module Ont
           17 => '3A', 18 => '3B', 19 => '3C', 20 => '3D',
           21 => '3E', 22 => '3F', 23 => '3G', 24 => '3H'
         }
-      }
+      }.with_indifferent_access
     end
   end
 end
