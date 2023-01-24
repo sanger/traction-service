@@ -255,11 +255,12 @@ RSpec.describe QcResultsUploadFactory do
     end
   end
 
-  describe '#csv_string_without_groups' do
+  describe '#csv_string_without_first_row' do
     let(:factory) { build(:qc_results_upload_factory) }
 
     it 'returns the csv header row' do
-      expect(factory.csv_string_without_groups).to be_a String
+      expect(factory.csv_string_without_first_row).to be_a String
+      expect(factory.csv_string_without_first_row).not_to include 'SAMPLE INFORMATION'
     end
   end
 
