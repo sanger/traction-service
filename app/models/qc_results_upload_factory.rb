@@ -160,7 +160,7 @@ class QcResultsUploadFactory
       assay_type ? assay_type.key : header.strip
     end
 
-    csv = CSV.new(csv_string_without_groups, headers: true, header_converters: header_converter)
+    csv = CSV.new(csv_string_without_first_row, headers: true, header_converters: header_converter)
 
     arr_of_hashes = csv.to_a.map(&:to_hash)
 
@@ -173,7 +173,7 @@ class QcResultsUploadFactory
 
   # Returns the CSV, with the first row (groupings) removed
   # @return [String] CSV
-  def csv_string_without_groups
+  def csv_string_without_first_row
     csv_data.split("\n")[1..].join("\n")
   end
 end
