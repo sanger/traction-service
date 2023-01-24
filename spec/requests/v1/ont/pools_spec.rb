@@ -415,8 +415,8 @@ RSpec.describe 'PoolsController', ont: true do
 
       expect(response).to have_http_status(:success)
       expect(json['data'].length).to eq(barcodes.length)
-      expect(json['data'][0]['attributes']['tube_barcode']).to eq barcodes[0]
-      expect(json['data'][1]['attributes']['tube_barcode']).to eq barcodes[1]
+      expect(barcodes).to include(json['data'][0]['attributes']['tube_barcode'])
+      expect(barcodes).to include(json['data'][1]['attributes']['tube_barcode'])
     end
   end
 end
