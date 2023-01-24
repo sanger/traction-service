@@ -72,4 +72,53 @@ RSpec.describe Ont::Flowcell, ont: true do
       expect(run.flowcells.count).to be(initial_flowcell_count - 1)
     end
   end
+
+  context 'flowcell adressing' do
+    it 'returns coordinates for PromethION' do
+      run = create(:ont_promethion_run, flowcell_count: 24)
+      first = run.flowcells.find_by(position: 1)
+      last = run.flowcells.find_by(position: 24)
+
+      expect(first.position).to eq(1)
+      expect(first.device_id).to eq('1A')
+
+      expect(last.position).to eq(24)
+      expect(last.device_id).to eq('3H')
+    end
+
+    it 'includes coordinates for PromethION errors' do
+      run = create(:ont_promethion_run, flowcell_count: 2)
+      run.flowcells[0].flowcell_id = run.flowcells[1].flowcell_id
+
+      expect(run).to be_invalid
+
+      messages = run.errors_messages
+      expect(messages).to include('flowcell_id F00002 at position 1A is duplicated in the same run')
+      expect(messages).to include('flowcell_id F00002 at position 1B is duplicated in the same run')
+    end
+
+    it 'returns numbers for GridION' do
+      run = create(:ont_gridion_run, flowcell_count: 5)
+      first = run.flowcells.find_by(position: 1)
+      last = run.flowcells.find_by(position: 5)
+
+      expect(first.position).to eq(1)
+      expect(first.device_id).to eq(1)
+
+      expect(last.position).to eq(5)
+      expect(last.device_id).to eq(5)
+    end
+
+    it 'returns number for MinION' do
+      run = create(:ont_minion_run)
+      first = run.flowcells.find_by(position: 1)
+      last = run.flowcells.find_by(position: 1)
+
+      expect(first.position).to eq(1)
+      expect(first.device_id).to eq(1)
+
+      expect(last.position).to eq(1)
+      expect(last.device_id).to eq(1)
+    end
+  end
 end
