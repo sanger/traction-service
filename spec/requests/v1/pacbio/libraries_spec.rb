@@ -134,6 +134,83 @@ RSpec.describe 'LibrariesController', pacbio: true do
         expect(library_relationships['source_plate']).to be_present
       end
     end
+
+    context 'pagination' do
+      context 'default' do
+        let!(:expected_libraries) { create_list(:pacbio_library, 5, created_at: Time.zone.now + 10) }
+
+        before do
+          # There should be 10 libraries total so we get the 5 we just created
+          get "#{v1_pacbio_libraries_path}?page[number]=1&page[size]=5",
+              headers: json_api_headers
+        end
+
+        it 'has a success status' do
+          expect(response).to have_http_status(:success), response.body
+        end
+
+        it 'returns a list of libraries' do
+          expect(json['data'].length).to eq(5)
+        end
+
+        it 'returns the correct attributes', aggregate_failures: true do
+          expected_libraries.each do |library|
+            library_attributes = find_resource(type: 'libraries', id: library.id)['attributes']
+            expect(library_attributes).to include(
+              'concentration' => library.concentration,
+              'volume' => library.volume,
+              'template_prep_kit_box_barcode' => library.template_prep_kit_box_barcode,
+              'insert_size' => library.insert_size,
+              'state' => library.state,
+              'created_at' => library.created_at.to_fs(:us)
+            )
+          end
+        end
+      end
+
+      context 'filters' do
+        context 'source_identifier' do
+          it 'when the source_identifier belongs to a plate' do
+            pacbio_plate = create(:plate_with_wells_and_requests, pipeline: 'pacbio')
+            pacbio_requests = pacbio_plate.wells.flat_map(&:pacbio_requests)
+            pacbio_library = create(:pacbio_library, request: pacbio_requests[0])
+            get "#{v1_pacbio_libraries_path}?filter[source_identifier]=#{pacbio_plate.barcode}",
+                headers: json_api_headers
+
+            expect(response).to have_http_status(:success)
+            expect(json['data'].length).to eq(1)
+            library_attributes = find_resource(type: 'libraries', id: pacbio_library.id)['attributes']
+            expect(library_attributes).to include(
+              'concentration' => pacbio_library.concentration,
+              'volume' => pacbio_library.volume,
+              'template_prep_kit_box_barcode' => pacbio_library.template_prep_kit_box_barcode,
+              'insert_size' => pacbio_library.insert_size,
+              'state' => pacbio_library.state,
+              'created_at' => pacbio_library.created_at.to_fs(:us)
+            )
+          end
+
+          it 'when the source_identifier belongs to a tube' do
+            pacbio_tube = create(:tube_with_pacbio_request)
+            pacbio_library = create(:pacbio_library, request: pacbio_tube.pacbio_requests[0])
+            get "#{v1_pacbio_libraries_path}?filter[source_identifier]=#{pacbio_tube.barcode}",
+                headers: json_api_headers
+
+            expect(response).to have_http_status(:success)
+            expect(json['data'].length).to eq(1)
+            library_attributes = find_resource(type: 'libraries', id: pacbio_library.id)['attributes']
+            expect(library_attributes).to include(
+              'concentration' => pacbio_library.concentration,
+              'volume' => pacbio_library.volume,
+              'template_prep_kit_box_barcode' => pacbio_library.template_prep_kit_box_barcode,
+              'insert_size' => pacbio_library.insert_size,
+              'state' => pacbio_library.state,
+              'created_at' => pacbio_library.created_at.to_fs(:us)
+            )
+          end
+        end
+      end
+    end
   end
 
   describe '#destroy' do
