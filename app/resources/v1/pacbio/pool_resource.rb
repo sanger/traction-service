@@ -20,6 +20,20 @@ module V1
                  :library_attributes
       attribute :source_identifier, readonly: true
 
+      # We can only make this endpoint paginated when pacbio run create/edit page
+      # No longer requires all records to be pulled back
+      #
+      # paginator :paged
+
+      # def self.default_sort
+      #   [{ field: 'created_at', direction: :desc }]
+      # end
+
+      # This could be changed so a pool has a barcode through tube
+      filter :barcode, apply: lambda { |records, value, _options|
+        records.where(tube: Tube.find_by(barcode: value))
+      }
+
       # When a pool is updated and it is attached to a run we need
       # to republish the messages for the run
       after_update :publish_messages
