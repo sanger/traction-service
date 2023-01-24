@@ -27,8 +27,8 @@ module V1
       # Filters
       # join pool with tube as a pool has a barcode through tube
       filter :barcode, apply: lambda { |records, value, _options|
-      records.joins(:tube).where(tube: { barcode: value }) }
-
+                                records.joins(:tube).where(tube: { barcode: value })
+                              }
 
       def library_attributes=(library_parameters)
         @model.library_attributes = library_parameters.map do |library|
