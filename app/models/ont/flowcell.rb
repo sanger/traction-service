@@ -35,32 +35,55 @@ module Ont
     # pool validations
     validates :ont_pool_id, presence: {
       message: lambda do |object, _data|
-        "pool at position #{object.position} is unknown"
+        "pool at position #{object.device_id} is unknown"
       end
     }
     validates :pool, presence: {
       if: -> { ont_pool_id.present? },
       message: lambda do |object, _data|
-        "pool at position #{object.position} is unknown"
+        "pool at position #{object.device_id} is unknown"
       end
     }
 
     # flowcell_id barcode validations
     validates :flowcell_id, presence: {
       message: lambda do |object, data|
-        "flowcell_id #{data[:value]} at position #{object.position} is missing"
+        "flowcell_id #{data[:value]} at position #{object.device_id} is missing"
       end
     }
     validates :flowcell_id, uniqueness: {
       scope: :run,
       message: lambda do |object, data|
-        "flowcell_id #{data[:value]} at position #{object.position} is duplicated in the same run"
+        "flowcell_id #{data[:value]} at position #{object.device_id} is duplicated in the same run"
       end
     }
 
     # Return the max_number of flowcells for the instrument if run and instrument are present.
     def max_number_of_flowcells
       run.present? && run.instrument.present? && run.instrument.max_number_of_flowcells
+    end
+
+    # Returns alternative adressing for position
+    def device_id
+      map = device_id_map[run&.instrument&.instrument_type&.to_sym]
+      if map
+        map[position]
+      else
+        position
+      end
+    end
+
+    def device_id_map
+      @device_id_map ||= {
+        PromethION: {
+          1 => '1A', 2 => '1B', 3 => '1C', 4 => '1D',
+          5 => '1E', 6 => '1F', 7 => '1G', 8 => '1H',
+          9 => '2A', 10 => '2B', 11 => '2C', 12 => '2D',
+          13 => '2E', 14 => '2F', 15 => '2G', 16 => '2H',
+          17 => '3A', 18 => '3B', 19 => '3C', 20 => '3D',
+          21 => '3E', 22 => '3F', 23 => '3G', 24 => '3H'
+        }
+      }
     end
   end
 end

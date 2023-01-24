@@ -40,7 +40,7 @@ module Ont
 
     # Check if positions are duplicated in the run.
     def position_uniqueness
-      positions = flowcells.collect(&:position)
+      positions = flowcells.collect(&:device_id)
       duplicates = positions.group_by { |f| f }.select { |_k, v| v.size > 1 }.map(&:first)
 
       duplicates.each do |position|
@@ -56,7 +56,7 @@ module Ont
 
       duplicates.each do |flowcell|
         message = "flowcell_id #{flowcell.flowcell_id} at position " \
-                  "#{flowcell.position} is duplicated in the same run"
+                  "#{flowcell.device_id} is duplicated in the same run"
 
         errors.add(:flowcells, message) unless errors_messages.include? message
       end
@@ -97,6 +97,11 @@ module Ont
       end
     end
 
+    # Returns error messages added so far
+    def errors_messages
+      errors.messages.values.flatten
+    end
+
     private
 
     def transform_flowcell_attributes(flowcell_options)
@@ -130,10 +135,6 @@ module Ont
         method = "#{key}="
         flowcell.send(method, value) if flowcell.respond_to?(method)
       end
-    end
-
-    def errors_messages
-      errors.messages.values.flatten
     end
 
     def generate_experiment_name
