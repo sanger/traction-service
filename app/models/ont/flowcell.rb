@@ -73,17 +73,21 @@ module Ont
       end
     end
 
+    private
+
     def device_id_map
       @device_id_map ||= {
-        PromethION: {
-          1 => '1A', 2 => '1B', 3 => '1C', 4 => '1D',
-          5 => '1E', 6 => '1F', 7 => '1G', 8 => '1H',
-          9 => '2A', 10 => '2B', 11 => '2C', 12 => '2D',
-          13 => '2E', 14 => '2F', 15 => '2G', 16 => '2H',
-          17 => '3A', 18 => '3B', 19 => '3C', 20 => '3D',
-          21 => '3E', 22 => '3F', 23 => '3G', 24 => '3H'
-        }
+        PromethION: promethion_device_ids
       }.with_indifferent_access
+    end
+
+    def promethion_device_ids
+      device_ids = (1..3).flat_map do |i|
+        ('A'..'H').flat_map do |j|
+          "#{i}#{j}"
+        end
+      end
+      device_ids.each_with_index.to_h { |v, i| [i + 1, v] }
     end
   end
 end
