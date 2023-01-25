@@ -37,6 +37,7 @@ module Ont
       maximum: :max_number_of_flowcells, if: :max_number_of_flowcells,
       message: 'number of flowcells must be less than instrument max number'
     }
+    # rubocop:enable Rails/I18nLocaleTexts
 
     # position uniqueness
     # position must be unique within the run. Previously this validation was
