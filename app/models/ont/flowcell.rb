@@ -95,7 +95,7 @@ module Ont
     def promethion_position_displays
       position_displays = (1..3).flat_map do |i|
         ('A'..'H').flat_map do |j|
-          "#{j}#{i}"
+          "#{i}#{j}"
         end
       end
       position_displays.each_with_index.to_h { |v, i| [i + 1, v] }
