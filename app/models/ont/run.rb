@@ -45,13 +45,13 @@ module Ont
     # expected when creating run and flowcells together.
     validate :flowcells, :position_uniqueness
 
-    # flowcell_id uniqueness validation
-    # flowcell_id must be unique within the run.
-    validate :flowcells, :flowcell_id_uniqueness
-
-    # Check if positions are duplicated in the run. Previously this validation was
+    # flowcell_id uniqueness
+    # flowcell_id must be unique within the run. Previously this validation was
     # on Flowcell as scoped uniqueness validation but it did not work as
     # expected when creating run and flowcells together.
+    validate :flowcells, :flowcell_id_uniqueness
+
+    # Check if positions are duplicated in the run.
     def position_uniqueness
       positions = flowcells.collect(&:position_display)
       duplicates = positions.group_by { |f| f }.select { |_k, v| v.size > 1 }.map(&:first)
