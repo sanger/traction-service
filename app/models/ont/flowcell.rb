@@ -69,7 +69,7 @@ module Ont
 
     # Return the max_number of flowcells for the instrument if run and instrument are present.
     def max_number_of_flowcells
-      run&.instrument&.max_number_of_flowcells
+      run&.max_number_of_flowcells
     end
 
     # Returns alternative adressing for position if available
