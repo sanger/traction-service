@@ -77,7 +77,7 @@ module Ont
 
     # Return the max_number of flowcells for the instrument if instrument is present.
     def max_number_of_flowcells
-      instrument.present? && instrument.max_number_of_flowcells
+      instrument&.max_number_of_flowcells
     end
 
     # Generate the experiment_name using the id of the run.
