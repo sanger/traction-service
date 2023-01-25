@@ -31,6 +31,17 @@ RSpec.describe Ont::Flowcell, ont: true do
     expect(flowcell).not_to be_valid
   end
 
+  it 'must have an integer position' do
+    flowcell = build(:ont_flowcell, position: 'NOT_NUMBER')
+    expect(flowcell).not_to be_valid
+  end
+
+  it 'must have a correct position range' do
+    flowcell = build(:ont_flowcell)
+    flowcell.position = flowcell.run.instrument.max_number_of_flowcells + 1
+    expect(flowcell).not_to be_valid
+  end
+
   it 'must have a run' do
     flowcell = build(:ont_flowcell, run: nil)
     expect(flowcell).not_to be_valid
@@ -45,7 +56,7 @@ RSpec.describe Ont::Flowcell, ont: true do
     flowcell = build(:ont_flowcell, pool: nil)
 
     expect(flowcell).not_to be_valid
-    expect(flowcell.errors.messages.values.flatten).to include('pool at position 1 is unknown')
+    expect(flowcell.errors.full_messages).to include('Pool pool at position 1 is unknown')
   end
 
   it 'must have a correct ont_pool_id' do
@@ -53,7 +64,7 @@ RSpec.describe Ont::Flowcell, ont: true do
     flowcell.ont_pool_id = -1
 
     expect(flowcell).not_to be_valid
-    expect(flowcell.errors.messages.values.flatten).to include('pool at position 1 is unknown')
+    expect(flowcell.errors.full_messages).to include('Pool pool at position 1 is unknown')
   end
 
   it 'returns pool requests' do
@@ -80,21 +91,20 @@ RSpec.describe Ont::Flowcell, ont: true do
       last = run.flowcells.find_by(position: 24)
 
       expect(first.position).to eq(1)
-      expect(first.device_id).to eq('1A')
+      expect(first.position_display).to eq('A1')
 
       expect(last.position).to eq(24)
-      expect(last.device_id).to eq('3H')
+      expect(last.position_display).to eq('H3')
     end
 
     it 'includes coordinates for PromethION errors' do
       run = create(:ont_promethion_run, flowcell_count: 2)
-      run.flowcells[0].flowcell_id = run.flowcells[1].flowcell_id
+      flowcell_id = run.flowcells[0].flowcell_id = run.flowcells[1].flowcell_id
 
       expect(run).to be_invalid
 
-      messages = run.errors_messages
-      expect(messages).to include('flowcell_id F00002 at position 1A is duplicated in the same run')
-      expect(messages).to include('flowcell_id F00002 at position 1B is duplicated in the same run')
+      expect(run.errors.full_messages).to include("Flowcells flowcell_id #{flowcell_id} at position A1 is duplicated in the same run")
+      expect(run.errors.full_messages).to include("Flowcells flowcell_id #{flowcell_id} at position B1 is duplicated in the same run")
     end
 
     it 'returns numbers for GridION' do
@@ -103,10 +113,10 @@ RSpec.describe Ont::Flowcell, ont: true do
       last = run.flowcells.find_by(position: 5)
 
       expect(first.position).to eq(1)
-      expect(first.device_id).to eq(1)
+      expect(first.position_display).to eq(1)
 
       expect(last.position).to eq(5)
-      expect(last.device_id).to eq(5)
+      expect(last.position_display).to eq(5)
     end
 
     it 'returns number for MinION' do
@@ -115,10 +125,10 @@ RSpec.describe Ont::Flowcell, ont: true do
       last = run.flowcells.find_by(position: 1)
 
       expect(first.position).to eq(1)
-      expect(first.device_id).to eq(1)
+      expect(first.position_display).to eq(1)
 
       expect(last.position).to eq(1)
-      expect(last.device_id).to eq(1)
+      expect(last.position_display).to eq(1)
     end
   end
 end

@@ -5,16 +5,29 @@ module Ont
   class Flowcell < ApplicationRecord
     include Uuidable
 
+    # flowcell_ids have 3 letters followed by 3 numbers
+    FLOWCELL_ID_FORMAT = 'ABC%03d'
+
     # Run has many of these flowcells up to the maximum number for the instrument.
     belongs_to :run, foreign_key: :ont_run_id, inverse_of: :flowcells
 
     # We assume one-to-one relationship with pool. We make it optional here to
-    # customise the validation later.
+    # remove the default presence validation to customise the validations below.
     belongs_to :pool, foreign_key: :ont_pool_id, inverse_of: :flowcell, optional: true
 
     delegate :requests, :libraries, to: :pool
 
     # flowcell position validations
+    # position must exist.
+    # position must be an integer.
+    # position must be in range between one and the max number of the instrument.
+    # position must be unique among the others in the same run. This scoped
+    # position uniqueness within the run is validated by run because the scoped
+    # uniqueness validation does not work properly when run does not have an id
+    # and it accepts nested attributes to autosave its flowcells.
+    # Numericality validations are listed separately to avoid duplicated
+    # validation keys.
+
     validates :position, presence: true
     validates :position, numericality: { only_integer: true }
     validates :position, numericality: {
@@ -25,47 +38,43 @@ module Ont
         "position #{data[:value]} is out of range for the instrument"
       end
     }
-    validates :position, uniqueness: {
-      scope: :run,
-      message: lambda do |_object, data|
-        "position #{data[:value]} is duplicated in the same run"
-      end
-    }
 
     # pool validations
-    validates :ont_pool_id, presence: {
-      message: lambda do |object, _data|
-        "pool at position #{object.device_id} is unknown"
-      end
-    }
+    # pool must exist. The error message is given as "is unknown" because of
+    # how the UI shows the message. The UI gets a tube barcode and finds the
+    # corresponding pool. If it can't find the pool, it sends a nil
+    # ont_pool_id . When it shows the error message, the invalid tube barcode
+    # entered by the user is still shown in the page. If the error message was
+    # "is required" or "is missing", it would be confusing.
+    # We do not validate ont_pool_id separately as the presence of the pool
+    # covers it.
+
     validates :pool, presence: {
-      if: -> { ont_pool_id.present? },
       message: lambda do |object, _data|
-        "pool at position #{object.device_id} is unknown"
+        "pool at position #{object.position_display} is unknown"
       end
     }
 
-    # flowcell_id barcode validations
+    # flowcell_id validations
+    # flowcell_id must exist.
+    # flowcell_id uniqueness within the run is validated by run because the scoped
+    # uniqueness validation does not work properly when run does not have an id
+    # and it accepts nested attributes to autosave its flowcells.
+
     validates :flowcell_id, presence: {
       message: lambda do |object, data|
-        "flowcell_id #{data[:value]} at position #{object.device_id} is missing"
-      end
-    }
-    validates :flowcell_id, uniqueness: {
-      scope: :run,
-      message: lambda do |object, data|
-        "flowcell_id #{data[:value]} at position #{object.device_id} is duplicated in the same run"
+        "flowcell_id #{data[:value]} at position #{object.position_display} is missing"
       end
     }
 
     # Return the max_number of flowcells for the instrument if run and instrument are present.
     def max_number_of_flowcells
-      run.present? && run.instrument.present? && run.instrument.max_number_of_flowcells
+      run&.instrument&.max_number_of_flowcells
     end
 
-    # Returns alternative adressing for position
-    def device_id
-      map = device_id_map[run&.instrument&.instrument_type]
+    # Returns alternative adressing for position if available
+    def position_display
+      map = position_display_map[run&.instrument&.instrument_type]
       if map
         map[position]
       else
@@ -75,19 +84,21 @@ module Ont
 
     private
 
-    def device_id_map
-      @device_id_map ||= {
-        PromethION: promethion_device_ids
+    # Maps positions to alternative addressing for instruments
+    def position_display_map
+      @position_display_map ||= {
+        PromethION: promethion_position_displays
       }.with_indifferent_access
     end
 
-    def promethion_device_ids
-      device_ids = (1..3).flat_map do |i|
+    # Generates alternative adressing for promethION, A1...H1, A2...H2, and A3..H3
+    def promethion_position_displays
+      position_displays = (1..3).flat_map do |i|
         ('A'..'H').flat_map do |j|
-          "#{i}#{j}"
+          "#{j}#{i}"
         end
       end
-      device_ids.each_with_index.to_h { |v, i| [i + 1, v] }
+      position_displays.each_with_index.to_h { |v, i| [i + 1, v] }
     end
   end
 end
