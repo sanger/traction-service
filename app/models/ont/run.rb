@@ -111,6 +111,8 @@ module Ont
         if attributes[:id]
           update_flowcell(attributes)
         else
+          # TODO: Create it here; check this one if takes attributes
+          # flowcells.build(attributes)
           create_flowcell(attributes)
         end
       end
@@ -121,6 +123,7 @@ module Ont
     # Change attributes before using them
     # Strip and upcase flowcell_ids to accept case-insensitive barcodes.
     def transform_flowcell_attributes(flowcell_options)
+      # TODO: Move this as an attribute writer to flowcell
       flowcell_options.each do |attributes|
         # because it is a frozen string
         if attributes[:flowcell_id]
