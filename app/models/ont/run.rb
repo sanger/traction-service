@@ -28,16 +28,14 @@ module Ont
     # flowcells, we do not need a separate presence validation.
     # The number of flowcells must be less than or equal to the instrument max number.
 
-    # rubocop:disable Rails/I18nLocaleTexts
     validates :flowcells, length: {
       minimum: 1,
-      message: 'there must be at least one flowcell'
+      message: :run_min_flowcells
     }
     validates :flowcells, length: {
       maximum: :max_number_of_flowcells, if: :max_number_of_flowcells,
-      message: 'number of flowcells must be less than instrument max number'
+      message: :run_max_flowcells
     }
-    # rubocop:enable Rails/I18nLocaleTexts
 
     # position uniqueness
     # position must be unique within the run. Previously this validation was
@@ -57,9 +55,7 @@ module Ont
       duplicates = positions.group_by { |f| f }.select { |_k, v| v.size > 1 }.map(&:first)
 
       duplicates.each do |position|
-        message = "position #{position} is duplicated in the same run"
-
-        errors.add(:flowcells, message)
+        errors.add(:flowcells, :position_duplicated, position:)
       end
     end
 
@@ -68,10 +64,8 @@ module Ont
       duplicates = flowcells.group_by(&:flowcell_id).select { |_k, v| v.size > 1 }.values.flatten
 
       duplicates.each do |flowcell|
-        message = "flowcell_id #{flowcell.flowcell_id} at position " \
-                  "#{flowcell.position_display} is duplicated in the same run"
-
-        errors.add(:flowcells, message)
+        errors.add(:flowcells, :flowcell_id_duplicated, flowcell_id: flowcell.flowcell_id,
+                                                        display: flowcell.position_display)
       end
     end
 

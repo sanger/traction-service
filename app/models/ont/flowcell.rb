@@ -34,9 +34,7 @@ module Ont
       greater_than_or_equal_to: 1,
       less_than_or_equal_to: :max_number_of_flowcells,
       if: :max_number_of_flowcells,
-      message: lambda do |_object, data|
-        "position #{data[:value]} is out of range for the instrument"
-      end
+      message: :position_out_of_range
     }
 
     # pool validations
@@ -48,11 +46,11 @@ module Ont
     # "is required" or "is missing", it would be confusing.
     # We do not validate ont_pool_id separately as the presence of the pool
     # covers it.
-
+    # We used generate_message to be able to pass options from this object.
     validates :pool, presence: {
-      message: lambda do |object, _data|
-        "pool at position #{object.position_display} is unknown"
-      end
+      message: lambda { |object, _data|
+        object.errors.generate_message(:pool, :pool_unknown, display: object.position_display)
+      }
     }
 
     # flowcell_id validations
@@ -60,11 +58,13 @@ module Ont
     # flowcell_id uniqueness within the run is validated by run because the scoped
     # uniqueness validation does not work properly when run does not have an id
     # and it accepts nested attributes to autosave its flowcells.
-
+    # # We used generate_message to be able to pass options from this object.
     validates :flowcell_id, presence: {
-      message: lambda do |object, data|
-        "flowcell_id #{data[:value]} at position #{object.position_display} is missing"
-      end
+      message: lambda { |object, _data|
+        object.errors.generate_message(
+          :flowcell_id, :flowcell_id_missing, display: object.position_display
+        )
+      }
     }
 
     # Return the max_number of flowcells for the instrument if run and instrument are present.
@@ -87,11 +87,12 @@ module Ont
     # Maps positions to alternative addressing for instruments
     def position_display_map
       @position_display_map ||= {
-        PromethION: promethion_position_displays
+        PromethION: promethion_position_displays,
+        GridION: gridion_position_displays
       }.with_indifferent_access
     end
 
-    # Generates alternative adressing for promethION, A1...H1, A2...H2, and A3..H3
+    # Generates alternative adressing for promethION, A1..H1, A2..H2, and A3..H3
     def promethion_position_displays
       position_displays = (1..3).flat_map do |i|
         ('A'..'H').flat_map do |j|
@@ -99,6 +100,11 @@ module Ont
         end
       end
       position_displays.each_with_index.to_h { |v, i| [i + 1, v] }
+    end
+
+    # Generates alternative adressing for gridION, x1..x5
+    def gridion_position_displays
+      (1..5).index_with { |i| "x#{i}" }
     end
   end
 end
