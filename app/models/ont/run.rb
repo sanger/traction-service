@@ -104,45 +104,17 @@ module Ont
         flowcells.delete(flowcell) if options_ids.exclude? flowcell.id
       end
 
-      # Update existing flowcells or build new ones
+      # Update existing flowcells or create new ones
       flowcell_options.map do |attributes|
         if attributes[:id]
-          update_flowcell(attributes)
+          flowcells.find(attributes[:id]).assign_attributes(attributes)
         else
-          # TODO: Create it here; check this one if takes attributes
-          # flowcells.build(attributes)
-          create_flowcell(attributes)
+          flowcells.build(attributes)
         end
       end
     end
 
     private
-
-    # Assing attributes to an existing flowcell. The flowcell is found by the
-    # id given in the attributes. If there is no flowcell with that id, an
-    # exception is raised.
-    def update_flowcell(attributes)
-      matching = flowcells.select { |flowcell| flowcell.id == attributes[:id] }
-      record_not_found(attributes[:id]) unless matching
-      assign_flowcell_attributes(matching[0], attributes)
-    end
-
-    def record_not_found(id)
-      raise ActiveRecord::RecordNotFound, "Ont flowcell #{id} does not exist"
-    end
-
-    # Create a new flowcell instance and assign attributes.
-    def create_flowcell(attributes)
-      new_flowcell = flowcells.build
-      assign_flowcell_attributes(new_flowcell, attributes)
-    end
-
-    def assign_flowcell_attributes(flowcell, attributes)
-      attributes.each do |key, value|
-        method = "#{key}="
-        flowcell.send(method, value) if flowcell.respond_to?(method)
-      end
-    end
 
     def generate_experiment_name
       return if experiment_name.present?
