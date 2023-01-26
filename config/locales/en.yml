@@ -60,7 +60,7 @@ en:
             flowcells:
               run_min_flowcells: there must be at least one flowcell
               run_max_flowcells: number of flowcells must be less than instrument max number
-              position_duplicated: position %{position} is duplicated in the same run
+              position_duplicated: position %{display} is duplicated in the same run
               flowcell_id_duplicated: flowcell_id %{flowcell_id} at position %{display} is duplicated in the same run
         reception:
           attributes:
