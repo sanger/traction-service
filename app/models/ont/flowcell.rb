@@ -17,6 +17,9 @@ module Ont
 
     delegate :requests, :libraries, to: :pool
 
+    # Returns the max_number of flowcells for the instrument if run and instrument are present.
+    delegate :max_number_of_flowcells, to: :run, allow_nil: true
+
     # flowcell position validations
     # position must exist.
     # position must be an integer.
@@ -67,13 +70,9 @@ module Ont
       }
     }
 
-    # Return the max_number of flowcells for the instrument if run and instrument are present.
-    def max_number_of_flowcells
-      run&.max_number_of_flowcells
-    end
-
     # Returns alternative adressing for position if available
     def position_display
+      # TODO: Get this information from Instrument
       map = position_display_map[run&.instrument&.instrument_type]
       if map
         map[position]
