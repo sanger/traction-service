@@ -229,7 +229,7 @@ RSpec.describe Ont::Run, ont: true do
         expect(fc1.pool).to eq(pool1)
 
         # Second flowcell has been changed.
-        expect(fc2.flowcell_id).to eq(attr2[:flowcell_id])
+        expect(fc2.flowcell_id).to eq(attr2[:flowcell_id].upcase) # flowcell_id is upcased
         expect(fc2.position).to eq(attr2[:position])
         expect(fc2.ont_pool_id).to eq(attr2[:ont_pool_id])
         expect(fc2.pool).to eq(pool2)
