@@ -33,7 +33,7 @@ module V1
         return recs unless recs.empty?
 
         # If no tubes match the source identifier we check plates
-        return records.joins(:well).joins(:plate).where(plate: { barcode: value })
+        return records.joins(:plate).where(plate: { barcode: value })
       }
 
       def self.default_sort
