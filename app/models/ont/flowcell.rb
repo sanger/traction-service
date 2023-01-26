@@ -92,7 +92,7 @@ module Ont
       }.with_indifferent_access
     end
 
-    # Generates alternative adressing for promethION, A1..H1, A2..H2, and A3..H3
+    # Generates alternative adressing for promethION, 1A..1H, 2A..2H, and 3A..3H
     def promethion_position_displays
       position_displays = (1..3).flat_map do |i|
         ('A'..'H').flat_map do |j|
