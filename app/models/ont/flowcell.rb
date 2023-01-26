@@ -81,6 +81,11 @@ module Ont
       end
     end
 
+    # Strip and upcase flowcell_ids to accept case-insensitive barcodes
+    def flowcell_id=(value)
+      super(value&.strip&.upcase)
+    end
+
     private
 
     # Maps positions to alternative addressing for instruments

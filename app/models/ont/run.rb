@@ -98,8 +98,6 @@ module Ont
     # without saving.
 
     def flowcell_attributes=(flowcell_options)
-      transform_flowcell_attributes(flowcell_options)
-
       # Delete flowcells if attributes are not given
       options_ids = flowcell_options.pluck(:id).compact
       flowcells.each do |flowcell|
@@ -119,18 +117,6 @@ module Ont
     end
 
     private
-
-    # Change attributes before using them
-    # Strip and upcase flowcell_ids to accept case-insensitive barcodes.
-    def transform_flowcell_attributes(flowcell_options)
-      # TODO: Move this as an attribute writer to flowcell
-      flowcell_options.each do |attributes|
-        # because it is a frozen string
-        if attributes[:flowcell_id]
-          attributes[:flowcell_id] = attributes[:flowcell_id]&.strip&.upcase
-        end
-      end
-    end
 
     # Assing attributes to an existing flowcell. The flowcell is found by the
     # id given in the attributes. If there is no flowcell with that id, an
