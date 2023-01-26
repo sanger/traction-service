@@ -59,10 +59,11 @@ RSpec.describe Ont::Run, ont: true do
 
     it 'must have unique flowcell position for a run' do
       run = build(:ont_gridion_run, flowcell_count: 2)
-      position = run.flowcells[0].position = run.flowcells[1].position = 2
+      run.flowcells[0].position = run.flowcells[1].position = 2
+      display = run.flowcells[0].position_display
 
       expect(run).not_to be_valid
-      expect(run.errors[:flowcells]).to include("position #{position} is duplicated in the same run")
+      expect(run.errors[:flowcells]).to include("position #{display} is duplicated in the same run")
     end
 
     it 'can have duplicate flowcell pool id for a run' do

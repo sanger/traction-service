@@ -244,7 +244,7 @@ RSpec.describe 'RunsController' do
       it 'returns error messages' do
         errors = json['errors']
         titles = errors.pluck('title')
-        expect(titles).to include "flowcell_id #{fc1.flowcell_id} at position #{fc2.position} is duplicated in the same run"
+        expect(titles).to include "flowcell_id #{fc1.flowcell_id} at position #{fc2.position_display} is duplicated in the same run"
       end
 
       context 'messages' do
@@ -300,8 +300,8 @@ RSpec.describe 'RunsController' do
         expect(response).to have_http_status(:unprocessable_entity), response.body
 
         titles = json['errors'].pluck('title')
-        expect(titles).to include("position #{attr2[:position]} is duplicated in the same run")
-        expect(titles).to include("flowcell_id #{attr2[:flowcell_id]} at position #{attr2[:position]} is duplicated in the same run")
+        expect(titles).to include("position x#{attr2[:position]} is duplicated in the same run")
+        expect(titles).to include("flowcell_id #{attr2[:flowcell_id]} at position x#{attr2[:position]} is duplicated in the same run")
       end
     end
 
@@ -334,8 +334,8 @@ RSpec.describe 'RunsController' do
         expect(response).to have_http_status(:unprocessable_entity), response.body
 
         titles = json['errors'].pluck('title')
-        expect(titles).to include("flowcell_id #{attr3[:flowcell_id]} at position #{attr3[:position]} is duplicated in the same run")
-        expect(titles).to include("position #{attr3[:position]} is duplicated in the same run")
+        expect(titles).to include("flowcell_id #{attr3[:flowcell_id]} at position x#{attr3[:position]} is duplicated in the same run")
+        expect(titles).to include("position x#{attr3[:position]} is duplicated in the same run")
       end
     end
   end

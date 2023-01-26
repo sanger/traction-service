@@ -56,7 +56,7 @@ RSpec.describe Ont::Flowcell, ont: true do
     flowcell = build(:ont_flowcell, pool: nil)
 
     expect(flowcell).not_to be_valid
-    expect(flowcell.errors.full_messages).to include('Pool pool at position 1 is unknown')
+    expect(flowcell.errors.full_messages).to include("Pool pool at position #{flowcell.position_display} is unknown")
   end
 
   it 'must have a correct ont_pool_id' do
@@ -64,7 +64,7 @@ RSpec.describe Ont::Flowcell, ont: true do
     flowcell.ont_pool_id = -1
 
     expect(flowcell).not_to be_valid
-    expect(flowcell.errors.full_messages).to include('Pool pool at position 1 is unknown')
+    expect(flowcell.errors.full_messages).to include("Pool pool at position #{flowcell.position_display} is unknown")
   end
 
   it 'returns pool requests' do
@@ -91,32 +91,34 @@ RSpec.describe Ont::Flowcell, ont: true do
       last = run.flowcells.find_by(position: 24)
 
       expect(first.position).to eq(1)
-      expect(first.position_display).to eq('A1')
+      expect(first.position_display).to eq('1A')
 
       expect(last.position).to eq(24)
-      expect(last.position_display).to eq('H3')
+      expect(last.position_display).to eq('3H')
     end
 
     it 'includes coordinates for PromethION errors' do
       run = create(:ont_promethion_run, flowcell_count: 2)
       flowcell_id = run.flowcells[0].flowcell_id = run.flowcells[1].flowcell_id
+      display0 = run.flowcells[0].position_display
+      display1 = run.flowcells[1].position_display
 
       expect(run).to be_invalid
 
-      expect(run.errors.full_messages).to include("Flowcells flowcell_id #{flowcell_id} at position A1 is duplicated in the same run")
-      expect(run.errors.full_messages).to include("Flowcells flowcell_id #{flowcell_id} at position B1 is duplicated in the same run")
+      expect(run.errors.full_messages).to include("Flowcells flowcell_id #{flowcell_id} at position #{display0} is duplicated in the same run")
+      expect(run.errors.full_messages).to include("Flowcells flowcell_id #{flowcell_id} at position #{display1} is duplicated in the same run")
     end
 
-    it 'returns numbers for GridION' do
+    it 'returns x-positions for GridION' do
       run = create(:ont_gridion_run, flowcell_count: 5)
       first = run.flowcells.find_by(position: 1)
       last = run.flowcells.find_by(position: 5)
 
       expect(first.position).to eq(1)
-      expect(first.position_display).to eq(1)
+      expect(first.position_display).to eq('x1')
 
       expect(last.position).to eq(5)
-      expect(last.position_display).to eq(5)
+      expect(last.position_display).to eq('x5')
     end
 
     it 'returns number for MinION' do
