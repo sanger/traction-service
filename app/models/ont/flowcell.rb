@@ -72,43 +72,13 @@ module Ont
 
     # Returns alternative adressing for position if available
     def position_display
-      # TODO: Get this information from Instrument
-      map = position_display_map[run&.instrument&.instrument_type]
-      if map
-        map[position]
-      else
-        position
-      end
+      map = run&.instrument&.position_names
+      map.present? ? map[position] : position
     end
 
     # Strip and upcase flowcell_ids to accept case-insensitive barcodes
     def flowcell_id=(value)
       super(value&.strip&.upcase)
-    end
-
-    private
-
-    # Maps positions to alternative addressing for instruments
-    def position_display_map
-      @position_display_map ||= {
-        PromethION: promethion_position_displays,
-        GridION: gridion_position_displays
-      }.with_indifferent_access
-    end
-
-    # Generates alternative adressing for promethION, 1A..1H, 2A..2H, and 3A..3H
-    def promethion_position_displays
-      position_displays = (1..3).flat_map do |i|
-        ('A'..'H').flat_map do |j|
-          "#{i}#{j}"
-        end
-      end
-      position_displays.each_with_index.to_h { |v, i| [i + 1, v] }
-    end
-
-    # Generates alternative adressing for gridION, x1..x5
-    def gridion_position_displays
-      (1..5).index_with { |i| "x#{i}" }
     end
   end
 end
