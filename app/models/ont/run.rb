@@ -51,11 +51,11 @@ module Ont
 
     # Check if positions are duplicated in the run.
     def position_uniqueness
-      position_displays = flowcells.collect(&:position_display)
-      duplicates = position_displays.group_by { |f| f }.select { |_k, v| v.size > 1 }.map(&:first)
+      position_names = flowcells.collect(&:position_name)
+      duplicates = position_names.group_by { |f| f }.select { |_k, v| v.size > 1 }.map(&:first)
 
-      duplicates.each do |position_display|
-        errors.add(:flowcells, :position_duplicated, display: position_display)
+      duplicates.each do |position_name|
+        errors.add(:flowcells, :position_duplicated, position_name:)
       end
     end
 
@@ -65,7 +65,7 @@ module Ont
 
       duplicates.each do |flowcell|
         errors.add(:flowcells, :flowcell_id_duplicated, flowcell_id: flowcell.flowcell_id,
-                                                        display: flowcell.position_display)
+                                                        position_name: flowcell.position_name)
       end
     end
 

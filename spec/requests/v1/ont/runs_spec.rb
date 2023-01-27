@@ -244,7 +244,7 @@ RSpec.describe 'RunsController' do
       it 'returns error messages' do
         errors = json['errors']
         titles = errors.pluck('title')
-        expect(titles).to include "flowcell_id #{fc1.flowcell_id} at position #{fc2.position_display} is duplicated in the same run"
+        expect(titles).to include "flowcell_id #{fc1.flowcell_id} at position #{fc2.position_name} is duplicated in the same run"
       end
 
       context 'messages' do
