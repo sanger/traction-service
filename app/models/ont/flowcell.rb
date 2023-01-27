@@ -52,7 +52,7 @@ module Ont
     # We used generate_message to be able to pass options from this object.
     validates :pool, presence: {
       message: lambda { |object, _data|
-        object.errors.generate_message(:pool, :pool_unknown, display: object.position_display)
+        object.errors.generate_message(:pool, :pool_unknown, position_name: object.position_name)
       }
     }
 
@@ -65,13 +65,13 @@ module Ont
     validates :flowcell_id, presence: {
       message: lambda { |object, _data|
         object.errors.generate_message(
-          :flowcell_id, :flowcell_id_missing, display: object.position_display
+          :flowcell_id, :flowcell_id_missing, position_name: object.position_name
         )
       }
     }
 
     # Returns alternative adressing for position if available
-    def position_display
+    def position_name
       map = run&.instrument&.position_names
       map.present? ? map[position] : position
     end

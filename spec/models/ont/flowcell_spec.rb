@@ -56,7 +56,7 @@ RSpec.describe Ont::Flowcell, ont: true do
     flowcell = build(:ont_flowcell, pool: nil)
 
     expect(flowcell).not_to be_valid
-    expect(flowcell.errors.full_messages).to include("Pool pool at position #{flowcell.position_display} is unknown")
+    expect(flowcell.errors.full_messages).to include("Pool pool at position #{flowcell.position_name} is unknown")
   end
 
   it 'must have a correct ont_pool_id' do
@@ -64,7 +64,7 @@ RSpec.describe Ont::Flowcell, ont: true do
     flowcell.ont_pool_id = -1
 
     expect(flowcell).not_to be_valid
-    expect(flowcell.errors.full_messages).to include("Pool pool at position #{flowcell.position_display} is unknown")
+    expect(flowcell.errors.full_messages).to include("Pool pool at position #{flowcell.position_name} is unknown")
   end
 
   it 'returns pool requests' do
@@ -91,17 +91,17 @@ RSpec.describe Ont::Flowcell, ont: true do
       last = run.flowcells.find_by(position: 24)
 
       expect(first.position).to eq(1)
-      expect(first.position_display).to eq('1A')
+      expect(first.position_name).to eq('1A')
 
       expect(last.position).to eq(24)
-      expect(last.position_display).to eq('3H')
+      expect(last.position_name).to eq('3H')
     end
 
     it 'includes coordinates for PromethION errors' do
       run = create(:ont_promethion_run, flowcell_count: 2)
       flowcell_id = run.flowcells[0].flowcell_id = run.flowcells[1].flowcell_id
-      display0 = run.flowcells[0].position_display
-      display1 = run.flowcells[1].position_display
+      display0 = run.flowcells[0].position_name
+      display1 = run.flowcells[1].position_name
 
       expect(run).to be_invalid
 
@@ -115,10 +115,10 @@ RSpec.describe Ont::Flowcell, ont: true do
       last = run.flowcells.find_by(position: 5)
 
       expect(first.position).to eq(1)
-      expect(first.position_display).to eq('x1')
+      expect(first.position_name).to eq('x1')
 
       expect(last.position).to eq(5)
-      expect(last.position_display).to eq('x5')
+      expect(last.position_name).to eq('x5')
     end
 
     it 'returns number for MinION' do
@@ -127,10 +127,10 @@ RSpec.describe Ont::Flowcell, ont: true do
       last = run.flowcells.find_by(position: 1)
 
       expect(first.position).to eq(1)
-      expect(first.position_display).to eq(1)
+      expect(first.position_name).to eq(1)
 
       expect(last.position).to eq(1)
-      expect(last.position_display).to eq(1)
+      expect(last.position_name).to eq(1)
     end
   end
 end
