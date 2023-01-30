@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module V1
-  # TagResource
   module Ont
+    # TagResource - a resource to return all of the ONT tags
     class TagResource < JSONAPI::Resource
       model_name 'Tag'
 
