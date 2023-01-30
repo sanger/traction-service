@@ -2,6 +2,8 @@
 
 module V1
   module Pacbio
+    # SmrtLinkOptionResource - a resource to return the SMRT link options for a particular
+    # SMRT Link version
     class SmrtLinkOptionResource < JSONAPI::Resource
       model_name 'Pacbio::SmrtLinkOption'
 
