@@ -21,9 +21,13 @@ module V1
         return recs unless recs.empty?
 
         # If no tubes match the source identifier we check plates
-        return records.joins(:plate).where(plate: { barcode: value })
+        # If source identifier specifies a well we need to match samples to well
+        # TODO: The below value[0] means we only take the first value passed in the filter
+        #       If we want to support multiple values in one filter we would need to update this
+        plate, well = value[0].split(':')
+        recs = records.joins(:plate).where(plate: { barcode: plate })
+        return well ? recs.joins(:well).where(well: { position: well }) : recs
       }
-
       def self.default_sort
         [{ field: 'created_at', direction: :desc }]
       end
