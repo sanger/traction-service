@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# A QC decision is a decision made by a person in the lab on the qc result.
+# The group who made the decision is recorded
 class QcDecision < ApplicationRecord
   enum decision_made_by: { long_read: 0, tol: 1 }
 

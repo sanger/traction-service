@@ -3,6 +3,7 @@
 module V1
   # TagResource
   module Pacbio
+    # TagResource - Returns the available tags for Pacbio
     class TagResource < JSONAPI::Resource
       model_name 'Tag'
 

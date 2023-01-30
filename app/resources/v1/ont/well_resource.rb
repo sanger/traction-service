@@ -2,6 +2,7 @@
 
 module V1
   module Ont
+    # WellResource - A resource to return the wells for an ONT plate
     class WellResource < JSONAPI::Resource
       model_name '::Well'
 
