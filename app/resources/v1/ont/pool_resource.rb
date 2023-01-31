@@ -25,6 +25,11 @@ module V1
         records.where(tube: Tube.find_by(barcode: value))
       }
 
+      filter :sample_name, apply: lambda { |records, value, _options|
+        # We have to join requests and samples here in order to find by sample name
+        records.joins(libraries: :sample).where(sample: { name: value })
+      }
+
       def self.default_sort
         [{ field: 'created_at', direction: :desc }]
       end
