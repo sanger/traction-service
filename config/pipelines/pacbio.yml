@@ -1,48 +1,12 @@
 default: &default
-  saphyr:
-    message:
-      lims: &lims Traction
-      key: bmap_flowcell
-      fields:
-        sample_uuid: &sample_uuid
-          type: :model
-          value: library.request.sample.external_id
-        study_uuid: &study_uuid
-          type: :model
-          value: library.request.external_study_id
-        experiment_name:
-          type: :model
-          value: chip.run.name
-        enzyme_name:
-          type: :model
-          value: library.enzyme.name
-        chip_barcode:
-          type: :model
-          value: chip.barcode
-        chip_serialnumber:
-          type: :model
-          value: chip.serial_number
-        position:
-          type: :model
-          value: position
-        id_library_lims:
-          type: :model
-          value: library.id
-        id_flowcell_lims:
-          type: :model
-          value: id
-        instrument_name:
-          type: :string
-          value: saphyr
-        last_updated: &timestamp
-          type: :constant
-          value: Time.current
   pacbio:
     message:
-      lims: *lims
+      lims: Traction
       key: pac_bio_run
       fields:
-        last_updated: *timestamp
+        last_updated:
+          type: :constant
+          value: Time.current
         id_pac_bio_run_lims:
           type: :model
           value: run.name
@@ -459,143 +423,9 @@ default: &default
               for:
                 - :well
               with: :well
-  ont:
-    message:
-      lims: *lims
-      key: oseq_flowcell_run
-      fields:
-        last_updated: *timestamp
-        experiment_name:
-          type: :model
-          value: experiment_name
-        instrument_name:
-          type: :string
-          value: GXB02004
-        flowcells:
-          type: :array
-          value: flowcells
-          children:
-            id_flowcell_lims:
-              type: :model
-              value: uuid
-            instrument_slot:
-              type: :model
-              value: position
-            samples:
-              type: :array
-              value: requests
-              children:
-                sample_uuid:
-                  type: :model
-                  value: external_id
-                study_uuid:
-                  type: :string
-                  value: 468e0cd0-6a9d-11ea-a04f-fa163e68e77d
-                tag_identifier:
-                  type: :model
-                  value: tags.first.group_id
-                tag_sequence:
-                  type: :model
-                  value: tags.first.oligo
-                tag_set_id_lims:
-                  type: :model
-                  value: tags.first.tag_set.id
-                tag_set_name:
-                  type: :model
-                  value: tags.first.tag_set.name
-    
-    sample_sheet:
-      columns:
-        flow_cell_id:
-          type: :model
-          value: flowcell_id
-          populate:
-            for:
-              - :sample
-            with: :flowcell
-        kit:
-          type: :model
-          value: pool.kit_barcode
-          populate:
-            for:
-              - :sample
-            with: :flowcell
-        sample_id:
-          type: :model
-          value: pool.tube.barcode
-          populate:
-            for:
-              - :sample
-            with: :flowcell
-        experiment_id:
-          type: :model
-          value: run.experiment_name
-          populate:
-            for:
-              - :sample
-            with: :flowcell
-        barcode: 
-          type: :model
-          value: tag.group_id
-          populate:
-            for:
-              - :sample
-            with: :sample
-        alias: 
-          type: :model
-          value: sample.name
-          populate:
-            for:
-              - :sample
-            with: :sample
-        type:
-          type: :model
-          value: request.data_type.name
-          populate:
-            for:
-              - :sample
-            with: :sample
-
-  qc_result:
-    message:
-      lims: *lims
-      key: long_read_qc_result
-      fields:
-        labware_barcode:
-          type: :model
-          value: labware_barcode
-        sample_id:
-          type: :model
-          value: sample_external_id
-        assay_type:
-          type: :model
-          value: qc_assay_type.label
-        assay_type_key:
-          type: :model
-          value: qc_assay_type.key
-        units:
-          type: :model
-          value: qc_assay_type.units
-        value:
-          type: :model
-          value: value
-        id_long_read_qc_result_lims:
-          type: :model
-          value: id
-        created:
-          type: :model
-          value: created_at
-        last_updated: &timestamp
-          type: :constant
-          value: Time.current
-        qc_status:
-          type: :model
-          value: qc_decision.status
-        qc_status_decision_by:
-          type: :model
-          value: qc_decision.decision_made_by
 
 development: *default
 test: *default
 uat: *default
+training: *default
 production: *default
