@@ -58,7 +58,11 @@ module Pipelines
   end
 
   def self.load_yaml
-    YAML.load_file('config/pipelines.yml')[Rails.env].symbolize_keys
+    config = {}
+    Dir.children("config/pipelines").each { |pipeline_file|
+     config.merge!(YAML.load_file("config/pipelines/#{pipeline_file}")[Rails.env].symbolize_keys)
+    }
+    return config
   end
 
   # memoization. Will load configuration on first use
