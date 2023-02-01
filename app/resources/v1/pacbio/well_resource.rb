@@ -2,6 +2,7 @@
 
 module V1
   module Pacbio
+    # WellResource - returns the wells for a Pacbio plate
     class WellResource < JSONAPI::Resource
       model_name '::Well'
 
