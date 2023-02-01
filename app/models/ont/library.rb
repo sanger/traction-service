@@ -6,6 +6,7 @@ module Ont
     include TubeMaterial
     include Uuidable
     include Librarian
+    include SampleSheet::Library
 
     validates :volume, :concentration,
               :insert_size, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
@@ -25,6 +26,10 @@ module Ont
 
     def collection?
       false
+    end
+
+    def sample_sheet_behaviour
+      SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour || :untagged)
     end
   end
 end

@@ -89,11 +89,15 @@ module Ont
     # returns sample sheet csv for a Ont::Run
     # using pipelines.yml configuration to generate data
     def generate_sample_sheet
-      sample_sheet = OntSampleSheet.new(run: self, configuration: Pipelines.ont.sample_sheet)
+      sample_sheet = OntSampleSheet.new(run: self, configuration: ont_run_sample_sheet_config)
       sample_sheet.generate
     end
 
     private
+
+    def ont_run_sample_sheet_config
+      Pipelines.ont.sample_sheet.by_version('v1')
+    end
 
     def update_flowcell(attributes)
       id = attributes[:id].to_s

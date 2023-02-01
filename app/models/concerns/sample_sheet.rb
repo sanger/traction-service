@@ -66,5 +66,11 @@ module SampleSheet
     def find_sample_name
       sample_sheet_behaviour.library_sample_name(self)
     end
+
+    # Barcode Name field
+    # Used in context of Ont::Library model
+    def barcode
+      sample_sheet_behaviour.barcode(tag)
+    end
   end
 end
