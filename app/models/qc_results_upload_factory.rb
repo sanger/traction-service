@@ -14,10 +14,10 @@ class QcResultsUploadFactory
   SANGER_SAMPLE_ID_FIELD = 'Sanger sample ID'
 
   LIST = [
-    { name: LR_DECISION_FIELD, require_value: true },
-    { name: TOL_DECISION_FIELD, require_value: false },
-    { name: TISSUE_TUBE_ID_FIELD, require_value: true },
-    { name: SANGER_SAMPLE_ID_FIELD, require_value: true }
+    LR_DECISION_FIELD,
+    TOL_DECISION_FIELD,
+    TISSUE_TUBE_ID_FIELD,
+    SANGER_SAMPLE_ID_FIELD
   ].freeze
 
   validates_with QcResultsUploadValidator, required_headers: LIST
@@ -41,19 +41,29 @@ class QcResultsUploadFactory
 
   # @param [Object] CSV row e.g. { col_header_1: row_1_col_1 }
   def create_data(row_object)
-    # 1. Always create Long Read QC Decision
-    lr_qc_decison = create_qc_decision!(row_object[LR_DECISION_FIELD], :long_read)
+    # 1. Create QC Decisions
+    qc_decisions = create_qc_decisions(row_object)
 
-    # 2. If required, create TOL QC Decision
+    # 2. Create QC Results
+    qc_results = create_qc_results(row_object)
+
+    # 3. Create QC Decision Results
+    create_qc_decision_results(qc_results, qc_decisions[:lr_qc_decision],
+                               qc_decisions[:tol_qc_decision])
+  end
+
+  def create_qc_decisions(row_object)
+    # If required, create Long Read QC Decision
+    if row_object[LR_DECISION_FIELD]
+      lr_qc_decision = create_qc_decision!(row_object[LR_DECISION_FIELD], :long_read)
+    end
+
+    # If required, create TOL QC Decision
     if row_object[TOL_DECISION_FIELD]
       tol_qc_decision = create_qc_decision!(row_object[TOL_DECISION_FIELD], :tol)
     end
 
-    # 3. Create QC Results
-    qc_results = create_qc_results(row_object)
-
-    # 4. Create QC decisions
-    create_qc_decisions(qc_results, lr_qc_decison, tol_qc_decision)
+    { lr_qc_decision:, tol_qc_decision: }
   end
 
   # @returns [List] of created QcResults
@@ -81,12 +91,15 @@ class QcResultsUploadFactory
   end
 
   # create a qc decision for each decision maker
-  def create_qc_decisions(qc_results, lr_qc_decision, tol_qc_decision)
+  def create_qc_decision_results(qc_results, lr_qc_decision, tol_qc_decision)
     # Always create Long Read QC Decision Results
 
     qc_results.each do |qc_result|
-      create_qc_decision_result!(qc_result, lr_qc_decision)
-      build_qc_result_message(qc_result, :long_read)
+      # If required, create LR QC Decision Results
+      if lr_qc_decision
+        create_qc_decision_result!(qc_result, lr_qc_decision)
+        build_qc_result_message(qc_result, :long_read)
+      end
 
       # If required, create TOL QC Decision Results
       if tol_qc_decision
@@ -144,18 +157,23 @@ class QcResultsUploadFactory
   def pivot_csv_data_to_obj
     header_converter = proc do |header|
       assay_type = QcAssayType.find_by(label: header.strip)
-      assay_type ? assay_type.key : header
+      assay_type ? assay_type.key : header.strip
     end
 
-    csv = CSV.new(csv_string_without_groups, headers: true, header_converters: header_converter,
-                                             converters: :all)
+    csv = CSV.new(csv_string_without_first_row, headers: true, header_converters: header_converter)
 
-    csv.to_a.map(&:to_hash)
+    arr_of_hashes = csv.to_a.map(&:to_hash)
+
+    # Remove any rows which are missing the Tissue Tube ID, or which are controls
+    arr_of_hashes.reject! do |row|
+      row[TISSUE_TUBE_ID_FIELD].nil? || row[TISSUE_TUBE_ID_FIELD].match(/control/i)
+    end
+    arr_of_hashes
   end
 
   # Returns the CSV, with the first row (groupings) removed
   # @return [String] CSV
-  def csv_string_without_groups
+  def csv_string_without_first_row
     csv_data.split("\n")[1..].join("\n")
   end
 end

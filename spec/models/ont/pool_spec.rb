@@ -8,6 +8,12 @@ RSpec.describe Ont::Pool, ont: true do
   let(:libraries) { create_list(:ont_library, 5) }
   let(:params) { {} }
 
+  context 'uuidable' do
+    let(:uuidable_model) { :ont_pool }
+
+    it_behaves_like 'uuidable'
+  end
+
   it 'will have a tube on validation' do
     pool.valid?
     expect(pool.tube).to be_a(Tube)

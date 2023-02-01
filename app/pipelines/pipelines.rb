@@ -57,6 +57,7 @@ module Pipelines
     send(pipeline.to_s.downcase)
   end
 
+  # Finds all the config files stored in config/pipelines and merges them into a hash
   def self.load_yaml
     config = {}
     Dir.children('config/pipelines').each do |pipeline_file|
