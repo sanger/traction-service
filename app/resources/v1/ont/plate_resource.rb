@@ -11,7 +11,9 @@ module V1
       has_many :wells
 
       # Filters
-      filter :barcode, apply: ->(records, value, _options) { records.by_barcode(value) }
+      filter :barcode, apply: lambda { |records, value, _options|
+        records.by_barcode(value.map { |bc| bc.strip.upcase })
+      }
 
       def self.records(_options = {})
         super.by_pipeline(:ont)

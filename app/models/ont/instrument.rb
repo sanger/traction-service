@@ -45,5 +45,33 @@ module Ont
 
     enum instrument_type: { MinION: 0, GridION: 1, PromethION: 2 }
     validates :name, presence: true, uniqueness: true
+
+    # Returns position names for instrument instance
+    def position_names
+      POSITION_NAME_MAP[instrument_type]
+    end
+
+    # Generates position names for promethION, 1A..1H, 2A..2H, and 3A..3H
+    # Returns a hash where keys are position numbers and values are names.
+    def self.promethion_position_names
+      position_names = (1..3).flat_map do |i|
+        ('A'..'H').flat_map do |j|
+          "#{i}#{j}"
+        end
+      end
+      position_names.each_with_index.to_h { |v, i| [i + 1, v] }
+    end
+
+    # Generates position names for gridION, x1..x5
+    # Returns a hash where keys are position numbers and values are names.
+    def self.gridion_position_names
+      (1..5).index_with { |i| "x#{i}" }
+    end
+
+    # Contains position names for instrument_types
+    POSITION_NAME_MAP = {
+      PromethION: promethion_position_names,
+      GridION: gridion_position_names
+    }.with_indifferent_access.freeze
   end
 end
