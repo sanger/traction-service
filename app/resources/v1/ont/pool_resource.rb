@@ -25,6 +25,15 @@ module V1
         records.where(tube: Tube.where(barcode: value.map { |bc| bc.strip.upcase }))
       }
 
+      filter :sample_name, apply: lambda { |records, value, _options|
+        # We have to join requests and samples here in order to find by sample name
+        records.joins(libraries: :sample).where(sample: { name: value })
+      }
+
+      def self.default_sort
+        [{ field: 'created_at', direction: :desc }]
+      end
+
       # # When a pool is updated and it is attached to a run we need
       # # to republish the messages for the run
       # after_update :publish_messages

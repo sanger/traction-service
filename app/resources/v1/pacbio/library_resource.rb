@@ -22,6 +22,36 @@ module V1
       has_one :source_well, relation_name: :source_well, class_name: 'Well'
       has_one :source_plate, relation_name: :source_plate, class_name: 'Plate'
 
+      paginator :paged
+
+      def self.default_sort
+        [{ field: 'created_at', direction: :desc }]
+      end
+
+      # Something like this would be nice to have but it is tricky to implement because we
+      # are dealing with records not instances
+      #
+      # filter :source_identifier, apply: lambda { |records, value, _options|
+      #   records.select {|lib| lib.source_identifier == value}
+      # }
+
+      filter :pool
+      filter :sample_name, apply: lambda { |records, value, _options|
+        # We have to join requests and samples here in order to find by sample name
+        records.joins(:sample).where(sample: { name: value })
+      }
+      filter :barcode, apply: lambda { |records, value, _options|
+        records.joins(:tube).where(tube: { barcode: value })
+      }
+      filter :source_identifier, apply: lambda { |records, value, _options|
+        # First we check tubes to see if there are any given the source identifier
+        recs = records.joins(:source_tube).where(source_tube: { barcode: value })
+        return recs unless recs.empty?
+
+        # If no tubes match the source identifier we check plates
+        return records.joins(:source_plate).where(source_plate: { barcode: value })
+      }
+
       def self.records_for_populate(*_args)
         super.preload(source_well: :plate, request: :sample,
                       tag: :tag_set,

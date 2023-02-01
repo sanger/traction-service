@@ -56,11 +56,11 @@ RSpec.describe 'PoolsController', ont: true do
     end
 
     context 'pagination' do
-      let!(:expected_pools) { create_list(:ont_pool, 2) }
+      let!(:expected_pools) { create_list(:ont_pool, 2, created_at: Time.zone.now + 10) }
 
       before do
         # There should be 4 pools total so we should get the 2 we just created
-        get "#{v1_ont_pools_path}?page[number]=2&page[size]=2",
+        get "#{v1_ont_pools_path}?page[number]=1&page[size]=2",
             headers: json_api_headers
       end
 
