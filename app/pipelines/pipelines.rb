@@ -33,7 +33,7 @@ module Pipelines
 
   # create methods for each pipeline so can use Pipelines.pipeline_name
   # instead of Pipelines.configuration.pipeline_name
-  Rails.configuration.pipelines.each do |k, _v|
+  ENUMS.each do |k, _v|
     self.class.send(:define_method, k, proc { configuration.send(k) })
   end
 
@@ -59,10 +59,11 @@ module Pipelines
 
   def self.load_yaml
     config = {}
-    Dir.children("config/pipelines").each { |pipeline_file|
-     config.merge!(YAML.load_file("config/pipelines/#{pipeline_file}")[Rails.env].symbolize_keys)
-    }
-    return config
+    Dir.children('config/pipelines').each do |pipeline_file|
+      config.merge!(YAML.load_file("config/pipelines/#{pipeline_file}")[Rails.env].symbolize_keys)
+    end
+
+    config
   end
 
   # memoization. Will load configuration on first use

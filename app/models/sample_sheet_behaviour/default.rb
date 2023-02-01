@@ -5,6 +5,10 @@
 # Will return
 # barcode_name => example--example
 class SampleSheetBehaviour::Default
+  def barcode(tag)
+    tag.group_id
+  end
+
   def barcode_name(tag)
     "#{tag.group_id}--#{tag.group_id}"
   end

@@ -171,4 +171,27 @@ RSpec.describe SampleSheet do
       expect(well.automation_parameters).to be_nil
     end
   end
+
+  describe '#barcode' do
+    let(:empty_flowcell) { create(:ont_flowcell) }
+
+    it 'returns a given library tag' do
+      pool = create(:ont_pool, libraries: create_list(:ont_library, 1, :tagged))
+      empty_flowcell.pool = pool
+      expected = empty_flowcell.pool.libraries.first.tag.group_id
+      expect(empty_flowcell.pool.libraries.first.barcode).to eq expected
+    end
+
+    it 'returns nothing if the libraries are tagged with a :hidden tag set (egh. IsoSeq)' do
+      pool = create(:ont_pool, libraries: create_list(:ont_library, 1, :hidden_tagged))
+      empty_flowcell.pool = pool
+      expect(empty_flowcell.pool.libraries.first.barcode).to be_nil
+    end
+
+    it 'returns nothing if the libraries are not tagged' do
+      pool = create(:ont_pool, libraries: create_list(:ont_library, 1, :untagged))
+      empty_flowcell.pool = pool
+      expect(empty_flowcell.pool.libraries.first.barcode).to be_nil
+    end
+  end
 end
