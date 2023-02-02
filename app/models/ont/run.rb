@@ -17,6 +17,15 @@ module Ont
                foreign_key: :ont_instrument_id,
                inverse_of: false
 
+    # This association creates the link to the MinKnowVersion. Run belongs
+    # to a MinKnowVersion. We set the default MinKnowVersion for the run
+    # using the class method 'default'.
+    belongs_to :min_know_version,
+               class_name: 'Ont::MinKnowVersion',
+               foreign_key: :ont_min_know_version_id,
+               inverse_of: :runs,
+               default: -> { MinKnowVersion.default }
+
     has_many :flowcells, foreign_key: :ont_run_id, inverse_of: :run, dependent: :destroy
 
     accepts_nested_attributes_for :flowcells, allow_destroy: true
@@ -96,7 +105,7 @@ module Ont
     private
 
     def ont_run_sample_sheet_config
-      Pipelines.ont.sample_sheet.by_version('v1')
+      Pipelines.ont.sample_sheet.by_version(min_know_version.name)
     end
 
     def update_flowcell(attributes)

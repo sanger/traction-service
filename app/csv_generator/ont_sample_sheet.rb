@@ -36,8 +36,7 @@ class OntSampleSheet
     end
   end
 
-  # Use configuration :type and :value to retrieve well data
-  # eg ["Sequel II", "run4"]
+  # Use configuration :type and :value to retrieve flowcell data
   def csv_data(options = {})
     configuration.columns.map do |column|
       populate_column(options.merge(column_options: column[1]))
@@ -50,33 +49,32 @@ class OntSampleSheet
   # pertaining to the row type
   # otherwise just populate with the populate with value.
   # some columns need populating for both types with the same method (polymorphism).
-  # well position is different. It would be really difficult to get that from sample.
-  # populate[:for] is either sample or well
-  # populate[:with] is either row_type (sample or well), sample or well
+  # populate[:for] is either sample or flowcell
+  # populate[:with] is either row_type (sample or flowcell), sample or flowcell
   # Examples:
   # +Is Collection:
   # type: :model
   # value: collection?
   # populate:
   #   for:
-  #     - :well
+  #     - :flowcell
   #     - :sample
   #   with: :row_type+
-  # means that is collection needs to be populated for samples and wells
-  # but needs to use the method from sample or well as the answers are different
-  # +Sample Well:
+  # means that is collection needs to be populated for samples and flowcells
+  # but needs to use the method from sample or flowcell as the answers are different
+  # +Sample flowcell:
   # type: :model
   # value: position_leading_zero
   # populate:
   #   for:
-  #     - :well
+  #     - :flowcell
   #     - :sample
-  #   with: :well+
-  # means that sample well needs to be populated for both samples and wells
-  # but needs to use the well method
+  #   with: :flowcell+
+  # means that sample flowcell needs to be populated for both samples and flowcells
+  # but needs to use the flowcell method
   # hopefully that is enough of an explanation!
   # @param [hash] options can include:
-  #  - well: the well data that is being added to the row
+  #  - flowcell: the flowcell data that is being added to the row
   #  - sample: the sample data that is being added to the row
   #  - column_options: from configuration
   def populate_column(options = { flowcell: nil, sample: nil, column_options: nil })
