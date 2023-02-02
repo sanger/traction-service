@@ -6,6 +6,8 @@ require './spec/support/read_only'
 RSpec.describe Ont::Flowcell, ont: true do
   before do
     set_read_only([described_class, Ont::Run, Ont::Request, Ont::Library], false)
+    # Create a MinKnow default version so that associated runs can be saved
+    create(:ont_min_know_version_default, name: 'v1')
   end
 
   context 'uuidable' do

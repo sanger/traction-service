@@ -18,6 +18,6 @@ namespace :min_know_versions do
       Ont::MinKnowVersion.find_or_create_by!(version)
     end
 
-    puts '-> ONT Min Know versions successfully created'
+    puts '-> ONT MinKnow versions successfully created'
   end
 end

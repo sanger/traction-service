@@ -132,6 +132,9 @@ namespace :ont_data do
     gridion = Ont::Instrument.GridION.first
     promethion = Ont::Instrument.PromethION.first
 
+    # MinKnowVersions
+    Rake::Task['min_know_versions:create'].invoke
+
     # Enumerations
     pool_enum = Ont::Pool.where.missing(:flowcell).to_enum # Pools available
     state_enum = Ont::Run.states.keys.cycle # Run states

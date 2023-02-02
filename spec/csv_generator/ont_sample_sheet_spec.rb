@@ -3,12 +3,16 @@
 require 'rails_helper'
 
 RSpec.describe OntSampleSheet, type: :model do
+  before do
+    create(:ont_min_know_version, name: 'v1', default: true)
+  end
+
   describe '#generate' do
     subject(:csv_string) { csv.generate }
 
     let(:run) { create(:ont_run, flowcell_count: 2) }
     let(:parsed_csv) { CSV.parse(csv_string) }
-    let(:csv) { described_class.new(run:, configuration: Pipelines.ont.sample_sheet.by_version('v1')) }
+    let(:csv) { described_class.new(run:, configuration: Pipelines.ont.sample_sheet.by_version(run.min_know_version.name)) }
 
     it 'must return a csv string' do
       expect(csv_string.class).to eq String
