@@ -17,6 +17,14 @@ module V1
                   type: 'text/csv; charset=utf-8; header=present',
                   disposition: "attachment; filename=#{run.experiment_name}.csv"
       end
+
+      # endpoint to retrive sample sheet setting
+      def sample_sheet_settings
+        json_file = File.read('config/sample-sheet-settings-template.json')
+        send_data json_file,
+                  type: 'text/json; charset=utf-8; header=present',
+                  disposition: 'attachment; filename=sample-sheet-settings-template.json'
+      end
     end
   end
 end
