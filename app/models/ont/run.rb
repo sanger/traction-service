@@ -5,18 +5,17 @@ module Ont
   class Run < ApplicationRecord
     include Uuidable
 
+    # ONT Run states
     enum state: { pending: 0, completed: 1, user_terminated: 2, instrument_crashed: 3, restart: 4 }
 
     NAME_PREFIX = 'ONTRUN-' # Used for generating a unique experiment name for the run.
 
     # This association creates a link to the instrument this run belongs to.
-    # We are setting to avoid automatic detection of inverse association from the instrument.
-    # XXX: Do we need a default instrument to initialise the run with?
-    belongs_to :instrument,
-               class_name: 'Ont::Instrument',
-               foreign_key: :ont_instrument_id,
-               inverse_of: false
+    # We are setting inverse_of to false to avoid detection of inverse association.
+    belongs_to :instrument, class_name: 'Ont::Instrument', foreign_key: :ont_instrument_id,
+                            inverse_of: false
 
+<<<<<<< HEAD
     # This association creates the link to the MinKnowVersion. Run belongs
     # to a MinKnowVersion. We set the default MinKnowVersion for the run
     # using the class method 'default'.
@@ -26,50 +25,65 @@ module Ont
                inverse_of: :runs,
                default: -> { MinKnowVersion.default }
 
+=======
+    # Run has many flowcells up to the instrument max number.
+>>>>>>> c7f672074c985b607f31ffce97d75db213a9009b
     has_many :flowcells, foreign_key: :ont_run_id, inverse_of: :run, dependent: :destroy
 
+    # Allow nested attributes and enable saving them together with this run.
     accepts_nested_attributes_for :flowcells, allow_destroy: true
 
     scope :active, -> { where(deactivated_at: nil) }
 
-    validate :check_max_number_of_flowcells, :check_flowcell_position, :check_flowcell_pool
+    # number of flowcells
+    # There must be at least one flowcell. Since it checks the min number of
+    # flowcells, we do not need a separate presence validation.
+    # The number of flowcells must be less than or equal to the instrument max number.
 
-    def check_flowcell_position
-      return if instrument.blank?
+    validates :flowcells, length: {
+      minimum: 1,
+      message: :run_min_flowcells
+    }
+    validates :flowcells, length: {
+      maximum: :max_number_of_flowcells, if: :max_number_of_flowcells,
+      message: :run_max_flowcells
+    }
 
-      position_set = Set.new
-      flowcells.each do |flowcell|
-        next if flowcell.position.blank?
+    # position uniqueness
+    # position must be unique within the run. Previously this validation was
+    # on Flowcell as scoped uniqueness validation but it did not work as
+    # expected when creating run and flowcells together.
+    validate :flowcells, :position_uniqueness
 
-        if flowcell.position < 1 || flowcell.position > instrument.max_number_of_flowcells
-          errors.add(:flowcells, "position #{flowcell.position} is out of range for the instrument")
-        elsif position_set.include? flowcell.position
-          errors.add(:flowcells, "position #{flowcell.position} is duplicated in the same run")
-        else
-          position_set.add(flowcell.position)
-        end
+    # flowcell_id uniqueness
+    # flowcell_id must be unique within the run. Previously this validation was
+    # on Flowcell as scoped uniqueness validation but it did not work as
+    # expected when creating run and flowcells together.
+    validate :flowcells, :flowcell_id_uniqueness
+
+    # Check if positions are duplicated in the run.
+    def position_uniqueness
+      position_names = flowcells.collect(&:position_name)
+      duplicates = position_names.group_by { |f| f }.select { |_k, v| v.size > 1 }.map(&:first)
+
+      duplicates.each do |position_name|
+        errors.add(:flowcells, :position_duplicated, position_name:)
       end
     end
 
-    def check_flowcell_pool
-      pool_set = Set.new
-      flowcells.each do |flowcell|
-        next if flowcell.ont_pool_id.blank?
+    # Check if flowcell_ids are duplicated in the run.
+    def flowcell_id_uniqueness
+      duplicates = flowcells.group_by(&:flowcell_id).select { |_k, v| v.size > 1 }.values.flatten
 
-        if pool_set.include? flowcell.ont_pool_id
-          errors.add(:flowcells, "pool #{flowcell.ont_pool_id} is duplicated in the same run")
-        else
-          pool_set.add(flowcell.ont_pool_id)
-        end
+      duplicates.each do |flowcell|
+        errors.add(:flowcells, :flowcell_id_duplicated, flowcell_id: flowcell.flowcell_id,
+                                                        position_name: flowcell.position_name)
       end
     end
 
-    def check_max_number_of_flowcells
-      return if instrument.blank?
-
-      return if flowcells.length <= instrument.max_number_of_flowcells
-
-      errors.add(:flowcells, 'must be less than instrument max number')
+    # Return the max_number of flowcells for the instrument if instrument is present.
+    def max_number_of_flowcells
+      instrument&.max_number_of_flowcells
     end
 
     # Generate the experiment_name using the id of the run.
@@ -85,12 +99,29 @@ module Ont
       update(deactivated_at: DateTime.current)
     end
 
+    # Sets flowcells from an array of attributes (hash)
+    # If there is no id in attributes, a new flowcell will be created.
+    # If there is an id, existing flowcell will be updated.
+    # If there is no attributes hash for an existing flowcell, it will be
+    # deleted.
+    # This method is called before validations, therefore it must properly
+    # set up all flowcells to be saved together with the run. It must first
+    # do the deletions and then "build" flowcells and "assign" attributes
+    # without saving.
+
     def flowcell_attributes=(flowcell_options)
-      self.flowcells = flowcell_options.map do |attributes|
+      # Delete flowcells if attributes are not given
+      options_ids = flowcell_options.pluck(:id).compact
+      flowcells.each do |flowcell|
+        flowcells.delete(flowcell) if options_ids.exclude? flowcell.id
+      end
+
+      # Update existing flowcells or create new ones
+      flowcell_options.map do |attributes|
         if attributes[:id]
-          update_flowcell(attributes)
+          flowcells.find(attributes[:id]).assign_attributes(attributes)
         else
-          Ont::Flowcell.new(attributes)
+          flowcells.build(attributes)
         end
       end
     end
@@ -106,20 +137,6 @@ module Ont
 
     def ont_run_sample_sheet_config
       Pipelines.ont.sample_sheet.by_version(min_know_version.name)
-    end
-
-    def update_flowcell(attributes)
-      id = attributes[:id].to_s
-      indexed_flowcells.fetch(id) { missing_flowcell(id) }
-                       .tap { |flowcell| flowcell.update(attributes) }
-    end
-
-    def missing_flowcell(id)
-      raise ActiveRecord::RecordNotFound, "Ont flowcell #{id} does not exist"
-    end
-
-    def indexed_flowcells
-      @indexed_flowcells ||= flowcells.index_by { |flowcell| flowcell.id.to_s }
     end
 
     def generate_experiment_name
