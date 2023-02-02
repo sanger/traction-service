@@ -109,9 +109,11 @@ namespace :ont_data do
     end
 
     # Run helper that creates runs for the specified instrument and flowcell count.
-    # pool_enum enumerates available pools, state_enum enumerates run states, and
-    # position_cycle enumerates flowcell positions for an instrument.
-    def create_run(instrument, flowcell_count, pool_enum, state_enum, position_cycle)
+    # pool_enum enumerates available pools, state_enum enumerates run states,
+    # position_cycle enumerates flowcell positions for an instrument and
+    # flowcell_id_enum enumerates numbers for flowcell_id values.
+    # rubocop:disable Metrics/ParameterLists
+    def create_run(instrument, flowcell_count, pool_enum, state_enum, position_cycle, flowcell_id_enum)
       return if flowcell_count < 1
       return if flowcell_count > instrument.max_number_of_flowcells
       return if safe_peek(pool_enum).blank?
@@ -121,11 +123,13 @@ namespace :ont_data do
         break if safe_peek(pool_enum).blank?
 
         position = position_cycle.next
-        flowcell_id = format('F%05d', position)
-        Ont::Flowcell.new(flowcell_id:, position:, run:, pool: pool_enum.next)
+        pool = pool_enum.next
+        flowcell_id = format(Ont::Flowcell::FLOWCELL_ID_FORMAT, flowcell_id_enum.next)
+        Ont::Flowcell.new(flowcell_id:, position:, run:, pool:)
       end
       run.save!
     end
+    # rubocop:enable Metrics/ParameterLists
 
     # Instruments
     Rake::Task['ont_instruments:create'].invoke
@@ -136,21 +140,25 @@ namespace :ont_data do
     Rake::Task['min_know_versions:create'].invoke
 
     # Enumerations
+    flowcell_id_enum = ((Ont::Flowcell.count + 1)..Ont::Pool.count).to_enum
     pool_enum = Ont::Pool.where.missing(:flowcell).to_enum # Pools available
     state_enum = Ont::Run.states.keys.cycle # Run states
     gridion_cycle = (1..gridion.max_number_of_flowcells).cycle
     promethion_cycle = (1..promethion.max_number_of_flowcells).cycle
 
+    initial_run_count = Ont::Run.count
+    initial_flowcell_count = Ont::Flowcell.count
+
     # Create runs with the specified instrument and flowcell counts
     [1, 2, 2].each do |flowcell_count|
-      create_run(gridion, flowcell_count, pool_enum, state_enum, gridion_cycle)
+      create_run(gridion, flowcell_count, pool_enum, state_enum, gridion_cycle, flowcell_id_enum)
     end
 
     [1, 2, 4].each do |flowcell_count|
-      create_run(promethion, flowcell_count, pool_enum, state_enum, promethion_cycle)
+      create_run(promethion, flowcell_count, pool_enum, state_enum, promethion_cycle, flowcell_id_enum)
     end
 
-    puts "-> Created #{Ont::Run.count} sequencing runs"
-    puts "-> Created #{Ont::Flowcell.count} flowcells"
+    puts "-> Created #{Ont::Run.count - initial_run_count} sequencing runs"
+    puts "-> Created #{Ont::Flowcell.count - initial_flowcell_count} flowcells"
   end
 end

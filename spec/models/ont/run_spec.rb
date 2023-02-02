@@ -56,24 +56,30 @@ RSpec.describe Ont::Run, ont: true do
 
       build(:ont_flowcell, run:)
       expect(run).not_to be_valid # one more than max number of flowcells
-      expect(run.errors[:flowcells]).to include 'must be less than instrument max number'
+      expect(run.errors[:flowcells]).to include('number of flowcells must be less than instrument max number')
     end
 
     it 'must have unique flowcell position for a run' do
       run = build(:ont_gridion_run, flowcell_count: 2)
-      run.flowcells[0].position = 2
-      run.flowcells[1].position = 2
+      run.flowcells[0].position = run.flowcells[1].position = 2
+      display = run.flowcells[0].position_name
 
       expect(run).not_to be_valid
-      expect(run.errors[:flowcells]).to include 'position 2 is duplicated in the same run'
+      expect(run.errors[:flowcells]).to include("position #{display} is duplicated in the same run")
     end
 
-    it 'must have unique flowcell pool id for a run' do
+    it 'can have duplicate flowcell pool id for a run' do
       run = build(:ont_gridion_run, flowcell_count: 2)
-      ont_pool_id = run.flowcells[0].ont_pool_id = run.flowcells[1].ont_pool_id
+      run.flowcells[0].ont_pool_id = run.flowcells[1].ont_pool_id
+
+      expect(run).to be_valid
+    end
+
+    it 'must have unique flowcell_id in the run' do
+      run = create(:ont_gridion_run, flowcell_count: 2)
+      run.flowcells[0].flowcell_id = run.flowcells[1].flowcell_id
 
       expect(run).not_to be_valid
-      expect(run.errors[:flowcells]).to include "pool #{ont_pool_id} is duplicated in the same run"
     end
   end
 
@@ -225,7 +231,7 @@ RSpec.describe Ont::Run, ont: true do
         expect(fc1.pool).to eq(pool1)
 
         # Second flowcell has been changed.
-        expect(fc2.flowcell_id).to eq(attr2[:flowcell_id])
+        expect(fc2.flowcell_id).to eq(attr2[:flowcell_id].upcase) # flowcell_id is upcased
         expect(fc2.position).to eq(attr2[:position])
         expect(fc2.ont_pool_id).to eq(attr2[:ont_pool_id])
         expect(fc2.pool).to eq(pool2)
@@ -289,6 +295,31 @@ RSpec.describe Ont::Run, ont: true do
         expect(fc3.position).to eq(attr3[:position])
         expect(fc3.ont_pool_id).to eq(attr3[:ont_pool_id])
         expect(fc3.pool).to eq(pool3)
+      end
+    end
+
+    context 'with transformation' do
+      let(:run) { create(:ont_gridion_run, flowcell_count: 1) }
+      let(:fc1) { run.flowcells[0] }
+
+      it 'converts flowcell_id to uppercase' do
+        flowcell_id_input = 'UpPeRcAseD'
+        attr = { id: fc1.id, flowcell_id: flowcell_id_input, position: fc1.position, ont_pool_id: fc1.ont_pool_id }
+
+        run.flowcell_attributes = [attr]
+        run.save!
+
+        expect(fc1.flowcell_id).to eq(flowcell_id_input.upcase)
+      end
+
+      it 'removes leading and trailing whitespace from flowcell_id' do
+        flowcell_id_input = " \b \v \t   NOWHITESPACE    \n\r  "
+        attr = { id: fc1.id, flowcell_id: flowcell_id_input, position: fc1.position, ont_pool_id: fc1.ont_pool_id }
+
+        run.flowcell_attributes = [attr]
+        run.save!
+
+        expect(fc1.flowcell_id).to eq(flowcell_id_input.strip)
       end
     end
   end
