@@ -57,6 +57,12 @@ RSpec.describe 'RakeTasks' do
     end
   end
 
+  describe 'min_know_versions:create' do
+    it 'creates the correct MinKnowVersion data' do
+      expect { Rake::Task['min_know_versions:create'].invoke }.to change(Ont::MinKnowVersion, :count).and output("-> ONT MinKnow versions successfully created\n").to_stdout
+    end
+  end
+
   describe 'ont_data:create' do
     let(:expected_plates) { 2 }
     let(:filled_wells_per_plate) { 95 }
@@ -76,6 +82,7 @@ RSpec.describe 'RakeTasks' do
       # And ont tags can be called from ont_data:create
       Rake.application.in_namespace(:tags) { |namespace| namespace.tasks.each(&:reenable) }
       Rake::Task['ont_instruments:create'].reenable
+      Rake::Task['min_know_versions:create'].reenable
     end
 
     it 'creates plates and tubes' do
@@ -91,6 +98,8 @@ RSpec.describe 'RakeTasks' do
         .and change(Ont::Run, :count).by(expected_runs)
         .and change(Ont::Flowcell, :count).by(expected_flowcells)
         .and change(Ont::Library, :count)
+        .and change(Ont::Instrument, :count)
+        .and change(Ont::MinKnowVersion, :count)
         .and output(
           "-> Created requests for #{expected_plates} plates and #{expected_tubes} tubes\n" \
           "-> Creating ONT Native tag set and tags\n" \
@@ -99,6 +108,7 @@ RSpec.describe 'RakeTasks' do
           "-> Created #{expected_single_plexed_pools} single plexed pools\n" \
           "-> Created #{expected_multi_plexed_pools} multiplexed pools\n" \
           "-> ONT Instruments successfully created\n" \
+          "-> ONT MinKnow versions successfully created\n" \
           "-> Created #{expected_runs} sequencing runs\n" \
           "-> Created #{expected_flowcells} flowcells\n"
         ).to_stdout

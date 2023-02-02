@@ -4,6 +4,8 @@ require 'rails_helper'
 require './spec/support/read_only'
 
 RSpec.describe Ont::Run, ont: true do
+  let!(:default_min_know_version) { create(:ont_min_know_version_default) }
+
   context 'on creation' do
     it 'state is pending' do
       run = create(:ont_run)
@@ -288,6 +290,14 @@ RSpec.describe Ont::Run, ont: true do
         expect(fc3.ont_pool_id).to eq(attr3[:ont_pool_id])
         expect(fc3.pool).to eq(pool3)
       end
+    end
+  end
+
+  context 'min_know_version' do
+    it 'will set a default value' do
+      run = create(:ont_run)
+
+      expect(run.min_know_version).to eq(default_min_know_version)
     end
   end
 end
