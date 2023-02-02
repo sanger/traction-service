@@ -15,7 +15,6 @@ module Ont
     belongs_to :instrument, class_name: 'Ont::Instrument', foreign_key: :ont_instrument_id,
                             inverse_of: false
 
-<<<<<<< HEAD
     # This association creates the link to the MinKnowVersion. Run belongs
     # to a MinKnowVersion. We set the default MinKnowVersion for the run
     # using the class method 'default'.
@@ -25,9 +24,7 @@ module Ont
                inverse_of: :runs,
                default: -> { MinKnowVersion.default }
 
-=======
     # Run has many flowcells up to the instrument max number.
->>>>>>> c7f672074c985b607f31ffce97d75db213a9009b
     has_many :flowcells, foreign_key: :ont_run_id, inverse_of: :run, dependent: :destroy
 
     # Allow nested attributes and enable saving them together with this run.
