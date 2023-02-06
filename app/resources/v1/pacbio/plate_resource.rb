@@ -10,8 +10,16 @@ module V1
 
       has_many :wells
 
-      # Filters
-      filter :barcode, apply: ->(records, value, _options) { records.by_barcode(value) }
+      # We can only make this endpoint paginated when pacbio pool/new page
+      # No longer requires all records to be pulled back
+      #
+      # paginator :paged
+
+      # def self.default_sort
+      #   [{ field: 'created_at', direction: :desc }]
+      # end
+
+      filter :barcode
 
       def self.records(_options = {})
         super.by_pipeline(:pacbio)
