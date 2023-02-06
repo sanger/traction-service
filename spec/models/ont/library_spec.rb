@@ -169,4 +169,20 @@ RSpec.describe Ont::Library, ont: true do
       end
     end
   end
+
+  describe '#tag_barcode' do
+    context 'from a tagged library' do
+      it 'returns the library tag group id' do
+        library = create(:ont_library, :tagged)
+        expect(library.tag_barcode).to eq(library.tag.group_id)
+      end
+    end
+
+    context 'from an untagged library' do
+      it 'returns nil when the library does not have a tag' do
+        library = create(:ont_library, :untagged)
+        expect(library.tag_barcode).to be_nil
+      end
+    end
+  end
 end

@@ -97,7 +97,7 @@ default: &default
               with: :flowcell
           barcode: 
             type: :model
-            value: barcode
+            value: tag_barcode
             populate:
               for:
                 - :sample
