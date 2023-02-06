@@ -31,9 +31,5 @@ FactoryBot.define do
     trait :untagged do
       tag { nil }
     end
-
-    trait :hidden_tagged do
-      association(:tag, factory: :hidden_tag)
-    end
   end
 end

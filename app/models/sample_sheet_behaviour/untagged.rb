@@ -7,10 +7,6 @@
 # barcoded_for_sample_sheet? => false
 # library_sample_name => 'my_sample'
 class SampleSheetBehaviour::Untagged < SampleSheetBehaviour::Default
-  def barcode(_tag)
-    nil
-  end
-
   def barcode_name(_tag)
     nil
   end
