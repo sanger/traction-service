@@ -44,9 +44,24 @@ en:
         ont/library:
           attributes:
             name:
-              duplicated_in_plate: 'must be unique: a pool already exists for this plate'
+              duplicated_in_plate: "must be unique: a pool already exists for this plate"
             flowcell:
               duplicated_in_run: must appear only once within a run
+        ont/flowcell:
+          attributes:
+            position:
+              position_out_of_range: position %{value} is out of range for the instrument
+            pool:
+              pool_unknown: pool at position %{position_name} is unknown
+            flowcell_id:
+              flowcell_id_missing: flowcell_id at position %{position_name} is missing
+        ont/run:
+          attributes:
+            flowcells:
+              run_min_flowcells: there must be at least one flowcell
+              run_max_flowcells: number of flowcells must be less than instrument max number
+              position_duplicated: position %{position_name} is duplicated in the same run
+              flowcell_id_duplicated: flowcell_id %{flowcell_id} at position %{position_name} is duplicated in the same run
         reception:
           attributes:
             source:
@@ -55,7 +70,7 @@ en:
           # TODO: this could be dryed out more. Something for a later date
           attributes:
             oligo:
-              duplicated_in_tag_set:  must only appear once within a set
+              duplicated_in_tag_set: must only appear once within a set
             group_id:
               duplicated_in_tag_set: must only appear once within a set
   errors:
