@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require './spec/support/read_only'
 
 RSpec.describe Ont::Run, ont: true do
   let!(:default_min_know_version) { create(:ont_min_know_version_default) }

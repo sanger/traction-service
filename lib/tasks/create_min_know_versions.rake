@@ -8,8 +8,8 @@ namespace :min_know_versions do
   task create: :environment do
     # Can load this from config in the future if need be
     versions = {
-      v1: {
-        name: 'v1',
+      v22: {
+        name: 'v22',
         active: true,
         default: true
       }

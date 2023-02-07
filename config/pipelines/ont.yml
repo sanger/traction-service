@@ -65,7 +65,7 @@ default: &default
                   value: tag_set.name
     
     sample_sheet:
-      v1:
+      v22:
         columns:
           flow_cell_id:
             type: :model

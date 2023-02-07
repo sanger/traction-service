@@ -11,7 +11,7 @@ module Ont
     scope :active, -> { where(active: true) }
     scope :ordered_by_default, -> { order(default: :desc) }
 
-    # Returns the default SMRT Link version.
+    # Returns the default Min Know version.
     def self.default
       find_by(default: true, active: true)
     end

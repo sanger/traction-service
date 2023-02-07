@@ -62,7 +62,6 @@ Rails.application.routes.draw do
       jsonapi_resources :instruments,         only: %i[index show]
       jsonapi_resources(:runs,                only: %i[index show create update]) do
         get 'sample_sheet', to: 'runs#sample_sheet'
-        get 'sample_sheet_settings', to: 'runs#sample_sheet_settings'
       end
       jsonapi_resources :flowcells,           only: %i[index show create update]
       jsonapi_resources :requests,            except: %i[create destroy]

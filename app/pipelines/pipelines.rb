@@ -14,6 +14,7 @@ module Pipelines
     ont: Ont,
     saphyr: Saphyr
   }.with_indifferent_access.freeze
+  PIPELINES_DIR = 'config/pipelines'
 
   def self.handler(pipeline)
     HANDLERS.fetch(pipeline) do
@@ -60,8 +61,8 @@ module Pipelines
   # Finds all the config files stored in config/pipelines and merges them into a hash
   def self.load_yaml
     config = {}
-    Dir.children('config/pipelines').each do |pipeline_file|
-      config.merge!(YAML.load_file("config/pipelines/#{pipeline_file}")[Rails.env].symbolize_keys)
+    Dir.children(PIPELINES_DIR).each do |pipeline_file|
+      config.merge!(YAML.load_file("#{PIPELINES_DIR}/#{pipeline_file}")[Rails.env].symbolize_keys)
     end
 
     config
