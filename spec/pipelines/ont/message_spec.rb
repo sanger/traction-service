@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Ont', ont: true, type: :model do
   before do
-    create(:ont_min_know_version, name: 'v1', default: true)
+    create(:ont_min_know_version, name: 'v22', default: true)
   end
 
   let(:config)            { Pipelines.configure(Pipelines.load_yaml) }
