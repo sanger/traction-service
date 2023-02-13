@@ -381,7 +381,7 @@ default: &default
               with: :well
           CCS Analysis Output - Include Kinetics Information:
             type: :model
-            value: ccs_analysis_output
+            value: ccs_analysis_output_include_kinetics_information
             populate:
               for:
                 - :well
