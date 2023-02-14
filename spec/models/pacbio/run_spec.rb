@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Pacbio::Run, type: :model, pacbio: true do
+RSpec.describe Pacbio::Run, pacbio: true do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
 
   context 'uuidable' do
@@ -60,6 +60,13 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
   it 'can have run comments' do
     run = create(:pacbio_run)
     expect(run.comments).to eq('A Run Comment')
+  end
+
+  it 'can have long run comments' do
+    comments = 'X' * 65535
+    run = create(:pacbio_run, comments:)
+    run.reload
+    expect(run.comments).to eq(comments)
   end
 
   it 'can have the wells summary when no run comments exist' do
@@ -126,7 +133,10 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
     it 'can filter runs based on state' do
       create_list(:pacbio_run, 2)
       create(:pacbio_run, state: :started)
+      # bad cop. This is state. Nothing to do with RSpec
+      # rubocop:disable RSpec/PendingWithoutReason
       expect(described_class.pending.length).to eq 2
+      # rubocop:enable RSpec/PendingWithoutReason
       expect(described_class.started.length).to eq 1
     end
   end

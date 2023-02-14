@@ -2,7 +2,6 @@
 
 module V1
   module Pacbio
-    # class WellResource
     class WellResource < JSONAPI::Resource
       model_name '::Well'
 

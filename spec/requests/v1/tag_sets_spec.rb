@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'TagSetsController', type: :request do
+RSpec.describe 'TagSetsController' do
   describe '#get' do
     let!(:tag_set1) { create(:tag_set) }
     let!(:tag_set2) { create(:tag_set) }

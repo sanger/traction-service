@@ -8,6 +8,9 @@ class Well < ApplicationRecord
   has_many :pacbio_requests, through: :container_materials, source: :material,
                              source_type: 'Pacbio::Request', class_name: 'Pacbio::Request'
 
+  has_many :ont_requests, through: :container_materials, source: :material,
+                          source_type: 'Ont::Request', class_name: 'Ont::Request'
+
   delegate :barcode, to: :plate, allow_nil: true
 
   validates :position, presence: true

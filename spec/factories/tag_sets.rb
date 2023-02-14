@@ -10,6 +10,10 @@ FactoryBot.define do
       sample_sheet_behaviour { :hidden }
     end
 
+    factory :ont_tag_set do
+      pipeline { :ont }
+    end
+
     factory :tag_set_with_tags do
       transient do
         number_of_tags { 3 }

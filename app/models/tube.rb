@@ -10,6 +10,11 @@ class Tube < ApplicationRecord
   validates :barcode, presence: true, on: :reception
 
   has_many :pacbio_pools, dependent: :restrict_with_exception, class_name: 'Pacbio::Pool'
+  has_many :ont_pools, dependent: :restrict_with_exception, class_name: 'Ont::Pool'
+  has_many :ont_requests, through: :container_materials, source: :material,
+                          source_type: 'Ont::Request', class_name: 'Ont::Request'
+  has_many :pacbio_requests, through: :container_materials, source: :material,
+                             source_type: 'Pacbio::Request', class_name: 'Pacbio::Request'
 
   scope :by_barcode, ->(*barcodes) { where(barcode: barcodes) }
   scope :by_pipeline,
