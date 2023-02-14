@@ -27,7 +27,6 @@ end
 group :test do
   gem 'database_cleaner'
   gem 'factory_bot_rails'
-  gem 'rspec-json_expectations'
 end
 
 group :development, :test do
