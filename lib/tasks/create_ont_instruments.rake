@@ -6,7 +6,7 @@ namespace :ont_instruments do
     # Load ONT Instruments configuration.
     config_name = 'ont_instruments.yml'
     config_path = Rails.root.join('config', config_name)
-    config = YAML.load_file(config_path)[Rails.env]
+    config = YAML.load_file(config_path, aliases: true)[Rails.env]
 
     # Create ONT Instruments
     instruments = config['instruments']
