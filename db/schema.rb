@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_01_154348) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_14_103743) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -220,7 +220,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_01_154348) do
     t.string "name"
     t.string "sequencing_kit_box_barcode"
     t.string "dna_control_complex_box_barcode"
-    t.string "comments"
+    t.text "comments"
     t.string "uuid"
     t.integer "system_name", default: 0
     t.datetime "created_at", precision: nil, null: false
