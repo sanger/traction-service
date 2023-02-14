@@ -24,4 +24,8 @@ class Well < ApplicationRecord
   def identifier
     "#{plate&.barcode}:#{position}"
   end
+
+  def labware_type
+    'well'
+  end
 end

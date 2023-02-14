@@ -3,6 +3,7 @@
 module V1
   # TagResource
   module Pacbio
+    # class TagResource
     class TagResource < JSONAPI::Resource
       model_name 'Tag'
 

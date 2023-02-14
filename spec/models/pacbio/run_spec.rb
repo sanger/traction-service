@@ -77,7 +77,7 @@ RSpec.describe Pacbio::Run, type: :model, pacbio: true do
       plate = create(:pacbio_plate, wells: [well1, well2])
       run = create(:pacbio_run, plate:)
 
-      expect_any_instance_of(::CsvGenerator).to receive(:generate_sample_sheet)
+      expect_any_instance_of(CsvGenerator).to receive(:generate_sample_sheet)
       run.generate_sample_sheet
     end
 

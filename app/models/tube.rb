@@ -22,4 +22,12 @@ class Tube < ApplicationRecord
   def identifier
     barcode
   end
+
+  def position
+    nil
+  end
+
+  def labware_type
+    'tube'
+  end
 end
