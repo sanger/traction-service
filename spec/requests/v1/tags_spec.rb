@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'TagsController', type: :request do
+RSpec.describe 'TagsController' do
   describe '#get' do
     let!(:tag1) { create(:tag) }
     let!(:tag2) { create(:tag) }

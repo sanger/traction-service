@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_07_105823) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -69,24 +69,58 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
   end
 
   create_table "ont_flowcells", charset: "utf8mb3", force: :cascade do |t|
+    t.string "flowcell_id"
     t.integer "position"
     t.string "uuid"
     t.bigint "ont_run_id"
-    t.bigint "ont_library_id"
+    t.bigint "ont_pool_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["ont_library_id"], name: "index_ont_flowcells_on_ont_library_id"
+    t.index ["ont_pool_id"], name: "index_ont_flowcells_on_ont_pool_id"
+    t.index ["ont_run_id", "flowcell_id"], name: "index_ont_flowcells_on_ont_run_id_and_flowcell_id", unique: true
+    t.index ["ont_run_id", "position"], name: "index_ont_flowcells_on_ont_run_id_and_position", unique: true
     t.index ["ont_run_id"], name: "index_ont_flowcells_on_ont_run_id"
-    t.index ["position", "ont_run_id"], name: "index_ont_flowcells_on_position_and_ont_run_id", unique: true
+  end
+
+  create_table "ont_instruments", charset: "utf8mb3", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "instrument_type", null: false
+    t.integer "max_number_of_flowcells", null: false
+    t.string "uuid"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_ont_instruments_on_name", unique: true
   end
 
   create_table "ont_libraries", charset: "utf8mb3", force: :cascade do |t|
-    t.string "name"
-    t.integer "pool"
-    t.integer "pool_size"
+    t.string "kit_barcode"
+    t.float "volume"
+    t.float "concentration"
+    t.integer "insert_size"
+    t.string "uuid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name"], name: "index_ont_libraries_on_name", unique: true
+    t.string "state"
+    t.datetime "deactivated_at", precision: nil
+    t.bigint "ont_request_id", null: false
+    t.bigint "tag_id"
+    t.bigint "ont_pool_id"
+    t.index ["ont_pool_id"], name: "index_ont_libraries_on_ont_pool_id"
+    t.index ["ont_request_id"], name: "index_ont_libraries_on_ont_request_id"
+    t.index ["tag_id"], name: "index_ont_libraries_on_tag_id"
+  end
+
+  create_table "ont_pools", charset: "utf8mb3", force: :cascade do |t|
+    t.string "kit_barcode"
+    t.float "volume"
+    t.float "concentration"
+    t.integer "insert_size"
+    t.float "final_library_amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "tube_id"
+    t.string "uuid", null: false
+    t.index ["tube_id"], name: "index_ont_pools_on_tube_id"
   end
 
   create_table "ont_requests", charset: "utf8mb3", force: :cascade do |t|
@@ -102,10 +136,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
   end
 
   create_table "ont_runs", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "ont_instrument_id", null: false
+    t.string "experiment_name"
     t.integer "state", default: 0
-    t.datetime "deactivated_at", precision: nil
+    t.datetime "deactivated_at"
+    t.string "uuid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["ont_instrument_id"], name: "index_ont_runs_on_ont_instrument_id"
   end
 
   create_table "pacbio_libraries", charset: "utf8mb3", force: :cascade do |t|
@@ -171,7 +209,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.string "name"
     t.string "sequencing_kit_box_barcode"
     t.string "dna_control_complex_box_barcode"
-    t.string "comments"
+    t.text "comments"
     t.string "uuid"
     t.integer "system_name", default: 0
     t.datetime "created_at", precision: nil, null: false
@@ -260,6 +298,23 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.string "units"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "used_by"
+  end
+
+  create_table "qc_decision_results", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "qc_result_id", null: false
+    t.bigint "qc_decision_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["qc_decision_id"], name: "index_qc_decision_results_on_qc_decision_id"
+    t.index ["qc_result_id"], name: "index_qc_decision_results_on_qc_result_id"
+  end
+
+  create_table "qc_decisions", charset: "utf8mb3", force: :cascade do |t|
+    t.string "status"
+    t.integer "decision_made_by"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "qc_results", charset: "utf8mb3", force: :cascade do |t|
@@ -270,6 +325,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["qc_assay_type_id"], name: "index_qc_results_on_qc_assay_type_id"
+  end
+
+  create_table "qc_results_uploads", charset: "utf8mb3", force: :cascade do |t|
+    t.text "csv_data", size: :long
+    t.string "used_by"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "receptions", charset: "utf8mb3", force: :cascade do |t|
@@ -399,14 +461,19 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_141850) do
     t.index ["plate_id"], name: "index_wells_on_plate_id"
   end
 
+  add_foreign_key "ont_flowcells", "ont_pools"
+  add_foreign_key "ont_flowcells", "ont_runs"
   add_foreign_key "ont_requests", "data_types"
   add_foreign_key "ont_requests", "library_types"
+  add_foreign_key "ont_runs", "ont_instruments"
   add_foreign_key "pacbio_libraries", "pacbio_pools"
   add_foreign_key "pacbio_libraries", "pacbio_requests"
   add_foreign_key "pacbio_pools", "tubes"
   add_foreign_key "pacbio_runs", "pacbio_smrt_link_versions"
   add_foreign_key "pacbio_smrt_link_option_versions", "pacbio_smrt_link_options"
   add_foreign_key "pacbio_smrt_link_option_versions", "pacbio_smrt_link_versions"
+  add_foreign_key "qc_decision_results", "qc_decisions"
+  add_foreign_key "qc_decision_results", "qc_results"
   add_foreign_key "qc_results", "qc_assay_types"
   add_foreign_key "requests", "receptions"
 end

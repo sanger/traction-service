@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Sample, type: :model do
+RSpec.describe Sample do
   context 'on creation' do
     it 'is active' do
       expect(create(:sample)).to be_active

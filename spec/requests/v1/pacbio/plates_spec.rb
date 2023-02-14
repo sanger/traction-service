@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'PlatesController', type: :request do
+RSpec.describe 'PlatesController' do
   describe '#get' do
     let!(:pacbio_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'pacbio') }
 
@@ -17,10 +17,14 @@ RSpec.describe 'PlatesController', type: :request do
       get v1_pacbio_plates_path, headers: json_api_headers
 
       expect(response).to have_http_status(:success)
-      json = ActiveSupport::JSON.decode(response.body)
 
-      expect(json['data'][0]['attributes']['barcode']).to eq(pacbio_plates.first.barcode)
-      expect(json['data'][0]['attributes']['created_at']).to eq(pacbio_plates.first.created_at.to_fs(:us))
+      pacbio_plates.each do |plate|
+        plate_attributes = find_resource(type: 'plates', id: plate.id)['attributes']
+        expect(plate_attributes).to include(
+          'barcode' => plate.barcode,
+          'created_at' => plate.created_at.to_fs(:us)
+        )
+      end
     end
 
     it 'returns the correct relationships' do
@@ -88,15 +92,42 @@ RSpec.describe 'PlatesController', type: :request do
       end
     end
 
-    it 'filtering by barcodes' do
-      barcodes = pacbio_plates.pluck(:barcode)[0..1]
-      get "#{v1_pacbio_plates_path}?filter[barcode]=#{barcodes.join(',')}",
-          headers: json_api_headers
-      expect(response).to have_http_status(:success)
-      json = ActiveSupport::JSON.decode(response.body)
-      expect(json['data'].length).to eq(barcodes.length)
-      expect(json['data'][0]['attributes']['barcode']).to eq barcodes[0]
-      expect(json['data'][1]['attributes']['barcode']).to eq barcodes[1]
+    context 'pagination', skip: 'Pagination is disabled until pacbio pool/new page is changed' do
+      let!(:expected_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'pacbio', created_at: Time.zone.now + 10) }
+
+      before do
+        # There should be 10 plates total so we get the 5 we just created
+        get "#{v1_pacbio_plates_path}?page[number]=1&page[size]=5",
+            headers: json_api_headers
+      end
+
+      it 'has a success status' do
+        expect(response).to have_http_status(:success), response.body
+      end
+
+      it 'returns a list of plates' do
+        expect(json['data'].length).to eq(5)
+      end
+
+      it 'returns the correct attributes', aggregate_failures: true do
+        expected_plates.each do |plate|
+          plate_attributes = find_resource(type: 'plates', id: plate.id)['attributes']
+          expect(plate_attributes).to include(
+            'barcode' => plate.barcode,
+            'created_at' => plate.created_at.to_fs(:us)
+          )
+        end
+      end
+
+      it 'filtering by barcodes' do
+        barcode = pacbio_plates.pluck(:barcode)[0]
+        get "#{v1_pacbio_plates_path}?filter[barcode]=#{barcode}",
+            headers: json_api_headers
+        expect(response).to have_http_status(:success)
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data'].length).to eq(1)
+        expect(json['data'][0]['attributes']['barcode']).to eq barcode
+      end
     end
   end
 

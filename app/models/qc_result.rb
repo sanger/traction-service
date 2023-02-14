@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# class QcResult
 class QcResult < ApplicationRecord
   belongs_to :qc_assay_type
 
