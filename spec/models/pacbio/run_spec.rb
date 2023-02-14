@@ -126,7 +126,6 @@ RSpec.describe Pacbio::Run, pacbio: true do
     it 'can filter runs based on state' do
       create_list(:pacbio_run, 2)
       create(:pacbio_run, state: :started)
-      # bad cop. This is state. Nothing to do with RSpec
       expect(described_class.pending.length).to eq 2
       expect(described_class.started.length).to eq 1
     end
