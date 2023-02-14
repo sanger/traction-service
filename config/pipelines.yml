@@ -504,6 +504,57 @@ default: &default
                   type: :model
                   value: tags.first.tag_set.name
 
+  reception_stock_resource:
+    message:
+      lims: *lims
+      key: stock_resource
+      fields:
+        last_updated: *timestamp
+        sample_uuid:
+          type: :model
+          value: sample.external_id
+        study_uuid:
+          type: :model
+          value: requestable.external_study_id
+        labware_coordinate:
+          type: :model
+          value: requestable.container_material.container.position
+        labware_machine_barcode:
+          type: :model
+          value: requestable.container_material.container.barcode
+        labware_human_barcode:
+          type: :model
+          value: requestable.container_material.container.barcode
+        # stock_resource_uuid:
+        labware_type:
+          type: :model
+          value: requestable.container_material.container.labware_type
+        id_stock_resource_lims:
+          type: :model
+          value: requestable.container_material.container.id
+        # initial_volume:
+        # concentration:
+
+  reception_sample:
+    message:
+      lims: *lims
+      key: sample
+      fields:
+        last_updated: *timestamp
+        id_sample_lims:
+          type: :model
+          value: id
+        uuid_sample_lims:
+          type: :model
+          value: external_id
+        name:
+          type: :model
+          value: name
+        common_name:
+          type: :model
+          value: species
+
+
 development: *default
 test: *default
 uat: *default

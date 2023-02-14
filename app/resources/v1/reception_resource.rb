@@ -20,7 +20,8 @@ module V1
 
       @model.request_attributes = request_parameters.map do |request|
         request.permit(request: permitted_request_attributes,
-                       sample: %i[name external_id species], container: %i[type barcode position])
+                       sample: %i[name external_id species study_uuid],
+                       container: %i[type barcode position])
                .to_h
                .with_indifferent_access
       end
@@ -28,10 +29,22 @@ module V1
 
     def construct_resources!
       @model.construct_resources!
+      publish_messages
     end
 
     def permitted_request_attributes
       [*::Pacbio.request_attributes, *::Ont.request_attributes, *::Saphyr.request_attributes].uniq
+    end
+
+    def publish_messages
+      Messages.publish(
+        @model.requests.map(&:sample).flatten,
+        Pipelines.reception_sample.message
+      )
+      Messages.publish(
+        @model.requests,
+        Pipelines.reception_stock_resource.message
+      )
     end
   end
 end

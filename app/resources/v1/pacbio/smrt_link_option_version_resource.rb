@@ -2,6 +2,7 @@
 
 module V1
   module Pacbio
+    # Class SmrtLinkOptionVersionResource
     class SmrtLinkOptionVersionResource < JSONAPI::Resource
       model_name 'Pacbio::SmrtLinkOptionVersion'
 

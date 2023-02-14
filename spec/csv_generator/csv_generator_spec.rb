@@ -12,7 +12,7 @@ RSpec.describe CsvGenerator, type: :model do
 
     let(:run) { create(:pacbio_run, plate:) }
     let(:parsed_csv) { CSV.parse(csv_string) }
-    let(:csv) { ::CsvGenerator.new(run:, configuration: Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name)) }
+    let(:csv) { described_class.new(run:, configuration: Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name)) }
 
     context 'when the libraries are tagged' do
       let(:well1) do
@@ -247,7 +247,7 @@ RSpec.describe CsvGenerator, type: :model do
       let(:plate)   { create(:pacbio_plate, wells: [well1, well2, well3]) }
 
       it 'sorts the wells by column' do
-        sorted_well_positions = parsed_csv[1..].map { |row| row[3] }
+        sorted_well_positions = parsed_csv[1..].pluck(3)
         expect(sorted_well_positions).to eq(%w[B01 A05 A10])
       end
     end
