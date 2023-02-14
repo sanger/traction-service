@@ -10,7 +10,7 @@ namespace :smrt_link_versions do
     # Load Pacbio SMRT Link versions and options configuration.
     config_name = 'pacbio_smrt_link_versions.yml'
     config_path = Rails.root.join('config', config_name)
-    config = YAML.load_file(config_path)[Rails.env]
+    config = YAML.load_file(config_path, aliases: true)[Rails.env]
 
     # Create Pacbio SMRT Link versions.
     versions = config['versions']
