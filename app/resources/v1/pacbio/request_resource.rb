@@ -19,7 +19,9 @@ module V1
       paginator :paged
       filter :species, apply: lambda { |records, value, _options|
         # We have to join requests and samples here in order to find by sample name
-        records.joins(:sample).where(sample: { species: value })
+        # TODO: The below value[0] means we only take the first value passed in the filter
+        #       If we want to support multiple values in one filter we would need to update this
+        records.joins(:sample).where('species LIKE ?', "%#{value[0]}%")
       }
 
       filter :sample_name, apply: lambda { |records, value, _options|
@@ -33,7 +35,12 @@ module V1
         return recs unless recs.empty?
 
         # If no tubes match the source identifier we check plates
-        return records.joins(:well).joins(:plate).where(plate: { barcode: value })
+        # If source identifier specifies a well we need to match samples to well
+        # TODO: The below value[0] means we only take the first value passed in the filter
+        #       If we want to support multiple values in one filter we would need to update this
+        plate, well = value[0].split(':')
+        recs = records.joins(:plate).where(plate: { barcode: plate })
+        return well ? recs.joins(:well).where(well: { position: well }) : recs
       }
 
       def self.default_sort

@@ -17,15 +17,17 @@ module V1
 
       filter :source_identifier, apply: lambda { |records, value, _options|
         # First we check tubes to see if there are any given the source identifier
-        recs = records.joins(:container_material).joins(:tube)
-                      .where(tube: { barcode: value })
+        recs = records.joins(:tube).where(tube: { barcode: value })
         return recs unless recs.empty?
 
         # If no tubes match the source identifier we check plates
-        return records.joins(:container_material).joins(:well).joins(:plate)
-                      .where(plate: { barcode: value })
+        # If source identifier specifies a well we need to match samples to well
+        # TODO: The below value[0] means we only take the first value passed in the filter
+        #       If we want to support multiple values in one filter we would need to update this
+        plate, well = value[0].split(':')
+        recs = records.joins(:plate).where(plate: { barcode: plate })
+        return well ? recs.joins(:well).where(well: { position: well }) : recs
       }
-
       def self.default_sort
         [{ field: 'created_at', direction: :desc }]
       end

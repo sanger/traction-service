@@ -38,7 +38,7 @@ module V1
       filter :pool
       filter :sample_name, apply: lambda { |records, value, _options|
         # We have to join requests and samples here in order to find by sample name
-        records.joins(:request).joins(:sample).where(sample: { name: value })
+        records.joins(:sample).where(sample: { name: value })
       }
       filter :barcode, apply: lambda { |records, value, _options|
         records.joins(:tube).where(tube: { barcode: value })
