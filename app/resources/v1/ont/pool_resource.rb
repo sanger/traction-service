@@ -14,7 +14,7 @@ module V1
       has_many :libraries
 
       attributes :volume, :kit_barcode, :concentration, :insert_size, :created_at, :updated_at,
-                 :library_attributes
+                 :library_attributes, :tube_barcode
       attribute :source_identifier, readonly: true
       attribute :final_library_amount, readonly: true
 
@@ -22,7 +22,12 @@ module V1
 
       # This could be changed so a pool has a barcode through tube
       filter :barcode, apply: lambda { |records, value, _options|
-        records.where(tube: Tube.find_by(barcode: value))
+        records.where(tube: Tube.where(barcode: value.map { |bc| bc.strip.upcase }))
+      }
+
+      filter :sample_name, apply: lambda { |records, value, _options|
+        # We have to join requests and samples here in order to find by sample name
+        records.joins(libraries: :sample).where(sample: { name: value })
       }
 
       def self.default_sort
@@ -54,6 +59,10 @@ module V1
 
       def updated_at
         @model.updated_at.to_fs(:us)
+      end
+
+      def tube_barcode
+        @model.tube.barcode
       end
     end
   end
