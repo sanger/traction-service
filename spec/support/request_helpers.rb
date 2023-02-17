@@ -59,7 +59,7 @@ module RequestHelpers
 
     expect(matching_resource).not_to be_nil, lambda {
       found = data.map { |resource| resource.values_at('type', 'id').join(':') }
-      "Could not find #{type}:#{id} in #{from}. Found #{found.to_sentence}"
+      "Could not find #{type}:#{id}. Found #{found.to_sentence}"
     }
 
     matching_resource

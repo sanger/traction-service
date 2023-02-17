@@ -36,7 +36,8 @@ RSpec.describe 'PoolsController', ont: true do
         'kit_barcode' => pool.kit_barcode,
         'insert_size' => pool.insert_size,
         'updated_at' => pool.updated_at.to_fs(:us),
-        'created_at' => pool.created_at.to_fs(:us)
+        'created_at' => pool.created_at.to_fs(:us),
+        'tube_barcode' => pool.tube.barcode
       )
     end
 
@@ -55,11 +56,11 @@ RSpec.describe 'PoolsController', ont: true do
     end
 
     context 'pagination' do
-      let!(:expected_pools) { create_list(:ont_pool, 2) }
+      let!(:expected_pools) { create_list(:ont_pool, 2, created_at: Time.zone.now + 10) }
 
       before do
         # There should be 4 pools total so we should get the 2 we just created
-        get "#{v1_ont_pools_path}?page[number]=2&page[size]=2",
+        get "#{v1_ont_pools_path}?page[number]=1&page[size]=2",
             headers: json_api_headers
       end
 
@@ -82,7 +83,8 @@ RSpec.describe 'PoolsController', ont: true do
             'insert_size' => pool.insert_size,
             'final_library_amount' => pool.final_library_amount,
             'updated_at' => pool.updated_at.to_fs(:us),
-            'created_at' => pool.created_at.to_fs(:us)
+            'created_at' => pool.created_at.to_fs(:us),
+            'tube_barcode' => pool.tube.barcode
           )
         end
       end
@@ -390,6 +392,31 @@ RSpec.describe 'PoolsController', ont: true do
           end
         end
       end
+    end
+  end
+
+  describe 'filter' do
+    let!(:pools) { create_list(:ont_pool, 2) }
+
+    it 'accepts case-insensitive barcode' do
+      pool = pools.first
+      downcased = pool.tube.barcode.downcase
+      get "#{v1_ont_pools_path}?filter[barcode]=#{downcased}", headers: json_api_headers
+
+      expect(response).to have_http_status(:success)
+      expect(json['data'].length).to eq(1)
+      expect(json['data'][0]['attributes']['tube_barcode']).to eq pool.tube.barcode
+    end
+
+    it 'accepts multiple case-insensitive barcodes' do
+      barcodes = pools.map { |pool| pool.tube.barcode }
+      downcased = barcodes.map(&:downcase)
+      get "#{v1_ont_pools_path}?filter[barcode]=#{downcased.join(',')}", headers: json_api_headers
+
+      expect(response).to have_http_status(:success)
+      expect(json['data'].length).to eq(barcodes.length)
+      expect(barcodes).to include(json['data'][0]['attributes']['tube_barcode'])
+      expect(barcodes).to include(json['data'][1]['attributes']['tube_barcode'])
     end
   end
 end

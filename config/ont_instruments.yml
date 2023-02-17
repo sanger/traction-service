@@ -14,3 +14,4 @@ development: *default
 test: *default
 production: *default
 uat: *default
+training: *default
