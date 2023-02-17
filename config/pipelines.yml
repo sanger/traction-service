@@ -566,31 +566,33 @@ default: &default
       lims: *lims
       key: stock_resource
       fields:
-        last_updated: *timestamp
-        sample_uuid:
-          type: :model
-          value: sample.external_id
-        study_uuid:
-          type: :model
-          value: requestable.external_study_id
+        created_at: *timestamp
+        updated_at: *timestamp
         labware_coordinate:
           type: :model
           value: requestable.container_material.container.position
-        labware_machine_barcode:
+        machine_barcode:
           type: :model
           value: requestable.container_material.container.barcode
-        labware_human_barcode:
+        human_barcode:
           type: :model
           value: requestable.container_material.container.barcode
-        # stock_resource_uuid:
         labware_type:
           type: :model
           value: requestable.container_material.container.labware_type
-        id_stock_resource_lims:
+        stock_resource_id:
           type: :model
           value: requestable.container_material.container.id
-        # initial_volume:
-        # concentration:
+        samples:
+          type: :array
+          value: samples_for_stock_resource
+          children:
+            sample_uuid:
+              type: :model
+              value: sample.external_id
+            study_uuid:
+              type: :model
+              value: requestable.external_study_id
 
   reception_sample:
     message:

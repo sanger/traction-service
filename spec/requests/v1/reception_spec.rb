@@ -64,13 +64,19 @@ RSpec.describe 'ReceptionsController' do
                                                                          })
         expect(Broker::Handle.test_received_messages[1]).to include_json({
                                                                            'lims' => 'Traction', 'stock_resource' => {
-                                                                             'id_stock_resource_lims' => /\d/,
+                                                                             'stock_resource_id' => /\d/,
                                                                              'labware_coordinate' => nil,
-                                                                             'labware_human_barcode' => 'NT1', 'labware_machine_barcode' => 'NT1',
+                                                                             'human_barcode' => 'NT1',
+                                                                             'machine_barcode' => 'NT1',
                                                                              'labware_type' => 'tube',
-                                                                             'last_updated' => /.*/,
-                                                                             'study_uuid' => /.*/,
-                                                                             'sample_uuid' => /.*/
+                                                                             'created_at' => /.*/,
+                                                                             'updated_at' => /.*/,
+                                                                             'samples' => [
+                                                                               {
+                                                                                 'sample_uuid' => /.*/,
+                                                                                 'study_uuid' => /.*/
+                                                                               }
+                                                                             ]
                                                                            }
                                                                          })
       end
