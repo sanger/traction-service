@@ -58,7 +58,7 @@ module Pipelines
   end
 
   def self.load_yaml
-    YAML.load_file('config/pipelines.yml')[Rails.env].symbolize_keys
+    YAML.load_file('config/pipelines.yml', aliases: true)[Rails.env].symbolize_keys
   end
 
   # memoization. Will load configuration on first use

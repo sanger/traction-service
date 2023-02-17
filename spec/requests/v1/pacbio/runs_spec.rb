@@ -53,6 +53,40 @@ RSpec.describe 'RunsController' do
       expect(json['data'][0]['relationships']['smrt_link_version']['data']['type']).to eq 'smrt_link_versions'
       expect(json['data'][0]['relationships']['smrt_link_version']['data']['id']).to eq run1.smrt_link_version.id.to_s
     end
+
+    context 'pagination' do
+      let!(:expected_runs) { create_list(:pacbio_run, 2, created_at: Time.zone.now + 10) }
+
+      before do
+        # There should be 4 runs total so we should get the 2 we just created
+        get "#{v1_pacbio_runs_path}?page[number]=1&page[size]=2",
+            headers: json_api_headers
+      end
+
+      it 'has a success status' do
+        expect(response).to have_http_status(:success), response.body
+      end
+
+      it 'returns a list of runs' do
+        expect(json['data'].length).to eq(2)
+      end
+
+      it 'returns the correct attributes', aggregate_failures: true do
+        expected_runs.each do |run|
+          run_attributes = find_resource(type: 'runs', id: run.id)['attributes']
+          expect(run_attributes).to include(
+            'name' => run.name,
+            'sequencing_kit_box_barcode' => run.sequencing_kit_box_barcode,
+            'dna_control_complex_box_barcode' => run.dna_control_complex_box_barcode,
+            'system_name' => run.system_name,
+            'state' => run.state,
+            'comments' => run.comments,
+            'pacbio_smrt_link_version_id' => run.pacbio_smrt_link_version_id,
+            'created_at' => run.created_at.to_fs(:us)
+          )
+        end
+      end
+    end
   end
 
   describe '#create' do

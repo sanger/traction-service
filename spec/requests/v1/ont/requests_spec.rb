@@ -29,7 +29,7 @@ RSpec.describe 'Ont::RequestsController', ont: true do
 
     context 'pagination' do
       context 'default' do
-        let!(:expected_requests) { create_list(:ont_request, 5) }
+        let!(:expected_requests) { create_list(:ont_request, 5, created_at: Time.zone.now + 10) }
 
         before do
           # There should be 10 requests total
@@ -62,7 +62,7 @@ RSpec.describe 'Ont::RequestsController', ont: true do
       end
 
       context 'non default' do
-        let!(:expected_requests) { create_list(:ont_request, 5) }
+        let!(:expected_requests) { create_list(:ont_request, 5, created_at: Time.zone.now + 10) }
 
         before do
           # There should be 10 requests total
@@ -93,6 +93,55 @@ RSpec.describe 'Ont::RequestsController', ont: true do
               'sample_name' => request.sample_name,
               'source_identifier' => request.source_identifier
             )
+          end
+        end
+      end
+
+      context 'filters' do
+        context 'source_identifier' do
+          it 'when the source_identifier belongs to a plate' do
+            ont_plate = create(:plate_with_wells_and_requests)
+            ont_plate_requests = ont_plate.wells.flat_map(&:ont_requests)
+            get "#{v1_ont_requests_path}?filter[source_identifier]=#{ont_plate.barcode}",
+                headers: json_api_headers
+
+            expect(response).to have_http_status(:success)
+            expect(json['data'].length).to eq(ont_plate_requests.length)
+            ont_plate_requests.each do |request|
+              request_attributes = find_resource(type: 'requests', id: request.id)['attributes']
+              expect(request_attributes).to include(
+                'cost_code' => request.cost_code,
+                'number_of_flowcells' => request.number_of_flowcells,
+                'external_study_id' => request.external_study_id,
+                'library_type' => request.library_type.name,
+                'data_type' => request.data_type.name,
+                'created_at' => request.created_at.to_fs(:us),
+                'sample_name' => request.sample_name,
+                'source_identifier' => request.source_identifier
+              )
+            end
+          end
+
+          it 'when the source_identifier belongs to a tube' do
+            ont_tube = create(:tube_with_ont_request)
+            get "#{v1_ont_requests_path}?filter[source_identifier]=#{ont_tube.barcode}",
+                headers: json_api_headers
+
+            expect(response).to have_http_status(:success)
+            expect(json['data'].length).to eq(ont_tube.ont_requests.length)
+            ont_tube.ont_requests.each do |request|
+              request_attributes = find_resource(type: 'requests', id: request.id)['attributes']
+              expect(request_attributes).to include(
+                'cost_code' => request.cost_code,
+                'number_of_flowcells' => request.number_of_flowcells,
+                'external_study_id' => request.external_study_id,
+                'library_type' => request.library_type.name,
+                'data_type' => request.data_type.name,
+                'created_at' => request.created_at.to_fs(:us),
+                'sample_name' => request.sample_name,
+                'source_identifier' => request.source_identifier
+              )
+            end
           end
         end
       end

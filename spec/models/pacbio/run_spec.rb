@@ -62,6 +62,13 @@ RSpec.describe Pacbio::Run, pacbio: true do
     expect(run.comments).to eq('A Run Comment')
   end
 
+  it 'can have long run comments' do
+    comments = 'X' * 65535
+    run = create(:pacbio_run, comments:)
+    run.reload
+    expect(run.comments).to eq(comments)
+  end
+
   it 'can have the wells summary when no run comments exist' do
     wells = create_list(:pacbio_well_with_pools, 2)
     plate = create(:pacbio_plate, wells:)
@@ -126,10 +133,7 @@ RSpec.describe Pacbio::Run, pacbio: true do
     it 'can filter runs based on state' do
       create_list(:pacbio_run, 2)
       create(:pacbio_run, state: :started)
-      # bad cop. This is state. Nothing to do with RSpec
-      # rubocop:disable RSpec/PendingWithoutReason
       expect(described_class.pending.length).to eq 2
-      # rubocop:enable RSpec/PendingWithoutReason
       expect(described_class.started.length).to eq 1
     end
   end
