@@ -43,7 +43,6 @@ module TractionService
     end
 
     config.mailer = config_for(:mailer)
-    config.pipelines = config_for(:pipelines)
 
     # Make it Rails 7 ready
     config.autoload_paths += %W{#{Rails.root}/app}
