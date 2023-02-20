@@ -268,7 +268,7 @@ RSpec.describe 'RakeTasks' do
       # Load config file
       config_name = 'pacbio_smrt_link_versions.yml'
       config_path = Rails.root.join('config', config_name)
-      config = YAML.load_file(config_path)[Rails.env]
+      config = YAML.load_file(config_path, aliases: true)[Rails.env]
 
       # Check if default and active flags are set correctly.
       config['versions'].each do |_title, version|

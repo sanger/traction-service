@@ -64,7 +64,6 @@ module Pipelines
     Dir.children(PIPELINES_DIR).each do |pipeline_file|
       config.merge!(YAML.load_file("#{PIPELINES_DIR}/#{pipeline_file}")[Rails.env].symbolize_keys)
     end
-
     config
   end
 
