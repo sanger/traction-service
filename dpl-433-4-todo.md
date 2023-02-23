@@ -1,5 +1,7 @@
 # Todo
 
+Run/ Wells/ Pools update and destroy
+
 ## Questions
 
 What to do when there are no pools given for a well/ would this ever be possible
