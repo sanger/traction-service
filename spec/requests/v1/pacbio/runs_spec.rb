@@ -73,7 +73,12 @@ RSpec.describe 'RunsController' do
 
       it 'returns the correct attributes', aggregate_failures: true do
         expected_runs.each do |run|
-          run_attributes = find_resource(type: 'runs', id: run.id)['attributes']
+          get "#{v1_pacbio_runs_path}/#{run.id}", headers: json_api_headers
+
+          expect(response).to have_http_status(:success), response.body
+          json = ActiveSupport::JSON.decode(response.body)
+          run_attributes = json['data']['attributes']
+
           expect(run_attributes).to include(
             'name' => run.name,
             'sequencing_kit_box_barcode' => run.sequencing_kit_box_barcode,
@@ -89,13 +94,46 @@ RSpec.describe 'RunsController' do
     end
   end
 
+  # Add to pools list
+  # {
+  #   type: 'libraries',
+  #   id: pool2.id
+  # }
   describe '#create' do
     # Set a non-default smrt link version id in request body.
+    let(:pool1) { create(:pacbio_pool) }
+
     let(:body) do
       {
         data: {
           type: 'runs',
-          attributes: attributes_for(:pacbio_run, pacbio_smrt_link_version_id: version11.id)
+          # attributes: attributes_for(:pacbio_run, pacbio_smrt_link_version_id: version11.id),
+          attributes: {
+            sequencing_kit_box_barcode: 'DM0001100861800123121',
+            dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
+            system_name: 'Sequel II',
+            comments: 'A Run Comment',
+            pacbio_smrt_link_version_id: version11.id,
+            wells_attributes: [
+              { row: 'A',
+                column: '1',
+                movie_time: 8,
+                on_plate_loading_concentration: 8.35,
+                pre_extension_time: '2',
+                generate_hifi: 'In SMRT Link',
+                ccs_analysis_output: 'Yes',
+                binding_kit_box_barcode: 'DM1117100862200111711',
+                ccs_analysis_output_include_low_quality_reads: 'Yes',
+                include_fivemc_calls_in_cpg_motifs: 'Yes',
+                ccs_analysis_output_include_kinetics_information: 'Yes',
+                demultiplex_barcodes: 'In SMRT Link',
+                pools: [
+                  {
+                    id: pool1.id
+                  }
+                ] }
+            ]
+          }
         }
       }.to_json
     end
@@ -108,6 +146,18 @@ RSpec.describe 'RunsController' do
 
       it 'creates a run' do
         expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Run, :count).by(1)
+      end
+
+      it 'creates a plate' do
+        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Plate, :count).by(1)
+      end
+
+      it 'creates a well' do
+        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
+      end
+
+      it 'creates a well pool' do
+        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::WellPool, :count).by(1)
       end
 
       it 'creates a run with the correct attributes' do
@@ -154,20 +204,46 @@ RSpec.describe 'RunsController' do
       it 'has the correct error messages' do
         post v1_pacbio_runs_path, params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
-        errors = json['data']['errors']
-        expect(errors['sequencing_kit_box_barcode']).to be_present
-        expect(errors['dna_control_complex_box_barcode']).to be_present
+        errors = json['errors']
+        expect(errors[0]['detail']).to eq "sequencing_kit_box_barcode - can't be blank"
+        expect(errors[1]['detail']).to eq "dna_control_complex_box_barcode - can't be blank"
       end
     end
   end
 
   describe '#create run with default smrt link version implicitly' do
     # Set no smrt link version id in request body.
+    let(:pool1) { create(:pacbio_pool) }
+
     let(:body) do
       {
         data: {
           type: 'runs',
-          attributes: attributes_for(:pacbio_run)
+          attributes: {
+            sequencing_kit_box_barcode: 'DM0001100861800123121',
+            dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
+            system_name: 'Sequel II',
+            comments: 'A Run Comment',
+            wells_attributes: [
+              { row: 'A',
+                column: '1',
+                movie_time: 8,
+                on_plate_loading_concentration: 8.35,
+                pre_extension_time: '2',
+                generate_hifi: 'In SMRT Link',
+                ccs_analysis_output: 'Yes',
+                binding_kit_box_barcode: 'DM1117100862200111711',
+                ccs_analysis_output_include_low_quality_reads: 'Yes',
+                include_fivemc_calls_in_cpg_motifs: 'Yes',
+                ccs_analysis_output_include_kinetics_information: 'Yes',
+                demultiplex_barcodes: 'In SMRT Link',
+                pools: [
+                  {
+                    id: pool1.id
+                  }
+                ] }
+            ]
+          }
         }
       }.to_json
     end
@@ -188,13 +264,41 @@ RSpec.describe 'RunsController' do
     end
   end
 
+  # TODO
   describe '#create run with default smrt link version explicitly' do
     # Set default smrt link version id in request body.
+    let(:pool1) { create(:pacbio_pool) }
+
     let(:body) do
       {
         data: {
           type: 'runs',
-          attributes: attributes_for(:pacbio_run, pacbio_smrt_link_version_id: version10.id)
+          attributes: {
+            sequencing_kit_box_barcode: 'DM0001100861800123121',
+            dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
+            system_name: 'Sequel II',
+            comments: 'A Run Comment',
+            pacbio_smrt_link_version_id: version10.id,
+            wells_attributes: [
+              { row: 'A',
+                column: '1',
+                movie_time: 8,
+                on_plate_loading_concentration: 8.35,
+                pre_extension_time: '2',
+                generate_hifi: 'In SMRT Link',
+                ccs_analysis_output: 'Yes',
+                binding_kit_box_barcode: 'DM1117100862200111711',
+                ccs_analysis_output_include_low_quality_reads: 'Yes',
+                include_fivemc_calls_in_cpg_motifs: 'Yes',
+                ccs_analysis_output_include_kinetics_information: 'Yes',
+                demultiplex_barcodes: 'In SMRT Link',
+                pools: [
+                  {
+                    id: pool1.id
+                  }
+                ] }
+            ]
+          }
         }
       }.to_json
     end
@@ -267,12 +371,13 @@ RSpec.describe 'RunsController' do
 
       it 'has a ok unprocessable_entity' do
         patch v1_pacbio_run_path(123), params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:not_found)
       end
 
       it 'has an error message' do
         patch v1_pacbio_run_path(123), params: body, headers: json_api_headers
-        expect(JSON.parse(response.body)['data']).to include('errors' => "Couldn't find Pacbio::Run with 'id'=123")
+        json = JSON.parse(response.body)
+        expect(json['errors'][0]['detail']).to eq 'The record identified by 123 could not be found.'
       end
 
       it 'does not update a run' do
@@ -352,13 +457,13 @@ RSpec.describe 'RunsController' do
     context 'on failure' do
       it 'does not delete the run' do
         delete '/v1/pacbio/runs/123', headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:not_found)
       end
 
       it 'has an error message' do
         delete '/v1/pacbio/runs/123', headers: json_api_headers
-        data = JSON.parse(response.body)['data']
-        expect(data['errors']).to be_present
+        body = JSON.parse(response.body)
+        expect(body['errors']).to be_present
       end
     end
   end

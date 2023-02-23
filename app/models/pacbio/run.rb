@@ -11,6 +11,7 @@ module Pacbio
     enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2 }
 
     delegate :wells, :all_wells_have_pools?, to: :plate, allow_nil: true
+    delegate :wells_attributes=, :construct_resources!, to: :run_factory
 
     after_create :generate_name
 
@@ -61,6 +62,10 @@ module Pacbio
       return if name.present?
 
       update(name: "#{NAME_PREFIX}#{id}")
+    end
+
+    def run_factory
+      @run_factory ||= RunFactory.new(run: self)
     end
   end
 end
