@@ -1,30 +1,59 @@
+// Create
+
 {
-  "data": {
-    "type": "runs",
-    "attributes": {
-      "sequencing_kit_box_barcode": "",
-      "dna_control_complex_box_barcode": "",
-      "system_name": "",
-      "pacbio_smrt_link_version_id": 1,
-      "comments": "comment 1",
-      "plate_attributes": {
-        "wells_attributes": {
-          "row": "A",
-          "column": "1",
-          "ccs_analysis_output":"",
-          "generate_hifi":"",
-          "ccs_analysis_output_include_low_quality_reads":"",
-          "include_fivemc_calls_in_cpg_motifs":"",
-          "ccs_analysis_output_include_kinetics_information":"",
-          "demultiplex_barcodes":"",
-          "on_plate_loading_concentration":"",
-          "binding_kit_box_barcode":"",
-          "pre_extension_time":"",
-          "loading_target_p1_plus_p2":"",
-          "movie_time":"",
-          "pacbio_pool_id":""
-        }
-      }
-    }
+  "data":{
+     "type":"runs",
+     "attributes":{
+        "sequencing_kit_box_barcode":"skbb",
+        "dna_control_complex_box_barcode":"dna",
+        "system_name":"Sequel II",
+        "pacbio_smrt_link_version_id":1,
+        "comments":"comment 2",
+        "wells_attributes":[
+           {
+              "row":"A",
+              "column":"1",
+              "ccs_analysis_output":"Yes",
+              "generate_hifi":"In SMRT Link",
+              "ccs_analysis_output_include_low_quality_reads":"ccs 2",
+              "include_fivemc_calls_in_cpg_motifs":"cpg",
+              "ccs_analysis_output_include_kinetics_information":"ccs 3",
+              "demultiplex_barcodes":"dem",
+              "on_plate_loading_concentration":"oplc",
+              "binding_kit_box_barcode":"bkbb",
+              "pre_extension_time":"12",
+              "loading_target_p1_plus_p2":"0.5",
+              "movie_time":"10",
+              "pools":[
+                 {
+                    "id":"6"
+                 }
+              ]
+           },
+           {
+              "row":"A",
+              "column":"2",
+              "ccs_analysis_output":"Yes",
+              "generate_hifi":"In SMRT Link",
+              "ccs_analysis_output_include_low_quality_reads":"ccs 222",
+              "include_fivemc_calls_in_cpg_motifs":"cpg",
+              "ccs_analysis_output_include_kinetics_information":"ccs 3333",
+              "demultiplex_barcodes":"dem",
+              "on_plate_loading_concentration":"oplc",
+              "binding_kit_box_barcode":"bkbb",
+              "pre_extension_time":"13",
+              "loading_target_p1_plus_p2":"0.5",
+              "movie_time":"10",
+              "pools":[
+                 {
+                    "id":"7"
+                 }
+              ]
+           }
+        ]
+     }
   }
 }
+
+// Update
+// TBC
