@@ -15,6 +15,15 @@ module Ont
     belongs_to :instrument, class_name: 'Ont::Instrument', foreign_key: :ont_instrument_id,
                             inverse_of: false
 
+    # This association creates the link to the MinKnowVersion. Run belongs
+    # to a MinKnowVersion. We set the default MinKnowVersion for the run
+    # using the class method 'default'.
+    belongs_to :min_know_version,
+               class_name: 'Ont::MinKnowVersion',
+               foreign_key: :ont_min_know_version_id,
+               inverse_of: :runs,
+               default: -> { MinKnowVersion.default }
+
     # Run has many flowcells up to the instrument max number.
     has_many :flowcells, foreign_key: :ont_run_id, inverse_of: :run, dependent: :destroy
 
@@ -114,7 +123,18 @@ module Ont
       end
     end
 
+    # returns sample sheet csv for a Ont::Run
+    # using pipelines.yml configuration to generate data
+    def generate_sample_sheet
+      sample_sheet = OntSampleSheet.new(run: self, configuration: ont_run_sample_sheet_config)
+      sample_sheet.generate
+    end
+
     private
+
+    def ont_run_sample_sheet_config
+      Pipelines.ont.sample_sheet.by_version(min_know_version.name)
+    end
 
     def generate_experiment_name
       return if experiment_name.present?
