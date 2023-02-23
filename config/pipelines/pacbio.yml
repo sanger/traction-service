@@ -1,48 +1,12 @@
 default: &default
-  saphyr:
-    message:
-      lims: &lims Traction
-      key: bmap_flowcell
-      fields:
-        sample_uuid: &sample_uuid
-          type: :model
-          value: library.request.sample.external_id
-        study_uuid: &study_uuid
-          type: :model
-          value: library.request.external_study_id
-        experiment_name:
-          type: :model
-          value: chip.run.name
-        enzyme_name:
-          type: :model
-          value: library.enzyme.name
-        chip_barcode:
-          type: :model
-          value: chip.barcode
-        chip_serialnumber:
-          type: :model
-          value: chip.serial_number
-        position:
-          type: :model
-          value: position
-        id_library_lims:
-          type: :model
-          value: library.id
-        id_flowcell_lims:
-          type: :model
-          value: id
-        instrument_name:
-          type: :string
-          value: saphyr
-        last_updated: &timestamp
-          type: :constant
-          value: Time.current
   pacbio:
     message:
-      lims: *lims
+      lims: Traction
       key: pac_bio_run
       fields:
-        last_updated: *timestamp
+        last_updated:
+          type: :constant
+          value: Time.current
         id_pac_bio_run_lims:
           type: :model
           value: run.name
@@ -417,7 +381,7 @@ default: &default
               with: :well
           CCS Analysis Output - Include Kinetics Information:
             type: :model
-            value: ccs_analysis_output
+            value: ccs_analysis_output_include_kinetics_information
             populate:
               for:
                 - :well
@@ -459,107 +423,6 @@ default: &default
               for:
                 - :well
               with: :well
-  ont:
-    message:
-      lims: *lims
-      key: oseq_flowcell_run
-      fields:
-        last_updated: *timestamp
-        experiment_name:
-          type: :model
-          value: experiment_name
-        instrument_name:
-          type: :model
-          value: instrument.name
-        run_uuid:
-          type: :model
-          value: uuid
-        flowcells:
-          type: :array
-          value: flowcells
-          children:
-            id_flowcell_lims:
-              type: :model
-              value: uuid
-            instrument_slot:
-              type: :model
-              value: position
-            flowcell_id:
-              type: :model
-              value: flowcell_id
-            samples:
-              type: :array
-              value: libraries
-              children:
-                sample_uuid:
-                  type: :model
-                  value: request.sample.external_id
-                study_uuid:
-                  type: :model
-                  value: request.external_study_id
-                pipeline_id_lims:
-                  type: :model
-                  value: request.library_type.name
-                requested_data_type:
-                  type: :model
-                  value: request.data_type.name
-                library_tube_uuid:
-                  type: :model
-                  value: pool.uuid
-                library_tube_barcode:
-                  type: :model
-                  value: pool.tube.barcode
-                tag_identifier:
-                  type: :model
-                  value: tag.group_id
-                tag_sequence:
-                  type: :model
-                  value: tag.oligo
-                tag_set_id_lims:
-                  type: :model
-                  value: tag_set.id
-                tag_set_name:
-                  type: :model
-                  value: tag_set.name
-
-  qc_result:
-    message:
-      lims: *lims
-      key: long_read_qc_result
-      fields:
-        labware_barcode:
-          type: :model
-          value: labware_barcode
-        sample_id:
-          type: :model
-          value: sample_external_id
-        assay_type:
-          type: :model
-          value: qc_assay_type.label
-        assay_type_key:
-          type: :model
-          value: qc_assay_type.key
-        units:
-          type: :model
-          value: qc_assay_type.units
-        value:
-          type: :model
-          value: value
-        id_long_read_qc_result_lims:
-          type: :model
-          value: id
-        created:
-          type: :model
-          value: created_at
-        last_updated: &timestamp
-          type: :constant
-          value: Time.current
-        qc_status:
-          type: :model
-          value: qc_decision.status
-        qc_status_decision_by:
-          type: :model
-          value: qc_decision.decision_made_by
 
   reception_stock_resource:
     message:
