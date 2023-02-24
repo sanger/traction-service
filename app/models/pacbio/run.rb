@@ -47,6 +47,18 @@ module Pacbio
       csv.generate_sample_sheet
     end
 
+    # TODO: Refactor
+    def wells_attributes
+      return [] unless wells
+
+      attributes = wells.map(&:attributes)
+      attributes.map do |well_attributes|
+        pool_ids = Pacbio::Well.find(well_attributes['id']).pools.map(&:id)
+        well_attributes['pools'] = pool_ids.map { |pool_id| { id: pool_id } }
+      end
+      attributes
+    end
+
     private
 
     # We now have SMRT Link versioning

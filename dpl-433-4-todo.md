@@ -1,25 +1,30 @@
 # Todo
 
-Run/ Wells/ Pools update and destroy
+Allow Well update:
+- add wells
+- remove wells
+- update wells id
+- add pools to well
+- remove pools from well
+- update well pools
 
-## Questions
+Run read:
+- include well data (done but refactor)
 
-What to do when there are no pools given for a well/ would this ever be possible
+Remove unused CRUD operations
 
-Are `library` pool types required to be added to a well? If not, `pacbio_well_libraries` could be removed maybe?
+Possibly remove `pacbio_well_libraries`
 
-Can the same pool be added to two wells on the same run/ not on the same run
-
-Do we want to keep plate/ well/ pool CRUD API resources?
 
 ## Tests
 
 `runs_spec.rb`
-- Check run/ plate/ well/ well_pools:  create/ update/ destroy
 - when no pools in well
 - when run values are invalid
-- add a library type pool to the pools list? / are libraries added to run wells
-- same pool to two wells?
+- same pool to two wells -  allowed
+- update run info
+- update run state
+
 
 `run.rb`
 - delegate :wells_attributes=, :construct_resources!, to: :run_factory

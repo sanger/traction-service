@@ -92,6 +92,70 @@ RSpec.describe 'RunsController' do
         end
       end
     end
+
+    context 'filter' do
+      context 'name' do
+        before do
+          get "#{v1_pacbio_runs_path}?filter[name]=#{run1.name}",
+              headers: json_api_headers
+        end
+
+        it 'has a success status' do
+          expect(response).to have_http_status(:success), response.body
+        end
+
+        it 'returns a list of runs' do
+          expect(json['data'].length).to eq(1)
+        end
+
+        it 'returns the correct attributes' do
+          json = ActiveSupport::JSON.decode(response.body)
+          run_attributes = json['data'][0]['attributes']
+
+          expect(run_attributes).to include(
+            'name' => run1.name,
+            'sequencing_kit_box_barcode' => run1.sequencing_kit_box_barcode,
+            'dna_control_complex_box_barcode' => run1.dna_control_complex_box_barcode,
+            'system_name' => run1.system_name,
+            'state' => run1.state,
+            'comments' => run1.comments,
+            'pacbio_smrt_link_version_id' => run1.pacbio_smrt_link_version_id,
+            'created_at' => run1.created_at.to_fs(:us)
+          )
+        end
+      end
+
+      context 'state' do
+        before do
+          get "#{v1_pacbio_runs_path}?filter[state]=#{run1.state}",
+              headers: json_api_headers
+        end
+
+        it 'has a success status' do
+          expect(response).to have_http_status(:success), response.body
+        end
+
+        it 'returns a list of runs' do
+          expect(json['data'].length).to eq(1)
+        end
+
+        it 'returns the correct attributes' do
+          json = ActiveSupport::JSON.decode(response.body)
+          run_attributes = json['data'][0]['attributes']
+
+          expect(run_attributes).to include(
+            'name' => run1.name,
+            'sequencing_kit_box_barcode' => run1.sequencing_kit_box_barcode,
+            'dna_control_complex_box_barcode' => run1.dna_control_complex_box_barcode,
+            'system_name' => run1.system_name,
+            'state' => run1.state,
+            'comments' => run1.comments,
+            'pacbio_smrt_link_version_id' => run1.pacbio_smrt_link_version_id,
+            'created_at' => run1.created_at.to_fs(:us)
+          )
+        end
+      end
+    end
   end
 
   # Add to pools list

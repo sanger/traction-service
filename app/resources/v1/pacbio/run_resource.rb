@@ -14,23 +14,16 @@ module V1
 
       has_one :smrt_link_version, foreign_key: 'pacbio_smrt_link_version_id'
 
-      # Todo
-      # Currently no tests for the below
-      # filters :name, :state
+      filters :name, :state
 
       paginator :paged
 
-      # Todo
-      # Currently no tests for the below
-      # def self.default_sort
-      #   [{ field: 'created_at', direction: :desc }]
-      # end
+      # TODO: Currently no tests for the below
+      def self.default_sort
+        [{ field: 'created_at', direction: :desc }]
+      end
 
       after_create :construct_resources!
-
-      def fetchable_fields
-        super - [:wells_attributes]
-      end
 
       def construct_resources!
         @model.construct_resources!

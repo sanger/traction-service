@@ -57,3 +57,59 @@
 
 // Update
 // TBC
+
+{
+   "data":{
+      "id": 125,
+      "type":"runs",
+      "attributes":{
+         "sequencing_kit_box_barcode":"skbbaaa2",
+         "dna_control_complex_box_barcode":"dna2",
+         "system_name":"Sequel I",
+         "pacbio_smrt_link_version_id":1,
+         "comments":"comment 2",
+         "wells_attributes":[
+            {
+               "row":"A",
+               "column":"1",
+               "ccs_analysis_output":"Yes",
+               "generate_hifi":"In SMRT Link",
+               "ccs_analysis_output_include_low_quality_reads":"ccs 2",
+               "include_fivemc_calls_in_cpg_motifs":"cpg",
+               "ccs_analysis_output_include_kinetics_information":"ccs 3",
+               "demultiplex_barcodes":"dem",
+               "on_plate_loading_concentration":"oplc",
+               "binding_kit_box_barcode":"bkbb",
+               "pre_extension_time":"12",
+               "loading_target_p1_plus_p2":"0.5",
+               "movie_time":"10",
+               "pools":[
+                  {
+                     "id":"6"
+                  }
+               ]
+            },
+            {
+               "row":"A",
+               "column":"2",
+               "ccs_analysis_output":"Yes",
+               "generate_hifi":"In SMRT Link",
+               "ccs_analysis_output_include_low_quality_reads":"ccs 222",
+               "include_fivemc_calls_in_cpg_motifs":"cpg",
+               "ccs_analysis_output_include_kinetics_information":"ccs 3333",
+               "demultiplex_barcodes":"dem",
+               "on_plate_loading_concentration":"oplc",
+               "binding_kit_box_barcode":"bkbb",
+               "pre_extension_time":"13",
+               "loading_target_p1_plus_p2":"0.5",
+               "movie_time":"10",
+               "pools":[
+                  {
+                     "id":"6"
+                  }
+               ]
+            }
+         ]
+      }
+   }
+}
