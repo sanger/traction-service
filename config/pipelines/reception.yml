@@ -2,10 +2,12 @@ default: &default
   reception:
     stock_resource:
       message:
-        lims: Traction
+        lims: &lims Traction
         key: stock_resource
         fields:
-          created_at: *timestamp
+          created_at: &timestamp
+            type: :constant
+            value: Time.current
           updated_at: *timestamp
           labware_coordinate:
             type: :model
@@ -35,7 +37,7 @@ default: &default
 
     sample:
       message:
-        lims: Traction
+        lims: *lims
         key: sample
         fields:
           last_updated: *timestamp
