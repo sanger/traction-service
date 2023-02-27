@@ -39,11 +39,11 @@ module V1
     def publish_messages
       Messages.publish(
         @model.requests.map(&:sample).flatten,
-        Pipelines.reception_sample.message
+        Pipelines.reception.sample.message
       )
       Messages.publish(
         @model.requests,
-        Pipelines.reception_stock_resource.message
+        Pipelines.reception.stock_resource.message
       )
     end
   end

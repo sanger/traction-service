@@ -426,7 +426,7 @@ default: &default
 
   reception_stock_resource:
     message:
-      lims: *lims
+      lims: Traction
       key: stock_resource
       fields:
         created_at: *timestamp
@@ -459,7 +459,7 @@ default: &default
 
   reception_sample:
     message:
-      lims: *lims
+      lims: Traction
       key: sample
       fields:
         last_updated: *timestamp
