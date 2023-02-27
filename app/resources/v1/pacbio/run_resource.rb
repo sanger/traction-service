@@ -18,15 +18,20 @@ module V1
 
       paginator :paged
 
+      after_create :construct_resources!, if: proc { wells_attributes }
+      after_update :update_resources!, if: proc { wells_attributes }
+
       # TODO: Currently no tests for the below
       def self.default_sort
         [{ field: 'created_at', direction: :desc }]
       end
 
-      after_create :construct_resources!
-
       def construct_resources!
         @model.construct_resources!
+      end
+
+      def update_resources!
+        @model.update_resources!
       end
 
       def created_at
@@ -69,7 +74,7 @@ module V1
       # Todo
       # Refactor
       def permitted_wells_attributes
-        %i[row column ccs_analysis_output generate_hifi
+        %i[id row column ccs_analysis_output generate_hifi
            ccs_analysis_output_include_low_quality_reads
            include_fivemc_calls_in_cpg_motifs
            ccs_analysis_output_include_kinetics_information
