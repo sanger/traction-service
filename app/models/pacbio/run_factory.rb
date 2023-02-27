@@ -19,5 +19,22 @@ module Pacbio
         @well_factory.save
       end
     end
+
+    def update_resources!
+      ApplicationRecord.transaction do
+        # Delete wells if attributes are not given
+        # well_ids = @wells_attributes.pluck(:id).compact
+        # run.wells.each do |well|
+        #   run.wells.delete(well) if well_ids.exclude? well.id
+        # end
+
+        @wells_attributes.map do |well_attributes|
+          well_attributes[:plate] = { id: run.plate.id }
+        end
+
+        @well_factory = WellFactory.new(@wells_attributes)
+        @well_factory.save
+      end
+    end
   end
 end

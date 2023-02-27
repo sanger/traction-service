@@ -56,27 +56,27 @@
 }
 
 // Update
-// TBC
-
 {
    "data":{
-      "id": 125,
+      "id": 127,
       "type":"runs",
       "attributes":{
+          "state": "started",
          "sequencing_kit_box_barcode":"skbbaaa2",
          "dna_control_complex_box_barcode":"dna2",
          "system_name":"Sequel I",
          "pacbio_smrt_link_version_id":1,
-         "comments":"comment 2",
+         "comments":"comment 2aaaaa",
          "wells_attributes":[
             {
+               "id": 49,
                "row":"A",
                "column":"1",
                "ccs_analysis_output":"Yes",
                "generate_hifi":"In SMRT Link",
-               "ccs_analysis_output_include_low_quality_reads":"ccs 2",
+               "ccs_analysis_output_include_low_quality_reads":"ccs 4",
                "include_fivemc_calls_in_cpg_motifs":"cpg",
-               "ccs_analysis_output_include_kinetics_information":"ccs 3",
+               "ccs_analysis_output_include_kinetics_information":"ccs 4",
                "demultiplex_barcodes":"dem",
                "on_plate_loading_concentration":"oplc",
                "binding_kit_box_barcode":"bkbb",
@@ -90,6 +90,7 @@
                ]
             },
             {
+               "id": 50,
                "row":"A",
                "column":"2",
                "ccs_analysis_output":"Yes",
@@ -105,7 +106,7 @@
                "movie_time":"10",
                "pools":[
                   {
-                     "id":"6"
+                     "id":"5"
                   }
                ]
             }

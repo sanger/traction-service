@@ -69,7 +69,7 @@ module Pacbio
       def create_or_update_well(well_attributes)
         if well_attributes[:id].present?
           well = Pacbio::Well.find(well_attributes[:id])
-          attributes_to_update = well_attributes.except(:id, :pools)
+          attributes_to_update = well_attributes.except(:id, :pools, :plate)
           well.update(attributes_to_update)
         else
           well = Pacbio::Well.new(well_attributes.except(:plate, :pools))

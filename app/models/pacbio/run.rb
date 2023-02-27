@@ -11,7 +11,8 @@ module Pacbio
     enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2 }
 
     delegate :wells, :all_wells_have_pools?, to: :plate, allow_nil: true
-    delegate :wells_attributes=, :construct_resources!, to: :run_factory
+    delegate :wells_attributes, :wells_attributes=, :construct_resources!, :update_resources!,
+             to: :run_factory
 
     after_create :generate_name
 
@@ -48,16 +49,16 @@ module Pacbio
     end
 
     # TODO: Refactor
-    def wells_attributes
-      return [] unless wells
+    # def wells_attributes
+    #   return [] unless wells
 
-      attributes = wells.map(&:attributes)
-      attributes.map do |well_attributes|
-        pool_ids = Pacbio::Well.find(well_attributes['id']).pools.map(&:id)
-        well_attributes['pools'] = pool_ids.map { |pool_id| { id: pool_id } }
-      end
-      attributes
-    end
+    #   attributes = wells.map(&:attributes)
+    #   attributes.map do |well_attributes|
+    #     pool_ids = Pacbio::Well.find(well_attributes['id']).pools.map(&:id)
+    #     well_attributes['pools'] = pool_ids.map { |pool_id| { id: pool_id } }
+    #   end
+    #   attributes
+    # end
 
     private
 

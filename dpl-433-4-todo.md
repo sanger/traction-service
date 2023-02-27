@@ -1,15 +1,17 @@
 # Todo
 
 Allow Well update:
-- add wells
-- remove wells
+- add wells (DONE)
+- remove wells (DONE)
 - update wells id
+- create and update wells in one request
 - add pools to well
 - remove pools from well
 - update well pools
+- pool does not exist (DONE?)
 
 Run read:
-- include well data (done but refactor)
+- include well data
 
 Remove unused CRUD operations
 
