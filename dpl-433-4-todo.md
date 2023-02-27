@@ -3,12 +3,9 @@
 Allow Well update:
 - add wells (DONE)
 - remove wells (DONE)
-- update wells id
-- create and update wells in one request
-- add pools to well
-- remove pools from well
-- update well pools
-- pool does not exist (DONE?)
+- update wells (DONE)
+- add pools to well (DONE)
+- remove pools from well (DONE)
 
 Run read:
 - include well data
@@ -47,3 +44,11 @@ Possibly remove `pacbio_well_libraries`
 - construct_resources!
 - wells_attributes=
 - wells_attributes
+
+
+- when two pools in the same well have the same library tag
+ActiveModel::Error attribute=tags, type=are not unique within the libraries for well A2, options={}>
+currently ignored - throw error instead?
+
+- when the pool doesn't exist
+currently ignored - throw error instead?
