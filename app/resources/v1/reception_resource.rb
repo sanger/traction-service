@@ -38,7 +38,7 @@ module V1
 
     def publish_messages
       Messages.publish(
-        @model.requests.map(&:sample).flatten,
+        @model.requests.map(&:sample),
         Pipelines.reception.sample.message
       )
       Messages.publish(
