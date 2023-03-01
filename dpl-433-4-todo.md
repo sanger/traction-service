@@ -1,18 +1,18 @@
 # Todo
 
+Run create/ update response
+- include run info
+- anything else?
+
 Allow Well update:
 - add wells (DONE)
 - remove wells (DONE)
 - update wells (DONE)
 - add pools to well (DONE)
 - remove pools from well (DONE)
+- add well validation to factory?
 
-Run read:
-- include well data
-
-Remove unused CRUD operations
-
-Possibly remove `pacbio_well_libraries`
+- when only sending some of the well attributes, does it delete all the others?
 
 
 ## Tests
@@ -23,7 +23,6 @@ Possibly remove `pacbio_well_libraries`
 - same pool to two wells -  allowed
 - update run info
 - update run state
-
 
 `run.rb`
 - delegate :wells_attributes=, :construct_resources!, to: :run_factory
@@ -39,11 +38,7 @@ Possibly remove `pacbio_well_libraries`
 - add back `self.default_sort` ?
 - is `records_for_populate` needed?
 
-`run_factory.rb`
-- run accessor
-- construct_resources!
-- wells_attributes=
-- wells_attributes
+`run_factory.rb` (DONE)
 
 
 - when two pools in the same well have the same library tag
@@ -52,3 +47,12 @@ currently ignored - throw error instead?
 
 - when the pool doesn't exist
 currently ignored - throw error instead?
+
+
+# Other
+
+Remove unused CRUD operations
+
+Possibly remove `pacbio_well_libraries`
+
+Remove well `_deprecated` attributes
