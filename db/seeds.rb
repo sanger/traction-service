@@ -11,3 +11,4 @@ Rake::Task['tags:create:traction_all'].invoke
 Rake::Task['qc_assay_types:create'].invoke
 Rake::Task['smrt_link_versions:create'].invoke
 Rake::Task['ont_instruments:create'].invoke
+Rake::Task['min_know_versions:create'].invoke

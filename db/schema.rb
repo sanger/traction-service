@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_07_105823) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_14_103743) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -110,6 +110,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_07_105823) do
     t.index ["tag_id"], name: "index_ont_libraries_on_tag_id"
   end
 
+  create_table "ont_min_know_versions", charset: "utf8mb3", force: :cascade do |t|
+    t.string "name", null: false
+    t.boolean "default", default: false
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_ont_min_know_versions_on_name", unique: true
+  end
+
   create_table "ont_pools", charset: "utf8mb3", force: :cascade do |t|
     t.string "kit_barcode"
     t.float "volume"
@@ -143,7 +152,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_07_105823) do
     t.string "uuid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "ont_min_know_version_id"
     t.index ["ont_instrument_id"], name: "index_ont_runs_on_ont_instrument_id"
+    t.index ["ont_min_know_version_id"], name: "index_ont_runs_on_ont_min_know_version_id"
   end
 
   create_table "pacbio_libraries", charset: "utf8mb3", force: :cascade do |t|
@@ -466,6 +477,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_07_105823) do
   add_foreign_key "ont_requests", "data_types"
   add_foreign_key "ont_requests", "library_types"
   add_foreign_key "ont_runs", "ont_instruments"
+  add_foreign_key "ont_runs", "ont_min_know_versions"
   add_foreign_key "pacbio_libraries", "pacbio_pools"
   add_foreign_key "pacbio_libraries", "pacbio_requests"
   add_foreign_key "pacbio_pools", "tubes"

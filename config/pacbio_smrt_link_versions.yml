@@ -151,9 +151,8 @@ default: &default
         - v11
 
 development: *default
-
 test: *default
-
 production: *default
-
 uat: *default
+training: *default
+
