@@ -7,4 +7,8 @@ FactoryBot.define do
     system_name { 'Sequel II' }
     comments { 'A Run Comment' }
   end
+
+  factory :pacbio_run_factory, class: 'Pacbio::RunFactory' do
+    pacbio_run
+  end
 end

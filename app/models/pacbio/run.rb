@@ -78,7 +78,7 @@ module Pacbio
     end
 
     def run_factory
-      @run_factory ||= RunFactory.new(run: self)
+      @run_factory ||= RunFactory.new(pacbio_run: self)
     end
   end
 end
