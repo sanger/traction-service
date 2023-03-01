@@ -1,59 +1,42 @@
 # frozen_string_literal: true
 
-# CSVGenerator
-class CsvGenerator
+# OntSampleSheet
+# Used to generate sample sheets specific to the ONT pipeline
+class OntSampleSheet
   include ActiveModel::Model
 
-  # run           => Pacbio::Run
+  # run           => Ont::Run
   # configuration => Pipelines::Configuration::Item
   attr_accessor :run, :configuration
 
   # return a CSV String
   # using run and configuration attributes
   # to generate headers and data
-  def generate_sample_sheet
+  def generate
     CSV.generate do |csv|
       csv << csv_headers
 
-      sorted_wells.each do |well|
-        # add well header row
-        csv << csv_data(well:, row_type: :well)
-
-        next unless well.show_row_per_sample?
-
-        csv_sample_rows(well).each { |sample_row| csv << sample_row }
+      run.flowcells.each do |flowcell|
+        csv_sample_rows(flowcell).each { |sample_row| csv << sample_row }
       end
     end
   end
 
   private
 
-  def wells
-    run.plate.wells
-  end
-
-  # Returns a list of wells associated with the plate in column order
-  # Example: [<Well position:'A1'>, <Well position:'A2'>, <Well position:'B1'>]) =>
-  #          [<Well position:'A1'>, <Well position:'B1'>, <Well position:'A2'>]
-  def sorted_wells
-    wells.sort_by { |well| [well.column.to_i, well.row] }
-  end
-
   # return a list of column names ie headers
-  # eg ['System Name', 'Run Name']
+  # eg ['flow_cell_id', 'sample_id']
   def csv_headers
     configuration.columns.map(&:first)
   end
 
-  def csv_sample_rows(well)
-    well.libraries.map do |library|
-      # add row under well header for each sample in the well
-      csv_data(sample: library, well:, row_type: :sample)
+  def csv_sample_rows(flowcell)
+    flowcell.pool.libraries.map do |library|
+      csv_data(sample: library, flowcell:, row_type: :sample)
     end
   end
 
-  # Use configuration :type and :value to retrieve well data
-  # eg ["Sequel II", "run4"]
+  # Use configuration :type and :value to retrieve flowcell data
   def csv_data(options = {})
     configuration.columns.map do |column|
       populate_column(options.merge(column_options: column[1]))
@@ -66,36 +49,35 @@ class CsvGenerator
   # pertaining to the row type
   # otherwise just populate with the populate with value.
   # some columns need populating for both types with the same method (polymorphism).
-  # well position is different. It would be really difficult to get that from sample.
-  # populate[:for] is either sample or well
-  # populate[:with] is either row_type (sample or well), sample or well
+  # populate[:for] is either sample or flowcell
+  # populate[:with] is either row_type (sample or flowcell), sample or flowcell
   # Examples:
   # +Is Collection:
   # type: :model
   # value: collection?
   # populate:
   #   for:
-  #     - :well
+  #     - :flowcell
   #     - :sample
   #   with: :row_type+
-  # means that is collection needs to be populated for samples and wells
-  # but needs to use the method from sample or well as the answers are different
-  # +Sample Well:
+  # means that is collection needs to be populated for samples and flowcells
+  # but needs to use the method from sample or flowcell as the answers are different
+  # +Sample flowcell:
   # type: :model
   # value: position_leading_zero
   # populate:
   #   for:
-  #     - :well
+  #     - :flowcell
   #     - :sample
-  #   with: :well+
-  # means that sample well needs to be populated for both samples and wells
-  # but needs to use the well method
+  #   with: :flowcell+
+  # means that sample flowcell needs to be populated for both samples and flowcells
+  # but needs to use the flowcell method
   # hopefully that is enough of an explanation!
   # @param [hash] options can include:
-  #  - well: the well data that is being added to the row
+  #  - flowcell: the flowcell data that is being added to the row
   #  - sample: the sample data that is being added to the row
   #  - column_options: from configuration
-  def populate_column(options = { well: nil, sample: nil, column_options: nil })
+  def populate_column(options = { flowcell: nil, sample: nil, column_options: nil })
     populate = options[:column_options][:populate]
     return '' unless populate[:for].include?(options[:row_type])
 

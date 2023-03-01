@@ -77,14 +77,14 @@ RSpec.describe Pacbio::Run, pacbio: true do
   end
 
   describe '#generate_sample_sheet' do
-    it 'must call CsvGenerator' do
+    it 'must call PacbioSampleSheet' do
       well1 = create(:pacbio_well_with_pools)
       well2 = create(:pacbio_well_with_pools)
 
       plate = create(:pacbio_plate, wells: [well1, well2])
       run = create(:pacbio_run, plate:)
 
-      expect_any_instance_of(CsvGenerator).to receive(:generate_sample_sheet)
+      expect_any_instance_of(PacbioSampleSheet).to receive(:generate)
       run.generate_sample_sheet
     end
 
@@ -133,10 +133,7 @@ RSpec.describe Pacbio::Run, pacbio: true do
     it 'can filter runs based on state' do
       create_list(:pacbio_run, 2)
       create(:pacbio_run, state: :started)
-      # bad cop. This is state. Nothing to do with RSpec
-      # rubocop:disable RSpec/PendingWithoutReason
       expect(described_class.pending.length).to eq 2
-      # rubocop:enable RSpec/PendingWithoutReason
       expect(described_class.started.length).to eq 1
     end
   end
