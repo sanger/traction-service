@@ -38,42 +38,46 @@ RSpec.describe Pacbio::Run, pacbio: true do
       expect(create(:pacbio_run, system_name: 2).system_name).to eq 'Sequel IIe'
       expect(create(:pacbio_run, system_name: 'Sequel IIe').system_name).to eq 'Sequel IIe'
     end
+
+    it 'must have a system_name default' do
+      expect(create(:pacbio_run).system_name).to eq 'Sequel II'
+    end
   end
 
-  it 'must have a system_name default' do
-    expect(create(:pacbio_run).system_name).to eq 'Sequel II'
+  context 'associations' do
+    it 'can have a plate' do
+      plate = create(:pacbio_plate)
+      run = create(:pacbio_run, plate:)
+      expect(run.plate).to eq(plate)
+    end
+
+    it 'can have some wells' do
+      wells = create_list(:pacbio_well, 5)
+      plate = create(:pacbio_plate, wells:)
+      run = create(:pacbio_run, plate:)
+      expect(run.wells.count).to eq(5)
+    end
   end
 
-  it 'can have a plate' do
-    plate = create(:pacbio_plate)
-    run = create(:pacbio_run, plate:)
-    expect(run.plate).to eq(plate)
-  end
+  describe '#comments' do
+    it 'can have run comments' do
+      run = create(:pacbio_run)
+      expect(run.comments).to eq('A Run Comment')
+    end
 
-  it 'can have some wells' do
-    wells = create_list(:pacbio_well, 5)
-    plate = create(:pacbio_plate, wells:)
-    run = create(:pacbio_run, plate:)
-    expect(run.wells.count).to eq(5)
-  end
+    it 'can have long run comments' do
+      comments = 'X' * 65535
+      run = create(:pacbio_run, comments:)
+      run.reload
+      expect(run.comments).to eq(comments)
+    end
 
-  it 'can have run comments' do
-    run = create(:pacbio_run)
-    expect(run.comments).to eq('A Run Comment')
-  end
-
-  it 'can have long run comments' do
-    comments = 'X' * 65535
-    run = create(:pacbio_run, comments:)
-    run.reload
-    expect(run.comments).to eq(comments)
-  end
-
-  it 'can have the wells summary when no run comments exist' do
-    wells = create_list(:pacbio_well_with_pools, 2)
-    plate = create(:pacbio_plate, wells:)
-    run = create(:pacbio_run, plate:, comments: nil)
-    expect(run.comments).to eq("#{wells.first.summary}:#{wells[1].summary}")
+    it 'can have the wells summary when no run comments exist' do
+      wells = create_list(:pacbio_well_with_pools, 2)
+      plate = create(:pacbio_plate, wells:)
+      run = create(:pacbio_run, plate:, comments: nil)
+      expect(run.comments).to eq("#{wells.first.summary}:#{wells[1].summary}")
+    end
   end
 
   describe '#generate_sample_sheet' do
@@ -176,6 +180,57 @@ RSpec.describe Pacbio::Run, pacbio: true do
     it 'will set a default value' do
       run = create(:pacbio_run)
       expect(run.smrt_link_version).to eq(version10)
+    end
+  end
+
+  describe '#run_factory' do
+    let!(:pool1) { create(:pacbio_pool) }
+
+    let!(:well_attributes1) { attributes_for(:pacbio_well, plate: nil) }
+
+    let(:wells_attributes_create) do
+      [
+        well_attributes1.merge({ pools: [{ id: pool1.id }] })
+      ]
+    end
+
+    let!(:well1) { create(:pacbio_well_with_pools, pool_count: 1) }
+
+    let(:wells_attributes_update) do
+      attrs = well1.attributes
+      attrs['row'] = 'H'
+      attrs['column'] = '12'
+
+      return [
+        attrs.merge({ pools: [{ id: well1.pools[0].id }] }).with_indifferent_access
+      ]
+    end
+
+    it 'will delegate wells_attributes methods to the run_factory' do
+      run = create(:pacbio_run)
+      run.wells_attributes = wells_attributes_create
+      expect(run.wells_attributes).to eq(wells_attributes_create)
+    end
+
+    it 'will delegate construct_resources! to the run_factory' do
+      run = create(:pacbio_run, plate: nil)
+      run.wells_attributes = wells_attributes_create
+      expect { run.construct_resources! }.to change(Pacbio::Plate, :count).by(1)
+      expect { run.construct_resources! }.to change(Pacbio::Well, :count).by(1)
+      expect { run.construct_resources! }.to change(Pacbio::WellPool, :count).by(1)
+    end
+
+    it 'will delegate update_resources! to the run_factory' do
+      run = create(:pacbio_run, smrt_link_version: version10, plate: well1.plate)
+
+      run.wells_attributes = wells_attributes_update
+      expect { run.update_resources! }.not_to change(Pacbio::Plate, :count)
+      expect { run.update_resources! }.not_to change(Pacbio::Well, :count)
+      expect { run.update_resources! }.not_to change(Pacbio::WellPool, :count)
+
+      run.reload
+      expect(run.plate.wells[0].row).to eq 'H'
+      expect(run.plate.wells[0].column).to eq '12'
     end
   end
 end
