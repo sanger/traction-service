@@ -33,6 +33,16 @@ RSpec.describe 'JsonMatcher' do
       expect(check_array({ 'a' => [{ 'b' => '1' }] }, { 'a' => [{ 'b' => '1' }] }, 'a')).to be_truthy
       expect(check_array({ 'a' => [{ 'b' => '1' }] }, { 'a' => [{ 'b' => '2' }] }, 'a')).to be_falsy
     end
+
+    it 'can check different lengths' do
+      expect(check_array({ 'a' => [{ 'b' => '1' }] }, { 'a' => [{ 'b' => '2' }, { 'e' => '3' }] }, 'a')).to be_falsy
+      expect(check_array({ 'a' => [{ 'b' => '2' }] }, { 'a' => [{ 'b' => '2' }, { 'e' => '3' }] }, 'a')).to be_falsy
+      expect(check_array({ 'a' => [{ 'b' => '2' }, { 'e' => '3' }] }, { 'a' => [{ 'b' => '2' }, { 'e' => '3' }] }, 'a')).to be_truthy
+      expect(check_array({ 'a' => [{ 'b' => '2' }, { 'e' => '3' }, { 'f' => '4' }] }, { 'a' => [{ 'b' => '2' }, { 'e' => '3' }] }, 'a')).to be_falsy
+      expect(check_array({ 'a' => [] }, { 'a' => [{ 'b' => '2' }, { 'e' => '3' }] }, 'a')).to be_falsy
+      expect(check_array({ 'a' => [{ 'b' => '1' }] }, { 'a' => [] }, 'a')).to be_falsy
+      expect(check_array({ 'a' => [] }, { 'a' => [] }, 'a')).to be_truthy
+    end
   end
 
   describe '#check_value' do

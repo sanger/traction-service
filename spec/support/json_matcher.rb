@@ -52,6 +52,15 @@ def check_subtree(object, compared_object, key)
   true
 end
 
+def _compare_array(object, compared_object, key)
+  compared_object[key].each_with_index do |_value, pos|
+    unless check_objects(object[key][pos], compared_object[key][pos])
+      Rails.logger.error "Difference when checking position #{pos} of key #{key}"
+      return false
+    end
+  end
+end
+
 # Checks if the arrays matches the elements across objects
 # object
 # Parameters:
@@ -68,12 +77,15 @@ def check_array(object, compared_object, key)
     Rails.logger.error "The element #{key} from the original object is not an array"
     return false
   end
-  compared_object[key].each_with_index do |_value, pos|
-    unless check_objects(object[key][pos], compared_object[key][pos])
-      Rails.logger.error "Difference when checking position #{pos} of key #{key}"
-      return false
-    end
+
+  unless object[key].length == compared_object[key].length
+    Rails.logger.error "The length of both arrays at #{key} is different"
+    return false
   end
+
+  val = _compare_array(object, compared_object, key)
+  return val unless val.nil?
+
   true
 end
 
