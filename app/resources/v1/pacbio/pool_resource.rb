@@ -43,6 +43,12 @@ module V1
       # to republish the messages for the run
       after_update :publish_messages
 
+      # Filters
+      # join pool with tube as a pool has a barcode through tube
+      filter :barcode, apply: lambda { |records, value, _options|
+                                records.joins(:tube).where(tube: { barcode: value })
+                              }
+
       def library_attributes=(library_parameters)
         @model.library_attributes = library_parameters.map do |library|
           library.permit(:id, :volume, :template_prep_kit_box_barcode,
