@@ -52,6 +52,13 @@ def check_subtree(object, compared_object, key)
   true
 end
 
+# Compares two arrays inside a key of a hash position by position
+# Parameters:
+# object: Hash
+# compared_object: Hash
+# key: string
+# Returns:
+# Returns false if they are different, or nil if not
 def _compare_array(object, compared_object, key)
   compared_object[key].each_with_index do |_value, pos|
     unless check_objects(object[key][pos], compared_object[key][pos])
