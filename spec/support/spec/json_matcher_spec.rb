@@ -24,6 +24,8 @@ RSpec.describe 'JsonMatcher' do
     it 'can perform checks' do
       expect(check_subtree({ 'a' => { 'b' => '1' } }, { 'a' => { 'b' => '1' } }, 'a')).to be_truthy
       expect(check_subtree({ 'a' => { 'b' => '1' } }, { 'a' => { 'b' => '2' } }, 'a')).to be_falsy
+      expect(check_subtree({ 'a' => { 'b' => '1', 'c' => '2' } }, { 'a' => { 'b' => '1' } }, 'a')).to be_truthy
+      expect(check_subtree({ 'a' => { 'b' => '1', 'c' => '2' } }, { 'a' => { 'b' => '2' } }, 'a')).to be_falsy
     end
   end
 
