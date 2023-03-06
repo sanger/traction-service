@@ -11,8 +11,9 @@ namespace :legacy_ont_data do
       # We use delete instead of destroy as we want to be careful about potentially mixed child records
       plate.wells.each do |well|
         well.container_materials.delete_all
+        well.delete
       end
-      plate.wells.delete_all
+
       plate.delete
     end
 
