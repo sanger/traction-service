@@ -16,6 +16,12 @@ class Well < ApplicationRecord
   validates :position, presence: true
   validates :barcode, presence: true, on: :reception
 
+  scope :by_barcode, ->(*barcodes) { joins(:plate).where(plate: { barcode: barcodes }) }
+  scope :by_barcode_and_position, ->(barcode, position) { 
+    joins(:plate).where(plate: { barcode: barcode }, position: position)
+  }
+  scope :with_requests, ->() { joins(:pacbio_requests).or(joins(:ont_requests)) }
+
   def row
     position[0]
   end

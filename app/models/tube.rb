@@ -24,6 +24,8 @@ class Tube < ApplicationRecord
           )
         }
 
+  scope :with_requests, ->() { joins(:pacbio_requests).or(joins(:ont_requests)) }
+
   def identifier
     barcode
   end

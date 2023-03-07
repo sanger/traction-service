@@ -19,6 +19,20 @@ class Reception
 
     validates_nested :request_attributes, flatten_keys: false
 
+    class ContainerDoesNotHaveRequestsAlready < ActiveModel::Validator
+      def validate(record)
+        containers = record.request_attributes.map(&:container).compact.uniq
+        containers.each do |container|
+          binding.pry
+          if container.already_exists? && container.has_requests?
+            record.errors.add :container, "The container #{container.barcode} already exists"
+          end
+        end
+      end
+    end
+    validates_with ContainerDoesNotHaveRequestsAlready
+  
+  
     #
     # Array describing the requests to create.
     # Each request consists of:
@@ -102,6 +116,10 @@ class Reception
       @plate_cache ||= build_plate_cache
     end
 
+    def container_cache
+      @container_cache = tube_cache || plate_cache
+    end
+
     def sample_cache
       @sample_cache ||= build_sample_cache
     end
@@ -124,5 +142,6 @@ class Reception
     def duplicate_containers
       request_attributes.filter_map(&:container).uniq!
     end
+
   end
 end
