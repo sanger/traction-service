@@ -62,5 +62,6 @@ class Reception
     def well?
       @container[:type] == 'wells'
     end
+
   end
 end
