@@ -23,7 +23,6 @@ class Reception
       def validate(record)
         containers = record.request_attributes.map(&:container).compact.uniq
         containers.each do |container|
-          binding.pry
           if container.already_exists? && container.has_requests?
             record.errors.add :container, "The container #{container.barcode} already exists"
           end

@@ -20,7 +20,7 @@ class Well < ApplicationRecord
   scope :by_barcode_and_position, ->(barcode, position) { 
     joins(:plate).where(plate: { barcode: barcode }, position: position)
   }
-  scope :with_requests, ->() { joins(:pacbio_requests).or(joins(:ont_requests)) }
+  scope :with_requests, ->() { Well.where(id: [Well.joins(:pacbio_requests).pluck(:id), Well.joins(:ont_requests).pluck(:id)].flatten) }
 
   def row
     position[0]
