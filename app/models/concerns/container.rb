@@ -12,7 +12,7 @@ module Container
     end
 
     def existing_records
-      return self.class.by_barcode(self.barcode) unless self.position
+      return self.class.by_barcode(self.barcode) unless self.respond_to?(:position) && self.position
       self.class.by_barcode_and_position(self.barcode, self.position)
     end
 
