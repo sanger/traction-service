@@ -116,10 +116,6 @@ class Reception
       @plate_cache ||= build_plate_cache
     end
 
-    def container_cache
-      @container_cache = tube_cache || plate_cache
-    end
-
     def sample_cache
       @sample_cache ||= build_sample_cache
     end
