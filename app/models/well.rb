@@ -17,10 +17,9 @@ class Well < ApplicationRecord
   validates :barcode, presence: true, on: :reception
 
   scope :by_barcode, ->(*barcodes) { joins(:plate).where(plate: { barcode: barcodes }) }
-  scope :by_barcode_and_position, ->(barcode, position) { 
-    joins(:plate).where(plate: { barcode: barcode }, position: position)
+  scope :by_barcode_and_position, lambda { |barcode, position|
+    joins(:plate).where(plate: { barcode: }, position:)
   }
-  scope :with_requests, ->() { Well.where(id: [Well.joins(:pacbio_requests).pluck(:id), Well.joins(:ont_requests).pluck(:id)].flatten) }
 
   def row
     position[0]
