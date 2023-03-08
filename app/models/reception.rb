@@ -20,11 +20,10 @@ class Reception < ApplicationRecord
   # attributes in Reception. We're merely using the ResourceFactory to
   # encapsulate the behaviour
   validates_nested :resource_factory, flatten_keys: true
-  
-    private
+
+  private
 
   def resource_factory
     @resource_factory ||= ResourceFactory.new(reception: self)
   end
-
 end

@@ -19,19 +19,20 @@ class Reception
 
     validates_nested :request_attributes, flatten_keys: false
 
+    # Validates that the model to create is not going to refer to a container
+    # which already have requests in it
     class ContainerDoesNotHaveRequestsAlready < ActiveModel::Validator
       def validate(record)
         containers = record.request_attributes.map(&:container).compact.uniq
         containers.each do |container|
-          if container.already_exists? && container.has_requests?
+          if container.already_exists? && container.existing_records_have_requests?
             record.errors.add :container, "The container #{container.barcode} already exists"
           end
         end
       end
     end
     validates_with ContainerDoesNotHaveRequestsAlready
-  
-  
+
     #
     # Array describing the requests to create.
     # Each request consists of:
@@ -141,6 +142,5 @@ class Reception
     def duplicate_containers
       request_attributes.filter_map(&:container).uniq!
     end
-
   end
 end
