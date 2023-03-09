@@ -21,7 +21,7 @@ RSpec.describe 'ResourceFactoryValidator' do
           container: { type: 'tubes', barcode: 'NT1' }
         }]
       end
-    
+
       before do
         validator.validate(resource_factory)
       end
@@ -30,6 +30,7 @@ RSpec.describe 'ResourceFactoryValidator' do
         expect(resource_factory).to be_valid
       end
     end
+
     context 'invalid' do
       let(:request_attributes) do
         [{
@@ -41,7 +42,7 @@ RSpec.describe 'ResourceFactoryValidator' do
           container: { type: 'tubes', barcode: 'NT1' }
         }]
       end
-    
+
       before do
         validator.validate(resource_factory)
       end
