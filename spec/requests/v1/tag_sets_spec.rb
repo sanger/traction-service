@@ -79,7 +79,8 @@ RSpec.describe 'TagSetsController' do
         # the failure responses are slightly different to in tags_spec because we are using the default controller
         it 'has an error message' do
           post v1_tag_sets_path, params: body, headers: json_api_headers
-          expect(response.parsed_body['errors'][0]).to include('detail' => "name - can't be blank")
+          json = ActiveSupport::JSON.decode(response.body)
+          expect(json['errors'][0]).to include('detail' => "name - can't be blank")
         end
       end
     end
@@ -140,7 +141,8 @@ RSpec.describe 'TagSetsController' do
         # the failure responses are slightly different to in tags_spec because we are using the default controller
         it 'has an error message' do
           patch v1_tag_set_path(123), params: body, headers: json_api_headers
-          expect(response.parsed_body['errors'][0]).to include('detail' => 'The record identified by 123 could not be found.')
+          json = ActiveSupport::JSON.decode(response.body)
+          expect(json['errors'][0]['detail']).to eq('The record identified by 123 could not be found.')
         end
       end
     end
