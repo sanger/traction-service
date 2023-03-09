@@ -272,7 +272,7 @@ RSpec.describe 'RunsController' do
 
       it 'has an error message' do
         patch v1_pacbio_run_path(123), params: body, headers: json_api_headers
-        expect(JSON.parse(response.body)['data']).to include('errors' => "Couldn't find Pacbio::Run with 'id'=123")
+        expect(response.parsed_body['data']).to include('errors' => "Couldn't find Pacbio::Run with 'id'=123")
       end
 
       it 'does not update a run' do
@@ -357,7 +357,7 @@ RSpec.describe 'RunsController' do
 
       it 'has an error message' do
         delete '/v1/pacbio/runs/123', headers: json_api_headers
-        data = JSON.parse(response.body)['data']
+        data = response.parsed_body['data']
         expect(data['errors']).to be_present
       end
     end
