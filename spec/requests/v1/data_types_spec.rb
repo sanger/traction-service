@@ -81,7 +81,7 @@ RSpec.describe 'DataTypesController' do
 
         it 'has an error message' do
           post v1_data_types_path, params: body, headers: json_api_headers
-          expect(JSON.parse(response.body)['errors'][0]).to include('detail' => "pipeline - can't be blank")
+          expect(response.parsed_body['errors'][0]).to include('detail' => "pipeline - can't be blank")
         end
       end
     end
@@ -142,7 +142,7 @@ RSpec.describe 'DataTypesController' do
         # the failure responses are slightly different to in tags_spec because we are using the default controller
         it 'has an error message' do
           patch v1_data_type_path(123), params: body, headers: json_api_headers
-          expect(JSON.parse(response.body)['errors'][0]).to include('detail' => 'The record identified by 123 could not be found.')
+          expect(response.parsed_body['errors'][0]).to include('detail' => 'The record identified by 123 could not be found.')
         end
       end
     end

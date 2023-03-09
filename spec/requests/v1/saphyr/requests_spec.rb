@@ -96,7 +96,7 @@ RSpec.describe 'RequestsController', saphyr: true do
 
         it 'has an error message' do
           post v1_saphyr_requests_path, params: body, headers: json_api_headers
-          expect(JSON.parse(response.body)['data']).not_to be_empty
+          expect(response.parsed_body['data']).not_to be_empty
         end
       end
 
@@ -155,7 +155,7 @@ RSpec.describe 'RequestsController', saphyr: true do
 
       it 'has an error message' do
         delete '/v1/saphyr/requests/fakerequest', headers: json_api_headers
-        data = JSON.parse(response.body)['data']
+        data = response.parsed_body['data']
         expect(data['errors']).to be_present
       end
     end
