@@ -8,7 +8,7 @@ module V1
 
       attributes :name, :sequencing_kit_box_barcode, :dna_control_complex_box_barcode,
                  :system_name, :created_at, :state, :comments, :all_wells_have_pools,
-                 :pacbio_smrt_link_version_id, :wells_attributes
+                 :pacbio_smrt_link_version_id, :well_attributes
       has_one :plate, foreign_key_on: :related, foreign_key: 'pacbio_run_id',
                       class_name: 'Runs::Plate'
 
@@ -18,26 +18,24 @@ module V1
 
       paginator :paged
 
-      after_create :construct_resources!, if: proc { wells_attributes }
-      after_update :update_resources!, if: proc { wells_attributes }
+      PERMITTED_WELL_PARAMETERS = %i[id
+                                     row column ccs_analysis_output generate_hifi
+                                     ccs_analysis_output_include_low_quality_reads
+                                     include_fivemc_calls_in_cpg_motifs comment
+                                     ccs_analysis_output_include_kinetics_information
+                                     demultiplex_barcodes on_plate_loading_concentration
+                                     binding_kit_box_barcode pre_extension_time
+                                     loading_target_p1_plus_p2 movie_time pools].freeze
 
-      # TODO: Currently no tests for the below
       def self.default_sort
         [{ field: 'created_at', direction: :desc }]
-      end
-
-      def construct_resources!
-        @model.construct_resources!
-      end
-
-      def update_resources!
-        @model.update_resources!
       end
 
       def created_at
         @model.created_at.to_fs(:us)
       end
 
+      # DPL-433 Could this be removed?
       def all_wells_have_pools
         @model.all_wells_have_pools?
       end
@@ -61,26 +59,10 @@ module V1
 
       private
 
-      def wells_attributes=(wells_parameters)
-        raise ArgumentError unless wells_parameters.is_a?(Array)
-
-        @model.wells_attributes = wells_parameters.map do |well|
-          well.permit(permitted_wells_attributes, pools: [:id])
-              .to_h
-              .with_indifferent_access
+      def well_attributes=(wells_parameters)
+        @model.well_attributes = wells_parameters.map do |well|
+          well.permit(PERMITTED_WELL_PARAMETERS, pools: [:id])
         end
-      end
-
-      # Todo
-      # Refactor
-      def permitted_wells_attributes
-        %i[id row column ccs_analysis_output generate_hifi
-           ccs_analysis_output_include_low_quality_reads
-           include_fivemc_calls_in_cpg_motifs
-           ccs_analysis_output_include_kinetics_information
-           demultiplex_barcodes on_plate_loading_concentration
-           binding_kit_box_barcode pre_extension_time
-           loading_target_p1_plus_p2 movie_time]
       end
     end
   end

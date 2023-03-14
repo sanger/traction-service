@@ -118,7 +118,7 @@ RSpec.describe 'RakeTasks' do
     let!(:well5) { create(:pacbio_well, ccs_analysis_output_deprecated: 'No',  ccs_analysis_output: nil, plate:) }
 
     it 'modifies the data correctly' do
-      expect(Pacbio::Well.count).to eq(5)
+      expect(Pacbio::Well.count).to eq(6) # create(:pacbio_plate) also creates a well
       Rake::Task['pacbio_wells:migrate_smrt_link_options'].invoke
       [well1, well2, well3, well4, well5].collect(&:reload)
       expect(well1.generate_hifi).to eq('In SMRT Link')

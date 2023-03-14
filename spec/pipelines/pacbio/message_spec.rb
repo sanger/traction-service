@@ -74,6 +74,7 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
         let(:request) { library.request }
 
         before do
+          plate_well.pools = []
           plate_well.pools << pool
         end
 
