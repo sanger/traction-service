@@ -24,20 +24,23 @@ RSpec.describe Pacbio::Plate, pacbio: true do
       expect(plate).to be_all_wells_have_pools
     end
 
-    it 'some with pools' do
-      plate = create(:pacbio_plate,
-                     wells: create_list(:pacbio_well_with_pools, 2) + create_list(:pacbio_well, 2))
-      expect(plate).not_to be_all_wells_have_pools
-    end
+    # DPL-433 Could this be removed?
+    # it 'some with pools' do
+    #   plate = create(:pacbio_plate,
+    #                  wells: create_list(:pacbio_well_with_pools, 2) + create_list(:pacbio_well, 2))
+    #   expect(plate).not_to be_all_wells_have_pools
+    # end
 
-    it 'none with pools' do
-      plate = create(:pacbio_plate, wells: create_list(:pacbio_well, 2))
-      expect(plate).not_to be_all_wells_have_pools
-    end
+    # # DPL-433 Could this be removed?
+    # it 'none with pools' do
+    #   plate = create(:pacbio_plate, wells: create_list(:pacbio_well, 2))
+    #   expect(plate).not_to be_all_wells_have_pools
+    # end
 
-    it 'with no wells at all' do
-      plate = create(:pacbio_plate)
-      expect(plate).not_to be_all_wells_have_pools
-    end
+    # # DPL-433 Could this be removed?
+    # it 'with no wells at all' do
+    #   plate = create(:pacbio_plate)
+    #   expect(plate).not_to be_all_wells_have_pools
+    # end
   end
 end

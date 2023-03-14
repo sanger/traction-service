@@ -12,31 +12,6 @@ module V1
       #
       # Here we may return multiple plates. To be compliant I think it would need to return a
       # plate_collection (or similar), but it doesn't sound like we'd need to provide an id.
-      def create
-        not_found if Flipper.enabled?(:dpl_277_disable_pacbio_specific_reception)
-        @plate_creator = ::Pacbio::PlateCreator.new(plates_params)
-        if @plate_creator.save!
-          @plates = @plate_creator.plates.map { |plate| PlateResource.new(plate, nil) }
-          body = serialize_array(@plates)
-          render json: body, status: :created
-        else
-          # JSON-API formatted errors.
-          errors = @plate_creator.errors.map { |title, detail| { title:, detail: } }
-          render json: { errors: },
-                 status: :unprocessable_entity
-        end
-      end
-
-      private
-
-      def plates_params
-        raise if Flipper.enabled?(:dpl_277_disable_pacbio_specific_reception)
-
-        params.require(:data)['attributes'].permit(
-          plates: [:barcode, { wells: [:position, { samples:
-              ::Pacbio.request_attributes + ::Pacbio.sample_attributes }] }]
-        ).to_h
-      end
     end
   end
 end

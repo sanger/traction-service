@@ -43,7 +43,15 @@ module Pacbio
     # explanation
     validates_with SmrtLinkOptionsValidator
 
+    # DPL-433 Refactor this to validate via pool and TagValidator?
+    validates_with WellValidator
+
     validates :row, :column, presence: true
+
+    validates :pools, length: {
+      minimum: 1,
+      message: 'there must be at least one pool' # :well_min_pools
+    }
 
     delegate :run, to: :plate, allow_nil: true
 
