@@ -1,9 +1,9 @@
 # Todo
 
-- Publish messages on run create/update (for plate)
 - Remove all_wells_have_pools?
 - Does wells want to include pool info?
 
+- What are Pacbio Requests?
 
 ## Other
 
