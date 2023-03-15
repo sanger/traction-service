@@ -8,12 +8,14 @@ module Pipelines
   # In order to maintain consistent numbering, this has been pulled out into
   # a constant. Please do *not* remove entries from this list, as it could
   # result in legacy data being reassigned to the incorrect pipelines
-  ENUMS = { pacbio: 0, ont: 1, saphyr: 2 }.freeze
+  ENUMS = { pacbio: 0, ont: 1, saphyr: 2, qc_result: 3 }.freeze
   HANDLERS = {
     pacbio: Pacbio,
     ont: Ont,
-    saphyr: Saphyr
+    saphyr: Saphyr,
+    qc_result: QcResult
   }.with_indifferent_access.freeze
+  PIPELINES_DIR = 'config/pipelines'
 
   def self.handler(pipeline)
     HANDLERS.fetch(pipeline) do
@@ -33,7 +35,7 @@ module Pipelines
 
   # create methods for each pipeline so can use Pipelines.pipeline_name
   # instead of Pipelines.configuration.pipeline_name
-  Rails.configuration.pipelines.each do |k, _v|
+  ENUMS.each do |k, _v|
     self.class.send(:define_method, k, proc { configuration.send(k) })
   end
 
@@ -57,8 +59,14 @@ module Pipelines
     send(pipeline.to_s.downcase)
   end
 
+  # Finds all the config files stored in config/pipelines and merges them into a hash
   def self.load_yaml
-    YAML.load_file('config/pipelines.yml', aliases: true)[Rails.env].symbolize_keys
+    config = {}
+    Dir.children(PIPELINES_DIR).each do |pipeline_file|
+      config.merge!(YAML.load_file("#{PIPELINES_DIR}/#{pipeline_file}",
+                                   aliases: true)[Rails.env].symbolize_keys)
+    end
+    config
   end
 
   # memoization. Will load configuration on first use

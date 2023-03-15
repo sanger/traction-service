@@ -1,0 +1,45 @@
+default: &default
+  saphyr:
+    message:
+      lims: Traction
+      key: bmap_flowcell
+      fields:
+        sample_uuid:
+          type: :model
+          value: library.request.sample.external_id
+        study_uuid:
+          type: :model
+          value: library.request.external_study_id
+        experiment_name:
+          type: :model
+          value: chip.run.name
+        enzyme_name:
+          type: :model
+          value: library.enzyme.name
+        chip_barcode:
+          type: :model
+          value: chip.barcode
+        chip_serialnumber:
+          type: :model
+          value: chip.serial_number
+        position:
+          type: :model
+          value: position
+        id_library_lims:
+          type: :model
+          value: library.id
+        id_flowcell_lims:
+          type: :model
+          value: id
+        instrument_name:
+          type: :string
+          value: saphyr
+        last_updated:
+          type: :constant
+          value: Time.current
+
+development: *default
+test: *default
+uat: *default
+training: *default
+production: *default

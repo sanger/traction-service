@@ -26,5 +26,10 @@ module Ont
     def collection?
       false
     end
+
+    # The tag.group_id 'Barcode' used for sample sheet generation
+    def tag_barcode
+      tag&.group_id
+    end
   end
 end

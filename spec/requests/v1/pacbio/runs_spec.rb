@@ -1058,27 +1058,36 @@ RSpec.describe 'RunsController' do
     # pool is added
     # pool is removed
     context 'on failure' do
+      let!(:run) { create(:pacbio_run) }
+      let!(:plate) { create(:pacbio_plate, run:, well_count: 2) }
+
       let(:body) do
         {
           data: {
             type: 'runs',
-            id: 123,
+            id: run.id,
             attributes: {
-              state: 'started'
+              state: 'unknown'
             }
           }
         }.to_json
       end
 
-      it 'has a ok unprocessable_entity' do
-        patch v1_pacbio_run_path(123), params: body, headers: json_api_headers
-        expect(response).to have_http_status(:not_found)
+      it 'has a bad_request' do
+        patch v1_pacbio_run_path(run.id), params: body, headers: json_api_headers
+        expect(response).to have_http_status(:bad_request)
       end
 
       it 'has an error message' do
-        patch v1_pacbio_run_path(123), params: body, headers: json_api_headers
-        json = JSON.parse(response.body)
-        expect(json['errors'][0]['detail']).to eq 'The record identified by 123 could not be found.'
+        patch v1_pacbio_run_path(run.id), params: body, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['errors'][0]['detail']).to eq 'unknown is not a valid value for state.'
+      end
+
+      it 'does not update a run' do
+        patch v1_pacbio_run_path(run.id), params: body, headers: json_api_headers
+        run.reload
+        expect(run).to be_pending
       end
     end
   end
@@ -1157,7 +1166,7 @@ RSpec.describe 'RunsController' do
 
       it 'has an error message' do
         delete '/v1/pacbio/runs/123', headers: json_api_headers
-        body = JSON.parse(response.body)
+        body = response.parsed_body
         expect(body['errors']).to be_present
       end
     end
