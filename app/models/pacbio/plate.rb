@@ -14,7 +14,7 @@ module Pacbio
 
     validates :wells, length: {
       minimum: 1,
-      message: 'there must be at least one well' # :plate_min_wells
+      message: :plate_min_wells
     }
 
     def well_attributes=(well_options)

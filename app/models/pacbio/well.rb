@@ -50,7 +50,7 @@ module Pacbio
 
     validates :pools, length: {
       minimum: 1,
-      message: 'there must be at least one pool' # :well_min_pools
+      message: :well_min_pools
     }
 
     delegate :run, to: :plate, allow_nil: true

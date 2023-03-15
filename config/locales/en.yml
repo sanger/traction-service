@@ -38,14 +38,6 @@ en:
           attributes:
             wells:
               empty: there are no wells
-        pacbio/plate:
-          attributes:
-            wells:
-              plate_min_wells: there must be at least one well
-        pacbio/well:
-          attributes:
-            pools:
-              well_min_pools: there must be at least one pool
   activerecord:
     errors:
       models:
@@ -63,6 +55,14 @@ en:
               pool_unknown: pool at position %{position_name} is unknown
             flowcell_id:
               flowcell_id_missing: flowcell_id at position %{position_name} is missing
+        pacbio/plate:
+          attributes:
+            wells:
+              plate_min_wells: there must be at least one well
+        pacbio/well:
+          attributes:
+            pools:
+              well_min_pools: there must be at least one pool
         ont/run:
           attributes:
             flowcells:
