@@ -23,6 +23,7 @@ module Pacbio
     validates :volume, :concentration,
               :insert_size, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
 
+    # DPL-433 Can this be removed?
     def library_attributes=(library_options)
       self.libraries = library_options.map do |attributes|
         if attributes['id']
@@ -33,6 +34,7 @@ module Pacbio
       end
     end
 
+    # DPL-433 Can this be removed?
     # @return [Array] of Plates attached to a sequencing run
     def sequencing_plates
       wells&.collect(&:plate)
@@ -40,16 +42,19 @@ module Pacbio
 
     private
 
+    # DPL-433 Can this be removed?
     def update_library(attributes)
       id = attributes['id'].to_s
       indexed_libraries.fetch(id) { missing_library(id) }
                        .tap { |l| l.update(attributes) }
     end
 
+    # DPL-433 Can this be removed?
     def missing_library(id)
       raise ActiveRecord::RecordNotFound, "Pacbio request #{id} is not part of the pool"
     end
 
+    # DPL-433 Can this be removed?
     def indexed_libraries
       @indexed_libraries ||= libraries.index_by { |lib| lib.id.to_s }
     end

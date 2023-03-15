@@ -41,6 +41,7 @@ module V1
 
       # When a pool is updated and it is attached to a run we need
       # to republish the messages for the run
+      # DPL-433 Can this be removed?
       after_update :publish_messages
 
       # Filters
@@ -49,6 +50,7 @@ module V1
                                 records.joins(:tube).where(tube: { barcode: value })
                               }
 
+      # DPL-433 Can this be removed?
       def library_attributes=(library_parameters)
         @model.library_attributes = library_parameters.map do |library|
           library.permit(:id, :volume, :template_prep_kit_box_barcode,
@@ -72,6 +74,7 @@ module V1
         @model.updated_at.to_fs(:us)
       end
 
+      # DPL-433 Can this be removed?
       def publish_messages
         Messages.publish(@model.sequencing_plates, Pipelines.pacbio.message)
       end

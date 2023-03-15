@@ -7,6 +7,22 @@ RSpec.describe 'RunsController' do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
 
+  shared_examples 'publish_messages_on_create' do
+    it 'publishes a message' do
+      expect(Messages).to receive(:publish).with(instance_of(Pacbio::Plate), having_attributes(pipeline: 'pacbio'))
+      post v1_pacbio_runs_path, params: body, headers: json_api_headers
+      expect(response).to have_http_status(:success), response.body
+    end
+  end
+
+  shared_examples 'publish_messages_on_update' do
+    it 'publishes a message' do
+      expect(Messages).to receive(:publish).with(run.plate, having_attributes(pipeline: 'pacbio'))
+      patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+      expect(response).to have_http_status(:success), response.body
+    end
+  end
+
   describe '#get' do
     let!(:run1) { create(:pacbio_run, state: 'pending') }
     let!(:run2) { create(:pacbio_run, state: 'started') }
@@ -239,478 +255,482 @@ RSpec.describe 'RunsController' do
         expect(run.smrt_link_version).to eq(version11)
         expect(run.pacbio_smrt_link_version_id).to eq(version11.id)
       end
+
+      it_behaves_like 'publish_messages_on_create'
     end
 
-    context 'on failure when there is missing run data' do
-      # We send an empty request body.
-      let(:body) do
-        {
-          data: {
-            type: 'runs',
-            attributes: {}
-          }
-        }.to_json
-      end
-
-      it 'has a unprocessable_entity status' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'does not create a run' do
-        expect do
-          post v1_pacbio_runs_path, params: body,
-                                    headers: json_api_headers
-        end.not_to change(Pacbio::Run, :count)
-      end
-
-      it 'has the correct error messages' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        errors = json['errors']
-        expect(errors[0]['detail']).to eq "sequencing_kit_box_barcode - can't be blank"
-        expect(errors[1]['detail']).to eq "dna_control_complex_box_barcode - can't be blank"
-      end
-    end
-
-    context 'when there is invalid run data' do
-      let(:body) do
-        {
-          data: {
-            type: 'runs',
-            attributes: {
-              system_name: 'invalid'
+    context 'on failure' do
+      context 'when there is missing run data' do
+        # We send an empty request body.
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {}
             }
-          }
-        }.to_json
+          }.to_json
+        end
+
+        it 'has a unprocessable_entity status' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'does not create a run' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Run, :count)
+        end
+
+        it 'has the correct error messages' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq "sequencing_kit_box_barcode - can't be blank"
+          expect(errors[1]['detail']).to eq "dna_control_complex_box_barcode - can't be blank"
+        end
       end
 
-      it 'has a bad_request status' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:bad_request)
-      end
-
-      it 'does not create a run' do
-        expect do
-          post v1_pacbio_runs_path, params: body,
-                                    headers: json_api_headers
-        end.not_to change(Pacbio::Run, :count)
-      end
-
-      it 'has the correct error messages' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        errors = json['errors']
-        expect(errors[0]['detail']).to eq 'invalid is not a valid value for system_name.'
-      end
-    end
-
-    context 'when there no wells' do
-      let(:pool1) { create(:pacbio_pool) }
-
-      let(:body) do
-        {
-          data: {
-            type: 'runs',
-            attributes: {
-              sequencing_kit_box_barcode: 'DM0001100861800123121',
-              dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-              system_name: 'Sequel II',
-              comments: 'A Run Comment',
-              pacbio_smrt_link_version_id: version11.id,
-              well_attributes: []
+      context 'when there is invalid run data' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                system_name: 'invalid'
+              }
             }
-          }
-        }.to_json
+          }.to_json
+        end
+
+        it 'has a bad_request status' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:bad_request)
+        end
+
+        it 'does not create a run' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Run, :count)
+        end
+
+        it 'has the correct error messages' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq 'invalid is not a valid value for system_name.'
+        end
       end
 
-      it 'has a unprocessable_entity status' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
+      context 'when there no wells' do
+        let(:pool1) { create(:pacbio_pool) }
 
-      it 'does not create a run' do
-        expect do
-          post v1_pacbio_runs_path, params: body,
-                                    headers: json_api_headers
-        end.not_to change(Pacbio::Run, :count)
-      end
-
-      it 'does not create a well' do
-        expect do
-          post v1_pacbio_runs_path, params: body,
-                                    headers: json_api_headers
-        end.not_to change(Pacbio::Well, :count)
-      end
-
-      it 'has the correct error messages' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        errors = json['errors']
-        expect(errors[0]['detail']).to eq 'plate.wells - there must be at least one well'
-      end
-    end
-
-    context 'when there is missing well data' do
-      let(:pool1) { create(:pacbio_pool) }
-
-      let(:body) do
-        {
-          data: {
-            type: 'runs',
-            attributes: {
-              sequencing_kit_box_barcode: 'DM0001100861800123121',
-              dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-              system_name: 'Sequel II',
-              comments: 'A Run Comment',
-              pacbio_smrt_link_version_id: version11.id,
-              well_attributes: [{
-                row: 'A',
-                pools: [pool1.id]
-              }]
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                sequencing_kit_box_barcode: 'DM0001100861800123121',
+                dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
+                system_name: 'Sequel II',
+                comments: 'A Run Comment',
+                pacbio_smrt_link_version_id: version11.id,
+                well_attributes: []
+              }
             }
-          }
-        }.to_json
+          }.to_json
+        end
+
+        it 'has a unprocessable_entity status' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'does not create a run' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Run, :count)
+        end
+
+        it 'does not create a well' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Well, :count)
+        end
+
+        it 'has the correct error messages' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq 'plate.wells - there must be at least one well'
+        end
       end
 
-      it 'has a unprocessable_entity status' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
+      context 'when there is missing well data' do
+        let(:pool1) { create(:pacbio_pool) }
 
-      it 'does not create a run' do
-        expect do
-          post v1_pacbio_runs_path, params: body,
-                                    headers: json_api_headers
-        end.not_to change(Pacbio::Run, :count)
-      end
-
-      it 'does not create a a well' do
-        expect do
-          post v1_pacbio_runs_path, params: body,
-                                    headers: json_api_headers
-        end.not_to change(Pacbio::Well, :count)
-      end
-
-      it 'has the correct error messages' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        errors = json['errors']
-        expect(errors[0]['detail']).to eq "plate.wells.column - can't be blank"
-      end
-    end
-
-    context 'when there are no well pools' do
-      let(:body) do
-        {
-          data: {
-            type: 'runs',
-            attributes: {
-              sequencing_kit_box_barcode: 'DM0001100861800123121',
-              dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-              system_name: 'Sequel II',
-              comments: 'A Run Comment',
-              pacbio_smrt_link_version_id: version11.id,
-              well_attributes: [
-                { row: 'A',
-                  column: '1',
-                  movie_time: 8,
-                  on_plate_loading_concentration: 8.35,
-                  pre_extension_time: '2',
-                  generate_hifi: 'In SMRT Link',
-                  ccs_analysis_output: 'Yes',
-                  binding_kit_box_barcode: 'DM1117100862200111711',
-                  ccs_analysis_output_include_low_quality_reads: 'Yes',
-                  include_fivemc_calls_in_cpg_motifs: 'Yes',
-                  ccs_analysis_output_include_kinetics_information: 'Yes',
-                  demultiplex_barcodes: 'In SMRT Link',
-                  pools: [] }
-              ]
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                sequencing_kit_box_barcode: 'DM0001100861800123121',
+                dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
+                system_name: 'Sequel II',
+                comments: 'A Run Comment',
+                pacbio_smrt_link_version_id: version11.id,
+                well_attributes: [{
+                  row: 'A',
+                  pools: [pool1.id]
+                }]
+              }
             }
-          }
-        }.to_json
+          }.to_json
+        end
+
+        it 'has a unprocessable_entity status' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'does not create a run' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Run, :count)
+        end
+
+        it 'does not create a a well' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Well, :count)
+        end
+
+        it 'has the correct error messages' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq "plate.wells.column - can't be blank"
+        end
       end
 
-      it 'has a unprocessable_entity status' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'does not create a run' do
-        expect do
-          post v1_pacbio_runs_path, params: body,
-                                    headers: json_api_headers
-        end.not_to change(Pacbio::Run, :count)
-      end
-
-      it 'does not create a a well' do
-        expect do
-          post v1_pacbio_runs_path, params: body,
-                                    headers: json_api_headers
-        end.not_to change(Pacbio::Well, :count)
-      end
-
-      it 'has the correct error messages' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        errors = json['errors']
-        expect(errors[0]['detail']).to eq 'plate.wells.pools - there must be at least one pool'
-      end
-    end
-
-    context 'when the well pool does not exist' do
-      let(:body) do
-        {
-          data: {
-            type: 'runs',
-            attributes: {
-              sequencing_kit_box_barcode: 'DM0001100861800123121',
-              dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-              system_name: 'Sequel II',
-              comments: 'A Run Comment',
-              pacbio_smrt_link_version_id: version11.id,
-              well_attributes: [
-                { row: 'A',
-                  column: '1',
-                  movie_time: 8,
-                  on_plate_loading_concentration: 8.35,
-                  pre_extension_time: '2',
-                  generate_hifi: 'In SMRT Link',
-                  ccs_analysis_output: 'Yes',
-                  binding_kit_box_barcode: 'DM1117100862200111711',
-                  ccs_analysis_output_include_low_quality_reads: 'Yes',
-                  include_fivemc_calls_in_cpg_motifs: 'Yes',
-                  ccs_analysis_output_include_kinetics_information: 'Yes',
-                  demultiplex_barcodes: 'In SMRT Link',
-                  pools: [123] }
-              ]
+      context 'when there are no well pools' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                sequencing_kit_box_barcode: 'DM0001100861800123121',
+                dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
+                system_name: 'Sequel II',
+                comments: 'A Run Comment',
+                pacbio_smrt_link_version_id: version11.id,
+                well_attributes: [
+                  { row: 'A',
+                    column: '1',
+                    movie_time: 8,
+                    on_plate_loading_concentration: 8.35,
+                    pre_extension_time: '2',
+                    generate_hifi: 'In SMRT Link',
+                    ccs_analysis_output: 'Yes',
+                    binding_kit_box_barcode: 'DM1117100862200111711',
+                    ccs_analysis_output_include_low_quality_reads: 'Yes',
+                    include_fivemc_calls_in_cpg_motifs: 'Yes',
+                    ccs_analysis_output_include_kinetics_information: 'Yes',
+                    demultiplex_barcodes: 'In SMRT Link',
+                    pools: [] }
+                ]
+              }
             }
-          }
-        }.to_json
+          }.to_json
+        end
+
+        it 'has a unprocessable_entity status' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'does not create a run' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Run, :count)
+        end
+
+        it 'does not create a a well' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Well, :count)
+        end
+
+        it 'has the correct error messages' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq 'plate.wells.pools - there must be at least one pool'
+        end
       end
 
-      it 'has a internal_server_error status' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:internal_server_error)
-      end
-
-      it 'does not create a run' do
-        expect do
-          post v1_pacbio_runs_path, params: body,
-                                    headers: json_api_headers
-        end.not_to change(Pacbio::Run, :count)
-      end
-
-      it 'does not create a a well' do
-        expect do
-          post v1_pacbio_runs_path, params: body,
-                                    headers: json_api_headers
-        end.not_to change(Pacbio::Well, :count)
-      end
-
-      it 'has the correct error messages' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        errors = json['errors']
-        expect(errors[0]['detail']).to eq 'Internal Server Error'
-      end
-    end
-
-    context 'when there is one well with two duplicate (library tags) pools' do
-      let!(:pool1) { create(:pacbio_pool, :tagged) }
-
-      let(:body) do
-        {
-          data: {
-            type: 'runs',
-            attributes: {
-              sequencing_kit_box_barcode: 'DM0001100861800123121',
-              dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-              system_name: 'Sequel II',
-              comments: 'A Run Comment',
-              pacbio_smrt_link_version_id: version11.id,
-              well_attributes: [
-                { row: 'A',
-                  column: '1',
-                  movie_time: 8,
-                  on_plate_loading_concentration: 8.35,
-                  pre_extension_time: '2',
-                  generate_hifi: 'In SMRT Link',
-                  ccs_analysis_output: 'Yes',
-                  binding_kit_box_barcode: 'DM1117100862200111711',
-                  ccs_analysis_output_include_low_quality_reads: 'Yes',
-                  include_fivemc_calls_in_cpg_motifs: 'Yes',
-                  ccs_analysis_output_include_kinetics_information: 'Yes',
-                  demultiplex_barcodes: 'In SMRT Link',
-                  pools: [pool1.id, pool1.id] }
-              ]
+      context 'when the well pool does not exist' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                sequencing_kit_box_barcode: 'DM0001100861800123121',
+                dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
+                system_name: 'Sequel II',
+                comments: 'A Run Comment',
+                pacbio_smrt_link_version_id: version11.id,
+                well_attributes: [
+                  { row: 'A',
+                    column: '1',
+                    movie_time: 8,
+                    on_plate_loading_concentration: 8.35,
+                    pre_extension_time: '2',
+                    generate_hifi: 'In SMRT Link',
+                    ccs_analysis_output: 'Yes',
+                    binding_kit_box_barcode: 'DM1117100862200111711',
+                    ccs_analysis_output_include_low_quality_reads: 'Yes',
+                    include_fivemc_calls_in_cpg_motifs: 'Yes',
+                    ccs_analysis_output_include_kinetics_information: 'Yes',
+                    demultiplex_barcodes: 'In SMRT Link',
+                    pools: [123] }
+                ]
+              }
             }
-          }
-        }.to_json
+          }.to_json
+        end
+
+        it 'has a internal_server_error status' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:internal_server_error)
+        end
+
+        it 'does not create a run' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Run, :count)
+        end
+
+        it 'does not create a a well' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Well, :count)
+        end
+
+        it 'has the correct error messages' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq 'Internal Server Error'
+        end
       end
 
-      it 'has a unprocessable_entity status' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
+      context 'when there is one well with two duplicate (library tags) pools' do
+        let!(:pool1) { create(:pacbio_pool, :tagged) }
 
-      it 'does not create a run' do
-        expect do
-          post v1_pacbio_runs_path, params: body,
-                                    headers: json_api_headers
-        end.not_to change(Pacbio::Run, :count)
-      end
-
-      it 'does not create a a well' do
-        expect do
-          post v1_pacbio_runs_path, params: body,
-                                    headers: json_api_headers
-        end.not_to change(Pacbio::Well, :count)
-      end
-
-      it 'has the correct error messages' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        errors = json['errors']
-        expect(errors[0]['detail']).to eq 'plate.wells.tags - are not unique within the libraries for well A1'
-      end
-    end
-
-    context 'when there are two wells with the same pool' do
-      let!(:pool1) { create(:pacbio_pool, :tagged) }
-
-      let(:body) do
-        {
-          data: {
-            type: 'runs',
-            attributes: {
-              sequencing_kit_box_barcode: 'DM0001100861800123121',
-              dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-              system_name: 'Sequel II',
-              comments: 'A Run Comment',
-              pacbio_smrt_link_version_id: version11.id,
-              well_attributes: [
-                { row: 'A',
-                  column: '1',
-                  movie_time: 8,
-                  on_plate_loading_concentration: 8.35,
-                  pre_extension_time: '2',
-                  generate_hifi: 'In SMRT Link',
-                  ccs_analysis_output: 'Yes',
-                  binding_kit_box_barcode: 'DM1117100862200111711',
-                  ccs_analysis_output_include_low_quality_reads: 'Yes',
-                  include_fivemc_calls_in_cpg_motifs: 'Yes',
-                  ccs_analysis_output_include_kinetics_information: 'Yes',
-                  demultiplex_barcodes: 'In SMRT Link',
-                  pools: [pool1.id] },
-                { row: 'A',
-                  column: '2',
-                  movie_time: 8,
-                  on_plate_loading_concentration: 8.35,
-                  pre_extension_time: '2',
-                  generate_hifi: 'In SMRT Link',
-                  ccs_analysis_output: 'Yes',
-                  binding_kit_box_barcode: 'DM1117100862200111711',
-                  ccs_analysis_output_include_low_quality_reads: 'Yes',
-                  include_fivemc_calls_in_cpg_motifs: 'Yes',
-                  ccs_analysis_output_include_kinetics_information: 'Yes',
-                  demultiplex_barcodes: 'In SMRT Link',
-                  pools: [pool1.id] }
-              ]
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                sequencing_kit_box_barcode: 'DM0001100861800123121',
+                dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
+                system_name: 'Sequel II',
+                comments: 'A Run Comment',
+                pacbio_smrt_link_version_id: version11.id,
+                well_attributes: [
+                  { row: 'A',
+                    column: '1',
+                    movie_time: 8,
+                    on_plate_loading_concentration: 8.35,
+                    pre_extension_time: '2',
+                    generate_hifi: 'In SMRT Link',
+                    ccs_analysis_output: 'Yes',
+                    binding_kit_box_barcode: 'DM1117100862200111711',
+                    ccs_analysis_output_include_low_quality_reads: 'Yes',
+                    include_fivemc_calls_in_cpg_motifs: 'Yes',
+                    ccs_analysis_output_include_kinetics_information: 'Yes',
+                    demultiplex_barcodes: 'In SMRT Link',
+                    pools: [pool1.id, pool1.id] }
+                ]
+              }
             }
-          }
-        }.to_json
+          }.to_json
+        end
+
+        it 'has a unprocessable_entity status' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'does not create a run' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Run, :count)
+        end
+
+        it 'does not create a a well' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Well, :count)
+        end
+
+        it 'has the correct error messages' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq 'plate.wells.tags - are not unique within the libraries for well A1'
+        end
       end
 
-      it 'has a created status' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:created)
-      end
+      context 'when there are two wells with the same pool' do
+        let!(:pool1) { create(:pacbio_pool, :tagged) }
 
-      it 'creates a run' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Run, :count).by(1)
-      end
-
-      it 'creates a plate' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Plate, :count).by(1)
-      end
-
-      it 'creates a well' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(2)
-      end
-
-      it 'creates a well pool' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::WellPool, :count).by(2)
-      end
-
-      it 'creates a run with the correct attributes' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        run = Pacbio::Run.first
-
-        expect(run.id).to eq(json['data']['id'].to_i)
-        expect(run.name).to be_present
-      end
-    end
-
-    context 'when there is one well with two pools, without tags' do
-      let(:pool1) { create(:pacbio_pool, libraries: create_list(:pacbio_library_without_tag, 1)) }
-      let(:pool2) { create(:pacbio_pool, libraries: create_list(:pacbio_library_without_tag, 1)) }
-
-      let(:body) do
-        {
-          data: {
-            type: 'runs',
-            attributes: {
-              sequencing_kit_box_barcode: 'DM0001100861800123121',
-              dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-              system_name: 'Sequel II',
-              comments: 'A Run Comment',
-              pacbio_smrt_link_version_id: version11.id,
-              well_attributes: [
-                { row: 'A',
-                  column: '1',
-                  movie_time: 8,
-                  on_plate_loading_concentration: 8.35,
-                  pre_extension_time: '2',
-                  generate_hifi: 'In SMRT Link',
-                  ccs_analysis_output: 'Yes',
-                  binding_kit_box_barcode: 'DM1117100862200111711',
-                  ccs_analysis_output_include_low_quality_reads: 'Yes',
-                  include_fivemc_calls_in_cpg_motifs: 'Yes',
-                  ccs_analysis_output_include_kinetics_information: 'Yes',
-                  demultiplex_barcodes: 'In SMRT Link',
-                  pools: [pool1.id, pool2.id] }
-              ]
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                sequencing_kit_box_barcode: 'DM0001100861800123121',
+                dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
+                system_name: 'Sequel II',
+                comments: 'A Run Comment',
+                pacbio_smrt_link_version_id: version11.id,
+                well_attributes: [
+                  { row: 'A',
+                    column: '1',
+                    movie_time: 8,
+                    on_plate_loading_concentration: 8.35,
+                    pre_extension_time: '2',
+                    generate_hifi: 'In SMRT Link',
+                    ccs_analysis_output: 'Yes',
+                    binding_kit_box_barcode: 'DM1117100862200111711',
+                    ccs_analysis_output_include_low_quality_reads: 'Yes',
+                    include_fivemc_calls_in_cpg_motifs: 'Yes',
+                    ccs_analysis_output_include_kinetics_information: 'Yes',
+                    demultiplex_barcodes: 'In SMRT Link',
+                    pools: [pool1.id] },
+                  { row: 'A',
+                    column: '2',
+                    movie_time: 8,
+                    on_plate_loading_concentration: 8.35,
+                    pre_extension_time: '2',
+                    generate_hifi: 'In SMRT Link',
+                    ccs_analysis_output: 'Yes',
+                    binding_kit_box_barcode: 'DM1117100862200111711',
+                    ccs_analysis_output_include_low_quality_reads: 'Yes',
+                    include_fivemc_calls_in_cpg_motifs: 'Yes',
+                    ccs_analysis_output_include_kinetics_information: 'Yes',
+                    demultiplex_barcodes: 'In SMRT Link',
+                    pools: [pool1.id] }
+                ]
+              }
             }
-          }
-        }.to_json
+          }.to_json
+        end
+
+        it 'has a created status' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:created)
+        end
+
+        it 'creates a run' do
+          expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Run, :count).by(1)
+        end
+
+        it 'creates a plate' do
+          expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Plate, :count).by(1)
+        end
+
+        it 'creates a well' do
+          expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(2)
+        end
+
+        it 'creates a well pool' do
+          expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::WellPool, :count).by(2)
+        end
+
+        it 'creates a run with the correct attributes' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          run = Pacbio::Run.first
+
+          expect(run.id).to eq(json['data']['id'].to_i)
+          expect(run.name).to be_present
+        end
       end
 
-      it 'has a unprocessable_entity status' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
+      context 'when there is one well with two pools, without tags' do
+        let(:pool1) { create(:pacbio_pool, libraries: create_list(:pacbio_library_without_tag, 1)) }
+        let(:pool2) { create(:pacbio_pool, libraries: create_list(:pacbio_library_without_tag, 1)) }
 
-      it 'does not create a run' do
-        expect do
-          post v1_pacbio_runs_path, params: body,
-                                    headers: json_api_headers
-        end.not_to change(Pacbio::Run, :count)
-      end
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                sequencing_kit_box_barcode: 'DM0001100861800123121',
+                dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
+                system_name: 'Sequel II',
+                comments: 'A Run Comment',
+                pacbio_smrt_link_version_id: version11.id,
+                well_attributes: [
+                  { row: 'A',
+                    column: '1',
+                    movie_time: 8,
+                    on_plate_loading_concentration: 8.35,
+                    pre_extension_time: '2',
+                    generate_hifi: 'In SMRT Link',
+                    ccs_analysis_output: 'Yes',
+                    binding_kit_box_barcode: 'DM1117100862200111711',
+                    ccs_analysis_output_include_low_quality_reads: 'Yes',
+                    include_fivemc_calls_in_cpg_motifs: 'Yes',
+                    ccs_analysis_output_include_kinetics_information: 'Yes',
+                    demultiplex_barcodes: 'In SMRT Link',
+                    pools: [pool1.id, pool2.id] }
+                ]
+              }
+            }
+          }.to_json
+        end
 
-      it 'does not create a a well' do
-        expect do
-          post v1_pacbio_runs_path, params: body,
-                                    headers: json_api_headers
-        end.not_to change(Pacbio::Well, :count)
-      end
+        it 'has a unprocessable_entity status' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
 
-      it 'has the correct error messages' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        errors = json['errors']
-        expect(errors[0]['detail']).to eq 'plate.wells.tags - are missing from the libraries'
+        it 'does not create a run' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Run, :count)
+        end
+
+        it 'does not create a a well' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Well, :count)
+        end
+
+        it 'has the correct error messages' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq 'plate.wells.tags - are missing from the libraries'
+        end
       end
     end
   end
@@ -762,6 +782,8 @@ RSpec.describe 'RunsController' do
         expect(run.smrt_link_version).to eq(version)
         expect(run.pacbio_smrt_link_version_id).to eq(version.id)
       end
+
+      it_behaves_like 'publish_messages_on_create'
     end
   end
 
@@ -812,264 +834,278 @@ RSpec.describe 'RunsController' do
         expect(run.smrt_link_version).to eq(version)
         expect(run.pacbio_smrt_link_version_id).to eq(version.id)
       end
+
+      it_behaves_like 'publish_messages_on_create'
     end
   end
 
   describe '#update' do
-    context 'when run state is successful' do
-      let!(:run) { create(:pacbio_run) }
-      let!(:plate) { create(:pacbio_plate, run:) }
-      let(:body) do
-        {
-          data: {
-            type: 'runs',
-            id: run.id,
-            attributes: {
-              state: 'started'
+    context 'on success' do
+      context 'when run state is successful' do
+        let!(:run) { create(:pacbio_run) }
+        let!(:plate) { create(:pacbio_plate, run:) }
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              id: run.id,
+              attributes: {
+                state: 'started'
+              }
             }
-          }
-        }.to_json
+          }.to_json
+        end
+
+        it 'has a ok status' do
+          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'updates a run' do
+          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          run.reload
+          expect(run.state).to eq 'started'
+        end
+
+        it 'returns the correct attributes' do
+          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          expect(json['data']['id']).to eq run.id.to_s
+        end
+
+        it_behaves_like 'publish_messages_on_update'
       end
 
-      it 'has a ok status' do
-        patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'updates a run' do
-        patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        run.reload
-        expect(run.state).to eq 'started'
-      end
-
-      it 'returns the correct attributes' do
-        patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data']['id']).to eq run.id.to_s
-      end
-    end
-
-    context 'when run info is successful' do
-      let(:body) do
-        {
-          data: {
-            id: run.id,
-            type: 'runs',
-            attributes: {
-              sequencing_kit_box_barcode: 'DM0001100861800123121_updated',
-              dna_control_complex_box_barcode: 'Lxxxxx101717600123191_updated',
-              system_name: 'Sequel I',
-              comments: 'A Run Comment updated'
+      context 'when run info is successful' do
+        let(:body) do
+          {
+            data: {
+              id: run.id,
+              type: 'runs',
+              attributes: {
+                sequencing_kit_box_barcode: 'DM0001100861800123121_updated',
+                dna_control_complex_box_barcode: 'Lxxxxx101717600123191_updated',
+                system_name: 'Sequel I',
+                comments: 'A Run Comment updated'
+              }
             }
-          }
-        }.to_json
-      end
-      let!(:run) { create(:pacbio_run) }
-      let!(:plate) { create(:pacbio_plate, run:) }
+          }.to_json
+        end
+        let!(:run) { create(:pacbio_run) }
+        let!(:plate) { create(:pacbio_plate, run:) }
 
-      it 'has a ok status' do
-        patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'does not create a run' do
-        expect do
+        it 'has a ok status' do
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        end.not_to change(Pacbio::Run, :count)
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'does not create a run' do
+          expect do
+            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          end.not_to change(Pacbio::Run, :count)
+        end
+
+        it 'updates a run' do
+          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          run.reload
+          expect(run.sequencing_kit_box_barcode).to eq 'DM0001100861800123121_updated'
+          expect(run.dna_control_complex_box_barcode).to eq 'Lxxxxx101717600123191_updated'
+          expect(run.system_name).to eq 'Sequel I'
+          expect(run.comments).to eq 'A Run Comment updated'
+          expect(run.state).to eq 'pending'
+        end
+
+        it_behaves_like 'publish_messages_on_update'
       end
 
-      it 'updates a run' do
-        patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        run.reload
-        expect(run.sequencing_kit_box_barcode).to eq 'DM0001100861800123121_updated'
-        expect(run.dna_control_complex_box_barcode).to eq 'Lxxxxx101717600123191_updated'
-        expect(run.system_name).to eq 'Sequel I'
-        expect(run.comments).to eq 'A Run Comment updated'
-        expect(run.state).to eq 'pending'
-      end
-    end
+      context 'when well info is successful' do
+        let!(:run) { create(:pacbio_run) }
+        let!(:plate) { create(:pacbio_plate, run:) }
+        let!(:well) { plate.wells.first }
+        let!(:pool1) { create(:pacbio_pool) }
 
-    context 'when well info is successful' do
-      let!(:run) { create(:pacbio_run) }
-      let!(:plate) { create(:pacbio_plate, run:) }
-      let!(:well) { plate.wells.first }
-      let!(:pool1) { create(:pacbio_pool) }
-
-      let(:body) do
-        {
-          data: {
-            id: run.id,
-            type: 'runs',
-            attributes: {
-              well_attributes: [
-                {
-                  id: well.id,
-                  row: 'D',
-                  column: '7',
-                  movie_time: 7,
-                  on_plate_loading_concentration: 7.35,
-                  binding_kit_box_barcode: 'DM1117100862200111711_updated',
-                  pools: [pool1.id]
-                }
-              ]
+        let(:body) do
+          {
+            data: {
+              id: run.id,
+              type: 'runs',
+              attributes: {
+                well_attributes: [
+                  {
+                    id: well.id,
+                    row: 'D',
+                    column: '7',
+                    movie_time: 7,
+                    on_plate_loading_concentration: 7.35,
+                    binding_kit_box_barcode: 'DM1117100862200111711_updated',
+                    pools: [pool1.id]
+                  }
+                ]
+              }
             }
-          }
-        }.to_json
-      end
+          }.to_json
+        end
 
-      it 'has a ok status' do
-        patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        expect(response).to have_http_status(:ok)
-      end
-
-      it 'does not create a well' do
-        expect do
+        it 'has a ok status' do
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        end.not_to change(Pacbio::Well, :count)
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'does not create a well' do
+          expect do
+            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          end.not_to change(Pacbio::Well, :count)
+        end
+
+        it 'updates a well' do
+          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          well.reload
+          expect(well.row).to eq 'D'
+          expect(well.column).to eq '7'
+          expect(well.movie_time).to eq 7
+          expect(well.on_plate_loading_concentration).to eq 7.35
+          expect(well.binding_kit_box_barcode).to eq 'DM1117100862200111711_updated'
+        end
+
+        it_behaves_like 'publish_messages_on_update'
       end
 
-      it 'updates a well' do
-        patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        well.reload
-        expect(well.row).to eq 'D'
-        expect(well.column).to eq '7'
-        expect(well.movie_time).to eq 7
-        expect(well.on_plate_loading_concentration).to eq 7.35
-        expect(well.binding_kit_box_barcode).to eq 'DM1117100862200111711_updated'
-      end
-    end
+      context 'when well is added, removed and updated' do
+        let!(:run) { create(:pacbio_run) }
+        let!(:plate) { create(:pacbio_plate, run:, well_count: 2) }
+        let!(:well1) { plate.wells[0] }
+        let!(:well2) { plate.wells[1] }
+        let(:pool1) { create(:pacbio_pool) }
 
-    context 'when well is added, removed and updated' do
-      let!(:run) { create(:pacbio_run) }
-      let!(:plate) { create(:pacbio_plate, run:, well_count: 2) }
-      let!(:well1) { plate.wells[0] }
-      let!(:well2) { plate.wells[1] }
-      let(:pool1) { create(:pacbio_pool) }
-
-      let(:body) do
-        {
-          data: {
-            id: run.id,
-            type: 'runs',
-            attributes: {
-              well_attributes: [
-                {
-                  row: 'F',
-                  column: '12',
-                  movie_time: 8,
-                  on_plate_loading_concentration: 8.35,
-                  pre_extension_time: '2',
-                  generate_hifi: 'In SMRT Link',
-                  ccs_analysis_output: 'Yes',
-                  binding_kit_box_barcode: 'DM1117100862200111711',
-                  ccs_analysis_output_include_low_quality_reads: 'Yes',
-                  include_fivemc_calls_in_cpg_motifs: 'Yes',
-                  ccs_analysis_output_include_kinetics_information: 'Yes',
-                  demultiplex_barcodes: 'In SMRT Link',
-                  pools: [pool1.id]
-                },
-                {
-                  id: well1.id,
-                  row: 'D',
-                  column: '7',
-                  pools: [well1.pools[0].id]
-                }
-              ]
+        let(:body) do
+          {
+            data: {
+              id: run.id,
+              type: 'runs',
+              attributes: {
+                well_attributes: [
+                  {
+                    row: 'F',
+                    column: '12',
+                    movie_time: 8,
+                    on_plate_loading_concentration: 8.35,
+                    pre_extension_time: '2',
+                    generate_hifi: 'In SMRT Link',
+                    ccs_analysis_output: 'Yes',
+                    binding_kit_box_barcode: 'DM1117100862200111711',
+                    ccs_analysis_output_include_low_quality_reads: 'Yes',
+                    include_fivemc_calls_in_cpg_motifs: 'Yes',
+                    ccs_analysis_output_include_kinetics_information: 'Yes',
+                    demultiplex_barcodes: 'In SMRT Link',
+                    pools: [pool1.id]
+                  },
+                  {
+                    id: well1.id,
+                    row: 'D',
+                    column: '7',
+                    pools: [well1.pools[0].id]
+                  }
+                ]
+              }
             }
-          }
-        }.to_json
-      end
+          }.to_json
+        end
 
-      it 'has a ok status' do
-        patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        expect(response).to have_http_status(:ok)
-      end
-
-      # Creates a well and deletes a well = +1-1 = 0
-      it 'does not create a well' do
-        expect do
+        it 'has a ok status' do
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        end.not_to change(Pacbio::Well, :count)
-      end
+          expect(response).to have_http_status(:ok)
+        end
 
-      # Creates a well and deletes a well pool = +1-1 = 0
-      it 'does not create a well pool' do
-        expect do
+        # Creates a well and deletes a well = +1-1 = 0
+        it 'does not create a well' do
+          expect do
+            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          end.not_to change(Pacbio::Well, :count)
+        end
+
+        # Creates a well and deletes a well pool = +1-1 = 0
+        it 'does not create a well pool' do
+          expect do
+            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          end.not_to change(Pacbio::WellPool, :count)
+        end
+
+        it 'updates a well' do
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        end.not_to change(Pacbio::WellPool, :count)
+          run.reload
+          expect(run.wells.length).to eq 2
+          expect(run.wells[0].row).to eq 'D'
+          expect(run.wells[0].column).to eq '7'
+          expect(run.wells[1].row).to eq 'F'
+          expect(run.wells[1].column).to eq '12'
+        end
+
+        it_behaves_like 'publish_messages_on_update'
       end
 
-      it 'updates a well' do
-        patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        run.reload
-        expect(run.wells.length).to eq 2
-        expect(run.wells[0].row).to eq 'D'
-        expect(run.wells[0].column).to eq '7'
-        expect(run.wells[1].row).to eq 'F'
-        expect(run.wells[1].column).to eq '12'
-      end
-    end
+      context 'when pool is added, removed and updated' do
+        let!(:run) { create(:pacbio_run) }
+        let!(:plate) { create(:pacbio_plate, run:, well_count: 2) }
+        let!(:well1) { plate.wells[0] }
+        let!(:well2) { plate.wells[1] }
+        let!(:pool1) { create(:pacbio_pool) }
+        let!(:pool2) { create(:pacbio_pool) }
+        let!(:pool3) { create(:pacbio_pool) }
 
-    context 'when pool is added, removed and updated' do
-      let!(:run) { create(:pacbio_run) }
-      let!(:plate) { create(:pacbio_plate, run:, well_count: 2) }
-      let!(:well1) { plate.wells[0] }
-      let!(:well2) { plate.wells[1] }
-      let!(:pool1) { create(:pacbio_pool) }
-      let!(:pool2) { create(:pacbio_pool) }
-      let!(:pool3) { create(:pacbio_pool) }
-
-      let(:body) do
-        {
-          data: {
-            id: run.id,
-            type: 'runs',
-            attributes: {
-              well_attributes: [
-                {
-                  id: run.wells[0].id,
-                  pools: [well1.pools[0].id, pool1.id]
-                },
-                {
-                  id: run.wells[1].id,
-                  pools: [pool2.id]
-                }
-              ]
+        let(:body) do
+          {
+            data: {
+              id: run.id,
+              type: 'runs',
+              attributes: {
+                well_attributes: [
+                  {
+                    id: run.wells[0].id,
+                    pools: [well1.pools[0].id, pool1.id]
+                  },
+                  {
+                    id: run.wells[1].id,
+                    pools: [pool2.id]
+                  }
+                ]
+              }
             }
-          }
-        }.to_json
-      end
+          }.to_json
+        end
 
-      it 'has a ok status' do
-        patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        expect(response).to have_http_status(:ok)
-      end
-
-      # Creates a well and deletes a well = +1-1 = 0
-      it 'does not create a well' do
-        expect do
+        it 'has a ok status' do
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        end.not_to change(Pacbio::Well, :count)
-      end
+          expect(response).to have_http_status(:ok)
+        end
 
-      # Currently 2 Well Pools
-      # Then, create two and remove 1
-      # 2 + 2 - 1 = 3
-      it 'does creates a well pool' do
-        expect do
+        # Creates a well and deletes a well = +1-1 = 0
+        it 'does not create a well' do
+          expect do
+            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          end.not_to change(Pacbio::Well, :count)
+        end
+
+        # Currently 2 Well Pools
+        # Then, create two and remove 1
+        # 2 + 2 - 1 = 3
+        it 'does creates a well pool' do
+          expect do
+            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          end.to change(Pacbio::WellPool, :count).from(2).to(3)
+        end
+
+        it 'updates a well' do
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        end.to change(Pacbio::WellPool, :count).from(2).to(3)
-      end
+          run.reload
+          expect(run.wells.length).to eq 2
+          expect(run.wells[0].pools.length).to eq 2
+          expect(run.wells[0].pools).to include well1.pools[0]
+          expect(run.wells[0].pools).to include pool1
+          expect(run.wells[1].pools.length).to eq 1
+          expect(run.wells[1].pools).to include pool2
+        end
 
-      it 'updates a well' do
-        patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-        run.reload
-        expect(run.wells.length).to eq 2
-        expect(run.wells[0].pools.length).to eq 2
-        expect(run.wells[0].pools).to include well1.pools[0]
-        expect(run.wells[0].pools).to include pool1
-        expect(run.wells[1].pools.length).to eq 1
-        expect(run.wells[1].pools).to include pool2
+        it_behaves_like 'publish_messages_on_update'
       end
     end
 
