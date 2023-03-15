@@ -37,6 +37,8 @@ module Pacbio
 
     accepts_nested_attributes_for :plate
 
+    attr_reader :well_attributes
+
     # if comments are nil this blows up so add try.
     def comments
       super || wells.try(:collect, &:summary).try(:join, ':')
@@ -47,17 +49,6 @@ module Pacbio
     def generate_sample_sheet
       sample_sheet = PacbioSampleSheet.new(run: self, configuration: pacbio_run_sample_sheet_config)
       sample_sheet.generate
-    end
-
-    # TODO: Refactor
-    def well_attributes
-      return [] unless wells
-
-      wells.map(&:attributes)
-      # attributes.map do |well_attributes|
-      #   pool_ids = Pacbio::Well.find(well_attributes['id']).pools.map(&:id)
-      #   well_attributes['pools'] = pool_ids.map { |pool_id| { id: pool_id } }
-      # end
     end
 
     def well_attributes=(well_options)
