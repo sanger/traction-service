@@ -21,19 +21,7 @@ module Pacbio
       # Delete wells if attributes are not given
       delete_removed_wells(well_options)
 
-      well_options.map.with_index do |attributes, _i|
-        # Assuming attributes['pools'] and the given pool id's exists
-        # If not, there is a problem and throw a 5**
-        pools = attributes['pools'].map { |pool_id| Pacbio::Pool.find(pool_id) }
-
-        if attributes[:id]
-          attributes['pools'] = pools
-          wells.find(attributes[:id]).assign_attributes(attributes)
-        else
-          attributes['pools'] = pools if attributes['pools']
-          wells.build(attributes)
-        end
-      end
+      create_or_update_wells(well_options)
     end
 
     def delete_removed_wells(well_options)
@@ -46,6 +34,22 @@ module Pacbio
       # Otherwise, access wells[i] before calling find
       wells.each do |well|
         wells.delete(well) if options_ids.exclude? well.id
+      end
+    end
+
+    def create_or_update_wells(well_options)
+      well_options.map.with_index do |attributes, _i|
+        # Assuming attributes['pools'] and the given pool id's exists
+        # If not, there is a problem and throw a 5**
+        pools = attributes['pools'].map { |pool_id| Pacbio::Pool.find(pool_id) }
+
+        if attributes[:id]
+          attributes['pools'] = pools
+          wells.find(attributes[:id]).assign_attributes(attributes)
+        else
+          attributes['pools'] = pools if attributes['pools']
+          wells.build(attributes)
+        end
       end
     end
 
