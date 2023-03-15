@@ -23,9 +23,7 @@
                "pre_extension_time": "12",
                "loading_target_p1_plus_p2": "0.5",
                "movie_time": "10",
-               "pools": [{
-                  "id": "6"
-               }]
+               "pools": ["6"]
             },
             {
                "row": "A",
