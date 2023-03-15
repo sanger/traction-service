@@ -1,13 +1,8 @@
 # Todo
 
-- Publish messages on run create/update
+- Publish messages on run create/update (for plate)
 - Remove all_wells_have_pools?
 - Does wells want to include pool info?
-
-## Tests
-
-- update pool id
-- remove pool id
 
 
 ## Other

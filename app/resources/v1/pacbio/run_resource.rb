@@ -25,7 +25,7 @@ module V1
                                      ccs_analysis_output_include_kinetics_information
                                      demultiplex_barcodes on_plate_loading_concentration
                                      binding_kit_box_barcode pre_extension_time
-                                     loading_target_p1_plus_p2 movie_time pools].freeze
+                                     loading_target_p1_plus_p2 movie_time].freeze
 
       def self.default_sort
         [{ field: 'created_at', direction: :desc }]
@@ -61,7 +61,7 @@ module V1
 
       def well_attributes=(wells_parameters)
         @model.well_attributes = wells_parameters.map do |well|
-          well.permit(PERMITTED_WELL_PARAMETERS, pools: [:id])
+          well.permit(PERMITTED_WELL_PARAMETERS, pools: [])
         end
       end
     end

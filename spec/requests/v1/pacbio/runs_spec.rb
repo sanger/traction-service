@@ -168,14 +168,12 @@ RSpec.describe 'RunsController' do
 
   describe '#create' do
     context 'on success' do
-      # Set a non-default smrt link version id in request body.
       let(:pool1) { create(:pacbio_pool) }
 
       let(:body) do
         {
           data: {
             type: 'runs',
-            # attributes: attributes_for(:pacbio_run, pacbio_smrt_link_version_id: version11.id),
             attributes: {
               sequencing_kit_box_barcode: 'DM0001100861800123121',
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
@@ -183,7 +181,8 @@ RSpec.describe 'RunsController' do
               comments: 'A Run Comment',
               pacbio_smrt_link_version_id: version11.id,
               well_attributes: [
-                { row: 'A',
+                {
+                  row: 'A',
                   column: '1',
                   movie_time: 31,
                   on_plate_loading_concentration: 8.35,
@@ -195,11 +194,8 @@ RSpec.describe 'RunsController' do
                   include_fivemc_calls_in_cpg_motifs: 'Yes',
                   ccs_analysis_output_include_kinetics_information: 'Yes',
                   demultiplex_barcodes: 'In SMRT Link',
-                  pools: [
-                    {
-                      id: pool1.id
-                    }
-                  ] }
+                  pools: [pool1.id]
+                }
               ]
             }
           }
@@ -310,14 +306,12 @@ RSpec.describe 'RunsController' do
     end
 
     context 'when there no wells' do
-      # Set a non-default smrt link version id in request body.
       let(:pool1) { create(:pacbio_pool) }
 
       let(:body) do
         {
           data: {
             type: 'runs',
-            # attributes: attributes_for(:pacbio_run, pacbio_smrt_link_version_id: version11.id),
             attributes: {
               sequencing_kit_box_barcode: 'DM0001100861800123121',
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
@@ -358,14 +352,12 @@ RSpec.describe 'RunsController' do
     end
 
     context 'when there is missing well data' do
-      # Set a non-default smrt link version id in request body.
       let(:pool1) { create(:pacbio_pool) }
 
       let(:body) do
         {
           data: {
             type: 'runs',
-            # attributes: attributes_for(:pacbio_run, pacbio_smrt_link_version_id: version11.id),
             attributes: {
               sequencing_kit_box_barcode: 'DM0001100861800123121',
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
@@ -373,7 +365,8 @@ RSpec.describe 'RunsController' do
               comments: 'A Run Comment',
               pacbio_smrt_link_version_id: version11.id,
               well_attributes: [{
-                row: 'A'
+                row: 'A',
+                pools: [pool1.id]
               }]
             }
           }
@@ -412,7 +405,6 @@ RSpec.describe 'RunsController' do
         {
           data: {
             type: 'runs',
-            # attributes: attributes_for(:pacbio_run, pacbio_smrt_link_version_id: version11.id),
             attributes: {
               sequencing_kit_box_barcode: 'DM0001100861800123121',
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
@@ -471,7 +463,6 @@ RSpec.describe 'RunsController' do
         {
           data: {
             type: 'runs',
-            # attributes: attributes_for(:pacbio_run, pacbio_smrt_link_version_id: version11.id),
             attributes: {
               sequencing_kit_box_barcode: 'DM0001100861800123121',
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
@@ -491,9 +482,7 @@ RSpec.describe 'RunsController' do
                   include_fivemc_calls_in_cpg_motifs: 'Yes',
                   ccs_analysis_output_include_kinetics_information: 'Yes',
                   demultiplex_barcodes: 'In SMRT Link',
-                  pools: [{
-                    id: 123
-                  }] }
+                  pools: [123] }
               ]
             }
           }
@@ -534,7 +523,6 @@ RSpec.describe 'RunsController' do
         {
           data: {
             type: 'runs',
-            # attributes: attributes_for(:pacbio_run, pacbio_smrt_link_version_id: version11.id),
             attributes: {
               sequencing_kit_box_barcode: 'DM0001100861800123121',
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
@@ -554,14 +542,7 @@ RSpec.describe 'RunsController' do
                   include_fivemc_calls_in_cpg_motifs: 'Yes',
                   ccs_analysis_output_include_kinetics_information: 'Yes',
                   demultiplex_barcodes: 'In SMRT Link',
-                  pools: [
-                    {
-                      id: pool1.id
-                    },
-                    {
-                      id: pool1.id
-                    }
-                  ] }
+                  pools: [pool1.id, pool1.id] }
               ]
             }
           }
@@ -602,7 +583,6 @@ RSpec.describe 'RunsController' do
         {
           data: {
             type: 'runs',
-            # attributes: attributes_for(:pacbio_run, pacbio_smrt_link_version_id: version11.id),
             attributes: {
               sequencing_kit_box_barcode: 'DM0001100861800123121',
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
@@ -622,11 +602,7 @@ RSpec.describe 'RunsController' do
                   include_fivemc_calls_in_cpg_motifs: 'Yes',
                   ccs_analysis_output_include_kinetics_information: 'Yes',
                   demultiplex_barcodes: 'In SMRT Link',
-                  pools: [
-                    {
-                      id: pool1.id
-                    }
-                  ] },
+                  pools: [pool1.id] },
                 { row: 'A',
                   column: '2',
                   movie_time: 8,
@@ -639,11 +615,7 @@ RSpec.describe 'RunsController' do
                   include_fivemc_calls_in_cpg_motifs: 'Yes',
                   ccs_analysis_output_include_kinetics_information: 'Yes',
                   demultiplex_barcodes: 'In SMRT Link',
-                  pools: [
-                    {
-                      id: pool1.id
-                    }
-                  ] }
+                  pools: [pool1.id] }
               ]
             }
           }
@@ -689,7 +661,6 @@ RSpec.describe 'RunsController' do
         {
           data: {
             type: 'runs',
-            # attributes: attributes_for(:pacbio_run, pacbio_smrt_link_version_id: version11.id),
             attributes: {
               sequencing_kit_box_barcode: 'DM0001100861800123121',
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
@@ -709,14 +680,7 @@ RSpec.describe 'RunsController' do
                   include_fivemc_calls_in_cpg_motifs: 'Yes',
                   ccs_analysis_output_include_kinetics_information: 'Yes',
                   demultiplex_barcodes: 'In SMRT Link',
-                  pools: [
-                    {
-                      id: pool1.id
-                    },
-                    {
-                      id: pool2.id
-                    }
-                  ] }
+                  pools: [pool1.id, pool2.id] }
               ]
             }
           }
@@ -778,11 +742,7 @@ RSpec.describe 'RunsController' do
                 include_fivemc_calls_in_cpg_motifs: 'Yes',
                 ccs_analysis_output_include_kinetics_information: 'Yes',
                 demultiplex_barcodes: 'In SMRT Link',
-                pools: [
-                  {
-                    id: pool1.id
-                  }
-                ]
+                pools: [pool1.id]
               }
             ]
           }
@@ -832,11 +792,7 @@ RSpec.describe 'RunsController' do
                 include_fivemc_calls_in_cpg_motifs: 'Yes',
                 ccs_analysis_output_include_kinetics_information: 'Yes',
                 demultiplex_barcodes: 'In SMRT Link',
-                pools: [
-                  {
-                    id: pool1.id
-                  }
-                ] }
+                pools: [pool1.id] }
             ]
           }
         }
@@ -937,6 +893,7 @@ RSpec.describe 'RunsController' do
       let!(:run) { create(:pacbio_run) }
       let!(:plate) { create(:pacbio_plate, run:) }
       let!(:well) { plate.wells.first }
+      let!(:pool1) { create(:pacbio_pool) }
 
       let(:body) do
         {
@@ -951,7 +908,8 @@ RSpec.describe 'RunsController' do
                   column: '7',
                   movie_time: 7,
                   on_plate_loading_concentration: 7.35,
-                  binding_kit_box_barcode: 'DM1117100862200111711_updated'
+                  binding_kit_box_barcode: 'DM1117100862200111711_updated',
+                  pools: [pool1.id]
                 }
               ]
             }
@@ -1008,16 +966,13 @@ RSpec.describe 'RunsController' do
                   include_fivemc_calls_in_cpg_motifs: 'Yes',
                   ccs_analysis_output_include_kinetics_information: 'Yes',
                   demultiplex_barcodes: 'In SMRT Link',
-                  pools: [
-                    {
-                      id: pool1.id
-                    }
-                  ]
+                  pools: [pool1.id]
                 },
                 {
                   id: well1.id,
                   row: 'D',
-                  column: '7'
+                  column: '7',
+                  pools: [well1.pools[0].id]
                 }
               ]
             }
@@ -1055,8 +1010,69 @@ RSpec.describe 'RunsController' do
       end
     end
 
-    # pool is added
-    # pool is removed
+    context 'when pool is added, removed and updated' do
+      let!(:run) { create(:pacbio_run) }
+      let!(:plate) { create(:pacbio_plate, run:, well_count: 2) }
+      let!(:well1) { plate.wells[0] }
+      let!(:well2) { plate.wells[1] }
+      let!(:pool1) { create(:pacbio_pool) }
+      let!(:pool2) { create(:pacbio_pool) }
+      let!(:pool3) { create(:pacbio_pool) }
+
+      let(:body) do
+        {
+          data: {
+            id: run.id,
+            type: 'runs',
+            attributes: {
+              well_attributes: [
+                {
+                  id: run.wells[0].id,
+                  pools: [well1.pools[0].id, pool1.id]
+                },
+                {
+                  id: run.wells[1].id,
+                  pools: [pool2.id]
+                }
+              ]
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a ok status' do
+        patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+        expect(response).to have_http_status(:ok)
+      end
+
+      # Creates a well and deletes a well = +1-1 = 0
+      it 'does not create a well' do
+        expect do
+          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+        end.not_to change(Pacbio::Well, :count)
+      end
+
+      # Currently 2 Well Pools
+      # Then, create two and remove 1
+      # 2 + 2 - 1 = 3
+      it 'does creates a well pool' do
+        expect do
+          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+        end.to change(Pacbio::WellPool, :count).from(2).to(3)
+      end
+
+      it 'updates a well' do
+        patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+        run.reload
+        expect(run.wells.length).to eq 2
+        expect(run.wells[0].pools.length).to eq 2
+        expect(run.wells[0].pools).to include well1.pools[0]
+        expect(run.wells[0].pools).to include pool1
+        expect(run.wells[1].pools.length).to eq 1
+        expect(run.wells[1].pools).to include pool2
+      end
+    end
+
     context 'on failure' do
       let!(:run) { create(:pacbio_run) }
       let!(:plate) { create(:pacbio_plate, run:, well_count: 2) }
