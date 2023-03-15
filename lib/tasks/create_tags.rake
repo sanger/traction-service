@@ -24,7 +24,7 @@ namespace :tags do
 
     desc 'Create all ont tags'
     task ont_all: :environment do
-      Rake::Task['tags:create:ont_native'].invoke
+      Rake::Task['tags:create:SQK-NBD114.96'].invoke
     end
 
     desc 'Create pacbio sequel tags'
@@ -511,11 +511,11 @@ namespace :tags do
       puts '-> Pacbio_96_barcode_plate_v3 tags successfully created'
     end
 
-    desc 'Create ONT Native tags'
-    task ont_native: :environment do
-      puts '-> Creating ONT Native tag set and tags'
+    desc 'Create SQK-NBD114.96 tags'
+    task 'SQK-NBD114.96': :environment do
+      puts '-> Creating SQK-NBD114.96 tag set and tags'
       set = TagSet.ont_pipeline
-                  .find_or_create_by!(name: 'ONT_native')
+                  .find_or_create_by!(name: 'SQK-NBD114.96')
       puts '-> Tag Set successfully created'
       [
         { group_id: 'NB01', oligo: 'CACAAAGACACCGACAACTTTCTT' },
@@ -617,7 +617,7 @@ namespace :tags do
       ].each do |tag_attributes|
         set.tags.find_or_create_by!(tag_attributes)
       end
-      puts '-> ONT_native tags successfully created'
+      puts '-> SQK-NBD114.96 tags successfully created'
     end
   end
 

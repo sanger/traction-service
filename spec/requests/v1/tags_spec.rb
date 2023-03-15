@@ -80,9 +80,9 @@ RSpec.describe 'TagsController' do
 
         it 'has an error message' do
           post v1_tags_path, params: body, headers: json_api_headers
-          expect(JSON.parse(response.body)['data']).to include('errors' => {
-                                                                 'group_id' => ["can't be blank"], 'oligo' => ["can't be blank"], 'tag_set' => ['must exist']
-                                                               })
+          expect(response.parsed_body['data']).to include('errors' => {
+                                                            'group_id' => ["can't be blank"], 'oligo' => ["can't be blank"], 'tag_set' => ['must exist']
+                                                          })
         end
       end
     end
@@ -142,7 +142,7 @@ RSpec.describe 'TagsController' do
 
       it 'has an error message' do
         patch v1_tag_path(123), params: body, headers: json_api_headers
-        expect(JSON.parse(response.body)['data']).to include('errors' => "Couldn't find Tag with 'id'=123")
+        expect(response.parsed_body['data']).to include('errors' => "Couldn't find Tag with 'id'=123")
       end
     end
   end
@@ -171,7 +171,7 @@ RSpec.describe 'TagsController' do
 
       it 'has an error message' do
         delete v1_tag_path(123), headers: json_api_headers
-        data = JSON.parse(response.body)['data']
+        data = response.parsed_body['data']
         expect(data['errors']).to be_present
       end
     end

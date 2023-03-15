@@ -2,11 +2,11 @@
 
 require 'rails_helper'
 
-RSpec.describe CsvGenerator, type: :model do
+RSpec.describe PacbioSampleSheet, type: :model do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
 
-  describe '#generate_sample_sheet' do
-    subject(:csv_string) { csv.generate_sample_sheet }
+  describe '#generate' do
+    subject(:csv_string) { csv.generate }
 
     let!(:run)         { create(:pacbio_run, smrt_link_version: version10, plate:) }
     let!(:parsed_csv)  { CSV.parse(csv_string) }
