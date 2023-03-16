@@ -4,6 +4,10 @@
 # load order issues on production
 require 'pacbio/pacbio'
 
+# This is currently only being used for the creation of Pacbio::Plate
+# data in the rake task.
+# TODO: Can it be removed??
+
 module Pacbio
   # PlateCreator
   # This will build a plate with wells and samples
