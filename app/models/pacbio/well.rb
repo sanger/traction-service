@@ -43,7 +43,6 @@ module Pacbio
     # explanation
     validates_with SmrtLinkOptionsValidator
 
-    # DPL-433 Refactor this to validate via pool and TagValidator?
     validates_with WellValidator
 
     validates :row, :column, presence: true
