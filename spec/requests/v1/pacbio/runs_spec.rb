@@ -47,8 +47,6 @@ RSpec.describe 'RunsController' do
       expect(json['data'][0]['attributes']['created_at']).to eq(run1.created_at.to_fs(:us))
       expect(json['data'][0]['attributes']['state']).to eq(run1.state)
       expect(json['data'][0]['attributes']['comments']).to eq(run1.comments)
-      # DPL-433 Could this be removed?
-      expect(json['data'][0]['attributes']['all_wells_have_pools']).to eq(run1.all_wells_have_pools?)
       expect(json['data'][1]['attributes']['name']).to eq(run2.name)
     end
 

@@ -1,12 +1,17 @@
 # Todo
 
-- Remove all_wells_have_pools?
-- Does wells want to include pool info?
+- Remove `PlateCreator` ?
+- Remove `LibraryFactory` ?
 
-- What are Pacbio Requests?
+
+- Check: What are Pacbio Requests?
+- Use TagValidator in well model
+`plate.wells.pools.libraries.tag`
+`plate.wells.pools.libraries.requests`
 
 ## Other
 
+Possibly remove code from from pool model and resource?
 Possibly remove `pacbio_well_libraries`
 Remove well `_deprecated` attributes
 
