@@ -10,7 +10,6 @@ module Pacbio
 
     enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2 }
 
-    # DPL-433 Could this be removed?
     delegate :wells, to: :plate, allow_nil: true
 
     after_create :generate_name
