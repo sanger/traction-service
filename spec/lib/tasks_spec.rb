@@ -31,7 +31,7 @@ RSpec.describe 'RakeTasks' do
 
   describe 'create pacbio runs' do
     before do
-      create :library_type, :pacbio
+      create(:library_type, :pacbio)
     end
 
     it 'creates the correct number of runs' do
