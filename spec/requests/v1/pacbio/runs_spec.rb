@@ -1021,11 +1021,13 @@ RSpec.describe 'RunsController' do
           end.not_to change(Pacbio::Well, :count)
         end
 
-        # Creates a well and deletes a well pool = +1-1 = 0
+        # Each well previously had 5 pools each
+        # Now each well has 1 pool
+        # Therefore, WellPool count changed from 10 to 2
         it 'does not create a well pool' do
           expect do
             patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-          end.not_to change(Pacbio::WellPool, :count)
+          end.to change(Pacbio::WellPool, :count).from(10).to(2)
         end
 
         it 'updates a well' do
@@ -1083,13 +1085,13 @@ RSpec.describe 'RunsController' do
           end.not_to change(Pacbio::Well, :count)
         end
 
-        # Currently 2 Well Pools
-        # Then, create two and remove 1
-        # 2 + 2 - 1 = 3
+        # Each well previously had 5 pools each
+        # Now there are 3 pools
+        # Therefore, WellPool count changed from 10 to 3
         it 'does creates a well pool' do
           expect do
             patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-          end.to change(Pacbio::WellPool, :count).from(2).to(3)
+          end.to change(Pacbio::WellPool, :count).from(10).to(3)
         end
 
         it 'updates a well' do

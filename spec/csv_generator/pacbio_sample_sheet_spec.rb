@@ -36,7 +36,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
 
       it 'must have the correct well header rows' do
         well_data_1 = parsed_csv[1]
-        well_data_2 = parsed_csv[3] # DPL-433 why has this gone from 7 to 3 ???
+        well_data_2 = parsed_csv[7]
 
         expect(well_data_1).to eq([
           well1.plate.run.system_name,
@@ -93,7 +93,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
 
       it 'must have the correct sample rows' do
         sample_data_1 = parsed_csv[2]
-        sample_data_2 = parsed_csv[4]
+        sample_data_2 = parsed_csv[8]
 
         expect(sample_data_1).to eq([
           '',

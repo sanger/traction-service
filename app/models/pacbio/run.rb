@@ -36,6 +36,8 @@ module Pacbio
 
     accepts_nested_attributes_for :plate
 
+    # This will return an empty list
+    # If well data is required via the run, use ?include=plate.wells
     attr_reader :well_attributes
 
     # if comments are nil this blows up so add try.
