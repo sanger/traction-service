@@ -118,7 +118,6 @@ RSpec.describe 'PoolsController', pacbio: true do
     end
   end
 
-  # DPL-433 can this be removed?
   describe '#create' do
     context 'when creating a singleplex library' do
       context 'on success' do
