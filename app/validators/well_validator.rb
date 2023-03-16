@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 # Failed validations return unprocessable_entity
-# Could this be Tag Validator?
 class WellValidator < ActiveModel::Validator
   include ActiveModel::Validations
 

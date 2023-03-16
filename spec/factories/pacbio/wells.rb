@@ -12,7 +12,7 @@ FactoryBot.define do
     sequence(:binding_kit_box_barcode) { |n| "DM111710086220011171#{n}" }
 
     transient do
-      pool_count { 1 }
+      pool_count { 5 }
       pool_factory { :pacbio_pool }
       pool_max { 2 }
     end

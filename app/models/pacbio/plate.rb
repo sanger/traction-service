@@ -38,17 +38,16 @@ module Pacbio
     end
 
     def create_or_update_wells(well_options)
-      well_options.map.with_index do |attributes, _i|
+      well_options.map do |well_attributes|
         # Assuming attributes['pools'] and the given pool id's exists
         # If not, there is a problem and throw a 5**
-        pools = attributes['pools'].map { |pool_id| Pacbio::Pool.find(pool_id) }
+        pools = well_attributes['pools'].map { |pool_id| Pacbio::Pool.find(pool_id) }
+        well_attributes['pools'] = pools
 
-        if attributes[:id]
-          attributes['pools'] = pools
-          wells.find(attributes[:id]).assign_attributes(attributes)
+        if well_attributes[:id]
+          wells.find(well_attributes[:id]).assign_attributes(well_attributes)
         else
-          attributes['pools'] = pools if attributes['pools']
-          wells.build(attributes)
+          wells.build(well_attributes)
         end
       end
     end
