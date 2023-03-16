@@ -52,12 +52,5 @@ module Pacbio
         end
       end
     end
-
-    # DPL-433 Could this be removed?
-    def all_wells_have_pools?
-      return false if wells.empty?
-
-      wells.all?(&:pools?)
-    end
   end
 end
