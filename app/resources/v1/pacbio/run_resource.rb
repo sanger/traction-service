@@ -27,8 +27,7 @@ module V1
                                      binding_kit_box_barcode pre_extension_time
                                      loading_target_p1_plus_p2 movie_time].freeze
 
-      after_create :publish_messages
-      after_update :publish_messages
+      after_save :publish_messages
 
       def self.default_sort
         [{ field: 'created_at', direction: :desc }]
