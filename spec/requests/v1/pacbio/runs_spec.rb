@@ -871,6 +871,16 @@ RSpec.describe 'RunsController' do
           expect(json['data']['id']).to eq run.id.to_s
         end
 
+        it 'retains the existing plate, wells, pools etc' do
+          existing_wells = run.plate.wells
+          existing_pools = run.plate.wells.map(&:pools)
+          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          run.reload
+          expect(run.plate).to eq plate
+          expect(run.plate.wells).to eq existing_wells
+          expect(run.plate.wells.map(&:pools)).to eq existing_pools
+        end
+
         it_behaves_like 'publish_messages_on_update'
       end
 
