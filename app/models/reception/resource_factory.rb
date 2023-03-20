@@ -19,6 +19,8 @@ class Reception
 
     validates_nested :request_attributes, flatten_keys: false
 
+    validates_with ResourceFactoryValidator
+
     #
     # Array describing the requests to create.
     # Each request consists of:
