@@ -3,10 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe '/qc_results_uploads' do
-  before do
-    Flipper.enable(:dpl_478_enable_qc_results_upload)
-  end
-
   describe '#post' do
     before do
       create(:qc_assay_type, key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul) [ESP1]', used_by: 0, units: 'ng/ul')
