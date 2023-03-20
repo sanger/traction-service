@@ -8,10 +8,6 @@ RSpec.describe 'PoolsController', ont: true do
   let!(:request2) { create(:ont_request) }
   let!(:tag2) { create(:tag) }
 
-  before do
-    Flipper.enable(:dpl_279_ont_libraries_and_pools)
-  end
-
   describe '#get' do
     let!(:pools) { create_list(:ont_pool, 2) }
 

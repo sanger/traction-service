@@ -30,6 +30,10 @@ RSpec.describe 'RakeTasks' do
   end
 
   describe 'create pacbio runs' do
+    before do
+      create(:library_type, :pacbio)
+    end
+
     it 'creates the correct number of runs' do
       Rake::Task['tags:create:pacbio_sequel'].reenable
       Rake::Task['tags:create:pacbio_isoseq'].reenable
