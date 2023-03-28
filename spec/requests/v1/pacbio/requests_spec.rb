@@ -33,7 +33,7 @@ RSpec.describe 'RequestsController', pacbio: true do
     end
 
     context 'pagination' do
-      context 'default' do
+      context 'default', skip: 'Pagination is disabled until pacbio pool/new page is changed' do
         let!(:expected_requests) { create_list(:pacbio_request, 2, created_at: Time.zone.now + 10) }
 
         before do
