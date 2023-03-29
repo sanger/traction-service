@@ -41,7 +41,7 @@ RSpec.describe Saphyr::RequestFactory, saphyr: true do
       factory = described_class.new(attributes)
       expect(factory.save).to be_truthy
       tube_barcodes = Saphyr::Request.all.map { |r| r.tube.barcode }
-      expect(tube_barcodes).to contain_exactly(*expected_barcodes)
+      expect(tube_barcodes).to match_array(expected_barcodes)
     end
 
     it 'has some requestables' do
