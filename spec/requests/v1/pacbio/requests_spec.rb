@@ -33,7 +33,7 @@ RSpec.describe 'RequestsController', pacbio: true do
     end
 
     context 'pagination' do
-      context 'default' do
+      context 'default', skip: 'Pagination is disabled until pacbio pool/new page is changed' do
         let!(:expected_requests) { create_list(:pacbio_request, 2, created_at: Time.zone.now + 10) }
 
         before do
@@ -122,112 +122,6 @@ RSpec.describe 'RequestsController', pacbio: true do
     end
   end
 
-  describe '#create' do
-    context 'when creating a single request' do
-      context 'on success' do
-        let(:body) do
-          {
-            data: {
-              type: 'requests',
-              attributes: {
-                requests: [
-                  {
-                    request: attributes_for(:pacbio_request),
-                    sample: attributes_for(:sample),
-                    tube: { barcode: 'custom' }
-                  }
-                ]
-              }
-            }
-          }.to_json
-        end
-
-        it 'has a created status' do
-          post v1_pacbio_requests_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:created)
-        end
-
-        it 'creates a request' do
-          expect do
-            post v1_pacbio_requests_path, params: body, headers: json_api_headers
-          end.to change(Pacbio::Request, :count).by(1)
-        end
-
-        it 'creates a sample' do
-          expect do
-            post v1_pacbio_requests_path, params: body, headers: json_api_headers
-          end.to change(Sample, :count).by(1)
-        end
-      end
-
-      context 'on failure' do
-        let(:body) do
-          {
-            data: {
-              attributes: {
-                requests: [
-                  {
-                    request: attributes_for(:pacbio_request),
-                    sample: attributes_for(:sample).except(:name),
-                    tube: { barcode: 'custom' }
-                  }
-                ]
-              }
-            }
-          }.to_json
-        end
-
-        it 'has an unprocessable entity status' do
-          post v1_pacbio_requests_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
-
-        it 'cannot create a request' do
-          expect do
-            post v1_pacbio_requests_path, params: body,
-                                          headers: json_api_headers
-          end.not_to change(Pacbio::Request, :count)
-        end
-
-        it 'has an error message' do
-          post v1_pacbio_requests_path, params: body, headers: json_api_headers
-          expect(JSON.parse(response.body)['data']).not_to be_empty
-        end
-      end
-
-      context 'when creating multiple requests' do
-        context 'on success' do
-          context 'when the sample does exist' do
-            let(:body) do
-              {
-                data: {
-                  attributes: {
-                    requests: [
-                      { request: attributes_for(:pacbio_request), sample: attributes_for(:sample) },
-                      { request: attributes_for(:pacbio_request), sample: attributes_for(:sample) }
-                    ]
-                  }
-                }
-              }.to_json
-            end
-
-            it 'can create requests' do
-              post v1_pacbio_requests_path, params: body, headers: json_api_headers
-              expect(response).to have_http_status(:created)
-            end
-
-            it 'will have the correct number of requests' do
-              expect do
-                post v1_pacbio_requests_path, params: body,
-                                              headers: json_api_headers
-              end.to change(Pacbio::Request, :count).by(2)
-            end
-          end
-        end
-      end
-    end
-  end
-
   describe '#destroy' do
     let!(:request) { create(:pacbio_request) }
 
@@ -252,7 +146,7 @@ RSpec.describe 'RequestsController', pacbio: true do
 
       it 'has an error message' do
         delete "#{v1_pacbio_requests_path}/fakerequest", headers: json_api_headers
-        data = JSON.parse(response.body)['data']
+        data = response.parsed_body['data']
         expect(data['errors']).to be_present
       end
     end

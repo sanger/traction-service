@@ -3,10 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe 'LibrariesController', ont: true do
-  before do
-    Flipper.enable(:dpl_279_ont_libraries_and_pools)
-  end
-
   describe '#get' do
     let!(:libraries) { create_list(:ont_library, 5, :tagged) }
 

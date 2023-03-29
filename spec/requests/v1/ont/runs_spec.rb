@@ -8,7 +8,6 @@ RSpec.describe 'RunsController' do
   end
 
   before do
-    Flipper.enable(:dpl_281_ont_create_sequencing_runs)
     create(:ont_min_know_version_default, name: 'v22')
   end
 

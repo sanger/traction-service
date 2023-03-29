@@ -128,7 +128,7 @@ RSpec.describe 'LibrariesController' do
 
           it 'has an error message' do
             post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-            expect(JSON.parse(response.body)['data']).to include('errors' => { 'request' => ['must exist'] })
+            expect(response.parsed_body['data']).to include('errors' => { 'request' => ['must exist'] })
           end
         end
 
@@ -160,7 +160,7 @@ RSpec.describe 'LibrariesController' do
 
           it 'has an error message' do
             post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-            expect(JSON.parse(response.body)['data']).to include('errors' => { 'enzyme' => ['must exist'] })
+            expect(response.parsed_body['data']).to include('errors' => { 'enzyme' => ['must exist'] })
           end
         end
       end
@@ -220,7 +220,7 @@ RSpec.describe 'LibrariesController' do
 
           it 'has an error message' do
             post v1_saphyr_libraries_path, params: body, headers: json_api_headers
-            expect(JSON.parse(response.body)['data']).to include('errors' => { 'request' => [
+            expect(response.parsed_body['data']).to include('errors' => { 'request' => [
               'must exist', 'must exist'
             ] })
           end
@@ -256,7 +256,7 @@ RSpec.describe 'LibrariesController' do
 
       it 'has an error message' do
         delete "/v1/saphyr/libraries/#{library.id}", headers: json_api_headers
-        expect(JSON.parse(response.body)['data']).to include('errors' => {})
+        expect(response.parsed_body['data']).to include('errors' => {})
       end
     end
   end
