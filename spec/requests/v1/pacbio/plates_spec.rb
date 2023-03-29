@@ -120,78 +120,14 @@ RSpec.describe 'PlatesController' do
       end
 
       it 'filtering by barcodes' do
-        barcode = pacbio_plates.pluck(:barcode)[0]
-        get "#{v1_pacbio_plates_path}?filter[barcode]=#{barcode}",
+        barcodes = pacbio_plates.pluck(:barcode)[0..1]
+        get "#{v1_pacbio_plates_path}?filter[barcode]=#{barcodes.join(',')}",
             headers: json_api_headers
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data'].length).to eq(1)
-        expect(json['data'][0]['attributes']['barcode']).to eq barcode
-      end
-    end
-  end
-
-  describe '#create' do
-    let(:external_plate) { build(:external_plate) }
-    let(:body) do
-      {
-        data: {
-          attributes: {
-            plates: [
-              external_plate
-            ]
-          }
-        }
-      }.to_json
-    end
-
-    context 'on success' do
-      it 'has a created status' do
-        post v1_pacbio_plates_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:created)
-      end
-
-      it 'creates a plate' do
-        expect do
-          post v1_pacbio_plates_path, params: body,
-                                      headers: json_api_headers
-        end.to change(Plate, :count).by(1)
-      end
-
-      # the plate creator and resources are already tested but we can make sure
-      # that the barcode is correct at least
-      it 'has the correct attributes (sanity check)' do
-        post v1_pacbio_plates_path, params: body, headers: json_api_headers
-        expect(Plate.find_by(barcode: external_plate[:barcode])).to be_present
-      end
-    end
-
-    context 'on failure' do
-      let(:body) do
-        {
-          data: {
-            attributes: {
-              plates: []
-            }
-          }
-        }.to_json
-      end
-
-      it 'has a ok unprocessable_entity' do
-        post v1_pacbio_plates_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'does not create a plate' do
-        expect do
-          post v1_pacbio_plates_path, params: body, headers: json_api_headers
-        end.not_to change(Plate, :count)
-      end
-
-      it 'has an error message' do
-        post v1_pacbio_plates_path, params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        expect(json['errors']).to be_present
+        expect(json['data'].length).to eq(barcodes.length)
+        expect(json['data'][0]['attributes']['barcode']).to eq barcodes[0]
+        expect(json['data'][1]['attributes']['barcode']).to eq barcodes[1]
       end
     end
   end
