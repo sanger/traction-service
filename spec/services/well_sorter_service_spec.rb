@@ -17,6 +17,8 @@ WELL_96 = %w[
   A12 B12 C12 D12 E12 F12 G12 H12
 ].freeze
 
+# dont agree with this. Transparent to have this here
+# and it is not used anywhere else.
 # rubocop:disable Metrics/CollectionLiteralLength
 WELL_384 = %w[
   A1 B1 C1 D1 E1 F1 G1 H1 I1 J1 K1 L1 M1 N1 O1 P1
