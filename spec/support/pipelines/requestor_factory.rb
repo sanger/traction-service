@@ -35,7 +35,7 @@ shared_examples_for 'requestor factory' do
       factory = described_class.new(attributes)
       expect(factory.save).to be_truthy
       tube_barcodes = described_class.request_model.all.map { |r| r.tube.barcode }
-      expect(tube_barcodes).to contain_exactly(*expected_barcodes)
+      expect(tube_barcodes).to match_array(expected_barcodes)
     end
 
     it 'generates the barcode on the tube if it is not provided' do
