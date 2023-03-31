@@ -28,13 +28,6 @@ module V1
         [{ field: 'created_at', direction: :desc }]
       end
 
-      # Something like this would be nice to have but it is tricky to implement because we
-      # are dealing with records not instances
-      #
-      # filter :source_identifier, apply: lambda { |records, value, _options|
-      #   records.select {|lib| lib.source_identifier == value}
-      # }
-
       filter :pool
       filter :sample_name, apply: lambda { |records, value, _options|
         # We have to join requests and samples here in order to find by sample name
@@ -49,7 +42,12 @@ module V1
         return recs unless recs.empty?
 
         # If no tubes match the source identifier we check plates
-        return records.joins(:source_plate).where(source_plate: { barcode: value })
+        # If source identifier specifies a well we need to match samples to well
+        # TODO: The below value[0] means we only take the first value passed in the filter
+        #       If we want to support multiple values in one filter we would need to update this
+        plate, well = value[0].split(':')
+        recs = records.joins(:source_plate).where(source_plate: { barcode: plate })
+        return well ? recs.joins(:source_well).where(source_well: { position: well }) : recs
       }
 
       def self.records_for_populate(*_args)
