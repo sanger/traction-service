@@ -6,8 +6,6 @@ module V1
     # resources
     # See {Run} and {RunResource} for more information
     class RunsController < ApplicationController
-      before_action { not_found unless Flipper.enabled?(:dpl_281_ont_create_sequencing_runs) }
-
       # endpoint generating a sample sheet for a Ont::Run
       def sample_sheet
         run = ::Ont::Run.find(params[:run_id])
