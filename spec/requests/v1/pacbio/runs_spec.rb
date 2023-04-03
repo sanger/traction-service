@@ -940,7 +940,7 @@ RSpec.describe 'RunsController' do
               attributes: {
                 well_attributes: [
                   {
-                    id: well.id,
+                    id: well.id.to_s, # We receive ids in string format from the ui
                     row: 'D',
                     column: '7',
                     movie_time: 7,
@@ -1008,7 +1008,7 @@ RSpec.describe 'RunsController' do
                     pools: [pool1.id]
                   },
                   {
-                    id: well1.id,
+                    id: well1.id.to_s,
                     row: 'D',
                     column: '7',
                     pools: [well1.pools[0].id]
@@ -1070,11 +1070,11 @@ RSpec.describe 'RunsController' do
               attributes: {
                 well_attributes: [
                   {
-                    id: run.wells[0].id,
+                    id: run.wells[0].id.to_s,
                     pools: [well1.pools[0].id, pool1.id]
                   },
                   {
-                    id: run.wells[1].id,
+                    id: run.wells[1].id.to_s,
                     pools: [pool2.id]
                   }
                 ]

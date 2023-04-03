@@ -25,7 +25,8 @@ module Pacbio
     end
 
     def delete_removed_wells(well_options)
-      options_ids = well_options.pluck(:id).compact
+      # Here we need to map the json ids to integers to make sure the exclude comparison uses ints
+      options_ids = well_options.pluck(:id).compact.map(&:to_i)
 
       # This loop here preloads the wells
       # This ensures the wells.find(attributes[:id]) block
