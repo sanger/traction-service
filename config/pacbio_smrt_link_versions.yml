@@ -17,9 +17,9 @@ default: &default
       name: v11
       active: true
       default: false
-    v12:
+    v12_revio:
       name: v12_revio
-      active: false
+      active: true
       default: false
 
   options:
