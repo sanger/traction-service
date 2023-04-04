@@ -7,7 +7,7 @@ module Version
   # and unnecessary
   # using a full stop would break method naming so I have gone for underscore
   # having the format here gives us the advantage of modifying easily.
-  FORMAT = /\Av\d{2}?_?\d{1,2}\z/
+  FORMAT = /\Av\d{2}?_?\w{1,5}\z/
 
   # Bespoke error class to highlight version errors
   class Error < StandardError
