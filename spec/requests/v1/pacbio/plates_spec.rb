@@ -124,10 +124,13 @@ RSpec.describe 'PlatesController' do
         get "#{v1_pacbio_plates_path}?filter[barcode]=#{barcodes.join(',')}",
             headers: json_api_headers
         expect(response).to have_http_status(:success)
-        json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data'].length).to eq(barcodes.length)
-        expect(json['data'][0]['attributes']['barcode']).to eq barcodes[0]
-        expect(json['data'][1]['attributes']['barcode']).to eq barcodes[1]
+        pacbio_plates[0..1].each do |plate|
+          plate_attributes = find_resource(type: 'plates', id: plate.id)['attributes']
+          expect(plate_attributes).to include(
+            'barcode' => plate.barcode,
+            'created_at' => plate.created_at.to_fs(:us)
+          )
+        end
       end
     end
   end
