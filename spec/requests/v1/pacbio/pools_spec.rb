@@ -84,7 +84,7 @@ RSpec.describe 'PoolsController', pacbio: true do
       expect(library_attributes['insert_size']).to eq(library.insert_size)
     end
 
-    context 'pagination', skip: 'Pagination is disabled until pacbio runs page is changed' do
+    context 'pagination' do
       let!(:expected_pools) { create_list(:pacbio_pool, 2, created_at: Time.zone.now + 10) }
 
       before do
