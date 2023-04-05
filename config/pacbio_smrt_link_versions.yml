@@ -157,7 +157,7 @@ default: &default
     movie_acquisition_time:
       key: movie_acquisition_time
       label: 'Movie Acquisition Time (hrs)'
-      default value:
+      default_value:
       # validations:
       #   presence: {}
       #   numericality:
@@ -170,7 +170,7 @@ default: &default
     include_base_kinetics:
       key: include_base_kinetics
       label: 'Include Base Kinetics'
-      default value: "Yes"
+      default_value: "Yes"
       # validations:
       #   presence: {}
       #   inclusion:
@@ -182,7 +182,7 @@ default: &default
     library_concentration:
       key: library_concentration
       label: 'Library Concentration (pM)'
-      default value:
+      default_value:
       # validations:
       #   presence: {}
       data_type: number

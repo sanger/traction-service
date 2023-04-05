@@ -39,8 +39,7 @@ module Pacbio
                         movie_acquisition_time
                         include_base_kinetics
                         library_concentration
-                        polymerase_kit
-                      ]
+                        polymerase_kit]
 
     # The SmrtLinkOptions validator gives full details on how this works
     # validations are loaded from the database

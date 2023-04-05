@@ -5,9 +5,11 @@ require 'rails_helper'
 # These tests may end up being redundant but we need to make sure existing validations still work
 # when this work is merged with yaml file for validations it would be better to load those
 # validations rather than setting them here
+# Make sure there is a default version to be able to create a run
 RSpec.describe Pacbio::Well, pacbio: true do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
+  # let!(:version12_revio) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
   let!(:plate_v10) { create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version10)) }
 
   before do
@@ -212,6 +214,10 @@ RSpec.describe Pacbio::Well, pacbio: true do
         binding_kit_box_barcode
         pre_extension_time
         loading_target_p1_plus_p2 movie_time
+        movie_acquisition_time
+        include_base_kinetics
+        library_concentration
+        polymerase_kit
       ])
     end
 
