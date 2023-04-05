@@ -62,7 +62,7 @@ class ReceptionGenerator
     @number_of_tubes.times.map do
       barcode = @barcodes.next
       library_type = @library_types.next
-      data_type = @data_types.next
+      data_type = begin; @data_types.next; rescue StopIteration; nil; end
       {
         request: request(library_type, data_type),
         sample:,
