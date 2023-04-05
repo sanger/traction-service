@@ -158,11 +158,11 @@ default: &default
       key: movie_acquisition_time
       label: 'Movie Acquisition Time (hrs)'
       default_value:
-      # validations:
-      #   presence: {}
-      #   numericality:
-      #     less_than_or_equal_to: 30
-      #     greater_than_or_equal_to: 0.1
+      validations:
+        presence: {}
+        numericality:
+          less_than_or_equal_to: 30
+          greater_than_or_equal_to: 0.1
       select_options: *select_times
       data_type: number
       versions:
@@ -171,10 +171,10 @@ default: &default
       key: include_base_kinetics
       label: 'Include Base Kinetics'
       default_value: "Yes"
-      # validations:
-      #   presence: {}
-      #   inclusion:
-      #     in: *true_false
+      validations:
+        presence: {}
+        inclusion:
+          in: *true_false
       data_type: list
       select_options: *select_true_false
       versions:
@@ -183,8 +183,8 @@ default: &default
       key: library_concentration
       label: 'Library Concentration (pM)'
       default_value:
-      # validations:
-      #   presence: {}
+      validations:
+        presence: {}
       data_type: number
       versions:
         - v12_revio
@@ -192,8 +192,8 @@ default: &default
       key: polymerase_kit
       label: 'Polymerase Kit'
       default_value:
-      # validations:
-      #   presence: {}
+      validations:
+        presence: {}
       data_type: number
       versions:
         - v12_revio
