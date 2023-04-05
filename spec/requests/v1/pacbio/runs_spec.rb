@@ -41,13 +41,14 @@ RSpec.describe 'RunsController' do
       expect(response).to have_http_status(:success), response.body
       json = ActiveSupport::JSON.decode(response.body)
 
-      expect(json['data'][0]['relationships']['plate']).to be_present
-      expect(json['data'][0]['relationships']['plate']['data']['type']).to eq 'plates'
-      expect(json['data'][0]['relationships']['plate']['data']['id']).to eq plate1.id.to_s
-
-      expect(json['data'][1]['relationships']['plate']).to be_present
-      expect(json['data'][1]['relationships']['plate']['data']['type']).to eq 'plates'
-      expect(json['data'][1]['relationships']['plate']['data']['id']).to eq plate2.id.to_s
+      plate1_attributes = find_included_resource(type: 'plates', id: plate1.id)['attributes']
+      expect(plate1_attributes).to include(
+        'pacbio_run_id' => run1.id
+      )
+      plate2_attributes = find_included_resource(type: 'plates', id: plate2.id)['attributes']
+      expect(plate2_attributes).to include(
+        'pacbio_run_id' => run2.id
+      )
 
       expect(json['data'][0]['relationships']['smrt_link_version']).to be_present
       expect(json['data'][0]['relationships']['smrt_link_version']['data']['type']).to eq 'smrt_link_versions'
