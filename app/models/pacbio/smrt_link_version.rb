@@ -19,7 +19,9 @@ module Pacbio
 
     # Returns the default SMRT Link version.
     def self.default
-      find_by(default: true, active: true)
+      find_by(default: true,
+              active: true) || raise('There is no default SMRT Link Version.
+              Please create one or Traction will implode.')
     end
   end
 end
