@@ -17,10 +17,10 @@ default: &default
     v11:
       name: v11
       active: true
-      default: false
+      default: true
     v12_revio:
       name: v12_revio
-      active: true
+      active: false
       default: false
 
   options:
