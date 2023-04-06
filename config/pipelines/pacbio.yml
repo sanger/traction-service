@@ -423,13 +423,7 @@ default: &default
               for:
                 - :well
               with: :well
-          Adapters / Barcodes:
-            type: :model
-            value: adapters_barcodes
-            populate:
-              for:
-                - :well
-              with: :well
+      # v12
 
 development: *default
 test: *default
