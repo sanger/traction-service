@@ -331,10 +331,10 @@ RSpec.describe Pacbio::Well, pacbio: true do
 
       # before do - create all the version12_revio specific options in here
       before do
-      create(:pacbio_smrt_link_option, key: 'movie_acquisition_time', validations: { presence: {}, numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 } }, smrt_link_versions: [version12_revio])
-      create(:pacbio_smrt_link_option, key: 'include_base_kinetics', validations: { presence: {}, inclusion: { in: true_false } }, smrt_link_versions: [version12_revio])
-      create(:pacbio_smrt_link_option, key: 'library_concentration', validations: { presence: {} }, smrt_link_versions: [version12_revio])
-      create(:pacbio_smrt_link_option, key: 'polymerase_kit', validations: { presence: {} }, smrt_link_versions: [version12_revio])
+        create(:pacbio_smrt_link_option, key: 'movie_acquisition_time', validations: { presence: {}, numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 } }, smrt_link_versions: [version12_revio])
+        create(:pacbio_smrt_link_option, key: 'include_base_kinetics', validations: { presence: {}, inclusion: { in: true_false } }, smrt_link_versions: [version12_revio])
+        create(:pacbio_smrt_link_option, key: 'library_concentration', validations: { presence: {} }, smrt_link_versions: [version12_revio])
+        create(:pacbio_smrt_link_option, key: 'polymerase_kit', validations: { presence: {} }, smrt_link_versions: [version12_revio])
       end
 
       context 'Movie acquisition time' do
@@ -342,15 +342,15 @@ RSpec.describe Pacbio::Well, pacbio: true do
           well.movie_acquisition_time = nil
           expect(well).not_to be_valid
         end
-    
+
         it 'can be a decimal' do
           well.movie_acquisition_time = 0.2
           expect(well.movie_acquisition_time).to eq(0.2)
         end
-    
+
         describe 'must be within range' do
           it 'is within range' do
-          expect(well.movie_acquisition_time = 15).to eq(15)
+            expect(well.movie_acquisition_time = 15).to eq(15)
           end
 
           it 'is above range' do
@@ -381,7 +381,7 @@ RSpec.describe Pacbio::Well, pacbio: true do
           expect(well).not_to be_valid
         end
       end
-      
+
       context 'Library concentration' do
         it 'must have a library concentration' do
           well.library_concentration = nil
