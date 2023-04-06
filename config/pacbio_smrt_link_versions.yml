@@ -170,7 +170,7 @@ default: &default
     include_base_kinetics:
       key: include_base_kinetics
       label: 'Include Base Kinetics'
-      default_value: "Yes"
+      default_value: 'True'
       validations:
         presence: {}
         inclusion:
