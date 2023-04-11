@@ -5,9 +5,11 @@ require 'rails_helper'
 # These tests may end up being redundant but we need to make sure existing validations still work
 # when this work is merged with yaml file for validations it would be better to load those
 # validations rather than setting them here
+# Make sure there is a default version to be able to create a run
 RSpec.describe Pacbio::Well, pacbio: true do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
+  let!(:version12_revio) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
   let!(:plate_v10) { create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version10)) }
 
   before do
@@ -199,6 +201,7 @@ RSpec.describe Pacbio::Well, pacbio: true do
     let(:well)  { create(:pacbio_well) }
     let(:generate_in) { Pacbio::GENERATE }
     let(:yes_no) { Pacbio::YES_NO }
+    let(:true_false) { Pacbio::TRUE_FALSE }
 
     it 'will include the relevant options' do
       expect(described_class.stored_attributes[:smrt_link_options]).to eq(%i[
@@ -212,6 +215,10 @@ RSpec.describe Pacbio::Well, pacbio: true do
         binding_kit_box_barcode
         pre_extension_time
         loading_target_p1_plus_p2 movie_time
+        movie_acquisition_time
+        include_base_kinetics
+        library_concentration
+        polymerase_kit
       ])
     end
 
@@ -313,6 +320,78 @@ RSpec.describe Pacbio::Well, pacbio: true do
           end
 
           well.demultiplex_barcodes = 'junk'
+          expect(well).not_to be_valid
+        end
+      end
+    end
+
+    context 'v12_revio' do
+      # build the well with the smrt_link version 12 revio
+      let(:well) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version12_revio))) }
+
+      # before do - create all the version12_revio specific options in here
+      before do
+        create(:pacbio_smrt_link_option, key: 'movie_acquisition_time', validations: { presence: {}, numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 } }, smrt_link_versions: [version12_revio])
+        create(:pacbio_smrt_link_option, key: 'include_base_kinetics', validations: { presence: {}, inclusion: { in: true_false } }, smrt_link_versions: [version12_revio])
+        create(:pacbio_smrt_link_option, key: 'library_concentration', validations: { presence: {} }, smrt_link_versions: [version12_revio])
+        create(:pacbio_smrt_link_option, key: 'polymerase_kit', validations: { presence: {} }, smrt_link_versions: [version12_revio])
+      end
+
+      context 'Movie acquisition time' do
+        it 'must be present' do
+          well.movie_acquisition_time = nil
+          expect(well).not_to be_valid
+        end
+
+        it 'can be a decimal' do
+          well.movie_acquisition_time = 0.2
+          expect(well.movie_acquisition_time).to eq(0.2)
+        end
+
+        describe 'must be within range' do
+          it 'is within range' do
+            expect(well.movie_acquisition_time = 15).to eq(15)
+          end
+
+          it 'is above range' do
+            well.movie_acquisition_time = 31
+            expect(well).not_to be_valid
+          end
+
+          it 'is below range' do
+            well.movie_acquisition_time = 0
+            expect(well).not_to be_valid
+          end
+        end
+      end
+
+      context 'Include base kinetics' do
+        it 'must be present' do
+          well.include_base_kinetics = nil
+          expect(well).not_to be_valid
+        end
+
+        it 'must be a valid value' do
+          true_false.each do |option|
+            well.include_base_kinetics = option
+            expect(well).to be_valid
+          end
+
+          well.include_base_kinetics = 'junk'
+          expect(well).not_to be_valid
+        end
+      end
+
+      context 'Library concentration' do
+        it 'must have a library concentration' do
+          well.library_concentration = nil
+          expect(well).not_to be_valid
+        end
+      end
+
+      context 'Polymerase kit' do
+        it 'must have a polymerase kit' do
+          well.polymerase_kit = nil
           expect(well).not_to be_valid
         end
       end
