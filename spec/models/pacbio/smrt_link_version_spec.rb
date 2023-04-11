@@ -27,6 +27,7 @@ RSpec.describe Pacbio::SmrtLinkVersion, pacbio: true do
     it 'name must be formatted correctly' do
       expect(build(:pacbio_smrt_link_version, name: 'v12')).to be_valid
       expect(build(:pacbio_smrt_link_version, name: 'v11_1')).to be_valid
+      expect(build(:pacbio_smrt_link_version, name: 'v12_revio')).to be_valid
 
       expect(build(:pacbio_smrt_link_version, name: 'v1.1')).not_to be_valid
       expect(build(:pacbio_smrt_link_version, name: '10')).not_to be_valid
