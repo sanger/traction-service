@@ -35,11 +35,14 @@ class ReceptionGenerator
 
   private
 
+  # Rubocop wants us to use .empty instead of size > 0
+  # But enumerators don't have a .empty method
+  # rubocop:disable Style/ZeroLengthPredicate
   def plates
     @number_of_plates.times.flat_map do
       barcode = @barcodes.next
       library_type = @library_types.next
-      data_type = begin; @data_types.next; rescue StopIteration; nil; end
+      data_type = @data_types.next if @data_types.size > 0
       @well_positions.take(@wells_per_plate).map do |position|
         {
           request: request(library_type, data_type),
@@ -62,7 +65,7 @@ class ReceptionGenerator
     @number_of_tubes.times.map do
       barcode = @barcodes.next
       library_type = @library_types.next
-      data_type = begin; @data_types.next; rescue StopIteration; nil; end
+      data_type = @data_types.next if @data_types.size > 0
       {
         request: request(library_type, data_type),
         sample:,
@@ -70,4 +73,5 @@ class ReceptionGenerator
       }
     end
   end
+  # rubocop:enable Style/ZeroLengthPredicate
 end
