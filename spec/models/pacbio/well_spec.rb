@@ -394,6 +394,11 @@ RSpec.describe Pacbio::Well, pacbio: true do
           well.polymerase_kit = nil
           expect(well).not_to be_valid
         end
+
+        it 'must be a valid value' do
+          well.polymerase_kit = 'Lxxxxx102739100123199'
+          expect(well).to be_valid
+        end
       end
     end
   end
