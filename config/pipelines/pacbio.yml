@@ -447,7 +447,7 @@ default: &default
               with: :well
           # Plate 2:
           Run Name:
-           type: :model
+            type: :model
             value: plate.run.name
             populate:
               for:
@@ -473,8 +473,8 @@ default: &default
           #   populate:
           #     for:
           #     with:
-          # Sample Well:
-           type: :model
+          Sample Well:
+            type: :model
             value: position_leading_zero
             populate:
               for:
