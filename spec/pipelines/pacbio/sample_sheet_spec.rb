@@ -41,7 +41,7 @@ RSpec.describe 'SampleSheet', type: :model do
     let(:sample_sheet_configuration) { Pipelines.pacbio.sample_sheet.by_version('v12_revio') }
 
     it 'will have movie acquisition time' do
-      column = sample_sheet_configuration.columns.children['Movie Acquisition Time (hrs)']
+      column = sample_sheet_configuration.columns.children['Movie Acquisition Time (hours)']
       expect(column).to be_present
       expect(column.fetch('type')).to eq(:model)
       expect(column.fetch('value')).to eq('movie_acquisition_time')
