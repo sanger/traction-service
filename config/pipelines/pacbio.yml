@@ -432,12 +432,13 @@ default: &default
               for:
                 - :well
               with: :well
-          # Reagent Plate:
-          # type: :model
-          #   value: reagent_plate
-            # populate:
-            #   for:
-            #   with:
+          Reagent Plate:
+            type: :model
+            value: 1
+            populate:
+              for:
+                - :well
+              with: :well
           Plate 1:
             type: :model
             value: plate.run.sequencing_kit_box_barcode
@@ -467,12 +468,14 @@ default: &default
               for:
                 - :well
               with: :well
-          # Is Collection:
-          #   type: :model
-          #   value:
-          #   populate:
-          #     for:
-          #     with:
+          Is Collection:
+            type: :model
+            value: collection?
+            populate:
+              for:
+                - :well
+                - :sample
+              with: :row_type
           Sample Well:
             type: :model
             value: position_leading_zero
