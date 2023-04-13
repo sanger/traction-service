@@ -40,6 +40,7 @@ RSpec.describe 'SampleSheet', type: :model do
   context 'v12_revio' do
     let(:sample_sheet_configuration) { Pipelines.pacbio.sample_sheet.by_version('v12_revio') }
 
+    # Where should the rest of the sample sheet columns be tested?
     it 'will have movie acquisition time' do
       column = sample_sheet_configuration.columns.children['Movie Acquisition Time (hours)']
       expect(column).to be_present
@@ -71,49 +72,5 @@ RSpec.describe 'SampleSheet', type: :model do
       expect(column.fetch('value')).to eq('polymerase_kit')
       expect(column.fetch('populate')).to eq(populate)
     end
-
-    # should the rest of the sample sheet columns be added to the tests?
-
-    # it 'must have a library type' do
-    # end
-
-    # it 'must have a reagent plate' do
-    # end
-
-    # it 'must have plate 1' do
-    # end
-
-    # it 'may have plate 2' do
-    # end
-
-    # it 'must have a run name' do
-    # end
-
-    # it 'may have an instrument type' do
-    # end
-
-    # it 'may have run comments' do
-    # end
-
-    # it 'may have is collection' do
-    # end
-
-    # it 'must have sample well' do
-    # end
-
-    # it 'must have well name' do
-    # end
-
-    # it 'may have automation parameters' do
-    # end
-
-    # it 'may have adapters / barcodes' do
-    # end
-
-    # it 'may have barcode name' do
-    # end
-
-    # it 'must have bio sample name' do
-    # end
   end
 end
