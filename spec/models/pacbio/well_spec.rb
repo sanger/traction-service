@@ -10,7 +10,6 @@ RSpec.describe Pacbio::Well, pacbio: true do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
   let!(:version12_revio) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
-  let!(:plate_v10) { create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version10)) }
 
   before do
     # v10 and v11 validations
@@ -41,7 +40,7 @@ RSpec.describe Pacbio::Well, pacbio: true do
 
   context 'movie time' do
     it 'must be present' do
-      expect(build(:pacbio_well, plate: plate_v10, movie_time: nil)).not_to be_valid
+      expect(build(:pacbio_well, movie_time: nil)).not_to be_valid
     end
 
     it 'can be a decimal' do
@@ -49,9 +48,9 @@ RSpec.describe Pacbio::Well, pacbio: true do
     end
 
     it 'must be within range' do
-      expect(build(:pacbio_well, plate: plate_v10, movie_time: 15)).to be_valid
-      expect(build(:pacbio_well, plate: plate_v10, movie_time: 31)).not_to be_valid
-      expect(build(:pacbio_well, plate: plate_v10, movie_time: 0)).not_to be_valid
+      expect(build(:pacbio_well, movie_time: 15)).to be_valid
+      expect(build(:pacbio_well, movie_time: 31)).not_to be_valid
+      expect(build(:pacbio_well, movie_time: 0)).not_to be_valid
     end
   end
 
@@ -100,7 +99,7 @@ RSpec.describe Pacbio::Well, pacbio: true do
     end
 
     it 'no pools' do
-      well = create(:pacbio_well)
+      well = build(:pacbio_well, pool_count: 0)
       expect(well).not_to be_pools
     end
   end
@@ -139,9 +138,14 @@ RSpec.describe Pacbio::Well, pacbio: true do
   end
 
   context 'libraries' do
-    let(:libraries) { create_list(:pacbio_library, 5, :tagged) }
-    let(:pools)     { create_list(:pacbio_pool, 2, libraries:) }
-    let(:well)      { create(:pacbio_well, pools:) }
+    let(:lib1)      { create(:pacbio_library, :tagged) }
+    let(:lib2)      { create(:pacbio_library, :tagged) }
+    let(:pool1)     { create(:pacbio_pool, libraries: [lib1]) }
+    let(:pool2)     { create(:pacbio_pool, libraries: [lib2]) }
+
+    let(:pools)     { [pool1, pool2] }
+    let(:libraries) { [lib1, lib2] }
+    let(:well)      { create(:pacbio_well, pools: [pool1, pool2]) }
 
     it 'can have one or more' do
       expect(well.libraries).to eq(libraries)
@@ -223,7 +227,7 @@ RSpec.describe Pacbio::Well, pacbio: true do
     end
 
     context 'v10' do
-      let(:well) { build(:pacbio_well, plate: plate_v10) }
+      let(:well) { build(:pacbio_well) }
 
       before do
         create(:pacbio_smrt_link_option, key: 'generate_hifi', validations: { presence: {}, inclusion: { in: generate_in } }, smrt_link_versions: [version10])

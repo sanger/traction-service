@@ -241,6 +241,12 @@ RSpec.describe 'RunsController' do
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
+      it 'does not create a run' do
+        expect do
+          patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: json_api_headers
+        end.not_to change(Ont::Run, :count)
+      end
+
       it 'returns error messages' do
         errors = json['errors']
         titles = errors.pluck('title')

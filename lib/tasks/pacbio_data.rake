@@ -7,11 +7,11 @@ namespace :pacbio_data do
   task create: [:environment, 'tags:create:pacbio_sequel', 'tags:create:pacbio_isoseq'] do
     require_relative 'reception_generator'
 
-    puts '-> Creating pacbio plates...'
+    puts '-> Creating pacbio plates and tubes...'
 
     reception_generator = ReceptionGenerator.new(
       number_of_plates: 5,
-      number_of_tubes: 0,
+      number_of_tubes: 5,
       wells_per_plate: 48,
       pipeline: :pacbio
     ).tap(&:construct_resources!)
@@ -59,9 +59,8 @@ namespace :pacbio_data do
     puts '-> Creating pacbio runs...'
     pool_records.each_with_index do |pool, i|
       run = Pacbio::Run.create!(name: "Run#{pool.id}", sequencing_kit_box_barcode: "SKB#{pool.id}", dna_control_complex_box_barcode: "DCCB#{pool.id}")
-      plate = Pacbio::Plate.create!(run:)
-      Pacbio::Well.create!(plate:, pools: [pool], movie_time: 20, on_plate_loading_concentration: 1,
-                           row: 'A', column: i + 1, generate_hifi: 'In SMRT Link', ccs_analysis_output: 'Yes', binding_kit_box_barcode: "BKB#{pool.id}")
+      plate = Pacbio::Plate.create(run:)
+      Pacbio::Well.create!(plate:, pools: [pool], movie_time: 20, on_plate_loading_concentration: 1, row: 'A', column: i + 1, generate_hifi: 'In SMRT Link', ccs_analysis_output: 'Yes', binding_kit_box_barcode: "BKB#{pool.id}")
     end
     puts '-> Pacbio runs successfully created'
   end

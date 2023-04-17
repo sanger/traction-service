@@ -92,7 +92,7 @@ RSpec.describe 'PlatesController' do
       end
     end
 
-    context 'pagination', skip: 'Pagination is disabled until pacbio pool/new page is changed' do
+    context 'pagination' do
       let!(:expected_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'pacbio', created_at: Time.zone.now + 10) }
 
       before do
@@ -124,10 +124,13 @@ RSpec.describe 'PlatesController' do
         get "#{v1_pacbio_plates_path}?filter[barcode]=#{barcodes.join(',')}",
             headers: json_api_headers
         expect(response).to have_http_status(:success)
-        json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data'].length).to eq(barcodes.length)
-        expect(json['data'][0]['attributes']['barcode']).to eq barcodes[0]
-        expect(json['data'][1]['attributes']['barcode']).to eq barcodes[1]
+        pacbio_plates[0..1].each do |plate|
+          plate_attributes = find_resource(type: 'plates', id: plate.id)['attributes']
+          expect(plate_attributes).to include(
+            'barcode' => plate.barcode,
+            'created_at' => plate.created_at.to_fs(:us)
+          )
+        end
       end
     end
   end
