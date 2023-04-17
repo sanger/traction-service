@@ -10,14 +10,11 @@ module V1
 
       has_many :wells
 
-      # We can only make this endpoint paginated when pacbio pool/new page
-      # No longer requires all records to be pulled back
-      #
-      # paginator :paged
+      paginator :paged
 
-      # def self.default_sort
-      #   [{ field: 'created_at', direction: :desc }]
-      # end
+      def self.default_sort
+        [{ field: 'created_at', direction: :desc }]
+      end
 
       filter :barcode
 
