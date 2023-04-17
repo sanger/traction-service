@@ -7,11 +7,11 @@ namespace :pacbio_data do
   task create: [:environment, 'tags:create:pacbio_sequel', 'tags:create:pacbio_isoseq'] do
     require_relative 'reception_generator'
 
-    puts '-> Creating pacbio plates...'
+    puts '-> Creating pacbio plates and tubes...'
 
     reception_generator = ReceptionGenerator.new(
       number_of_plates: 5,
-      number_of_tubes: 0,
+      number_of_tubes: 5,
       wells_per_plate: 48,
       pipeline: :pacbio
     ).tap(&:construct_resources!)

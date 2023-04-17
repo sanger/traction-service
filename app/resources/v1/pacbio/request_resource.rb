@@ -16,9 +16,7 @@ module V1
       has_one :plate, relation_name: :plate
       has_one :tube, relation_name: :tube
 
-      # Commented out until we have updates pacbio pools/new to search for plates/tubes
-      # via the service
-      # paginator :paged
+      paginator :paged
 
       filter :species, apply: lambda { |records, value, _options|
         # We have to join requests and samples here in order to find by sample name
