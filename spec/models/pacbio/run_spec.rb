@@ -38,42 +38,46 @@ RSpec.describe Pacbio::Run, pacbio: true do
       expect(create(:pacbio_run, system_name: 2).system_name).to eq 'Sequel IIe'
       expect(create(:pacbio_run, system_name: 'Sequel IIe').system_name).to eq 'Sequel IIe'
     end
+
+    it 'must have a system_name default' do
+      expect(create(:pacbio_run).system_name).to eq 'Sequel II'
+    end
   end
 
-  it 'must have a system_name default' do
-    expect(create(:pacbio_run).system_name).to eq 'Sequel II'
+  context 'associations' do
+    it 'can have a plate' do
+      plate = create(:pacbio_plate)
+      run = create(:pacbio_run, plate:)
+      expect(run.plate).to eq(plate)
+    end
+
+    it 'can have some wells' do
+      wells = create_list(:pacbio_well, 5)
+      plate = create(:pacbio_plate, wells:)
+      run = create(:pacbio_run, plate:)
+      expect(run.wells.count).to eq(5)
+    end
   end
 
-  it 'can have a plate' do
-    plate = create(:pacbio_plate)
-    run = create(:pacbio_run, plate:)
-    expect(run.plate).to eq(plate)
-  end
+  describe '#comments' do
+    it 'can have run comments' do
+      run = create(:pacbio_run)
+      expect(run.comments).to eq('A Run Comment')
+    end
 
-  it 'can have some wells' do
-    wells = create_list(:pacbio_well, 5)
-    plate = create(:pacbio_plate, wells:)
-    run = create(:pacbio_run, plate:)
-    expect(run.wells.count).to eq(5)
-  end
+    it 'can have long run comments' do
+      comments = 'X' * 65535
+      run = create(:pacbio_run, comments:)
+      run.reload
+      expect(run.comments).to eq(comments)
+    end
 
-  it 'can have run comments' do
-    run = create(:pacbio_run)
-    expect(run.comments).to eq('A Run Comment')
-  end
-
-  it 'can have long run comments' do
-    comments = 'X' * 65535
-    run = create(:pacbio_run, comments:)
-    run.reload
-    expect(run.comments).to eq(comments)
-  end
-
-  it 'can have the wells summary when no run comments exist' do
-    wells = create_list(:pacbio_well_with_pools, 2)
-    plate = create(:pacbio_plate, wells:)
-    run = create(:pacbio_run, plate:, comments: nil)
-    expect(run.comments).to eq("#{wells.first.summary}:#{wells[1].summary}")
+    it 'can have the wells summary when no run comments exist' do
+      wells = create_list(:pacbio_well_with_pools, 2)
+      plate = create(:pacbio_plate, wells:)
+      run = create(:pacbio_run, plate:, comments: nil)
+      expect(run.comments).to eq("#{wells.first.summary}:#{wells[1].summary}")
+    end
   end
 
   describe '#generate_sample_sheet' do
