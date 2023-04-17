@@ -10,7 +10,7 @@ module Pacbio
 
     enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2 }
 
-    delegate :wells, :all_wells_have_pools?, to: :plate, allow_nil: true
+    delegate :wells, to: :plate, allow_nil: true
 
     after_create :generate_name
 
@@ -34,6 +34,12 @@ module Pacbio
 
     scope :active, -> { where(deactivated_at: nil) }
 
+    accepts_nested_attributes_for :plate
+
+    # This will return an empty list
+    # If well data is required via the run, use ?include=plate.wells
+    attr_reader :well_attributes
+
     # if comments are nil this blows up so add try.
     def comments
       super || wells.try(:collect, &:summary).try(:join, ':')
@@ -44,6 +50,12 @@ module Pacbio
     def generate_sample_sheet
       sample_sheet = PacbioSampleSheet.new(run: self, configuration: pacbio_run_sample_sheet_config)
       sample_sheet.generate
+    end
+
+    def well_attributes=(well_options)
+      self.plate = build_plate(run: self) unless plate
+
+      plate.well_attributes = well_options
     end
 
     private

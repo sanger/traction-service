@@ -3,23 +3,21 @@
 require 'rails_helper'
 
 RSpec.describe PacbioSampleSheet, type: :model do
-  before do
-    create(:pacbio_smrt_link_version, name: 'v10', default: true)
-  end
+  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
 
   describe '#generate' do
     subject(:csv_string) { csv.generate }
 
-    let(:run) { create(:pacbio_run, plate:) }
-    let(:parsed_csv) { CSV.parse(csv_string) }
-    let(:csv) { described_class.new(run:, configuration: Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name)) }
+    let!(:run)         { create(:pacbio_run, smrt_link_version: version10, plate:) }
+    let!(:parsed_csv)  { CSV.parse(csv_string) }
+    let!(:csv)         { described_class.new(run:, configuration: Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name)) }
 
     context 'when the libraries are tagged' do
-      let(:well1) do
+      let!(:well1) do
         create(:pacbio_well_with_pools, pre_extension_time: 2, generate_hifi: 'In SMRT Link',
                                         ccs_analysis_output: 'Yes')
       end
-      let(:well2) do
+      let!(:well2) do
         create(:pacbio_well_with_pools, pre_extension_time: 2, generate_hifi: 'In SMRT Link',
                                         ccs_analysis_output: 'No')
       end
