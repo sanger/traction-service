@@ -32,6 +32,12 @@ FactoryBot.define do
     demultiplex_barcodes { 'In SMRT Link' }
     loading_target_p1_plus_p2 { 0.85 }
 
+    # v12_revio
+    movie_acquisition_time { 15 }
+    include_base_kinetics { 'True' }
+    sequence(:library_concentration) { |n| "10.#{n}".to_f }
+    sequence(:polymerase_kit) { |n| "DM111710086220011171#{n}" }
+
     factory :pacbio_well_with_pools do
       before(:create) do |well, evaluator|
         well.pools = create_list(:pacbio_pool, evaluator.pool_count)
