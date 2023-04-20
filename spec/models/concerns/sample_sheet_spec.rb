@@ -9,12 +9,11 @@ RSpec.describe SampleSheet do
   end
 
   let(:well) { create(:pacbio_well_with_pools, pool_count: 5) }
-  let(:empty_well) { create(:pacbio_well) }
 
   describe '#barcode_name' do
     it 'returns a string of library tags when the well has one library' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :tagged))
-      empty_well.pools << pool
+      empty_well = create(:pacbio_well, pools: [pool])
       tag_group_id = empty_well.pools.first.libraries.first.tag.group_id
       expected = "#{tag_group_id}--#{tag_group_id}"
       expect(empty_well.libraries.last.barcode_name).to eq expected
@@ -22,13 +21,13 @@ RSpec.describe SampleSheet do
 
     it 'returns nothing if the libraries are tagged with a :hidden tag set (egh. IsoSeq)' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :hidden_tagged))
-      empty_well.pools << pool
+      empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.libraries.last.barcode_name).to be_nil
     end
 
     it 'returns nothing if the libraries are not tagged' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged))
-      empty_well.pools << pool
+      empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.libraries.last.barcode_name).to be_nil
     end
   end
@@ -41,13 +40,13 @@ RSpec.describe SampleSheet do
 
     it 'returns nothing if the libraries are not tagged' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged))
-      empty_well.pools << pool
+      empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.barcode_set).to be_nil
     end
 
     it 'returns nothing if the libraries are tagged with a :hidden tag set (egh. IsoSeq)' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :hidden_tagged))
-      empty_well.pools << pool
+      empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.barcode_set).to be_nil
     end
   end
@@ -58,14 +57,14 @@ RSpec.describe SampleSheet do
     end
 
     it 'returns false if there is one library and it has no tag' do
-      empty_well.pools << create(:pacbio_pool,
-                                 libraries: create_list(:pacbio_library, 1, :untagged))
+      pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged))
+      empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.sample_is_barcoded).to be false
     end
 
     it 'returns true if there is only one library and it has a non isoSeq tag' do
       pool = create(:pacbio_pool)
-      empty_well.pools << pool
+      empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.sample_is_barcoded).to be true
     end
 
@@ -92,7 +91,8 @@ RSpec.describe SampleSheet do
       let(:library) { create(:pacbio_library, :hidden_tagged) }
 
       it 'returns well sample_names if row type is well' do
-        empty_well.pools << create(:pacbio_pool, libraries: [library])
+        pool = create(:pacbio_pool, libraries: [library])
+        empty_well = create(:pacbio_well, pools: [pool])
         expect(empty_well.find_sample_name).to eq empty_well.sample_names
       end
 
@@ -109,13 +109,13 @@ RSpec.describe SampleSheet do
 
     it 'returns false if there is one library and it has no tag' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged))
-      empty_well.pools << pool
+      empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.show_row_per_sample?).to be false
     end
 
     it 'returns true if there is only one library and it has a tag' do
       pool = create(:pacbio_pool)
-      empty_well.pools << pool
+      empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.show_row_per_sample?).to be true
     end
 
@@ -126,7 +126,7 @@ RSpec.describe SampleSheet do
 
     it 'returns nothing if the libraries are tagged with a :hidden tag set (egh. IsoSeq)' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 3, :hidden_tagged))
-      empty_well.pools << pool
+      empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.show_row_per_sample?).to be false
     end
   end
