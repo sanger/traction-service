@@ -43,7 +43,14 @@ module Pacbio
     # explanation
     validates_with SmrtLinkOptionsValidator
 
+    validates_with WellValidator
+
     validates :row, :column, presence: true
+
+    validates :pools, length: {
+      minimum: 1,
+      message: :well_min_pools
+    }
 
     delegate :run, to: :plate, allow_nil: true
 
