@@ -36,4 +36,41 @@ RSpec.describe 'SampleSheet', type: :model do
       expect(column.fetch('populate')).to eq(populate)
     end
   end
+
+  context 'v12_revio' do
+    let(:sample_sheet_configuration) { Pipelines.pacbio.sample_sheet.by_version('v12_revio') }
+
+    # Where should the rest of the sample sheet columns be tested?
+    it 'will have movie acquisition time' do
+      column = sample_sheet_configuration.columns.children['Movie Acquisition Time (hours)']
+      expect(column).to be_present
+      expect(column.fetch('type')).to eq(:model)
+      expect(column.fetch('value')).to eq('movie_acquisition_time')
+      expect(column.fetch('populate')).to eq(populate)
+    end
+
+    it 'may have include base kinetics' do
+      column = sample_sheet_configuration.columns.children['Include Base Kinetics']
+      expect(column).to be_present
+      expect(column.fetch('type')).to eq(:model)
+      expect(column.fetch('value')).to eq('include_base_kinetics')
+      expect(column.fetch('populate')).to eq(populate)
+    end
+
+    it 'may have library concentration (pM)' do
+      column = sample_sheet_configuration.columns.children['Library Concentration (pM)']
+      expect(column).to be_present
+      expect(column.fetch('type')).to eq(:model)
+      expect(column.fetch('value')).to eq('library_concentration')
+      expect(column.fetch('populate')).to eq(populate)
+    end
+
+    it 'will have polymerase kit' do
+      column = sample_sheet_configuration.columns.children['Polymerase Kit']
+      expect(column).to be_present
+      expect(column.fetch('type')).to eq(:model)
+      expect(column.fetch('value')).to eq('polymerase_kit')
+      expect(column.fetch('populate')).to eq(populate)
+    end
+  end
 end
