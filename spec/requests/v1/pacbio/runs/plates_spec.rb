@@ -13,7 +13,10 @@ RSpec.describe 'PlatesController' do
     let!(:run2) { create(:pacbio_run) }
     let!(:plate1) { create(:pacbio_plate, run: run1) }
     let!(:plate2) { create(:pacbio_plate, run: run2) }
-    let!(:wells) { create_list(:pacbio_well, 5, plate: plate2) }
+
+    before do
+      create_list(:pacbio_well, 5, plate: plate2)
+    end
 
     it 'returns a list of plates' do
       get v1_pacbio_runs_plates_path, headers: json_api_headers

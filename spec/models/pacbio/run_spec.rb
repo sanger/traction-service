@@ -146,7 +146,7 @@ RSpec.describe Pacbio::Run, pacbio: true do
     context 'active' do
       it 'returns only active runs' do
         create_list(:pacbio_run, 2)
-        run = create(:pacbio_run, deactivated_at: DateTime.now)
+        create(:pacbio_run, deactivated_at: DateTime.now)
         expect(described_class.active.length).to eq 2
       end
     end

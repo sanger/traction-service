@@ -61,7 +61,7 @@ RSpec.describe Sample do
   context 'requests' do
     it 'can have requests' do
       sample = create(:sample)
-      libraries = create_list(:request, 2, sample:)
+      create_list(:request, 2, sample:)
       expect(sample.requests.length).to eq 2
     end
   end

@@ -35,10 +35,10 @@ RSpec.describe 'LibrariesController' do
     end
 
     context 'when some libraries are deactivated' do
-      let!(:library3) { create(:saphyr_library_in_tube) }
-      let!(:library4) { create(:saphyr_library_in_tube, deactivated_at: DateTime.now) }
-
       it 'only returns active libraries' do
+        create(:saphyr_library_in_tube)
+        create(:saphyr_library_in_tube, deactivated_at: DateTime.now)
+
         get v1_saphyr_libraries_path, headers: json_api_headers
 
         expect(response).to have_http_status(:success)
