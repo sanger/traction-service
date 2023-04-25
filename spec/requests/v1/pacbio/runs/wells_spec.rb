@@ -3,8 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe 'WellsController' do
-  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
-  let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
+  before do
+    create(:pacbio_smrt_link_version, name: 'v10', default: true)
+    create(:pacbio_smrt_link_version, name: 'v11')
+  end
 
   describe '#get' do
     let!(:wells) { create_list(:pacbio_well_with_pools, 2, pool_count: 2) }

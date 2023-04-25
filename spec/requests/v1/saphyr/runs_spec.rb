@@ -8,8 +8,11 @@ RSpec.describe 'RunsController' do
     let!(:run2) { create(:saphyr_run, state: 'started') }
     let!(:chip1) { create(:saphyr_chip, run: run1) }
     let!(:chip2) { create(:saphyr_chip, run: run2) }
-    let!(:flowcells1) { create_list(:saphyr_flowcell, 2, chip: chip1) }
-    let!(:flowcells2) { create_list(:saphyr_flowcell, 2, chip: chip2) }
+
+    before do
+      create_list(:saphyr_flowcell, 2, chip: chip1)
+      create_list(:saphyr_flowcell, 2, chip: chip2)
+    end
 
     it 'returns a list of runs' do
       get v1_saphyr_runs_path, headers: json_api_headers
@@ -19,7 +22,7 @@ RSpec.describe 'RunsController' do
     end
 
     it 'only returns active runs' do
-      run3 = create(:saphyr_run, deactivated_at: DateTime.now)
+      create(:saphyr_run, deactivated_at: DateTime.now)
       get v1_saphyr_runs_path, headers: json_api_headers
 
       expect(response).to have_http_status(:success)
