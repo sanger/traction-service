@@ -41,6 +41,14 @@ RSpec.describe 'SampleSheet', type: :model do
     let(:sample_sheet_configuration) { Pipelines.pacbio.sample_sheet.by_version('v12_revio') }
 
     it 'will have library type' do
+      column = sample_sheet_configuration.columns.children['Reagent Plate']
+      expect(column).to be_present
+      expect(column.fetch('type')).to eq(:string)
+      expect(column.fetch('value')).to eq(1)
+      expect(column.fetch('populate')).to eq(populate)
+    end
+
+    it 'will have a reagent plate' do
       column = sample_sheet_configuration.columns.children['Library Type']
       expect(column).to be_present
       expect(column.fetch('type')).to eq(:string)
