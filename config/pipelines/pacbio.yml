@@ -446,7 +446,13 @@ default: &default
               for:
                 - :well
               with: :well
-          # Plate 2:
+          Plate 2:
+            type: :model
+            value: plate.run.sequencing_kit_box_barcode
+            populate:
+              for:
+                - :well
+              with: :well
           Run Name:
             type: :model
             value: plate.run.name

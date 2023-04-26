@@ -56,6 +56,22 @@ RSpec.describe 'SampleSheet', type: :model do
       expect(column.fetch('populate')).to eq(populate)
     end
 
+    it 'will have a plate 1' do
+      column = sample_sheet_configuration.columns.children['Plate 1']
+      expect(column).to be_present
+      expect(column.fetch('type')).to eq(:model)
+      expect(column.fetch('value')).to eq('plate.run.sequencing_kit_box_barcode')
+      expect(column.fetch('populate')).to eq(populate)
+    end
+
+    it 'will have a plate 2' do
+      column = sample_sheet_configuration.columns.children['Plate 2']
+      expect(column).to be_present
+      expect(column.fetch('type')).to eq(:model)
+      expect(column.fetch('value')).to eq('plate.run.sequencing_kit_box_barcode')
+      expect(column.fetch('populate')).to eq(populate)
+    end
+
     # Where should the rest of the sample sheet columns be tested?
     it 'will have movie acquisition time' do
       column = sample_sheet_configuration.columns.children['Movie Acquisition Time (hours)']
