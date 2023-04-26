@@ -194,7 +194,7 @@ default: &default
       default_value:
       validations:
         presence: {}
-      data_type: number
+      data_type: string
       versions:
         - v12_revio
 

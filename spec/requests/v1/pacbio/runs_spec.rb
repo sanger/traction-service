@@ -280,7 +280,7 @@ RSpec.describe 'RunsController' do
                   library_concentration: 8.35,
                   pre_extension_time: '2',
                   include_base_kinetics: 'True',
-                  polymerase_kit: '123',
+                  polymerase_kit: 'ABC123',
                   pools: [pool1.id]
                 }
               ]
