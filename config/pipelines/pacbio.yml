@@ -433,7 +433,7 @@ default: &default
                 - :well
               with: :well
           Reagent Plate:
-            type: :model
+            type: :string
             value: 1
             populate:
               for:
