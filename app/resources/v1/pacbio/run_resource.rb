@@ -25,7 +25,9 @@ module V1
                                      ccs_analysis_output_include_kinetics_information
                                      demultiplex_barcodes on_plate_loading_concentration
                                      binding_kit_box_barcode pre_extension_time
-                                     loading_target_p1_plus_p2 movie_time].freeze
+                                     loading_target_p1_plus_p2 movie_time
+                                     movie_acquisition_time include_base_kinetics
+                                     library_concentration polymerase_kit].freeze
 
       after_save :publish_messages
 
