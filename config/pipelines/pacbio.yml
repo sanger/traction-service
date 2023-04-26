@@ -426,8 +426,8 @@ default: &default
       v12_revio:
         columns:
           Library Type:
-            type: :model
-            value: library_type
+            type: :string
+            value: Standard
             populate:
               for:
                 - :well
