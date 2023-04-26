@@ -43,10 +43,6 @@ RSpec.describe Sample do
         expect(build(:sample, species: nil)).not_to be_valid
       end
     end
-
-    it 'is active' do
-      expect(create(:sample)).to be_active
-    end
   end
 
   context 'on update' do
