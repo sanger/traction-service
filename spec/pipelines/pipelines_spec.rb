@@ -19,7 +19,9 @@ RSpec.describe Pipelines, type: :model do
     end
 
     it '#delegation' do
-      expect(pipelines.keys).to be_all { |pipeline| described_class.respond_to?(pipeline) }
+      expect(pipelines.keys).to be_all do |pipeline|
+        described_class.respond_to?(pipeline)
+      end
     end
   end
 end

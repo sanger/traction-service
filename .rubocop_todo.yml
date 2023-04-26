@@ -8,33 +8,10 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 2
-# Configuration parameters: IgnoredMethods.
-Lint/AmbiguousBlockAssociation:
-  Exclude:
-    - 'spec/pipelines/pipelines_spec.rb'
-
-# Offense count: 1
-# Configuration parameters: AllowComments, AllowEmptyLambdas.
-Lint/EmptyBlock:
-  Exclude:
-    - 'spec/factories/saphyr/runs.rb'
-
-# Offense count: 2
-Lint/ShadowingOuterLocalVariable:
-  Exclude:
-    - 'spec/requests/v1/pacbio/plates_spec.rb'
-
 # Offense count: 1
 # Configuration parameters: IgnoredMethods, CountRepeatedAttributes.
 Metrics/AbcSize:
   Max: 32
-
-# Offense count: 2
-RSpec/AnyInstance:
-  Exclude:
-    - 'spec/models/pacbio/run_spec.rb'
-    - 'spec/support/read_only.rb'
 
 # Offense count: 194
 # Configuration parameters: Prefixes.
@@ -59,13 +36,6 @@ RSpec/IdenticalEqualityAssertion:
   Exclude:
     - 'spec/requests/v1/saphyr/chips_spec.rb'
 
-# Offense count: 52
-# Configuration parameters: AssignmentOnly.
-RSpec/InstanceVariable:
-  Exclude:
-    - 'spec/requests/v1/pacbio/runs_spec.rb'
-    - 'spec/requests/v1/saphyr/runs_spec.rb'
-
 # Offense count: 25
 # Configuration parameters: .
 # SupportedStyles: have_received, receive
@@ -84,21 +54,3 @@ RSpec/MultipleMemoizedHelpers:
 # Offense count: 64
 RSpec/NestedGroups:
   Max: 6
-
-# Offense count: 4
-RSpec/RepeatedDescription:
-  Exclude:
-    - 'spec/models/sample_spec.rb'
-    - 'spec/pipelines/ont/message_spec.rb'
-
-# Offense count: 2
-RSpec/RepeatedExample:
-  Exclude:
-    - 'spec/models/sample_spec.rb'
-
-# Offense count: 1
-# Configuration parameters: AllowedMethods.
-# AllowedMethods: respond_to_missing?
-Style/OptionalBooleanParameter:
-  Exclude:
-    - 'spec/support/read_only.rb'
