@@ -24,24 +24,6 @@ RSpec/ContextWording:
 RSpec/ExampleLength:
   Max: 52
 
-# # Offense count: 1
-# # Configuration parameters: Include, CustomTransform, IgnoreMethods, SpecSuffixOnly.
-# # Include: **/*_spec*rb*, **/spec/**/*
-# RSpec/FilePath:
-#   Exclude:
-#     - 'spec/models/pacbio/well_pool.spec.rb'
-
-# # Offense count: 1
-# RSpec/IdenticalEqualityAssertion:
-#   Exclude:
-#     - 'spec/requests/v1/saphyr/chips_spec.rb'
-
-# Offense count: 25
-# Configuration parameters: .
-# SupportedStyles: have_received, receive
-RSpec/MessageSpies:
-  EnforcedStyle: receive
-
 # Offense count: 148
 RSpec/MultipleExpectations:
   Max: 16
@@ -51,6 +33,6 @@ RSpec/MultipleExpectations:
 RSpec/MultipleMemoizedHelpers:
   Max: 14
 
-# Offense count: 64
+# Offense count: 97
 RSpec/NestedGroups:
-  Max: 6
+  Max: 5
