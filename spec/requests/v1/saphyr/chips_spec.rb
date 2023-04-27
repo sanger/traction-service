@@ -123,9 +123,10 @@ RSpec.describe 'ChipsController' do
       end
 
       it 'does not update a chip' do
+        old_barcode = chip.barcode
         patch v1_saphyr_chip_path(123), params: body, headers: json_api_headers
         chip.reload
-        expect(chip.barcode).to eq chip.barcode
+        expect(chip.barcode).to eq old_barcode
       end
 
       it 'has an error message' do
