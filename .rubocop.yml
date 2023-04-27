@@ -137,3 +137,6 @@ Style/OpenStructUse:
 RSpec/VerifiedDoubles:
   Exclude:
     - 'spec/messages/broker_spec.rb'
+
+RSpec/MessageSpies:
+  EnforcedStyle: receive
