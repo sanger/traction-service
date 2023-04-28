@@ -448,7 +448,7 @@ default: &default
                 - :well
               with: :well
           Plate 2:
-            type: :model
+            type: :string
             value: null
             populate:
               for:
