@@ -68,7 +68,7 @@ RSpec.describe 'SampleSheet', type: :model do
     it 'will have a plate 2' do
       column = sample_sheet_configuration.columns.children['Plate 2']
       expect(column).to be_present
-      expect(column.fetch('type')).to eq(:model)
+      expect(column.fetch('type')).to eq(:string)
       expect(column.fetch('value')).to be_nil
       expect(column.fetch('populate')).to eq(populate)
     end
