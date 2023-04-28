@@ -438,6 +438,7 @@ default: &default
             populate:
               for:
                 - :well
+                - :sample
               with: :well
           Plate 1:
             type: :model
@@ -447,8 +448,8 @@ default: &default
                 - :well
               with: :well
           Plate 2:
-            type: :model
-            value: plate.run.sequencing_kit_box_barcode
+            type: :string
+            value: null
             populate:
               for:
                 - :well
