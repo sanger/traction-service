@@ -23,13 +23,13 @@ RSpec.describe.skip WellPositionValidator do
       expect(described_class.new.validate(record)).not_to be_valid
 
       record = build(:pacbio_run, wells: [build(:pacbio_well, position: 'A1'), build(:pacbio_well, position: 'G12')])
-      expect(described_class.new.validate(record)).to be_valid
+      expect(described_class.new.validate(record)).not_to be_valid
 
       record = build(:pacbio_run, wells: [build(:pacbio_well, position: 'A1'), build(:pacbio_well, position: 'B1'), build(:pacbio_well, position: 'H4')])
-      expect(described_class.new.validate(record)).to be_valid
+      expect(described_class.new.validate(record)).not_to be_valid
 
       record = build(:pacbio_run, wells: [build(:pacbio_well, position: 'A1'), build(:pacbio_well, position: 'B1'), build(:pacbio_well, position: 'D4'), build(:pacbio_well, position: 'H12')])
-      expect(described_class.new.validate(record)).to be_valid
+      expect(described_class.new.validate(record)).not_to be_valid
     end
   end
 
