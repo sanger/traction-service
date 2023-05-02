@@ -154,30 +154,30 @@ RSpec.describe WellSorterService do
       end
     end
 
-    context 'with a specified size' do
+    context 'with a specified size of 96' do
       subject { described_class.index_of(well, size) }
 
-      context 'of 96' do
-        let(:size) { 96 }
+      let(:size) { 96 }
 
-        WELL_96.each_with_index do |test_well, test_index|
-          context("well #{test_well}") do
-            let(:well) { test_well }
+      WELL_96.each_with_index do |test_well, test_index|
+        context("well #{test_well}") do
+          let(:well) { test_well }
 
-            it { is_expected.to eq(test_index) }
-          end
+          it { is_expected.to eq(test_index) }
         end
       end
+    end
 
-      context 'of 384' do
-        let(:size) { 384 }
+    context 'with a specified size of 384' do
+      subject { described_class.index_of(well, size) }
 
-        WELL_384.each_with_index do |test_well, test_index|
-          context("well #{test_well}") do
-            let(:well) { test_well }
+      let(:size) { 384 }
 
-            it { is_expected.to eq(test_index) }
-          end
+      WELL_384.each_with_index do |test_well, test_index|
+        context("well #{test_well}") do
+          let(:well) { test_well }
+
+          it { is_expected.to eq(test_index) }
         end
       end
     end
