@@ -35,4 +35,4 @@ RSpec/MultipleMemoizedHelpers:
 
 # Offense count: 97
 RSpec/NestedGroups:
-  Max: 5
+  Max: 4
