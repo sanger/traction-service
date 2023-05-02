@@ -426,18 +426,19 @@ default: &default
       v12_revio:
         columns:
           Library Type:
-            type: :model
-            value: library_type
+            type: :string
+            value: Standard
             populate:
               for:
                 - :well
               with: :well
           Reagent Plate:
-            type: :model
+            type: :string
             value: 1
             populate:
               for:
                 - :well
+                - :sample
               with: :well
           Plate 1:
             type: :model
@@ -446,7 +447,13 @@ default: &default
               for:
                 - :well
               with: :well
-          # Plate 2:
+          Plate 2:
+            type: :string
+            value: null
+            populate:
+              for:
+                - :well
+              with: :well
           Run Name:
             type: :model
             value: plate.run.name

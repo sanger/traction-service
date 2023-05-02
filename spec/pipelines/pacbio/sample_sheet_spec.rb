@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'SampleSheet', type: :model do
   let(:populate) { { for: [:well], with: :well }.with_indifferent_access }
+  let(:populate_with_sample) { { for: %i[well sample], with: :well }.with_indifferent_access }
 
   context 'v11' do
     let(:sample_sheet_configuration) { Pipelines.pacbio.sample_sheet.by_version('v11') }
@@ -39,6 +40,38 @@ RSpec.describe 'SampleSheet', type: :model do
 
   context 'v12_revio' do
     let(:sample_sheet_configuration) { Pipelines.pacbio.sample_sheet.by_version('v12_revio') }
+
+    it 'will have library type' do
+      column = sample_sheet_configuration.columns.children['Reagent Plate']
+      expect(column).to be_present
+      expect(column.fetch('type')).to eq(:string)
+      expect(column.fetch('value')).to eq(1)
+      expect(column.fetch('populate')).to eq(populate_with_sample)
+    end
+
+    it 'will have a reagent plate' do
+      column = sample_sheet_configuration.columns.children['Library Type']
+      expect(column).to be_present
+      expect(column.fetch('type')).to eq(:string)
+      expect(column.fetch('value')).to eq('Standard')
+      expect(column.fetch('populate')).to eq(populate)
+    end
+
+    it 'will have a plate 1' do
+      column = sample_sheet_configuration.columns.children['Plate 1']
+      expect(column).to be_present
+      expect(column.fetch('type')).to eq(:model)
+      expect(column.fetch('value')).to eq('plate.run.sequencing_kit_box_barcode')
+      expect(column.fetch('populate')).to eq(populate)
+    end
+
+    it 'will have a plate 2' do
+      column = sample_sheet_configuration.columns.children['Plate 2']
+      expect(column).to be_present
+      expect(column.fetch('type')).to eq(:string)
+      expect(column.fetch('value')).to be_nil
+      expect(column.fetch('populate')).to eq(populate)
+    end
 
     # Where should the rest of the sample sheet columns be tested?
     it 'will have movie acquisition time' do
