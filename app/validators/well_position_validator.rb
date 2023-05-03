@@ -7,6 +7,11 @@ class WellPositionValidator < ActiveModel::Validator
   VALID_WELLS = %w[A1 B1 C1 D1].freeze
 
   def validate(record)
-    record
+    well_positions = record.wells.collect(&:position)
+
+    # are the wells in the correct positions?
+    return if (well_positions - VALID_WELLS).empty?
+
+    record.errors.add(:wells, "must be in positions #{VALID_WELLS}")
   end
 end
