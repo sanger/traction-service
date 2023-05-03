@@ -36,6 +36,11 @@ module Pacbio
                                                                           system_name == 'Revio'
                                                                         }
 
+    # if it is a Revio run we need to check if the wells are in the correct positions
+    validates_with WellPositionValidator, if: lambda {
+                                                system_name == 'Revio'
+                                              }
+
     validates :name, uniqueness: { case_sensitive: false }
 
     scope :active, -> { where(deactivated_at: nil) }
