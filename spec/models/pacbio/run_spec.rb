@@ -23,11 +23,22 @@ RSpec.describe Pacbio::Run, pacbio: true do
     it 'must have a system name' do
       expect(build(:pacbio_run, system_name: nil)).not_to be_valid
     end
+
+    context 'when system name is Revio' do
+      it 'does not need a DNA control complex barcode' do
+        expect(build(:pacbio_run, system_name: 'Revio', dna_control_complex_box_barcode: nil)).to be_valid
+      end
+
+      it 'must have the wells in the correct positions' do
+        plate = build(:pacbio_plate, run: create(:pacbio_run, system_name: 'Revio'), wells: [build(:pacbio_well, row: 'G', column: '12')])
+        expect(plate.run).not_to be_valid
+      end
+    end
   end
 
   context 'System Name' do
     it 'must include the correct options' do
-      expect(described_class.system_names.keys).to eq(['Sequel II', 'Sequel I', 'Sequel IIe'])
+      expect(described_class.system_names.keys).to eq(['Sequel II', 'Sequel I', 'Sequel IIe', 'Revio'])
     end
 
     it 'must have a System Name' do
@@ -37,11 +48,13 @@ RSpec.describe Pacbio::Run, pacbio: true do
       expect(create(:pacbio_run, system_name: 'Sequel I').system_name).to eq 'Sequel I'
       expect(create(:pacbio_run, system_name: 2).system_name).to eq 'Sequel IIe'
       expect(create(:pacbio_run, system_name: 'Sequel IIe').system_name).to eq 'Sequel IIe'
+      expect(create(:pacbio_run, system_name: 3).system_name).to eq 'Revio'
+      expect(create(:pacbio_run, system_name: 'Revio').system_name).to eq 'Revio'
     end
+  end
 
-    it 'must have a system_name default' do
-      expect(create(:pacbio_run).system_name).to eq 'Sequel II'
-    end
+  it 'must have a system_name default' do
+    expect(create(:pacbio_run).system_name).to eq 'Sequel IIe'
   end
 
   context 'associations' do
@@ -169,6 +182,13 @@ RSpec.describe Pacbio::Run, pacbio: true do
     it 'will set a default value' do
       run = create(:pacbio_run)
       expect(run.smrt_link_version).to eq(version10)
+    end
+  end
+
+  context 'instrument name' do
+    it 'will set a default value' do
+      run = create(:pacbio_run)
+      expect(run.instrument_name).to eq(run.system_name)
     end
   end
 end
