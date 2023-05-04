@@ -9,11 +9,41 @@ class WellPositionValidator < ActiveModel::Validator
   def validate(record)
     return unless record.wells
 
-    well_positions = record.wells.collect(&:position)
+    validations = %i[validate_wells validate_contiguousness]
 
-    # are the wells in the correct positions?
+    validations.each do |validation|
+      next if record.errors.present?
+
+      send(validation, record)
+    end
+  end
+
+  # This validation ensures that the wells are in correct positions
+  def validate_wells(record)
+    well_positions = record.wells.collect(&:position)
     return if (well_positions - VALID_WELLS).empty?
 
     record.errors.add(:wells, "must be in positions #{VALID_WELLS}")
+    nil
+  end
+
+  # This validation ensures that the wells chosen are continuous in alphabetical order
+  # Compares the order of received well positions against the valid wells positions
+  def validate_contiguousness(record)
+    reversed_valid_wells = VALID_WELLS.reverse
+    well_positions = record.wells.collect(&:position)
+    reversed_received_wells = well_positions.reverse
+
+    # find the last well position received and find its position in the valid wells array
+    position = reversed_valid_wells.index(reversed_received_wells[0])
+    # get the correct order the well positions should be
+    valid_well_order = reversed_valid_wells[position + 1..]
+    # get the order of the well positions received
+    received_well_order = reversed_received_wells[1..]
+    # compare the valid and received order of wells
+    return if valid_well_order == received_well_order
+
+    record.errors.add(:wells, "must be in the valid order #{VALID_WELLS}")
+    nil
   end
 end
