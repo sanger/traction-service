@@ -35,7 +35,7 @@ RSpec.describe 'PlatesController' do
 
       expect(json['data'][0]['relationships']['wells']).to be_present
 
-      well = json['included'].find { |well| well['type'] == 'wells' }
+      well = json['included'].find { |w| w['type'] == 'wells' }
       expect(well['type']).to eq('wells')
       expect(well['id']).to eq(pacbio_plates.first.wells.first.id.to_s)
       expect(well['attributes']['position']).to eq(pacbio_plates.first.wells.first.position)
@@ -68,7 +68,7 @@ RSpec.describe 'PlatesController' do
 
       expect(json['data'][0]['relationships']['wells']).to be_present
 
-      well = json['included'].find { |well| well['type'] == 'wells' }
+      well = json['included'].find { |w| w['type'] == 'wells' }
       expect(well['type']).to eq('wells')
       expect(well['id']).to eq(pacbio_plates.first.wells.first.id.to_s)
       expect(well['attributes']['position']).to eq(pacbio_plates.first.wells.first.position)

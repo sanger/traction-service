@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Messages::Broker do
-  let(:bunny) { double('Bunny') }
+  let(:bunny) { class_double(Bunny) }
 
   let(:bunny_config) do
     {

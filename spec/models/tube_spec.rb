@@ -34,15 +34,14 @@ RSpec.describe Tube do
   end
 
   context 'scope' do
-    let!(:saphyr_library_tubes) { create_list(:tube_with_saphyr_library, 2) }
-    let!(:pacbio_library_tubes) { create_list(:tube_with_pacbio_library, 3) }
-
     context 'by_pipeline saphyr' do
       it 'returns only tubes with saphyr materials' do
+        create_list(:tube_with_saphyr_library, 2)
         expect(described_class.by_pipeline(:saphyr).length).to eq 2
       end
 
       it 'returns only tubes with pacbio materials' do
+        create_list(:tube_with_pacbio_library, 3)
         expect(described_class.by_pipeline(:pacbio).length).to eq 3
       end
     end

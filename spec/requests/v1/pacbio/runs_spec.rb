@@ -973,7 +973,10 @@ RSpec.describe 'RunsController' do
           }.to_json
         end
         let!(:run) { create(:pacbio_run) }
-        let!(:plate) { create(:pacbio_plate, run:) }
+
+        before do
+          create(:pacbio_plate, run:)
+        end
 
         it 'has a ok status' do
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
@@ -1055,7 +1058,6 @@ RSpec.describe 'RunsController' do
         let!(:run) { create(:pacbio_run) }
         let!(:plate) { create(:pacbio_plate, run:, well_count: 2) }
         let!(:well1) { plate.wells[0] }
-        let!(:well2) { plate.wells[1] }
         let(:pool1) { create(:pacbio_pool) }
 
         let(:body) do
@@ -1130,10 +1132,8 @@ RSpec.describe 'RunsController' do
         let!(:run) { create(:pacbio_run) }
         let!(:plate) { create(:pacbio_plate, run:, well_count: 2) }
         let!(:well1) { plate.wells[0] }
-        let!(:well2) { plate.wells[1] }
         let!(:pool1) { create(:pacbio_pool) }
         let!(:pool2) { create(:pacbio_pool) }
-        let!(:pool3) { create(:pacbio_pool) }
 
         let(:body) do
           {
@@ -1194,7 +1194,6 @@ RSpec.describe 'RunsController' do
 
     context 'on failure' do
       let!(:run) { create(:pacbio_run) }
-      let!(:plate) { create(:pacbio_plate, run:, well_count: 2) }
 
       let(:body) do
         {
@@ -1276,7 +1275,10 @@ RSpec.describe 'RunsController' do
 
   describe '#destroy' do
     let!(:run) { create(:pacbio_run) }
-    let!(:plate1) { create(:pacbio_plate, run:) }
+
+    before do
+      create(:pacbio_plate, run:)
+    end
 
     context 'on success' do
       it 'returns the correct status' do
