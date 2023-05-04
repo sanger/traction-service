@@ -8,7 +8,8 @@ module Pacbio
     include Uuidable
     include Stateful
 
-    enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2 }
+    # Sequel II and Sequel I are now deprecated
+    enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2, 'Revio' => 3 }
 
     delegate :wells, to: :plate, allow_nil: true
 
@@ -27,8 +28,18 @@ module Pacbio
                default: -> { SmrtLinkVersion.default }
 
     validates :sequencing_kit_box_barcode,
-              :dna_control_complex_box_barcode,
               :system_name, presence: true
+
+    # it would be sensible to move this to dependent validation as with wells
+    # and SMRT Link. Something to ponder on ...
+    validates :dna_control_complex_box_barcode, presence: true, unless: lambda {
+                                                                          system_name == 'Revio'
+                                                                        }
+
+    # if it is a Revio run we need to check if the wells are in the correct positions
+    validates_with WellPositionValidator, if: lambda {
+                                                system_name == 'Revio'
+                                              }
 
     validates :name, uniqueness: { case_sensitive: false }
 
@@ -50,6 +61,12 @@ module Pacbio
     def generate_sample_sheet
       sample_sheet = PacbioSampleSheet.new(run: self, configuration: pacbio_run_sample_sheet_config)
       sample_sheet.generate
+    end
+
+    # Revio has changed to use instrument_name
+    # We can't alias it as it is an enum
+    def instrument_name
+      system_name
     end
 
     def well_attributes=(well_options)

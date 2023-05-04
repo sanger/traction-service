@@ -423,6 +423,140 @@ default: &default
               for:
                 - :well
               with: :well
+      v12_revio:
+        columns:
+          Library Type:
+            type: :string
+            value: Standard
+            populate:
+              for:
+                - :well
+              with: :well
+          Reagent Plate:
+            type: :string
+            value: 1
+            populate:
+              for:
+                - :well
+                - :sample
+              with: :well
+          Plate 1:
+            type: :model
+            value: plate.run.sequencing_kit_box_barcode
+            populate:
+              for:
+                - :well
+              with: :well
+          Plate 2:
+            type: :string
+            value: null
+            populate:
+              for:
+                - :well
+              with: :well
+          Run Name:
+            type: :model
+            value: plate.run.name
+            populate:
+              for:
+                - :well
+              with: :well
+          Instrument Type:
+            type: :model
+            value: plate.run.system_name
+            populate:
+              for:
+                - :well
+              with: :well
+          Run Comments:
+            type: :model
+            value: plate.run.comments
+            populate:
+              for:
+                - :well
+              with: :well
+          Is Collection:
+            type: :model
+            value: collection?
+            populate:
+              for:
+                - :well
+                - :sample
+              with: :row_type
+          Sample Well:
+            type: :model
+            value: position_leading_zero
+            populate:
+              for:
+                - :well
+                - :sample
+              with: :well
+          Well Name:
+            type: :model
+            value: pool_barcode
+            populate:
+              for:
+                - :well
+              with: :well
+          Movie Acquisition Time (hours):
+            type: :model
+            value: movie_acquisition_time
+            populate:
+              for:
+                - :well
+              with: :well
+          Include Base Kinetics:
+            type: :model
+            value: include_base_kinetics
+            populate:
+              for:
+                - :well
+              with: :well
+          Library Concentration (pM):
+            type: :model
+            value: library_concentration
+            populate:
+              for:
+                - :well
+              with: :well
+          Polymerase Kit:
+            type: :model
+            value: polymerase_kit
+            populate:
+              for:
+                - :well
+              with: :well
+            populate_on_row_type: :well
+          Automation Parameters:
+            type: :model
+            value: automation_parameters
+            populate:
+              for:
+                - :well
+              with: :well
+          Adapters / Barcodes:
+            type: :model
+            value: barcode_set
+            populate:
+              for:
+                - :well
+              with: :well
+          Barcode Name:
+            type: :model
+            value: barcode_name
+            populate:
+              for:
+                - :sample
+              with: :sample
+          Bio Sample Name:
+            type: :model
+            value: find_sample_name
+            populate:
+              for:
+                - :well
+                - :sample
+              with: :row_type
+              
 
 development: *default
 test: *default
