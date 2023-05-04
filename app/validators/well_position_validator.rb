@@ -9,7 +9,7 @@ class WellPositionValidator < ActiveModel::Validator
   def validate(record)
     return unless record.wells
 
-    validations = %i[validate_wells validate_contiguousness]
+    validations = %i[validate_positions validate_contiguousness]
 
     validations.each do |validation|
       next if record.errors.present?
@@ -19,7 +19,7 @@ class WellPositionValidator < ActiveModel::Validator
   end
 
   # This validation ensures that the wells are in correct positions
-  def validate_wells(record)
+  def validate_positions(record)
     well_positions = record.wells.collect(&:position)
     return if (well_positions - VALID_WELLS).empty?
 
