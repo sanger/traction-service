@@ -352,20 +352,19 @@ RSpec.describe Pacbio::Well, pacbio: true do
           expect(well.movie_acquisition_time).to eq(0.2)
         end
 
-        describe 'must be within range' do
-          it 'is within range' do
-            expect(well.movie_acquisition_time = 15).to eq(15)
-          end
+        it 'must be within range' do
+          well.movie_acquisition_time = 15
+          expect(well).to be_valid
+        end
 
-          it 'is above range' do
-            well.movie_acquisition_time = 31
-            expect(well).not_to be_valid
-          end
+        it 'is not above range' do
+          well.movie_acquisition_time = 31
+          expect(well).not_to be_valid
+        end
 
-          it 'is below range' do
-            well.movie_acquisition_time = 0
-            expect(well).not_to be_valid
-          end
+        it 'is not below range' do
+          well.movie_acquisition_time = 0
+          expect(well).not_to be_valid
         end
       end
 

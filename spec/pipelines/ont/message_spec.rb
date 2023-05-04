@@ -71,70 +71,67 @@ RSpec.describe 'Ont', ont: true, type: :model do
 
       context 'samples' do
         let(:libraries) { flowcell.libraries }
+        let(:message_sample) { message_flowcell[:samples].first }
+        let(:library) { libraries.first }
 
         it 'will have the correct number' do
           expect(message_flowcell[:samples].length).to eq(libraries.length)
         end
 
-        context 'each' do
-          let(:message_sample) { message_flowcell[:samples].first }
-          let(:library) { libraries.first }
+        it 'must have a sample_uuid' do
+          expect(message_sample[:sample_uuid]).to eq(library.request.sample.external_id)
+        end
 
-          it 'must have a sample_uuid' do
-            expect(message_sample[:sample_uuid]).to eq(library.request.sample.external_id)
-          end
+        it 'must have a study_uuid' do
+          expect(message_sample[:study_uuid]).to eq(library.request.external_study_id)
+        end
 
-          it 'must have a study_uuid' do
-            expect(message_sample[:study_uuid]).to eq(library.request.external_study_id)
-          end
+        it 'must have a pipeline_id_lims' do
+          expect(message_sample[:pipeline_id_lims]).to eq(library.request.library_type.name)
+        end
 
-          it 'must have a pipeline_id_lims' do
-            expect(message_sample[:pipeline_id_lims]).to eq(library.request.library_type.name)
-          end
+        it 'must have a requested_data_type' do
+          expect(message_sample[:requested_data_type]).to eq(library.request.data_type.name)
+        end
 
-          it 'must have a requested_data_type' do
-            expect(message_sample[:requested_data_type]).to eq(library.request.data_type.name)
-          end
+        it 'must have a library_tube_uuid' do
+          expect(message_sample[:library_tube_uuid]).to eq(library.pool.uuid)
+        end
 
-          it 'must have a library_tube_uuid' do
-            expect(message_sample[:library_tube_uuid]).to eq(library.pool.uuid)
-          end
+        it 'must have a library_tube_barcode' do
+          expect(message_sample[:library_tube_barcode]).to eq(library.pool.tube.barcode)
+        end
 
-          it 'must have a library_tube_barcode' do
-            expect(message_sample[:library_tube_barcode]).to eq(library.pool.tube.barcode)
-          end
+        it 'must have a tag_identifier' do
+          expect(message_sample[:tag_identifier]).to eq(library.tag.group_id)
+        end
 
-          it 'must have a tag_identifier' do
-            expect(message_sample[:tag_identifier]).to eq(library.tag.group_id)
-          end
+        it 'must have a tag_sequence' do
+          expect(message_sample[:tag_sequence]).to eq(library.tag.oligo)
+        end
 
-          it 'must have a tag_sequence' do
-            expect(message_sample[:tag_sequence]).to eq(library.tag.oligo)
-          end
+        it 'must have a tag_set_id_lims' do
+          expect(message_sample[:tag_set_id_lims]).to eq(library.tag.tag_set.id)
+        end
 
-          it 'must have a tag_set_id_lims' do
-            expect(message_sample[:tag_set_id_lims]).to eq(library.tag.tag_set.id)
-          end
+        it 'must have a tag_set_id_name' do
+          expect(message_sample[:tag_set_name]).to eq(library.tag.tag_set.name)
+        end
 
-          it 'must have a tag_set_id_name' do
-            expect(message_sample[:tag_set_name]).to eq(library.tag.tag_set.name)
-          end
+        it 'passes tag2_identifier as nil' do
+          expect(message_sample[:tag2_identifier]).to be_nil
+        end
 
-          it 'passes tag2_identifier as nil' do
-            expect(message_sample[:tag2_identifier]).to be_nil
-          end
+        it 'passes tag2_sequence as nil' do
+          expect(message_sample[:tag2_sequence]).to be_nil
+        end
 
-          it 'passes tag2_sequence as nil' do
-            expect(message_sample[:tag2_sequence]).to be_nil
-          end
+        it 'passes tag2_set_id_lims as nil' do
+          expect(message_sample[:tag2_set_id_lims]).to be_nil
+        end
 
-          it 'passes tag2_set_id_lims as nil' do
-            expect(message_sample[:tag2_set_id_lims]).to be_nil
-          end
-
-          it 'passes tag2_set_name as nil' do
-            expect(message_sample[:tag2_set_name]).to be_nil
-          end
+        it 'passes tag2_set_name as nil' do
+          expect(message_sample[:tag2_set_name]).to be_nil
         end
       end
     end

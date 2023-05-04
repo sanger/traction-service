@@ -77,7 +77,7 @@ RSpec.describe Messages::Message, type: :model do
   end
 
   context 'nested fields' do
-    let(:children) { Array.new(5) { |_o| o = ObjectB.new('attr_d') } }
+    let(:children) { Array.new(5) { |_o| ObjectB.new('attr_d') } }
     let(:object_c) { ObjectC.new(children) }
     let(:params) do
       {

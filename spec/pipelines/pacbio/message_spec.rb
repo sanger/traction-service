@@ -72,6 +72,9 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
         let(:libraries) { create_list(:pacbio_library, 5, :tagged) }
         let(:pool) { create(:pacbio_pool, libraries:) }
         let(:request) { library.request }
+        let(:message_sample) { message_well[:samples].first }
+        let(:request_library) { requests.first }
+        let(:library) { libraries.first }
 
         before do
           plate_well.pools = [pool]
@@ -81,46 +84,40 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
           expect(message_well[:samples].length).to eq(5)
         end
 
-        context 'each' do
-          let(:message_sample) { message_well[:samples].first }
-          let(:request_library) { requests.first }
-          let(:library) { libraries.first }
+        it 'must have a cost code' do
+          expect(message_sample[:cost_code]).to eq(request.cost_code)
+        end
 
-          it 'must have a cost code' do
-            expect(message_sample[:cost_code]).to eq(request.cost_code)
-          end
+        it 'must have a library tube id' do
+          expect(message_sample[:pac_bio_library_tube_id_lims]).to eq(library.id)
+        end
 
-          it 'must have a library tube id' do
-            expect(message_sample[:pac_bio_library_tube_id_lims]).to eq(library.id)
-          end
+        it 'must have a well uuid lims' do
+          expect(message_sample[:pac_bio_library_tube_uuid]).to eq(library.uuid)
+        end
 
-          it 'must have a well uuid lims' do
-            expect(message_sample[:pac_bio_library_tube_uuid]).to eq(library.uuid)
-          end
+        it 'must have a sample_uuid' do
+          expect(message_sample[:sample_uuid]).to eq(request.sample.external_id)
+        end
 
-          it 'must have a sample_uuid' do
-            expect(message_sample[:sample_uuid]).to eq(request.sample.external_id)
-          end
+        it 'must have a study_uuid' do
+          expect(message_sample[:study_uuid]).to eq(request.external_study_id)
+        end
 
-          it 'must have a study_uuid' do
-            expect(message_sample[:study_uuid]).to eq(request.external_study_id)
-          end
+        it 'can have a tag sequence' do
+          expect(message_sample[:tag_sequence]).to eq(library.tag.oligo)
+        end
 
-          it 'can have a tag sequence' do
-            expect(message_sample[:tag_sequence]).to eq(library.tag.oligo)
-          end
+        it 'can have a tag group id' do
+          expect(message_sample[:tag_set_id_lims]).to eq(library.tag.tag_set.id)
+        end
 
-          it 'can have a tag group id' do
-            expect(message_sample[:tag_set_id_lims]).to eq(library.tag.tag_set.id)
-          end
+        it 'can have a tag identifier' do
+          expect(message_sample[:tag_identifier]).to eq(library.tag.group_id)
+        end
 
-          it 'can have a tag identifier' do
-            expect(message_sample[:tag_identifier]).to eq(library.tag.group_id)
-          end
-
-          it 'can have a tag set name' do
-            expect(message_sample[:tag_set_name]).to eq(library.tag.tag_set.name)
-          end
+        it 'can have a tag set name' do
+          expect(message_sample[:tag_set_name]).to eq(library.tag.tag_set.name)
         end
       end
     end
