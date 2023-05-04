@@ -28,6 +28,11 @@ RSpec.describe Pacbio::Run, pacbio: true do
       it 'does not need a DNA control complex barcode' do
         expect(build(:pacbio_run, system_name: 'Revio', dna_control_complex_box_barcode: nil)).to be_valid
       end
+
+      it 'must have the wells in the correct positions' do
+        plate = build(:pacbio_plate, run: create(:pacbio_run, system_name: 'Revio'), wells: [build(:pacbio_well, row: 'G', column: '12')])
+        expect(plate.run).not_to be_valid
+      end
     end
   end
 
