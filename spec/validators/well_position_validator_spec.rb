@@ -7,7 +7,7 @@ RSpec.describe WellPositionValidator do
     create(:pacbio_smrt_link_version, name: 'v12_revio', default: true)
   end
 
-  # we need to check that id does not throw a 500
+  # This should not throw an error
   it 'when there are no wells' do
     plate = build(:pacbio_plate, well_count: 0)
     described_class.new.validate(plate.run)
