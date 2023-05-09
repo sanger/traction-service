@@ -30,6 +30,10 @@ class WellPositionValidator < ActiveModel::Validator
   # This validation ensures that the wells chosen are continuous in alphabetical order
   # Compares the order of received well positions against the valid wells positions
   def validate_contiguousness(record)
+    # if we don't do this we get a 500 when there are no wells
+    # there is already validation to check if there are wells
+    return if record.wells.blank?
+
     reversed_valid_wells = VALID_WELLS.reverse
     well_positions = record.wells.collect(&:position)
     reversed_received_wells = well_positions.reverse
