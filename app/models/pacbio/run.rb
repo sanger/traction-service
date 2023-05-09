@@ -11,12 +11,10 @@ module Pacbio
     # Sequel II and Sequel I are now deprecated
     enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2, 'Revio' => 3 }
 
-    delegate :wells, to: :plate, allow_nil: true
-
     after_create :generate_name
 
-    has_one :plate, foreign_key: :pacbio_run_id,
-                    dependent: :destroy, inverse_of: :run
+    has_many :plates, foreign_key: :pacbio_run_id,
+                      dependent: :destroy, inverse_of: :run
 
     # This association creates the link to the SmrtLinkVersion. Run belongs
     # to a SmrtLinkVersion. We set the default SmrtLinkVersion for the run
@@ -45,7 +43,7 @@ module Pacbio
 
     scope :active, -> { where(deactivated_at: nil) }
 
-    accepts_nested_attributes_for :plate
+    accepts_nested_attributes_for :plates
 
     # This will return an empty list
     # If well data is required via the run, use ?include=plate.wells
@@ -70,9 +68,13 @@ module Pacbio
     end
 
     def well_attributes=(well_options)
-      self.plate = build_plate(run: self) unless plate
+      self.plates = build_plate(run: self) unless plate
 
       plate.well_attributes = well_options
+    end
+
+    def wells
+      plates.collect(&:wells).flatten
     end
 
     private
