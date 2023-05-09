@@ -68,6 +68,12 @@ RSpec.describe WellPositionValidator do
     end
 
     describe 'contiguousness' do
+      it 'A1 - empty, B1 - empty, C1 - filled, D1 - filled' do
+        plate.wells = [build(:pacbio_well, row: 'C', column: '1'), build(:pacbio_well, row: 'D', column: '1')]
+        described_class.new.validate(plate.run)
+        expect(plate.run.errors).to be_empty
+      end
+
       it 'A1 - empty, B1 - filled, C1 - empty, D1 - empty' do
         plate.wells = [build(:pacbio_well, row: 'B', column: '1')]
         described_class.new.validate(plate.run)

@@ -5,6 +5,7 @@ class WellPositionValidator < ActiveModel::Validator
   include ActiveModel::Validations
 
   VALID_WELLS = %w[A1 B1 C1 D1].freeze
+  PARTIAL_PLATE = %w[C1 D1].freeze
 
   def validate(record)
     return unless record.wells
@@ -37,6 +38,9 @@ class WellPositionValidator < ActiveModel::Validator
     reversed_valid_wells = VALID_WELLS.reverse
     well_positions = record.wells.collect(&:position)
     reversed_received_wells = well_positions.reverse
+
+    # a partial plate is where the last 2 wells are filled
+    return if reversed_received_wells == PARTIAL_PLATE.reverse
 
     # find the last well position received and find its position in the valid wells array
     position = reversed_valid_wells.index(reversed_received_wells[0])
