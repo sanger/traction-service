@@ -17,6 +17,9 @@ WELL_96 = %w[
   A12 B12 C12 D12 E12 F12 G12 H12
 ].freeze
 
+# dont agree with this. Transparent to have this here
+# and it is not used anywhere else.
+# rubocop:disable Metrics/CollectionLiteralLength
 WELL_384 = %w[
   A1 B1 C1 D1 E1 F1 G1 H1 I1 J1 K1 L1 M1 N1 O1 P1
   A2 B2 C2 D2 E2 F2 G2 H2 I2 J2 K2 L2 M2 N2 O2 P2
@@ -43,6 +46,7 @@ WELL_384 = %w[
   A23 B23 C23 D23 E23 F23 G23 H23 I23 J23 K23 L23 M23 N23 O23 P23
   A24 B24 C24 D24 E24 F24 G24 H24 I24 J24 K24 L24 M24 N24 O24 P24
 ].freeze
+# rubocop:enable Metrics/CollectionLiteralLength
 
 RSpec.describe WellSorterService do
   let(:well_96) { WELL_96 }
@@ -150,30 +154,30 @@ RSpec.describe WellSorterService do
       end
     end
 
-    context 'with a specified size' do
+    context 'with a specified size of 96' do
       subject { described_class.index_of(well, size) }
 
-      context 'of 96' do
-        let(:size) { 96 }
+      let(:size) { 96 }
 
-        WELL_96.each_with_index do |test_well, test_index|
-          context("well #{test_well}") do
-            let(:well) { test_well }
+      WELL_96.each_with_index do |test_well, test_index|
+        context("well #{test_well}") do
+          let(:well) { test_well }
 
-            it { is_expected.to eq(test_index) }
-          end
+          it { is_expected.to eq(test_index) }
         end
       end
+    end
 
-      context 'of 384' do
-        let(:size) { 384 }
+    context 'with a specified size of 384' do
+      subject { described_class.index_of(well, size) }
 
-        WELL_384.each_with_index do |test_well, test_index|
-          context("well #{test_well}") do
-            let(:well) { test_well }
+      let(:size) { 384 }
 
-            it { is_expected.to eq(test_index) }
-          end
+      WELL_384.each_with_index do |test_well, test_index|
+        context("well #{test_well}") do
+          let(:well) { test_well }
+
+          it { is_expected.to eq(test_index) }
         end
       end
     end

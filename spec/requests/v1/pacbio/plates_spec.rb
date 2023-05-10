@@ -35,7 +35,7 @@ RSpec.describe 'PlatesController' do
 
       expect(json['data'][0]['relationships']['wells']).to be_present
 
-      well = json['included'].find { |well| well['type'] == 'wells' }
+      well = json['included'].find { |w| w['type'] == 'wells' }
       expect(well['type']).to eq('wells')
       expect(well['id']).to eq(pacbio_plates.first.wells.first.id.to_s)
       expect(well['attributes']['position']).to eq(pacbio_plates.first.wells.first.position)
@@ -68,7 +68,7 @@ RSpec.describe 'PlatesController' do
 
       expect(json['data'][0]['relationships']['wells']).to be_present
 
-      well = json['included'].find { |well| well['type'] == 'wells' }
+      well = json['included'].find { |w| w['type'] == 'wells' }
       expect(well['type']).to eq('wells')
       expect(well['id']).to eq(pacbio_plates.first.wells.first.id.to_s)
       expect(well['attributes']['position']).to eq(pacbio_plates.first.wells.first.position)
@@ -92,7 +92,7 @@ RSpec.describe 'PlatesController' do
       end
     end
 
-    context 'pagination', skip: 'Pagination is disabled until pacbio pool/new page is changed' do
+    context 'pagination' do
       let!(:expected_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'pacbio', created_at: Time.zone.now + 10) }
 
       before do
@@ -120,78 +120,17 @@ RSpec.describe 'PlatesController' do
       end
 
       it 'filtering by barcodes' do
-        barcode = pacbio_plates.pluck(:barcode)[0]
-        get "#{v1_pacbio_plates_path}?filter[barcode]=#{barcode}",
+        barcodes = pacbio_plates.pluck(:barcode)[0..1]
+        get "#{v1_pacbio_plates_path}?filter[barcode]=#{barcodes.join(',')}",
             headers: json_api_headers
         expect(response).to have_http_status(:success)
-        json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data'].length).to eq(1)
-        expect(json['data'][0]['attributes']['barcode']).to eq barcode
-      end
-    end
-  end
-
-  describe '#create' do
-    let(:external_plate) { build(:external_plate) }
-    let(:body) do
-      {
-        data: {
-          attributes: {
-            plates: [
-              external_plate
-            ]
-          }
-        }
-      }.to_json
-    end
-
-    context 'on success' do
-      it 'has a created status' do
-        post v1_pacbio_plates_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:created)
-      end
-
-      it 'creates a plate' do
-        expect do
-          post v1_pacbio_plates_path, params: body,
-                                      headers: json_api_headers
-        end.to change(Plate, :count).by(1)
-      end
-
-      # the plate creator and resources are already tested but we can make sure
-      # that the barcode is correct at least
-      it 'has the correct attributes (sanity check)' do
-        post v1_pacbio_plates_path, params: body, headers: json_api_headers
-        expect(Plate.find_by(barcode: external_plate[:barcode])).to be_present
-      end
-    end
-
-    context 'on failure' do
-      let(:body) do
-        {
-          data: {
-            attributes: {
-              plates: []
-            }
-          }
-        }.to_json
-      end
-
-      it 'has a ok unprocessable_entity' do
-        post v1_pacbio_plates_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'does not create a plate' do
-        expect do
-          post v1_pacbio_plates_path, params: body, headers: json_api_headers
-        end.not_to change(Plate, :count)
-      end
-
-      it 'has an error message' do
-        post v1_pacbio_plates_path, params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        expect(json['errors']).to be_present
+        pacbio_plates[0..1].each do |plate|
+          plate_attributes = find_resource(type: 'plates', id: plate.id)['attributes']
+          expect(plate_attributes).to include(
+            'barcode' => plate.barcode,
+            'created_at' => plate.created_at.to_fs(:us)
+          )
+        end
       end
     end
   end

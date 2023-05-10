@@ -14,7 +14,8 @@ module V1
                    :ccs_analysis_output_include_low_quality_reads,
                    :include_fivemc_calls_in_cpg_motifs,
                    :ccs_analysis_output_include_kinetics_information,
-                   :demultiplex_barcodes
+                   :demultiplex_barcodes, :movie_acquisition_time, :include_base_kinetics,
+                   :library_concentration, :polymerase_kit
 
         has_many :libraries
         has_many :pools

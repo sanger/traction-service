@@ -6,12 +6,19 @@ FactoryBot.define do
     sequence(:on_plate_loading_concentration) { |n| "10.#{n}".to_f }
     row { 'A' }
     sequence(:column) { |n| "0#{n}" }
-    plate { create(:pacbio_plate) }
+    plate { build(:pacbio_plate, wells: [instance]) }
+
     sequence(:comment) { |n| "comment#{n}" }
     sequence(:binding_kit_box_barcode) { |n| "DM111710086220011171#{n}" }
 
     transient do
       pool_count { 5 }
+      pool_factory { :pacbio_pool }
+      pool_max { 2 }
+    end
+
+    pools do
+      build_list(pool_factory, pool_count)
     end
 
     # v10
@@ -25,8 +32,14 @@ FactoryBot.define do
     demultiplex_barcodes { 'In SMRT Link' }
     loading_target_p1_plus_p2 { 0.85 }
 
+    # v12_revio
+    movie_acquisition_time { 15 }
+    include_base_kinetics { 'True' }
+    sequence(:library_concentration) { |n| "10.#{n}".to_f }
+    sequence(:polymerase_kit) { |n| "DM111710086220011171#{n}" }
+
     factory :pacbio_well_with_pools do
-      after(:create) do |well, evaluator|
+      before(:create) do |well, evaluator|
         well.pools = create_list(:pacbio_pool, evaluator.pool_count)
       end
     end

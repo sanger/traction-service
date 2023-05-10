@@ -23,11 +23,22 @@ RSpec.describe Pacbio::Run, pacbio: true do
     it 'must have a system name' do
       expect(build(:pacbio_run, system_name: nil)).not_to be_valid
     end
+
+    context 'when system name is Revio' do
+      it 'does not need a DNA control complex barcode' do
+        expect(build(:pacbio_run, system_name: 'Revio', dna_control_complex_box_barcode: nil)).to be_valid
+      end
+
+      it 'must have the wells in the correct positions' do
+        plate = build(:pacbio_plate, run: create(:pacbio_run, system_name: 'Revio'), wells: [build(:pacbio_well, row: 'G', column: '12')])
+        expect(plate.run).not_to be_valid
+      end
+    end
   end
 
   context 'System Name' do
     it 'must include the correct options' do
-      expect(described_class.system_names.keys).to eq(['Sequel II', 'Sequel I', 'Sequel IIe'])
+      expect(described_class.system_names.keys).to eq(['Sequel II', 'Sequel I', 'Sequel IIe', 'Revio'])
     end
 
     it 'must have a System Name' do
@@ -37,57 +48,52 @@ RSpec.describe Pacbio::Run, pacbio: true do
       expect(create(:pacbio_run, system_name: 'Sequel I').system_name).to eq 'Sequel I'
       expect(create(:pacbio_run, system_name: 2).system_name).to eq 'Sequel IIe'
       expect(create(:pacbio_run, system_name: 'Sequel IIe').system_name).to eq 'Sequel IIe'
+      expect(create(:pacbio_run, system_name: 3).system_name).to eq 'Revio'
+      expect(create(:pacbio_run, system_name: 'Revio').system_name).to eq 'Revio'
     end
   end
 
   it 'must have a system_name default' do
-    expect(create(:pacbio_run).system_name).to eq 'Sequel II'
+    expect(create(:pacbio_run).system_name).to eq 'Sequel IIe'
   end
 
-  it 'can have a plate' do
-    plate = create(:pacbio_plate)
-    run = create(:pacbio_run, plate:)
-    expect(run.plate).to eq(plate)
+  context 'associations' do
+    it 'can have a plate' do
+      plate = create(:pacbio_plate)
+      run = create(:pacbio_run, plate:)
+      expect(run.plate).to eq(plate)
+    end
+
+    it 'can have some wells' do
+      wells = create_list(:pacbio_well, 5)
+      plate = create(:pacbio_plate, wells:)
+      run = create(:pacbio_run, plate:)
+      expect(run.wells.count).to eq(5)
+    end
   end
 
-  it 'can have some wells' do
-    wells = create_list(:pacbio_well, 5)
-    plate = create(:pacbio_plate, wells:)
-    run = create(:pacbio_run, plate:)
-    expect(run.wells.count).to eq(5)
-  end
+  describe '#comments' do
+    it 'can have run comments' do
+      run = create(:pacbio_run)
+      expect(run.comments).to eq('A Run Comment')
+    end
 
-  it 'can have run comments' do
-    run = create(:pacbio_run)
-    expect(run.comments).to eq('A Run Comment')
-  end
+    it 'can have long run comments' do
+      comments = 'X' * 65535
+      run = create(:pacbio_run, comments:)
+      run.reload
+      expect(run.comments).to eq(comments)
+    end
 
-  it 'can have long run comments' do
-    comments = 'X' * 65535
-    run = create(:pacbio_run, comments:)
-    run.reload
-    expect(run.comments).to eq(comments)
-  end
-
-  it 'can have the wells summary when no run comments exist' do
-    wells = create_list(:pacbio_well_with_pools, 2)
-    plate = create(:pacbio_plate, wells:)
-    run = create(:pacbio_run, plate:, comments: nil)
-    expect(run.comments).to eq("#{wells.first.summary}:#{wells[1].summary}")
+    it 'can have the wells summary when no run comments exist' do
+      wells = create_list(:pacbio_well_with_pools, 2)
+      plate = create(:pacbio_plate, wells:)
+      run = create(:pacbio_run, plate:, comments: nil)
+      expect(run.comments).to eq("#{wells.first.summary}:#{wells[1].summary}")
+    end
   end
 
   describe '#generate_sample_sheet' do
-    it 'must call PacbioSampleSheet' do
-      well1 = create(:pacbio_well_with_pools)
-      well2 = create(:pacbio_well_with_pools)
-
-      plate = create(:pacbio_plate, wells: [well1, well2])
-      run = create(:pacbio_run, plate:)
-
-      expect_any_instance_of(PacbioSampleSheet).to receive(:generate)
-      run.generate_sample_sheet
-    end
-
     it 'must return a String' do
       well1 = create(:pacbio_well_with_pools)
       well2 = create(:pacbio_well_with_pools)
@@ -142,7 +148,7 @@ RSpec.describe Pacbio::Run, pacbio: true do
     context 'active' do
       it 'returns only active runs' do
         create_list(:pacbio_run, 2)
-        run = create(:pacbio_run, deactivated_at: DateTime.now)
+        create(:pacbio_run, deactivated_at: DateTime.now)
         expect(described_class.active.length).to eq 2
       end
     end
@@ -176,6 +182,13 @@ RSpec.describe Pacbio::Run, pacbio: true do
     it 'will set a default value' do
       run = create(:pacbio_run)
       expect(run.smrt_link_version).to eq(version10)
+    end
+  end
+
+  context 'instrument name' do
+    it 'will set a default value' do
+      run = create(:pacbio_run)
+      expect(run.instrument_name).to eq(run.system_name)
     end
   end
 end

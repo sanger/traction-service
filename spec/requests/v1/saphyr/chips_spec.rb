@@ -60,7 +60,7 @@ RSpec.describe 'ChipsController' do
 
       it 'has an error message' do
         post v1_saphyr_chips_path, params: body, headers: json_api_headers
-        expect(JSON.parse(response.body)['data']['errors'].length).to eq(1)
+        expect(response.parsed_body['data']['errors'].length).to eq(1)
       end
     end
   end
@@ -123,14 +123,15 @@ RSpec.describe 'ChipsController' do
       end
 
       it 'does not update a chip' do
+        old_barcode = chip.barcode
         patch v1_saphyr_chip_path(123), params: body, headers: json_api_headers
         chip.reload
-        expect(chip.barcode).to eq chip.barcode
+        expect(chip.barcode).to eq old_barcode
       end
 
       it 'has an error message' do
         patch v1_saphyr_chip_path(123), params: body, headers: json_api_headers
-        expect(JSON.parse(response.body)['data']).to include('errors' => "Couldn't find Saphyr::Chip with 'id'=123")
+        expect(response.parsed_body['data']).to include('errors' => "Couldn't find Saphyr::Chip with 'id'=123")
       end
     end
   end
