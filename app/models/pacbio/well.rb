@@ -35,7 +35,11 @@ module Pacbio
                         binding_kit_box_barcode
                         pre_extension_time
                         loading_target_p1_plus_p2
-                        movie_time]
+                        movie_time
+                        movie_acquisition_time
+                        include_base_kinetics
+                        library_concentration
+                        polymerase_kit]
 
     # The SmrtLinkOptions validator gives full details on how this works
     # validations are loaded from the database
@@ -43,7 +47,14 @@ module Pacbio
     # explanation
     validates_with SmrtLinkOptionsValidator
 
+    validates_with WellValidator
+
     validates :row, :column, presence: true
+
+    validates :pools, length: {
+      minimum: 1,
+      message: :well_min_pools
+    }
 
     delegate :run, to: :plate, allow_nil: true
 
