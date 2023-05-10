@@ -13,7 +13,7 @@ module Pacbio
 
     # This is dependent on the requests association, so needs to be included
     # after that is defined
-    include PlateSourcedLibrary
+    include DualSourcedPool
 
     validates :libraries, presence: true
     validates_with TagValidator
