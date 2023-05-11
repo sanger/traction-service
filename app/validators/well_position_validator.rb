@@ -36,7 +36,8 @@ class WellPositionValidator < ActiveModel::Validator
     return if record.wells.blank? || record.wells.count == 1
 
     # get the position for each well in an array
-    well_positions = record.wells.collect(&:position)
+    # we need to sort otherwise the index will be negative
+    well_positions = record.wells.collect(&:position).sort
 
     # find the correct index of each well position vs the valid well and reverse it
     # we need to reverse it otherwise we get negative indexes
