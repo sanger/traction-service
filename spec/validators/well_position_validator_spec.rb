@@ -68,32 +68,62 @@ RSpec.describe WellPositionValidator do
     end
 
     describe 'contiguousness' do
-      it 'A1 - empty, B1 - empty, C1 - filled, D1 - filled' do
+      it 'B1 filled' do
+        plate.wells = [build(:pacbio_well, row: 'B', column: '1')]
+        described_class.new.validate(plate.run)
+        expect(plate.run.errors).to be_empty
+      end
+
+      it 'B1, C1 filled' do
+        plate.wells = [build(:pacbio_well, row: 'B', column: '1'), build(:pacbio_well, row: 'C', column: '1')]
+        described_class.new.validate(plate.run)
+        expect(plate.run.errors).to be_empty
+      end
+
+      it 'C1 filled' do
+        plate.wells = [build(:pacbio_well, row: 'C', column: '1')]
+        described_class.new.validate(plate.run)
+        expect(plate.run.errors).to be_empty
+      end
+
+      it 'C1, D1 filled' do
         plate.wells = [build(:pacbio_well, row: 'C', column: '1'), build(:pacbio_well, row: 'D', column: '1')]
         described_class.new.validate(plate.run)
         expect(plate.run.errors).to be_empty
       end
 
-      it 'A1 - empty, B1 - filled, C1 - empty, D1 - empty' do
-        plate.wells = [build(:pacbio_well, row: 'B', column: '1')]
+      it 'D1 filled' do
+        plate.wells = [build(:pacbio_well, row: 'D', column: '1')]
         described_class.new.validate(plate.run)
-        expect(plate.run.errors.full_messages.length).to eq(1)
+        expect(plate.run.errors).to be_empty
       end
 
-      it 'A1 - filled, B1 - empty, C1 - filled, D1 - empty' do
-        plate.wells = [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'C', column: '1')]
-        described_class.new.validate(plate.run)
-        expect(plate.run.errors.full_messages.length).to eq(1)
-      end
-
-      it 'A1 - filled, B1 - empty, C1 - empty, D1 - filled' do
+      it 'A1, D1 filled' do
         plate.wells = [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'D', column: '1')]
         described_class.new.validate(plate.run)
         expect(plate.run.errors.full_messages.length).to eq(1)
       end
 
-      it 'A1 - empty, B1 - filled, C1 - filled, D1 - filled' do
-        plate.wells = [build(:pacbio_well, row: 'B', column: '1'), build(:pacbio_well, row: 'C', column: '1'), build(:pacbio_well, row: 'D', column: '1')]
+      it 'A1, C1 filled' do
+        plate.wells = [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'C', column: '1')]
+        described_class.new.validate(plate.run)
+        expect(plate.run.errors.full_messages.length).to eq(1)
+      end
+
+      it 'B1, D1 filled' do
+        plate.wells = [build(:pacbio_well, row: 'B', column: '1'), build(:pacbio_well, row: 'D', column: '1')]
+        described_class.new.validate(plate.run)
+        expect(plate.run.errors.full_messages.length).to eq(1)
+      end
+
+      it 'A1, C1, D1 filled' do
+        plate.wells = [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'C', column: '1'), build(:pacbio_well, row: 'D', column: '1')]
+        described_class.new.validate(plate.run)
+        expect(plate.run.errors.full_messages.length).to eq(1)
+      end
+
+      it 'A1, B1, D1 filled' do
+        plate.wells = [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1'), build(:pacbio_well, row: 'D', column: '1')]
         described_class.new.validate(plate.run)
         expect(plate.run.errors.full_messages.length).to eq(1)
       end

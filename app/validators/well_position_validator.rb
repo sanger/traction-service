@@ -5,7 +5,6 @@ class WellPositionValidator < ActiveModel::Validator
   include ActiveModel::Validations
 
   VALID_WELLS = %w[A1 B1 C1 D1].freeze
-  PARTIAL_PLATE = %w[C1 D1].freeze
 
   def validate(record)
     return unless record.wells
@@ -28,30 +27,39 @@ class WellPositionValidator < ActiveModel::Validator
     nil
   end
 
-  # This validation ensures that the wells chosen are continuous in alphabetical order
-  # Compares the order of received well positions against the valid wells positions
+  # This validation checks that the there are no empty wells between libraries
+  # e.g. A1, D1 is invalid whereas B1, C1 is valid
   def validate_contiguousness(record)
     # if we don't do this we get a 500 when there are no wells
     # there is already validation to check if there are wells
-    return if record.wells.blank?
+    # it is valid if there is a single well
+    return if record.wells.blank? || record.wells.count == 1
 
-    reversed_valid_wells = VALID_WELLS.reverse
+    # get the position for each well in an array
     well_positions = record.wells.collect(&:position)
-    reversed_received_wells = well_positions.reverse
 
-    # a partial plate is where the last 2 wells are filled
-    return if reversed_received_wells == PARTIAL_PLATE.reverse
+    # find the correct index of each well position vs the valid well and reverse it
+    # we need to reverse it otherwise we get negative indexes
+    reversed_indexes = well_positions.collect { |position| VALID_WELLS.index(position) }.reverse
 
-    # find the last well position received and find its position in the valid wells array
-    position = reversed_valid_wells.index(reversed_received_wells[0])
-    # get the correct order the well positions should be
-    valid_well_order = reversed_valid_wells[position + 1..]
-    # get the order of the well positions received
-    received_well_order = reversed_received_wells[1..]
-    # compare the valid and received order of wells
-    return if valid_well_order == received_well_order
+    # get the differences in the indexes for each well
+    index_differences = find_index_differences(reversed_indexes)
 
+    # if all of the wells are next to each other and they are valid i.e. difference is 1
+    return unless index_differences.any? { |index| index > 1 }
+
+    # if the wells are not next to each other then it is not valid
     record.errors.add(:wells, "must be in the valid order #{VALID_WELLS}")
-    nil
+  end
+
+  # find the difference in position of each well
+  # e.g. if wells are B1 and C1 then the difference is 1
+  # whereas if the wells are B1 and D1 the difference is 2
+  def find_index_differences(indexes)
+    [].tap do |index_differences|
+      indexes.each_with_index do |value, index|
+        index_differences << (value - indexes[index + 1]) unless value == indexes.last
+      end
+    end
   end
 end
