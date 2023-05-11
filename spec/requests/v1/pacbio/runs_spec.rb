@@ -18,7 +18,7 @@ RSpec.describe 'RunsController' do
 
   shared_examples 'publish_messages_on_update' do
     it 'publishes a message' do
-      expect(Messages).to receive(:publish).with(run.plate, having_attributes(pipeline: 'pacbio'))
+      expect(Messages).to receive(:publish).with(run.plates, having_attributes(pipeline: 'pacbio'))
       patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
@@ -52,7 +52,7 @@ RSpec.describe 'RunsController' do
     end
 
     it 'returns the correct relationships', aggregate_failures: true do
-      get "#{v1_pacbio_runs_path}?include=plate,smrt_link_version", headers: json_api_headers
+      get "#{v1_pacbio_runs_path}?include=plates,smrt_link_version", headers: json_api_headers
 
       expect(response).to have_http_status(:success), response.body
       json = ActiveSupport::JSON.decode(response.body)
@@ -437,7 +437,7 @@ RSpec.describe 'RunsController' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq 'plate.wells - there must be at least one well'
+          expect(errors[0]['detail']).to eq 'plates.wells - there must be at least one well'
         end
       end
 
@@ -486,7 +486,7 @@ RSpec.describe 'RunsController' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq "plate.wells.column - can't be blank"
+          expect(errors[0]['detail']).to eq "plates.wells.column - can't be blank"
         end
       end
 
@@ -544,7 +544,7 @@ RSpec.describe 'RunsController' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq 'plate.wells.pools - there must be at least one pool'
+          expect(errors[0]['detail']).to eq 'plates.wells.pools - there must be at least one pool'
         end
       end
 
@@ -662,7 +662,7 @@ RSpec.describe 'RunsController' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq 'plate.wells.tags - are not unique within the libraries for well A1'
+          expect(errors[0]['detail']).to eq 'plates.wells.tags - are not unique within the libraries for well A1'
         end
       end
 
@@ -800,7 +800,7 @@ RSpec.describe 'RunsController' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq 'plate.wells.tags - are missing from the libraries'
+          expect(errors[0]['detail']).to eq 'plates.wells.tags - are missing from the libraries'
         end
       end
     end
@@ -914,7 +914,7 @@ RSpec.describe 'RunsController' do
     context 'on success' do
       context 'when run state is successful' do
         let!(:run) { create(:pacbio_run) }
-        let!(:plate) { create(:pacbio_plate, run:) }
+        let!(:plates) { create(:pacbio_plate, run:) }
         let(:body) do
           {
             data: {
@@ -945,13 +945,13 @@ RSpec.describe 'RunsController' do
         end
 
         it 'retains the existing plate, wells, pools etc' do
-          existing_wells = run.plate.wells
-          existing_pools = run.plate.wells.map(&:pools)
+          existing_wells = run.plates.wells.flatten
+          existing_pools = run.plates.wells.map(&:pools).flatten
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
           run.reload
-          expect(run.plate).to eq plate
-          expect(run.plate.wells).to eq existing_wells
-          expect(run.plate.wells.map(&:pools)).to eq existing_pools
+          expect(run.plates).to eq plate
+          expect(run.plates.wells.flatten).to eq existing_wells
+          expect(run.plates.wells.map(&:pools).flatten).to eq existing_pools
         end
 
         it_behaves_like 'publish_messages_on_update'
@@ -1313,7 +1313,7 @@ RSpec.describe 'RunsController' do
     let(:well1)   { create(:pacbio_well_with_pools) }
     let(:well2)   { create(:pacbio_well_with_pools) }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
-    let(:run)     { create(:pacbio_run, smrt_link_version: version10, plate:) }
+    let(:run)     { create(:pacbio_run, smrt_link_version: version10, plates: [plate]) }
 
     after { FileUtils.rm_rf("#{run.name}.csv") }
 
