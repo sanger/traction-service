@@ -39,6 +39,7 @@ class WellPositionValidator < ActiveModel::Validator
     well_positions = record.wells.collect(&:position)
 
     # find the correct index of each well position vs the valid well and reverse it
+    # we need to reverse it otherwise we get negative indexes
     reversed_indexes = well_positions.collect { |position| VALID_WELLS.index(position) }.reverse
 
     # get the differences in the indexes for each well
