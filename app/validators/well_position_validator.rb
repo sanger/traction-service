@@ -32,6 +32,7 @@ class WellPositionValidator < ActiveModel::Validator
   def validate_contiguousness(record)
     # if we don't do this we get a 500 when there are no wells
     # there is already validation to check if there are wells
+    # it is valid if there is a single well
     return if record.wells.blank? || record.wells.count == 1
 
     # get the position for each well in an array
