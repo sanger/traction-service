@@ -46,7 +46,7 @@ module Pacbio
     accepts_nested_attributes_for :plates
 
     # This will return an empty list
-    # If well data is required via the run, use ?include=plate.wells
+    # If well data is required via the run, use ?include=plates.wells
     attr_reader :well_attributes
 
     # if comments are nil this blows up so add try.
@@ -68,9 +68,7 @@ module Pacbio
     end
 
     def well_attributes=(well_options)
-      self.plates = build_plate(run: self) unless plate
-
-      plate.well_attributes = well_options
+      self.plates << Pacbio::Plate.new(run: self, well_attributes:well_options)
     end
 
     def wells
