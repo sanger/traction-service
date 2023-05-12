@@ -127,6 +127,12 @@ RSpec.describe WellPositionValidator do
         described_class.new.validate(plate.run)
         expect(plate.run.errors.full_messages.length).to eq(1)
       end
+
+      it 'B1, D1 filled but in reverse order' do
+        plate.wells = [build(:pacbio_well, row: 'D', column: '1'), build(:pacbio_well, row: 'B', column: '1')]
+        described_class.new.validate(plate.run)
+        expect(plate.run.errors.full_messages.length).to eq(1)
+      end
     end
   end
 end

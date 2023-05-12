@@ -4,7 +4,8 @@
 class WellPositionValidator < ActiveModel::Validator
   include ActiveModel::Validations
 
-  VALID_WELLS = %w[A1 B1 C1 D1].freeze
+  # the standard set of well positions
+  REFERENCE_WELLS = %w[A1 B1 C1 D1].freeze
 
   def validate(record)
     return unless record.wells
@@ -21,9 +22,9 @@ class WellPositionValidator < ActiveModel::Validator
   # This validation ensures that the wells are in correct positions
   def validate_positions(record)
     well_positions = record.wells.collect(&:position)
-    return if (well_positions - VALID_WELLS).empty?
+    return if (well_positions - REFERENCE_WELLS).empty?
 
-    record.errors.add(:wells, "must be in positions #{VALID_WELLS}")
+    record.errors.add(:wells, "must be in positions #{REFERENCE_WELLS}")
     nil
   end
 
@@ -35,31 +36,55 @@ class WellPositionValidator < ActiveModel::Validator
     # it is valid if there is a single well
     return if record.wells.blank? || record.wells.count == 1
 
-    # get the position for each well in an array
-    well_positions = record.wells.collect(&:position)
+    # build instance to check positions
+    well_positions = WellPositionService.new({ wells: record.wells,
+                                               reference_wells: REFERENCE_WELLS })
 
-    # find the correct index of each well position vs the valid well and reverse it
-    # we need to reverse it otherwise we get negative indexes
-    reversed_indexes = well_positions.collect { |position| VALID_WELLS.index(position) }.reverse
-
-    # get the differences in the indexes for each well
-    index_differences = find_index_differences(reversed_indexes)
-
-    # if all of the wells are next to each other and they are valid i.e. difference is 1
-    return unless index_differences.any? { |index| index > 1 }
+    # are the wells next to each other
+    return unless well_positions.contiguous?
 
     # if the wells are not next to each other then it is not valid
-    record.errors.add(:wells, "must be in the valid order #{VALID_WELLS}")
+    record.errors.add(:wells, "must be in the valid order #{REFERENCE_WELLS}")
   end
 
-  # find the difference in position of each well
-  # e.g. if wells are B1 and C1 then the difference is 1
-  # whereas if the wells are B1 and D1 the difference is 2
-  def find_index_differences(indexes)
-    [].tap do |index_differences|
-      indexes.each_with_index do |value, index|
-        index_differences << (value - indexes[index + 1]) unless value == indexes.last
+  # This inline class encapsulates the behaviour for checking the wells
+  # We can leave it here for now but if we need to reuse it can be abstracted
+  class WellPositionService
+    include ActiveModel::Model
+
+    # reference wells are the standard set of well positions
+    # wells will have a position e.g. A1
+    attr_accessor :reference_wells, :wells
+
+    # extract each position into a list and sort it by position
+    def positions
+      wells.collect(&:position).sort
+    end
+
+    # find the correct index of each well position vs the reference well
+    def indexes
+      @indexes ||= positions.collect { |position| reference_wells.index(position) }
+    end
+
+    # reverse the indexes
+    def reversed_indexes
+      @reversed_indexes ||= indexes.reverse
+    end
+
+    # find the difference in position of each well
+    # e.g. if wells are B1 and C1 then the difference is 1
+    # whereas if the wells are B1 and D1 the difference is 2
+    def index_differences
+      @index_differences ||= [].tap do |differences|
+        reversed_indexes.each_with_index do |value, index|
+          differences << (value - reversed_indexes[index + 1]) unless value == reversed_indexes.last
+        end
       end
+    end
+
+    # check whether all of the wells are next to each other
+    def contiguous?
+      index_differences.any? { |index| index > 1 }
     end
   end
 end
