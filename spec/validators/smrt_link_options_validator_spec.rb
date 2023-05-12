@@ -34,41 +34,38 @@ RSpec.describe SmrtLinkOptionsValidator do
         expect(well).not_to be_valid
       end
 
-      context 'will show the correct errors' do
-        let(:plate) { create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: versions.first)) }
-
-        it 'when the value is missing' do
-          well = build(:pacbio_well, plate:, demultiplex_barcodes: nil)
-          described_class.new.validate(well)
-          expect(well.errors.full_messages.length).to eq(2)
-          expect(well.errors.full_messages).to include("Demultiplex barcodes can't be blank")
-          expect(well.errors.full_messages).to include('Demultiplex barcodes is not included in the list')
-        end
-
-        it 'when the value is not in the proscribed list' do
-          well = build(:pacbio_well, plate:, demultiplex_barcodes: 'si')
-          described_class.new.validate(well)
-          expect(well.errors.full_messages).to include('Demultiplex barcodes is not included in the list')
-        end
-
-        it 'when the value is not a number' do
-          well = build(:pacbio_well, plate:, loading_target_p1_plus_p2: 'manana')
-          described_class.new.validate(well)
-          expect(well.errors.full_messages).to include('Loading target p1 plus p2 is not a number')
-        end
-
-        it 'when the value is not within range' do
-          well = build(:pacbio_well, plate:, loading_target_p1_plus_p2: 2)
-          described_class.new.validate(well)
-          expect(well.errors.full_messages).to include('Loading target p1 plus p2 must be less than or equal to 1')
-        end
-      end
-
-      it 'will only mark the record as invalid for the correct version' do
-        well = build(:pacbio_well, plate:, movie_time: nil)
+      it 'when the value is missing' do
+        well = build(:pacbio_well, plate:, demultiplex_barcodes: nil)
         described_class.new.validate(well)
-        expect(well).to be_valid
+        expect(well.errors.full_messages.length).to eq(2)
+        expect(well.errors.full_messages).to include("Demultiplex barcodes can't be blank")
+        expect(well.errors.full_messages).to include('Demultiplex barcodes is not included in the list')
       end
+
+      it 'when the value is not in the proscribed list' do
+        well = build(:pacbio_well, plate:, demultiplex_barcodes: 'si')
+        described_class.new.validate(well)
+        expect(well.errors.full_messages).to include('Demultiplex barcodes is not included in the list')
+      end
+
+      it 'when the value is not a number' do
+        well = build(:pacbio_well, plate:, loading_target_p1_plus_p2: 'manana')
+        described_class.new.validate(well)
+        expect(well.errors.full_messages).to include('Loading target p1 plus p2 is not a number')
+      end
+
+      it 'when the value is not within range' do
+        well = build(:pacbio_well, plate:, loading_target_p1_plus_p2: 2)
+        described_class.new.validate(well)
+        expect(well.errors.full_messages).to include('Loading target p1 plus p2 must be less than or equal to 1')
+      end
+    end
+
+    it 'will only mark the record as invalid for the correct version' do
+      plate = create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: versions.first))
+      well = build(:pacbio_well, plate:, movie_time: nil)
+      described_class.new.validate(well)
+      expect(well).to be_valid
     end
   end
 end

@@ -28,6 +28,11 @@ RSpec.describe Pacbio::Run, pacbio: true do
       it 'does not need a DNA control complex barcode' do
         expect(build(:pacbio_run, system_name: 'Revio', dna_control_complex_box_barcode: nil)).to be_valid
       end
+
+      it 'must have the wells in the correct positions' do
+        plate = build(:pacbio_plate, run: create(:pacbio_run, system_name: 'Revio'), wells: [build(:pacbio_well, row: 'G', column: '12')])
+        expect(plate.run).not_to be_valid
+      end
     end
   end
 
@@ -89,17 +94,6 @@ RSpec.describe Pacbio::Run, pacbio: true do
   end
 
   describe '#generate_sample_sheet' do
-    it 'must call PacbioSampleSheet' do
-      well1 = create(:pacbio_well_with_pools)
-      well2 = create(:pacbio_well_with_pools)
-
-      plate = create(:pacbio_plate, wells: [well1, well2])
-      run = create(:pacbio_run, plate:)
-
-      expect_any_instance_of(PacbioSampleSheet).to receive(:generate)
-      run.generate_sample_sheet
-    end
-
     it 'must return a String' do
       well1 = create(:pacbio_well_with_pools)
       well2 = create(:pacbio_well_with_pools)
@@ -154,7 +148,7 @@ RSpec.describe Pacbio::Run, pacbio: true do
     context 'active' do
       it 'returns only active runs' do
         create_list(:pacbio_run, 2)
-        run = create(:pacbio_run, deactivated_at: DateTime.now)
+        create(:pacbio_run, deactivated_at: DateTime.now)
         expect(described_class.active.length).to eq 2
       end
     end

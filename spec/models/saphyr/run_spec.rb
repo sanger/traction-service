@@ -80,7 +80,7 @@ RSpec.describe Saphyr::Run, saphyr: true do
     context 'active' do
       it 'returns only active runs' do
         create_list(:saphyr_run, 2)
-        run = create(:saphyr_run, deactivated_at: DateTime.now)
+        create(:saphyr_run, deactivated_at: DateTime.now)
         expect(described_class.active.length).to eq 2
       end
     end

@@ -32,9 +32,8 @@ RSpec.describe Plate do
   end
 
   context 'by pipeline' do
-    let!(:pacbio_plates) { create_list(:plate_with_wells_and_requests, 5, pipeline: 'pacbio') }
-
     it 'returns the correct plates' do
+      create_list(:plate_with_wells_and_requests, 5, pipeline: 'pacbio')
       expect(described_class.by_pipeline(:pacbio).length).to eq(5)
     end
   end
