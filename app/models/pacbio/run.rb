@@ -68,7 +68,14 @@ module Pacbio
     end
 
     def well_attributes=(well_options)
-      self.plates << Pacbio::Plate.new(run: self, well_attributes:well_options)
+      if plates.empty?
+        plates.build(run: self, well_attributes: well_options)
+      else
+        plate = plates.first
+        plate.well_attributes = well_options
+        # TODO: we should not need this
+        plate.save
+      end
     end
 
     def wells
