@@ -10,7 +10,7 @@ FactoryBot.define do
     end
 
     wells do
-      build_list(well_factory, well_count, plates: [instance])
+      build_list(well_factory, well_count, plate: instance)
     end
 
     trait :pooled do

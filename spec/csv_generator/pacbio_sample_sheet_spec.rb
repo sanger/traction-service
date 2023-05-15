@@ -8,7 +8,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
   describe '#generate' do
     subject(:csv_string) { csv.generate }
 
-    let!(:plate)       { create(:pacbio_plate)}
+    let!(:plate)       { create(:pacbio_plate) }
     let!(:run)         { create(:pacbio_run, smrt_link_version: version10, plates: [plate]) }
     let!(:parsed_csv)  { CSV.parse(csv_string) }
     let!(:csv)         { described_class.new(run:, configuration: Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name)) }

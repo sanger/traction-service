@@ -59,10 +59,10 @@ RSpec.describe Pacbio::Run, pacbio: true do
 
   context 'associations' do
     it 'can have multiple plates' do
-    plate_1 = create(:pacbio_plate)
-    plate_2 = create(:pacbio_plate)
-    run = create(:pacbio_run, plates: [plate_1, plate_2])
-    expect(run.plates).to eq([plate_1, plate_2])
+      plate_1 = create(:pacbio_plate)
+      plate_2 = create(:pacbio_plate)
+      run = create(:pacbio_run, plates: [plate_1, plate_2])
+      expect(run.plates).to eq([plate_1, plate_2])
     end
 
     it 'can have some wells' do

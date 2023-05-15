@@ -18,7 +18,7 @@ RSpec.describe 'RunsController' do
 
   shared_examples 'publish_messages_on_update' do
     it 'publishes a message' do
-      expect(Messages).to receive(:publish).with(run.plates, having_attributes(pipeline: 'pacbio'))
+      expect(Messages).to receive(:publish).with(run.plates.first, having_attributes(pipeline: 'pacbio'))
       patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
@@ -914,7 +914,7 @@ RSpec.describe 'RunsController' do
     context 'on success' do
       context 'when run state is successful' do
         let!(:run) { create(:pacbio_run) }
-        let!(:plates) { create(:pacbio_plate, run:) }
+        let!(:plate) { create(:pacbio_plate, run:) }
         let(:body) do
           {
             data: {
@@ -945,13 +945,13 @@ RSpec.describe 'RunsController' do
         end
 
         it 'retains the existing plate, wells, pools etc' do
-          existing_wells = run.plates.wells.flatten
-          existing_pools = run.plates.wells.map(&:pools).flatten
+          existing_wells = run.plates.first.wells
+          existing_pools = existing_wells.map(&:pools)
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
           run.reload
-          expect(run.plates).to eq plate
-          expect(run.plates.wells.flatten).to eq existing_wells
-          expect(run.plates.wells.map(&:pools).flatten).to eq existing_pools
+          expect(run.plates.first).to eq plate
+          expect(run.plates.first.wells).to eq existing_wells
+          expect(run.plates.first.wells.map(&:pools)).to eq existing_pools
         end
 
         it_behaves_like 'publish_messages_on_update'
@@ -1253,17 +1253,17 @@ RSpec.describe 'RunsController' do
     end
 
     it 'returns the correct relationships' do
-      get "#{v1_pacbio_run_path(run)}?include=plate", headers: json_api_headers
+      get "#{v1_pacbio_run_path(run)}?include=plates", headers: json_api_headers
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      expect(json['data']['relationships']['plate']).to be_present
-      expect(json['data']['relationships']['plate']['data']['type']).to eq 'plates'
-      expect(json['data']['relationships']['plate']['data']['id']).to eq plate.id.to_s
+      expect(json['data']['relationships']['plates']).to be_present
+      expect(json['data']['relationships']['plates']['data'][0]['type']).to eq 'plates'
+      expect(json['data']['relationships']['plates']['data'][0]['id']).to eq plate.id.to_s
     end
 
     it 'returns the correct includes' do
-      get "#{v1_pacbio_run_path(run)}?include=plate", headers: json_api_headers
+      get "#{v1_pacbio_run_path(run)}?include=plates", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
