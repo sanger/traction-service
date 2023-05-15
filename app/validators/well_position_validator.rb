@@ -4,8 +4,8 @@
 class WellPositionValidator < ActiveModel::Validator
   include ActiveModel::Validations
 
-  VALID_WELLS = %w[A1 B1 C1 D1].freeze
-  PARTIAL_PLATE = %w[C1 D1].freeze
+  # the standard set of well positions
+  REFERENCE_WELLS = %w[A1 B1 C1 D1].freeze
 
   def validate(record)
     return unless record.wells
@@ -22,36 +22,69 @@ class WellPositionValidator < ActiveModel::Validator
   # This validation ensures that the wells are in correct positions
   def validate_positions(record)
     well_positions = record.wells.collect(&:position)
-    return if (well_positions - VALID_WELLS).empty?
+    return if (well_positions - REFERENCE_WELLS).empty?
 
-    record.errors.add(:wells, "must be in positions #{VALID_WELLS}")
+    record.errors.add(:wells, "must be in positions #{REFERENCE_WELLS}")
     nil
   end
 
-  # This validation ensures that the wells chosen are continuous in alphabetical order
-  # Compares the order of received well positions against the valid wells positions
+  # This validation checks that the there are no empty wells between libraries
+  # e.g. A1, D1 is invalid whereas B1, C1 is valid
   def validate_contiguousness(record)
     # if we don't do this we get a 500 when there are no wells
     # there is already validation to check if there are wells
-    return if record.wells.blank?
+    # it is valid if there is a single well
+    return if record.wells.blank? || record.wells.count == 1
 
-    reversed_valid_wells = VALID_WELLS.reverse
-    well_positions = record.wells.collect(&:position)
-    reversed_received_wells = well_positions.reverse
+    # build instance to check positions
+    well_positions = WellPositionService.new({ wells: record.wells,
+                                               reference_wells: REFERENCE_WELLS })
 
-    # a partial plate is where the last 2 wells are filled
-    return if reversed_received_wells == PARTIAL_PLATE.reverse
+    # are the wells next to each other
+    return unless well_positions.contiguous?
 
-    # find the last well position received and find its position in the valid wells array
-    position = reversed_valid_wells.index(reversed_received_wells[0])
-    # get the correct order the well positions should be
-    valid_well_order = reversed_valid_wells[position + 1..]
-    # get the order of the well positions received
-    received_well_order = reversed_received_wells[1..]
-    # compare the valid and received order of wells
-    return if valid_well_order == received_well_order
+    # if the wells are not next to each other then it is not valid
+    record.errors.add(:wells, "must be in the valid order #{REFERENCE_WELLS}")
+  end
 
-    record.errors.add(:wells, "must be in the valid order #{VALID_WELLS}")
-    nil
+  # This inline class encapsulates the behaviour for checking the wells
+  # We can leave it here for now but if we need to reuse it can be abstracted
+  class WellPositionService
+    include ActiveModel::Model
+
+    # reference wells are the standard set of well positions
+    # wells will have a position e.g. A1
+    attr_accessor :reference_wells, :wells
+
+    # extract each position into a list and sort it by position
+    def positions
+      wells.collect(&:position).sort
+    end
+
+    # find the correct index of each well position vs the reference well
+    def indexes
+      @indexes ||= positions.collect { |position| reference_wells.index(position) }
+    end
+
+    # reverse the indexes
+    def reversed_indexes
+      @reversed_indexes ||= indexes.reverse
+    end
+
+    # find the difference in position of each well
+    # e.g. if wells are B1 and C1 then the difference is 1
+    # whereas if the wells are B1 and D1 the difference is 2
+    def index_differences
+      @index_differences ||= [].tap do |differences|
+        reversed_indexes.each_with_index do |value, index|
+          differences << (value - reversed_indexes[index + 1]) unless value == reversed_indexes.last
+        end
+      end
+    end
+
+    # check whether all of the wells are next to each other
+    def contiguous?
+      index_differences.any? { |index| index > 1 }
+    end
   end
 end
