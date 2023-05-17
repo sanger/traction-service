@@ -6,4 +6,9 @@ FactoryBot.define do
     sequence(:dna_control_complex_box_barcode) { |n| "Lxxxxx10171760012319#{n}" }
     comments { 'A Run Comment' }
   end
+
+  # rubocop:disable Lint/EmptyBlock
+  factory :pacbio_run_factory, class: 'Pacbio::RunFactory' do
+  end
+  # rubocop:enable Lint/EmptyBlock
 end

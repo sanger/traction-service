@@ -5,8 +5,9 @@ module Pacbio
   class RunFactory
     include ActiveModel::Model
 
-    def run
-      @run ||= Pacbio::Run.new
-    end
+    # attr_accessor :run, :well_attributes
+    attr_accessor :well_attributes
+
+    def construct_resources!; end
   end
 end
