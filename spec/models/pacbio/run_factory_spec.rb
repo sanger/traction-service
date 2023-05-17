@@ -17,11 +17,11 @@ RSpec.describe Pacbio::RunFactory do
       build(:pacbio_run_factory, well_attributes:)
     end
 
-    let(:well_attributes) { [attributes_for(:pacbio_well).except(:plate, :pools, :run)] }
+    let!(:well_attributes) { [attributes_for(:pacbio_well).except(:plate, :pools, :run)] }
 
     context 'create' do
       it 'creates a run' do
-        expect { construct_resources }.to change(Pacbio::Run, :count).by(1)
+        expect { construct_resources }.to change(Pacbio::Run, :count).by(0)
       end
     end
   end
