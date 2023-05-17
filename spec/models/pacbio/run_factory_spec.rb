@@ -21,7 +21,7 @@ RSpec.describe Pacbio::RunFactory do
 
     context 'create' do
       it 'creates a run' do
-        expect { construct_resources }.to change(Pacbio::Run, :count).by(0)
+        expect { construct_resources }.not_to change(Pacbio::Run, :count)
       end
     end
   end
