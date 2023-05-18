@@ -7,18 +7,9 @@ require 'rails_helper'
 # validations rather than setting them here
 # Make sure there is a default version to be able to create a run
 RSpec.describe Pacbio::Well, pacbio: true do
-  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
-  let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
+  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10') }
+  let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11', default: true) }
   let!(:version12_revio) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
-
-  before do
-    # v10 and v11 validations
-    create(:pacbio_smrt_link_option, key: :movie_time, validations: { presence: {}, numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 } }, smrt_link_versions: [version10, version11])
-    create(:pacbio_smrt_link_option, key: :binding_kit_box_barcode, validations: { presence: {} }, smrt_link_versions: [version10, version11])
-    create(:pacbio_smrt_link_option, key: :on_plate_loading_concentration, validations: { presence: {} }, smrt_link_versions: [version10, version11])
-    create(:pacbio_smrt_link_option, key: :pre_extension_time, validations: { numericality: { allow_blank: true } }, smrt_link_versions: [version10, version11])
-    create(:pacbio_smrt_link_option, key: :loading_target_p1_plus_p2, validations: { numericality: { allow_blank: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 1 } }, smrt_link_versions: [version10, version11])
-  end
 
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_well }
@@ -38,22 +29,6 @@ RSpec.describe Pacbio::Well, pacbio: true do
     end
   end
 
-  context 'movie time' do
-    it 'must be present' do
-      expect(build(:pacbio_well, movie_time: nil)).not_to be_valid
-    end
-
-    it 'can be a decimal' do
-      expect(build(:pacbio_well, movie_time: 0.2).movie_time).to eq(0.2)
-    end
-
-    it 'must be within range' do
-      expect(build(:pacbio_well, movie_time: 15)).to be_valid
-      expect(build(:pacbio_well, movie_time: 31)).not_to be_valid
-      expect(build(:pacbio_well, movie_time: 0)).not_to be_valid
-    end
-  end
-
   context 'insert size' do
     let(:pools)     { create_list(:pacbio_pool, 2) }
     let(:well)      { create(:pacbio_well, pools:) }
@@ -61,10 +36,6 @@ RSpec.describe Pacbio::Well, pacbio: true do
     it 'gest the fragment size of the first pool in the well' do
       expect(well.pools[0].insert_size).to eq(well.insert_size)
     end
-  end
-
-  it 'must have an on plate loading concentration' do
-    expect(build(:pacbio_well, on_plate_loading_concentration: nil)).not_to be_valid
   end
 
   context 'position' do
@@ -75,10 +46,6 @@ RSpec.describe Pacbio::Well, pacbio: true do
 
   it 'must have to a plate' do
     expect(build(:pacbio_well, plate: nil)).not_to be_valid
-  end
-
-  it 'must have a binding kit box barcode' do
-    expect(build(:pacbio_well, binding_kit_box_barcode: nil)).not_to be_valid
   end
 
   it 'can have a comment' do
@@ -101,39 +68,6 @@ RSpec.describe Pacbio::Well, pacbio: true do
     it 'no pools' do
       well = build(:pacbio_well, pool_count: 0)
       expect(well).not_to be_pools
-    end
-  end
-
-  context 'pre-extension time' do
-    it 'is not required' do
-      expect(create(:pacbio_well, pre_extension_time: nil)).to be_valid
-    end
-
-    it 'can be set' do
-      well = build(:pacbio_well, pre_extension_time: 2)
-      expect(well.pre_extension_time).to eq(2)
-    end
-
-    it 'can be a decimal' do
-      well = build(:pacbio_well, pre_extension_time: 2.5)
-      expect(well).to be_valid
-    end
-  end
-
-  context 'loading target p1 plus p2' do
-    it 'is not required' do
-      expect(build(:pacbio_well, loading_target_p1_plus_p2: nil)).to be_valid
-    end
-
-    it 'can be a decimal' do
-      expect(build(:pacbio_well,
-                   loading_target_p1_plus_p2: 0.5).loading_target_p1_plus_p2).to eq(0.5)
-    end
-
-    it 'must be within range' do
-      expect(build(:pacbio_well, loading_target_p1_plus_p2: 0.45)).to be_valid
-      expect(build(:pacbio_well, loading_target_p1_plus_p2: 72)).not_to be_valid
-      expect(build(:pacbio_well, loading_target_p1_plus_p2: 0)).to be_valid
     end
   end
 
@@ -226,8 +160,81 @@ RSpec.describe Pacbio::Well, pacbio: true do
       ])
     end
 
+    context 'v10 or v11' do
+      before do
+        # v10 and v11 validations
+        create(:pacbio_smrt_link_option, key: :movie_time, validations: { presence: {}, numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 } }, smrt_link_versions: [version10, version11])
+        create(:pacbio_smrt_link_option, key: :binding_kit_box_barcode, validations: { presence: {} }, smrt_link_versions: [version10, version11])
+        create(:pacbio_smrt_link_option, key: :on_plate_loading_concentration, validations: { presence: {} }, smrt_link_versions: [version10, version11])
+        create(:pacbio_smrt_link_option, key: :pre_extension_time, validations: { numericality: { allow_blank: true } }, smrt_link_versions: [version10, version11])
+        create(:pacbio_smrt_link_option, key: :loading_target_p1_plus_p2, validations: { numericality: { allow_blank: true, greater_than_or_equal_to: 0.0, less_than_or_equal_to: 1.0 } }, smrt_link_versions: [version10, version11])
+      end
+
+      # we need to create this after creating smrt link options otherwise they will not be added
+      let!(:plate) { create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version11)) }
+
+      context 'movie time' do
+        it 'must be present' do
+          expect(build(:pacbio_well, movie_time: nil, plate:)).not_to be_valid
+        end
+
+        it 'can be a decimal' do
+          expect(build(:pacbio_well, movie_time: 0.2, plate:).movie_time).to eq(0.2)
+        end
+
+        it 'must be within range' do
+          expect(build(:pacbio_well, movie_time: 15, plate:)).to be_valid
+          expect(build(:pacbio_well, movie_time: 31, plate:)).not_to be_valid
+          expect(build(:pacbio_well, movie_time: 0, plate:)).not_to be_valid
+        end
+      end
+
+      it 'must have an on plate loading concentration' do
+        expect(build(:pacbio_well, on_plate_loading_concentration: nil, plate:)).not_to be_valid
+      end
+
+      it 'must have a binding kit box barcode' do
+        expect(build(:pacbio_well, binding_kit_box_barcode: nil, plate:)).not_to be_valid
+      end
+
+      context 'pre-extension time' do
+        it 'is not required' do
+          expect(create(:pacbio_well, pre_extension_time: nil, plate:)).to be_valid
+        end
+
+        it 'can be set' do
+          expect(build(:pacbio_well, pre_extension_time: 2, plate:).pre_extension_time).to eq(2)
+        end
+
+        it 'can be a decimal' do
+          expect(build(:pacbio_well, pre_extension_time: 2.5, plate:)).to be_valid
+        end
+
+        it 'must be a number' do
+          expect(build(:pacbio_well, pre_extension_time: 'NaN', plate:)).not_to be_valid
+        end
+      end
+
+      context 'loading target p1 plus p2' do
+        it 'is not required' do
+          expect(build(:pacbio_well, loading_target_p1_plus_p2: nil, plate:)).to be_valid
+        end
+
+        it 'can be a decimal' do
+          expect(build(:pacbio_well,
+                       loading_target_p1_plus_p2: 0.5, plate:).loading_target_p1_plus_p2).to eq(0.5)
+        end
+
+        it 'must be within range' do
+          expect(build(:pacbio_well, loading_target_p1_plus_p2: 0.45, plate:)).to be_valid
+          expect(build(:pacbio_well, loading_target_p1_plus_p2: 0, plate:)).to be_valid
+          expect(build(:pacbio_well, loading_target_p1_plus_p2: 72, plate:)).not_to be_valid
+        end
+      end
+    end
+
     context 'v10' do
-      let(:well) { build(:pacbio_well) }
+      let(:well) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version10))) }
 
       before do
         create(:pacbio_smrt_link_option, key: 'generate_hifi', validations: { presence: {}, inclusion: { in: generate_in } }, smrt_link_versions: [version10])
