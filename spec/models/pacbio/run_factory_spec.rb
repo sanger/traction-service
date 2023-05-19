@@ -13,31 +13,40 @@ RSpec.describe Pacbio::RunFactory do
       run_factory.construct_resources!
     end
 
-    let(:run_attributes) { attributes_for(:pacbio_run).merge(pacbio_smrt_link_version_id: smrt_link_version.id) }
-
     let(:run_factory) do
       build(:pacbio_run_factory, run_attributes:, well_attributes:)
     end
 
-    let(:well_attributes) { [attributes_for(:pacbio_well).except(:plate, :pools, :run)] }
+    let!(:pool) { create(:pacbio_pool) }
+    let(:run_attributes) { attributes_for(:pacbio_run).merge(pacbio_smrt_link_version_id: smrt_link_version.id) }
+    let(:well_attributes) { [attributes_for(:pacbio_well).except(:plate, :pools, :run).merge(pools: [pool.id]).with_indifferent_access] }
 
     context 'create' do
       it 'creates a run' do
-        # p well_attributes
         expect { construct_resources }.to change(Pacbio::Run, :count).by(1)
+      end
+
+      it 'creates a plate' do
+        expect { construct_resources }.to change(Pacbio::Plate, :count).by(1)
+      end
+
+      it 'creates a well' do
+        expect { construct_resources }.to change(Pacbio::Well, :count).by(1)
+      end
+
+      it 'attaches a pool to the well' do
+        construct_resources
+        expect(Pacbio::Well.first.pools.first).to eq(pool)
       end
     end
   end
 
-  describe 'create a new run thats invalid' do
+  describe 'with invalid run' do
     subject(:run_factory) { build(:pacbio_run_factory, run_attributes:, well_attributes:) }
 
     let(:run_attributes)  { attributes_for(:pacbio_run).merge(pacbio_smrt_link_version_id: smrt_link_version.id, sequencing_kit_box_barcode: nil) }
     let(:well_attributes) { [attributes_for(:pacbio_well).except(:plate, :pools, :run)] }
 
-    it 'not valid' do
-      run_factory.construct_resources!
-      expect(run_factory).not_to be_valid
-    end
+    it { is_expected.to be_invalid }
   end
 end
