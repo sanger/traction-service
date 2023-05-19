@@ -11,7 +11,10 @@ module Pacbio
     validates_nested :run
 
     def construct_resources!
-      run.save
+      ApplicationRecord.transaction do
+        run.save!
+        plate.save!
+      end
     end
 
     def run
@@ -19,7 +22,7 @@ module Pacbio
     end
 
     def plate
-      @plate ||= run.plates.build(run: self, well_attributes:)
+      @plate ||= run.plates.build(run:, well_attributes:)
     end
   end
 end
