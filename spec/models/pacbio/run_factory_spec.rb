@@ -52,7 +52,7 @@ RSpec.describe Pacbio::RunFactory do
     it { is_expected.to be_invalid }
   end
 
-  describe.skip 'with invalid well' do
+  describe 'with invalid well' do
     subject(:run_factory) { build(:pacbio_run_factory, run_attributes:, well_attributes:) }
 
     let(:run_attributes)  { attributes_for(:pacbio_run).merge(pacbio_smrt_link_version_id: smrt_link_version.id) }
