@@ -17,9 +17,9 @@ RSpec.describe Pacbio::RunFactory do
       build(:pacbio_run_factory, run_attributes:, well_attributes:)
     end
 
-    let!(:pool) { create(:pacbio_pool) }
+    let!(:pools) { [create(:pacbio_pool), create(:pacbio_pool)] }
     let(:run_attributes) { attributes_for(:pacbio_run).merge(pacbio_smrt_link_version_id: smrt_link_version.id) }
-    let(:well_attributes) { [attributes_for(:pacbio_well).except(:plate, :pools, :run).merge(pools: [pool.id]).with_indifferent_access] }
+    let(:well_attributes) { [attributes_for(:pacbio_well).except(:plate, :pools, :run).merge(pools: pools.collect(&:id)).with_indifferent_access] }
 
     context 'create' do
       it 'creates a run' do
@@ -34,9 +34,11 @@ RSpec.describe Pacbio::RunFactory do
         expect { construct_resources }.to change(Pacbio::Well, :count).by(1)
       end
 
-      it 'attaches a pool to the well' do
+      it 'attaches pools to the well' do
         construct_resources
-        expect(Pacbio::Well.first.pools.first).to eq(pool)
+        expect(Pacbio::Well.first.pools.count).to eq(pools.length)
+        expect(Pacbio::Well.first.pools.first).to eq(pools.first)
+        expect(Pacbio::Well.first.pools.last).to eq(pools.last)
       end
     end
   end
