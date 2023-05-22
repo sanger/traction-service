@@ -14,7 +14,7 @@ module Pacbio
     after_create :generate_name
 
     has_many :plates, foreign_key: :pacbio_run_id,
-                      dependent: :destroy, inverse_of: :run
+                      dependent: :destroy, inverse_of: :run, autosave: true
 
     # This association creates the link to the SmrtLinkVersion. Run belongs
     # to a SmrtLinkVersion. We set the default SmrtLinkVersion for the run

@@ -6,7 +6,7 @@ module Pacbio
     include ActiveModel::Model
     extend NestedValidation
 
-    attr_accessor :run_attributes, :well_attributes
+    attr_accessor :run_attributes
 
     validates_nested :run, :wells
 
@@ -17,8 +17,16 @@ module Pacbio
       end
     end
 
+    def well_attributes=(attributes)
+      @well_attributes = attributes.map do |attrs|
+        pool_ids = attrs.delete('pools') || []
+        pools = pool_ids.collect { |id| Pacbio::Pool.find(id) }
+        wells << Pacbio::Well.new(**attrs, pools:, plate:)
+      end
+    end
+
     def wells
-      run.plates.collect(&:wells).flatten
+      @wells ||= []
     end
 
     def run
@@ -26,7 +34,7 @@ module Pacbio
     end
 
     def plate
-      @plate ||= run.plates.build(run:, well_attributes:)
+      @plate ||= run.plates.build(run:)
     end
   end
 end
