@@ -8,13 +8,17 @@ module Pacbio
 
     attr_accessor :run_attributes, :well_attributes
 
-    validates_nested :run
+    validates_nested :run, :wells
 
     def construct_resources!
       ApplicationRecord.transaction do
         run.save!
         plate.save!
       end
+    end
+
+    def wells
+      run.plates.collect(&:wells).flatten
     end
 
     def run
