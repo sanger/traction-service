@@ -17,11 +17,11 @@ RSpec.describe Pacbio::RunFactory do
       build(:pacbio_run_factory, run_attributes:, well_attributes:)
     end
 
-    let!(:pools) { [create(:pacbio_pool), create(:pacbio_pool)] }
-    let(:run_attributes) { attributes_for(:pacbio_run).merge(pacbio_smrt_link_version_id: smrt_link_version.id) }
-    let(:well_attributes) { [attributes_for(:pacbio_well).except(:plate, :pools, :run).merge(pools: pools.collect(&:id)).with_indifferent_access] }
-
     context 'create' do
+      let!(:pools) { [create(:pacbio_pool), create(:pacbio_pool)] }
+      let(:run_attributes) { attributes_for(:pacbio_run).merge(pacbio_smrt_link_version_id: smrt_link_version.id) }
+      let(:well_attributes) { [attributes_for(:pacbio_well).except(:plate, :pools, :run).merge(pools: pools.collect(&:id)).with_indifferent_access] }
+
       it 'creates a run' do
         expect { construct_resources }.to change(Pacbio::Run, :count).by(1)
       end
@@ -39,6 +39,20 @@ RSpec.describe Pacbio::RunFactory do
         expect(Pacbio::Well.first.pools.count).to eq(pools.length)
         expect(Pacbio::Well.first.pools.first).to eq(pools.first)
         expect(Pacbio::Well.first.pools.last).to eq(pools.last)
+      end
+    end
+
+    context 'update' do
+      it 'updates the run'
+
+      it 'does not create a new plate'
+
+      context 'wells' do
+        it 'updates existing wells'
+
+        it 'creates new wells'
+
+        it 'deletes wells that are no longer exist'
       end
     end
   end
