@@ -6,9 +6,9 @@ module Pacbio
     include ActiveModel::Model
     extend NestedValidation
 
-    attr_accessor :run_attributes
-
     validates_nested :run, :wells
+
+    attr_reader :run
 
     def construct_resources!
       ApplicationRecord.transaction do
@@ -17,12 +17,21 @@ module Pacbio
       end
     end
 
+    def run_attributes=(attributes)
+      id = attributes.delete(:id)
+      @run ||= id.present? ? Pacbio::Run.find(id) : Pacbio::Run.new
+      @run.assign_attributes(attributes)
+      @run_attributes = attributes
+    end
+
     ##
     # Array describing the wells to create.
     # Each well consists of:
     #
     # @param attributes [Array<Hash>] Array containing a hash describing the wells to build
     def well_attributes=(attributes)
+      return if attributes.blank?
+
       @well_attributes = attributes.map do |attrs|
         # remove the pool ids from the attributes and find the corresponding pool
         pool_ids = attrs.delete('pools') || []
@@ -37,12 +46,8 @@ module Pacbio
       @wells ||= []
     end
 
-    def run
-      @run ||= Pacbio::Run.new(run_attributes)
-    end
-
     def plate
-      @plate ||= run.plates.build(run:)
+      @plate ||= run.plates.first || run.plates.build(run:)
     end
   end
 end
