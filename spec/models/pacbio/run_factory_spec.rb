@@ -43,9 +43,23 @@ RSpec.describe Pacbio::RunFactory do
     end
 
     context 'update' do
-      it 'updates the run'
+      let!(:run) { create(:pacbio_run, plates: [create(:pacbio_plate)]) }
+      let(:run_attributes) { { id: run.id, sequencing_kit_box_barcode: 'DMXXX' } }
+      let(:well_attributes) { nil }
 
-      it 'does not create a new plate'
+      it 'updates the run' do
+        construct_resources
+        run.reload
+        expect(run.sequencing_kit_box_barcode).to eq('DMXXX')
+      end
+
+      it 'does not create a run' do
+        expect { construct_resources }.not_to change(Pacbio::Run, :count)
+      end
+
+      it 'does not create a new plate' do
+        expect { construct_resources }.not_to change(Pacbio::Plate, :count)
+      end
 
       context 'wells' do
         it 'updates existing wells'
