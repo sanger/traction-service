@@ -42,31 +42,57 @@ RSpec.describe Pacbio::RunFactory do
       end
     end
 
-    context 'update' do
+    context 'update run' do
       let!(:run) { create(:pacbio_run, plates: [create(:pacbio_plate)]) }
       let(:run_attributes) { { id: run.id, sequencing_kit_box_barcode: 'DMXXX' } }
       let(:well_attributes) { nil }
 
-      it 'updates the run' do
+      it 'modifies the attributes' do
         construct_resources
         run.reload
         expect(run.sequencing_kit_box_barcode).to eq('DMXXX')
       end
 
-      it 'does not create a run' do
+      it 'does not create a new run' do
         expect { construct_resources }.not_to change(Pacbio::Run, :count)
       end
 
       it 'does not create a new plate' do
         expect { construct_resources }.not_to change(Pacbio::Plate, :count)
       end
+    end
 
-      context 'wells' do
-        it 'updates existing wells'
+    context 'update wells' do
+      let!(:wells) { [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1')] }
+      let!(:run) { create(:pacbio_run, plates: [create(:pacbio_plate, wells:)]) }
+      let!(:run_attributes) { { id: run.id } }
+      let!(:pool) { create(:pacbio_pool) }
 
-        it 'creates new wells'
+      it 'updates existing wells' do
+        well_attributes = run.plates.first.wells.collect { |well| well.attributes.with_indifferent_access }
+        well_attributes.first.merge!(pools: [pool.id])
+        run_factory = build(:pacbio_run_factory, run_attributes:, well_attributes:)
+        run_factory.construct_resources!
+        run.reload
+        expect(run.plates.first.wells.find_by(row: 'A', column: '1').pools).to eq([pool])
+      end
 
-        it 'deletes wells that are no longer exist'
+      it 'creates new wells' do
+        well_attributes = run.plates.first.wells.collect { |well| well.attributes.with_indifferent_access }
+        well_attributes << build(:pacbio_well, row: 'C', column: '1').attributes.merge(pools: [pool.id]).with_indifferent_access
+        run_factory = build(:pacbio_run_factory, run_attributes:, well_attributes:)
+        run_factory.construct_resources!
+        run.reload
+        expect(run.plates.first.wells.count).to eq(3)
+      end
+
+      it 'deletes wells that are no longer exist', skip: 'Not implemented' do
+        well_attributes = run.plates.first.wells.collect { |well| well.attributes.with_indifferent_access }
+        well_attributes.pop
+        run_factory = build(:pacbio_run_factory, run_attributes:, well_attributes:)
+        run_factory.construct_resources!
+        run.reload
+        expect(run.plates.first.wells.count).to eq(1)
       end
     end
   end
