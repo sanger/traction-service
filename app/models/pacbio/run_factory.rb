@@ -69,7 +69,9 @@ module Pacbio
     def mark_removed_wells_for_destruction
       removed_well_ids = run.plates.first.wells.pluck(:id) - well_ids.compact
       removed_well_ids.map do |well_id|
-        Pacbio::Well.find(well_id).mark_for_destruction
+
+        plate.wells.find_by(id: well_id).mark_for_destruction
+  
       end
     end
   end

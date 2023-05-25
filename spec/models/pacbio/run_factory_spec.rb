@@ -86,11 +86,13 @@ RSpec.describe Pacbio::RunFactory do
         expect(run.plates.first.wells.count).to eq(3)
       end
 
-      it 'deletes wells that are no longer exist', skip: 'Not implemented' do
+      # it 'deletes wells that are no longer exist', skip: 'Not implemented' do
+      it 'deletes wells that are no longer exist' do
         well_attributes = run.plates.first.wells.collect { |well| well.attributes.with_indifferent_access }
         well_attributes.pop
         run_factory = build(:pacbio_run_factory, run_attributes:, well_attributes:)
         run_factory.construct_resources!
+        # binding.pry
         run.reload
         expect(run.plates.first.wells.count).to eq(1)
       end
