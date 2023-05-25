@@ -8,18 +8,27 @@ module Pacbio
 
     validates_nested :run, :wells
 
-    attr_reader :run, :well_attributes
+    attr_reader :run, :well_attributes, :removed_well_ids
 
+    # Create the run and all associated records
+    # plates and wells
     def construct_resources!
       ApplicationRecord.transaction do
-        mark_removed_wells_for_destruction
+        # we have to do this first otherwise we would delete
+        # newly created wells
+        mark_wells_to_remove_for_destruction
         run.save!
         plate.save!
+        destroy_removed_wells
       end
     end
 
+    # Build run and assign attributes
+    # if the run has an id retrieve it from the database otherwise
+    # build a new one
     def run_attributes=(attributes)
       id = attributes.delete(:id)
+      # do we need to eager load?
       @run ||= id.present? ? Pacbio::Run.find(id) : Pacbio::Run.new
       @run.assign_attributes(attributes)
       @run_attributes = attributes
@@ -28,28 +37,22 @@ module Pacbio
     ##
     # Array describing the wells to create.
     # Each well consists of:
-    #
     # @param attributes [Array<Hash>] Array containing a hash describing the wells to build
     def well_attributes=(attributes)
       return if attributes.blank?
 
       @well_attributes = attributes
-      @well_ids = []
 
       well_attributes.map do |attrs|
         # remove the pool ids from the attributes and find the corresponding pool
         pool_ids = attrs.delete(:pools) || []
         pools = pool_ids.collect { |id| Pacbio::Pool.find(id) }
 
-        id = attrs.delete(:id)
-
-        @well_ids << id
-
-        well = id.present? ? Pacbio::Well.find(id) : Pacbio::Well.new
-
-        well.assign_attributes(**attrs, pools:, plate:)
-
-        # build a well and it to the array of wells
+        # if the well has an id retrieve it from the database
+        # if it is new build a new well
+        # finally assign the attributes to the well
+        well = attrs[:id].present? ? plate.wells.find_by(id: attrs[:id]) : Pacbio::Well.new
+        well.assign_attributes(**attrs.except(:id), pools:, plate:)
         wells << well
       end
     end
@@ -58,21 +61,36 @@ module Pacbio
       @wells ||= []
     end
 
+    # get list of all of the well ids that have been passed
     def well_ids
-      @well_ids ||= []
+      return [] if well_attributes.blank?
+
+      @well_ids ||= well_attributes.pluck(:id).compact
     end
 
+    # Get all of the ids for the current wells and then
+    # check that against well ids that have been passed to return
+    # a list of well ids to be removed
+    def well_ids_for_removal
+      @well_ids_for_removal ||= run.plates.first.wells.pluck(:id) - well_ids
+    end
+
+    # If the run is new build it otherwise return the firts plate
     def plate
       @plate ||= run.plates.first || run.plates.build(run:)
     end
 
-    def mark_removed_wells_for_destruction
-      removed_well_ids = run.plates.first.wells.pluck(:id) - well_ids.compact
-      removed_well_ids.map do |well_id|
-
+    # Any wells that are no longer being used should be marked for destruction
+    # so that they are not validated for any well specific validation
+    def mark_wells_to_remove_for_destruction
+      well_ids_for_removal.map do |well_id|
         plate.wells.find_by(id: well_id).mark_for_destruction
-  
       end
+    end
+
+    # delete any wells that were not passed in as they are no longer used
+    def destroy_removed_wells
+      Pacbio::Well.where(id: well_ids_for_removal).destroy_all
     end
   end
 end
