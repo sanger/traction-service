@@ -10,7 +10,7 @@ module Pacbio
     has_many :wells, class_name: 'Pacbio::Well', foreign_key: :pacbio_plate_id,
                      inverse_of: :plate, dependent: :destroy, autosave: true
 
-    accepts_nested_attributes_for :wells
+    # accepts_nested_attributes_for :wells
 
     validates :wells, length: {
       minimum: 1,
