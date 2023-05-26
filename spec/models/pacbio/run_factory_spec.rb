@@ -92,7 +92,6 @@ RSpec.describe Pacbio::RunFactory do
         well_attributes.pop
         run_factory = build(:pacbio_run_factory, run_attributes:, well_attributes:)
         run_factory.construct_resources!
-        # binding.pry
         run.reload
         expect(run.plates.first.wells.count).to eq(1)
       end

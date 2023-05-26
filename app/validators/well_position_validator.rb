@@ -21,7 +21,7 @@ class WellPositionValidator < ActiveModel::Validator
 
   # This validation ensures that the wells are in correct positions
   def validate_positions(record)
-    well_positions = record.wells.collect(&:position)
+    well_positions = wells_unless_marked_for_destruction(record).collect(&:position)
     return if (well_positions - REFERENCE_WELLS).empty?
 
     record.errors.add(:wells, "must be in positions #{REFERENCE_WELLS}")
@@ -37,7 +37,7 @@ class WellPositionValidator < ActiveModel::Validator
     return if record.wells.blank? || record.wells.count == 1
 
     # build instance to check positions
-    well_positions = WellPositionService.new({ wells: record.wells,
+    well_positions = WellPositionService.new({ wells: wells_unless_marked_for_destruction(record),
                                                reference_wells: REFERENCE_WELLS })
 
     # are the wells next to each other
@@ -45,6 +45,12 @@ class WellPositionValidator < ActiveModel::Validator
 
     # if the wells are not next to each other then it is not valid
     record.errors.add(:wells, "must be in the valid order #{REFERENCE_WELLS}")
+  end
+
+  private
+
+  def wells_unless_marked_for_destruction(record)
+    @wells_unless_marked_for_destruction ||= record.wells.filter { |well| !well.marked_for_destruction? }
   end
 
   # This inline class encapsulates the behaviour for checking the wells
