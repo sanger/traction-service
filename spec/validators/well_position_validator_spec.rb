@@ -133,6 +133,15 @@ RSpec.describe WellPositionValidator do
         described_class.new.validate(plate.run)
         expect(plate.run.errors.full_messages.length).to eq(1)
       end
+
+      it 'wont validate wells that are marked for destruction' do
+        plate.wells = [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1'), build(:pacbio_well, row: 'C', column: '1')]
+        plate.save
+        plate.reload
+        plate.wells.select { |well| well.row == 'B' && well.column == '1' }.first.mark_for_destruction
+        described_class.new.validate(plate.run)
+        expect(plate.run.errors.full_messages.length).to eq(1)
+      end
     end
   end
 end
