@@ -42,6 +42,26 @@ RSpec.describe Pacbio::RunFactory do
       end
     end
 
+    context 'create on invalid' do
+      subject(:run_factory) { build(:pacbio_run_factory, run_attributes:, well_attributes:) }
+
+      let(:run_attributes) { attributes_for(:pacbio_run).merge(pacbio_smrt_link_version_id: smrt_link_version.id) }
+      let(:well_attributes) { [attributes_for(:pacbio_well).except(:plate, :pools, :run)] }
+      let!(:pools) { [create(:pacbio_pool), create(:pacbio_pool)] }
+
+      it 'does not create a run with invalid well positions' do
+        run_factory.well_attributes = [build(:pacbio_well, row: 'D', column: '1').attributes.merge(pools: pools.collect(&:id)).with_indifferent_access]
+        run_factory.construct_resources!
+        expect(run_factory).not_to be_valid
+      end
+
+      it 'does not create a run with invalid well contiguousness' do
+        run_factory.well_attributes = [build(:pacbio_well, row: 'A', column: '1').attributes.merge(pools: pools.collect(&:id)).with_indifferent_access, build(:pacbio_well, row: 'B', column: '1').attributes.merge(pools: pools.collect(&:id)).with_indifferent_access]
+        run_factory.construct_resources!
+        expect(run_factory).not_to be_valid
+      end
+    end
+
     context 'update run' do
       let!(:run) { create(:pacbio_run, plates: [create(:pacbio_plate)]) }
       let(:run_attributes) { { id: run.id, sequencing_kit_box_barcode: 'DMXXX' } }
@@ -104,7 +124,12 @@ RSpec.describe Pacbio::RunFactory do
     let(:run_attributes)  { attributes_for(:pacbio_run).merge(pacbio_smrt_link_version_id: smrt_link_version.id, sequencing_kit_box_barcode: nil) }
     let(:well_attributes) { [attributes_for(:pacbio_well).except(:plate, :pools, :run)] }
 
-    it { is_expected.to be_invalid }
+    #  I need to find out a way to use subject with the second expectation instead of putting it in an it block
+    # it { is_expected.to be_invalid }
+    it 'is invalid' do
+      expect(run_factory).not_to be_valid
+      expect(run_factory.errors.full_messages).to include("Sequencing kit box barcode can't be blank")
+    end
   end
 
   describe 'with invalid well' do
