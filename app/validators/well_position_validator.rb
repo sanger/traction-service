@@ -50,7 +50,7 @@ class WellPositionValidator < ActiveModel::Validator
   private
 
   def wells_unless_marked_for_destruction(record)
-    @wells_unless_marked_for_destruction ||= record.wells.filter { |well| !well.marked_for_destruction? }
+    record.wells.filter { |well| !well.marked_for_destruction? }
   end
 
   # This inline class encapsulates the behaviour for checking the wells

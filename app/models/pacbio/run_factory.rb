@@ -73,6 +73,7 @@ module Pacbio
     # a list of well ids to be removed
     def well_ids_for_removal
       return if well_attributes.blank?
+
       @well_ids_for_removal ||= run.plates.first.wells.pluck(:id) - well_ids
     end
 
@@ -85,6 +86,7 @@ module Pacbio
     # so that they are not validated for any well specific validation
     def mark_wells_to_remove_for_destruction
       return if well_attributes.blank?
+
       well_ids_for_removal.map do |well_id|
         plate.wells.find { |well| well.id == well_id }.mark_for_destruction
       end
@@ -92,8 +94,8 @@ module Pacbio
 
     # delete any wells that were not passed in as they are no longer used
     def destroy_removed_wells
-      
       return if well_attributes.blank?
+
       Pacbio::Well.where(id: well_ids_for_removal).destroy_all
     end
   end
