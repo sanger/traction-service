@@ -106,9 +106,8 @@ RSpec.describe Pacbio::RunFactory do
         expect(run.plates.first.wells.count).to eq(3)
       end
 
-      # it 'deletes wells that are no longer exist', skip: 'Not implemented' do
       it 'deletes wells that are no longer exist' do
-        well_attributes = run.plates.first.wells.collect { |well| well.attributes.with_indifferent_access }
+        well_attributes = run.plates.first.wells.collect { |well| well.attributes.with_indifferent_access.merge(pools: well.pools.pluck(:id)) }
         well_attributes.pop
         run_factory = build(:pacbio_run_factory, run_attributes:, well_attributes:)
         run_factory.construct_resources!
@@ -124,8 +123,6 @@ RSpec.describe Pacbio::RunFactory do
     let(:run_attributes)  { attributes_for(:pacbio_run).merge(pacbio_smrt_link_version_id: smrt_link_version.id, sequencing_kit_box_barcode: nil) }
     let(:well_attributes) { [attributes_for(:pacbio_well).except(:plate, :pools, :run)] }
 
-    #  I need to find out a way to use subject with the second expectation instead of putting it in an it block
-    # it { is_expected.to be_invalid }
     it 'is invalid' do
       expect(run_factory).not_to be_valid
       expect(run_factory.errors.full_messages).to include("Sequencing kit box barcode can't be blank")
