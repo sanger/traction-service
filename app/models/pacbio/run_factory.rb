@@ -18,7 +18,6 @@ module Pacbio
         # newly created wells
         mark_wells_to_remove_for_destruction
         run.save!
-        binding.pry
         plate.save!
         destroy_removed_wells
       end
