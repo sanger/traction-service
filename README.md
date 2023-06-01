@@ -34,6 +34,19 @@ This will:
 - Create the database
 - Seed basic data such as library types and tags.
 
+Note:
+
+- If the mysql-client cannot be found (possibly due to the homebrew installation path not being the default), the `mysql2` gem will fail to install with the exception:
+
+  ```
+  ...
+  /Users/<user>/.rbenv/versions/3.1.2/lib/ruby/3.1.0/mkmf.rb:1086:in `block in find_library': undefined method `split' for nil:NilClass (NoMethodError)
+  ...
+  ```
+
+- The fix is to add the mysql-client to the PATH:
+  `export PATH=$PATH:~/homebrew/Cellar/mysql-client@5.7/5.7.34/bin`
+
 ## Database setup
 
 The database should have been generated as part of the installation step above.
