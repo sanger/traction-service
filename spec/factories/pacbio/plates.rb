@@ -25,4 +25,9 @@ FactoryBot.define do
       :pacbio_plate
     end
   end
+
+  # rubocop:disable Lint/EmptyBlock
+  factory :pacbio_plate_factory, class: 'Pacbio::PlateFactory' do
+  end
+  # rubocop:enable Lint/EmptyBlock
 end

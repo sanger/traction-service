@@ -11,10 +11,9 @@ module Pacbio
 
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
                        inverse_of: :wells, autosave: true
-
     has_many :well_pools, class_name: 'Pacbio::WellPool', foreign_key: :pacbio_well_id,
                           dependent: :destroy, inverse_of: :well
-    has_many :pools, class_name: 'Pacbio::Pool', through: :well_pools, autosave: true
+    has_many :pools, class_name: 'Pacbio::Pool', through: :well_pools
 
     has_many :libraries, through: :pools
     has_many :tag_sets, through: :libraries
