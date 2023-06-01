@@ -2,13 +2,15 @@
 
 module Pacbio
   # Create or update a run
-  class RunFactory
+  class PlateFactory
     include ActiveModel::Model
     extend NestedValidation
 
-    validates_nested :run, :wells
+    validates_nested :wells
 
-    attr_reader :run, :well_attributes, :removed_well_ids
+    attr_reader :well_attributes, :removed_well_ids
+
+    attr_accessor :run
 
     # Create the run and all associated records
     # plates and wells
@@ -17,21 +19,9 @@ module Pacbio
         # we have to do this first otherwise we would delete
         # newly created wells
         mark_wells_to_remove_for_destruction
-        run.save!
         plate.save!
         destroy_removed_wells
       end
-    end
-
-    # Build run and assign attributes
-    # if the run has an id retrieve it from the database otherwise
-    # build a new one
-    def run_attributes=(attributes)
-      id = attributes.delete(:id)
-      # do we need to eager load?
-      @run ||= id.present? ? Pacbio::Run.find(id) : Pacbio::Run.new
-      @run.assign_attributes(attributes)
-      @run_attributes = attributes
     end
 
     ##
@@ -55,6 +45,8 @@ module Pacbio
         well.assign_attributes(**attrs.except(:id), pools:, plate:)
         wells << well
       end
+
+      # binding.pry
     end
 
     def wells
