@@ -44,8 +44,10 @@ Note:
   ...
   ```
 
-- The fix is to add the mysql-client to the PATH:
+- The fix is to add the mysql-client to the PATH [^1]:
   `export PATH=$PATH:~/homebrew/Cellar/mysql-client@5.7/5.7.34/bin`
+
+[^1]: https://stackoverflow.com/a/69106302
 
 ## Database setup
 
