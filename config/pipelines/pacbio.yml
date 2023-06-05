@@ -16,9 +16,6 @@ default: &default
         pac_bio_run_name:
           type: :model
           value: run.name
-        plate_barcode:
-          type: :string
-          value: "plate_barcode placeholder"
         plate_uuid_lims:
           type: :model
           value: uuid
@@ -69,6 +66,9 @@ default: &default
                 pipeline_id_lims:
                   type: :model
                   value: request.library_type
+                pac_bio_library_tube_barcode:
+                  type: :model
+                  value: pool.tube.barcode
 
     sample_sheet:
       v10:

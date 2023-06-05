@@ -96,6 +96,14 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
           expect(message_sample[:pac_bio_library_tube_uuid]).to eq(library.uuid)
         end
 
+        it 'must have a sample name' do
+          expect(message_sample[:pac_bio_library_tube_name]).to eq(library.request.sample_name)
+        end
+
+        it 'can have a pool barcode' do
+          expect(message_sample[:pac_bio_library_tube_barcode]).to eq(library.pool.tube.barcode)
+        end
+
         it 'must have a sample_uuid' do
           expect(message_sample[:sample_uuid]).to eq(request.sample.external_id)
         end
@@ -118,6 +126,10 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
 
         it 'can have a tag set name' do
           expect(message_sample[:tag_set_name]).to eq(library.tag.tag_set.name)
+        end
+
+        it 'can have a pipeline id' do
+          expect(message_sample[:pipeline_id_lims]).to eq(request.library_type)
         end
       end
     end
