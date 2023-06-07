@@ -46,4 +46,9 @@ FactoryBot.define do
       end
     end
   end
+
+  # rubocop:disable Lint/EmptyBlock
+  factory :pacbio_well_factory, class: 'Pacbio::WellFactory' do
+  end
+  # rubocop:enable Lint/EmptyBlock
 end
