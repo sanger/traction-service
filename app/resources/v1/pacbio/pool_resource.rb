@@ -20,34 +20,24 @@ module V1
                  :library_attributes
       attribute :source_identifier, readonly: true
 
-      # We can only make this endpoint paginated when pacbio run create/edit page
-      # No longer requires all records to be pulled back
-      #
-      # paginator :paged
+      paginator :paged
 
-      # def self.default_sort
-      #   [{ field: 'created_at', direction: :desc }]
-      # end
-
-      # This could be changed so a pool has a barcode through tube
-      filter :barcode, apply: lambda { |records, value, _options|
-        records.where(tube: Tube.find_by(barcode: value))
-      }
+      def self.default_sort
+        [{ field: 'created_at', direction: :desc }]
+      end
 
       filter :sample_name, apply: lambda { |records, value, _options|
         # We have to join requests and samples here in order to find by sample name
         records.joins(libraries: :sample).where(sample: { name: value })
       }
 
+      filter :barcode, apply: lambda { |records, value, _options|
+        records.joins(:tube).where(tube: { barcode: value })
+      }
+
       # When a pool is updated and it is attached to a run we need
       # to republish the messages for the run
       after_update :publish_messages
-
-      # Filters
-      # join pool with tube as a pool has a barcode through tube
-      filter :barcode, apply: lambda { |records, value, _options|
-                                records.joins(:tube).where(tube: { barcode: value })
-                              }
 
       def library_attributes=(library_parameters)
         @model.library_attributes = library_parameters.map do |library|

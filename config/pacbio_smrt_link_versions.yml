@@ -1,21 +1,26 @@
 ---
 default: &default
-
-  yes_no: &yes_no ['Yes','No']
-  generate: &generate [In SMRT Link,Do Not Generate,On Instrument]
+  yes_no: &yes_no ["Yes", "No"]
+  generate: &generate [In SMRT Link, Do Not Generate, On Instrument]
+  true_false: &true_false ["True", "False"]
 
   select_yes_no: &select_yes_no Yes,No
   select_generate: &select_generate In SMRT Link,Do Not Generate,On Instrument
   select_times: &select_times 10.0,15.0,20.0,24.0,30.0
-  
+  select_true_false: &select_true_false True,False
+
   versions:
     v10:
       name: v10
       active: true
-      default: true
+      default: false
     v11:
       name: v11
       active: true
+      default: true
+    v12_revio:
+      name: v12_revio
+      active: false
       default: false
 
   options:
@@ -149,6 +154,51 @@ default: &default
       versions:
         - v10
         - v11
+    movie_acquisition_time:
+      key: movie_acquisition_time
+      label: 'Movie Acquisition Time (hrs)'
+      default_value:
+      validations:
+        presence: {}
+        numericality:
+          less_than_or_equal_to: 30
+          greater_than_or_equal_to: 0.1
+      select_options: *select_times
+      data_type: number
+      versions:
+        - v12_revio
+    include_base_kinetics:
+      key: include_base_kinetics
+      label: 'Include Base Kinetics'
+      default_value: 'True'
+      validations:
+        presence: {}
+        inclusion:
+          in: *true_false
+      data_type: list
+      select_options: *select_true_false
+      versions:
+        - v12_revio
+    library_concentration:
+      key: library_concentration
+      label: 'Library Concentration (pM)'
+      default_value:
+      validations:
+        presence: {}
+      data_type: number
+      versions:
+        - v12_revio
+    polymerase_kit:
+      key: polymerase_kit
+      label: 'Polymerase Kit'
+      default_value:
+      validations:
+        presence: {}
+      data_type: string
+      versions:
+        - v12_revio
+
+
 
 development: *default
 test: *default

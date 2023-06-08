@@ -17,6 +17,7 @@ module V1
       has_one :tube, relation_name: :tube
 
       paginator :paged
+
       filter :species, apply: lambda { |records, value, _options|
         # We have to join requests and samples here in order to find by sample name
         # TODO: The below value[0] means we only take the first value passed in the filter

@@ -69,159 +69,51 @@ RSpec.describe 'RequestsController', pacbio: true do
         end
       end
 
-      context 'filters' do
-        context 'source_identifier' do
-          it 'when the source_identifier belongs to a plate' do
-            pacbio_plate = create(:plate_with_wells_and_requests, pipeline: 'pacbio')
-            pacbio_plate_requests = pacbio_plate.wells.flat_map(&:pacbio_requests)
-            get "#{v1_pacbio_requests_path}?filter[source_identifier]=#{pacbio_plate.barcode}",
-                headers: json_api_headers
+      context 'filters - source_identifier' do
+        it 'when the source_identifier belongs to a plate' do
+          pacbio_plate = create(:plate_with_wells_and_requests, pipeline: 'pacbio')
+          pacbio_plate_requests = pacbio_plate.wells.flat_map(&:pacbio_requests)
+          get "#{v1_pacbio_requests_path}?filter[source_identifier]=#{pacbio_plate.barcode}",
+              headers: json_api_headers
 
-            expect(response).to have_http_status(:success)
-            expect(json['data'].length).to eq(pacbio_plate_requests.length)
-            pacbio_plate_requests.each do |request|
-              request_attributes = find_resource(type: 'requests', id: request.id)['attributes']
-              expect(request_attributes).to include(
-                'cost_code' => request.cost_code,
-                'number_of_smrt_cells' => request.number_of_smrt_cells,
-                'external_study_id' => request.external_study_id,
-                'library_type' => request.library_type,
-                'estimate_of_gb_required' => request.estimate_of_gb_required,
-                'sample_name' => request.sample.name,
-                'sample_species' => request.sample.species,
-                'source_identifier' => request.source_identifier,
-                'created_at' => request.created_at.to_fs(:us)
-              )
-            end
-          end
-
-          it 'when the source_identifier belongs to a tube' do
-            pacbio_tube = create(:tube_with_pacbio_request)
-            get "#{v1_pacbio_requests_path}?filter[source_identifier]=#{pacbio_tube.barcode}",
-                headers: json_api_headers
-
-            expect(response).to have_http_status(:success)
-            expect(json['data'].length).to eq(pacbio_tube.pacbio_requests.length)
-            pacbio_tube.pacbio_requests.each do |request|
-              request_attributes = find_resource(type: 'requests', id: request.id)['attributes']
-              expect(request_attributes).to include(
-                'cost_code' => request.cost_code,
-                'number_of_smrt_cells' => request.number_of_smrt_cells,
-                'external_study_id' => request.external_study_id,
-                'library_type' => request.library_type,
-                'estimate_of_gb_required' => request.estimate_of_gb_required,
-                'sample_name' => request.sample.name,
-                'sample_species' => request.sample.species,
-                'source_identifier' => request.source_identifier,
-                'created_at' => request.created_at.to_fs(:us)
-              )
-            end
+          expect(response).to have_http_status(:success)
+          expect(json['data'].length).to eq(pacbio_plate_requests.length)
+          pacbio_plate_requests.each do |request|
+            request_attributes = find_resource(type: 'requests', id: request.id)['attributes']
+            expect(request_attributes).to include(
+              'cost_code' => request.cost_code,
+              'number_of_smrt_cells' => request.number_of_smrt_cells,
+              'external_study_id' => request.external_study_id,
+              'library_type' => request.library_type,
+              'estimate_of_gb_required' => request.estimate_of_gb_required,
+              'sample_name' => request.sample.name,
+              'sample_species' => request.sample.species,
+              'source_identifier' => request.source_identifier,
+              'created_at' => request.created_at.to_fs(:us)
+            )
           end
         end
-      end
-    end
-  end
 
-  describe '#create' do
-    context 'when creating a single request' do
-      context 'on success' do
-        let(:body) do
-          {
-            data: {
-              type: 'requests',
-              attributes: {
-                requests: [
-                  {
-                    request: attributes_for(:pacbio_request),
-                    sample: attributes_for(:sample),
-                    tube: { barcode: 'custom' }
-                  }
-                ]
-              }
-            }
-          }.to_json
-        end
+        it 'when the source_identifier belongs to a tube' do
+          pacbio_tube = create(:tube_with_pacbio_request)
+          get "#{v1_pacbio_requests_path}?filter[source_identifier]=#{pacbio_tube.barcode}",
+              headers: json_api_headers
 
-        it 'has a created status' do
-          post v1_pacbio_requests_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:created)
-        end
-
-        it 'creates a request' do
-          expect do
-            post v1_pacbio_requests_path, params: body, headers: json_api_headers
-          end.to change(Pacbio::Request, :count).by(1)
-        end
-
-        it 'creates a sample' do
-          expect do
-            post v1_pacbio_requests_path, params: body, headers: json_api_headers
-          end.to change(Sample, :count).by(1)
-        end
-      end
-
-      context 'on failure' do
-        let(:body) do
-          {
-            data: {
-              attributes: {
-                requests: [
-                  {
-                    request: attributes_for(:pacbio_request),
-                    sample: attributes_for(:sample).except(:name),
-                    tube: { barcode: 'custom' }
-                  }
-                ]
-              }
-            }
-          }.to_json
-        end
-
-        it 'has an unprocessable entity status' do
-          post v1_pacbio_requests_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
-
-        it 'cannot create a request' do
-          expect do
-            post v1_pacbio_requests_path, params: body,
-                                          headers: json_api_headers
-          end.not_to change(Pacbio::Request, :count)
-        end
-
-        it 'has an error message' do
-          post v1_pacbio_requests_path, params: body, headers: json_api_headers
-          expect(response.parsed_body['data']).not_to be_empty
-        end
-      end
-
-      context 'when creating multiple requests' do
-        context 'on success' do
-          context 'when the sample does exist' do
-            let(:body) do
-              {
-                data: {
-                  attributes: {
-                    requests: [
-                      { request: attributes_for(:pacbio_request), sample: attributes_for(:sample) },
-                      { request: attributes_for(:pacbio_request), sample: attributes_for(:sample) }
-                    ]
-                  }
-                }
-              }.to_json
-            end
-
-            it 'can create requests' do
-              post v1_pacbio_requests_path, params: body, headers: json_api_headers
-              expect(response).to have_http_status(:created)
-            end
-
-            it 'will have the correct number of requests' do
-              expect do
-                post v1_pacbio_requests_path, params: body,
-                                              headers: json_api_headers
-              end.to change(Pacbio::Request, :count).by(2)
-            end
+          expect(response).to have_http_status(:success)
+          expect(json['data'].length).to eq(pacbio_tube.pacbio_requests.length)
+          pacbio_tube.pacbio_requests.each do |request|
+            request_attributes = find_resource(type: 'requests', id: request.id)['attributes']
+            expect(request_attributes).to include(
+              'cost_code' => request.cost_code,
+              'number_of_smrt_cells' => request.number_of_smrt_cells,
+              'external_study_id' => request.external_study_id,
+              'library_type' => request.library_type,
+              'estimate_of_gb_required' => request.estimate_of_gb_required,
+              'sample_name' => request.sample.name,
+              'sample_species' => request.sample.species,
+              'source_identifier' => request.source_identifier,
+              'created_at' => request.created_at.to_fs(:us)
+            )
           end
         end
       end

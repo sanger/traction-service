@@ -11,10 +11,9 @@ shared_examples_for 'tubes' do
 
   describe '#get' do
     context 'tubes' do
-      let!(:other_pipeline_tubes) { create_list(other_pipeline_tube_library_factory, 2) }
-      let!(:pipeline_tubes)       { create_list(pipeline_tube_library_factory, 3) }
-
       it 'returns a list' do
+        create_list(other_pipeline_tube_library_factory, 2)
+        create_list(pipeline_tube_library_factory, 3)
         get send(tubes_path), headers: json_api_headers
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
@@ -23,10 +22,10 @@ shared_examples_for 'tubes' do
     end
 
     context 'when material is a request' do
-      let!(:other_pipeline_tube_request)   { create(other_pipeline_tube_request_factory) }
       let!(:pipeline_tube_requests)        { create_list(pipeline_tube_request_factory, 2) }
 
       it 'returns the correct attributes', aggregate_failures: true do
+        create(other_pipeline_tube_request_factory)
         get send(tubes_path), headers: json_api_headers
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)
@@ -44,10 +43,10 @@ shared_examples_for 'tubes' do
     end
 
     context 'when material is a library' do
-      let!(:other_pipeline_tube_library)  { create(other_pipeline_tube_library_factory) }
-      let!(:pipeline_tube_libraries)      { create_list(pipeline_tube_library_factory, 2) }
+      let!(:pipeline_tube_libraries) { create_list(pipeline_tube_library_factory, 2) }
 
       it 'returns the correct attributes' do
+        create(other_pipeline_tube_library_factory)
         get send(tubes_path), headers: json_api_headers
         expect(response).to have_http_status(:success)
         json = ActiveSupport::JSON.decode(response.body)

@@ -8,10 +8,10 @@ RSpec.describe 'Pacbio::TagSetsController' do
   end
 
   describe '#get' do
-    let!(:tag_set1) { create(:tag_set, pipeline: :pacbio) }
-    let!(:tag_set2) { create(:tag_set, pipeline: :ont) }
+    let!(:tag_set) { create(:tag_set, pipeline: :pacbio) }
 
     before do
+      create(:tag_set, pipeline: :ont)
       get v1_pacbio_tag_sets_path, headers: json_api_headers
     end
 
@@ -24,7 +24,7 @@ RSpec.describe 'Pacbio::TagSetsController' do
     end
 
     it 'returns the correct attributes' do
-      expect(json['data'][0]['attributes']['name']).to eq(tag_set1.name)
+      expect(json['data'][0]['attributes']['name']).to eq(tag_set.name)
     end
   end
 

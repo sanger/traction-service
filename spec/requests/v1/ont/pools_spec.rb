@@ -8,10 +8,6 @@ RSpec.describe 'PoolsController', ont: true do
   let!(:request2) { create(:ont_request) }
   let!(:tag2) { create(:tag) }
 
-  before do
-    Flipper.enable(:dpl_279_ont_libraries_and_pools)
-  end
-
   describe '#get' do
     let!(:pools) { create_list(:ont_pool, 2) }
 
@@ -140,37 +136,35 @@ RSpec.describe 'PoolsController', ont: true do
       end
 
       context 'on failure' do
-        context 'when library is invalid' do
-          let(:body) do
-            {
-              data: {
-                type: 'pools',
-                attributes: {
-                  library_attributes: [
-                    {
-                      kit_barcode: 'LK1234567',
-                      volume: 1.11,
-                      concentration: 2.22,
-                      insert_size: 'Sausages',
-                      ont_request_id: request.id,
-                      tag_id: tag.id
-                    }
-                  ]
-                }
+        let(:body) do
+          {
+            data: {
+              type: 'pools',
+              attributes: {
+                library_attributes: [
+                  {
+                    kit_barcode: 'LK1234567',
+                    volume: 1.11,
+                    concentration: 2.22,
+                    insert_size: 'Sausages',
+                    ont_request_id: request.id,
+                    tag_id: tag.id
+                  }
+                ]
               }
-            }.to_json
-          end
+            }
+          }.to_json
+        end
 
-          it 'returns unprocessable entity status' do
-            post v1_ont_pools_path, params: body, headers: json_api_headers
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
+        it 'returns unprocessable entity status' do
+          post v1_ont_pools_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
 
-          it 'cannot create a pool' do
-            expect { post v1_ont_pools_path, params: body, headers: json_api_headers }.not_to(
-              change(Ont::Pool, :count)
-            )
-          end
+        it 'cannot create a pool' do
+          expect { post v1_ont_pools_path, params: body, headers: json_api_headers }.not_to(
+            change(Ont::Pool, :count)
+          )
         end
       end
     end
@@ -217,46 +211,44 @@ RSpec.describe 'PoolsController', ont: true do
         end
       end
 
-      context 'on failure' do
-        context 'when there is a tag clash' do
-          let(:body) do
-            {
-              data: {
-                type: 'pools',
-                attributes: {
-                  library_attributes: [
-                    {
-                      kit_barcode: 'LK1234567',
-                      volume: 1.11,
-                      concentration: 2.22,
-                      insert_size: 100,
-                      ont_request_id: request.id,
-                      tag_id: tag.id
-                    },
-                    {
-                      kit_barcode: 'LK1234567',
-                      volume: 1.11,
-                      concentration: 2.22,
-                      insert_size: 100,
-                      ont_request_id: request2.id,
-                      tag_id: tag.id
-                    }
-                  ]
-                }
+      context 'on failure - when there is a tag clash' do
+        let(:body) do
+          {
+            data: {
+              type: 'pools',
+              attributes: {
+                library_attributes: [
+                  {
+                    kit_barcode: 'LK1234567',
+                    volume: 1.11,
+                    concentration: 2.22,
+                    insert_size: 100,
+                    ont_request_id: request.id,
+                    tag_id: tag.id
+                  },
+                  {
+                    kit_barcode: 'LK1234567',
+                    volume: 1.11,
+                    concentration: 2.22,
+                    insert_size: 100,
+                    ont_request_id: request2.id,
+                    tag_id: tag.id
+                  }
+                ]
               }
-            }.to_json
-          end
+            }
+          }.to_json
+        end
 
-          it 'returns unprocessable entity status' do
-            post v1_ont_pools_path, params: body, headers: json_api_headers
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
+        it 'returns unprocessable entity' do
+          post v1_ont_pools_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
 
-          it 'cannot create a pool' do
-            expect { post v1_ont_pools_path, params: body, headers: json_api_headers }.not_to(
-              change(Ont::Pool, :count)
-            )
-          end
+        it 'cannot create a pool' do
+          expect { post v1_ont_pools_path, params: body, headers: json_api_headers }.not_to(
+            change(Ont::Pool, :count)
+          )
         end
       end
     end
@@ -338,58 +330,56 @@ RSpec.describe 'PoolsController', ont: true do
         end
       end
 
-      context 'on failure' do
-        context 'when there is a tag clash' do
-          let(:body) do
-            {
-              data: {
-                type: 'pools',
-                id: pool.id.to_s,
-                attributes: {
-                  library_attributes: [
-                    {
-                      id: updated_library.id.to_s,
-                      ont_request_id: updated_library.ont_request_id.to_s,
-                      kit_barcode: 'LK12345',
-                      tag_id: tag.id,
-                      volume: 1,
-                      concentration: 1,
-                      insert_size: 100
-                    },
-                    {
-                      ont_request_id: added_request.id.to_s,
-                      kit_barcode: 'LK12345',
-                      tag_id: tag.id,
-                      volume: 1,
-                      concentration: 1,
-                      insert_size: 100
-                    }
-                  ],
-                  volume: '200',
-                  concentration: '22',
-                  kit_barcode: '100',
-                  insert_size: '11',
-                  created_at: '2021-08-04T14:35:47.208Z',
-                  updated_at: '2021-08-04T14:35:47.208Z'
-                }
+      context 'on failure - when there is a tag clash' do
+        let(:body) do
+          {
+            data: {
+              type: 'pools',
+              id: pool.id.to_s,
+              attributes: {
+                library_attributes: [
+                  {
+                    id: updated_library.id.to_s,
+                    ont_request_id: updated_library.ont_request_id.to_s,
+                    kit_barcode: 'LK12345',
+                    tag_id: tag.id,
+                    volume: 1,
+                    concentration: 1,
+                    insert_size: 100
+                  },
+                  {
+                    ont_request_id: added_request.id.to_s,
+                    kit_barcode: 'LK12345',
+                    tag_id: tag.id,
+                    volume: 1,
+                    concentration: 1,
+                    insert_size: 100
+                  }
+                ],
+                volume: '200',
+                concentration: '22',
+                kit_barcode: '100',
+                insert_size: '11',
+                created_at: '2021-08-04T14:35:47.208Z',
+                updated_at: '2021-08-04T14:35:47.208Z'
               }
-            }.to_json
-          end
+            }
+          }.to_json
+        end
 
-          it 'returns unprocessable entity status' do
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
+        it 'returns unprocessable entity status' do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
 
-          it 'does not update a pool' do
-            pool.reload
-            expect(pool.kit_barcode).not_to eq('100')
-          end
+        it 'does not update a pool' do
+          pool.reload
+          expect(pool.kit_barcode).not_to eq('100')
+        end
 
-          it 'does not change the libraries' do
-            attributes = pool.libraries.reload.map(&:attributes)
-            expect(attributes).to include(updated_library.attributes)
-            expect(attributes).to include(removed_library.attributes)
-          end
+        it 'does not change the libraries' do
+          attributes = pool.libraries.reload.map(&:attributes)
+          expect(attributes).to include(updated_library.attributes)
+          expect(attributes).to include(removed_library.attributes)
         end
       end
     end

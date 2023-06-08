@@ -43,10 +43,6 @@ RSpec.describe Sample do
         expect(build(:sample, species: nil)).not_to be_valid
       end
     end
-
-    it 'is active' do
-      expect(create(:sample)).to be_active
-    end
   end
 
   context 'on update' do
@@ -61,7 +57,7 @@ RSpec.describe Sample do
   context 'requests' do
     it 'can have requests' do
       sample = create(:sample)
-      libraries = create_list(:request, 2, sample:)
+      create_list(:request, 2, sample:)
       expect(sample.requests.length).to eq 2
     end
   end
