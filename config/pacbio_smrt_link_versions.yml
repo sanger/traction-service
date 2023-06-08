@@ -12,7 +12,7 @@ default: &default
   versions:
     v10:
       name: v10
-      active: true
+      active: false
       default: false
     v11:
       name: v11
@@ -20,7 +20,7 @@ default: &default
       default: true
     v12_revio:
       name: v12_revio
-      active: false
+      active: true
       default: false
 
   options:
