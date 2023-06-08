@@ -58,7 +58,9 @@ namespace :pacbio_data do
 
     puts '-> Creating pacbio runs...'
     pool_records.each_with_index do |pool, i|
-      run = Pacbio::Run.create!(name: "Run#{pool.id}", sequencing_kit_box_barcode: "SKB#{pool.id}", dna_control_complex_box_barcode: "DCCB#{pool.id}")
+      run = Pacbio::Run.create!(name: "Run#{pool.id}",
+                                sequencing_kit_box_barcode: "SKB#{pool.id}",
+                                dna_control_complex_box_barcode: "DCCB#{pool.id}")
       plate = Pacbio::Plate.create(run:)
       Pacbio::Well.create!(
         plate:,
