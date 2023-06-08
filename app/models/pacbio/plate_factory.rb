@@ -24,7 +24,6 @@ module Pacbio
       end
     end
 
-    ##
     # Array describing the wells to create.
     # Each well consists of:
     # @param attributes [Array<Hash>] Array containing a hash describing the wells to build
@@ -45,8 +44,6 @@ module Pacbio
         well.assign_attributes(**attrs.except(:id), pools:, plate:)
         wells << well
       end
-
-      # binding.pry
     end
 
     def wells
