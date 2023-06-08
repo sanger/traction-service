@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Pacbio
+  # Create or update wells
   class WellFactory
-    # provides model-like behaviour
     include ActiveModel::Model
 
     extend NestedValidation
@@ -10,15 +10,14 @@ module Pacbio
     validates_nested :wells
 
     attr_reader :well_attributes
-    attr_accessor :plate
+    attr_accessor :plate, :run
 
     def construct_resources!
       mark_wells_to_remove_for_destruction
-      well.save!
+      wells.collect(&:save!)
       destroy_removed_wells
     end
 
-    # if wells do not exist, initialises as an empty array
     def wells
       @wells ||= []
     end
@@ -42,7 +41,6 @@ module Pacbio
       end
     end
 
-    # get an array of all well IDs from well_attributes array
     def well_ids
       return [] if well_attributes.blank?
 
@@ -64,7 +62,7 @@ module Pacbio
     def well_ids_for_removal
       return if well_attributes.blank?
 
-      @well_ids_for_removal ||= run.plates.first.wells.pluck(:id) - well_ids
+      @well_ids_for_removal ||= plate.wells.pluck(:id) - well_ids
     end
 
     # Any wells that are no longer being used should be marked for destruction
