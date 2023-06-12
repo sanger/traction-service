@@ -60,16 +60,15 @@ RSpec.describe Pacbio::WellFactory do
       end
     end
 
-    describe.skip '#update' do
+    describe '#update' do
       let!(:wells) { [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1')] }
       let(:run) { create(:pacbio_run, plates: [create(:pacbio_plate, wells:)]) }
       let!(:pool) { create(:pacbio_pool) }
-      let!(:plate) { create(:pacbio_plate) }
 
       it 'updates existing wells' do
-        well_attributes = run.plates.first.wells.collect { |well| well.attributes.with_indifferent_access }
+        well_attributes = run.plates.first.wells.collect { |well| well.attributes.merge(pools: well.pools.pluck(:id)).with_indifferent_access }
         well_attributes.first.merge!(pools: [pool.id])
-        well_factory = build(:pacbio_well_factory, plate:, well_attributes:)
+        well_factory = build(:pacbio_well_factory, plate: run.plates.first, well_attributes:)
         well_factory.construct_resources!
         run.reload
         expect(run.plates.first.wells.find_by(row: 'A', column: '1').pools).to eq([pool])
@@ -78,7 +77,7 @@ RSpec.describe Pacbio::WellFactory do
       it 'deletes wells that no longer exist' do
         well_attributes = run.plates.first.wells.collect { |well| well.attributes.with_indifferent_access.merge(pools: well.pools.pluck(:id)) }
         well_attributes.pop
-        well_factory = build(:pacbio_well_factory, plate:, well_attributes:)
+        well_factory = build(:pacbio_well_factory, plate: run.plates.first, well_attributes:)
         well_factory.construct_resources!
         run.reload
         expect(run.plates.first.wells.count).to eq(1)
