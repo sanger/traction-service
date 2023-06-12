@@ -14,6 +14,7 @@ module Pacbio
 
     def construct_resources!
       mark_wells_to_remove_for_destruction
+      # binding.pry
       wells.collect(&:save!)
       destroy_removed_wells
     end

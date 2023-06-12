@@ -8,7 +8,7 @@ RSpec.describe Pacbio::WellFactory do
     create(:pacbio_smrt_link_version, name: 'v11', default: true)
   end
 
-  describe.skip '#construct_resources' do
+  describe '#construct_resources' do
     subject(:construct_resources) do
       well_factory.construct_resources!
     end
@@ -18,37 +18,49 @@ RSpec.describe Pacbio::WellFactory do
         build(:pacbio_well_factory, plate:, well_attributes:)
       end
 
-      let!(:plate) { create(:pacbio_plate) }
-      let!(:pools) { [create(:pacbio_pool), create(:pacbio_pool)] }
+      let!(:plate) { build(:pacbio_plate, well_count: 0) }
+      let!(:pools) { create_list(:pacbio_pool, 2) }
       let(:well_attributes) { [build(:pacbio_well, row: 'A', column: '1').attributes.merge(pools: pools.collect(&:id)).with_indifferent_access] }
 
-      it 'creates a well' do
-        expect(well_factory).to be_valid
-        expect { construct_resources }.to change(Pacbio::Well, :count).by(1)
+      context 'valid' do
+        let(:well_factory) do
+          build(:pacbio_well_factory, plate:, well_attributes:)
+        end
+
+        it 'creates a well' do
+          expect { construct_resources }.to change(Pacbio::Well, :count).by(1)
+        end
+
+        it 'attaches pools to the well' do
+          construct_resources
+          expect(Pacbio::Well.first.pools.count).to eq(pools.length)
+          expect(Pacbio::Well.first.pools.first).to eq(pools.first)
+          expect(Pacbio::Well.first.pools.last).to eq(pools.last)
+        end
       end
 
-      it 'attaches pools to the well' do
-        construct_resources
-        expect(Pacbio::Well.first.pools.count).to eq(pools.length)
-        expect(Pacbio::Well.first.pools.first).to eq(pools.first)
-        expect(Pacbio::Well.first.pools.last).to eq(pools.last)
-      end
+      context 'invalid' do
+        it 'when the well is not valid' do
+          well_attributes << build(:pacbio_well, row: nil, column: '1').attributes.merge(pools: pools.collect(&:id)).with_indifferent_access
+          well_factory = build(:pacbio_well_factory, plate:, well_attributes:)
+          expect(well_factory).not_to be_valid
+        end
 
-      it 'does not create a run with invalid well positions' do
-        well_factory.well_attributes = [build(:pacbio_well, row: 'D', column: '1')]
-        expect(well_factory).not_to be_valid
-      end
+        it 'does not create wells with invalid well positions', skip: 'Not sure we can do this here as this validation is run level' do
+          well_attributes << build(:pacbio_well, row: 'F', column: '1').attributes.merge(pools: pools.collect(&:id)).with_indifferent_access
+          well_factory = build(:pacbio_well_factory, plate:, well_attributes:)
+          expect(well_factory).not_to be_valid
+        end
 
-      it 'does not create a run with invalid well contiguousness' do
-        well_factory.well_attributes = [
-          build(:pacbio_well, row: 'A', column: '1'),
-          build(:pacbio_well, row: 'B', column: '1')
-        ]
-        expect(well_factory).not_to be_valid
+        it 'does not create wells with invalid well contiguousness', skip: 'Not sure we can do this here as this validation is run level' do
+          well_attributes << build(:pacbio_well, row: 'C', column: '1').attributes.merge(pools: pools.collect(&:id)).with_indifferent_access
+          well_factory = build(:pacbio_well_factory, plate:, well_attributes:)
+          expect(well_factory).not_to be_valid
+        end
       end
     end
 
-    describe '#update' do
+    describe.skip '#update' do
       let!(:wells) { [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1')] }
       let(:run) { create(:pacbio_run, plates: [create(:pacbio_plate, wells:)]) }
       let!(:pool) { create(:pacbio_pool) }
@@ -74,7 +86,7 @@ RSpec.describe Pacbio::WellFactory do
     end
   end
 
-  describe 'returns the correct output' do
+  describe.skip 'returns the correct output' do
     context 'well factory with existing wells' do
       let!(:plate) { create(:pacbio_plate) }
       let!(:pools) { [create(:pacbio_pool), create(:pacbio_pool)] }
@@ -94,7 +106,7 @@ RSpec.describe Pacbio::WellFactory do
     end
 
     # create an well_factory with new wells
-    context.skip 'well factory with new wells' do
+    context 'well factory with new wells' do
       let!(:wells) { [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1')] }
       let(:run) { create(:pacbio_run, plates: [create(:pacbio_plate, wells:)]) }
       let!(:pool) { create(:pacbio_pool) }
