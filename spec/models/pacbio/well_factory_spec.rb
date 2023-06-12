@@ -74,6 +74,20 @@ RSpec.describe Pacbio::WellFactory do
         expect(run.plates.first.wells.find_by(row: 'A', column: '1').pools).to eq([pool])
       end
 
+      # further investigation here:
+      #  - it looks like it is trying to validate the well pool because the well and pool must both exist
+      #  - but the well in the well pool does not exist until after the well is created
+      #  - this means that the failure is circular. We don't actually want to create the well pool until the well is saved
+      #  - but the well needs to have pools hence failure.
+      it 'adds new wells', skip: 'test is not currently working because well pools and pools are invalid' do
+        well_attributes = run.plates.first.wells.collect { |well| well.attributes.merge(pools: well.pools.pluck(:id)).with_indifferent_access }
+        well_attributes << build(:pacbio_well, row: 'C', column: '1').attributes.merge(pools: [pool.id]).with_indifferent_access
+        well_factory = build(:pacbio_well_factory, plate: run.plates.first, well_attributes:)
+        well_factory.construct_resources!
+        run.reload
+        expect(run.plates.first.wells.count).to eq(3)
+      end
+
       it 'deletes wells that no longer exist' do
         well_attributes = run.plates.first.wells.collect { |well| well.attributes.with_indifferent_access.merge(pools: well.pools.pluck(:id)) }
         well_attributes.pop
