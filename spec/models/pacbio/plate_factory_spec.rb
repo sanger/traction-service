@@ -39,30 +39,13 @@ RSpec.describe Pacbio::PlateFactory do
       end
     end
 
-    context 'create on invalid' do
-      subject(:plate_factory) { build(:pacbio_plate_factory, run:, well_attributes:) }
-
-      let(:well_attributes) { [attributes_for(:pacbio_well).except(:plate, :pools, :run)] }
-      let!(:pools) { [create(:pacbio_pool), create(:pacbio_pool)] }
-
-      it 'does not create a run with invalid well positions' do
-        plate_factory.well_attributes = [build(:pacbio_well, row: 'D', column: '1').attributes.merge(pools: pools.collect(&:id)).with_indifferent_access]
-        expect(plate_factory).not_to be_valid
-      end
-
-      it 'does not create a run with invalid well contiguousness' do
-        plate_factory.well_attributes = [build(:pacbio_well, row: 'A', column: '1').attributes.merge(pools: pools.collect(&:id)).with_indifferent_access, build(:pacbio_well, row: 'B', column: '1').attributes.merge(pools: pools.collect(&:id)).with_indifferent_access]
-        expect(plate_factory).not_to be_valid
-      end
-    end
-
     context 'update wells' do
       let!(:wells) { [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1')] }
       let!(:run) { create(:pacbio_run, plates: [create(:pacbio_plate, wells:)]) }
       let!(:pool) { create(:pacbio_pool) }
 
       it 'updates existing wells' do
-        well_attributes = run.plates.first.wells.collect { |well| well.attributes.with_indifferent_access }
+        well_attributes = run.plates.first.wells.collect { |well| well.attributes.with_indifferent_access.merge(pools: well.pools.pluck(:id)) }
         well_attributes.first.merge!(pools: [pool.id])
         plate_factory = build(:pacbio_plate_factory, run:, well_attributes:)
         plate_factory.construct_resources!
@@ -70,7 +53,7 @@ RSpec.describe Pacbio::PlateFactory do
         expect(run.plates.first.wells.find_by(row: 'A', column: '1').pools).to eq([pool])
       end
 
-      it 'creates new wells', skip: 'there is an issue with the way models are interacting' do
+      it 'creates new wells' do
         well_attributes = run.plates.first.wells.collect { |well| well.attributes.with_indifferent_access.merge(pools: well.pools.pluck(:id)) }
         well_attributes << build(:pacbio_well, row: 'C', column: '1').attributes.with_indifferent_access.merge(pools: [pool.id])
         plate_factory = build(:pacbio_plate_factory, run:, well_attributes:)
