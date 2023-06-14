@@ -198,7 +198,7 @@ RSpec.describe Pacbio::Run, pacbio: true do
     let(:wells_attributes) { [build(:pacbio_well, row: 'A', column: '1').attributes.merge(pool_ids: pools.pluck(:id)), build(:pacbio_well, row: 'A', column: '1').attributes.merge(pool_ids: pools.pluck(:id))] }
 
     it 'creates a run' do
-      expect { create(:pacbio_run, plates_attributes: [{ wells_attributes:}]) }.to change(Pacbio::Run, :count).by(1)
+      expect { create(:pacbio_run, plates_attributes: [{ wells_attributes: }]) }.to change(described_class, :count).by(1)
     end
   end
 end

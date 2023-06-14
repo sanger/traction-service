@@ -53,7 +53,7 @@ RSpec.describe Pacbio::PlateFactory do
         expect(run.plates.first.wells.find_by(row: 'A', column: '1').pools).to eq([pool])
       end
 
-      it 'creates new wells', skip: "Need to set well pool to have well optional" do
+      it 'creates new wells', skip: 'Need to set well pool to have well optional' do
         well_attributes = run.plates.first.wells.collect { |well| well.attributes.with_indifferent_access.merge(pools: well.pools.pluck(:id)) }
         well_attributes << build(:pacbio_well, row: 'C', column: '1').attributes.with_indifferent_access.merge(pools: [pool.id])
         plate_factory = build(:pacbio_plate_factory, run:, well_attributes:)
