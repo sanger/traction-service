@@ -43,11 +43,11 @@ module Pacbio
 
     scope :active, -> { where(deactivated_at: nil) }
 
-    accepts_nested_attributes_for :plates
+    accepts_nested_attributes_for :plates, allow_destroy: true
 
     # This will return an empty list
-    # If well data is required via the run, use ?include=plates.wells
-    attr_reader :well_attributes
+    # If plate/well data is required via the run, use ?include=plates.wells
+    attr_reader :plates_attributes
 
     # if comments are nil this blows up so add try.
     def comments
@@ -65,17 +65,6 @@ module Pacbio
     # We can't alias it as it is an enum
     def instrument_name
       system_name
-    end
-
-    def well_attributes=(well_options)
-      if plates.empty?
-        plates.build(run: self, well_attributes: well_options)
-      else
-        plate = plates.first
-        plate.well_attributes = well_options
-        # TODO: we should not need this
-        plate.save
-      end
     end
 
     def wells

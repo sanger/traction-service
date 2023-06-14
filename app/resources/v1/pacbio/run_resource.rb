@@ -8,7 +8,8 @@ module V1
 
       attributes :name, :sequencing_kit_box_barcode, :dna_control_complex_box_barcode,
                  :system_name, :created_at, :state, :comments,
-                 :pacbio_smrt_link_version_id, :well_attributes
+                 :pacbio_smrt_link_version_id, :plates_attributes
+
       has_many :plates, foreign_key_on: :related, foreign_key: 'pacbio_run_id',
                         class_name: 'Runs::Plate'
 
@@ -62,9 +63,14 @@ module V1
 
       private
 
-      def well_attributes=(wells_parameters)
-        @model.well_attributes = wells_parameters.map do |well|
-          well.permit(PERMITTED_WELL_PARAMETERS, pools: [])
+      def plates_attributes=(plates_parameters)
+        @model.plates_attributes = plates_parameters.map do |plate|
+          plate.permit(
+            wells_attributes: [
+              PERMITTED_WELL_PARAMETERS,
+              { pool_ids: [] }
+            ]
+          )
         end
       end
     end
