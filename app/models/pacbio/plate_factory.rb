@@ -34,13 +34,11 @@ module Pacbio
       @well_attributes = attributes
 
       @well_factory = WellFactory.new(plate:, well_attributes:)
-
     end
 
     # If the run is new build it otherwise return the firts plate
     def plate
       @plate ||= run.plates.first || run.plates.build(run:)
     end
-
   end
 end
