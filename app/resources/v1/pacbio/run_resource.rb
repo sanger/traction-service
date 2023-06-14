@@ -68,6 +68,7 @@ module V1
           plate.permit(
             :id,
             wells_attributes: [
+              :_destroy,
               PERMITTED_WELL_PARAMETERS,
               { pool_ids: [] }
             ]
