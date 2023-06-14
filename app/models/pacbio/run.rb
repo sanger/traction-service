@@ -41,6 +41,8 @@ module Pacbio
 
     validates :name, uniqueness: { case_sensitive: false }
 
+    validate :validate_plate_limit
+
     scope :active, -> { where(deactivated_at: nil) }
 
     accepts_nested_attributes_for :plates, allow_destroy: true
@@ -86,6 +88,19 @@ module Pacbio
       return if name.present?
 
       update(name: "#{NAME_PREFIX}#{id}")
+    end
+
+    def validate_plate_limit
+      return if system_name.blank?
+
+      if plates.size > 1 && system_name.match?('Sequel IIe')
+        errors.add(:plates,
+                   'Sequel IIe can only have 1 plate')
+      end
+      return unless plates.size > 2 && system_name.match?('Revio')
+
+      errors.add(:plates,
+                 'Revio can only have 2 plates')
     end
   end
 end
