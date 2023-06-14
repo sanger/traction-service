@@ -86,6 +86,8 @@ RSpec.describe Pacbio::WellFactory do
         well_factory.construct_resources!
         run.reload
         expect(run.plates.first.wells.count).to eq(3)
+        # we need to check the pools. Due to the issue with well pools
+        expect(run.plates.first.wells.last.pools).to eq([pool])
       end
 
       it 'deletes wells that no longer exist' do
@@ -99,7 +101,7 @@ RSpec.describe Pacbio::WellFactory do
     end
   end
 
-  describe.skip 'returns the correct output' do
+  describe 'returns the correct output' do
     context 'well factory with existing wells' do
       let!(:plate) { create(:pacbio_plate) }
       let!(:pools) { [create(:pacbio_pool), create(:pacbio_pool)] }
@@ -123,19 +125,18 @@ RSpec.describe Pacbio::WellFactory do
       let!(:wells) { [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1')] }
       let(:run) { create(:pacbio_run, plates: [create(:pacbio_plate, wells:)]) }
       let!(:pool) { create(:pacbio_pool) }
-      let!(:plate) { create(:pacbio_plate) }
 
       it 'returns #new_well attributes' do
         well_attributes = run.plates.first.wells.collect { |well| well.attributes.with_indifferent_access }
         well_attributes.first.merge!(pools: [pool.id])
-        well_factory = build(:pacbio_well_factory, plate:, well_attributes:)
+        well_factory = build(:pacbio_well_factory, plate: run.plates.first, well_attributes:)
         expect(well_factory.new_wells).to eq(well_factory.well_attributes)
       end
 
       it 'does not return any #existing_wells attributes' do
         well_attributes = run.plates.first.wells.collect { |well| well.attributes.with_indifferent_access }
         well_attributes.first.merge!(pools: [pool.id])
-        well_factory = build(:pacbio_well_factory, plate:, well_attributes:)
+        well_factory = build(:pacbio_well_factory, plate: run.plates.first, well_attributes:)
         expect(well_factory.existing_wells).to eq([])
       end
     end
