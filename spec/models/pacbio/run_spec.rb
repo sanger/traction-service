@@ -195,10 +195,15 @@ RSpec.describe Pacbio::Run, pacbio: true do
 
   describe '#create with nested attributes' do
     let!(:pools) { create_list(:pacbio_pool, 2) }
-    let(:wells_attributes) { [build(:pacbio_well, row: 'A', column: '1').attributes.merge(pool_ids: pools.pluck(:id)), build(:pacbio_well, row: 'A', column: '1').attributes.merge(pool_ids: pools.pluck(:id))] }
 
     it 'creates a run' do
+      wells_attributes = [build(:pacbio_well, row: 'A', column: '1').attributes.merge(pool_ids: pools.pluck(:id)), build(:pacbio_well, row: 'A', column: '1').attributes.merge(pool_ids: pools.pluck(:id))]
       expect { create(:pacbio_run, plates_attributes: [{ wells_attributes: }]) }.to change(described_class, :count).by(1)
+    end
+
+    it 'removes existing wells' do
+      run = create(:pacbio_run, plates: [create(:pacbio_plate, well_count: 2)])
+      expect { run.update(plates_attributes: { id: run.plates.first.id, wells_attributes: [{ id: run.plates.first.wells.first.id, _destroy: true }] }) }.to change(run.plates.first.wells, :count).by(-1)
     end
   end
 end

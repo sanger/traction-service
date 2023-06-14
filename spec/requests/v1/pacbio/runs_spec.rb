@@ -1091,7 +1091,7 @@ RSpec.describe 'RunsController' do
               attributes: {
                 plates_attributes: [{
                   id: plate.id,
-                  well_attributes: [
+                  wells_attributes: [
                     {
                       row: 'F',
                       column: '12',
@@ -1112,6 +1112,10 @@ RSpec.describe 'RunsController' do
                       row: 'D',
                       column: '7',
                       pool_ids: [well1.pools[0].id]
+                    },
+                    {
+                      id: plate.wells[1].id.to_s,
+                      _destroy: true
                     }
                   ]
                 }]
