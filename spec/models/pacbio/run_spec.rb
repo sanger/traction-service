@@ -58,10 +58,10 @@ RSpec.describe Pacbio::Run, pacbio: true do
   end
 
   context 'associations' do
-    it 'can have multiple plates' do
-      plate_1 = create(:pacbio_plate)
-      plate_2 = create(:pacbio_plate)
-      run = create(:pacbio_run, plates: [plate_1, plate_2])
+    it 'can have multiple plates for Revio' do
+      plate_1 = create(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])
+      plate_2 = create(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])
+      run = create(:pacbio_run, system_name: 'Revio', plates: [plate_1, plate_2])
       expect(run.plates).to eq([plate_1, plate_2])
     end
 
@@ -204,6 +204,18 @@ RSpec.describe Pacbio::Run, pacbio: true do
     it 'removes existing wells' do
       run = create(:pacbio_run, plates: [create(:pacbio_plate, well_count: 2)])
       expect { run.update(plates_attributes: { id: run.plates.first.id, wells_attributes: [{ id: run.plates.first.wells.first.id, _destroy: true }] }) }.to change(run.plates.first.wells, :count).by(-1)
+    end
+  end
+
+  describe 'validate number of plates' do
+    it 'when system name is Sequel IIe' do
+      expect(build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate)])).to be_valid
+      expect(build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate), build(:pacbio_plate)])).not_to be_valid
+    end
+
+    it 'when system name is Revio' do
+      expect(build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])).to be_valid
+      expect(build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])).not_to be_valid
     end
   end
 end
