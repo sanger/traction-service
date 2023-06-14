@@ -196,22 +196,24 @@ RSpec.describe 'RunsController' do
               system_name: 'Sequel II',
               comments: 'A Run Comment',
               pacbio_smrt_link_version_id: version11.id,
-              well_attributes: [
-                {
-                  row: 'A',
-                  column: '1',
-                  movie_time: 31,
-                  on_plate_loading_concentration: 8.35,
-                  pre_extension_time: '2',
-                  generate_hifi: 'In SMRT Link',
-                  ccs_analysis_output: 'Yes',
-                  binding_kit_box_barcode: 'DM1117100862200111711',
-                  ccs_analysis_output_include_low_quality_reads: 'Yes',
-                  include_fivemc_calls_in_cpg_motifs: 'Yes',
-                  ccs_analysis_output_include_kinetics_information: 'Yes',
-                  demultiplex_barcodes: 'In SMRT Link',
-                  pools: [pool1.id]
-                }
+              plates_attributes: [ {
+                wells_attributes: [
+                  {
+                    row: 'A',
+                    column: '1',
+                    movie_time: 31,
+                    on_plate_loading_concentration: 8.35,
+                    pre_extension_time: '2',
+                    generate_hifi: 'In SMRT Link',
+                    ccs_analysis_output: 'Yes',
+                    binding_kit_box_barcode: 'DM1117100862200111711',
+                    ccs_analysis_output_include_low_quality_reads: 'Yes',
+                    include_fivemc_calls_in_cpg_motifs: 'Yes',
+                    ccs_analysis_output_include_kinetics_information: 'Yes',
+                    demultiplex_barcodes: 'In SMRT Link',
+                    pool_ids: [pool1.id]
+                  }
+                ] }
               ]
             }
           }
@@ -272,17 +274,19 @@ RSpec.describe 'RunsController' do
               system_name: 'Sequel II',
               comments: 'A Run Comment',
               pacbio_smrt_link_version_id: version12.id,
-              well_attributes: [
-                {
-                  row: 'A',
-                  column: '1',
-                  movie_acquisition_time: 30,
-                  library_concentration: 8.35,
-                  pre_extension_time: '2',
-                  include_base_kinetics: 'True',
-                  polymerase_kit: 'ABC123',
-                  pools: [pool1.id]
-                }
+              plates_attributes: [ {
+                wells_attributes: [
+                  {
+                    row: 'A',
+                    column: '1',
+                    movie_acquisition_time: 30,
+                    library_concentration: 8.35,
+                    pre_extension_time: '2',
+                    include_base_kinetics: 'True',
+                    polymerase_kit: 'ABC123',
+                    pool_ids: [pool1.id]
+                  }
+                ] }
               ]
             }
           }
@@ -408,7 +412,7 @@ RSpec.describe 'RunsController' do
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
-                well_attributes: []
+                plates_attributes: [{ wells_attributes: [] }]
               }
             }
           }.to_json
@@ -454,10 +458,12 @@ RSpec.describe 'RunsController' do
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
-                well_attributes: [{
-                  row: 'A',
-                  pools: [pool1.id]
-                }]
+                plates_attributes: [ {
+                  wells_attributes: [{
+                    row: 'A',
+                    pool_ids: [pool1.id]
+                  }]
+                } ]
               }
             }
           }.to_json
@@ -501,20 +507,22 @@ RSpec.describe 'RunsController' do
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
-                well_attributes: [
-                  { row: 'A',
-                    column: '1',
-                    movie_time: 8,
-                    on_plate_loading_concentration: 8.35,
-                    pre_extension_time: '2',
-                    generate_hifi: 'In SMRT Link',
-                    ccs_analysis_output: 'Yes',
-                    binding_kit_box_barcode: 'DM1117100862200111711',
-                    ccs_analysis_output_include_low_quality_reads: 'Yes',
-                    include_fivemc_calls_in_cpg_motifs: 'Yes',
-                    ccs_analysis_output_include_kinetics_information: 'Yes',
-                    demultiplex_barcodes: 'In SMRT Link',
-                    pools: [] }
+                plates_attributes: [ {
+                  wells_attributes: [
+                    { row: 'A',
+                      column: '1',
+                      movie_time: 8,
+                      on_plate_loading_concentration: 8.35,
+                      pre_extension_time: '2',
+                      generate_hifi: 'In SMRT Link',
+                      ccs_analysis_output: 'Yes',
+                      binding_kit_box_barcode: 'DM1117100862200111711',
+                      ccs_analysis_output_include_low_quality_reads: 'Yes',
+                      include_fivemc_calls_in_cpg_motifs: 'Yes',
+                      ccs_analysis_output_include_kinetics_information: 'Yes',
+                      demultiplex_barcodes: 'In SMRT Link',
+                      pool_ids: [] }
+                  ] }
                 ]
               }
             }
@@ -559,20 +567,22 @@ RSpec.describe 'RunsController' do
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
-                well_attributes: [
-                  { row: 'A',
-                    column: '1',
-                    movie_time: 8,
-                    on_plate_loading_concentration: 8.35,
-                    pre_extension_time: '2',
-                    generate_hifi: 'In SMRT Link',
-                    ccs_analysis_output: 'Yes',
-                    binding_kit_box_barcode: 'DM1117100862200111711',
-                    ccs_analysis_output_include_low_quality_reads: 'Yes',
-                    include_fivemc_calls_in_cpg_motifs: 'Yes',
-                    ccs_analysis_output_include_kinetics_information: 'Yes',
-                    demultiplex_barcodes: 'In SMRT Link',
-                    pools: [123] }
+                plates_attributes: [ {
+                  wells_attributes: [
+                    { row: 'A',
+                      column: '1',
+                      movie_time: 8,
+                      on_plate_loading_concentration: 8.35,
+                      pre_extension_time: '2',
+                      generate_hifi: 'In SMRT Link',
+                      ccs_analysis_output: 'Yes',
+                      binding_kit_box_barcode: 'DM1117100862200111711',
+                      ccs_analysis_output_include_low_quality_reads: 'Yes',
+                      include_fivemc_calls_in_cpg_motifs: 'Yes',
+                      ccs_analysis_output_include_kinetics_information: 'Yes',
+                      demultiplex_barcodes: 'In SMRT Link',
+                      pool_ids: [123] }
+                  ] }
                 ]
               }
             }
@@ -619,20 +629,22 @@ RSpec.describe 'RunsController' do
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
-                well_attributes: [
-                  { row: 'A',
-                    column: '1',
-                    movie_time: 8,
-                    on_plate_loading_concentration: 8.35,
-                    pre_extension_time: '2',
-                    generate_hifi: 'In SMRT Link',
-                    ccs_analysis_output: 'Yes',
-                    binding_kit_box_barcode: 'DM1117100862200111711',
-                    ccs_analysis_output_include_low_quality_reads: 'Yes',
-                    include_fivemc_calls_in_cpg_motifs: 'Yes',
-                    ccs_analysis_output_include_kinetics_information: 'Yes',
-                    demultiplex_barcodes: 'In SMRT Link',
-                    pools: [pool1.id, pool1.id] }
+                plates_attributes: [ {
+                  wells_attributes: [
+                    { row: 'A',
+                      column: '1',
+                      movie_time: 8,
+                      on_plate_loading_concentration: 8.35,
+                      pre_extension_time: '2',
+                      generate_hifi: 'In SMRT Link',
+                      ccs_analysis_output: 'Yes',
+                      binding_kit_box_barcode: 'DM1117100862200111711',
+                      ccs_analysis_output_include_low_quality_reads: 'Yes',
+                      include_fivemc_calls_in_cpg_motifs: 'Yes',
+                      ccs_analysis_output_include_kinetics_information: 'Yes',
+                      demultiplex_barcodes: 'In SMRT Link',
+                      pool_ids: [pool1.id, pool1.id] }
+                  ] }
                 ]
               }
             }
@@ -679,7 +691,8 @@ RSpec.describe 'RunsController' do
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
-                well_attributes: [
+                plates_attributes: [ {
+                  wells_attributes: [
                   { row: 'A',
                     column: '1',
                     movie_time: 8,
@@ -692,7 +705,7 @@ RSpec.describe 'RunsController' do
                     include_fivemc_calls_in_cpg_motifs: 'Yes',
                     ccs_analysis_output_include_kinetics_information: 'Yes',
                     demultiplex_barcodes: 'In SMRT Link',
-                    pools: [pool1.id] },
+                    pool_ids: [pool1.id] },
                   { row: 'A',
                     column: '2',
                     movie_time: 8,
@@ -705,8 +718,9 @@ RSpec.describe 'RunsController' do
                     include_fivemc_calls_in_cpg_motifs: 'Yes',
                     ccs_analysis_output_include_kinetics_information: 'Yes',
                     demultiplex_barcodes: 'In SMRT Link',
-                    pools: [pool1.id] }
-                ]
+                    pool_ids: [pool1.id] }
+                  ]
+                }]
               }
             }
           }.to_json
@@ -757,21 +771,23 @@ RSpec.describe 'RunsController' do
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
-                well_attributes: [
-                  { row: 'A',
-                    column: '1',
-                    movie_time: 8,
-                    on_plate_loading_concentration: 8.35,
-                    pre_extension_time: '2',
-                    generate_hifi: 'In SMRT Link',
-                    ccs_analysis_output: 'Yes',
-                    binding_kit_box_barcode: 'DM1117100862200111711',
-                    ccs_analysis_output_include_low_quality_reads: 'Yes',
-                    include_fivemc_calls_in_cpg_motifs: 'Yes',
-                    ccs_analysis_output_include_kinetics_information: 'Yes',
-                    demultiplex_barcodes: 'In SMRT Link',
-                    pools: [pool1.id, pool2.id] }
-                ]
+                plates_attributes: [ { 
+                  wells_attributes: [
+                    { row: 'A',
+                      column: '1',
+                      movie_time: 8,
+                      on_plate_loading_concentration: 8.35,
+                      pre_extension_time: '2',
+                      generate_hifi: 'In SMRT Link',
+                      ccs_analysis_output: 'Yes',
+                      binding_kit_box_barcode: 'DM1117100862200111711',
+                      ccs_analysis_output_include_low_quality_reads: 'Yes',
+                      include_fivemc_calls_in_cpg_motifs: 'Yes',
+                      ccs_analysis_output_include_kinetics_information: 'Yes',
+                      demultiplex_barcodes: 'In SMRT Link',
+                      pool_ids: [pool1.id, pool2.id] }
+                  ]
+                }]
               }
             }
           }.to_json
@@ -819,23 +835,25 @@ RSpec.describe 'RunsController' do
             dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
             system_name: 'Sequel II',
             comments: 'A Run Comment',
-            well_attributes: [
-              {
-                row: 'A',
-                column: '1',
-                movie_time: 8,
-                on_plate_loading_concentration: 8.35,
-                pre_extension_time: '2',
-                generate_hifi: 'In SMRT Link',
-                ccs_analysis_output: 'Yes',
-                binding_kit_box_barcode: 'DM1117100862200111711',
-                ccs_analysis_output_include_low_quality_reads: 'Yes',
-                include_fivemc_calls_in_cpg_motifs: 'Yes',
-                ccs_analysis_output_include_kinetics_information: 'Yes',
-                demultiplex_barcodes: 'In SMRT Link',
-                pools: [pool1.id]
-              }
-            ]
+            plates_attributes: [ {
+              wells_attributes: [
+                {
+                  row: 'A',
+                  column: '1',
+                  movie_time: 8,
+                  on_plate_loading_concentration: 8.35,
+                  pre_extension_time: '2',
+                  generate_hifi: 'In SMRT Link',
+                  ccs_analysis_output: 'Yes',
+                  binding_kit_box_barcode: 'DM1117100862200111711',
+                  ccs_analysis_output_include_low_quality_reads: 'Yes',
+                  include_fivemc_calls_in_cpg_motifs: 'Yes',
+                  ccs_analysis_output_include_kinetics_information: 'Yes',
+                  demultiplex_barcodes: 'In SMRT Link',
+                  pool_ids: [pool1.id]
+                }
+              ]
+            }]
           }
         }
       }.to_json
@@ -872,21 +890,23 @@ RSpec.describe 'RunsController' do
             system_name: 'Sequel II',
             comments: 'A Run Comment',
             pacbio_smrt_link_version_id: version10.id,
-            well_attributes: [
-              { row: 'A',
-                column: '1',
-                movie_time: 8,
-                on_plate_loading_concentration: 8.35,
-                pre_extension_time: '2',
-                generate_hifi: 'In SMRT Link',
-                ccs_analysis_output: 'Yes',
-                binding_kit_box_barcode: 'DM1117100862200111711',
-                ccs_analysis_output_include_low_quality_reads: 'Yes',
-                include_fivemc_calls_in_cpg_motifs: 'Yes',
-                ccs_analysis_output_include_kinetics_information: 'Yes',
-                demultiplex_barcodes: 'In SMRT Link',
-                pools: [pool1.id] }
-            ]
+            plates_attributes: [ { 
+              wells_attributes: [
+                { row: 'A',
+                  column: '1',
+                  movie_time: 8,
+                  on_plate_loading_concentration: 8.35,
+                  pre_extension_time: '2',
+                  generate_hifi: 'In SMRT Link',
+                  ccs_analysis_output: 'Yes',
+                  binding_kit_box_barcode: 'DM1117100862200111711',
+                  ccs_analysis_output_include_low_quality_reads: 'Yes',
+                  include_fivemc_calls_in_cpg_motifs: 'Yes',
+                  ccs_analysis_output_include_kinetics_information: 'Yes',
+                  demultiplex_barcodes: 'In SMRT Link',
+                  pool_ids: [pool1.id] }
+              ]
+            }]
           }
         }
       }.to_json
@@ -1014,17 +1034,20 @@ RSpec.describe 'RunsController' do
               id: run.id,
               type: 'runs',
               attributes: {
-                well_attributes: [
-                  {
-                    id: well.id.to_s, # We receive ids in string format from the ui
-                    row: 'D',
-                    column: '7',
-                    movie_time: 7,
-                    on_plate_loading_concentration: 7.35,
-                    binding_kit_box_barcode: 'DM1117100862200111711_updated',
-                    pools: [pool1.id]
-                  }
-                ]
+                plates_attributes: [ { 
+                  id: plate.id,
+                  wells_attributes: [
+                    {
+                      id: well.id.to_s, # We receive ids in string format from the ui
+                      row: 'D',
+                      column: '7',
+                      movie_time: 7,
+                      on_plate_loading_concentration: 7.35,
+                      binding_kit_box_barcode: 'DM1117100862200111711_updated',
+                      pool_ids: [pool1.id]
+                    }
+                  ]
+                }]
               }
             }
           }.to_json
@@ -1066,29 +1089,32 @@ RSpec.describe 'RunsController' do
               id: run.id,
               type: 'runs',
               attributes: {
-                well_attributes: [
-                  {
-                    row: 'F',
-                    column: '12',
-                    movie_time: 8,
-                    on_plate_loading_concentration: 8.35,
-                    pre_extension_time: '2',
-                    generate_hifi: 'In SMRT Link',
-                    ccs_analysis_output: 'Yes',
-                    binding_kit_box_barcode: 'DM1117100862200111711',
-                    ccs_analysis_output_include_low_quality_reads: 'Yes',
-                    include_fivemc_calls_in_cpg_motifs: 'Yes',
-                    ccs_analysis_output_include_kinetics_information: 'Yes',
-                    demultiplex_barcodes: 'In SMRT Link',
-                    pools: [pool1.id]
-                  },
-                  {
-                    id: well1.id.to_s,
-                    row: 'D',
-                    column: '7',
-                    pools: [well1.pools[0].id]
-                  }
-                ]
+                plates_attributes: [ {
+                  id: plate.id,
+                  well_attributes: [
+                    {
+                      row: 'F',
+                      column: '12',
+                      movie_time: 8,
+                      on_plate_loading_concentration: 8.35,
+                      pre_extension_time: '2',
+                      generate_hifi: 'In SMRT Link',
+                      ccs_analysis_output: 'Yes',
+                      binding_kit_box_barcode: 'DM1117100862200111711',
+                      ccs_analysis_output_include_low_quality_reads: 'Yes',
+                      include_fivemc_calls_in_cpg_motifs: 'Yes',
+                      ccs_analysis_output_include_kinetics_information: 'Yes',
+                      demultiplex_barcodes: 'In SMRT Link',
+                      pool_ids: [pool1.id]
+                    },
+                    {
+                      id: well1.id.to_s,
+                      row: 'D',
+                      column: '7',
+                      pool_ids: [well1.pools[0].id]
+                    }
+                  ]
+                }]
               }
             }
           }.to_json
@@ -1141,16 +1167,18 @@ RSpec.describe 'RunsController' do
               id: run.id,
               type: 'runs',
               attributes: {
-                well_attributes: [
-                  {
-                    id: run.wells[0].id.to_s,
-                    pools: [well1.pools[0].id, pool1.id]
-                  },
-                  {
-                    id: run.wells[1].id.to_s,
-                    pools: [pool2.id]
-                  }
-                ]
+                plates_attributes: [ { 
+                  wells_attributes: [
+                    {
+                      id: run.wells[0].id.to_s,
+                      pool_ids: [well1.pools[0].id, pool1.id]
+                    },
+                    {
+                      id: run.wells[1].id.to_s,
+                      pool_ids: [pool2.id]
+                    }
+                  ]
+                }]
               }
             }
           }.to_json

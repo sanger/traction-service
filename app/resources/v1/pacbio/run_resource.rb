@@ -66,6 +66,7 @@ module V1
       def plates_attributes=(plates_parameters)
         @model.plates_attributes = plates_parameters.map do |plate|
           plate.permit(
+            :id,
             wells_attributes: [
               PERMITTED_WELL_PARAMETERS,
               { pool_ids: [] }
