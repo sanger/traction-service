@@ -20,7 +20,7 @@ module Ont
     has_many :requests, through: :libraries
     # This is dependent on the requests association, so needs to be included
     # after that is defined
-    include PlateSourcedLibrary
+    include DualSourcedPool
     validates :volume, :concentration,
               :insert_size, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
     validates :libraries, presence: true
