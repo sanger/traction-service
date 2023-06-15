@@ -12,8 +12,8 @@ RSpec.describe Pacbio::Run, pacbio: true do
   end
 
   context 'validation' do
-    it 'must have a sequencing kit box barcode' do
-      expect(build(:pacbio_run, sequencing_kit_box_barcode: nil)).not_to be_valid
+    it 'does not need a sequencing kit box barcode' do
+      expect(build(:pacbio_run, sequencing_kit_box_barcode: nil)).to be_valid
     end
 
     it 'must have a DNA control complex kit box barcode' do
@@ -197,12 +197,12 @@ RSpec.describe Pacbio::Run, pacbio: true do
 
     it 'creates a run' do
       wells_attributes = [build(:pacbio_well, row: 'A', column: '1').attributes.merge(pool_ids: pools.pluck(:id)), build(:pacbio_well, row: 'A', column: '1').attributes.merge(pool_ids: pools.pluck(:id))]
-      expect { create(:pacbio_run, plates_attributes: [{ wells_attributes: }]) }.to change(described_class, :count).by(1)
+      expect { create(:pacbio_run, plates_attributes: [{ wells_attributes:, sequencing_kit_box_barcode: 'DM0001100861800123121', plate_number: 1 }]) }.to change(described_class, :count).by(1)
     end
 
     it 'removes existing wells' do
       run = create(:pacbio_run, plates: [create(:pacbio_plate, well_count: 2)])
-      expect { run.update(plates_attributes: { id: run.plates.first.id, wells_attributes: [{ id: run.plates.first.wells.first.id, _destroy: true }] }) }.to change(run.plates.first.wells, :count).by(-1)
+      expect { run.update(plates_attributes: { id: run.plates.first.id, sequencing_kit_box_barcode: 'DM0001100861800123121', plate_number: 1, wells_attributes: [{ id: run.plates.first.wells.first.id, _destroy: true }] }) }.to change(run.plates.first.wells, :count).by(-1)
     end
   end
 

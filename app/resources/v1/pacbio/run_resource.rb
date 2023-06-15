@@ -6,7 +6,7 @@ module V1
     class RunResource < JSONAPI::Resource
       model_name 'Pacbio::Run'
 
-      attributes :name, :sequencing_kit_box_barcode, :dna_control_complex_box_barcode,
+      attributes :name, :dna_control_complex_box_barcode,
                  :system_name, :created_at, :state, :comments,
                  :pacbio_smrt_link_version_id, :plates_attributes
 
@@ -67,6 +67,8 @@ module V1
         @model.plates_attributes = plates_parameters.map do |plate|
           plate.permit(
             :id,
+            :sequencing_kit_box_barcode,
+            :plate_number,
             wells_attributes: [
               # the following is needed to allow the _destroy parameter which
               # is used to mark wells for destruction

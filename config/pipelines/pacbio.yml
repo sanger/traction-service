@@ -141,7 +141,7 @@ default: &default
             populate_on_row_type: :well
           Sequencing Kit Box Barcode:
             type: :model
-            value: plate.run.sequencing_kit_box_barcode
+            value: plate.sequencing_kit_box_barcode
             populate:
               for:
                 - :well
@@ -310,7 +310,7 @@ default: &default
             populate_on_row_type: :well
           Sequencing Kit Box Barcode:
             type: :model
-            value: plate.run.sequencing_kit_box_barcode
+            value: plate.sequencing_kit_box_barcode
             populate:
               for:
                 - :well
@@ -442,7 +442,7 @@ default: &default
               with: :well
           Plate 1:
             type: :model
-            value: plate.run.sequencing_kit_box_barcode
+            value: plate.sequencing_kit_box_barcode
             populate:
               for:
                 - :well

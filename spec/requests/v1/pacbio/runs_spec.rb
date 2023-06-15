@@ -42,7 +42,6 @@ RSpec.describe 'RunsController' do
 
       json = ActiveSupport::JSON.decode(response.body)
       expect(json['data'][0]['attributes']['name']).to eq(run1.name)
-      expect(json['data'][0]['attributes']['sequencing_kit_box_barcode']).to eq(run1.sequencing_kit_box_barcode)
       expect(json['data'][0]['attributes']['dna_control_complex_box_barcode']).to eq(run1.dna_control_complex_box_barcode)
       expect(json['data'][0]['attributes']['system_name']).to eq(run1.system_name)
       expect(json['data'][0]['attributes']['created_at']).to eq(run1.created_at.to_fs(:us))
@@ -105,7 +104,6 @@ RSpec.describe 'RunsController' do
 
           expect(run_attributes).to include(
             'name' => run.name,
-            'sequencing_kit_box_barcode' => run.sequencing_kit_box_barcode,
             'dna_control_complex_box_barcode' => run.dna_control_complex_box_barcode,
             'system_name' => run.system_name,
             'state' => run.state,
@@ -138,7 +136,6 @@ RSpec.describe 'RunsController' do
 
           expect(run_attributes).to include(
             'name' => run1.name,
-            'sequencing_kit_box_barcode' => run1.sequencing_kit_box_barcode,
             'dna_control_complex_box_barcode' => run1.dna_control_complex_box_barcode,
             'system_name' => run1.system_name,
             'state' => run1.state,
@@ -169,7 +166,6 @@ RSpec.describe 'RunsController' do
 
           expect(run_attributes).to include(
             'name' => run1.name,
-            'sequencing_kit_box_barcode' => run1.sequencing_kit_box_barcode,
             'dna_control_complex_box_barcode' => run1.dna_control_complex_box_barcode,
             'system_name' => run1.system_name,
             'state' => run1.state,
@@ -191,12 +187,13 @@ RSpec.describe 'RunsController' do
           data: {
             type: 'runs',
             attributes: {
-              sequencing_kit_box_barcode: 'DM0001100861800123121',
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
               system_name: 'Sequel II',
               comments: 'A Run Comment',
               pacbio_smrt_link_version_id: version11.id,
               plates_attributes: [{
+                sequencing_kit_box_barcode: 'DM0001100861800123121',
+                plate_number: 1,
                 wells_attributes: [
                   {
                     row: 'A',
@@ -249,7 +246,6 @@ RSpec.describe 'RunsController' do
         expect(run.id).to eq(json['data']['id'].to_i)
         expect(run.name).to be_present
         expect(run.state).to be_present
-        expect(run.sequencing_kit_box_barcode).to be_present
         expect(run.dna_control_complex_box_barcode).to be_present
         expect(run.system_name).to be_present
         expect(run.comments).to be_present
@@ -269,12 +265,13 @@ RSpec.describe 'RunsController' do
           data: {
             type: 'runs',
             attributes: {
-              sequencing_kit_box_barcode: 'DM0001100861800123121',
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
               system_name: 'Sequel II',
               comments: 'A Run Comment',
               pacbio_smrt_link_version_id: version12.id,
               plates_attributes: [{
+                sequencing_kit_box_barcode: 'DM0001100861800123121',
+                plate_number: 1,
                 wells_attributes: [
                   {
                     row: 'A',
@@ -322,7 +319,6 @@ RSpec.describe 'RunsController' do
         expect(run.id).to eq(json['data']['id'].to_i)
         expect(run.name).to be_present
         expect(run.state).to be_present
-        expect(run.sequencing_kit_box_barcode).to be_present
         expect(run.dna_control_complex_box_barcode).to be_present
         expect(run.system_name).to be_present
         expect(run.comments).to be_present
@@ -362,8 +358,7 @@ RSpec.describe 'RunsController' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq "sequencing_kit_box_barcode - can't be blank"
-          expect(errors[1]['detail']).to eq "dna_control_complex_box_barcode - can't be blank"
+          expect(errors[0]['detail']).to eq "dna_control_complex_box_barcode - can't be blank"
         end
       end
 
@@ -407,7 +402,6 @@ RSpec.describe 'RunsController' do
             data: {
               type: 'runs',
               attributes: {
-                sequencing_kit_box_barcode: 'DM0001100861800123121',
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
@@ -453,12 +447,13 @@ RSpec.describe 'RunsController' do
             data: {
               type: 'runs',
               attributes: {
-                sequencing_kit_box_barcode: 'DM0001100861800123121',
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
                 plates_attributes: [{
+                  sequencing_kit_box_barcode: 'DM0001100861800123121',
+                  plate_number: 1,
                   wells_attributes: [{
                     row: 'A',
                     pool_ids: [pool1.id]
@@ -502,12 +497,13 @@ RSpec.describe 'RunsController' do
             data: {
               type: 'runs',
               attributes: {
-                sequencing_kit_box_barcode: 'DM0001100861800123121',
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
                 plates_attributes: [{
+                  sequencing_kit_box_barcode: 'DM0001100861800123121',
+                  plate_number: 1,
                   wells_attributes: [
                     { row: 'A',
                       column: '1',
@@ -562,12 +558,13 @@ RSpec.describe 'RunsController' do
             data: {
               type: 'runs',
               attributes: {
-                sequencing_kit_box_barcode: 'DM0001100861800123121',
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
                 plates_attributes: [{
+                  sequencing_kit_box_barcode: 'DM0001100861800123121',
+                  plate_number: 1,
                   wells_attributes: [
                     { row: 'A',
                       column: '1',
@@ -624,12 +621,13 @@ RSpec.describe 'RunsController' do
             data: {
               type: 'runs',
               attributes: {
-                sequencing_kit_box_barcode: 'DM0001100861800123121',
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
                 plates_attributes: [{
+                  sequencing_kit_box_barcode: 'DM0001100861800123121',
+                  plate_number: 1,
                   wells_attributes: [
                     { row: 'A',
                       column: '1',
@@ -686,12 +684,13 @@ RSpec.describe 'RunsController' do
             data: {
               type: 'runs',
               attributes: {
-                sequencing_kit_box_barcode: 'DM0001100861800123121',
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
                 plates_attributes: [{
+                  sequencing_kit_box_barcode: 'DM0001100861800123121',
+                  plate_number: 1,
                   wells_attributes: [
                     { row: 'A',
                       column: '1',
@@ -766,12 +765,13 @@ RSpec.describe 'RunsController' do
             data: {
               type: 'runs',
               attributes: {
-                sequencing_kit_box_barcode: 'DM0001100861800123121',
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
                 plates_attributes: [{
+                  sequencing_kit_box_barcode: 'DM0001100861800123121',
+                  plate_number: 1,
                   wells_attributes: [
                     { row: 'A',
                       column: '1',
@@ -831,11 +831,12 @@ RSpec.describe 'RunsController' do
         data: {
           type: 'runs',
           attributes: {
-            sequencing_kit_box_barcode: 'DM0001100861800123121',
             dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
             system_name: 'Sequel II',
             comments: 'A Run Comment',
             plates_attributes: [{
+              sequencing_kit_box_barcode: 'DM0001100861800123121',
+              plate_number: 1,
               wells_attributes: [
                 {
                   row: 'A',
@@ -885,12 +886,13 @@ RSpec.describe 'RunsController' do
         data: {
           type: 'runs',
           attributes: {
-            sequencing_kit_box_barcode: 'DM0001100861800123121',
             dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
             system_name: 'Sequel II',
             comments: 'A Run Comment',
             pacbio_smrt_link_version_id: version10.id,
             plates_attributes: [{
+              sequencing_kit_box_barcode: 'DM0001100861800123121',
+              plate_number: 1,
               wells_attributes: [
                 { row: 'A',
                   column: '1',
@@ -984,7 +986,6 @@ RSpec.describe 'RunsController' do
               id: run.id,
               type: 'runs',
               attributes: {
-                sequencing_kit_box_barcode: 'DM0001100861800123121_updated',
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191_updated',
                 system_name: 'Sequel I',
                 comments: 'A Run Comment updated'
@@ -1012,7 +1013,6 @@ RSpec.describe 'RunsController' do
         it 'updates a run' do
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
           run.reload
-          expect(run.sequencing_kit_box_barcode).to eq 'DM0001100861800123121_updated'
           expect(run.dna_control_complex_box_barcode).to eq 'Lxxxxx101717600123191_updated'
           expect(run.system_name).to eq 'Sequel I'
           expect(run.comments).to eq 'A Run Comment updated'
@@ -1280,7 +1280,6 @@ RSpec.describe 'RunsController' do
       expect(json['data']['id']).to eq(run.id.to_s)
       expect(json['data']['attributes']['state']).to eq(run.state)
       expect(json['data']['attributes']['name']).to eq(run.name)
-      expect(json['data']['attributes']['sequencing_kit_box_barcode']).to eq(run.sequencing_kit_box_barcode)
       expect(json['data']['attributes']['dna_control_complex_box_barcode']).to eq(run.dna_control_complex_box_barcode)
       expect(json['data']['attributes']['system_name']).to eq(run.system_name)
     end

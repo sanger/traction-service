@@ -25,8 +25,7 @@ module Pacbio
                inverse_of: :runs,
                default: -> { SmrtLinkVersion.default }
 
-    validates :sequencing_kit_box_barcode,
-              :system_name, presence: true
+    validates :system_name, presence: true
 
     # it would be sensible to move this to dependent validation as with wells
     # and SMRT Link. Something to ponder on ...
