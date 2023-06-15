@@ -96,7 +96,7 @@ module Pacbio
         errors.add(:plates,
                    'Sequel IIe can only have 1 plate')
       end
-      return unless plates.size != 2 && system_name == 'Revio'
+      return unless plates.size > 2 && system_name == 'Revio'
 
       errors.add(:plates,
                  'Revio can only have 2 plates')
