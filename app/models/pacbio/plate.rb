@@ -16,5 +16,7 @@ module Pacbio
       minimum: 1,
       message: :plate_min_wells
     }
+
+    validates :sequencing_kit_box_barcode, :plate_number, presence: true
   end
 end

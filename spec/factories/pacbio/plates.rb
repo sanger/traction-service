@@ -9,6 +9,9 @@ FactoryBot.define do
       well_max { 94 }
     end
 
+    sequence(:sequencing_kit_box_barcode) { |n| "DM000110086180012312#{n}" }
+    sequence(:plate_number) { |n| n }
+
     wells do
       build_list(well_factory, well_count, plate: instance)
     end
