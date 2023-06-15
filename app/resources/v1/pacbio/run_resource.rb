@@ -68,6 +68,8 @@ module V1
           plate.permit(
             :id,
             wells_attributes: [
+              # the following is needed to allow the _destroy parameter which
+              # is used to mark wells for destruction
               :_destroy,
               PERMITTED_WELL_PARAMETERS,
               { pool_ids: [] }
