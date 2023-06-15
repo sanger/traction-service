@@ -5,5 +5,10 @@ FactoryBot.define do
     sequence(:sequencing_kit_box_barcode) { |n| "DM000110086180012312#{n}" }
     sequence(:dna_control_complex_box_barcode) { |n| "Lxxxxx10171760012319#{n}" }
     comments { 'A Run Comment' }
+
+    factory :pacbio_revio_run do
+      system_name { 'Revio' }
+      plates { build_list(:pacbio_plate, 2, wells: [build(:pacbio_well, row: 'A', column: '1')]) }
+    end
   end
 end
