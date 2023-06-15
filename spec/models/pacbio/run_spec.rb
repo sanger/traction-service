@@ -26,12 +26,13 @@ RSpec.describe Pacbio::Run, pacbio: true do
 
     context 'when system name is Revio' do
       it 'does not need a DNA control complex barcode' do
-        expect(build(:pacbio_run, system_name: 'Revio', dna_control_complex_box_barcode: nil)).to be_valid
+        expect(build(:pacbio_revio_run, dna_control_complex_box_barcode: nil)).to be_valid
       end
 
       it 'must have the wells in the correct positions' do
-        plate = build(:pacbio_plate, run: create(:pacbio_run, system_name: 'Revio'), wells: [build(:pacbio_well, row: 'G', column: '12')])
-        expect(plate.run).not_to be_valid
+        plate_1 = build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])
+        plate_2 = build(:pacbio_plate, wells: [build(:pacbio_well, row: 'G', column: '12')])
+        expect(build(:pacbio_revio_run, plates: [plate_1, plate_2])).not_to be_valid
       end
     end
   end
@@ -48,8 +49,8 @@ RSpec.describe Pacbio::Run, pacbio: true do
       expect(create(:pacbio_run, system_name: 'Sequel I').system_name).to eq 'Sequel I'
       expect(create(:pacbio_run, system_name: 2).system_name).to eq 'Sequel IIe'
       expect(create(:pacbio_run, system_name: 'Sequel IIe').system_name).to eq 'Sequel IIe'
-      expect(create(:pacbio_run, system_name: 3).system_name).to eq 'Revio'
-      expect(create(:pacbio_run, system_name: 'Revio').system_name).to eq 'Revio'
+      expect(create(:pacbio_revio_run, system_name: 3).system_name).to eq 'Revio'
+      expect(create(:pacbio_revio_run, system_name: 'Revio').system_name).to eq 'Revio'
     end
   end
 
@@ -59,16 +60,14 @@ RSpec.describe Pacbio::Run, pacbio: true do
 
   context 'associations' do
     it 'can have multiple plates for Revio' do
-      plate_1 = create(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])
-      plate_2 = create(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])
-      run = create(:pacbio_run, system_name: 'Revio', plates: [plate_1, plate_2])
-      expect(run.plates).to eq([plate_1, plate_2])
+      plates = create_list(:pacbio_plate, 2, wells: [build(:pacbio_well, row: 'A', column: '1')])
+      run = create(:pacbio_run, system_name: 'Revio', plates:)
+      expect(run.plates).to eq(plates)
+      expect(run.wells.count).to eq(2)
     end
 
     it 'can have some wells' do
-      wells = create_list(:pacbio_well, 5)
-      plate = create(:pacbio_plate, wells:)
-      run = create(:pacbio_run, plates: [plate])
+      run = create(:pacbio_run, plates: [create(:pacbio_plate, wells: build_list(:pacbio_well, 5))])
       expect(run.wells.count).to eq(5)
     end
   end
@@ -215,6 +214,7 @@ RSpec.describe Pacbio::Run, pacbio: true do
 
     it 'when system name is Revio' do
       expect(build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])).to be_valid
+      expect(build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])).not_to be_valid
       expect(build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])).not_to be_valid
     end
   end
