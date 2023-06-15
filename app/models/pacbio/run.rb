@@ -93,11 +93,11 @@ module Pacbio
     def validate_plate_limit
       return if system_name.blank?
 
-      if plates.size > 1 && system_name.match?('Sequel IIe')
+      if plates.size > 1 && system_name == 'Sequel IIe'
         errors.add(:plates,
                    'Sequel IIe can only have 1 plate')
       end
-      return unless plates.size > 2 && system_name.match?('Revio')
+      return unless plates.size > 2 && system_name == 'Revio'
 
       errors.add(:plates,
                  'Revio can only have 2 plates')
