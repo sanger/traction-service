@@ -23,8 +23,14 @@ RSpec.describe InstrumentTypeValidator do
     end
 
     context 'plates' do
-      it 'required attributes' do
-        expect(true).to be_truthy
+      it 'required attributes', skip: 'not yet implemented' do
+        instrument_types['sequel_iie']['plate']['required_attributes'].each do |attribute|
+          run = build(:pacbio_run, system_name: 'Sequel IIe')
+          run.send("#{attribute}=", nil)
+          instrument_type_validator = described_class.new(instrument_types:)
+          instrument_type_validator.validate(run)
+          expect(run.errors.messages[attribute]).to include("can't be blank")
+        end
       end
     end
 
