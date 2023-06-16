@@ -34,6 +34,11 @@ module V1
         records.joins(:sample).where(sample: { name: value })
       }
       filter :barcode, apply: lambda { |records, value, _options|
+        # If wildcard is the last value passed we want to do a wildcard search
+        if value.last == 'wildcard'
+          return records.joins(:tube).where('tubes.barcode LIKE ?', "%#{value[0]}%")
+        end
+
         records.joins(:tube).where(tube: { barcode: value })
       }
       filter :source_identifier, apply: lambda { |records, value, _options|

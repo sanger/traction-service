@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-# Include in a library record to provide a #source_identifier method
+# Include in a pool record to provide a #source_identifier method
 # based on source plates.
-module PlateSourcedLibrary
+module DualSourcedPool
   extend ActiveSupport::Concern
 
   included do
@@ -14,9 +14,11 @@ module PlateSourcedLibrary
     # table, or expects to see '::Well' in the container_type column
     has_many :source_wells, through: :container_materials, source: :container,
                             source_type: 'Well', class_name: '::Well'
+    has_many :source_tubes, through: :container_materials, source: :container,
+                            source_type: 'Tube', class_name: '::Tube'
   end
 
-  # Identifies the plate and wells from which the library was created
+  # Identifies the plate and wells from which the pool was created
   # Typically in the format: DN123:A1-D1.
   # In the unlikely event we have multiple plates, will include them all
   # @note Assumes 96 well plates. formatted_range can take a second argument
@@ -25,10 +27,13 @@ module PlateSourcedLibrary
   # @return [String] Identifies source plate and wells. eg. 'DN123:A1-D1
   #
   def source_identifier
-    wells_grouped_by_container.map do |plate, wells|
+    formatted_wells = wells_grouped_by_container.map do |plate, wells|
       well_range = plate.formatted_range(wells.pluck(:position))
       "#{plate.barcode}:#{well_range}"
     end.join(',')
+    formatted_tubes = source_tubes.pluck(:barcode).join(',')
+    # Combines the two outputs checking neither are empty
+    [formatted_wells, formatted_tubes].filter(&:present?).join(',')
   end
 
   private
