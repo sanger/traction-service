@@ -20,11 +20,13 @@ class InstrumentTypeValidator < ActiveModel::Validator
     record.plates.each do |plate|
       validate_required_attributes(plate, instrument_type['plates'])
       validate_limit(plate, :wells, instrument_type['wells'])
+      validate_well_positions(plate, instrument_type['wells']['positions'])
     end
   end
 
   def validate_required_attributes(record, configuration)
-    return unless configuration['required_attributes'].present?
+    return if configuration['required_attributes'].blank?
+
     configuration['required_attributes'].each do |attribute|
       record.errors.add(attribute, "can't be blank") if record.send(attribute).blank?
     end
@@ -43,6 +45,17 @@ class InstrumentTypeValidator < ActiveModel::Validator
     record.errors.add(labware_type,
                       "must have at most #{maximum} #{pluralize(maximum,
                                                                 labware_type)}")
+  end
+
+  def validate_well_positions(record, valid_positions)
+    return if valid_positions.blank?
+
+    well_positions = record.wells.filter do |well|
+      !well.marked_for_destruction?
+    end.collect(&:position)
+    return if (well_positions - valid_positions).empty?
+
+    record.errors.add(:wells, "must be in positions #{valid_positions}")
   end
 
   # This needs to be moved to locale file
