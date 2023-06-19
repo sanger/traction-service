@@ -13,7 +13,7 @@ RSpec.describe InstrumentTypeValidator do
     context 'run' do
       it 'required attributes' do
         instrument_types['sequel_iie']['run']['required_attributes'].each do |attribute|
-          run = build(:pacbio_run, system_name: 'Sequel IIe')
+          run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate)])
           run.send("#{attribute}=", nil)
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
@@ -23,20 +23,57 @@ RSpec.describe InstrumentTypeValidator do
     end
 
     context 'plates' do
-      it 'required attributes', skip: 'not yet implemented' do
-        instrument_types['sequel_iie']['plate']['required_attributes'].each do |attribute|
-          run = build(:pacbio_run, system_name: 'Sequel IIe')
-          run.send("#{attribute}=", nil)
+      it 'required attributes' do
+        instrument_types['sequel_iie']['plates']['required_attributes'].each do |attribute|
+          plate = build(:pacbio_plate)
+          run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [plate])
+          plate.send("#{attribute}=", nil)
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
-          expect(run.errors.messages[attribute]).to include("can't be blank")
+          expect(plate.errors.messages[attribute]).to include("can't be blank")
         end
+      end
+
+      it 'minimum or maximum number of plates' do
+        plates = build_list(:pacbio_plate, 2)
+
+        run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [plates.first])
+        instrument_type_validator = described_class.new(instrument_types:)
+        instrument_type_validator.validate(run)
+        expect(run.errors.messages[:plates]).to be_empty
+
+        # Minimum
+        run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [])
+        instrument_type_validator = described_class.new(instrument_types:)
+        instrument_type_validator.validate(run)
+        expect(run.errors.messages[:plates]).to include('must have at least 1 plate')
+
+        # Maximum
+        run = build(:pacbio_run, system_name: 'Sequel IIe', plates:)
+        instrument_type_validator = described_class.new(instrument_types:)
+        instrument_type_validator.validate(run)
+        expect(run.errors.messages[:plates]).to include('must have at most 1 plate')
       end
     end
 
     context 'wells' do
-      it 'minimum number of wells' do
-        expect(true).to be_truthy
+      it 'minimum or maximum number of wells' do
+        run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate, well_count: 1)])
+        instrument_type_validator = described_class.new(instrument_types:)
+        instrument_type_validator.validate(run)
+        expect(run.plates.first.errors.messages).to be_empty
+
+        # Minimum
+        run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate, well_count: 0)])
+        instrument_type_validator = described_class.new(instrument_types:)
+        instrument_type_validator.validate(run)
+        expect(run.plates.first.errors.messages[:wells]).to include('must have at least 1 well')
+
+        # Maximum
+        run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate, well_count: 100)])
+        instrument_type_validator = described_class.new(instrument_types:)
+        instrument_type_validator.validate(run)
+        expect(run.plates.first.errors.messages[:wells]).to include('must have at most 96 wells')
       end
     end
   end

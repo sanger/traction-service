@@ -13,7 +13,7 @@ default: &default
         maximum: 1
         required_attributes:
         - :plate_number
-        - :sequencing_kit_barcode
+        - :sequencing_kit_box_barcode
       wells:
         minimum: 1
         maximum: 96
@@ -27,7 +27,7 @@ default: &default
         maximum: 2
         required_attributes:
         - :plate_number
-        - :sequencing_kit_barcode
+        - :sequencing_kit_box_barcode
       wells:
         minimum: 1
         maximum: 4
