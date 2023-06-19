@@ -24,6 +24,7 @@ class InstrumentTypeValidator < ActiveModel::Validator
   end
 
   def validate_required_attributes(record, configuration)
+    return unless configuration['required_attributes'].present?
     configuration['required_attributes'].each do |attribute|
       record.errors.add(attribute, "can't be blank") if record.send(attribute).blank?
     end
