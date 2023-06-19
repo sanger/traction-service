@@ -204,6 +204,14 @@ RSpec.describe Pacbio::Run, pacbio: true do
       run = create(:pacbio_run, plates: [create(:pacbio_plate, well_count: 2)])
       expect { run.update(plates_attributes: { id: run.plates.first.id, sequencing_kit_box_barcode: 'DM0001100861800123121', plate_number: 1, wells_attributes: [{ id: run.plates.first.wells.first.id, _destroy: true }] }) }.to change(run.plates.first.wells, :count).by(-1)
     end
+
+    it 'removes existing wells and readds the with the same position' do
+      run = create(:pacbio_run, plates: [create(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])
+      run.update(plates_attributes: { id: run.plates.first.id, sequencing_kit_box_barcode: 'DM0001100861800123121', plate_number: 1, wells_attributes: [{ id: run.plates.first.wells.first.id, _destroy: true }, build(:pacbio_well, row: 'A', column: '1').attributes.merge(pool_ids: pools.pluck(:id))] })
+      run.reload
+      expect(run.plates.first.wells.count).to eq(1)
+      expect(run.plates.first.wells.first.position).to eq('A1')
+    end
   end
 
   describe 'validate number of plates' do
