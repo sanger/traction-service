@@ -78,20 +78,75 @@ RSpec.describe InstrumentTypeValidator do
     end
   end
 
-  describe.skip 'when the instrument type is Revio' do
+  describe 'when the instrument type is Revio' do
     before do
       create(:pacbio_smrt_link_version, name: 'v12_revio', default: true)
     end
 
     context 'plates' do
       it 'required attributes' do
-        expect(true).to be_truthy
+        instrument_types['sequel_iie']['plates']['required_attributes'].each do |attribute|
+          plates = build_list(:pacbio_plate, 2)
+          run = build(:pacbio_run, system_name: 'Sequel IIe', plates:)
+          plates.first.send("#{attribute}=", nil)
+          instrument_type_validator = described_class.new(instrument_types:)
+          instrument_type_validator.validate(run)
+          expect(plates.first.errors.messages[attribute]).to include("can't be blank")
+          expect(plates.last.errors.messages).to be_empty
+        end
       end
     end
 
     context 'wells' do
-      it 'minimum number of wells' do
-        expect(true).to be_truthy
+      it 'minimum or maximum number of wells' do
+        wells = [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1'), build(:pacbio_well, row: 'C', column: '1'), build(:pacbio_well, row: 'D', column: '1')]
+        run = build(:pacbio_run, system_name: 'Revio', plates: build_list(:pacbio_plate, 2, wells: [wells.first]))
+        instrument_type_validator = described_class.new(instrument_types:)
+        instrument_type_validator.validate(run)
+        expect(run.plates.first.errors.messages).to be_empty
+        expect(run.plates.second.errors.messages).to be_empty
+
+        run = build(:pacbio_run, system_name: 'Revio', plates: build_list(:pacbio_plate, 2, wells:))
+        instrument_type_validator = described_class.new(instrument_types:)
+        instrument_type_validator.validate(run)
+        expect(run.plates.first.errors.messages).to be_empty
+        expect(run.plates.second.errors.messages).to be_empty
+
+        # Minimum
+        run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, well_count: 0), build(:pacbio_plate, wells: [wells.first])])
+        instrument_type_validator = described_class.new(instrument_types:)
+        instrument_type_validator.validate(run)
+        expect(run.plates.first.errors.messages[:wells]).to include('must have at least 1 well')
+        expect(run.plates.second.errors.messages[:wells]).to be_empty
+
+        # Maximum
+        run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, well_count: 5), build(:pacbio_plate, wells:)])
+        instrument_type_validator = described_class.new(instrument_types:)
+        instrument_type_validator.validate(run)
+        expect(run.plates.first.errors.messages[:wells]).to include('must have at most 4 wells')
+        expect(run.plates.second.errors.messages[:wells]).to be_empty
+      end
+
+      it 'well positions', skip: 'not yet implemented' do
+
+        valid_wells = [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1'), build(:pacbio_well, row: 'C', column: '1'), build(:pacbio_well, row: 'D', column: '1')]
+
+        run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'G', column: '1'), build(:pacbio_plate, wells:)])])
+        instrument_type_validator = described_class.new(instrument_types:)
+        instrument_type_validator.validate(run)
+        expect(run.plates.first.errors.messages[:wells]).to include("wells must be in the positions #{instrument_types['revio']['plates']['well_positions']}")
+        expect(run.plates.second.errors.messages[:wells]).to be_empty
+
+        # Maximum
+        run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells:), build(:pacbio_plate, wells:)])
+        instrument_type_validator = described_class.new(instrument_types:)
+        instrument_type_validator.validate(run)
+        expect(run.plates.first.errors.messages[:wells]).to include('must have at most 4 wells')
+        expect(run.plates.second.errors.messages[:wells]).to be_empty
+
+      end
+
+      it 'well combinations' do
       end
     end
   end
