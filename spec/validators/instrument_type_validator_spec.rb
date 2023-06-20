@@ -145,7 +145,10 @@ RSpec.describe InstrumentTypeValidator do
 
         instrument_types['revio']['wells']['combinations'].each do |combination|
           it combination do
-            expect(true).to be_truthy
+            wells = combination.each do |position|
+              row, column = position.split('')
+              w << build(:pacbio_well, row:, column:)
+            end
           end
         end
 
