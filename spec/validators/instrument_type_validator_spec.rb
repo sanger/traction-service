@@ -142,6 +142,13 @@ RSpec.describe InstrumentTypeValidator do
       end
 
       context 'well combinations', skip: 'Not yet implemented' do
+
+        instrument_types['revio']['wells']['combinations'].each do |combination|
+          it combination do
+            expect(true).to be_truthy
+          end
+        end
+
         it 'A1, D1 filled' do
           run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'D', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])
           instrument_type_validator = described_class.new(instrument_types:)
