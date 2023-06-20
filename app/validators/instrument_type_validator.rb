@@ -8,19 +8,19 @@ class InstrumentTypeValidator < ActiveModel::Validator
 
   def initialize(options)
     super
-    @instrument_types = options[:instrument_types]
+    @instrument_types = options[:instrument_types].with_indifferent_access
   end
 
   def validate(record)
-    @instrument_type = instrument_types.select do |_key, value|
-      value['name'] == record.system_name
-    end.values.first
+    self.instrument_type = record
+
     validate_required_attributes(record, instrument_type['run'])
-    validate_limit(record, :plates, instrument_type['plates'])
+    validate_limits(record, :plates, instrument_type['plates']['limits'])
     record.plates.each do |plate|
       validate_required_attributes(plate, instrument_type['plates'])
-      validate_limit(plate, :wells, instrument_type['wells'])
+      validate_limits(plate, :wells, instrument_type['wells']['limits'])
       validate_well_positions(plate, instrument_type['wells']['positions'])
+      validate_well_combinations(plate, instrument_type['wells']['combinations'])
     end
   end
 
@@ -32,19 +32,17 @@ class InstrumentTypeValidator < ActiveModel::Validator
     end
   end
 
-  def validate_limit(record, labware_type, configuration)
-    minimum = configuration['minimum']
-    maximum = configuration['maximum']
-    if record.send(labware_type).length < minimum
+  def validate_limits(record, labware_type, limits)
+    if record.send(labware_type).length < limits[:minimum]
       record.errors.add(labware_type,
-                        "must have at least #{minimum} #{pluralize(minimum,
-                                                                   labware_type)}")
+                        "must have at least #{limits[:minimum]} #{pluralize(limits[:minimum],
+                                                                            labware_type)}")
     end
-    return unless record.send(labware_type).length > maximum
+    return unless record.send(labware_type).length > limits[:maximum]
 
     record.errors.add(labware_type,
-                      "must have at most #{maximum} #{pluralize(maximum,
-                                                                labware_type)}")
+                      "must have at most #{limits[:maximum]} #{pluralize(limits[:maximum],
+                                                                         labware_type)}")
   end
 
   def validate_well_positions(record, valid_positions)
@@ -52,10 +50,28 @@ class InstrumentTypeValidator < ActiveModel::Validator
 
     well_positions = record.wells.filter do |well|
       !well.marked_for_destruction?
-    end.collect(&:position)
+    end.collect(&:position).sort
     return if (well_positions - valid_positions).empty?
 
     record.errors.add(:wells, "must be in positions #{valid_positions}")
+  end
+
+  def validate_well_combinations(record, valid_combinations)
+    return if valid_combinations.blank?
+
+    well_positions = record.wells.filter do |well|
+      !well.marked_for_destruction?
+    end.collect(&:position).sort
+
+    return if valid_combinations.include?(well_positions)
+
+    record.errors.add(:wells, 'must be in a valid order')
+  end
+
+  def instrument_type=(record)
+    @instrument_type = instrument_types.select do |_key, value|
+      value['name'] == record.system_name
+    end.values.first
   end
 
   # This needs to be moved to locale file
