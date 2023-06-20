@@ -9,28 +9,32 @@ default: &default
         required_attributes:
         - :dna_control_complex_box_barcode
       plates:
-        minimum: 1
-        maximum: 1
+        limits:
+          minimum: 1
+          maximum: 1
         required_attributes:
         - :plate_number
         - :sequencing_kit_box_barcode
       wells:
-        minimum: 1
-        maximum: 96
+        limits:
+          minimum: 1
+          maximum: 96
     revio:
       name: Revio
       run:
         smrt_link_versions:
         - v12
       plates:
-        minimum: 1
-        maximum: 2
+        limits:
+          minimum: 1
+          maximum: 2
         required_attributes:
         - :plate_number
         - :sequencing_kit_box_barcode
       wells:
-        minimum: 1
-        maximum: 4
+        limits:
+          minimum: 1
+          maximum: 4
         positions:
         - A1
         - B1
