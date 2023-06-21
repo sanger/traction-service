@@ -32,7 +32,11 @@ RSpec.describe 'PlatesController' do
       json = ActiveSupport::JSON.decode(response.body)
 
       expect(json['data'][0]['attributes']['pacbio_run_id']).to eq(plate1.pacbio_run_id)
+      expect(json['data'][0]['attributes']['plate_number']).to eq(plate1.plate_number)
+      expect(json['data'][0]['attributes']['sequencing_kit_box_barcode']).to eq(plate1.sequencing_kit_box_barcode)
       expect(json['data'][1]['attributes']['pacbio_run_id']).to eq(plate2.pacbio_run_id)
+      expect(json['data'][1]['attributes']['plate_number']).to eq(plate2.plate_number)
+      expect(json['data'][1]['attributes']['sequencing_kit_box_barcode']).to eq(plate2.sequencing_kit_box_barcode)
 
       wells = json['included']
       expect(wells.length).to eq(7)
