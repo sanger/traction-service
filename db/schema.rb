@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_15_123313) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_05_090618) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -180,8 +180,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_15_123313) do
     t.string "uuid"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.integer "plate_number", null: false
-    t.string "sequencing_kit_box_barcode", null: false
     t.index ["pacbio_run_id"], name: "index_pacbio_plates_on_pacbio_run_id"
   end
 
