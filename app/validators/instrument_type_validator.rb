@@ -16,12 +16,24 @@ class InstrumentTypeValidator < ActiveModel::Validator
 
     validate_required_attributes(record, instrument_type['run'])
     validate_limits(record, :plates, instrument_type['plates']['limits'])
+    validate_plates(record)
+  end
+
+  def validate_plates(record)
     record.plates.each do |plate|
       validate_required_attributes(plate, instrument_type['plates'])
       validate_limits(plate, :wells, instrument_type['wells']['limits'])
-      validate_well_positions(plate, instrument_type['wells']['positions'])
-      validate_well_combinations(plate, instrument_type['wells']['combinations'])
+      validate_wells(plate, instrument_type['wells'])
     end
+  end
+
+  def validate_wells(record, configuration)
+    well_positions = record.wells.filter do |well|
+      !well.marked_for_destruction?
+    end.collect(&:position).sort
+    
+    validate_well_positions(record, well_positions,configuration['positions'])
+    validate_well_combinations(record, well_positions, configuration['combinations'])
   end
 
   def validate_required_attributes(record, configuration)
@@ -45,23 +57,16 @@ class InstrumentTypeValidator < ActiveModel::Validator
                                                                          labware_type)}")
   end
 
-  def validate_well_positions(record, valid_positions)
+  def validate_well_positions(record, well_positions, valid_positions)
     return if valid_positions.blank?
 
-    well_positions = record.wells.filter do |well|
-      !well.marked_for_destruction?
-    end.collect(&:position).sort
     return if (well_positions - valid_positions).empty?
 
     record.errors.add(:wells, "must be in positions #{valid_positions}")
   end
 
-  def validate_well_combinations(record, valid_combinations)
+  def validate_well_combinations(record, well_positions, valid_combinations)
     return if valid_combinations.blank?
-
-    well_positions = record.wells.filter do |well|
-      !well.marked_for_destruction?
-    end.collect(&:position).sort
 
     return if valid_combinations.include?(well_positions)
 
