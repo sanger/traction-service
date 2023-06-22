@@ -25,10 +25,8 @@ RSpec.describe 'RunsController' do
   end
 
   describe '#get' do
-    let!(:run1) { create(:pacbio_run, state: 'pending') }
-    let!(:run2) { create(:pacbio_run, state: 'started') }
-    let!(:plate1) { create(:pacbio_plate, run: run1, well_count: 1) }
-    let!(:plate2) { create(:pacbio_plate, run: run2, well_count: 1) }
+    let!(:run1) { create(:pacbio_revio_run, state: 'pending') }
+    let!(:run2) { create(:pacbio_revio_run, state: 'started') }
 
     it 'returns a list of runs' do
       get v1_pacbio_runs_path, headers: json_api_headers
@@ -37,17 +35,22 @@ RSpec.describe 'RunsController' do
       expect(json['data'].length).to eq(2)
     end
 
+    # intermitterntly failing??
     it 'returns the correct attributes' do
       get v1_pacbio_runs_path, headers: json_api_headers
 
       json = ActiveSupport::JSON.decode(response.body)
-      expect(json['data'][0]['attributes']['name']).to eq(run1.name)
-      expect(json['data'][0]['attributes']['dna_control_complex_box_barcode']).to eq(run1.dna_control_complex_box_barcode)
-      expect(json['data'][0]['attributes']['system_name']).to eq(run1.system_name)
-      expect(json['data'][0]['attributes']['created_at']).to eq(run1.created_at.to_fs(:us))
-      expect(json['data'][0]['attributes']['state']).to eq(run1.state)
-      expect(json['data'][0]['attributes']['comments']).to eq(run1.comments)
-      expect(json['data'][1]['attributes']['name']).to eq(run2.name)
+
+      run1_attributes = json['data'].find { |data| data['id'] == run1.id.to_s }['attributes']
+      expect(run1_attributes['name']).to eq(run1.name)
+      expect(run1_attributes['dna_control_complex_box_barcode']).to eq(run1.dna_control_complex_box_barcode)
+      expect(run1_attributes['system_name']).to eq(run1.system_name)
+      expect(run1_attributes['created_at']).to eq(run1.created_at.to_fs(:us))
+      expect(run1_attributes['state']).to eq(run1.state)
+      expect(run1_attributes['comments']).to eq(run1.comments)
+
+      run2_attributes = json['data'].find { |data| data['id'] == run2.id.to_s }['attributes']
+      expect(run2_attributes['name']).to eq(run2.name)
     end
 
     it 'returns the correct relationships', aggregate_failures: true do
@@ -56,11 +59,11 @@ RSpec.describe 'RunsController' do
       expect(response).to have_http_status(:success), response.body
       json = ActiveSupport::JSON.decode(response.body)
 
-      plate1_attributes = find_included_resource(type: 'plates', id: plate1.id)['attributes']
+      plate1_attributes = find_included_resource(type: 'plates', id: run1.plates.first.id)['attributes']
       expect(plate1_attributes).to include(
         'pacbio_run_id' => run1.id
       )
-      plate2_attributes = find_included_resource(type: 'plates', id: plate2.id)['attributes']
+      plate2_attributes = find_included_resource(type: 'plates', id: run2.plates.first.id)['attributes']
       expect(plate2_attributes).to include(
         'pacbio_run_id' => run2.id
       )
@@ -71,8 +74,8 @@ RSpec.describe 'RunsController' do
     end
 
     context 'pagination' do
-      let!(:run1) { create(:pacbio_run, created_at: Time.zone.now) }
-      let!(:run2) { create(:pacbio_run, created_at: Time.zone.now + 2000) }
+      let!(:run1) { create(:pacbio_revio_run, created_at: Time.zone.now) }
+      let!(:run2) { create(:pacbio_revio_run, created_at: Time.zone.now + 2000) }
       let!(:expected_runs) { [run1, run2] }
 
       before do
@@ -935,8 +938,7 @@ RSpec.describe 'RunsController' do
   describe '#update' do
     context 'on success' do
       context 'when run state is successful' do
-        let!(:run) { create(:pacbio_run) }
-        let!(:plate) { create(:pacbio_plate, run:) }
+        let!(:run) { create(:pacbio_revio_run) }
         let(:body) do
           {
             data: {
@@ -971,7 +973,6 @@ RSpec.describe 'RunsController' do
           existing_pools = existing_wells.map(&:pools)
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
           run.reload
-          expect(run.plates.first).to eq plate
           expect(run.plates.first.wells).to eq existing_wells
           expect(run.plates.first.wells.map(&:pools)).to eq existing_pools
         end
@@ -993,11 +994,7 @@ RSpec.describe 'RunsController' do
             }
           }.to_json
         end
-        let!(:run) { create(:pacbio_run) }
-
-        before do
-          create(:pacbio_plate, run:)
-        end
+        let!(:run) { create(:pacbio_revio_run) }
 
         it 'has a ok status' do
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
@@ -1023,9 +1020,9 @@ RSpec.describe 'RunsController' do
       end
 
       context 'when well info is successful' do
-        let!(:run) { create(:pacbio_run) }
-        let!(:plate) { create(:pacbio_plate, run:) }
-        let!(:well) { plate.wells.first }
+        let!(:run) { create(:pacbio_sequel_run) }
+        let!(:plate) { run.plates.first }
+        let!(:well) { run.plates.first.wells.first }
         let!(:pool1) { create(:pacbio_pool) }
 
         let(:body) do
@@ -1078,8 +1075,8 @@ RSpec.describe 'RunsController' do
       end
 
       context 'when well is added, removed and updated' do
-        let!(:run) { create(:pacbio_run) }
-        let!(:plate) { create(:pacbio_plate, run:, well_count: 2) }
+        let!(:run) { create(:pacbio_sequel_run, plates: [build(:pacbio_plate, wells: build_list(:pacbio_well, 2))]) }
+        let!(:plate) { run.plates.first }
         let!(:well1) { plate.wells[0] }
         let(:pool1) { create(:pacbio_pool) }
 
@@ -1159,9 +1156,14 @@ RSpec.describe 'RunsController' do
       end
 
       context 'when pool is added, removed and updated' do
-        let!(:run) { create(:pacbio_run) }
-        let!(:plate) { create(:pacbio_plate, run:, well_count: 2) }
-        let!(:well1) { plate.wells[0] }
+        let!(:run) do
+          create(:pacbio_revio_run, plates: [
+            build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1', pool_count: 5), build(:pacbio_well, row: 'B', column: '1', pool_count: 5)]),
+            build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1', pool_count: 5), build(:pacbio_well, row: 'B', column: '1', pool_count: 5)])
+          ])
+        end
+        let(:plate) { run.plates.first }
+        let(:well1) { plate.wells.first }
         let!(:pool1) { create(:pacbio_pool) }
         let!(:pool2) { create(:pacbio_pool) }
 
@@ -1175,11 +1177,11 @@ RSpec.describe 'RunsController' do
                   id: plate.id,
                   wells_attributes: [
                     {
-                      id: run.wells[0].id.to_s,
-                      pool_ids: [well1.pools[0].id, pool1.id]
+                      id: plate.wells.first.id.to_s,
+                      pool_ids: [plate.wells.first.pools[0].id, pool1.id]
                     },
                     {
-                      id: run.wells[1].id.to_s,
+                      id: plate.wells.second.id.to_s,
                       pool_ids: [pool2.id]
                     }
                   ]
@@ -1203,22 +1205,23 @@ RSpec.describe 'RunsController' do
 
         # Each well previously had 5 pools each
         # Now there are 3 pools
-        # Therefore, WellPool count changed from 10 to 3
+        # Therefore, WellPool count changed from 20 to 13
         it 'does creates a well pool' do
           expect do
             patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-          end.to change(Pacbio::WellPool, :count).from(10).to(3)
+          end.to change(Pacbio::WellPool, :count).from(20).to(13)
         end
 
         it 'updates a well' do
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
           run.reload
-          expect(run.wells.length).to eq 2
-          expect(run.wells[0].pools.length).to eq 2
-          expect(run.wells[0].pools).to include well1.pools[0]
-          expect(run.wells[0].pools).to include pool1
-          expect(run.wells[1].pools.length).to eq 1
-          expect(run.wells[1].pools).to include pool2
+          updated_plate = run.plates.find_by(id: plate.id)
+          expect(updated_plate.wells.length).to eq 2
+          expect(updated_plate.wells[0].pools.length).to eq 2
+          expect(updated_plate.wells[0].pools).to include well1.pools[0]
+          expect(updated_plate.wells[0].pools).to include pool1
+          expect(updated_plate.wells[1].pools.length).to eq 1
+          expect(updated_plate.wells[1].pools).to include pool2
         end
 
         it_behaves_like 'publish_messages_on_update'
@@ -1226,7 +1229,7 @@ RSpec.describe 'RunsController' do
     end
 
     context 'on failure' do
-      let!(:run) { create(:pacbio_run) }
+      let!(:run) { create(:pacbio_revio_run) }
 
       let(:body) do
         {
@@ -1260,8 +1263,8 @@ RSpec.describe 'RunsController' do
   end
 
   describe '#show' do
-    let!(:run) { create(:pacbio_run) }
-    let!(:plate) { create(:pacbio_plate, run:) }
+    let!(:run) { create(:pacbio_revio_run) }
+    let!(:plate) { run.plates.first }
 
     it 'returns the runs' do
       get v1_pacbio_run_path(run), headers: json_api_headers
@@ -1306,11 +1309,7 @@ RSpec.describe 'RunsController' do
   end
 
   describe '#destroy' do
-    let!(:run) { create(:pacbio_run) }
-
-    before do
-      create(:pacbio_plate, run:)
-    end
+    let!(:run) { create(:pacbio_sequel_run) }
 
     context 'on success' do
       it 'returns the correct status' do
@@ -1359,7 +1358,7 @@ RSpec.describe 'RunsController' do
       expect(response.header['Content-Type']).to include 'text/csv'
     end
 
-    it 'the attached csv file is named after the run its assoicated with' do
+    it 'the attached csv file is named after the run its associated with' do
       get v1_pacbio_run_sample_sheet_path(run).to_s, headers: json_api_headers
       expect(response.header['Content-Disposition']).to include "#{run.name}.csv"
     end

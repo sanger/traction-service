@@ -7,7 +7,12 @@ FactoryBot.define do
 
     factory :pacbio_revio_run do
       system_name { 'Revio' }
-      plates { build_list(:pacbio_plate, 2, wells: [build(:pacbio_well, row: 'A', column: '1')]) }
+      plates { [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])] }
+    end
+
+    factory :pacbio_sequel_run do
+      system_name { 'Sequel IIe' }
+      plates { build_list(:pacbio_plate, 1, wells: [build(:pacbio_well)]) }
     end
   end
 end

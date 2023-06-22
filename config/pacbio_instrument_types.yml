@@ -1,60 +1,55 @@
 ---
 default: &default
-  instrument_types:
-    sequel_iie:
-      name: Sequel IIe
-      run:
-        smrt_link_versions:
-        - v11
-        required_attributes:
-        - :dna_control_complex_box_barcode
-      plates:
-        limits:
-          minimum: 1
-          maximum: 1
-        required_attributes:
-        - :plate_number
-        - :sequencing_kit_box_barcode
-      wells:
-        limits:
-          minimum: 1
-          maximum: 96
-    revio:
-      name: Revio
-      run:
-        smrt_link_versions:
-        - v12
-      plates:
-        limits:
-          minimum: 1
-          maximum: 2
-        required_attributes:
-        - :plate_number
-        - :sequencing_kit_box_barcode
-      wells:
-        limits:
-          minimum: 1
-          maximum: 4
-        positions:
-        - A1
-        - B1
-        - C1
-        - D1
-        combinations:
-        - [A1]
-        - [A1,B1]
-        - [A1,B1,C1]
-        - [A1,B1,C1,D1]
-        - [B1]
-        - [B1,C1]
-        - [B1,C1,D1]
-        - [C1]
-        - [C1,D1]
-        - [D1]
-
-
-
-
+  sequel_iie:
+    name: Sequel IIe
+    run:
+      smrt_link_versions:
+      - v11
+      required_attributes:
+      - :dna_control_complex_box_barcode
+    plates:
+      limits:
+        minimum: 1
+        maximum: 1
+      required_attributes:
+      - :plate_number
+      - :sequencing_kit_box_barcode
+    wells:
+      limits:
+        minimum: 1
+        maximum: 96
+  revio:
+    name: Revio
+    run:
+      smrt_link_versions:
+      - v12
+    plates:
+      limits:
+        minimum: 1
+        maximum: 2
+      required_attributes:
+      - :plate_number
+      - :sequencing_kit_box_barcode
+    wells:
+      limits:
+        minimum: 1
+        maximum: 4
+      positions:
+      - A1
+      - B1
+      - C1
+      - D1
+      combinations:
+      - [A1]
+      - [A1,B1]
+      - [A1,B1,C1]
+      - [A1,B1,C1,D1]
+      - [B1]
+      - [B1,C1]
+      - [B1,C1,D1]
+      - [C1]
+      - [C1,D1]
+      - [D1]
 
 development: *default
 test: *default
