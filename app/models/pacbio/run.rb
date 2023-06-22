@@ -38,6 +38,12 @@ module Pacbio
                                                 system_name == 'Revio'
                                               }
 
+    validates_with InstrumentTypeValidator,
+                   instrument_types: Rails.configuration.pacbio_instrument_types,
+                   if: lambda {
+                         system_name.present?
+                       }
+
     validates :name, uniqueness: { case_sensitive: false }
 
     validate :validate_plate_limit

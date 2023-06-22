@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe InstrumentTypeValidator do
-  let!(:instrument_types) { YAML.load_file(Rails.root.join('config/pacbio_instrument_types.yml'), aliases: true)[Rails.env]['instrument_types'] }
+  let!(:instrument_types) { YAML.load_file(Rails.root.join('config/pacbio_instrument_types.yml'), aliases: true)[Rails.env] }
 
   describe 'when the instrument type is Sequel IIe' do
     before do

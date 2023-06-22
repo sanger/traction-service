@@ -24,6 +24,8 @@ class InstrumentTypeValidator < ActiveModel::Validator
   def validate(record)
     self.instrument_type = record
 
+    return if instrument_type.blank?
+
     validate_required_attributes(record, instrument_type['run'])
     validate_limits(record, :plates, instrument_type['plates']['limits'])
     validate_plates(record)

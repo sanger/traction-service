@@ -171,7 +171,8 @@ RSpec.describe Pacbio::Well, pacbio: true do
       end
 
       # we need to create this after creating smrt link options otherwise they will not be added
-      let!(:plate) { create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version11)) }
+      let!(:run) { create(:pacbio_sequel_run, smrt_link_version: version11) }
+      let(:plate) { run.plates.first }
 
       context 'movie time' do
         it 'must be present' do
@@ -234,12 +235,13 @@ RSpec.describe Pacbio::Well, pacbio: true do
     end
 
     context 'v10' do
-      let(:well) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version10))) }
-
       before do
         create(:pacbio_smrt_link_option, key: 'generate_hifi', validations: { presence: {}, inclusion: { in: generate_in } }, smrt_link_versions: [version10])
         create(:pacbio_smrt_link_option, key: 'ccs_analysis_output', validations: { presence: {}, inclusion: { in: yes_no } }, smrt_link_versions: [version10])
       end
+
+      let!(:run) { create(:pacbio_sequel_run, smrt_link_version: version10) }
+      let!(:well) { build(:pacbio_well, plate: run.plates.first) }
 
       context 'generate hifi' do
         it 'must be present' do
@@ -277,13 +279,14 @@ RSpec.describe Pacbio::Well, pacbio: true do
     end
 
     context 'v11' do
-      let(:well) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version11))) }
-
       before do
         create(:pacbio_smrt_link_option, key: 'demultiplex_barcodes', validations: { presence: {}, inclusion: { in: generate_in } }, smrt_link_versions: [version11])
         create(:pacbio_smrt_link_option, key: 'ccs_analysis_output_include_low_quality_reads', validations: { presence: {}, inclusion: { in: yes_no } }, smrt_link_versions: [version11])
         create(:pacbio_smrt_link_option, key: 'ccs_analysis_output_include_kinetics_information', validations: { presence: {}, inclusion: { in: yes_no } }, smrt_link_versions: [version11])
       end
+
+      let!(:run) { create(:pacbio_sequel_run, smrt_link_version: version11) }
+      let(:well) { build(:pacbio_well, plate: run.plates.first) }
 
       context 'CCS Analysis Output - Include Low Quality Reads' do
         it 'must be present' do
@@ -337,9 +340,6 @@ RSpec.describe Pacbio::Well, pacbio: true do
     end
 
     context 'v12_revio' do
-      # build the well with the smrt_link version 12 revio
-      let(:well) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version12_revio))) }
-
       # before do - create all the version12_revio specific options in here
       before do
         create(:pacbio_smrt_link_option, key: 'movie_acquisition_time', validations: { presence: {}, numericality: { greater_than_or_equal_to: 0.1, less_than_or_equal_to: 30 } }, smrt_link_versions: [version12_revio])
@@ -347,6 +347,10 @@ RSpec.describe Pacbio::Well, pacbio: true do
         create(:pacbio_smrt_link_option, key: 'library_concentration', validations: { presence: {} }, smrt_link_versions: [version12_revio])
         create(:pacbio_smrt_link_option, key: 'polymerase_kit', validations: { presence: {} }, smrt_link_versions: [version12_revio])
       end
+
+      # build the well with the smrt_link version 12 revio
+      let!(:run) { create(:pacbio_sequel_run, smrt_link_version: version12_revio) }
+      let(:well) { build(:pacbio_well, plate: run.plates.first) }
 
       context 'Movie acquisition time' do
         it 'must be present' do

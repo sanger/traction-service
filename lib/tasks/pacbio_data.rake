@@ -58,9 +58,7 @@ namespace :pacbio_data do
 
     puts '-> Creating pacbio runs...'
     pool_records.each_with_index do |pool, i|
-      run = Pacbio::Run.create!(name: "Run#{pool.id}", dna_control_complex_box_barcode: "DCCB#{pool.id}")
-      plate = Pacbio::Plate.create(run:, sequencing_kit_box_barcode: "SKB#{pool.id}", plate_number: 1)
-      Pacbio::Well.create!(plate:, pools: [pool], movie_time: 20, on_plate_loading_concentration: 1, row: 'A', column: i + 1, generate_hifi: 'In SMRT Link', ccs_analysis_output: 'Yes', binding_kit_box_barcode: "BKB#{pool.id}")
+      Pacbio::Run.create!(name: "Run#{pool.id}", dna_control_complex_box_barcode: "DCCB#{pool.id}", plates: [Pacbio::Plate.new(sequencing_kit_box_barcode: "SKB#{pool.id}", plate_number: 1, wells: [Pacbio::Well.new(pools: [pool], movie_time: 20, on_plate_loading_concentration: 1, row: 'A', column: i + 1, generate_hifi: 'In SMRT Link', ccs_analysis_output: 'Yes', binding_kit_box_barcode: "BKB#{pool.id}")])])
     end
     puts '-> Pacbio runs successfully created'
   end
