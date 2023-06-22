@@ -7,7 +7,7 @@ module V1
       class PlateResource < JSONAPI::Resource
         model_name 'Pacbio::Plate'
 
-        attributes :pacbio_run_id
+        attributes :pacbio_run_id, :plate_number, :sequencing_kit_box_barcode
 
         has_many :wells, class_name: 'Well'
       end
