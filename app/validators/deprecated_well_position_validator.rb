@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Validator to check the correct wells are being used
-class WellPositionValidator < ActiveModel::Validator
+class DeprecatedWellPositionValidator < ActiveModel::Validator
   include ActiveModel::Validations
 
   # the standard set of well positions
