@@ -157,7 +157,7 @@ RSpec.describe.skip InstrumentTypeValidator, reason: 'Refactor' do
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
           expect(run.errors.messages[:plates].length).to eq(1)
-          expect(run.errors.messages[:plates]).to include('"plate #{plates.first.plate_number} wells must be in a valid order')
+          expect(run.errors.messages[:plates]).to include(%("plate #{plates.first.plate_number} wells must be in a valid order))
         end
 
         it 'A1, C1 filled' do
@@ -165,7 +165,7 @@ RSpec.describe.skip InstrumentTypeValidator, reason: 'Refactor' do
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
           expect(run.errors.messages[:plates].length).to eq(1)
-          expect(run.errors.messages[:plates]).to include('"plate #{plates.first.plate_number} wells must be in a valid order')
+          expect(run.errors.messages[:plates]).to include(%("plate #{plates.first.plate_number} wells must be in a valid order))
         end
 
         it 'B1, D1 filled' do
@@ -173,7 +173,7 @@ RSpec.describe.skip InstrumentTypeValidator, reason: 'Refactor' do
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
           expect(run.errors.messages[:plates].length).to eq(1)
-          expect(run.errors.messages[:plates]).to include('"plate #{plates.first.plate_number} wells must be in a valid order')
+          expect(run.errors.messages[:plates]).to include(%("plate #{plates.first.plate_number} wells must be in a valid order))
         end
 
         it 'A1, C1, D1 filled' do
@@ -181,7 +181,7 @@ RSpec.describe.skip InstrumentTypeValidator, reason: 'Refactor' do
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
           expect(run.errors.messages[:plates].length).to eq(1)
-          expect(run.errors.messages[:plates]).to include('"plate #{plates.first.plate_number} wells must be in a valid order')
+          expect(run.errors.messages[:plates]).to include(%("plate #{plates.first.plate_number} wells must be in a valid order))
         end
 
         it 'A1, B1, D1 filled' do
@@ -189,7 +189,7 @@ RSpec.describe.skip InstrumentTypeValidator, reason: 'Refactor' do
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
           expect(run.errors.messages[:plates].length).to eq(1)
-          expect(run.errors.messages[:plates]).to include('"plate #{plates.first.plate_number} wells must be in a valid order')
+          expect(run.errors.messages[:plates]).to include(%("plate #{plates.first.plate_number} wells must be in a valid order))
         end
 
         it 'B1, D1 filled but in reverse order' do
@@ -197,7 +197,7 @@ RSpec.describe.skip InstrumentTypeValidator, reason: 'Refactor' do
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
           expect(run.errors.messages[:plates].length).to eq(1)
-          expect(run.errors.messages[:plates]).to include('"plate #{plates.first.plate_number} wells must be in a valid order')
+          expect(run.errors.messages[:plates]).to include(%("plate #{plates.first.plate_number} wells must be in a valid order))
         end
 
         it 'wont validate wells that are marked for destruction' do
@@ -207,7 +207,7 @@ RSpec.describe.skip InstrumentTypeValidator, reason: 'Refactor' do
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
           expect(run.errors.messages[:plates].length).to eq(1)
-          expect(run.errors.messages[:plates]).to include('"plate #{plates.first.plate_number} wells must be in a valid order')
+          expect(run.errors.messages[:plates]).to include(%("plate #{plates.first.plate_number} wells must be in a valid order))
         end
       end
     end
