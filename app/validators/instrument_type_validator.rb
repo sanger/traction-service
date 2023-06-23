@@ -39,7 +39,8 @@ class InstrumentTypeValidator < ActiveModel::Validator
   def validate_plates(record)
     record.plates.each do |plate|
       validate_required_attributes(plate, instrument_type['plates'])
-      validate_limits(plate, :wells, instrument_type['wells']['limits'], "plate #{plate.plate_number} ")
+      validate_limits(plate, :wells, instrument_type['wells']['limits'],
+                      "plate #{plate.plate_number} ")
       validate_wells(plate, instrument_type['wells'])
     end
   end
@@ -78,14 +79,14 @@ class InstrumentTypeValidator < ActiveModel::Validator
     # binding.pry
     if record.send(labware_type).length < limits[:minimum]
       run.errors.add(labware_type,
-                        "#{message_prefix}must have at least #{limits[:minimum]} #{pluralize(limits[:minimum],
-                                                                            labware_type)}")
+                     "#{message_prefix}must have at least #{limits[:minimum]}
+                     #{pluralize(limits[:minimum], labware_type)}")
     end
     return unless record.send(labware_type).length > limits[:maximum]
 
     run.errors.add(labware_type,
-                      "#{message_prefix}must have at most #{limits[:maximum]} #{pluralize(limits[:maximum],
-                                                                         labware_type)}")
+                   "#{message_prefix}must have at most #{limits[:maximum]}
+                   #{pluralize(limits[:maximum], labware_type)}")
   end
 
   # @param [Plate] plate
@@ -96,7 +97,8 @@ class InstrumentTypeValidator < ActiveModel::Validator
 
     return if (well_positions - valid_positions).empty?
 
-    run.errors.add(:plates, "plate #{plate.plate_number} wells must be in positions #{valid_positions}")
+    run.errors.add(:plates,
+                   "plate #{plate.plate_number} wells must be in positions #{valid_positions}")
   end
 
   # @param [Plate] plate

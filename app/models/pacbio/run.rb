@@ -81,6 +81,5 @@ module Pacbio
 
       update(name: "#{NAME_PREFIX}#{id}")
     end
-
   end
 end
