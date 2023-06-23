@@ -27,17 +27,6 @@ module Pacbio
 
     validates :system_name, presence: true
 
-    # it would be sensible to move this to dependent validation as with wells
-    # and SMRT Link. Something to ponder on ...
-    validates :dna_control_complex_box_barcode, presence: true, unless: lambda {
-                                                                          system_name == 'Revio'
-                                                                        }
-
-    # if it is a Revio run we need to check if the wells are in the correct positions
-    validates_with WellPositionValidator, if: lambda {
-                                                system_name == 'Revio'
-                                              }
-
     validates_with InstrumentTypeValidator,
                    instrument_types: Rails.configuration.pacbio_instrument_types,
                    if: lambda {
@@ -45,8 +34,6 @@ module Pacbio
                        }
 
     validates :name, uniqueness: { case_sensitive: false }
-
-    validate :validate_plate_limit
 
     scope :active, -> { where(deactivated_at: nil) }
 
@@ -95,17 +82,5 @@ module Pacbio
       update(name: "#{NAME_PREFIX}#{id}")
     end
 
-    def validate_plate_limit
-      return if system_name.blank?
-
-      if plates.size > 1 && system_name == 'Sequel IIe'
-        errors.add(:plates,
-                   'Sequel IIe can only have 1 plate')
-      end
-      return unless plates.size > 2 && system_name == 'Revio'
-
-      errors.add(:plates,
-                 'Revio can only have 2 plates')
-    end
   end
 end

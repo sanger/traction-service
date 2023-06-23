@@ -11,7 +11,7 @@
 class InstrumentTypeValidator < ActiveModel::Validator
   include ActiveModel::Validations
 
-  attr_reader :instrument_types, :instrument_type
+  attr_reader :instrument_types, :instrument_type, :run
 
   # @param [Hash] options
   # @option options [Hash] :instrument_types
@@ -23,6 +23,8 @@ class InstrumentTypeValidator < ActiveModel::Validator
   # @param [Run] record
   def validate(record)
     self.instrument_type = record
+
+    @run = record
 
     return if instrument_type.blank?
 
@@ -37,7 +39,7 @@ class InstrumentTypeValidator < ActiveModel::Validator
   def validate_plates(record)
     record.plates.each do |plate|
       validate_required_attributes(plate, instrument_type['plates'])
-      validate_limits(plate, :wells, instrument_type['wells']['limits'])
+      validate_limits(plate, :wells, instrument_type['wells']['limits'], "plate #{plate.plate_number} ")
       validate_wells(plate, instrument_type['wells'])
     end
   end
@@ -72,39 +74,40 @@ class InstrumentTypeValidator < ActiveModel::Validator
   # @param [Symbol] labware_type
   # @param [Hash] limits
   # validates the number of Plates or Wells
-  def validate_limits(record, labware_type, limits)
+  def validate_limits(record, labware_type, limits, message_prefix = nil)
+    # binding.pry
     if record.send(labware_type).length < limits[:minimum]
-      record.errors.add(labware_type,
-                        "must have at least #{limits[:minimum]} #{pluralize(limits[:minimum],
+      run.errors.add(labware_type,
+                        "#{message_prefix}must have at least #{limits[:minimum]} #{pluralize(limits[:minimum],
                                                                             labware_type)}")
     end
     return unless record.send(labware_type).length > limits[:maximum]
 
-    record.errors.add(labware_type,
-                      "must have at most #{limits[:maximum]} #{pluralize(limits[:maximum],
+    run.errors.add(labware_type,
+                      "#{message_prefix}must have at most #{limits[:maximum]} #{pluralize(limits[:maximum],
                                                                          labware_type)}")
   end
 
-  # @param [Plate] record
+  # @param [Plate] plate
   # @param [Hash] configuration
   # validates the positions of Wells
-  def validate_well_positions(record, well_positions, valid_positions)
+  def validate_well_positions(plate, well_positions, valid_positions)
     return if valid_positions.blank?
 
     return if (well_positions - valid_positions).empty?
 
-    record.errors.add(:wells, "must be in positions #{valid_positions}")
+    run.errors.add(:plates, "plate #{plate.plate_number} wells must be in positions #{valid_positions}")
   end
 
-  # @param [Plate] record
+  # @param [Plate] plate
   # @param [Hash] configuration
   # validates the combinations of Wells
-  def validate_well_combinations(record, well_positions, valid_combinations)
+  def validate_well_combinations(plate, well_positions, valid_combinations)
     return if valid_combinations.blank?
 
     return if valid_combinations.include?(well_positions)
 
-    record.errors.add(:wells, 'must be in a valid order')
+    run.errors.add(:plates, "plate #{plate.plate_number} wells must be in a valid order")
   end
 
   # @param [Run] record

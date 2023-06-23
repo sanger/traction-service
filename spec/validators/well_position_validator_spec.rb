@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe WellPositionValidator do
+RSpec.describe DeprecatedWellPositionValidator do
   before do
     create(:pacbio_smrt_link_version, name: 'v12_revio', default: true)
   end
