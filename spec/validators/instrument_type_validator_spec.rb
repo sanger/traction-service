@@ -12,7 +12,7 @@ RSpec.describe.skip InstrumentTypeValidator, reason: 'Refactor' do
 
     context 'run' do
       it 'required attributes' do
-        instrument_types['sequel_iie']['run']['required_attributes'].each do |attribute|
+        instrument_types['sequel_iie']['run']['options']['required_attributes'].each do |attribute|
           run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate)])
           run.send("#{attribute}=", nil)
           instrument_type_validator = described_class.new(instrument_types:)
@@ -24,7 +24,7 @@ RSpec.describe.skip InstrumentTypeValidator, reason: 'Refactor' do
 
     context 'plates' do
       it 'required attributes' do
-        instrument_types['sequel_iie']['plates']['required_attributes'].each do |attribute|
+        instrument_types['sequel_iie']['options']['plates']['required_attributes'].each do |attribute|
           plate = build(:pacbio_plate)
           run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [plate])
           plate.send("#{attribute}=", nil)
@@ -85,7 +85,7 @@ RSpec.describe.skip InstrumentTypeValidator, reason: 'Refactor' do
 
     context 'plates' do
       it 'required attributes' do
-        instrument_types['sequel_iie']['plates']['required_attributes'].each do |attribute|
+        instrument_types['sequel_iie']['plates']['options']['required_attributes'].each do |attribute|
           plate = build(:pacbio_plate)
           run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [plate])
           plate.send("#{attribute}=", nil)
@@ -129,13 +129,13 @@ RSpec.describe.skip InstrumentTypeValidator, reason: 'Refactor' do
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
         expect(run.errors.messages[:plates].length).to eq(1)
-        expect(run.errors.messages[:plates]).to include("wells must be in positions #{instrument_types['revio']['wells']['positions']}")
+        expect(run.errors.messages[:plates]).to include("wells must be in positions #{instrument_types['revio']['wells']['validations']['options']['positions']}")
 
         run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1'), build(:pacbio_well, row: 'C', column: '1'), build(:pacbio_well, row: 'H', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
         expect(run.errors.messages[:plates].length).to eq(1)
-        expect(run.errors.messages[:plates]).to include("wells must be in positions #{instrument_types['revio']['wells']['positions']}")
+        expect(run.errors.messages[:plates]).to include("wells must be in positions #{instrument_types['revio']['wells']['validations']['options']['positions']}")
       end
 
       context 'well combinations' do
