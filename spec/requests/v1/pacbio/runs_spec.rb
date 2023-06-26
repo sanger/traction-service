@@ -361,7 +361,8 @@ RSpec.describe 'RunsController' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq "dna_control_complex_box_barcode - can't be blank"
+          expect(errors[0]['detail']).to eq 'plates - must have at least 1 plates'
+          expect(errors[1]['detail']).to eq "dna_control_complex_box_barcode - can't be blank"
         end
       end
 
