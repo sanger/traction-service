@@ -60,12 +60,14 @@ default: &default
       validations:
         positions:
           options:
+            exclude_marked_for_destruction: true
             valid_positions:
             - A1
             - B1
             - C1
             - D1
         combinations:
+          exclude_marked_for_destruction: true
           options:
             valid_combinations:
             - [A1]
