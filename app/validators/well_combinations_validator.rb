@@ -28,6 +28,7 @@ class WellCombinationsValidator < ActiveModel::Validator
 
   def filtered(record)
     return record.wells unless exclude_marked_for_destruction
+
     record.wells.filter { |well| !well.marked_for_destruction? }
   end
 end
