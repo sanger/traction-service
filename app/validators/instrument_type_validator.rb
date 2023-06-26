@@ -21,95 +21,74 @@ class InstrumentTypeValidator < ActiveModel::Validator
   end
 
   # @param [Run] record
+  # validates the InstrumentType and its associated Plates and Wells
   def validate(record)
     self.instrument_type = record
 
-    @run = record
-
     return if instrument_type.blank?
 
-    validate_required_attributes(record, instrument_type['run'])
-    validate_limits(record, :plates, instrument_type['plates']['limits'])
-    validate_plates(record)
-  end
+    @run = record
 
-  # @param [Run] record
-  # validates the presence of required attributes
-  # validates the number of Wells
-  def validate_plates(record)
-    record.plates.each do |plate|
-      validate_required_attributes(plate, instrument_type['plates'])
-      validate_limits(plate, :wells, instrument_type['wells']['limits'],
-                      "plate #{plate.plate_number} ")
-      validate_wells(plate, instrument_type['wells'])
-    end
-  end
+    validate_model(record.model_name.element.to_sym, record, instrument_type['models'])
 
-  # @param [Plate] record
-  # @param [Hash] configuration
-  # validates the positions of Wells
-  # validates the combinations of Wells
-  def validate_wells(record, configuration)
-    well_positions = record.wells.filter do |well|
-      !well.marked_for_destruction?
-    end.collect(&:position).sort
-
-    validate_well_positions(record, well_positions, configuration['positions'])
-    validate_well_combinations(record, well_positions, configuration['combinations'])
+    bubble_errors(record)
   end
 
   private
 
-  # @param [Run | Plate] record
-  # @param [Hash] configuration
-  # validates the presence of required attributes
-  def validate_required_attributes(record, configuration)
-    return if configuration['required_attributes'].blank?
+  # @param [Symbol] root - the root of the model e.g. :run
+  # @param [Model] record - the model to validate
+  # @param [Hash] models - the validations
+  # validates the model and its children
+  def validate_model(root, record, models)
+    model = models[root]
 
-    configuration['required_attributes'].each do |attribute|
-      record.errors.add(attribute, "can't be blank") if record.send(attribute).blank?
+    return if model[:validations].blank?
+
+    if model[:validate_each]
+      run_child_validations(record, model, models)
+    else
+      run_validations(record, model[:validations])
+      if model[:children].present?
+        validate_model(model[:children], record.send(model[:children]),
+                       models)
+      end
     end
   end
 
-  # @param [Run | Plate] record
-  # @param [Symbol] labware_type
-  # @param [Hash] limits
-  # validates the number of Plates or Wells
-  def validate_limits(record, labware_type, limits, message_prefix = nil)
-    # binding.pry
-    if record.send(labware_type).length < limits[:minimum]
-      run.errors.add(labware_type,
-                     "#{message_prefix}must have at least #{limits[:minimum]}
-                     #{pluralize(limits[:minimum], labware_type)}")
+  # @param [Model] record - the model to validate
+  # @param [Hash] validations - the validations
+  # run each validation by calling the corresponding validator
+  def run_validations(record, validations)
+    validations.each do |key, validation|
+      validator = "#{key.classify.pluralize}Validator".constantize
+      instance = validator.new(validation[:options])
+      instance.validate(record)
     end
-    return unless record.send(labware_type).length > limits[:maximum]
-
-    run.errors.add(labware_type,
-                   "#{message_prefix}must have at most #{limits[:maximum]}
-                   #{pluralize(limits[:maximum], labware_type)}")
   end
 
-  # @param [Plate] plate
-  # @param [Hash] configuration
-  # validates the positions of Wells
-  def validate_well_positions(plate, well_positions, valid_positions)
-    return if valid_positions.blank?
-
-    return if (well_positions - valid_positions).empty?
-
-    run.errors.add(:plates,
-                   "plate #{plate.plate_number} wells must be in positions #{valid_positions}")
+  # @param [Model] record - the model to validate
+  # @param [Hash] model - the specific validations for the record
+  # @param [Hash] models - all of the validations
+  # run each validation by calling the corresponding validator
+  def run_child_validations(record, model, models)
+    record.each do |child|
+      run_validations(child, model[:validations])
+      validate_model(model[:children], child, models) if model[:children].present?
+    end
   end
 
-  # @param [Plate] plate
-  # @param [Hash] configuration
-  # validates the combinations of Wells
-  def validate_well_combinations(plate, well_positions, valid_combinations)
-    return if valid_combinations.blank?
+  # @param [Run] record
+  # adds the errors from the Plates and Wells to the Run
+  def bubble_errors(record)
+    record.plates.each do |plate|
+      next if plate.errors.empty?
 
-    return if valid_combinations.include?(well_positions)
-
-    run.errors.add(:plates, "plate #{plate.plate_number} wells must be in a valid order")
+      plate.errors.each do |error|
+        record.errors.add(:plates,
+                          "plate #{plate.plate_number} #{error.attribute} #{error.message}")
+      end
+    end
   end
 
   # @param [Run] record
