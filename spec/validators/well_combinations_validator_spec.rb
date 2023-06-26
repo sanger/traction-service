@@ -31,7 +31,7 @@ end
 RSpec.describe WellCombinationsValidator do
   let(:valid_combinations) { [['A1'], %w[A1 B1], %w[A1 B1 C1], %w[A1 B1 C1 D1], ['B1'], %w[B1 C1], %w[B1 C1 D1], ['C1'], %w[C1 D1], ['D1']] }
   let(:invalid_combinations) { [%w[A1 D1], %w[A1 C1], %w[B1 D1], %w[A1 C1 D1], %w[A1 B1 D1]] }
-  let(:validator) { described_class.new(valid_combinations:) }
+  let(:validator) { described_class.new(valid_combinations:, exclude_marked_for_destruction: true) }
 
   it 'is valid when it is a valid well combination' do
     valid_combinations.each do |valid_combination|

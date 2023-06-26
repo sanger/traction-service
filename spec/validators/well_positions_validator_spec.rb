@@ -49,7 +49,7 @@ RSpec.describe WellPositionsValidator do
 
   it 'will not validate wells that are marked for destruction' do
     well_list = WellList.new(positions: valid_positions + ['B1'])
-    validator = described_class.new(valid_positions:)
+    validator = described_class.new(valid_positions:,  exclude_marked_for_destruction: true)
     well_list.wells.last.mark_for_destruction
     validator.validate(well_list)
     expect(well_list.errors).to be_empty
