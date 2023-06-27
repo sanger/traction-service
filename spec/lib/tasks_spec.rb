@@ -38,8 +38,23 @@ RSpec.describe 'RakeTasks' do
     it 'creates the correct number of runs' do
       Rake::Task['tags:create:pacbio_sequel'].reenable
       Rake::Task['tags:create:pacbio_isoseq'].reenable
-      Rake::Task['pacbio_data:create'].invoke
-      expect(Pacbio::Run.count).to eq(6)
+      expect { Rake::Task['pacbio_data:create'].invoke }
+        .to output(
+          "-> Creating Sequel_16_barcodes_v3 tag set and tags\n" \
+          "-> Tag Set successfully created\n" \
+          "-> Sequel_16_barcodes_v3 tags successfully created\n" \
+          "-> Creating Pacbio IsoSeq tag set and tags\n" \
+          "-> Tag Set successfully created\n" \
+          "-> IsoSeq_Primers_12_Barcodes_v1 created\n" \
+          "-> Creating pacbio plates and tubes...\n" \
+          "-> Pacbio plates successfully created\n" \
+          "-> Creating pacbio libraries...\n" \
+          "-> Pacbio libraries successfully created\n" \
+          "-> Creating pacbio runs...\n" \
+          "-> Pacbio runs successfully created\n"
+        ).to_stdout
+      expect(Pacbio::Run.count)
+        .to eq(6)
     end
   end
 
