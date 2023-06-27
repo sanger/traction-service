@@ -3,8 +3,6 @@
 # Validator for limits
 # Validates the maximum and minimum values of attributes
 class LimitsValidator < ActiveModel::Validator
-  include ActiveModel::Validations
-
   attr_reader :minimum, :maximum, :attribute
 
   # @param [Hash] options

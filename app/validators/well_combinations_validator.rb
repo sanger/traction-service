@@ -3,8 +3,6 @@
 # Validator for well combinations
 # Validates the combinations of Wells
 class WellCombinationsValidator < ActiveModel::Validator
-  include ActiveModel::Validations
-
   attr_reader :valid_combinations, :exclude_marked_for_destruction
 
   # @param [Hash] options

@@ -3,8 +3,6 @@
 # Failed validations return unprocessable_entity
 # These are being validated before any QC entity is created
 class QcResultsUploadValidator < ActiveModel::Validator
-  include ActiveModel::Validations
-
   def validate(record)
     validations = %i[validate_used_by validate_csv_data validate_rows validate_headers
                      validate_fields]

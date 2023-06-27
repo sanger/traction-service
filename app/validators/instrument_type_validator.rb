@@ -9,8 +9,6 @@
 # TODO: Move the error messages to locale file
 # TODO: It functions but it is not pretty
 class InstrumentTypeValidator < ActiveModel::Validator
-  include ActiveModel::Validations
-
   attr_reader :instrument_types, :instrument_type, :run
 
   # @param [Hash] options

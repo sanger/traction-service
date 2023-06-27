@@ -3,8 +3,6 @@
 # Validator to check the correct wells are being used
 # Validates the positions of Wells
 class WellPositionsValidator < ActiveModel::Validator
-  include ActiveModel::Validations
-
   attr_reader :valid_positions, :exclude_marked_for_destruction
 
   # @param [Hash] options
