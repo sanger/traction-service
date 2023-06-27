@@ -33,7 +33,7 @@ class LimitsValidator < ActiveModel::Validator
   def validate_minimum(record)
     return if record.send(attribute).size >= minimum
 
-    record.errors.add(attribute, "must have at least #{minimum} #{attribute}")
+    record.errors.add(attribute, "must have at least #{minimum} #{pluralize(minimum, attribute)}")
   end
 
   # @param [ActiveRecord::Base] record
@@ -41,6 +41,16 @@ class LimitsValidator < ActiveModel::Validator
   def validate_maximum(record)
     return if record.send(attribute).size <= maximum
 
-    record.errors.add(attribute, "must have at most #{maximum} #{attribute}")
+    record.errors.add(attribute, "must have at most #{maximum} #{pluralize(maximum, attribute)}")
+  end
+
+  # @param [Integer] limit
+  # @param [String] text
+  # @return [String]
+  # returns the plural or singular form of a word
+  def pluralize(limit, text)
+    return text.to_s.pluralize if limit > 1
+
+    text.to_s.singularize
   end
 end

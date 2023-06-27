@@ -29,6 +29,7 @@ class InstrumentTypeValidator < ActiveModel::Validator
 
     @run = record
 
+    # e.g. if record is a Run, then root is :run
     validate_model(record.model_name.element.to_sym, record, instrument_type['models'])
 
     bubble_errors(record)
@@ -45,10 +46,12 @@ class InstrumentTypeValidator < ActiveModel::Validator
 
     return if model[:validations].blank?
 
+    # if the model is a has_many relationship
     if model[:validate_each]
       run_child_validations(record, model, models)
     else
       run_validations(record, model[:validations])
+      # recursively validate the children
       if model[:children].present?
         validate_model(model[:children], record.send(model[:children]),
                        models)
@@ -61,7 +64,8 @@ class InstrumentTypeValidator < ActiveModel::Validator
   # run each validation by calling the corresponding validator
   def run_validations(record, validations)
     validations.each do |key, validation|
-      validator = "#{key.classify.pluralize}Validator".constantize
+      # e.g. my_simple_validator = MySimpleValidator.new(validation[:options])
+      validator = "#{key.camelize}Validator".constantize
       instance = validator.new(validation[:options])
       instance.validate(record)
     end
@@ -80,6 +84,10 @@ class InstrumentTypeValidator < ActiveModel::Validator
 
   # @param [Run] record
   # adds the errors from the Plates and Wells to the Run
+  # It would be better to use the configuration to make this more flexible
+  # but I need a bit more time to get it right
+  # if we don't do this the run could be marked as valid
+  # because it will not recognise nested errors
   def bubble_errors(record)
     record.plates.each do |plate|
       next if plate.errors.empty?
@@ -98,16 +106,5 @@ class InstrumentTypeValidator < ActiveModel::Validator
     @instrument_type = instrument_types.select do |_key, value|
       value['name'] == record.system_name
     end.values.first
-  end
-
-  # This needs to be moved to locale file
-  # @param [Integer] limit
-  # @param [String] text
-  # @return [String]
-  # returns the plural or singular form of a word
-  def pluralize(limit, text)
-    return text.to_s.pluralize if limit > 1
-
-    text.to_s.singularize
   end
 end

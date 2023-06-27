@@ -224,12 +224,12 @@ RSpec.describe Pacbio::Run, pacbio: true do
 
   describe 'validate number of plates' do
     it 'when system name is Sequel IIe' do
-      expect(build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate)])).to be_valid
+      expect(build(:pacbio_sequel_run)).to be_valid
       expect(build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate), build(:pacbio_plate)])).not_to be_valid
     end
 
     it 'when system name is Revio' do
-      expect(build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])).to be_valid
+      expect(build(:pacbio_revio_run)).to be_valid
       expect(build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])).to be_valid
       expect(build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])).not_to be_valid
     end

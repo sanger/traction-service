@@ -46,13 +46,13 @@ RSpec.describe InstrumentTypeValidator, reason: 'Refactor' do
         run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [])
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
-        expect(run.errors.messages[:plates]).to include('must have at least 1 plates')
+        expect(run.errors.messages[:plates]).to include('must have at least 1 plate')
 
         # Maximum
         run = build(:pacbio_run, system_name: 'Sequel IIe', plates:)
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
-        expect(run.errors.messages[:plates]).to include('must have at most 1 plates')
+        expect(run.errors.messages[:plates]).to include('must have at most 1 plate')
       end
     end
 
@@ -67,13 +67,13 @@ RSpec.describe InstrumentTypeValidator, reason: 'Refactor' do
         run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate, well_count: 0)])
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
-        expect(run.errors.messages[:plates].first).to include("plate #{run.plates.first.plate_number} wells must have at least 1 wells")
+        expect(run.errors.messages[:plates].first).to include("plate #{run.plates.first.plate_number} wells must have at least 1 well")
 
         # Maximum
         run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate, well_count: 100)])
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
-        expect(run.errors.messages[:plates].first).to include("plate #{run.plates.first.plate_number} wells must have at most 96 wells")
+        expect(run.errors.messages[:plates].first).to include("plate #{run.plates.first.plate_number} wells must have at most 96 well")
       end
     end
   end
@@ -114,7 +114,7 @@ RSpec.describe InstrumentTypeValidator, reason: 'Refactor' do
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
         expect(run.errors.messages[:plates].length).to eq(2)
-        expect(run.errors.messages[:plates]).to include("plate #{run.plates.first.plate_number} wells must have at least 1 wells")
+        expect(run.errors.messages[:plates]).to include("plate #{run.plates.first.plate_number} wells must have at least 1 well")
 
         # Maximum
         run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, well_count: 5), build(:pacbio_plate, wells:)])
@@ -125,13 +125,13 @@ RSpec.describe InstrumentTypeValidator, reason: 'Refactor' do
       end
 
       it 'well positions' do
-        run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'G', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])
+        run = build(:pacbio_revio_run, well_positions_plate_1: ['G1'], well_positions_plate_2: ['A1'])
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
         expect(run.errors.messages[:plates].length).to eq(2)
         expect(run.errors.messages[:plates]).to include("plate #{run.plates.first.plate_number} wells must be in positions #{instrument_types['revio']['models']['wells']['validations']['well_positions']['options']['valid_positions'].join(',')}")
 
-        run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1'), build(:pacbio_well, row: 'C', column: '1'), build(:pacbio_well, row: 'H', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])
+        run = build(:pacbio_revio_run, system_name: 'Revio', well_positions_plate_1: %w[A1 B1 C1 H1], well_positions_plate_2: ['A1'])
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
         expect(run.errors.messages[:plates].length).to eq(2)
@@ -153,7 +153,7 @@ RSpec.describe InstrumentTypeValidator, reason: 'Refactor' do
         end
 
         it 'A1, D1 filled' do
-          run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'D', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])
+          run = build(:pacbio_revio_run, well_positions_plate_1: %w[A1 D1])
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
           expect(run.errors.messages[:plates].length).to eq(1)
@@ -161,7 +161,7 @@ RSpec.describe InstrumentTypeValidator, reason: 'Refactor' do
         end
 
         it 'A1, C1 filled' do
-          run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'C', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])
+          run = build(:pacbio_revio_run, well_positions_plate_1: %w[A1 C1])
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
           expect(run.errors.messages[:plates].length).to eq(1)
@@ -169,7 +169,7 @@ RSpec.describe InstrumentTypeValidator, reason: 'Refactor' do
         end
 
         it 'B1, D1 filled' do
-          run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'B', column: '1'), build(:pacbio_well, row: 'D', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])
+          run = build(:pacbio_revio_run, well_positions_plate_1: %w[B1 D1])
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
           expect(run.errors.messages[:plates].length).to eq(1)
@@ -177,7 +177,7 @@ RSpec.describe InstrumentTypeValidator, reason: 'Refactor' do
         end
 
         it 'A1, C1, D1 filled' do
-          run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'C', column: '1'), build(:pacbio_well, row: 'D', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])
+          run = build(:pacbio_revio_run, well_positions_plate_1: %w[A1 C1 D1])
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
           expect(run.errors.messages[:plates].length).to eq(1)
@@ -185,7 +185,7 @@ RSpec.describe InstrumentTypeValidator, reason: 'Refactor' do
         end
 
         it 'A1, B1, D1 filled' do
-          run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1'), build(:pacbio_well, row: 'D', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])
+          run = build(:pacbio_revio_run, well_positions_plate_1: %w[A1 B1 D1])
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
           expect(run.errors.messages[:plates].length).to eq(1)
@@ -193,7 +193,7 @@ RSpec.describe InstrumentTypeValidator, reason: 'Refactor' do
         end
 
         it 'B1, D1 filled but in reverse order' do
-          run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'D', column: '1'), build(:pacbio_well, row: 'B', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])
+          run = build(:pacbio_revio_run, well_positions_plate_1: %w[D1 B1])
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
           expect(run.errors.messages[:plates].length).to eq(1)
