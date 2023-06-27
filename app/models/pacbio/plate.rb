@@ -12,11 +12,8 @@ module Pacbio
 
     accepts_nested_attributes_for :wells, allow_destroy: true
 
-    validates :wells, length: {
-      minimum: 1,
-      message: :plate_min_wells
-    }
-
+    # we maybe still need this in case someone tries to create a
+    # non sequel IIe or Revio run
     validates :sequencing_kit_box_barcode, :plate_number, presence: true
   end
 end
