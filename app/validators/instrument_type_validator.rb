@@ -6,10 +6,8 @@
 # Validates the number of Plates and Wells
 # Validates the positions of Wells
 # Validates the combinations of Wells
-# TODO: Move the error messages to locale file
-# TODO: It functions but it is not pretty
 class InstrumentTypeValidator < ActiveModel::Validator
-  attr_reader :instrument_types, :instrument_type, :run
+  attr_reader :instrument_types, :instrument_type
 
   # @param [Hash] options
   # @option options [Hash] :instrument_types
@@ -24,8 +22,6 @@ class InstrumentTypeValidator < ActiveModel::Validator
     self.instrument_type = record
 
     return if instrument_type.blank?
-
-    @run = record
 
     # e.g. if record is a Run, then root is :run
     validate_model(record.model_name.element.to_sym, record, instrument_type['models'])

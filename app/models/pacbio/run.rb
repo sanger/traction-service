@@ -61,6 +61,7 @@ module Pacbio
       system_name
     end
 
+    # This is needed to generate the comments
     def wells
       plates.collect(&:wells).flatten
     end

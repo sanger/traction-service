@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe InstrumentTypeValidator, reason: 'Refactor' do
+RSpec.describe InstrumentTypeValidator do
   let!(:instrument_types) { YAML.load_file(Rails.root.join('config/pacbio_instrument_types.yml'), aliases: true)[Rails.env] }
 
   describe 'when the instrument type is Sequel IIe' do
@@ -70,7 +70,7 @@ RSpec.describe InstrumentTypeValidator, reason: 'Refactor' do
         expect(run.errors.messages[:plates].first).to include("plate #{run.plates.first.plate_number} wells must have at least 1 well")
 
         # Maximum
-        run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate, well_count: 100)])
+        run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate, well_count: 97)])
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
         expect(run.errors.messages[:plates].first).to include("plate #{run.plates.first.plate_number} wells must have at most 96 well")
@@ -141,63 +141,20 @@ RSpec.describe InstrumentTypeValidator, reason: 'Refactor' do
       context 'well combinations' do
         it 'valid well combinations' do
           instrument_types['revio']['models']['wells']['validations']['well_combinations']['options']['valid_combinations'].each do |combination|
-            wells = combination.map do |position|
-              row, column = position.chars
-              build(:pacbio_well, row:, column:)
-            end
-            run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells:)])
+            run = build(:pacbio_revio_run, system_name: 'Revio', well_positions_plate_1: combination)
             instrument_type_validator = described_class.new(instrument_types:)
             instrument_type_validator.validate(run)
             expect(run.errors.messages).to be_empty
           end
         end
 
-        it 'A1, D1 filled' do
-          run = build(:pacbio_revio_run, well_positions_plate_1: %w[A1 D1])
-          instrument_type_validator = described_class.new(instrument_types:)
-          instrument_type_validator.validate(run)
-          expect(run.errors.messages[:plates].length).to eq(1)
-          expect(run.errors.messages[:plates]).to include("plate #{run.plates.first.plate_number} wells must be in a valid order")
-        end
-
-        it 'A1, C1 filled' do
-          run = build(:pacbio_revio_run, well_positions_plate_1: %w[A1 C1])
-          instrument_type_validator = described_class.new(instrument_types:)
-          instrument_type_validator.validate(run)
-          expect(run.errors.messages[:plates].length).to eq(1)
-          expect(run.errors.messages[:plates]).to include("plate #{run.plates.first.plate_number} wells must be in a valid order")
-        end
-
-        it 'B1, D1 filled' do
-          run = build(:pacbio_revio_run, well_positions_plate_1: %w[B1 D1])
-          instrument_type_validator = described_class.new(instrument_types:)
-          instrument_type_validator.validate(run)
-          expect(run.errors.messages[:plates].length).to eq(1)
-          expect(run.errors.messages[:plates]).to include("plate #{run.plates.first.plate_number} wells must be in a valid order")
-        end
-
-        it 'A1, C1, D1 filled' do
-          run = build(:pacbio_revio_run, well_positions_plate_1: %w[A1 C1 D1])
-          instrument_type_validator = described_class.new(instrument_types:)
-          instrument_type_validator.validate(run)
-          expect(run.errors.messages[:plates].length).to eq(1)
-          expect(run.errors.messages[:plates].first).to include("plate #{run.plates.first.plate_number} wells must be in a valid order")
-        end
-
-        it 'A1, B1, D1 filled' do
-          run = build(:pacbio_revio_run, well_positions_plate_1: %w[A1 B1 D1])
-          instrument_type_validator = described_class.new(instrument_types:)
-          instrument_type_validator.validate(run)
-          expect(run.errors.messages[:plates].length).to eq(1)
-          expect(run.errors.messages[:plates]).to include("plate #{run.plates.first.plate_number} wells must be in a valid order")
-        end
-
-        it 'B1, D1 filled but in reverse order' do
-          run = build(:pacbio_revio_run, well_positions_plate_1: %w[D1 B1])
-          instrument_type_validator = described_class.new(instrument_types:)
-          instrument_type_validator.validate(run)
-          expect(run.errors.messages[:plates].length).to eq(1)
-          expect(run.errors.messages[:plates]).to include("plate #{run.plates.first.plate_number} wells must be in a valid order")
+        it 'invalid well combinations' do
+          instrument_types['revio']['models']['wells']['validations']['well_combinations']['invalid_combinations'].each do |combination|
+            run = build(:pacbio_revio_run, well_positions_plate_1: combination)
+            instrument_type_validator = described_class.new(instrument_types:)
+            instrument_type_validator.validate(run)
+            expect(run.errors.messages[:plates]).to include("plate #{run.plates.first.plate_number} wells must be in a valid order")
+          end
         end
 
         it 'wont validate wells that are marked for destruction' do
