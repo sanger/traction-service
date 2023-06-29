@@ -10,6 +10,12 @@ RSpec.describe InstrumentTypeValidator do
       create(:pacbio_smrt_link_version, name: 'v11', default: true)
     end
 
+    # This is a test for the config. It would be better to use other tests but want to time box this for now ...
+    it 'Sequel IIe and Revio should both exclude records marked for destruction from limits validation' do
+      expect(instrument_types['sequel_iie']['models']['plates']['validations']['limits']['options']['exclude_marked_for_destruction']).to be_truthy
+      expect(instrument_types['revio']['models']['plates']['validations']['limits']['options']['exclude_marked_for_destruction']).to be_truthy
+    end
+
     context 'run' do
       it 'required attributes' do
         instrument_types['sequel_iie']['models']['run']['validations']['required_attributes']['options']['required_attributes'].each do |attribute|
@@ -97,31 +103,33 @@ RSpec.describe InstrumentTypeValidator do
     end
 
     context 'wells' do
-      it 'minimum or maximum number of wells' do
-        wells = [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1'), build(:pacbio_well, row: 'C', column: '1'), build(:pacbio_well, row: 'D', column: '1')]
-        run = build(:pacbio_run, system_name: 'Revio', plates: build_list(:pacbio_plate, 2, wells: [wells.first]))
+      it 'when the number of wells is within limits' do
+        well_positions = %w[A1 B1 C1 D1]
+        run = build(:pacbio_revio_run, well_positions_plate_1: well_positions)
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
         expect(run.errors.messages[:plates]).to be_empty
 
-        run = build(:pacbio_run, system_name: 'Revio', plates: build_list(:pacbio_plate, 2, wells:))
+        run = build(:pacbio_revio_run, well_positions_plate_1: well_positions, well_positions_plate_2: well_positions)
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
         expect(run.errors.messages[:plates]).to be_empty
+      end
 
-        # Minimum
-        run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, well_count: 0), build(:pacbio_plate, wells: [wells.first])])
-        instrument_type_validator = described_class.new(instrument_types:)
-        instrument_type_validator.validate(run)
-        expect(run.errors.messages[:plates].length).to eq(2)
-        expect(run.errors.messages[:plates]).to include("plate #{run.plates.first.plate_number} wells must have at least 1 well")
-
-        # Maximum
-        run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, well_count: 5), build(:pacbio_plate, wells:)])
+      it 'when the number of wells exceeds the limit' do
+        run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, well_count: 5), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
         expect(run.errors.messages[:plates].length).to eq(3)
         expect(run.errors.messages[:plates]).to include("plate #{run.plates.first.plate_number} wells must have at most 4 wells")
+      end
+
+      it 'when the number of wells is under the limit' do
+        run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, well_count: 0), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])
+        instrument_type_validator = described_class.new(instrument_types:)
+        instrument_type_validator.validate(run)
+        expect(run.errors.messages[:plates].length).to eq(2)
+        expect(run.errors.messages[:plates]).to include("plate #{run.plates.first.plate_number} wells must have at least 1 well")
       end
 
       it 'well positions' do

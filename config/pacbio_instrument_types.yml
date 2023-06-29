@@ -27,6 +27,7 @@ default: &default
         validations:
           limits:
             options:
+              exclude_marked_for_destruction: true
               attribute: :wells
               minimum: 1
               maximum: 96
@@ -58,6 +59,7 @@ default: &default
         validations:
           limits:
             options:
+              exclude_marked_for_destruction: true
               attribute: :wells
               minimum: 1
               maximum: 4
