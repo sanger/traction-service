@@ -116,11 +116,32 @@ To do this, refer to the documentation in `.githooks/README.txt`.
 
 To see all the commands available from rails: `bundle exec rails -T`
 
-### ERD
+### Entity-Relationship Diagrams
 
 An ERD was created using the `rails-erd` gem by executing: `bundle exec erd`
 
 ![ERD](erd.jpg "ERD")
+
+A custom PacBio ERD was created using the `.erd.pacbio.erdconfig` config by executing: `bundle exec erd --config .erd.pacbio.erdconfig`
+
+![ERD-PacBio](erd-pacbio.jpg "ERD-PacBio")
+
+Should the ERD fail to generate with the message `Failed: ArgumentError: bad value for range`, apply the patch below:
+
+```diff
+diff --git a/app/models/ont/run.rb b/app/models/ont/run.rb
+index 4dd7083e..d3bde752 100644
+--- a/app/models/ont/run.rb
++++ b/app/models/ont/run.rb
+@@ -42,7 +42,7 @@ module Ont
+       message: :run_min_flowcells
+     }
+     validates :flowcells, length: {
+-      maximum: :max_number_of_flowcells, if: :max_number_of_flowcells,
++      maximum: 2, # :max_number_of_flowcells, if: :max_number_of_flowcells, # TODO: fix failing ERD
+       message: :run_max_flowcells
+     }
+```
 
 ## Releases
 
