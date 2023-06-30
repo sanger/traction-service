@@ -28,6 +28,7 @@ namespace :pacbio_data do
 
     print '-> Creating pacbio libraries...'
 
+    # TODO: refactor the pools array below to better correspond to requests, libraries, and pools
     pools = [
       { library_type: 'Pacbio_HiFi', tag_set: nil, size: 1 },
       { library_type: 'Pacbio_HiFi', tag_set: 'Sequel_16_barcodes_v3', size: 1 },
