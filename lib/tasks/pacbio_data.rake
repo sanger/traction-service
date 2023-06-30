@@ -2,12 +2,18 @@
 
 require 'securerandom'
 
+BACKSPACE = "\b"
+SUCCESS = '√'
+NEWLINE = "\n"
+# COMPLETED replaces '...' on the previous line with a success symbol, used with print, not puts
+COMPLETED = (BACKSPACE * 3) + " #{SUCCESS} " + NEWLINE
+
 namespace :pacbio_data do
   desc 'Populate the database with pacbio plates and runs'
   task create: [:environment, 'tags:create:pacbio_sequel', 'tags:create:pacbio_isoseq'] do
     require_relative 'reception_generator'
 
-    puts '-> Creating pacbio plates and tubes...'
+    print '-> Creating pacbio plates and tubes...'
 
     reception_generator = ReceptionGenerator.new(
       number_of_plates: 5,
@@ -18,9 +24,9 @@ namespace :pacbio_data do
 
     requests = reception_generator.reception.requests.each
 
-    puts '-> Pacbio plates successfully created'
+    print COMPLETED
 
-    puts '-> Creating pacbio libraries...'
+    print '-> Creating pacbio libraries...'
 
     pools = [
       { library_type: 'Pacbio_HiFi', tag_set: nil, size: 1 },
@@ -54,16 +60,17 @@ namespace :pacbio_data do
         end.pool
       end
     end
-    puts '-> Pacbio libraries successfully created'
+    print COMPLETED
 
-    puts '-> Finding Pacbio SMRT Link versions'
+    print '-> Finding Pacbio SMRT Link versions...'
     v10 = Pacbio::SmrtLinkVersion.find_by(name: 'v10')
     v11 = Pacbio::SmrtLinkVersion.find_by(name: 'v11')
     v12_revio = Pacbio::SmrtLinkVersion.find_by(name: 'v12_revio')
+    print COMPLETED
 
-    puts '-> Creating pacbio runs...'
+    puts '-> Creating pacbio runs:'
 
-    puts "   -> Creating runs for #{v10.name}..."
+    print "   -> Creating runs for #{v10.name}..."
     pool_records.each_with_index do |pool, i|
       Pacbio::Run.create!(
         name: "Run10#{pool.id}",
@@ -86,8 +93,9 @@ namespace :pacbio_data do
         )]
       )
     end
+    print COMPLETED
 
-    puts "   -> Creating runs for #{v11.name}..."
+    print "   -> Creating runs for #{v11.name}..."
     pool_records.each_with_index do |pool, i|
       Pacbio::Run.create!(
         name: "Run11#{pool.id}",
@@ -112,8 +120,9 @@ namespace :pacbio_data do
         )]
       )
     end
+    print COMPLETED
 
-    puts "   -> Creating runs for #{v12_revio.name}..."
+    print "   -> Creating runs for #{v12_revio.name}..."
     pool_records.each_with_index do |pool, i|
       Pacbio::Run.create!(
         system_name: Pacbio::Run.system_names['Revio'],
@@ -135,6 +144,7 @@ namespace :pacbio_data do
         )]
       )
     end
+    print COMPLETED
 
     puts '-> Pacbio runs successfully created'
   end
@@ -147,6 +157,6 @@ namespace :pacbio_data do
      Pacbio::WellPool, Pacbio::Pool].each(&:delete_all)
     Plate.by_pipeline('Pacbio').destroy_all
 
-    puts '-> Pacbio data successfully deleted'
+    print '-> Pacbio data successfully deleted'
   end
 end
