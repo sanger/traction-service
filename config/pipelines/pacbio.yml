@@ -9,20 +9,23 @@ default: &default
           value: Time.current
         id_pac_bio_run_lims:
           type: :model
-          value: run.name
+          value: name
         pac_bio_run_uuid:
           type: :model
-          value: run.uuid
+          value: uuid
         pac_bio_run_name:
           type: :model
-          value: run.name
-        plate_uuid_lims:
-          type: :model
-          value: uuid
+          value: name
         wells:
           type: :array
           value: wells
           children:
+            plate_number:
+              type: :model
+              value: plate.plate_number
+            plate_uuid_lims:
+              type: :model
+              value: plate.uuid
             well_label:
               type: :model
               value: position
@@ -556,7 +559,7 @@ default: &default
                 - :well
                 - :sample
               with: :row_type
-              
+
 
 development: *default
 test: *default

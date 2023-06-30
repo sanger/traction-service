@@ -58,7 +58,7 @@ module V1
       end
 
       def publish_messages
-        Messages.publish(@model.plates.first, Pipelines.pacbio.message)
+        Messages.publish(@model, Pipelines.pacbio.message)
       end
 
       private

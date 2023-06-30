@@ -65,6 +65,7 @@ module V1
       end
 
       def publish_messages
+        # What to do here?
         Messages.publish(@model.sequencing_plates, Pipelines.pacbio.message)
       end
     end

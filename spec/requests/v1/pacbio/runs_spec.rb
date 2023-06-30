@@ -10,7 +10,7 @@ RSpec.describe 'RunsController' do
 
   shared_examples 'publish_messages_on_create' do
     it 'publishes a message' do
-      expect(Messages).to receive(:publish).with(instance_of(Pacbio::Plate), having_attributes(pipeline: 'pacbio'))
+      expect(Messages).to receive(:publish).with(instance_of(Pacbio::Run), having_attributes(pipeline: 'pacbio'))
       post v1_pacbio_runs_path, params: body, headers: json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
@@ -18,7 +18,7 @@ RSpec.describe 'RunsController' do
 
   shared_examples 'publish_messages_on_update' do
     it 'publishes a message' do
-      expect(Messages).to receive(:publish).with(run.plates.first, having_attributes(pipeline: 'pacbio'))
+      expect(Messages).to receive(:publish).with(run, having_attributes(pipeline: 'pacbio'))
       patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
