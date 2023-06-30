@@ -124,7 +124,7 @@ RSpec.describe 'RakeTasks' do
     # We need to set the smrt link version to v12 so it is not validated
     # generate_hifi - 'In SMRT Link' => 0, 'On Instrument' => 1, 'Do Not Generate' => 2
     let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12') }
-    let!(:run) { create(:pacbio_run, smrt_link_version: version12) }
+    let!(:run) { create(:pacbio_run, system_name: 0, smrt_link_version: version12) }
     let!(:plate) { create(:pacbio_plate, run:) }
     let!(:well1) { create(:pacbio_well, generate_hifi_deprecated: 0, generate_hifi: nil, plate:) }
     let!(:well2) { create(:pacbio_well, generate_hifi_deprecated: 1,  generate_hifi: nil, plate:) }
@@ -166,7 +166,7 @@ RSpec.describe 'RakeTasks' do
         loading_target_p1_plus_p2: nil,
         movie_time_deprecated: 5,
         movie_time: nil,
-        plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: version))
+        plate: create(:pacbio_plate, run: create(:pacbio_run, system_name: 0, smrt_link_version: version))
       )
       # Skip validations in the following to be able set nil for options as
       # entry condition.
@@ -245,8 +245,8 @@ RSpec.describe 'RakeTasks' do
     end
 
     it 'sets pacbio smrt link versions' do
-      run10 = create(:pacbio_run, smrt_link_version_deprecated: 'v10')
-      run11 = create(:pacbio_run, smrt_link_version_deprecated: 'v11')
+      run10 = create(:pacbio_run, system_name: 0, smrt_link_version_deprecated: 'v10')
+      run11 = create(:pacbio_run, system_name: 0, smrt_link_version_deprecated: 'v11')
 
       Rake::Task['smrt_link_versions:create'].reenable
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable

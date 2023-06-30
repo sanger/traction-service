@@ -1,0 +1,109 @@
+---
+default: &default
+  sequel_iie:
+    name: Sequel IIe
+    smrt_link_versions:
+      - v11
+    models:
+      run:
+        # the run is the root. This could be used to kick off validation
+        root: true
+        children: :plates
+        validations:
+          limits:
+            options:
+              attribute: :plates
+              minimum: 1
+              maximum: 1
+          required_attributes:
+            options:
+              required_attributes:
+                - :dna_control_complex_box_barcode
+      plates:
+        children: :wells
+        # we want to validate each plate and plate
+        # number can be used to identify the plate
+        validate_each: :plate_number
+        validations:
+          limits:
+            options:
+              exclude_marked_for_destruction: true
+              attribute: :wells
+              minimum: 1
+              maximum: 96
+          required_attributes:
+            options:
+              required_attributes:
+                - :plate_number
+                - :sequencing_kit_box_barcode
+      wells:
+        # good of ending recursive actions
+        terminator: true
+  revio:
+    name: Revio
+    smrt_link_versions:
+      - v12
+    models:
+      run:
+        root: true
+        children: :plates
+        validations:
+          limits:
+            options:
+              attribute: :plates
+              minimum: 1
+              maximum: 2
+      plates:
+        children: :wells
+        validate_each: :plate_number
+        validations:
+          limits:
+            options:
+              exclude_marked_for_destruction: true
+              attribute: :wells
+              minimum: 1
+              maximum: 4
+          required_attributes:
+            options:
+              required_attributes:
+                - :plate_number
+                - :sequencing_kit_box_barcode
+      wells:
+        terminator: true
+        validations:
+          well_positions:
+            options:
+              exclude_marked_for_destruction: true
+              valid_positions:
+              - A1
+              - B1
+              - C1
+              - D1
+          well_combinations:
+            invalid_combinations:
+              - [A1,D1]
+              - [A1,C1]
+              - [B1,D1]
+              - [A1,C1,D1]
+              - [A1,B1,D1]
+              - [D1,B1]
+            options:
+              exclude_marked_for_destruction: true
+              valid_combinations:
+              - [A1]
+              - [A1,B1]
+              - [A1,B1,C1]
+              - [A1,B1,C1,D1]
+              - [B1]
+              - [B1,C1]
+              - [B1,C1,D1]
+              - [C1]
+              - [C1,D1]
+              - [D1]
+
+development: *default
+test: *default
+production: *default
+uat: *default
+training: *default
+

@@ -11,12 +11,10 @@ module Pacbio
     # Sequel II and Sequel I are now deprecated
     enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2, 'Revio' => 3 }
 
-    delegate :wells, to: :plate, allow_nil: true
-
     after_create :generate_name
 
-    has_one :plate, foreign_key: :pacbio_run_id,
-                    dependent: :destroy, inverse_of: :run
+    has_many :plates, foreign_key: :pacbio_run_id,
+                      dependent: :destroy, inverse_of: :run, autosave: true
 
     # This association creates the link to the SmrtLinkVersion. Run belongs
     # to a SmrtLinkVersion. We set the default SmrtLinkVersion for the run
@@ -27,29 +25,23 @@ module Pacbio
                inverse_of: :runs,
                default: -> { SmrtLinkVersion.default }
 
-    validates :sequencing_kit_box_barcode,
-              :system_name, presence: true
+    validates :system_name, presence: true
 
-    # it would be sensible to move this to dependent validation as with wells
-    # and SMRT Link. Something to ponder on ...
-    validates :dna_control_complex_box_barcode, presence: true, unless: lambda {
-                                                                          system_name == 'Revio'
-                                                                        }
-
-    # if it is a Revio run we need to check if the wells are in the correct positions
-    validates_with WellPositionValidator, if: lambda {
-                                                system_name == 'Revio'
-                                              }
+    validates_with InstrumentTypeValidator,
+                   instrument_types: Rails.configuration.pacbio_instrument_types,
+                   if: lambda {
+                         system_name.present?
+                       }
 
     validates :name, uniqueness: { case_sensitive: false }
 
     scope :active, -> { where(deactivated_at: nil) }
 
-    accepts_nested_attributes_for :plate
+    accepts_nested_attributes_for :plates, allow_destroy: true
 
     # This will return an empty list
-    # If well data is required via the run, use ?include=plate.wells
-    attr_reader :well_attributes
+    # If plate/well data is required via the run, use ?include=plates.wells
+    attr_reader :plates_attributes
 
     # if comments are nil this blows up so add try.
     def comments
@@ -69,10 +61,9 @@ module Pacbio
       system_name
     end
 
-    def well_attributes=(well_options)
-      self.plate = build_plate(run: self) unless plate
-
-      plate.well_attributes = well_options
+    # This is needed to generate the comments
+    def wells
+      plates.collect(&:wells).flatten
     end
 
     private
