@@ -1,3 +1,11 @@
+# By default, a title is displayed at the top of the diagram: "<application> domain model". You can
+# change the title by setting this option. If set to false, no title will be displayed at all.
+# Default value: true
+title: PacBio Domain Model
+
+# Basename of the output diagram.
+filename: erd-pacbio
+
 # The file type of the generated diagram. PDF output is strongly recommended, other formats may render
 # significantly worse. The available formats depend on your installation of Graphviz. If you set the
 # file type to dot, raw Graphviz instructions are saved in dot format. This does not require Graphviz
@@ -12,10 +20,23 @@ polymorphism: false
 
 # Exclude specified models. Together with only, this will allow to filter out models on your
 # diagram. Default value: nil. Example: exclude="User,Role"
-exclude: "ApplicationRecord,ActiveRecord::InternalMetadata,ActiveRecord::SchemaMigration"
+exclude: >
+  ",ApplicationRecord,ActiveRecord::InternalMetadata,ActiveRecord::SchemaMigration"
+  ",Ont::Library,Ont::Pool,Ont::Request,"
 
 # Ensure primary key is at start of attribute list.
 prepend_primary: true
 
 # Display models in subgraphs based on their namespace.
 cluster: true
+
+# Specifies whether or not to display relationships that are indirect. Indirect relationships are
+# defined in Active Record by has_many :through associations. Older versions of Graphviz may have
+# trouble drawing diagrams with indirect relationships.
+indirect: false
+
+# Filter to only include listed models in diagram.
+only: ",Pacbio::Run,Pacbio::Well,TagSet"
+
+# Recurses into relations specified by --only up to a depth N.
+only_recursion_depth: 3
