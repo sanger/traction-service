@@ -66,7 +66,7 @@ namespace :pacbio_data do
     puts "   -> Creating runs for #{v10.name}..."
     pool_records.each_with_index do |pool, i|
       Pacbio::Run.create!(
-        name: "Run#{pool.id}",
+        name: "Run10#{pool.id}",
         system_name: Pacbio::Run.system_names['Sequel II'],
         smrt_link_version: v10,
         dna_control_complex_box_barcode: "DCCB#{pool.id}",
@@ -90,7 +90,7 @@ namespace :pacbio_data do
     puts "   -> Creating runs for #{v11.name}..."
     pool_records.each_with_index do |pool, i|
       Pacbio::Run.create!(
-        name: "Run#{pool.id}",
+        name: "Run11#{pool.id}",
         system_name: Pacbio::Run.system_names['Sequel IIe'],
         smrt_link_version: v11,
         dna_control_complex_box_barcode: "DCCB#{pool.id}",
@@ -101,8 +101,10 @@ namespace :pacbio_data do
             pools: [pool],
             row: 'A',
             column: i + 1,
-            ccs_analysis_output: 'Yes',
-            generate_hifi: 'In SMRT Link',
+            ccs_analysis_output_include_kinetics_information:	'Yes',
+            ccs_analysis_output_include_low_quality_reads:	'Yes',
+            include_fivemc_calls_in_cpg_motifs:	'Yes',
+            demultiplex_barcodes:	'In SMRT Link',
             on_plate_loading_concentration: 1,
             binding_kit_box_barcode: "BKB#{pool.id}",
             movie_time: 20
@@ -125,8 +127,10 @@ namespace :pacbio_data do
             pools: [pool],
             row: 'A',
             column: i + 1,
-            ccs_analysis_output: 'Yes',
-            generate_hifi: 'In SMRT Link',
+            ccs_analysis_output_include_kinetics_information:	'Yes',
+            ccs_analysis_output_include_low_quality_reads:	'Yes',
+            include_fivemc_calls_in_cpg_motifs:	'Yes',
+            demultiplex_barcodes:	'In SMRT Link',
             on_plate_loading_concentration: 1,
             binding_kit_box_barcode: "BKB#{pool.id}",
             movie_time: 20
