@@ -6,11 +6,12 @@ module V1
     class RunResource < JSONAPI::Resource
       model_name 'Pacbio::Run'
 
-      attributes :name, :sequencing_kit_box_barcode, :dna_control_complex_box_barcode,
+      attributes :name, :dna_control_complex_box_barcode,
                  :system_name, :created_at, :state, :comments,
-                 :pacbio_smrt_link_version_id, :well_attributes
-      has_one :plate, foreign_key_on: :related, foreign_key: 'pacbio_run_id',
-                      class_name: 'Runs::Plate'
+                 :pacbio_smrt_link_version_id, :plates_attributes
+
+      has_many :plates, foreign_key_on: :related, foreign_key: 'pacbio_run_id',
+                        class_name: 'Runs::Plate'
 
       has_one :smrt_link_version, foreign_key: 'pacbio_smrt_link_version_id'
 
@@ -57,14 +58,25 @@ module V1
       end
 
       def publish_messages
-        Messages.publish(@model.plate, Pipelines.pacbio.message)
+        Messages.publish(@model.plates.first, Pipelines.pacbio.message)
       end
 
       private
 
-      def well_attributes=(wells_parameters)
-        @model.well_attributes = wells_parameters.map do |well|
-          well.permit(PERMITTED_WELL_PARAMETERS, pools: [])
+      def plates_attributes=(plates_parameters)
+        @model.plates_attributes = plates_parameters.map do |plate|
+          plate.permit(
+            :id,
+            :sequencing_kit_box_barcode,
+            :plate_number,
+            wells_attributes: [
+              # the following is needed to allow the _destroy parameter which
+              # is used to mark wells for destruction
+              :_destroy,
+              PERMITTED_WELL_PARAMETERS,
+              { pool_ids: [] }
+            ]
+          )
         end
       end
     end

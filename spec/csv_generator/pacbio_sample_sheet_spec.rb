@@ -8,7 +8,8 @@ RSpec.describe PacbioSampleSheet, type: :model do
   describe '#generate' do
     subject(:csv_string) { csv.generate }
 
-    let!(:run)         { create(:pacbio_run, smrt_link_version: version10, plate:) }
+    let!(:plate)       { create(:pacbio_plate) }
+    let!(:run)         { create(:pacbio_run, smrt_link_version: version10, plates: [plate]) }
     let!(:parsed_csv)  { CSV.parse(csv_string) }
     let!(:csv)         { described_class.new(run:, configuration: Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name)) }
 
@@ -48,7 +49,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
           well1.insert_size.to_s,
           well1.template_prep_kit_box_barcode,
           well1.binding_kit_box_barcode,
-          well1.plate.run.sequencing_kit_box_barcode,
+          well1.plate.sequencing_kit_box_barcode,
           well1.on_plate_loading_concentration.to_s,
           well1.plate.run.dna_control_complex_box_barcode,
           well1.plate.run.comments,
@@ -74,7 +75,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
           well2.insert_size.to_s,
           well2.template_prep_kit_box_barcode,
           well2.binding_kit_box_barcode,
-          well2.plate.run.sequencing_kit_box_barcode,
+          well2.plate.sequencing_kit_box_barcode,
           well2.on_plate_loading_concentration.to_s,
           well2.plate.run.dna_control_complex_box_barcode,
           well2.plate.run.comments,
@@ -187,7 +188,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
           well1.insert_size.to_s,
           well1.template_prep_kit_box_barcode,
           well1.binding_kit_box_barcode,
-          well1.plate.run.sequencing_kit_box_barcode,
+          well1.plate.sequencing_kit_box_barcode,
           well1.on_plate_loading_concentration.to_s,
           well1.plate.run.dna_control_complex_box_barcode,
           well1.plate.run.comments,
@@ -213,7 +214,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
           well2.insert_size.to_s,
           well2.template_prep_kit_box_barcode,
           well2.binding_kit_box_barcode,
-          well2.plate.run.sequencing_kit_box_barcode,
+          well2.plate.sequencing_kit_box_barcode,
           well2.on_plate_loading_concentration.to_s,
           well2.plate.run.dna_control_complex_box_barcode,
           well2.plate.run.comments,
