@@ -69,6 +69,23 @@ namespace :pacbio_data do
     print COMPLETED
 
     puts '-> Creating pacbio runs:'
+    # See required structure in 'config/pacbio_smrt_link_versions.yml'
+    # Or execute the DB query below:
+    #
+    # SELECT
+    #   versions.name,
+    #   options_.key,
+    #   options_.default_value
+    # FROM
+    #   pacbio_smrt_link_option_versions AS option_versions
+    #   JOIN pacbio_smrt_link_versions AS versions
+    #     ON option_versions.pacbio_smrt_link_version_id = versions.id
+    #   JOIN pacbio_smrt_link_options AS options_
+    #     ON option_versions.pacbio_smrt_link_option_id = options_.id
+    # ORDER BY
+    #     option_versions.id
+
+    # TODO: create the seed data below with the appropiate options dynamically sourced from config
 
     print "   -> Creating runs for #{v10.name}..."
     pool_records.each_with_index do |pool, i|
