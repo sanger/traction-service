@@ -117,7 +117,7 @@ namespace :pacbio_data do
     print "   -> Creating runs for #{v12_revio.name}..."
     pool_records.each_with_index do |pool, i|
       plate1 = Pacbio::Plate.new(
-        sequencing_kit_box_barcode: "SKB#{pool.id}",
+        sequencing_kit_box_barcode: "SKB#{pool.id}1",
         plate_number: 1,
         wells: [Pacbio::Well.new(
           pools: [pool],
@@ -131,7 +131,7 @@ namespace :pacbio_data do
         )]
       )
       plate2 = Pacbio::Plate.new(
-        sequencing_kit_box_barcode: "SKB#{pool.id}",
+        sequencing_kit_box_barcode: "SKB#{pool.id}2",
         plate_number: 2,
         wells: [Pacbio::Well.new(
           pools: [pool],
