@@ -100,6 +100,16 @@ RSpec.describe InstrumentTypeValidator do
           expect(run.errors.messages[:plates]).to include("plate #{plate.plate_number} #{attribute} can't be blank")
         end
       end
+
+      it 'validates sequencing_kit_box_barcode' do
+        create(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, plate_number: 1, sequencing_kit_box_barcode: '1234', wells: [build(:pacbio_well, row: 'A', column: '1')])])
+        create(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, plate_number: 1, sequencing_kit_box_barcode: '1234', wells: [build(:pacbio_well, row: 'B', column: '1')])])
+
+        run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, plate_number: 1, sequencing_kit_box_barcode: '1234', wells: [build(:pacbio_well, row: 'A', column: '1')])])
+        instrument_type_validator = described_class.new(instrument_types:)
+        instrument_type_validator.validate(run)
+        expect(run.errors.messages[:plates]).to include('plate 1 plates sequencing kit box barcode has already been used on 2 plates')
+      end
     end
 
     context 'wells' do
