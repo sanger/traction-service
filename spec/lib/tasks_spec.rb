@@ -46,15 +46,16 @@ RSpec.describe 'RakeTasks' do
           "-> Creating Pacbio IsoSeq tag set and tags\n" \
           "-> Tag Set successfully created\n" \
           "-> IsoSeq_Primers_12_Barcodes_v1 created\n" \
-          "-> Creating pacbio plates and tubes...\n" \
-          "-> Pacbio plates successfully created\n" \
-          "-> Creating pacbio libraries...\n" \
-          "-> Pacbio libraries successfully created\n" \
-          "-> Creating pacbio runs...\n" \
+          "-> Creating pacbio plates and tubes...\b\b\b √ \n" \
+          "-> Creating pacbio libraries...\b\b\b √ \n" \
+          "-> Finding Pacbio SMRT Link versions...\b\b\b √ \n" \
+          "-> Creating pacbio runs:\n   " \
+          "-> Creating runs for v11...\b\b\b √ \n   " \
+          "-> Creating runs for v12_revio...\b\b\b √ \n" \
           "-> Pacbio runs successfully created\n"
         ).to_stdout
       expect(Pacbio::Run.count)
-        .to eq(6)
+        .to eq(12)
     end
   end
 
