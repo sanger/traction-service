@@ -30,7 +30,7 @@ class PacbioSampleSheet
   private
 
   def wells
-    run.plates.first.wells
+    run.plates.collect(&:wells).flatten
   end
 
   # Returns a list of wells associated with the plate in column order
