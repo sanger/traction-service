@@ -116,7 +116,6 @@ namespace :pacbio_data do
     puts "   -> Creating runs for #{v12_revio.name}..."
     pool_records.each_with_index do |pool, i|
       Pacbio::Run.create!(
-        name: "Run#{pool.id}",
         system_name: Pacbio::Run.system_names['Revio'],
         smrt_link_version: v12_revio,
         dna_control_complex_box_barcode: "DCCB#{pool.id}",
@@ -126,14 +125,12 @@ namespace :pacbio_data do
           wells: [Pacbio::Well.new(
             pools: [pool],
             row: 'A',
-            column: i + 1,
-            ccs_analysis_output_include_kinetics_information:	'Yes',
-            ccs_analysis_output_include_low_quality_reads:	'Yes',
-            include_fivemc_calls_in_cpg_motifs:	'Yes',
-            demultiplex_barcodes:	'In SMRT Link',
-            on_plate_loading_concentration: 1,
-            binding_kit_box_barcode: "BKB#{pool.id}",
-            movie_time: 20
+            column: 1,
+            pre_extension_time: 2,
+            movie_acquisition_time:	24.0,
+            include_base_kinetics:	'True',
+            library_concentration:	1,
+            polymerase_kit:	"PK12#{i}"
           )]
         )]
       )
