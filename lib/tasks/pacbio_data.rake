@@ -116,24 +116,48 @@ namespace :pacbio_data do
 
     print "   -> Creating runs for #{v12_revio.name}..."
     pool_records.each_with_index do |pool, i|
+      plate1 = Pacbio::Plate.new(
+        sequencing_kit_box_barcode: "SKB#{pool.id}",
+        plate_number: 1,
+        wells: [Pacbio::Well.new(
+          pools: [pool],
+          row: 'A',
+          column: 1,
+          pre_extension_time: 2,
+          movie_acquisition_time:	24.0,
+          include_base_kinetics:	'True',
+          library_concentration:	1,
+          polymerase_kit:	"PK12#{i}"
+        )]
+      )
+      plate2 = Pacbio::Plate.new(
+        sequencing_kit_box_barcode: "SKB#{pool.id}",
+        plate_number: 2,
+        wells: [Pacbio::Well.new(
+          pools: [pool],
+          row: 'A',
+          column: 1,
+          pre_extension_time: 2,
+          movie_acquisition_time:	24.0,
+          include_base_kinetics:	'True',
+          library_concentration:	1,
+          polymerase_kit:	"PK12#{i}"
+        ), Pacbio::Well.new(
+          pools: [pool],
+          row: 'B',
+          column: 1,
+          pre_extension_time: 2,
+          movie_acquisition_time:	24.0,
+          include_base_kinetics:	'True',
+          library_concentration:	1,
+          polymerase_kit:	"PK12#{i}"
+        )]
+      )
       Pacbio::Run.create!(
         system_name: Pacbio::Run.system_names['Revio'],
         smrt_link_version: v12_revio,
         dna_control_complex_box_barcode: "DCCB#{pool.id}",
-        plates: [Pacbio::Plate.new(
-          sequencing_kit_box_barcode: "SKB#{pool.id}",
-          plate_number: 1,
-          wells: [Pacbio::Well.new(
-            pools: [pool],
-            row: 'A',
-            column: 1,
-            pre_extension_time: 2,
-            movie_acquisition_time:	24.0,
-            include_base_kinetics:	'True',
-            library_concentration:	1,
-            polymerase_kit:	"PK12#{i}"
-          )]
-        )]
+        plates: [plate1] + (i > 2 ? [plate2] : [])
       )
     end
     print COMPLETED
