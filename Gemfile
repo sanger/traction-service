@@ -37,6 +37,8 @@ group :development, :test do
   gem 'rubocop-rails', require: false
   gem 'rubocop-rspec', require: false
   gem 'shoulda-matchers'
+  gem 'simplecov', require: false
+  gem 'simplecov-lcov', require: false
   gem 'sqlite3'
 end
 
