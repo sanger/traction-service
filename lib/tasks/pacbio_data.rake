@@ -107,7 +107,7 @@ namespace :pacbio_data do
             demultiplex_barcodes:	'In SMRT Link',
             on_plate_loading_concentration: 1,
             binding_kit_box_barcode: "BKB#{pool.id}",
-            movie_time: 20
+            movie_time: '20.0'
           )]
         )]
       )
@@ -124,7 +124,7 @@ namespace :pacbio_data do
           row: 'A',
           column: 1,
           pre_extension_time: 2,
-          movie_acquisition_time:	24.0,
+          movie_acquisition_time:	'24.0',
           include_base_kinetics:	'True',
           library_concentration:	1,
           polymerase_kit:	"PK12#{i}"
@@ -138,7 +138,7 @@ namespace :pacbio_data do
           row: 'A',
           column: 1,
           pre_extension_time: 2,
-          movie_acquisition_time:	24.0,
+          movie_acquisition_time:	'24.0',
           include_base_kinetics:	'True',
           library_concentration:	1,
           polymerase_kit:	"PK12#{i}"
@@ -147,7 +147,7 @@ namespace :pacbio_data do
           row: 'B',
           column: 1,
           pre_extension_time: 2,
-          movie_acquisition_time:	24.0,
+          movie_acquisition_time:	'24.0',
           include_base_kinetics:	'True',
           library_concentration:	1,
           polymerase_kit:	"PK12#{i}"
