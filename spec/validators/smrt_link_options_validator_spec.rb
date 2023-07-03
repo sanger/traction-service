@@ -14,7 +14,8 @@ RSpec.describe SmrtLinkOptionsValidator do
     end
 
     context 'valid' do
-      let(:record) { build(:pacbio_well, plate: create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: versions.first)), demultiplex_barcodes: 'In SMRT Link', loading_target_p1_plus_p2: 0.85, movie_time: 5) }
+      let!(:run) { create(:pacbio_sequel_run, smrt_link_version: versions.first) }
+      let(:record) { build(:pacbio_well, plate: run.plates.first, demultiplex_barcodes: 'In SMRT Link', loading_target_p1_plus_p2: 0.85, movie_time: 5) }
 
       before do
         described_class.new.validate(record)
@@ -26,7 +27,8 @@ RSpec.describe SmrtLinkOptionsValidator do
     end
 
     context 'invalid' do
-      let(:plate) { create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: versions.first)) }
+      let!(:run) { create(:pacbio_sequel_run, smrt_link_version: versions.first) }
+      let(:plate) { run.plates.first }
 
       it 'will mark the record as invalid' do
         well = build(:pacbio_well, plate:, demultiplex_barcodes: nil)
@@ -62,8 +64,8 @@ RSpec.describe SmrtLinkOptionsValidator do
     end
 
     it 'will only mark the record as invalid for the correct version' do
-      plate = create(:pacbio_plate, run: create(:pacbio_run, smrt_link_version: versions.first))
-      well = build(:pacbio_well, plate:, movie_time: nil)
+      run = create(:pacbio_sequel_run, smrt_link_version: versions.first)
+      well = build(:pacbio_well, plate: run.plates.first, movie_time: nil)
       described_class.new.validate(well)
       expect(well).to be_valid
     end

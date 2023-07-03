@@ -12,7 +12,7 @@ default: &default
   versions:
     v10:
       name: v10
-      active: true
+      active: false
       default: false
     v11:
       name: v11
@@ -20,7 +20,7 @@ default: &default
       default: true
     v12_revio:
       name: v12_revio
-      active: false
+      active: true
       default: false
 
   options:
@@ -127,6 +127,7 @@ default: &default
       versions:
         - v10
         - v11
+        - v12_revio
     loading_target_p1_plus_p2:
       key: loading_target_p1_plus_p2
       label: 'Loading Target (P1 + P2)'
@@ -205,4 +206,3 @@ test: *default
 production: *default
 uat: *default
 training: *default
-

@@ -61,7 +61,7 @@ RSpec.describe 'SampleSheet', type: :model do
       column = sample_sheet_configuration.columns.children['Plate 1']
       expect(column).to be_present
       expect(column.fetch('type')).to eq(:model)
-      expect(column.fetch('value')).to eq('plate.run.sequencing_kit_box_barcode')
+      expect(column.fetch('value')).to eq('plate.sequencing_kit_box_barcode')
       expect(column.fetch('populate')).to eq(populate)
     end
 

@@ -18,17 +18,15 @@ RSpec.describe 'RunsController' do
 
   shared_examples 'publish_messages_on_update' do
     it 'publishes a message' do
-      expect(Messages).to receive(:publish).with(run.plate, having_attributes(pipeline: 'pacbio'))
+      expect(Messages).to receive(:publish).with(run.plates.first, having_attributes(pipeline: 'pacbio'))
       patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
   end
 
   describe '#get' do
-    let!(:run1) { create(:pacbio_run, state: 'pending') }
-    let!(:run2) { create(:pacbio_run, state: 'started') }
-    let!(:plate1) { create(:pacbio_plate, run: run1, well_count: 1) }
-    let!(:plate2) { create(:pacbio_plate, run: run2, well_count: 1) }
+    let!(:run1) { create(:pacbio_revio_run, state: 'pending') }
+    let!(:run2) { create(:pacbio_revio_run, state: 'started') }
 
     it 'returns a list of runs' do
       get v1_pacbio_runs_path, headers: json_api_headers
@@ -37,31 +35,35 @@ RSpec.describe 'RunsController' do
       expect(json['data'].length).to eq(2)
     end
 
+    # intermitterntly failing??
     it 'returns the correct attributes' do
       get v1_pacbio_runs_path, headers: json_api_headers
 
       json = ActiveSupport::JSON.decode(response.body)
-      expect(json['data'][0]['attributes']['name']).to eq(run1.name)
-      expect(json['data'][0]['attributes']['sequencing_kit_box_barcode']).to eq(run1.sequencing_kit_box_barcode)
-      expect(json['data'][0]['attributes']['dna_control_complex_box_barcode']).to eq(run1.dna_control_complex_box_barcode)
-      expect(json['data'][0]['attributes']['system_name']).to eq(run1.system_name)
-      expect(json['data'][0]['attributes']['created_at']).to eq(run1.created_at.to_fs(:us))
-      expect(json['data'][0]['attributes']['state']).to eq(run1.state)
-      expect(json['data'][0]['attributes']['comments']).to eq(run1.comments)
-      expect(json['data'][1]['attributes']['name']).to eq(run2.name)
+
+      run1_attributes = json['data'].find { |data| data['id'] == run1.id.to_s }['attributes']
+      expect(run1_attributes['name']).to eq(run1.name)
+      expect(run1_attributes['dna_control_complex_box_barcode']).to eq(run1.dna_control_complex_box_barcode)
+      expect(run1_attributes['system_name']).to eq(run1.system_name)
+      expect(run1_attributes['created_at']).to eq(run1.created_at.to_fs(:us))
+      expect(run1_attributes['state']).to eq(run1.state)
+      expect(run1_attributes['comments']).to eq(run1.comments)
+
+      run2_attributes = json['data'].find { |data| data['id'] == run2.id.to_s }['attributes']
+      expect(run2_attributes['name']).to eq(run2.name)
     end
 
     it 'returns the correct relationships', aggregate_failures: true do
-      get "#{v1_pacbio_runs_path}?include=plate,smrt_link_version", headers: json_api_headers
+      get "#{v1_pacbio_runs_path}?include=plates,smrt_link_version", headers: json_api_headers
 
       expect(response).to have_http_status(:success), response.body
       json = ActiveSupport::JSON.decode(response.body)
 
-      plate1_attributes = find_included_resource(type: 'plates', id: plate1.id)['attributes']
+      plate1_attributes = find_included_resource(type: 'plates', id: run1.plates.first.id)['attributes']
       expect(plate1_attributes).to include(
         'pacbio_run_id' => run1.id
       )
-      plate2_attributes = find_included_resource(type: 'plates', id: plate2.id)['attributes']
+      plate2_attributes = find_included_resource(type: 'plates', id: run2.plates.first.id)['attributes']
       expect(plate2_attributes).to include(
         'pacbio_run_id' => run2.id
       )
@@ -72,8 +74,8 @@ RSpec.describe 'RunsController' do
     end
 
     context 'pagination' do
-      let!(:run1) { create(:pacbio_run, created_at: Time.zone.now) }
-      let!(:run2) { create(:pacbio_run, created_at: Time.zone.now + 2000) }
+      let!(:run1) { create(:pacbio_revio_run, created_at: Time.zone.now) }
+      let!(:run2) { create(:pacbio_revio_run, created_at: Time.zone.now + 2000) }
       let!(:expected_runs) { [run1, run2] }
 
       before do
@@ -105,7 +107,6 @@ RSpec.describe 'RunsController' do
 
           expect(run_attributes).to include(
             'name' => run.name,
-            'sequencing_kit_box_barcode' => run.sequencing_kit_box_barcode,
             'dna_control_complex_box_barcode' => run.dna_control_complex_box_barcode,
             'system_name' => run.system_name,
             'state' => run.state,
@@ -138,7 +139,6 @@ RSpec.describe 'RunsController' do
 
           expect(run_attributes).to include(
             'name' => run1.name,
-            'sequencing_kit_box_barcode' => run1.sequencing_kit_box_barcode,
             'dna_control_complex_box_barcode' => run1.dna_control_complex_box_barcode,
             'system_name' => run1.system_name,
             'state' => run1.state,
@@ -169,7 +169,6 @@ RSpec.describe 'RunsController' do
 
           expect(run_attributes).to include(
             'name' => run1.name,
-            'sequencing_kit_box_barcode' => run1.sequencing_kit_box_barcode,
             'dna_control_complex_box_barcode' => run1.dna_control_complex_box_barcode,
             'system_name' => run1.system_name,
             'state' => run1.state,
@@ -191,28 +190,31 @@ RSpec.describe 'RunsController' do
           data: {
             type: 'runs',
             attributes: {
-              sequencing_kit_box_barcode: 'DM0001100861800123121',
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
               system_name: 'Sequel II',
               comments: 'A Run Comment',
               pacbio_smrt_link_version_id: version11.id,
-              well_attributes: [
-                {
-                  row: 'A',
-                  column: '1',
-                  movie_time: 31,
-                  on_plate_loading_concentration: 8.35,
-                  pre_extension_time: '2',
-                  generate_hifi: 'In SMRT Link',
-                  ccs_analysis_output: 'Yes',
-                  binding_kit_box_barcode: 'DM1117100862200111711',
-                  ccs_analysis_output_include_low_quality_reads: 'Yes',
-                  include_fivemc_calls_in_cpg_motifs: 'Yes',
-                  ccs_analysis_output_include_kinetics_information: 'Yes',
-                  demultiplex_barcodes: 'In SMRT Link',
-                  pools: [pool1.id]
-                }
-              ]
+              plates_attributes: [{
+                sequencing_kit_box_barcode: 'DM0001100861800123121',
+                plate_number: 1,
+                wells_attributes: [
+                  {
+                    row: 'A',
+                    column: '1',
+                    movie_time: 31,
+                    on_plate_loading_concentration: 8.35,
+                    pre_extension_time: '2',
+                    generate_hifi: 'In SMRT Link',
+                    ccs_analysis_output: 'Yes',
+                    binding_kit_box_barcode: 'DM1117100862200111711',
+                    ccs_analysis_output_include_low_quality_reads: 'Yes',
+                    include_fivemc_calls_in_cpg_motifs: 'Yes',
+                    ccs_analysis_output_include_kinetics_information: 'Yes',
+                    demultiplex_barcodes: 'In SMRT Link',
+                    pool_ids: [pool1.id]
+                  }
+                ]
+              }]
             }
           }
         }.to_json
@@ -247,7 +249,6 @@ RSpec.describe 'RunsController' do
         expect(run.id).to eq(json['data']['id'].to_i)
         expect(run.name).to be_present
         expect(run.state).to be_present
-        expect(run.sequencing_kit_box_barcode).to be_present
         expect(run.dna_control_complex_box_barcode).to be_present
         expect(run.system_name).to be_present
         expect(run.comments).to be_present
@@ -267,23 +268,26 @@ RSpec.describe 'RunsController' do
           data: {
             type: 'runs',
             attributes: {
-              sequencing_kit_box_barcode: 'DM0001100861800123121',
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
               system_name: 'Sequel II',
               comments: 'A Run Comment',
               pacbio_smrt_link_version_id: version12.id,
-              well_attributes: [
-                {
-                  row: 'A',
-                  column: '1',
-                  movie_acquisition_time: 30,
-                  library_concentration: 8.35,
-                  pre_extension_time: '2',
-                  include_base_kinetics: 'True',
-                  polymerase_kit: 'ABC123',
-                  pools: [pool1.id]
-                }
-              ]
+              plates_attributes: [{
+                sequencing_kit_box_barcode: 'DM0001100861800123121',
+                plate_number: 1,
+                wells_attributes: [
+                  {
+                    row: 'A',
+                    column: '1',
+                    movie_acquisition_time: 30,
+                    library_concentration: 8.35,
+                    pre_extension_time: '2',
+                    include_base_kinetics: 'True',
+                    polymerase_kit: 'ABC123',
+                    pool_ids: [pool1.id]
+                  }
+                ]
+              }]
             }
           }
         }.to_json
@@ -318,7 +322,6 @@ RSpec.describe 'RunsController' do
         expect(run.id).to eq(json['data']['id'].to_i)
         expect(run.name).to be_present
         expect(run.state).to be_present
-        expect(run.sequencing_kit_box_barcode).to be_present
         expect(run.dna_control_complex_box_barcode).to be_present
         expect(run.system_name).to be_present
         expect(run.comments).to be_present
@@ -358,7 +361,7 @@ RSpec.describe 'RunsController' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq "sequencing_kit_box_barcode - can't be blank"
+          expect(errors[0]['detail']).to eq 'plates - must have at least 1 plate'
           expect(errors[1]['detail']).to eq "dna_control_complex_box_barcode - can't be blank"
         end
       end
@@ -403,12 +406,11 @@ RSpec.describe 'RunsController' do
             data: {
               type: 'runs',
               attributes: {
-                sequencing_kit_box_barcode: 'DM0001100861800123121',
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-                system_name: 'Sequel II',
+                system_name: 'Sequel IIe',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
-                well_attributes: []
+                plates_attributes: [{ wells_attributes: [] }]
               }
             }
           }.to_json
@@ -437,7 +439,7 @@ RSpec.describe 'RunsController' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq 'plate.wells - there must be at least one well'
+          expect(errors.pluck('detail')).to include 'plates - plate  wells must have at least 1 well'
         end
       end
 
@@ -449,14 +451,17 @@ RSpec.describe 'RunsController' do
             data: {
               type: 'runs',
               attributes: {
-                sequencing_kit_box_barcode: 'DM0001100861800123121',
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
-                well_attributes: [{
-                  row: 'A',
-                  pools: [pool1.id]
+                plates_attributes: [{
+                  sequencing_kit_box_barcode: 'DM0001100861800123121',
+                  plate_number: 1,
+                  wells_attributes: [{
+                    row: 'A',
+                    pool_ids: [pool1.id]
+                  }]
                 }]
               }
             }
@@ -486,7 +491,7 @@ RSpec.describe 'RunsController' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq "plate.wells.column - can't be blank"
+          expect(errors[0]['detail']).to eq "plates.wells.column - can't be blank"
         end
       end
 
@@ -496,26 +501,29 @@ RSpec.describe 'RunsController' do
             data: {
               type: 'runs',
               attributes: {
-                sequencing_kit_box_barcode: 'DM0001100861800123121',
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
-                well_attributes: [
-                  { row: 'A',
-                    column: '1',
-                    movie_time: 8,
-                    on_plate_loading_concentration: 8.35,
-                    pre_extension_time: '2',
-                    generate_hifi: 'In SMRT Link',
-                    ccs_analysis_output: 'Yes',
-                    binding_kit_box_barcode: 'DM1117100862200111711',
-                    ccs_analysis_output_include_low_quality_reads: 'Yes',
-                    include_fivemc_calls_in_cpg_motifs: 'Yes',
-                    ccs_analysis_output_include_kinetics_information: 'Yes',
-                    demultiplex_barcodes: 'In SMRT Link',
-                    pools: [] }
-                ]
+                plates_attributes: [{
+                  sequencing_kit_box_barcode: 'DM0001100861800123121',
+                  plate_number: 1,
+                  wells_attributes: [
+                    { row: 'A',
+                      column: '1',
+                      movie_time: 8,
+                      on_plate_loading_concentration: 8.35,
+                      pre_extension_time: '2',
+                      generate_hifi: 'In SMRT Link',
+                      ccs_analysis_output: 'Yes',
+                      binding_kit_box_barcode: 'DM1117100862200111711',
+                      ccs_analysis_output_include_low_quality_reads: 'Yes',
+                      include_fivemc_calls_in_cpg_motifs: 'Yes',
+                      ccs_analysis_output_include_kinetics_information: 'Yes',
+                      demultiplex_barcodes: 'In SMRT Link',
+                      pool_ids: [] }
+                  ]
+                }]
               }
             }
           }.to_json
@@ -544,7 +552,7 @@ RSpec.describe 'RunsController' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq 'plate.wells.pools - there must be at least one pool'
+          expect(errors[0]['detail']).to eq 'plates.wells.pools - there must be at least one pool'
         end
       end
 
@@ -554,26 +562,29 @@ RSpec.describe 'RunsController' do
             data: {
               type: 'runs',
               attributes: {
-                sequencing_kit_box_barcode: 'DM0001100861800123121',
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
-                well_attributes: [
-                  { row: 'A',
-                    column: '1',
-                    movie_time: 8,
-                    on_plate_loading_concentration: 8.35,
-                    pre_extension_time: '2',
-                    generate_hifi: 'In SMRT Link',
-                    ccs_analysis_output: 'Yes',
-                    binding_kit_box_barcode: 'DM1117100862200111711',
-                    ccs_analysis_output_include_low_quality_reads: 'Yes',
-                    include_fivemc_calls_in_cpg_motifs: 'Yes',
-                    ccs_analysis_output_include_kinetics_information: 'Yes',
-                    demultiplex_barcodes: 'In SMRT Link',
-                    pools: [123] }
-                ]
+                plates_attributes: [{
+                  sequencing_kit_box_barcode: 'DM0001100861800123121',
+                  plate_number: 1,
+                  wells_attributes: [
+                    { row: 'A',
+                      column: '1',
+                      movie_time: 8,
+                      on_plate_loading_concentration: 8.35,
+                      pre_extension_time: '2',
+                      generate_hifi: 'In SMRT Link',
+                      ccs_analysis_output: 'Yes',
+                      binding_kit_box_barcode: 'DM1117100862200111711',
+                      ccs_analysis_output_include_low_quality_reads: 'Yes',
+                      include_fivemc_calls_in_cpg_motifs: 'Yes',
+                      ccs_analysis_output_include_kinetics_information: 'Yes',
+                      demultiplex_barcodes: 'In SMRT Link',
+                      pool_ids: [123] }
+                  ]
+                }]
               }
             }
           }.to_json
@@ -614,26 +625,29 @@ RSpec.describe 'RunsController' do
             data: {
               type: 'runs',
               attributes: {
-                sequencing_kit_box_barcode: 'DM0001100861800123121',
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
-                well_attributes: [
-                  { row: 'A',
-                    column: '1',
-                    movie_time: 8,
-                    on_plate_loading_concentration: 8.35,
-                    pre_extension_time: '2',
-                    generate_hifi: 'In SMRT Link',
-                    ccs_analysis_output: 'Yes',
-                    binding_kit_box_barcode: 'DM1117100862200111711',
-                    ccs_analysis_output_include_low_quality_reads: 'Yes',
-                    include_fivemc_calls_in_cpg_motifs: 'Yes',
-                    ccs_analysis_output_include_kinetics_information: 'Yes',
-                    demultiplex_barcodes: 'In SMRT Link',
-                    pools: [pool1.id, pool1.id] }
-                ]
+                plates_attributes: [{
+                  sequencing_kit_box_barcode: 'DM0001100861800123121',
+                  plate_number: 1,
+                  wells_attributes: [
+                    { row: 'A',
+                      column: '1',
+                      movie_time: 8,
+                      on_plate_loading_concentration: 8.35,
+                      pre_extension_time: '2',
+                      generate_hifi: 'In SMRT Link',
+                      ccs_analysis_output: 'Yes',
+                      binding_kit_box_barcode: 'DM1117100862200111711',
+                      ccs_analysis_output_include_low_quality_reads: 'Yes',
+                      include_fivemc_calls_in_cpg_motifs: 'Yes',
+                      ccs_analysis_output_include_kinetics_information: 'Yes',
+                      demultiplex_barcodes: 'In SMRT Link',
+                      pool_ids: [pool1.id, pool1.id] }
+                  ]
+                }]
               }
             }
           }.to_json
@@ -662,7 +676,7 @@ RSpec.describe 'RunsController' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq 'plate.wells.tags - are not unique within the libraries for well A1'
+          expect(errors[0]['detail']).to eq 'plates.wells.tags - are not unique within the libraries for well A1'
         end
       end
 
@@ -674,39 +688,42 @@ RSpec.describe 'RunsController' do
             data: {
               type: 'runs',
               attributes: {
-                sequencing_kit_box_barcode: 'DM0001100861800123121',
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
-                well_attributes: [
-                  { row: 'A',
-                    column: '1',
-                    movie_time: 8,
-                    on_plate_loading_concentration: 8.35,
-                    pre_extension_time: '2',
-                    generate_hifi: 'In SMRT Link',
-                    ccs_analysis_output: 'Yes',
-                    binding_kit_box_barcode: 'DM1117100862200111711',
-                    ccs_analysis_output_include_low_quality_reads: 'Yes',
-                    include_fivemc_calls_in_cpg_motifs: 'Yes',
-                    ccs_analysis_output_include_kinetics_information: 'Yes',
-                    demultiplex_barcodes: 'In SMRT Link',
-                    pools: [pool1.id] },
-                  { row: 'A',
-                    column: '2',
-                    movie_time: 8,
-                    on_plate_loading_concentration: 8.35,
-                    pre_extension_time: '2',
-                    generate_hifi: 'In SMRT Link',
-                    ccs_analysis_output: 'Yes',
-                    binding_kit_box_barcode: 'DM1117100862200111711',
-                    ccs_analysis_output_include_low_quality_reads: 'Yes',
-                    include_fivemc_calls_in_cpg_motifs: 'Yes',
-                    ccs_analysis_output_include_kinetics_information: 'Yes',
-                    demultiplex_barcodes: 'In SMRT Link',
-                    pools: [pool1.id] }
-                ]
+                plates_attributes: [{
+                  sequencing_kit_box_barcode: 'DM0001100861800123121',
+                  plate_number: 1,
+                  wells_attributes: [
+                    { row: 'A',
+                      column: '1',
+                      movie_time: 8,
+                      on_plate_loading_concentration: 8.35,
+                      pre_extension_time: '2',
+                      generate_hifi: 'In SMRT Link',
+                      ccs_analysis_output: 'Yes',
+                      binding_kit_box_barcode: 'DM1117100862200111711',
+                      ccs_analysis_output_include_low_quality_reads: 'Yes',
+                      include_fivemc_calls_in_cpg_motifs: 'Yes',
+                      ccs_analysis_output_include_kinetics_information: 'Yes',
+                      demultiplex_barcodes: 'In SMRT Link',
+                      pool_ids: [pool1.id] },
+                    { row: 'A',
+                      column: '2',
+                      movie_time: 8,
+                      on_plate_loading_concentration: 8.35,
+                      pre_extension_time: '2',
+                      generate_hifi: 'In SMRT Link',
+                      ccs_analysis_output: 'Yes',
+                      binding_kit_box_barcode: 'DM1117100862200111711',
+                      ccs_analysis_output_include_low_quality_reads: 'Yes',
+                      include_fivemc_calls_in_cpg_motifs: 'Yes',
+                      ccs_analysis_output_include_kinetics_information: 'Yes',
+                      demultiplex_barcodes: 'In SMRT Link',
+                      pool_ids: [pool1.id] }
+                  ]
+                }]
               }
             }
           }.to_json
@@ -752,26 +769,29 @@ RSpec.describe 'RunsController' do
             data: {
               type: 'runs',
               attributes: {
-                sequencing_kit_box_barcode: 'DM0001100861800123121',
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
                 comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
-                well_attributes: [
-                  { row: 'A',
-                    column: '1',
-                    movie_time: 8,
-                    on_plate_loading_concentration: 8.35,
-                    pre_extension_time: '2',
-                    generate_hifi: 'In SMRT Link',
-                    ccs_analysis_output: 'Yes',
-                    binding_kit_box_barcode: 'DM1117100862200111711',
-                    ccs_analysis_output_include_low_quality_reads: 'Yes',
-                    include_fivemc_calls_in_cpg_motifs: 'Yes',
-                    ccs_analysis_output_include_kinetics_information: 'Yes',
-                    demultiplex_barcodes: 'In SMRT Link',
-                    pools: [pool1.id, pool2.id] }
-                ]
+                plates_attributes: [{
+                  sequencing_kit_box_barcode: 'DM0001100861800123121',
+                  plate_number: 1,
+                  wells_attributes: [
+                    { row: 'A',
+                      column: '1',
+                      movie_time: 8,
+                      on_plate_loading_concentration: 8.35,
+                      pre_extension_time: '2',
+                      generate_hifi: 'In SMRT Link',
+                      ccs_analysis_output: 'Yes',
+                      binding_kit_box_barcode: 'DM1117100862200111711',
+                      ccs_analysis_output_include_low_quality_reads: 'Yes',
+                      include_fivemc_calls_in_cpg_motifs: 'Yes',
+                      ccs_analysis_output_include_kinetics_information: 'Yes',
+                      demultiplex_barcodes: 'In SMRT Link',
+                      pool_ids: [pool1.id, pool2.id] }
+                  ]
+                }]
               }
             }
           }.to_json
@@ -800,7 +820,7 @@ RSpec.describe 'RunsController' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq 'plate.wells.tags - are missing from the libraries'
+          expect(errors[0]['detail']).to eq 'plates.wells.tags - are missing from the libraries'
         end
       end
     end
@@ -815,27 +835,30 @@ RSpec.describe 'RunsController' do
         data: {
           type: 'runs',
           attributes: {
-            sequencing_kit_box_barcode: 'DM0001100861800123121',
             dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
             system_name: 'Sequel II',
             comments: 'A Run Comment',
-            well_attributes: [
-              {
-                row: 'A',
-                column: '1',
-                movie_time: 8,
-                on_plate_loading_concentration: 8.35,
-                pre_extension_time: '2',
-                generate_hifi: 'In SMRT Link',
-                ccs_analysis_output: 'Yes',
-                binding_kit_box_barcode: 'DM1117100862200111711',
-                ccs_analysis_output_include_low_quality_reads: 'Yes',
-                include_fivemc_calls_in_cpg_motifs: 'Yes',
-                ccs_analysis_output_include_kinetics_information: 'Yes',
-                demultiplex_barcodes: 'In SMRT Link',
-                pools: [pool1.id]
-              }
-            ]
+            plates_attributes: [{
+              sequencing_kit_box_barcode: 'DM0001100861800123121',
+              plate_number: 1,
+              wells_attributes: [
+                {
+                  row: 'A',
+                  column: '1',
+                  movie_time: 8,
+                  on_plate_loading_concentration: 8.35,
+                  pre_extension_time: '2',
+                  generate_hifi: 'In SMRT Link',
+                  ccs_analysis_output: 'Yes',
+                  binding_kit_box_barcode: 'DM1117100862200111711',
+                  ccs_analysis_output_include_low_quality_reads: 'Yes',
+                  include_fivemc_calls_in_cpg_motifs: 'Yes',
+                  ccs_analysis_output_include_kinetics_information: 'Yes',
+                  demultiplex_barcodes: 'In SMRT Link',
+                  pool_ids: [pool1.id]
+                }
+              ]
+            }]
           }
         }
       }.to_json
@@ -867,26 +890,29 @@ RSpec.describe 'RunsController' do
         data: {
           type: 'runs',
           attributes: {
-            sequencing_kit_box_barcode: 'DM0001100861800123121',
             dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
             system_name: 'Sequel II',
             comments: 'A Run Comment',
             pacbio_smrt_link_version_id: version10.id,
-            well_attributes: [
-              { row: 'A',
-                column: '1',
-                movie_time: 8,
-                on_plate_loading_concentration: 8.35,
-                pre_extension_time: '2',
-                generate_hifi: 'In SMRT Link',
-                ccs_analysis_output: 'Yes',
-                binding_kit_box_barcode: 'DM1117100862200111711',
-                ccs_analysis_output_include_low_quality_reads: 'Yes',
-                include_fivemc_calls_in_cpg_motifs: 'Yes',
-                ccs_analysis_output_include_kinetics_information: 'Yes',
-                demultiplex_barcodes: 'In SMRT Link',
-                pools: [pool1.id] }
-            ]
+            plates_attributes: [{
+              sequencing_kit_box_barcode: 'DM0001100861800123121',
+              plate_number: 1,
+              wells_attributes: [
+                { row: 'A',
+                  column: '1',
+                  movie_time: 8,
+                  on_plate_loading_concentration: 8.35,
+                  pre_extension_time: '2',
+                  generate_hifi: 'In SMRT Link',
+                  ccs_analysis_output: 'Yes',
+                  binding_kit_box_barcode: 'DM1117100862200111711',
+                  ccs_analysis_output_include_low_quality_reads: 'Yes',
+                  include_fivemc_calls_in_cpg_motifs: 'Yes',
+                  ccs_analysis_output_include_kinetics_information: 'Yes',
+                  demultiplex_barcodes: 'In SMRT Link',
+                  pool_ids: [pool1.id] }
+              ]
+            }]
           }
         }
       }.to_json
@@ -913,8 +939,7 @@ RSpec.describe 'RunsController' do
   describe '#update' do
     context 'on success' do
       context 'when run state is successful' do
-        let!(:run) { create(:pacbio_run) }
-        let!(:plate) { create(:pacbio_plate, run:) }
+        let!(:run) { create(:pacbio_revio_run) }
         let(:body) do
           {
             data: {
@@ -945,13 +970,12 @@ RSpec.describe 'RunsController' do
         end
 
         it 'retains the existing plate, wells, pools etc' do
-          existing_wells = run.plate.wells
-          existing_pools = run.plate.wells.map(&:pools)
+          existing_wells = run.plates.first.wells
+          existing_pools = existing_wells.map(&:pools)
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
           run.reload
-          expect(run.plate).to eq plate
-          expect(run.plate.wells).to eq existing_wells
-          expect(run.plate.wells.map(&:pools)).to eq existing_pools
+          expect(run.plates.first.wells).to eq existing_wells
+          expect(run.plates.first.wells.map(&:pools)).to eq existing_pools
         end
 
         it_behaves_like 'publish_messages_on_update'
@@ -964,7 +988,6 @@ RSpec.describe 'RunsController' do
               id: run.id,
               type: 'runs',
               attributes: {
-                sequencing_kit_box_barcode: 'DM0001100861800123121_updated',
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191_updated',
                 system_name: 'Sequel I',
                 comments: 'A Run Comment updated'
@@ -972,11 +995,7 @@ RSpec.describe 'RunsController' do
             }
           }.to_json
         end
-        let!(:run) { create(:pacbio_run) }
-
-        before do
-          create(:pacbio_plate, run:)
-        end
+        let!(:run) { create(:pacbio_revio_run) }
 
         it 'has a ok status' do
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
@@ -992,7 +1011,6 @@ RSpec.describe 'RunsController' do
         it 'updates a run' do
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
           run.reload
-          expect(run.sequencing_kit_box_barcode).to eq 'DM0001100861800123121_updated'
           expect(run.dna_control_complex_box_barcode).to eq 'Lxxxxx101717600123191_updated'
           expect(run.system_name).to eq 'Sequel I'
           expect(run.comments).to eq 'A Run Comment updated'
@@ -1003,9 +1021,9 @@ RSpec.describe 'RunsController' do
       end
 
       context 'when well info is successful' do
-        let!(:run) { create(:pacbio_run) }
-        let!(:plate) { create(:pacbio_plate, run:) }
-        let!(:well) { plate.wells.first }
+        let!(:run) { create(:pacbio_sequel_run) }
+        let!(:plate) { run.plates.first }
+        let!(:well) { run.plates.first.wells.first }
         let!(:pool1) { create(:pacbio_pool) }
 
         let(:body) do
@@ -1014,17 +1032,20 @@ RSpec.describe 'RunsController' do
               id: run.id,
               type: 'runs',
               attributes: {
-                well_attributes: [
-                  {
-                    id: well.id.to_s, # We receive ids in string format from the ui
-                    row: 'D',
-                    column: '7',
-                    movie_time: 7,
-                    on_plate_loading_concentration: 7.35,
-                    binding_kit_box_barcode: 'DM1117100862200111711_updated',
-                    pools: [pool1.id]
-                  }
-                ]
+                plates_attributes: [{
+                  id: plate.id,
+                  wells_attributes: [
+                    {
+                      id: well.id.to_s, # We receive ids in string format from the ui
+                      row: 'D',
+                      column: '7',
+                      movie_time: 7,
+                      on_plate_loading_concentration: 7.35,
+                      binding_kit_box_barcode: 'DM1117100862200111711_updated',
+                      pool_ids: [pool1.id]
+                    }
+                  ]
+                }]
               }
             }
           }.to_json
@@ -1055,8 +1076,8 @@ RSpec.describe 'RunsController' do
       end
 
       context 'when well is added, removed and updated' do
-        let!(:run) { create(:pacbio_run) }
-        let!(:plate) { create(:pacbio_plate, run:, well_count: 2) }
+        let!(:run) { create(:pacbio_sequel_run, plates: [build(:pacbio_plate, wells: build_list(:pacbio_well, 2))]) }
+        let!(:plate) { run.plates.first }
         let!(:well1) { plate.wells[0] }
         let(:pool1) { create(:pacbio_pool) }
 
@@ -1066,29 +1087,36 @@ RSpec.describe 'RunsController' do
               id: run.id,
               type: 'runs',
               attributes: {
-                well_attributes: [
-                  {
-                    row: 'F',
-                    column: '12',
-                    movie_time: 8,
-                    on_plate_loading_concentration: 8.35,
-                    pre_extension_time: '2',
-                    generate_hifi: 'In SMRT Link',
-                    ccs_analysis_output: 'Yes',
-                    binding_kit_box_barcode: 'DM1117100862200111711',
-                    ccs_analysis_output_include_low_quality_reads: 'Yes',
-                    include_fivemc_calls_in_cpg_motifs: 'Yes',
-                    ccs_analysis_output_include_kinetics_information: 'Yes',
-                    demultiplex_barcodes: 'In SMRT Link',
-                    pools: [pool1.id]
-                  },
-                  {
-                    id: well1.id.to_s,
-                    row: 'D',
-                    column: '7',
-                    pools: [well1.pools[0].id]
-                  }
-                ]
+                plates_attributes: [{
+                  id: plate.id,
+                  wells_attributes: [
+                    {
+                      row: 'F',
+                      column: '12',
+                      movie_time: 8,
+                      on_plate_loading_concentration: 8.35,
+                      pre_extension_time: '2',
+                      generate_hifi: 'In SMRT Link',
+                      ccs_analysis_output: 'Yes',
+                      binding_kit_box_barcode: 'DM1117100862200111711',
+                      ccs_analysis_output_include_low_quality_reads: 'Yes',
+                      include_fivemc_calls_in_cpg_motifs: 'Yes',
+                      ccs_analysis_output_include_kinetics_information: 'Yes',
+                      demultiplex_barcodes: 'In SMRT Link',
+                      pool_ids: [pool1.id]
+                    },
+                    {
+                      id: well1.id.to_s,
+                      row: 'D',
+                      column: '7',
+                      pool_ids: [well1.pools[0].id]
+                    },
+                    {
+                      id: plate.wells[1].id.to_s,
+                      _destroy: true
+                    }
+                  ]
+                }]
               }
             }
           }.to_json
@@ -1129,9 +1157,14 @@ RSpec.describe 'RunsController' do
       end
 
       context 'when pool is added, removed and updated' do
-        let!(:run) { create(:pacbio_run) }
-        let!(:plate) { create(:pacbio_plate, run:, well_count: 2) }
-        let!(:well1) { plate.wells[0] }
+        let!(:run) do
+          create(:pacbio_revio_run, plates: [
+            build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1', pool_count: 5), build(:pacbio_well, row: 'B', column: '1', pool_count: 5)]),
+            build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1', pool_count: 5), build(:pacbio_well, row: 'B', column: '1', pool_count: 5)])
+          ])
+        end
+        let(:plate) { run.plates.first }
+        let(:well1) { plate.wells.first }
         let!(:pool1) { create(:pacbio_pool) }
         let!(:pool2) { create(:pacbio_pool) }
 
@@ -1141,16 +1174,19 @@ RSpec.describe 'RunsController' do
               id: run.id,
               type: 'runs',
               attributes: {
-                well_attributes: [
-                  {
-                    id: run.wells[0].id.to_s,
-                    pools: [well1.pools[0].id, pool1.id]
-                  },
-                  {
-                    id: run.wells[1].id.to_s,
-                    pools: [pool2.id]
-                  }
-                ]
+                plates_attributes: [{
+                  id: plate.id,
+                  wells_attributes: [
+                    {
+                      id: plate.wells.first.id.to_s,
+                      pool_ids: [plate.wells.first.pools[0].id, pool1.id]
+                    },
+                    {
+                      id: plate.wells.second.id.to_s,
+                      pool_ids: [pool2.id]
+                    }
+                  ]
+                }]
               }
             }
           }.to_json
@@ -1170,22 +1206,23 @@ RSpec.describe 'RunsController' do
 
         # Each well previously had 5 pools each
         # Now there are 3 pools
-        # Therefore, WellPool count changed from 10 to 3
+        # Therefore, WellPool count changed from 20 to 13
         it 'does creates a well pool' do
           expect do
             patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-          end.to change(Pacbio::WellPool, :count).from(10).to(3)
+          end.to change(Pacbio::WellPool, :count).from(20).to(13)
         end
 
         it 'updates a well' do
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
           run.reload
-          expect(run.wells.length).to eq 2
-          expect(run.wells[0].pools.length).to eq 2
-          expect(run.wells[0].pools).to include well1.pools[0]
-          expect(run.wells[0].pools).to include pool1
-          expect(run.wells[1].pools.length).to eq 1
-          expect(run.wells[1].pools).to include pool2
+          updated_plate = run.plates.find_by(id: plate.id)
+          expect(updated_plate.wells.length).to eq 2
+          expect(updated_plate.wells[0].pools.length).to eq 2
+          expect(updated_plate.wells[0].pools).to include well1.pools[0]
+          expect(updated_plate.wells[0].pools).to include pool1
+          expect(updated_plate.wells[1].pools.length).to eq 1
+          expect(updated_plate.wells[1].pools).to include pool2
         end
 
         it_behaves_like 'publish_messages_on_update'
@@ -1193,7 +1230,7 @@ RSpec.describe 'RunsController' do
     end
 
     context 'on failure' do
-      let!(:run) { create(:pacbio_run) }
+      let!(:run) { create(:pacbio_revio_run) }
 
       let(:body) do
         {
@@ -1227,8 +1264,8 @@ RSpec.describe 'RunsController' do
   end
 
   describe '#show' do
-    let!(:run) { create(:pacbio_run) }
-    let!(:plate) { create(:pacbio_plate, run:) }
+    let!(:run) { create(:pacbio_revio_run) }
+    let!(:plate) { run.plates.first }
 
     it 'returns the runs' do
       get v1_pacbio_run_path(run), headers: json_api_headers
@@ -1247,23 +1284,22 @@ RSpec.describe 'RunsController' do
       expect(json['data']['id']).to eq(run.id.to_s)
       expect(json['data']['attributes']['state']).to eq(run.state)
       expect(json['data']['attributes']['name']).to eq(run.name)
-      expect(json['data']['attributes']['sequencing_kit_box_barcode']).to eq(run.sequencing_kit_box_barcode)
       expect(json['data']['attributes']['dna_control_complex_box_barcode']).to eq(run.dna_control_complex_box_barcode)
       expect(json['data']['attributes']['system_name']).to eq(run.system_name)
     end
 
     it 'returns the correct relationships' do
-      get "#{v1_pacbio_run_path(run)}?include=plate", headers: json_api_headers
+      get "#{v1_pacbio_run_path(run)}?include=plates", headers: json_api_headers
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
 
-      expect(json['data']['relationships']['plate']).to be_present
-      expect(json['data']['relationships']['plate']['data']['type']).to eq 'plates'
-      expect(json['data']['relationships']['plate']['data']['id']).to eq plate.id.to_s
+      expect(json['data']['relationships']['plates']).to be_present
+      expect(json['data']['relationships']['plates']['data'][0]['type']).to eq 'plates'
+      expect(json['data']['relationships']['plates']['data'][0]['id']).to eq plate.id.to_s
     end
 
     it 'returns the correct includes' do
-      get "#{v1_pacbio_run_path(run)}?include=plate", headers: json_api_headers
+      get "#{v1_pacbio_run_path(run)}?include=plates", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
       json = ActiveSupport::JSON.decode(response.body)
@@ -1274,11 +1310,7 @@ RSpec.describe 'RunsController' do
   end
 
   describe '#destroy' do
-    let!(:run) { create(:pacbio_run) }
-
-    before do
-      create(:pacbio_plate, run:)
-    end
+    let!(:run) { create(:pacbio_sequel_run) }
 
     context 'on success' do
       it 'returns the correct status' do
@@ -1313,7 +1345,7 @@ RSpec.describe 'RunsController' do
     let(:well1)   { create(:pacbio_well_with_pools) }
     let(:well2)   { create(:pacbio_well_with_pools) }
     let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
-    let(:run)     { create(:pacbio_run, smrt_link_version: version10, plate:) }
+    let(:run)     { create(:pacbio_run, smrt_link_version: version10, plates: [plate]) }
 
     after { FileUtils.rm_rf("#{run.name}.csv") }
 
@@ -1327,7 +1359,7 @@ RSpec.describe 'RunsController' do
       expect(response.header['Content-Type']).to include 'text/csv'
     end
 
-    it 'the attached csv file is named after the run its assoicated with' do
+    it 'the attached csv file is named after the run its associated with' do
       get v1_pacbio_run_sample_sheet_path(run).to_s, headers: json_api_headers
       expect(response.header['Content-Disposition']).to include "#{run.name}.csv"
     end

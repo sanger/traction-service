@@ -17,4 +17,12 @@ RSpec.describe Pacbio::Plate, pacbio: true do
   it 'must have a run' do
     expect(build(:pacbio_plate, run: nil)).not_to be_valid
   end
+
+  it 'must have a sequencing kit box barcode' do
+    expect(build(:pacbio_plate, sequencing_kit_box_barcode: nil)).not_to be_valid
+  end
+
+  it 'must have a plate number' do
+    expect(build(:pacbio_plate, plate_number: nil)).not_to be_valid
+  end
 end

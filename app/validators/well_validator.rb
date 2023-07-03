@@ -2,8 +2,6 @@
 
 # Failed validations return unprocessable_entity
 class WellValidator < ActiveModel::Validator
-  include ActiveModel::Validations
-
   def validate(record)
     # return unless there are multiple libraries
     return unless record.pools.map(&:libraries).flatten.many?
