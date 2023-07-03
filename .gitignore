@@ -17,6 +17,9 @@
 !/log/.keep
 !/tmp/.keep
 
+# Ignore all test related files
+lcov.info
+
 # Ignore uploaded files in development
 /storage/*
 !/storage/.keep
