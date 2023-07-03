@@ -61,15 +61,15 @@ RSpec.describe 'SampleSheet', type: :model do
       column = sample_sheet_configuration.columns.children['Plate 1']
       expect(column).to be_present
       expect(column.fetch('type')).to eq(:model)
-      expect(column.fetch('value')).to eq('plate.sequencing_kit_box_barcode')
+      expect(column.fetch('value')).to eq('sequencing_kit_box_barcode_plate_1')
       expect(column.fetch('populate')).to eq(populate)
     end
 
     it 'will not have a plate-2' do
       column = sample_sheet_configuration.columns.children['Plate 2']
       expect(column).to be_present
-      expect(column.fetch('type')).to eq(:string)
-      expect(column.fetch('value')).to be_nil
+      expect(column.fetch('type')).to eq(:model)
+      expect(column.fetch('value')).to eq('sequencing_kit_box_barcode_plate_2')
       expect(column.fetch('populate')).to eq(populate)
     end
 
@@ -129,8 +129,8 @@ RSpec.describe 'SampleSheet', type: :model do
     it 'will not have a plate-1' do
       column = sample_sheet_configuration.columns.children['Plate 1']
       expect(column).to be_present
-      expect(column.fetch('type')).to eq(:string)
-      expect(column.fetch('value')).to be_nil
+      expect(column.fetch('type')).to eq(:model)
+      expect(column.fetch('value')).to eq('sequencing_kit_box_barcode_plate_1')
       expect(column.fetch('populate')).to eq(populate)
     end
 
@@ -138,7 +138,7 @@ RSpec.describe 'SampleSheet', type: :model do
       column = sample_sheet_configuration.columns.children['Plate 2']
       expect(column).to be_present
       expect(column.fetch('type')).to eq(:model)
-      expect(column.fetch('value')).to eq('plate.sequencing_kit_box_barcode')
+      expect(column.fetch('value')).to eq('sequencing_kit_box_barcode_plate_2')
       expect(column.fetch('populate')).to eq(populate)
     end
 

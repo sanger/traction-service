@@ -70,6 +70,7 @@ default: &default
                   type: :model
                   value: pool.tube.barcode
 
+    # For instructions on structure and syntax, see: 'app/csv_generator/pacbio_sample_sheet.rb'
     sample_sheet:
       v10:
         columns:
@@ -442,14 +443,14 @@ default: &default
               with: :well
           Plate 1:
             type: :model
-            value: plate.sequencing_kit_box_barcode
+            value: sequencing_kit_box_barcode_plate_1
             populate:
               for:
                 - :well
               with: :well
           Plate 2:
-            type: :string
-            value: null
+            type: :model
+            value: sequencing_kit_box_barcode_plate_2
             populate:
               for:
                 - :well
