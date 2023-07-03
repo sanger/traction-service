@@ -11,21 +11,26 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
   let(:config)        { Pipelines.configure(Pipelines.load_yaml) }
   let(:pacbio_config) { config.pacbio }
   let(:revio_run)     { create(:pacbio_revio_run) }
-  let(:sequel_run)    { create(:pacbio_sequel_run) }
-  let(:message)       { Messages::Message.new(object: revio_run, configuration: pacbio_config.message) }
+  let(:revio_message) { Messages::Message.new(object: revio_run, configuration: pacbio_config.message) }
 
-  # test run with multiple plates, with multiple wells
+  # let(:sequel_run)    { create(:pacbio_sequel_run) }
+  # let(:sequel_message) { Messages::Message.new(object: sequel_run, configuration: pacbio_config.message) }
+
+  # TODO: test run with multiple plates, with multiple wells
 
   it 'has a lims' do
-    expect(message.content[:lims]).to eq(pacbio_config.lims)
+    expect(revio_message.content[:lims]).to eq(pacbio_config.lims)
+    # expect(sequel_message.content[:lims]).to eq(pacbio_config.lims)
   end
 
   it 'has a key' do
-    expect(message.content[pacbio_config.key]).not_to be_empty
+    expect(revio_message.content[pacbio_config.key]).not_to be_empty
+    # expect(sequel_message.content[pacbio_config.key]).not_to be_empty
   end
 
   describe 'key' do
-    let(:key) { message.content[pacbio_config.key] }
+    let(:revio_key) { revio_message.content[pacbio_config.key] }
+    # let(:sequel_key) { sequel_message.content[pacbio_config.key] }
 
     let(:timestamp) { Time.zone.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
 
@@ -34,30 +39,37 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
     end
 
     it 'must have a id_pac_bio_run_lims' do
-      expect(key[:id_pac_bio_run_lims]).to eq(revio_run.name)
+      expect(revio_key[:id_pac_bio_run_lims]).to eq(revio_run.name)
+      # expect(sequel_key[:id_pac_bio_run_lims]).to eq(sequel_run.name)
     end
 
     it 'must have a pac_bio_run_uuid' do
-      expect(key[:pac_bio_run_uuid]).to eq(revio_run.uuid)
+      expect(revio_key[:pac_bio_run_uuid]).to eq(revio_run.uuid)
+      # expect(sequel_key[:pac_bio_run_uuid]).to eq(sequel_run.uuid)
     end
 
     it 'must have a pac_bio_run_name' do
-      expect(key[:pac_bio_run_name]).to eq(revio_run.name)
+      expect(revio_key[:pac_bio_run_name]).to eq(revio_run.name)
+      # expect(sequel_key[:pac_bio_run_name]).to eq(sequel_run.name)
     end
 
     it 'must have a last_updated field' do
-      expect(key[:last_updated]).to eq(timestamp)
+      expect(revio_key[:last_updated]).to eq(timestamp)
+      # expect(sequel_key[:last_updated]).to eq(timestamp)
     end
 
     context 'wells' do
       let(:plate_well) { revio_run.plates.first.wells.first }
-      let(:message_well) { key[:wells].first }
+      let(:message_well) { revio_key[:wells].first }
+      # let(:sequel_message_well) { sequel_key[:wells].first }
 
       it 'will have the correct number' do
-        expect(key[:wells].length).to eq(revio_run.wells.count)
+        expect(revio_key[:wells].length).to eq(revio_run.wells.count)
+        # expect(sequel_key[:wells].length).to eq(sequel_run.wells.count)
       end
 
       context 'each' do
+        # TODO: check each well for revio run
         it 'must have a plate number' do
           expect(message_well[:plate_number]).to eq(plate_well.plate.plate_number)
         end
@@ -76,12 +88,13 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
       end
 
       context 'samples' do
+        # TODO: check each sample for revio run
         let(:libraries) { create_list(:pacbio_library, 5, :tagged) }
+        let(:library) { libraries.first }
         let(:pool) { create(:pacbio_pool, libraries:) }
         let(:request) { library.request }
         let(:message_sample) { message_well[:samples].first }
         let(:request_library) { requests.first }
-        let(:library) { libraries.first }
 
         before do
           plate_well.pools = [pool]
