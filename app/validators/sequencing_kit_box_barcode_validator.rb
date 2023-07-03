@@ -1,11 +1,18 @@
 # frozen_string_literal: true
 
-# Failed validations return unprocessable_entity
-class PacbioRevioPlateValidator < ActiveModel::Validator
-  def validate(record)
-    # return unless the run is a Revio run
-    return unless record.run.present? && record.run.system_name == 'Revio'
+# Validator for sequencing kit box barcodes
+# Validates the sequencing kit box barcodes for Revio runs
+class SequencingKitBoxBarcodeValidator < ActiveModel::Validator
+  attr_reader :options
 
+  # @param [Hash] options
+  # @option options [Integer] :max_number_of_plates
+  def initialize(options)
+    super
+    @options = options
+  end
+
+  def validate(record)
     existing_plates = Pacbio::Plate.where(
       sequencing_kit_box_barcode: record.sequencing_kit_box_barcode
     ).where.not(id: record.id)
@@ -23,9 +30,11 @@ class PacbioRevioPlateValidator < ActiveModel::Validator
   end
 
   def validate_sequencing_kit_box_barcode_count(record, existing_plates)
-    return unless existing_plates.count > 1
+    return unless existing_plates.count >= options[:max_number_of_plates]
 
-    record.errors.add(:sequencing_kit_box_barcode, 'has already been used on 2 plates')
+    record.errors
+          .add(:plates,
+               'sequencing kit box barcode has already been used on 2 plates')
   end
 
   def validate_sequencing_kit_box_barcode_positions(record, existing_plates)
@@ -35,7 +44,7 @@ class PacbioRevioPlateValidator < ActiveModel::Validator
 
     positions = common_positions.join(',')
     record.errors
-          .add(:wells,
+          .add(:plates,
                "#{positions} have already been used for plate #{record.sequencing_kit_box_barcode}")
   end
 end

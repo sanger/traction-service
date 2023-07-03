@@ -15,6 +15,5 @@ module Pacbio
     # we maybe still need this in case someone tries to create a
     # non sequel IIe or Revio run
     validates :sequencing_kit_box_barcode, :plate_number, presence: true
-    validates_with PacbioRevioPlateValidator
   end
 end
