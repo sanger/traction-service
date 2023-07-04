@@ -38,7 +38,7 @@ class SequencingKitBoxBarcodeValidator < ActiveModel::Validator
 
     record
       .errors.add(:plates,
-                  "sequencing kit box barcode has already been used on " +
+                  'sequencing kit box barcode has already been used on ' \
                   "#{options[:max_number_of_plates]} plates")
   end
 
