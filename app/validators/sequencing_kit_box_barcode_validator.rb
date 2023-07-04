@@ -29,17 +29,28 @@ class SequencingKitBoxBarcodeValidator < ActiveModel::Validator
     end
   end
 
+  # @param [Plate] record
+  # @param [Array<Plate>] existing_plates
+  # For a given sequencing kit box barcode, check if the number of plates is less than the max
+  # number of plates allowed
   def validate_sequencing_kit_box_barcode_count(record, existing_plates)
     return unless existing_plates.count >= options[:max_number_of_plates]
 
-    record.errors
-          .add(:plates,
-               'sequencing kit box barcode has already been used on 2 plates')
+    record
+      .errors.add(:plates,
+                  "sequencing kit box barcode has already been used on " +
+                  "#{options[:max_number_of_plates]} plates")
   end
 
+  # @param [Plate] record
+  # @param [Array<Plate>] existing_plates
+  # For a given sequencing kit box barcode, check if the positions have already been used
   def validate_sequencing_kit_box_barcode_positions(record, existing_plates)
-    common_positions = existing_plates.map(&:wells)
-                                      .flatten.map(&:position) & record.wells.map(&:position)
+    # Only compare wells which are not marked for destruction
+    record_wells = record.wells.filter { |rec| !rec.marked_for_destruction? }
+    # Get the common positions between the existing plates and the record wells
+    common_positions = existing_plates.map(&:wells).flatten.map(&:position) &
+                       record_wells.map(&:position)
     return unless common_positions.any?
 
     positions = common_positions.join(',')
