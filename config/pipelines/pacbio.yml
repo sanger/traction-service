@@ -70,6 +70,7 @@ default: &default
                   type: :model
                   value: pool.tube.barcode
 
+    # For instructions on structure and syntax, see: 'app/csv_generator/README.md'
     sample_sheet:
       v10:
         columns:

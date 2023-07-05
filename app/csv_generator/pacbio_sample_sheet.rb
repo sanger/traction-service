@@ -2,6 +2,7 @@
 
 # PacbioSampleSheet
 # Used to generate sample sheets specific to the Pacbio pipeline
+# For usage documentation see 'app/csv_generator/README.md'
 class PacbioSampleSheet
   include ActiveModel::Model
 
@@ -70,28 +71,7 @@ class PacbioSampleSheet
   # well position is different. It would be really difficult to get that from sample.
   # populate[:for] is either sample or well
   # populate[:with] is either row_type (sample or well), sample or well
-  # Examples:
-  # +Is Collection:
-  # type: :model
-  # value: collection?
-  # populate:
-  #   for:
-  #     - :well
-  #     - :sample
-  #   with: :row_type+
-  # means that is collection needs to be populated for samples and wells
-  # but needs to use the method from sample or well as the answers are different
-  # +Sample Well:
-  # type: :model
-  # value: position_leading_zero
-  # populate:
-  #   for:
-  #     - :well
-  #     - :sample
-  #   with: :well+
-  # means that sample well needs to be populated for both samples and wells
-  # but needs to use the well method
-  # hopefully that is enough of an explanation!
+  # For usage documentation see 'app/csv_generator/README.md'
   # @param [hash] options can include:
   #  - well: the well data that is being added to the row
   #  - sample: the sample data that is being added to the row
