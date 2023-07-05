@@ -2,6 +2,7 @@
 
 # OntSampleSheet
 # Used to generate sample sheets specific to the ONT pipeline
+# For usage documentation see 'app/csv_generator/README.md'
 class OntSampleSheet
   include ActiveModel::Model
 
@@ -51,28 +52,7 @@ class OntSampleSheet
   # some columns need populating for both types with the same method (polymorphism).
   # populate[:for] is either sample or flowcell
   # populate[:with] is either row_type (sample or flowcell), sample or flowcell
-  # Examples:
-  # +Is Collection:
-  # type: :model
-  # value: collection?
-  # populate:
-  #   for:
-  #     - :flowcell
-  #     - :sample
-  #   with: :row_type+
-  # means that is collection needs to be populated for samples and flowcells
-  # but needs to use the method from sample or flowcell as the answers are different
-  # +Sample flowcell:
-  # type: :model
-  # value: position_leading_zero
-  # populate:
-  #   for:
-  #     - :flowcell
-  #     - :sample
-  #   with: :flowcell+
-  # means that sample flowcell needs to be populated for both samples and flowcells
-  # but needs to use the flowcell method
-  # hopefully that is enough of an explanation!
+  # For usage documentation see 'app/csv_generator/README.md'
   # @param [hash] options can include:
   #  - flowcell: the flowcell data that is being added to the row
   #  - sample: the sample data that is being added to the row
