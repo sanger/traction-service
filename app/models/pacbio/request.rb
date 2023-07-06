@@ -35,5 +35,10 @@ module Pacbio
     def sequencing_plates
       libraries.collect(&:sequencing_plates).flatten.uniq
     end
+
+    # @return [Array] of Runs that the request is used in
+    def sequencing_runs
+      libraries.collect(&:sequencing_plates).flatten.collect(&:run).uniq
+    end
   end
 end
