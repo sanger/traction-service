@@ -38,8 +38,24 @@ RSpec.describe 'RakeTasks' do
     it 'creates the correct number of runs' do
       Rake::Task['tags:create:pacbio_sequel'].reenable
       Rake::Task['tags:create:pacbio_isoseq'].reenable
-      Rake::Task['pacbio_data:create'].invoke
-      expect(Pacbio::Run.count).to eq(6)
+      expect { Rake::Task['pacbio_data:create'].invoke }
+        .to output(
+          "-> Creating Sequel_16_barcodes_v3 tag set and tags\n" \
+          "-> Tag Set successfully created\n" \
+          "-> Sequel_16_barcodes_v3 tags successfully created\n" \
+          "-> Creating Pacbio IsoSeq tag set and tags\n" \
+          "-> Tag Set successfully created\n" \
+          "-> IsoSeq_Primers_12_Barcodes_v1 created\n" \
+          "-> Creating pacbio plates and tubes...\b\b\b √ \n" \
+          "-> Creating pacbio libraries...\b\b\b √ \n" \
+          "-> Finding Pacbio SMRT Link versions...\b\b\b √ \n" \
+          "-> Creating pacbio runs:\n   " \
+          "-> Creating runs for v11...\b\b\b √ \n   " \
+          "-> Creating runs for v12_revio...\b\b\b √ \n" \
+          "-> Pacbio runs successfully created\n"
+        ).to_stdout
+      expect(Pacbio::Run.count)
+        .to eq(12)
     end
   end
 
@@ -244,9 +260,37 @@ RSpec.describe 'RakeTasks' do
       end
     end
 
+    it 'creates smrt link versions and options for v12_revio' do
+      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
+      Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].invoke
+
+      version = Pacbio::SmrtLinkVersion.find_by(name: 'v12_revio', default: false, active: true)
+      expect(version).not_to be_nil
+      expect(version.smrt_link_options).not_to be_nil
+      expect(version.default).to be false
+      expect(version.active).to be true
+
+      keys = %w[
+        ccs_analysis_output_include_low_quality_reads
+        ccs_analysis_output_include_kinetics_information
+        include_fivemc_calls_in_cpg_motifs
+        on_plate_loading_concentration
+        binding_kit_box_barcode
+        pre_extension_time
+        loading_target_p1_plus_p2
+        movie_time
+      ]
+
+      keys.each do |key|
+        obj = version.smrt_link_options.where(key:)
+        expect(obj).not_to be_nil
+      end
+    end
+
     it 'sets pacbio smrt link versions' do
       run10 = create(:pacbio_run, system_name: 0, smrt_link_version_deprecated: 'v10')
       run11 = create(:pacbio_run, system_name: 0, smrt_link_version_deprecated: 'v11')
+      run12_revio = create(:pacbio_run, system_name: 0, smrt_link_version_deprecated: 'v12_revio')
 
       Rake::Task['smrt_link_versions:create'].reenable
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
@@ -254,6 +298,7 @@ RSpec.describe 'RakeTasks' do
 
       run10.reload
       run11.reload
+      run12_revio.reload
 
       expect(run10.smrt_link_version).not_to be_nil
       expect(run10.smrt_link_version.name).to eq('v10')
