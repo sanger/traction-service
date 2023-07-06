@@ -156,7 +156,6 @@ RSpec.describe 'RequestsController', pacbio: true do
   end
 
   describe '#update' do
-    # let(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
     let!(:pool)      { create(:pacbio_pool) }
     let(:well)       { create(:pacbio_well, pools: [pool]) }
     let!(:request)   { pool.requests.first }
