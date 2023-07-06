@@ -43,85 +43,56 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
   end
 
   shared_examples 'check the plate wells' do
-    it 'will have the correct number' do
+    it 'will have the correct number of wells for each plate' do
       expect(key[:wells].length).to eq(run.wells.count)
     end
   end
 
   shared_examples 'check each well' do
-    it 'must have the' do
-      expect(message_well[:well_label]).to eq(well.position)
-    end
-
-    it 'must have a plate number' do
-      expect(message_well[:plate_number]).to eq(well.plate.plate_number)
-    end
-
-    it 'must have a well label' do
-      expect(message_well[:well_label]).to eq(well.position)
-    end
-
-    it 'must have a well uuid lims' do
-      expect(message_well[:well_uuid_lims]).to eq(well.uuid)
+    it 'must have the message well information' do
+      message_wells.each_with_index do |message_well, index|
+        expect(message_well[:plate_number]).to eq(wells[index].plate.plate_number)
+        expect(message_well[:plate_uuid_lims]).to eq(wells[index].plate.uuid)
+        expect(message_well[:well_label]).to eq(wells[index].position)
+        expect(message_well[:well_uuid_lims]).to eq(wells[index].uuid)
+      end
     end
   end
 
   shared_examples 'check the plate samples' do
-    it 'will have the correct number' do
-      expect(message_well[:samples].length).to eq(5)
+    it 'will have the correct number of samples for each well' do
+      message_wells.each do |message_well|
+        message_samples = message_well[:samples]
+        expect(message_samples.length).to eq(5)
+      end
     end
   end
 
   shared_examples 'check each sample' do
-    let(:library) { well.libraries.first }
-    let(:request) { library.request }
+    it 'must have the message sample information' do
+      message_wells.each_with_index do |message_well, well_index|
+        well = wells[well_index]
 
-    it 'must have a cost code' do
-      expect(message_sample[:cost_code]).to eq(request.cost_code)
-    end
+        message_samples = message_well[:samples]
 
-    it 'must have a library tube id' do
-      expect(message_sample[:pac_bio_library_tube_id_lims]).to eq(library.id)
-    end
+        message_samples.each_with_index do |message_sample, sample_index|
+          library = well.libraries[sample_index]
+          request = library.request
 
-    it 'must have a well uuid lims' do
-      expect(message_sample[:pac_bio_library_tube_uuid]).to eq(library.uuid)
-    end
-
-    it 'must have a sample name' do
-      expect(message_sample[:pac_bio_library_tube_name]).to eq(request.sample_name)
-    end
-
-    it 'can have a pool barcode' do
-      expect(message_sample[:pac_bio_library_tube_barcode]).to eq(library.pool.tube.barcode)
-    end
-
-    it 'must have a sample_uuid' do
-      expect(message_sample[:sample_uuid]).to eq(request.sample.external_id)
-    end
-
-    it 'must have a study_uuid' do
-      expect(message_sample[:study_uuid]).to eq(request.external_study_id)
-    end
-
-    it 'can have a tag sequence' do
-      expect(message_sample[:tag_sequence]).to eq(library.tag.oligo)
-    end
-
-    it 'can have a tag group id' do
-      expect(message_sample[:tag_set_id_lims]).to eq(library.tag.tag_set.id)
-    end
-
-    it 'can have a tag identifier' do
-      expect(message_sample[:tag_identifier]).to eq(library.tag.group_id)
-    end
-
-    it 'can have a tag set name' do
-      expect(message_sample[:tag_set_name]).to eq(library.tag.tag_set.name)
-    end
-
-    it 'can have a pipeline id' do
-      expect(message_sample[:pipeline_id_lims]).to eq(request.library_type)
+          expect(message_sample[:cost_code]).to eq(request.cost_code)
+          expect(message_sample[:pac_bio_library_tube_id_lims]).to eq(library.id)
+          expect(message_sample[:pac_bio_library_tube_uuid]).to eq(library.uuid)
+          expect(message_sample[:pac_bio_library_tube_name]).to eq(request.sample_name)
+          expect(message_sample[:pac_bio_library_tube_barcode]).to eq(library.pool.tube.barcode)
+          expect(message_sample[:sample_uuid]).to eq(request.sample.external_id)
+          expect(message_sample[:study_uuid]).to eq(request.external_study_id)
+          expect(message_sample[:tag_sequence]).to eq(library.tag.oligo)
+          expect(message_sample[:tag_set_id_lims]).to eq(library.tag.tag_set.id)
+          expect(message_sample[:tag_identifier]).to eq(library.tag.group_id)
+          expect(message_sample[:tag_set_name]).to eq(library.tag.tag_set.name)
+          expect(message_sample[:pipeline_id_lims]).to eq(request.library_type)
+        end
+      end
     end
   end
 
@@ -133,13 +104,8 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
     let(:message)        { Messages::Message.new(object: run, configuration: pacbio_config.message) }
     let(:key)            { message.content[pacbio_config.key] }
 
-    let(:message_well)   { key[:wells][0] }
-    let(:message_sample) { message_well[:samples][0] }
-    let(:well)           { run.plates[0].wells[0] }
-
-    before do
-      well.pools = [pool]
-    end
+    let(:message_wells)  { key[:wells] }
+    let(:wells)          { run.plates[0].wells }
 
     it_behaves_like 'check the high level content'
     it_behaves_like 'check the keys'
@@ -157,13 +123,8 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
     let(:message)        { Messages::Message.new(object: run, configuration: pacbio_config.message) }
     let(:key)            { message.content[pacbio_config.key] }
 
-    let(:message_well)   { key[:wells][0] }
-    let(:message_sample) { message_well[:samples][0] }
-    let(:well)           { run.plates[0].wells[0] }
-
-    before do
-      well.pools = [pool]
-    end
+    let(:message_wells)  { key[:wells] }
+    let(:wells)          { [run.plates[0].wells, run.plates[1].wells].flatten }
 
     it_behaves_like 'check the high level content'
     it_behaves_like 'check the keys'
