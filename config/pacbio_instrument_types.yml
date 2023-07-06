@@ -102,6 +102,7 @@ default: &default
               - [D1]
           sequencing_kit_box_barcode:
             options:
+              exclude_marked_for_destruction: true
               max_number_of_plates: 2
 
 development: *default

@@ -3,6 +3,8 @@
 # Validator for sequencing kit box barcodes
 # Validates the sequencing kit box barcodes for Revio runs
 class SequencingKitBoxBarcodeValidator < ActiveModel::Validator
+  include HasFilters
+
   attr_reader :options
 
   # @param [Hash] options
@@ -46,8 +48,8 @@ class SequencingKitBoxBarcodeValidator < ActiveModel::Validator
   # @param [Array<Plate>] existing_plates
   # For a given sequencing kit box barcode, check if the positions have already been used
   def validate_sequencing_kit_box_barcode_positions(record, existing_plates)
-    # Only compare wells which are not marked for destruction
-    record_wells = record.wells.filter { |rec| !rec.marked_for_destruction? }
+    # filter wells based on exclusions
+    record_wells = filtered(record.wells)
     # Get the common positions between the existing plates and the record wells
     common_positions = existing_plates.map(&:wells).flatten.map(&:position) &
                        record_wells.map(&:position)
