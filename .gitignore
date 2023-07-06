@@ -17,6 +17,10 @@
 !/log/.keep
 !/tmp/.keep
 
+# Ignore all test related files
+/coverage/*
+lcov.info
+
 # Ignore uploaded files in development
 /storage/*
 !/storage/.keep
@@ -43,3 +47,6 @@ doc/
 
 # talisman
 .talismanrc
+
+# Custom editor ignores
+.vscode/settings.json
