@@ -14,6 +14,7 @@ RSpec.describe InstrumentTypeValidator do
     it 'Sequel IIe and Revio should both exclude records marked for destruction from limits validation' do
       expect(instrument_types['sequel_iie']['models']['plates']['validations']['limits']['options']['exclude_marked_for_destruction']).to be_truthy
       expect(instrument_types['revio']['models']['plates']['validations']['limits']['options']['exclude_marked_for_destruction']).to be_truthy
+      expect(instrument_types['revio']['models']['wells']['validations']['sequencing_kit_box_barcode']['options']['exclude_marked_for_destruction']).to be_truthy
     end
 
     context 'run' do
