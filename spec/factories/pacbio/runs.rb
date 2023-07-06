@@ -19,7 +19,7 @@ FactoryBot.define do
 
     factory :pacbio_revio_run do
       transient do
-        well_positions_plate_1 { ['A1'] }
+        well_positions_plate_1 { ['A1', 'B1'] }
         well_positions_plate_2 { ['A1'] }
       end
 
