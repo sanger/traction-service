@@ -2,7 +2,6 @@
 
 require 'rails_helper'
 
-# TODO: add multiple wells to the plates
 RSpec.describe 'PacBio', pacbio: true, type: :model do
   let(:timestamp) { Time.zone.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
   let(:pacbio_config) { Pipelines.configure(Pipelines.load_yaml).pacbio }
