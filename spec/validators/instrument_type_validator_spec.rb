@@ -14,6 +14,7 @@ RSpec.describe InstrumentTypeValidator do
     it 'Sequel IIe and Revio should both exclude records marked for destruction from limits validation' do
       expect(instrument_types['sequel_iie']['models']['plates']['validations']['limits']['options']['exclude_marked_for_destruction']).to be_truthy
       expect(instrument_types['revio']['models']['plates']['validations']['limits']['options']['exclude_marked_for_destruction']).to be_truthy
+      expect(instrument_types['revio']['models']['wells']['validations']['sequencing_kit_box_barcode']['options']['exclude_marked_for_destruction']).to be_truthy
     end
 
     context 'run' do
@@ -99,6 +100,16 @@ RSpec.describe InstrumentTypeValidator do
           instrument_type_validator.validate(run)
           expect(run.errors.messages[:plates]).to include("plate #{plate.plate_number} #{attribute} can't be blank")
         end
+      end
+
+      it 'validates sequencing_kit_box_barcode' do
+        create(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, plate_number: 1, sequencing_kit_box_barcode: '1234', wells: [build(:pacbio_well, row: 'A', column: '1')])])
+        create(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, plate_number: 1, sequencing_kit_box_barcode: '1234', wells: [build(:pacbio_well, row: 'B', column: '1')])])
+
+        run = build(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, plate_number: 1, sequencing_kit_box_barcode: '1234', wells: [build(:pacbio_well, row: 'A', column: '1')])])
+        instrument_type_validator = described_class.new(instrument_types:)
+        instrument_type_validator.validate(run)
+        expect(run.errors.messages[:plates]).to include('plate 1 plates sequencing kit box barcode has already been used on 2 plates')
       end
     end
 
