@@ -8,7 +8,7 @@ module Pipelines
   # In order to maintain consistent numbering, this has been pulled out into
   # a constant. Please do *not* remove entries from this list, as it could
   # result in legacy data being reassigned to the incorrect pipelines
-  ENUMS = { pacbio: 0, ont: 1, saphyr: 2, qc_result: 3 }.freeze
+  NAMES = { pacbio: 0, ont: 1, saphyr: 2, qc_result: 3 }.freeze
   HANDLERS = {
     pacbio: Pacbio,
     ont: Ont,
@@ -35,7 +35,7 @@ module Pipelines
 
   # create methods for each pipeline so can use Pipelines.pipeline_name
   # instead of Pipelines.configuration.pipeline_name
-  ENUMS.each do |k, _v|
+  NAMES.each do |k, _v|
     self.class.send(:define_method, k, proc { configuration.send(k) })
   end
 
