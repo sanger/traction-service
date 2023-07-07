@@ -59,12 +59,14 @@ module Pipelines
     send(pipeline.to_s.downcase)
   end
 
-  # Finds all the config files stored in config/pipelines and merges them into a hash
+  # Load config files that match the name of a pipeline and merge them into the config hash
   def self.load_yaml
     config = {}
-    Dir.children(PIPELINES_DIR).each do |pipeline_file|
-      config.merge!(YAML.load_file("#{PIPELINES_DIR}/#{pipeline_file}",
-                                   aliases: true)[Rails.env].symbolize_keys)
+    Dir.glob("#{PIPELINES_DIR}/*.yml").each do |pipeline_file|
+      pipeline_name = File.basename(pipeline_file, '.*')
+      next unless NAMES.keys.include?(pipeline_name.to_sym)
+
+      config.merge!(YAML.load_file(pipeline_file, aliases: true)[Rails.env].symbolize_keys)
     end
     config
   end
