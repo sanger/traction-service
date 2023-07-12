@@ -6,8 +6,10 @@ RSpec.describe PacbioSampleSheetV12Revio do
   before { create(:pacbio_smrt_link_version, name: 'v12', default: true) }
 
   context "when the tagging doesn't matter" do
+    let!(:sample_sheet_compiler) { described_class.new(nil) } # empty run, we are only interested in the headers
+
     it 'generates the header for the version' do
-      headers = described_class.generate_headers
+      headers = sample_sheet_compiler.generate_headers
       expect(headers).to eql([
         'Library Type',
         'Reagent Plate',
@@ -42,6 +44,7 @@ RSpec.describe PacbioSampleSheetV12Revio do
     end
     let(:plate) { create(:pacbio_plate, wells: [well1, well2]) }
     let!(:run) { create(:pacbio_run, plates: [plate]) }
+    let!(:sample_sheet_compiler) { described_class.new(run:) }
 
     it 'returns the row array based on the column config' do
       args = {
@@ -52,7 +55,7 @@ RSpec.describe PacbioSampleSheetV12Revio do
         library: well1.libraries.first
       }
 
-      row = described_class.generate_row(args)
+      row = sample_sheet_compiler.generate_row(args)
 
       expect(row).to eq([
         '',
@@ -90,6 +93,7 @@ RSpec.describe PacbioSampleSheetV12Revio do
     end
     let(:plate) { create(:pacbio_plate, wells: [well1, well2]) }
     let!(:run) { create(:pacbio_run, plates: [plate]) }
+    let!(:sample_sheet_compiler) { described_class.new(run:) }
 
     it 'returns the row array based on the column config' do
       args = {
@@ -100,7 +104,7 @@ RSpec.describe PacbioSampleSheetV12Revio do
         #  note the lack of `library`
       }
 
-      row = described_class.generate_row(args)
+      row = sample_sheet_compiler.generate_row(args)
 
       expect(row).to eq([
         'Revio',
