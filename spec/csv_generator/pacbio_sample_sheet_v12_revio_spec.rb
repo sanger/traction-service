@@ -63,15 +63,15 @@ RSpec.describe PacbioSampleSheetV12Revio do
         'Sequel IIe',
         'A Run Comment',
         true,
-        'A01',
+        well1.position_leading_zero,
         well1.pool_barcode,
         15,
         'True',
-        10.1,
-        'DM1117100862200111711',
+        well1.library_concentration,
+        well1.polymerase_kit,
         'ExtensionTime=double:2|ExtendFirst=boolean:True',
-        '6',
-        '6--6',
+        well1.barcode_set,
+        well1.libraries.first.barcode_name,
         ''
       ])
     end
@@ -111,16 +111,16 @@ RSpec.describe PacbioSampleSheetV12Revio do
         'Sequel IIe',
         'A Run Comment',
         true,
-        'A03',
+        well1.position_leading_zero,
         well1.pool_barcode,
         15,
         'True',
-        10.3,
-        'DM1117100862200111713',
+        well1.library_concentration,
+        well1.polymerase_kit,
         'ExtensionTime=double:2|ExtendFirst=boolean:True',
         '',
         '',
-        'Sample21'
+        well1.find_sample_name
       ])
     end
   end
