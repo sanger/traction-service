@@ -11,16 +11,11 @@ class PacbioSampleSheetCompiler
     @run = run
   end
 
-  # Returns a flattened array of wells from the multiple plates within a run
-  def wells
-    @run.plates.flat_map(&:wells)
-  end
-
-  # Returns a list of wells associated with the plate in column order
+  # Returns a list of wells associated with the plates in column order
   # Example: [<Well position:'A1'>, <Well position:'A2'>, <Well position:'B1'>]) =>
   #          [<Well position:'A1'>, <Well position:'B1'>, <Well position:'A2'>]
   def sorted_wells
-    wells.sort_by { |well| [well.column.to_i, well.row] }
+    @run.wells.sort_by { |well| [well.column.to_i, well.row] }
   end
 
   def csv_sample_rows(well)
@@ -51,12 +46,25 @@ class PacbioSampleSheetCompiler
 
       csv << csv_headers
 
-      sorted_wells.each do |_well|
-        row = self.class::COLUMN_CONFIG.values.map { |value| value.call(c) }
+      sorted_wells.each do |well|
+        args = {
+          context: :well,
+          run: @run,
+          plate: well.plate,
+          well:,
+          library: nil
+        }
 
-        # next unless well.show_row_per_sample?
+        well_row = generate_row(args)
+        csv << well_row
 
-        # csv_sample_rows(well).each { |sample_row| csv << sample_row }
+        next unless well.show_row_per_sample?
+
+        well.libraries.map do |library|
+          args[:library] = library # set library value
+          library_row = generate_row(args)
+          csv << library_row
+        end
       end
     end
   end
