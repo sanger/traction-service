@@ -49,9 +49,20 @@ module Pacbio
     end
 
     # returns sample sheet csv for a Pacbio::Run
-    # using pipelines.yml configuration to generate data
+    # using class-config in `app/csv_generator/` to generate data
     def generate_sample_sheet
-      sample_sheet = PacbioSampleSheet.new(run: self, configuration: pacbio_run_sample_sheet_config)
+      case smrt_link_version.name
+      when 'v10'
+        sample_sheet = PacbioSampleSheetV10.new(self)
+      when 'v11'
+        sample_sheet = PacbioSampleSheet.new(run: self,
+                                             configuration: pacbio_run_sample_sheet_config)
+      when 'v12_revio'
+        sample_sheet = PacbioSampleSheetV12Revio.new(self)
+      else
+        sample_sheet = PacbioSampleSheet.new(run: self,
+                                             configuration: pacbio_run_sample_sheet_config)
+      end
       sample_sheet.generate
     end
 
