@@ -190,6 +190,13 @@ RSpec.describe Pacbio::Well, pacbio: true do
         end
       end
 
+      it 'must have a sequencing kit box barcode for plate 1 only' do
+        well = build(:pacbio_well, plate:)
+
+        expect(well.sequencing_kit_box_barcode_plate_1).to be(well.plate.sequencing_kit_box_barcode)
+        expect(well.sequencing_kit_box_barcode_plate_2).to be_nil
+      end
+
       it 'must have an on plate loading concentration' do
         expect(build(:pacbio_well, on_plate_loading_concentration: nil, plate:)).not_to be_valid
       end
@@ -413,6 +420,18 @@ RSpec.describe Pacbio::Well, pacbio: true do
         it 'must be a valid value' do
           well_plate1.polymerase_kit = 'Lxxxxx102739100123199'
           expect(well_plate1).to be_valid
+        end
+      end
+
+      context 'for the sample sheets' do
+        it 'a well on plate 1 must have a sequencing kit box barcode for plate 1 only' do
+          expect(well_plate1.sequencing_kit_box_barcode_plate_1).to be(well_plate1.plate.sequencing_kit_box_barcode)
+          expect(well_plate1.sequencing_kit_box_barcode_plate_2).to be_nil
+        end
+
+        it 'a well on plate 2 must have a sequencing kit box barcode for plate 2 only' do
+          expect(well_plate2.sequencing_kit_box_barcode_plate_1).to be_nil
+          expect(well_plate2.sequencing_kit_box_barcode_plate_2).to be(well_plate2.plate.sequencing_kit_box_barcode)
         end
       end
     end
