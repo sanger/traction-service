@@ -349,69 +349,70 @@ RSpec.describe Pacbio::Well, pacbio: true do
       end
 
       # build the well with the smrt_link version 12 revio
-      let!(:run) { create(:pacbio_sequel_run, smrt_link_version: version12_revio) }
-      let(:well) { build(:pacbio_well, plate: run.plates.first) }
+      let!(:run) { create(:pacbio_revio_run, smrt_link_version: version12_revio) }
+      let(:well_plate1) { build(:pacbio_well, plate: run.plates.first) }
+      let(:well_plate2) { build(:pacbio_well, plate: run.plates.last) }
 
       context 'Movie acquisition time' do
         it 'must be present' do
-          well.movie_acquisition_time = nil
-          expect(well).not_to be_valid
+          well_plate1.movie_acquisition_time = nil
+          expect(well_plate1).not_to be_valid
         end
 
         it 'can be a decimal' do
-          well.movie_acquisition_time = 0.2
-          expect(well.movie_acquisition_time).to eq(0.2)
+          well_plate1.movie_acquisition_time = 0.2
+          expect(well_plate1.movie_acquisition_time).to eq(0.2)
         end
 
         it 'must be within range' do
-          well.movie_acquisition_time = 15
-          expect(well).to be_valid
+          well_plate1.movie_acquisition_time = 15
+          expect(well_plate1).to be_valid
         end
 
         it 'is not above range' do
-          well.movie_acquisition_time = 31
-          expect(well).not_to be_valid
+          well_plate1.movie_acquisition_time = 31
+          expect(well_plate1).not_to be_valid
         end
 
         it 'is not below range' do
-          well.movie_acquisition_time = 0
-          expect(well).not_to be_valid
+          well_plate1.movie_acquisition_time = 0
+          expect(well_plate1).not_to be_valid
         end
       end
 
       context 'Include base kinetics' do
         it 'must be present' do
-          well.include_base_kinetics = nil
-          expect(well).not_to be_valid
+          well_plate1.include_base_kinetics = nil
+          expect(well_plate1).not_to be_valid
         end
 
         it 'must be a valid value' do
           true_false.each do |option|
-            well.include_base_kinetics = option
-            expect(well).to be_valid
+            well_plate1.include_base_kinetics = option
+            expect(well_plate1).to be_valid
           end
 
-          well.include_base_kinetics = 'junk'
-          expect(well).not_to be_valid
+          well_plate1.include_base_kinetics = 'junk'
+          expect(well_plate1).not_to be_valid
         end
       end
 
       context 'Library concentration' do
         it 'must have a library concentration' do
-          well.library_concentration = nil
-          expect(well).not_to be_valid
+          well_plate1.library_concentration = nil
+          expect(well_plate1).not_to be_valid
         end
       end
 
       context 'Polymerase kit' do
         it 'must have a polymerase kit' do
-          well.polymerase_kit = nil
-          expect(well).not_to be_valid
+          well_plate1.polymerase_kit = nil
+          expect(well_plate1).not_to be_valid
         end
 
         it 'must be a valid value' do
-          well.polymerase_kit = 'Lxxxxx102739100123199'
-          expect(well).to be_valid
+          well_plate1.polymerase_kit = 'Lxxxxx102739100123199'
+          expect(well_plate1).to be_valid
         end
       end
     end
