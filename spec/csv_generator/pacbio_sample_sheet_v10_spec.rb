@@ -3,16 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe PacbioSampleSheetV10, type: :model do
-  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
+  before { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
 
   describe '#generate' do
-    subject(:csv_string) { csv.generate }
-
-    let!(:plate)       { create(:pacbio_plate) }
-    let!(:run)         { create(:pacbio_run, smrt_link_version: version10, plates: [plate]) }
-    let!(:parsed_csv)  { CSV.parse(csv_string) }
-    let!(:csv)         { described_class.new(run:, configuration: Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name)) }
-
     context 'when the libraries are tagged' do
       let!(:well1) do
         create(:pacbio_well_with_pools, pre_extension_time: 2, generate_hifi: 'In SMRT Link',
@@ -22,7 +15,12 @@ RSpec.describe PacbioSampleSheetV10, type: :model do
         create(:pacbio_well_with_pools, pre_extension_time: 2, generate_hifi: 'In SMRT Link',
                                         ccs_analysis_output: 'No')
       end
-      let(:plate) { create(:pacbio_plate, wells: [well1, well2]) }
+      let!(:plate) { create(:pacbio_plate, wells: [well1, well2]) }
+
+      let!(:run) { create(:pacbio_run, plates: [plate]) }
+      let!(:sample_sheet_compiler) { described_class.new(run) }
+      let!(:csv_string) { sample_sheet_compiler.generate }
+      let!(:parsed_csv) { CSV.parse(csv_string) }
 
       it 'must return a csv string' do
         expect(csv_string.class).to eq String
@@ -163,6 +161,11 @@ RSpec.describe PacbioSampleSheetV10, type: :model do
       end
       let(:plate) { create(:pacbio_plate, wells: [well1, well2]) }
 
+      let!(:run) { create(:pacbio_run, plates: [plate]) }
+      let!(:sample_sheet_compiler) { described_class.new(run) }
+      let!(:csv_string) { sample_sheet_compiler.generate }
+      let!(:parsed_csv) { CSV.parse(csv_string) }
+
       it 'must return a csv string' do
         expect(csv_string).to be_a String
       end
@@ -244,6 +247,11 @@ RSpec.describe PacbioSampleSheetV10, type: :model do
       let(:well2)   { create(:pacbio_well, pools: pool2, row: 'A', column: 5) }
       let(:well3)   { create(:pacbio_well, pools: pool3, row: 'B', column: 1) }
       let(:plate)   { create(:pacbio_plate, wells: [well1, well2, well3]) }
+
+      let!(:run) { create(:pacbio_run, plates: [plate]) }
+      let!(:sample_sheet_compiler) { described_class.new(run) }
+      let!(:csv_string) { sample_sheet_compiler.generate }
+      let!(:parsed_csv) { CSV.parse(csv_string) }
 
       it 'sorts the wells by column' do
         sorted_well_positions = parsed_csv[1..].pluck(3)
