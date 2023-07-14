@@ -288,7 +288,6 @@ RSpec.describe 'RakeTasks' do
     end
 
     it 'sets pacbio smrt link versions' do
-      run10 = create(:pacbio_run, system_name: 0, smrt_link_version_deprecated: 'v10')
       run11 = create(:pacbio_run, system_name: 0, smrt_link_version_deprecated: 'v11')
       run12_revio = create(:pacbio_run, system_name: 0, smrt_link_version_deprecated: 'v12_revio')
 
@@ -296,14 +295,8 @@ RSpec.describe 'RakeTasks' do
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].invoke
 
-      run10.reload
       run11.reload
       run12_revio.reload
-
-      expect(run10.smrt_link_version).not_to be_nil
-      expect(run10.smrt_link_version.name).to eq('v10')
-      expect(run10.smrt_link_version.smrt_link_options).not_to be_nil
-      expect(run10.smrt_link_version.smrt_link_options).not_to be_empty
 
       expect(run11.smrt_link_version).not_to be_nil
       expect(run11.smrt_link_version.name).to eq('v11')

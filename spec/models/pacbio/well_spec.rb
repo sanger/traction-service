@@ -234,50 +234,6 @@ RSpec.describe Pacbio::Well, pacbio: true do
       end
     end
 
-    context 'v10' do
-      before do
-        create(:pacbio_smrt_link_option, key: 'generate_hifi', validations: { presence: {}, inclusion: { in: generate_in } }, smrt_link_versions: [version10])
-        create(:pacbio_smrt_link_option, key: 'ccs_analysis_output', validations: { presence: {}, inclusion: { in: yes_no } }, smrt_link_versions: [version10])
-      end
-
-      let!(:run) { create(:pacbio_sequel_run, smrt_link_version: version10) }
-      let!(:well) { build(:pacbio_well, plate: run.plates.first) }
-
-      context 'generate hifi' do
-        it 'must be present' do
-          well.generate_hifi = nil
-          expect(well).not_to be_valid
-        end
-
-        it 'must be a valid value' do
-          generate_in.each do |option|
-            well.generate_hifi = option
-            expect(well).to be_valid
-          end
-
-          well.generate_hifi = 'junk'
-          expect(well).not_to be_valid
-        end
-      end
-
-      context 'ccs analysis output' do
-        it 'must be present' do
-          well.ccs_analysis_output = nil
-          expect(well).not_to be_valid
-        end
-
-        it 'must be a valid value' do
-          yes_no.each do |option|
-            well.ccs_analysis_output = option
-            expect(well).to be_valid
-          end
-
-          well.ccs_analysis_output = 'junk'
-          expect(well).not_to be_valid
-        end
-      end
-    end
-
     context 'v11' do
       before do
         create(:pacbio_smrt_link_option, key: 'demultiplex_barcodes', validations: { presence: {}, inclusion: { in: generate_in } }, smrt_link_versions: [version11])
