@@ -38,123 +38,82 @@ RSpec.describe PacbioSampleSheet, type: :model do
       it 'must have the correct well header rows' do
         well_data_1 = parsed_csv[1]
         well_data_2 = parsed_csv[7]
-
-        expect(well_data_1).to eq([
-          well1.plate.run.system_name,
-          well1.plate.run.name,
-          'true',
-          well1.position,
-          well1.pool_barcode,
-          well1.movie_time.to_s,
-          well1.insert_size.to_s,
-          well1.template_prep_kit_box_barcode,
-          well1.binding_kit_box_barcode,
-          well1.plate.sequencing_kit_box_barcode,
-          well1.on_plate_loading_concentration.to_s,
-          well1.plate.run.dna_control_complex_box_barcode,
-          well1.plate.run.comments,
-          well1.show_row_per_sample?.to_s,
-          '',
-          well1.barcode_set,
-          well1.same_barcodes_on_both_ends_of_sequence.to_s,
-          '',
-          well1.automation_parameters,
-          well1.ccs_analysis_output_include_kinetics_information,
-          well1.loading_target_p1_plus_p2.to_s,
-          well1.adaptive_loading_check.to_s,
-          well1.ccs_analysis_output_include_low_quality_reads,
-          well1.include_fivemc_calls_in_cpg_motifs,
-          well1.demultiplex_barcodes
-        ])
-
-        expect(well_data_2).to eq([
-          well2.plate.run.system_name,
-          well2.plate.run.name,
-          'true',
-          well2.position,
-          well2.pool_barcode,
-          well2.movie_time.to_s,
-          well2.insert_size.to_s,
-          well2.template_prep_kit_box_barcode,
-          well2.binding_kit_box_barcode,
-          well2.plate.sequencing_kit_box_barcode,
-          well2.on_plate_loading_concentration.to_s,
-          well2.plate.run.dna_control_complex_box_barcode,
-          well2.plate.run.comments,
-          well2.show_row_per_sample?.to_s,
-          '',
-          well2.barcode_set,
-          well2.same_barcodes_on_both_ends_of_sequence.to_s,
-          '',
-          well2.automation_parameters,
-          well2.ccs_analysis_output_include_kinetics_information,
-          well2.loading_target_p1_plus_p2.to_s,
-          well2.adaptive_loading_check.to_s,
-          well2.ccs_analysis_output_include_low_quality_reads,
-          well2.include_fivemc_calls_in_cpg_motifs,
-          well2.demultiplex_barcodes
-        ])
+        #  iterate through the wells under test
+        well_expectations = [
+          [well_data_1, well1],
+          [well_data_2, well2]
+        ]
+        well_expectations.each do |well_data, well|
+          expect(well_data).to eq([
+            well.plate.run.system_name,
+            well.plate.run.name,
+            'true',
+            well.position,
+            well.pool_barcode,
+            well.movie_time.to_s,
+            well.insert_size.to_s,
+            well.template_prep_kit_box_barcode,
+            well.binding_kit_box_barcode,
+            well.plate.sequencing_kit_box_barcode,
+            well.on_plate_loading_concentration.to_s,
+            well.plate.run.dna_control_complex_box_barcode,
+            well.plate.run.comments,
+            well.show_row_per_sample?.to_s,
+            '',
+            well.barcode_set,
+            well.same_barcodes_on_both_ends_of_sequence.to_s,
+            '',
+            well.automation_parameters,
+            well.ccs_analysis_output_include_kinetics_information,
+            well.loading_target_p1_plus_p2.to_s,
+            well.adaptive_loading_check.to_s,
+            well.ccs_analysis_output_include_low_quality_reads,
+            well.include_fivemc_calls_in_cpg_motifs,
+            well.demultiplex_barcodes
+          ])
+        end
       end
 
       it 'must have the correct sample rows' do
+        # Note the increment in the parsed_csv index
         sample_data_1 = parsed_csv[2]
         sample_data_2 = parsed_csv[8]
 
-        expect(sample_data_1).to eq([
-          '',
-          '',
-          'false',
-          well1.position,
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          well1.libraries.first.barcode_name,
-          '',
-          '',
-          well1.libraries.first.request.sample_name,
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          ''
-        ])
+        #  iterate through the samples under test
+        sample_expectations = [
+          [sample_data_1, well1],
+          [sample_data_2, well2]
+        ]
+        sample_expectations.each do |sample_data, well|
+          expect(sample_data).to eq([
 
-        expect(sample_data_2).to eq([
-          '',
-          '',
-          'false',
-          well2.position,
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          well2.libraries.first.barcode_name,
-          '',
-          '',
-          well2.libraries.first.request.sample_name,
-          '',
-          '',
-          '',
-          '',
-          '',
-          '',
-          ''
-        ])
+            '',
+            '',
+            'false',
+            well.position,
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            well.libraries.first.barcode_name,
+            '',
+            '',
+            well.libraries.first.request.sample_name,
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            ''
+          ])
+        end
       end
     end
 
@@ -185,62 +144,40 @@ RSpec.describe PacbioSampleSheet, type: :model do
       it 'must have the correct well header rows' do
         well_data_1 = parsed_csv[1]
         well_data_2 = parsed_csv[2]
-
-        expect(well_data_1).to eq([
-          well1.plate.run.system_name,
-          well1.plate.run.name,
-          'true',
-          well1.position,
-          well1.pool_barcode,
-          well1.movie_time.to_s,
-          well1.insert_size.to_s,
-          well1.template_prep_kit_box_barcode,
-          well1.binding_kit_box_barcode,
-          well1.plate.sequencing_kit_box_barcode,
-          well1.on_plate_loading_concentration.to_s,
-          well1.plate.run.dna_control_complex_box_barcode,
-          well1.plate.run.comments,
-          well1.sample_is_barcoded.to_s,
-          '',
-          well1.barcode_set,
-          well1.same_barcodes_on_both_ends_of_sequence.to_s,
-          well1.find_sample_name,
-          well1.automation_parameters,
-          well1.ccs_analysis_output_include_kinetics_information,
-          well1.loading_target_p1_plus_p2.to_s,
-          well1.adaptive_loading_check.to_s,
-          well1.ccs_analysis_output_include_low_quality_reads,
-          well1.include_fivemc_calls_in_cpg_motifs,
-          well1.demultiplex_barcodes
-        ])
-
-        expect(well_data_2).to eq([
-          well2.plate.run.system_name,
-          well2.plate.run.name,
-          'true',
-          well2.position,
-          well2.pool_barcode,
-          well2.movie_time.to_s,
-          well2.insert_size.to_s,
-          well2.template_prep_kit_box_barcode,
-          well2.binding_kit_box_barcode,
-          well2.plate.sequencing_kit_box_barcode,
-          well2.on_plate_loading_concentration.to_s,
-          well2.plate.run.dna_control_complex_box_barcode,
-          well2.plate.run.comments,
-          well2.sample_is_barcoded.to_s,
-          '',
-          well2.barcode_set,
-          well2.same_barcodes_on_both_ends_of_sequence.to_s,
-          well2.find_sample_name,
-          well2.automation_parameters,
-          well2.ccs_analysis_output_include_kinetics_information,
-          well2.loading_target_p1_plus_p2.to_s,
-          well2.adaptive_loading_check.to_s,
-          well2.ccs_analysis_output_include_low_quality_reads,
-          well2.include_fivemc_calls_in_cpg_motifs,
-          well2.demultiplex_barcodes
-        ])
+        #  iterate through the wells under test
+        well_expectations = [
+          [well_data_1, well1],
+          [well_data_2, well2]
+        ]
+        well_expectations.each do |well_data, well|
+          expect(well_data).to eq([
+            well.plate.run.system_name,
+            well.plate.run.name,
+            'true',
+            well.position,
+            well.pool_barcode,
+            well.movie_time.to_s,
+            well.insert_size.to_s,
+            well.template_prep_kit_box_barcode,
+            well.binding_kit_box_barcode,
+            well.plate.sequencing_kit_box_barcode,
+            well.on_plate_loading_concentration.to_s,
+            well.plate.run.dna_control_complex_box_barcode,
+            well.plate.run.comments,
+            well.sample_is_barcoded.to_s,
+            '',
+            well.barcode_set,
+            well.same_barcodes_on_both_ends_of_sequence.to_s,
+            well.find_sample_name,
+            well.automation_parameters,
+            well.ccs_analysis_output_include_kinetics_information,
+            well.loading_target_p1_plus_p2.to_s,
+            well.adaptive_loading_check.to_s,
+            well.ccs_analysis_output_include_low_quality_reads,
+            well.include_fivemc_calls_in_cpg_motifs,
+            well.demultiplex_barcodes
+          ])
+        end
       end
 
       it 'must not have sample rows' do
