@@ -47,7 +47,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
           expect(well_data).to eq([
             well.plate.run.system_name,
             well.plate.run.name,
-            'true',
+            'true', # well.collection?
             well.position,
             well.pool_barcode,
             well.movie_time.to_s,
@@ -59,10 +59,10 @@ RSpec.describe PacbioSampleSheet, type: :model do
             well.plate.run.dna_control_complex_box_barcode,
             well.plate.run.comments,
             well.show_row_per_sample?.to_s,
-            '',
+            '', # barcode name - does not apply
             well.barcode_set,
             well.same_barcodes_on_both_ends_of_sequence.to_s,
-            '',
+            '', # sample name - does not apply
             well.automation_parameters,
             well.ccs_analysis_output_include_kinetics_information,
             well.loading_target_p1_plus_p2.to_s,
@@ -89,7 +89,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
 
             '',
             '',
-            'false',
+            'false', # well.collection?
             well.position,
             '',
             '',
@@ -153,7 +153,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
           expect(well_data).to eq([
             well.plate.run.system_name,
             well.plate.run.name,
-            'true',
+            'true', # well.collection?
             well.position,
             well.pool_barcode,
             well.movie_time.to_s,
@@ -165,7 +165,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
             well.plate.run.dna_control_complex_box_barcode,
             well.plate.run.comments,
             well.sample_is_barcoded.to_s,
-            '',
+            '', # barcode name - does not apply
             well.barcode_set,
             well.same_barcodes_on_both_ends_of_sequence.to_s,
             well.find_sample_name,
