@@ -59,10 +59,12 @@ RSpec.describe PacbioSampleSheet, type: :model do
           well1.same_barcodes_on_both_ends_of_sequence.to_s,
           '',
           well1.automation_parameters,
-          well1.generate_hifi,
-          well1.ccs_analysis_output,
+          well1.ccs_analysis_output_include_kinetics_information,
           well1.loading_target_p1_plus_p2.to_s,
-          well1.adaptive_loading_check.to_s
+          well1.adaptive_loading_check.to_s,
+          well1.ccs_analysis_output_include_low_quality_reads,
+          well1.include_fivemc_calls_in_cpg_motifs,
+          well1.demultiplex_barcodes
         ])
 
         expect(well_data_2).to eq([
@@ -85,10 +87,12 @@ RSpec.describe PacbioSampleSheet, type: :model do
           well2.same_barcodes_on_both_ends_of_sequence.to_s,
           '',
           well2.automation_parameters,
-          well2.generate_hifi,
-          well2.ccs_analysis_output,
+          well2.ccs_analysis_output_include_kinetics_information,
           well2.loading_target_p1_plus_p2.to_s,
-          well2.adaptive_loading_check.to_s
+          well2.adaptive_loading_check.to_s,
+          well2.ccs_analysis_output_include_low_quality_reads,
+          well2.include_fivemc_calls_in_cpg_motifs,
+          well2.demultiplex_barcodes
         ])
       end
 
@@ -119,6 +123,8 @@ RSpec.describe PacbioSampleSheet, type: :model do
           '',
           '',
           '',
+          '',
+          '',
           ''
         ])
 
@@ -141,6 +147,8 @@ RSpec.describe PacbioSampleSheet, type: :model do
           '',
           '',
           well2.libraries.first.request.sample_name,
+          '',
+          '',
           '',
           '',
           '',
@@ -198,10 +206,12 @@ RSpec.describe PacbioSampleSheet, type: :model do
           well1.same_barcodes_on_both_ends_of_sequence.to_s,
           well1.find_sample_name,
           well1.automation_parameters,
-          well1.generate_hifi,
-          well1.ccs_analysis_output,
+          well1.ccs_analysis_output_include_kinetics_information,
           well1.loading_target_p1_plus_p2.to_s,
-          well1.adaptive_loading_check.to_s
+          well1.adaptive_loading_check.to_s,
+          well1.ccs_analysis_output_include_low_quality_reads,
+          well1.include_fivemc_calls_in_cpg_motifs,
+          well1.demultiplex_barcodes
         ])
 
         expect(well_data_2).to eq([
@@ -224,10 +234,12 @@ RSpec.describe PacbioSampleSheet, type: :model do
           well2.same_barcodes_on_both_ends_of_sequence.to_s,
           well2.find_sample_name,
           well2.automation_parameters,
-          well2.generate_hifi,
-          well2.ccs_analysis_output,
+          well2.ccs_analysis_output_include_kinetics_information,
           well2.loading_target_p1_plus_p2.to_s,
-          well2.adaptive_loading_check.to_s
+          well2.adaptive_loading_check.to_s,
+          well2.ccs_analysis_output_include_low_quality_reads,
+          well2.include_fivemc_calls_in_cpg_motifs,
+          well2.demultiplex_barcodes
         ])
       end
 
