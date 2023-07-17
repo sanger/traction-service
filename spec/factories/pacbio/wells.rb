@@ -23,6 +23,10 @@ FactoryBot.define do
       build_list(pool_factory, pool_count)
     end
 
+    # v10
+    generate_hifi { 'In SMRT Link' }
+    ccs_analysis_output { 'Yes' }
+
     # v11
     ccs_analysis_output_include_low_quality_reads { 'Yes' }
     ccs_analysis_output_include_kinetics_information { 'Yes' }

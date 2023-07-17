@@ -72,7 +72,7 @@ module Pacbio
     # This allows generation of sample sheets based on the SMRT Link version
     # Each different version of SMRT Link has different columns
     # A version can be assigned to a run but changed
-    # e.g. Pipelines.pacbio.sample_sheet.by_version('v11')
+    # e.g. Pipelines.pacbio.sample_sheet.by_version('v10')
     def pacbio_run_sample_sheet_config
       Pipelines.pacbio.sample_sheet.by_version(smrt_link_version.name)
     end

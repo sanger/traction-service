@@ -10,6 +10,10 @@ default: &default
   select_true_false: &select_true_false True,False
 
   versions:
+    v10:
+      name: v10
+      active: false
+      default: false
     v11:
       name: v11
       active: true
@@ -20,6 +24,30 @@ default: &default
       default: false
 
   options:
+    ccs_analysis_output:
+      key: ccs_analysis_output
+      label: 'CCS Analysis Output'
+      default_value: 'Yes'
+      validations:
+        presence: {}
+        inclusion:
+          in: *yes_no
+      data_type: list
+      select_options: *select_yes_no
+      versions:
+        - v10
+    generate_hifi:
+      key: generate_hifi
+      label: 'Generate HiFi'
+      default_value: On Instrument      
+      validations:
+        presence: {}
+        inclusion:
+          in: *generate
+      data_type: list
+      select_options: *select_generate
+      versions: 
+        - v10
     ccs_analysis_output_include_kinetics_information:
       key: ccs_analysis_output_include_kinetics_information
       label: 'Include Kinetics Information'
@@ -76,6 +104,7 @@ default: &default
         presence: {}
       data_type: number
       versions:
+        - v10
         - v11
     binding_kit_box_barcode:
       key: binding_kit_box_barcode
@@ -85,6 +114,7 @@ default: &default
         presence: {}
       data_type: number
       versions:
+        - v10
         - v11
     pre_extension_time:
       key: pre_extension_time
@@ -95,6 +125,7 @@ default: &default
           allow_blank: true
       data_type: number
       versions:
+        - v10
         - v11
         - v12_revio
     loading_target_p1_plus_p2:
@@ -108,6 +139,7 @@ default: &default
           greater_than_or_equal_to: 0.0
       data_type: number
       versions:
+        - v10
         - v11
     movie_time:
       key: movie_time
@@ -121,6 +153,7 @@ default: &default
       select_options: *select_times
       data_type: number
       versions:
+        - v10
         - v11
     movie_acquisition_time:
       key: movie_acquisition_time
