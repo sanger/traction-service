@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Pacbio::Run, pacbio: true do
-  let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11', default: true) }
+  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
 
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_revio_run }
@@ -181,7 +181,7 @@ RSpec.describe Pacbio::Run, pacbio: true do
   context 'smrt_link_version' do
     it 'will set a default value' do
       run = create(:pacbio_revio_run)
-      expect(run.smrt_link_version).to eq(version11)
+      expect(run.smrt_link_version).to eq(version10)
     end
   end
 
