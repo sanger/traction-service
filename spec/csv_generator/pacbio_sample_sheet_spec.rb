@@ -6,23 +6,33 @@ RSpec.describe PacbioSampleSheet, type: :model do
   describe '#generate' do
     subject(:csv_string) { csv.generate }
 
+    let(:plate)       { create(:pacbio_plate, wells: [well1, well2]) }
+    let(:run)         { create(:pacbio_run, smrt_link_version:, plates: [plate]) }
+    let(:parsed_csv)  { CSV.parse(csv_string) }
+    let(:csv)         { described_class.new(run:, configuration: Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name)) }
+
     context 'v10' do
-      let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
-      let!(:plate)       { create(:pacbio_plate) }
-      let!(:run)         { create(:pacbio_run, smrt_link_version: version10, plates: [plate]) }
-      let!(:parsed_csv)  { CSV.parse(csv_string) }
-      let!(:csv)         { described_class.new(run:, configuration: Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name)) }
+      let(:smrt_link_version) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
 
       context 'when the libraries are tagged' do
-        let!(:well1) do
-          create(:pacbio_well_with_pools, pre_extension_time: 2, generate_hifi: 'In SMRT Link',
-                                          ccs_analysis_output: 'Yes')
+        let(:well1) do
+          create(
+            :pacbio_well_with_pools,
+            pre_extension_time: 2,
+            generate_hifi: 'In SMRT Link',
+
+            ccs_analysis_output: 'Yes'
+          )
         end
-        let!(:well2) do
-          create(:pacbio_well_with_pools, pre_extension_time: 2, generate_hifi: 'In SMRT Link',
-                                          ccs_analysis_output: 'No')
+        let(:well2) do
+          create(
+            :pacbio_well_with_pools,
+            pre_extension_time: 2,
+            generate_hifi: 'In SMRT Link',
+
+            ccs_analysis_output: 'No'
+          )
         end
-        let(:plate) { create(:pacbio_plate, wells: [well1, well2]) }
 
         it 'must return a csv string' do
           expect(csv_string.class).to eq String
@@ -196,22 +206,25 @@ RSpec.describe PacbioSampleSheet, type: :model do
     end
 
     context 'v11' do
-      let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11', default: true) }
-      let!(:plate)       { create(:pacbio_plate) }
-      let!(:run)         { create(:pacbio_run, smrt_link_version: version11, plates: [plate]) }
-      let!(:parsed_csv)  { CSV.parse(csv_string) }
-      let!(:csv)         { described_class.new(run:, configuration: Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name)) }
+      let(:smrt_link_version) { create(:pacbio_smrt_link_version, name: 'v11', default: true) }
 
       context 'when the libraries are tagged' do
-        let!(:well1) do
-          create(:pacbio_well_with_pools, pre_extension_time: 2, generate_hifi: 'In SMRT Link',
-                                          ccs_analysis_output: 'Yes')
+        let(:well1) do
+          create(
+            :pacbio_well_with_pools,
+            pre_extension_time: 2,
+            generate_hifi: 'In SMRT Link',
+            ccs_analysis_output: 'Yes'
+          )
         end
-        let!(:well2) do
-          create(:pacbio_well_with_pools, pre_extension_time: 2, generate_hifi: 'In SMRT Link',
-                                          ccs_analysis_output: 'No')
+        let(:well2) do
+          create(
+            :pacbio_well_with_pools,
+            pre_extension_time: 2,
+            generate_hifi: 'In SMRT Link',
+            ccs_analysis_output: 'No'
+          )
         end
-        let(:plate) { create(:pacbio_plate, wells: [well1, well2]) }
 
         it 'must return a csv string' do
           expect(csv_string.class).to eq String
