@@ -37,7 +37,7 @@ RSpec.describe Pacbio::Request, pacbio: true do
     end
   end
 
-  describe '#runs' do
+  describe '#sequencing_plates' do
     it 'if the request belongs to a run' do
       plate = create(:pacbio_plate_with_wells, :pooled)
       request = plate.wells.first.libraries.first.request
@@ -59,6 +59,31 @@ RSpec.describe Pacbio::Request, pacbio: true do
     it 'when the request does not belong to any runs' do
       request = create(:pacbio_request)
       expect(request.sequencing_plates).to be_empty
+    end
+  end
+
+  describe '#sequencing_runs' do
+    it 'if the request belongs to a run' do
+      plate = create(:pacbio_plate_with_wells, :pooled)
+      request = plate.wells.first.libraries.first.request
+      expect(request.sequencing_runs).to eq([plate.run])
+    end
+
+    it 'when the request belongs to multiple runs' do
+      plate1 = create(:pacbio_plate)
+      plate2 = create(:pacbio_plate)
+      request = create(:pacbio_request)
+      library1 = create(:pacbio_library, request:)
+      library2 = create(:pacbio_library, request:)
+      pool = create(:pacbio_pool, libraries: [library1, library2])
+      create(:pacbio_well, pools: [pool], plate: plate1)
+      create(:pacbio_well, pools: [pool], plate: plate2)
+      expect(request.sequencing_runs).to eq([plate1.run, plate2.run])
+    end
+
+    it 'when the request does not belong to any runs' do
+      request = create(:pacbio_request)
+      expect(request.sequencing_runs).to be_empty
     end
   end
 end

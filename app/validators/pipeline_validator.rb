@@ -29,6 +29,6 @@ class PipelineValidator < ActiveModel::EachValidator
   end
 
   def valid_pipeline?
-    Pipelines::ENUMS.key?(expected)
+    Pipelines::NAMES.key?(expected)
   end
 end
