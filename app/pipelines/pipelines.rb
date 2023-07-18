@@ -8,7 +8,7 @@ module Pipelines
   # In order to maintain consistent numbering, this has been pulled out into
   # a constant. Please do *not* remove entries from this list, as it could
   # result in legacy data being reassigned to the incorrect pipelines
-  ENUMS = { pacbio: 0, ont: 1, saphyr: 2, qc_result: 3 }.freeze
+  NAMES = { pacbio: 0, ont: 1, saphyr: 2, qc_result: 3 }.freeze
   HANDLERS = {
     pacbio: Pacbio,
     ont: Ont,
@@ -35,7 +35,7 @@ module Pipelines
 
   # create methods for each pipeline so can use Pipelines.pipeline_name
   # instead of Pipelines.configuration.pipeline_name
-  ENUMS.each do |k, _v|
+  NAMES.each do |k, _v|
     self.class.send(:define_method, k, proc { configuration.send(k) })
   end
 
@@ -59,12 +59,14 @@ module Pipelines
     send(pipeline.to_s.downcase)
   end
 
-  # Finds all the config files stored in config/pipelines and merges them into a hash
+  # Load config files that match the name of a pipeline and merge them into the config hash
   def self.load_yaml
     config = {}
-    Dir.children(PIPELINES_DIR).each do |pipeline_file|
-      config.merge!(YAML.load_file("#{PIPELINES_DIR}/#{pipeline_file}",
-                                   aliases: true)[Rails.env].symbolize_keys)
+    Dir.glob("#{PIPELINES_DIR}/*.yml").each do |pipeline_file|
+      pipeline_name = File.basename(pipeline_file, '.*')
+      next unless NAMES.keys.include?(pipeline_name.to_sym)
+
+      config.merge!(YAML.load_file(pipeline_file, aliases: true)[Rails.env].symbolize_keys)
     end
     config
   end
