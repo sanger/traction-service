@@ -38,6 +38,11 @@ module Pacbio
       wells&.collect(&:plate)
     end
 
+    # @return [Array] of Runs that the pool is used in
+    def sequencing_runs
+      wells&.collect(&:run)&.uniq
+    end
+
     private
 
     def update_library(attributes)
