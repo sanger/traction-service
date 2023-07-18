@@ -2,6 +2,8 @@
 
 require 'rails_helper'
 
+# See additional sample sheet specs at 'spec/csv_generator/pacbio_sample_sheet_spec.rb'
+
 RSpec.describe 'SampleSheet', type: :model do
   let(:populate) { { for: [:well], with: :well }.with_indifferent_access }
   let(:populate_with_sample) { { for: %i[well sample], with: :well }.with_indifferent_access }
@@ -73,7 +75,6 @@ RSpec.describe 'SampleSheet', type: :model do
       expect(column.fetch('populate')).to eq(populate)
     end
 
-    # Where should the rest of the sample sheet columns be tested?
     it 'will have movie acquisition time' do
       column = sample_sheet_configuration.columns.children['Movie Acquisition Time (hours)']
       expect(column).to be_present
@@ -142,7 +143,6 @@ RSpec.describe 'SampleSheet', type: :model do
       expect(column.fetch('populate')).to eq(populate)
     end
 
-    # Where should the rest of the sample sheet columns be tested?
     it 'will have movie acquisition time' do
       column = sample_sheet_configuration.columns.children['Movie Acquisition Time (hours)']
       expect(column).to be_present
