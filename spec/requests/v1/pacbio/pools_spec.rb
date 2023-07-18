@@ -451,8 +451,7 @@ RSpec.describe 'PoolsController', pacbio: true do
       before { create(:pacbio_well, pools: [pool], plate:) }
 
       it 'publishes a message' do
-        expect(Messages).to receive(:publish).with(pool.sequencing_plates,
-                                                   having_attributes(pipeline: 'pacbio'))
+        expect(Messages).to receive(:publish).with(pool.sequencing_runs, having_attributes(pipeline: 'pacbio'))
         patch v1_pacbio_pool_path(pool), params: body, headers: json_api_headers
         expect(response).to have_http_status(:success), response.body
       end

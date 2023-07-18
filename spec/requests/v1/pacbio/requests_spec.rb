@@ -3,6 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe 'RequestsController', pacbio: true do
+  before do
+    # Create a default pacbio smrt link version for pacbio runs.
+    create(:pacbio_smrt_link_version, name: 'v10', default: true)
+  end
+
   describe '#get' do
     let!(:requests) { create_list(:pacbio_request, 2) }
 
@@ -151,7 +156,9 @@ RSpec.describe 'RequestsController', pacbio: true do
   end
 
   describe '#update' do
-    let!(:request) { create(:pacbio_request) }
+    let!(:pool)      { create(:pacbio_pool) }
+    let(:well)       { create(:pacbio_well, pools: [pool]) }
+    let!(:request)   { pool.requests.first }
 
     let(:body) do
       {
@@ -176,8 +183,7 @@ RSpec.describe 'RequestsController', pacbio: true do
     end
 
     it 'publishes a message' do
-      # This might be overkill but wanted to ensure the right thing is happening
-      expect(Messages).to receive(:publish).with(request.sequencing_plates,
+      expect(Messages).to receive(:publish).with(request.sequencing_runs,
                                                  having_attributes(pipeline: 'pacbio'))
       patch v1_pacbio_request_path(request), params: body, headers: json_api_headers
     end
