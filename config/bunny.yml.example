@@ -11,7 +11,7 @@ default: &default
 
 development:
   <<: *default
-  enabled: false
+  enabled: true
 
 test:
   enabled: false

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_15_123313) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_18_091815) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -68,7 +68,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_15_123313) do
     t.index ["pipeline"], name: "index_library_types_on_pipeline"
   end
 
-  create_table "ont_flowcells", charset: "utf8mb3", force: :cascade do |t|
+  create_table "ont_flowcells", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "flowcell_id"
     t.integer "position"
     t.string "uuid"
@@ -110,7 +110,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_15_123313) do
     t.index ["tag_id"], name: "index_ont_libraries_on_tag_id"
   end
 
-  create_table "ont_min_know_versions", charset: "utf8mb3", force: :cascade do |t|
+  create_table "ont_min_know_versions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.boolean "default", default: false
     t.boolean "active", default: true
@@ -314,7 +314,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_15_123313) do
     t.integer "used_by"
   end
 
-  create_table "qc_decision_results", charset: "utf8mb3", force: :cascade do |t|
+  create_table "qc_decision_results", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "qc_result_id", null: false
     t.bigint "qc_decision_id", null: false
     t.datetime "created_at", null: false
@@ -323,9 +323,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_15_123313) do
     t.index ["qc_result_id"], name: "index_qc_decision_results_on_qc_result_id"
   end
 
-  create_table "qc_decisions", charset: "utf8mb3", force: :cascade do |t|
+  create_table "qc_decisions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "status"
     t.integer "decision_made_by"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "qc_receptions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "source"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -337,10 +343,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_15_123313) do
     t.string "value", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "date_submitted"
+    t.string "priority_level"
+    t.string "date_required_by"
+    t.string "reason_for_priority"
     t.index ["qc_assay_type_id"], name: "index_qc_results_on_qc_assay_type_id"
   end
 
-  create_table "qc_results_uploads", charset: "utf8mb3", force: :cascade do |t|
+  create_table "qc_results_uploads", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "csv_data", size: :long
     t.string "used_by"
     t.datetime "created_at", null: false
