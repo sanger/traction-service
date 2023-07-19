@@ -24,12 +24,17 @@ FactoryBot.define do
       end
 
       system_name { 'Revio' }
-      plates { [build(:pacbio_plate, wells: build_wells_by_position(well_positions_plate_1)), build(:pacbio_plate, wells: build_wells_by_position(well_positions_plate_2))] }
+      plates do
+        [
+          build(:pacbio_plate, plate_number: 1, wells: build_wells_by_position(well_positions_plate_1)),
+          build(:pacbio_plate, plate_number: 2, wells: build_wells_by_position(well_positions_plate_2))
+        ]
+      end
     end
 
     factory :pacbio_sequel_run do
       system_name { 'Sequel IIe' }
-      plates { build_list(:pacbio_plate, 1, wells: [build(:pacbio_well)]) }
+      plates { build_list(:pacbio_plate, 1, plate_number: 1, wells: [build(:pacbio_well)]) }
     end
   end
 end
