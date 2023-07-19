@@ -560,6 +560,25 @@ default: &default
                 - :well
                 - :sample
               with: :row_type
+        column_order:
+          - Library Type
+          - Reagent Plate
+          - Plate 1
+          - Plate 2
+          - Run Name
+          - Instrument Type
+          - Run Comments
+          - Is Collection
+          - Sample Well
+          - Well Name
+          - Movie Acquisition Time (hours)
+          - Include Base Kinetics
+          - Library Concentration (pM)
+          - Polymerase Kit
+          - Automation Parameters
+          - Adapters / Barcodes
+          - Barcode Name
+          - Bio Sample Name
         fields:
          wells:
           type: :array
