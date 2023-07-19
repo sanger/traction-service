@@ -60,4 +60,10 @@ If the field is a:
 - [string] => return the value
 - [model] => take the value split it by the full stop and recursively send the method to the object
   e.g. it is object.foo.bar will first evaluate foo and then apply bar
+- [parent_model] => as above, but for the direct parent of the current model
 - [constant] => take the constant and applies the method chain to it e.g DateTime.now
+
+### Functions
+
+Functions are defined for `:model` and `:parent_model` in the models themselves and in
+`app/models/concerns/sample_sheet.rb`

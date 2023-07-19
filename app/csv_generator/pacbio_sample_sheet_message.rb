@@ -16,7 +16,7 @@ class PacbioSampleSheetMessage
   #     "last_updated"=>Mon, 12 Aug 2019 12:37:51 UTC +00:00}}
   def content
     configuration.fields.each_with_object({}) do |(k, v), r|
-      r[k] = instance_value(object, v)
+      r[k] = instance_value(object, v, :root)
     end
   end
 
@@ -33,7 +33,7 @@ class PacbioSampleSheetMessage
   def build_children(object, field)
     Array(object.send(field[:value])).collect do |o|
       field[:children].each_with_object({}) do |(k, v), r|
-        r[k] = instance_value(o, v)
+        r[k] = instance_value(o, v, object)
       end
     end
   end
@@ -45,15 +45,18 @@ class PacbioSampleSheetMessage
   #                 and recursively send the method to the object
   #                 e.g. it is object.foo.bar will first evaluate
   #                 foo and then apply bar
+  # * [parent_model] - as above, but applied to the parent object
   # * [constant]  - Takes the constant and applies the method chain
   #                 to it e.g DateTime.now
   # * [array]     - usually an array of fields
-  def instance_value(object, field)
+  def instance_value(object, field, parent)
     case field[:type]
     when :string
       field[:value]
     when :model
       evaluate_method_chain(object, field[:value].split('.'))
+    when :parent_model
+      evaluate_method_chain(parent, field[:value].split('.'))
     when :constant
       evaluate_method_chain(field[:value].split('.').first.constantize,
                             field[:value].split('.')[1..])
