@@ -646,8 +646,8 @@ default: &default
                   type: :model
                   value: collection?
                 Sample Well:
-                  type: :model
-                  value: source_well.position_leading_zero
+                  type: :parent_model
+                  value: position_leading_zero
                 Barcode Name:
                   type: :model
                   value: barcode_name
