@@ -25,6 +25,11 @@ class PacbioSampleSheetMessage
     content.to_json
   end
 
+  # Content as csv
+  def payload_csv
+    payload
+  end
+
   # If the message contains a number of children for example
   # with Pacbio each well will have a number of samples
   # For each field get the value
