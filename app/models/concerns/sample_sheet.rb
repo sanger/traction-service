@@ -57,7 +57,7 @@ module SampleSheet
 
     # Sample bio Name field
     def find_sample_name
-      sample_is_barcoded ? '' : sample_names
+      sample_is_barcoded ? nil : sample_names
     end
   end
 

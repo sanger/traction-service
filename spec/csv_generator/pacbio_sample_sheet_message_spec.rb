@@ -71,8 +71,8 @@ RSpec.describe PacbioSampleSheetMessage, type: :model do
               well.polymerase_kit,
               well.automation_parameters,
               well.barcode_set,
-              '', # barcode name - does not apply
-              '' # sample name - does not apply
+              nil, # barcode name - does not apply
+              nil # sample name - does not apply
             ])
           end
         end
@@ -89,22 +89,22 @@ RSpec.describe PacbioSampleSheetMessage, type: :model do
           ]
           sample_expectations.each do |sample_data, well|
             expect(sample_data).to eq([
-              '',
+              nil,
               '1', # reagent plate
-              '',
-              '',
-              '',
-              '',
-              '',
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
               'false', # well.collection?
               well.position,
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
               well.libraries.first.barcode_name,
               well.libraries.first.request.sample_name
             ])
@@ -161,7 +161,7 @@ RSpec.describe PacbioSampleSheetMessage, type: :model do
               well.polymerase_kit,
               well.automation_parameters,
               well.barcode_set,
-              '', # barcode name - does not apply
+              nil, # barcode name - does not apply
               well.find_sample_name
             ])
           end
