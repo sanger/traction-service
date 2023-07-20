@@ -57,7 +57,7 @@ RSpec.describe PacbioSampleSheetMessage, type: :model do
             expect(well_data).to eq([
               'Standard', # library type
               '1', # reagent plate
-              well.plate.run.sequencing_kit_box_barcode,
+              well.plate.sequencing_kit_box_barcode,
               nil, # plate 2: sequencing_kit_box_barcode
               well.plate.run.name,
               well.plate.run.system_name,
@@ -147,7 +147,7 @@ RSpec.describe PacbioSampleSheetMessage, type: :model do
             expect(well_data).to eq([
               'Standard', # library type
               '1', # reagent plate
-              well.plate.run.sequencing_kit_box_barcode,
+              well.plate.sequencing_kit_box_barcode,
               nil, # plate 2: sequencing_kit_box_barcode
               well.plate.run.name,
               well.plate.run.system_name,
