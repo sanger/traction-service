@@ -110,7 +110,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_091815) do
     t.index ["tag_id"], name: "index_ont_libraries_on_tag_id"
   end
 
-  create_table "ont_min_know_versions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "ont_min_know_versions", charset: "utf8mb3", force: :cascade do |t|
     t.string "name", null: false
     t.boolean "default", default: false
     t.boolean "active", default: true
@@ -330,7 +330,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_091815) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "qc_receptions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "qc_receptions", charset: "utf8mb3", force: :cascade do |t|
     t.string "source"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
