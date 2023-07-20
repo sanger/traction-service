@@ -22,6 +22,13 @@ module SampleSheet
       sample_sheet_behaviour.show_row_per_sample?(libraries)
     end
 
+    # Returns libraries only if they should be shown per row
+    def libraries_to_show_per_row
+      return unless show_row_per_sample?
+
+      libraries
+    end
+
     # Sample Name field
     def pool_barcode
       # First pool in well's barcode as samples names are already contained in bio sample name

@@ -637,7 +637,7 @@ default: &default
               value: find_sample_name
             samples:
               type: :array
-              value: libraries
+              value: libraries_to_show_per_row
               children:
                 Reagent Plate:
                   type: :string
