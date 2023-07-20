@@ -27,7 +27,7 @@ namespace :qc_assay_types do
       { key: 'final_nano_drop_280', label: 'Final NanoDrop 260/280', used_by: 2, units: '' },
       { key: 'final_nano_drop_230', label: 'Final NanoDrop 260/230', used_by: 2, units: '' },
       { key: 'final_nano_drop', label: 'Final NanoDrop ng/ul', used_by: 2, units: 'ng/ul' },
-      { key: 'shearing_qc_comments', label: 'Shearing & QC comments (if applicable)', used_by: 2, units: '' },
+      { key: 'shearing_qc_comments', label: 'Shearing & QC comments (if applicable)', used_by: 2, units: '' }
     ].each do |options|
       QcAssayType.create_with(options).find_or_create_by!(key: options[:key])
     end
