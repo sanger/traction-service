@@ -102,6 +102,15 @@ class PacbioSampleSheetMessage
   end
 end
 
+private
+
+# Returns a list of wells associated with the plate in column order
+# Example: [<Well position:'A1'>, <Well position:'A2'>, <Well position:'B1'>]) =>
+#          [<Well position:'A1'>, <Well position:'B1'>, <Well position:'A2'>]
+def sorted_wells
+  wells.sort_by { |well| [well.column.to_i, well.row] }
+end
+
 # ==================================== CSV BELOW ==================================== #
 
 # PacbioSampleSheet
@@ -136,13 +145,6 @@ class PacbioSampleSheetMessageCSV
 
   def wells
     run.plates.flat_map(&:wells)
-  end
-
-  # Returns a list of wells associated with the plate in column order
-  # Example: [<Well position:'A1'>, <Well position:'A2'>, <Well position:'B1'>]) =>
-  #          [<Well position:'A1'>, <Well position:'B1'>, <Well position:'A2'>]
-  def sorted_wells
-    wells.sort_by { |well| [well.column.to_i, well.row] }
   end
 
   # return a list of column names ie headers
