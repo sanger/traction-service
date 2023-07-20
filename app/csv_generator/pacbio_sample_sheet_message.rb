@@ -25,9 +25,38 @@ class PacbioSampleSheetMessage
     content.to_json
   end
 
+  # return a list of column names ie headers
+  # eg ['System Name', 'Run Name']
+  def csv_headers
+    configuration.column_order
+  end
+
   # Content as csv
   def payload_csv
-    payload
+    # puts content
+
+    csv = CSV.generate do |csv|
+      csv << csv_headers
+      # content = {"sorted_wells"=>[{"Library Type"=>"Standard",
+      content.values.each do |children|
+        # children = [{"Library Type"=>"Standard",
+        children.each do |child|
+          csv << child.values_at(*csv_headers)
+          # child = {"Library Type"=>"Standard",...,"samples"=>[{"Reagent Plate"=>1,
+
+          child.values.select { |v| v.respond_to?(:each) }.each do |grandchildren|
+            # grandchildren = [{"Reagent Plate"=>1,
+            grandchildren.each do |grandchild|
+              # grandchild = {"Reagent Plate"=>1,
+
+              row_data = grandchild.values_at(*csv_headers)
+              row_data = row_data.map { |col| col || '' } # replace nil with empty string
+              csv << row_data
+            end
+          end
+        end
+      end
+    end
   end
 
   # If the message contains a number of children for example
