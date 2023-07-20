@@ -24,7 +24,7 @@ FactoryBot.define do
     end
   end
 
-  factory :qc_receptions_factory do
+  factory :qc_receptions_factory, class: 'QcReceptionsFactory' do
     qc_reception
   end
 end

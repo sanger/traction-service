@@ -18,7 +18,7 @@ class QcReceptionsFactory
   end
 
   def create_qc_results!
-    if qc_results_list.empty?
+    if @qc_results_list.empty?
       errors.add('QcReceptionsFactory', 'the qc_results_list is empty')
       return
     end
@@ -31,12 +31,12 @@ class QcReceptionsFactory
     # 2. iterate through qc fields
     # 3. for each qc, if assay_type exists
     # 4. then create qc_results
-    assay_types = get_assay_types
+    assay_types_hash = assay_types
     @qc_results_list.each do |request_obj|
       request_obj.each do |qc, value|
-        next unless assay_types.keys.include? qc
+        next unless assay_types_hash.keys.include? qc
 
-        create_row(request_obj, assay_types[qc], value)
+        create_row(request_obj, assay_types_hash[qc], value)
       end
     end
   end
