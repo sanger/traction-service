@@ -78,7 +78,7 @@ class PacbioSampleSheet
   #  - column_options: from configuration
   def populate_column(options = { well: nil, sample: nil, column_options: nil })
     populate = options[:column_options][:populate]
-    return '' unless populate[:for].include?(options[:row_type])
+    return nil unless populate[:for].include?(options[:row_type])
 
     obj = populate[:with] == :row_type ? options[options[:row_type]] : options[populate[:with]]
     instance_value(obj, options[:column_options])

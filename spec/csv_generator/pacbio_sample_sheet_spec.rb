@@ -71,10 +71,10 @@ RSpec.describe PacbioSampleSheet, type: :model do
               well.plate.run.dna_control_complex_box_barcode,
               well.plate.run.comments,
               well.show_row_per_sample?.to_s,
-              '', # barcode name - does not apply
+              nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
-              '', # sample name - does not apply
+              nil, # sample name - does not apply
               well.automation_parameters,
               well.generate_hifi,
               well.ccs_analysis_output,
@@ -97,29 +97,29 @@ RSpec.describe PacbioSampleSheet, type: :model do
           sample_expectations.each do |sample_data, well|
             expect(sample_data).to eq([
 
-              '',
-              '',
+              nil,
+              nil,
               'false', # well.collection?
               well.position,
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
               well.libraries.first.barcode_name,
-              '',
-              '',
+              nil,
+              nil,
               well.libraries.first.request.sample_name,
-              '',
-              '',
-              '',
-              '',
-              ''
+              nil,
+              nil,
+              nil,
+              nil,
+              nil
             ])
           end
         end
@@ -173,7 +173,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
               well.plate.run.dna_control_complex_box_barcode,
               well.plate.run.comments,
               well.sample_is_barcoded.to_s,
-              '', # barcode name - does not apply
+              nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
               well.find_sample_name,
@@ -263,10 +263,10 @@ RSpec.describe PacbioSampleSheet, type: :model do
               well.plate.run.dna_control_complex_box_barcode,
               well.plate.run.comments,
               well.show_row_per_sample?.to_s,
-              '', # barcode name - does not apply
+              nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
-              '', # sample name - does not apply
+              nil, # sample name - does not apply
               well.automation_parameters,
               well.ccs_analysis_output_include_kinetics_information,
               well.loading_target_p1_plus_p2.to_s,
@@ -290,31 +290,31 @@ RSpec.describe PacbioSampleSheet, type: :model do
           ]
           sample_expectations.each do |sample_data, well|
             expect(sample_data).to eq([
-              '',
-              '',
+              nil,
+              nil,
               'false', # well.collection?
               well.position,
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
               well.libraries.first.barcode_name,
-              '',
-              '',
+              nil,
+              nil,
               well.libraries.first.request.sample_name,
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              ''
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil
             ])
           end
         end
@@ -368,7 +368,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
               well.plate.run.dna_control_complex_box_barcode,
               well.plate.run.comments,
               well.sample_is_barcoded.to_s,
-              '', # barcode name - does not apply
+              nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
               well.find_sample_name,
@@ -462,8 +462,8 @@ RSpec.describe PacbioSampleSheet, type: :model do
               well.polymerase_kit,
               well.automation_parameters,
               well.barcode_set,
-              '', # barcode name - does not apply
-              '' # sample name - does not apply
+              nil, # barcode name - does not apply
+              nil # sample name - does not apply
             ])
           end
         end
@@ -480,22 +480,22 @@ RSpec.describe PacbioSampleSheet, type: :model do
           ]
           sample_expectations.each do |sample_data, well|
             expect(sample_data).to eq([
-              '',
+              nil,
               '1', # reagent plate
-              '',
-              '',
-              '',
-              '',
-              '',
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
               'false', # well.collection?
               well.position,
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
               well.libraries.first.barcode_name,
               well.libraries.first.request.sample_name
             ])
@@ -553,7 +553,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
               well.polymerase_kit,
               well.automation_parameters,
               well.barcode_set,
-              '', # barcode name - does not apply
+              nil, # barcode name - does not apply
               well.find_sample_name
             ])
           end
