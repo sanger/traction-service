@@ -4,6 +4,16 @@
 # Namespace for helper modules to assist ActiveRecord classes in rendering
 # sample sheets
 module SampleSheet
+  # Provides run helper methods for sample sheet generation
+  module Run
+    # Returns a list of wells associated with the plate in column order
+    # Example: [<Well position:'A1'>, <Well position:'A2'>, <Well position:'B1'>]) =>
+    #          [<Well position:'A1'>, <Well position:'B1'>, <Well position:'A2'>]
+    def sorted_wells
+      wells.sort_by { |well| [well.column.to_i, well.row] }
+    end
+  end
+
   # Provides well helper methods for sample sheet generation
   module Well
     # The sequencing_kit_box_barcode of this plate if well belongs to plate 1
