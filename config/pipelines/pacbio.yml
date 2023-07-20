@@ -580,9 +580,9 @@ default: &default
           - Barcode Name
           - Bio Sample Name
         fields:
-         sorted_wells:
+         _sorted_wells:
           type: :array
-          value: wells
+          value: sorted_wells
           children:
             Library Type:
               type: :string
