@@ -51,14 +51,13 @@ module Pacbio
     # returns sample sheet csv for a Pacbio::Run
     # using pipelines.yml configuration to generate data
     def generate_sample_sheet
-      case smrt_link_version.name
-      when 'v12_revio'
-        sample_sheet = SampleSheetMessage.new(run: self,
-                                              configuration: pacbio_run_sample_sheet_config)
-      else
-        sample_sheet = PacbioSampleSheet.new(run: self,
-                                             configuration: pacbio_run_sample_sheet_config)
+      sample_sheet_generator = PacbioSampleSheet
+      # if the feature flag is enabled and there is a 'fields' config defined, use the new-style generator
+      if Flipper.enabled?(:dpl_831_enable_simpler_config_sample_sheets) && 'fields' in pacbio_run_sample_sheet_config
+        sample_sheet_generator = SampleSheetMessage
       end
+      sample_sheet = sample_sheet_generator.new(run: self,
+                                                configuration: pacbio_run_sample_sheet_config)
       sample_sheet.generate
     end
 
