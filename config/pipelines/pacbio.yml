@@ -560,6 +560,81 @@ default: &default
                 - :well
                 - :sample
               with: :row_type
+        fields:
+         wells:
+          type: :array
+          value: wells
+          children:
+            Library Type:
+              type: :string
+              value: Standard
+            Reagent Plate:
+              type: :string
+              value: 1
+            Plate 1:
+              type: :model
+              value: sequencing_kit_box_barcode_plate_1
+            Plate 2:
+              type: :model
+              value: sequencing_kit_box_barcode_plate_2
+            Run Name:
+              type: :model
+              value: plate.run.name
+            Instrument Type:
+              type: :model
+              value: plate.run.system_name
+            Run Comments:
+              type: :model
+              value: plate.run.comments
+            Is Collection:
+              type: :model
+              value: collection?
+            Sample Well:
+              type: :model
+              value: position_leading_zero
+            Well Name:
+              type: :model
+              value: pool_barcode
+            Movie Acquisition Time (hours):
+              type: :model
+              value: movie_acquisition_time
+            Include Base Kinetics:
+              type: :model
+              value: include_base_kinetics
+            Library Concentration (pM):
+              type: :model
+              value: library_concentration
+            Polymerase Kit:
+              type: :model
+              value: polymerase_kit
+            Automation Parameters:
+              type: :model
+              value: automation_parameters
+            Adapters / Barcodes:
+              type: :model
+              value: barcode_set
+            Bio Sample Name:
+              type: :model
+              value: find_sample_name
+            samples:
+              type: :array
+              value: libraries
+              children:
+                Reagent Plate:
+                  type: :string
+                  value: 1
+                Is Collection:
+                  type: :model
+                  value: collection?
+                Sample Well:
+                  type: :model
+                  value: source_well.position_leading_zero
+                Barcode Name:
+                  type: :model
+                  value: barcode_name
+                Bio Sample Name:
+                  type: :model
+                  value: find_sample_name
 
 
 development: *default

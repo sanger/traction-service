@@ -15,10 +15,8 @@ class PacbioSampleSheetMessage
   #     "id_flowcell_lims"=>10, "instrument_name"=>"saphyr",
   #     "last_updated"=>Mon, 12 Aug 2019 12:37:51 UTC +00:00}}
   def content
-    { lims: configuration.lims }.with_indifferent_access.tap do |result|
-      result[configuration.key] = configuration.fields.each_with_object({}) do |(k, v), r|
-        r[k] = instance_value(object, v)
-      end
+    configuration.fields.each_with_object({}) do |(k, v), r|
+      r[k] = instance_value(object, v)
     end
   end
 
