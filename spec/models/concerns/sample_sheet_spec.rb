@@ -78,7 +78,7 @@ RSpec.describe SampleSheet do
   describe '#find_sample_name' do
     context 'when tag set is :default type' do
       it 'returns nothing if row type is well' do
-        expect(well.find_sample_name).to eq ''
+        expect(well.find_sample_name).to eq nil
       end
 
       it 'returns library sample_name when well has libraries and row type is library' do

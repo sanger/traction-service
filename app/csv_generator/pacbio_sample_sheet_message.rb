@@ -48,10 +48,7 @@ class PacbioSampleSheetMessage
             # grandchildren = [{"Reagent Plate"=>1,
             grandchildren.each do |grandchild|
               # grandchild = {"Reagent Plate"=>1,
-
-              row_data = grandchild.values_at(*csv_headers)
-              row_data = row_data.map { |col| col || '' } # replace nil with empty string
-              csv << row_data
+              csv << grandchild.values_at(*csv_headers)
             end
           end
         end
