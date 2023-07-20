@@ -7,6 +7,7 @@ module Pacbio
 
     include Uuidable
     include Stateful
+    include SampleSheet::Run
 
     # Sequel II and Sequel I are now deprecated
     enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2, 'Revio' => 3 }
@@ -51,14 +52,11 @@ module Pacbio
     # returns sample sheet csv for a Pacbio::Run
     # using pipelines.yml configuration to generate data
     def generate_sample_sheet
-      sample_sheet_generator = PacbioSampleSheet
       configuration = pacbio_run_sample_sheet_config
-      # if the feature flag is enabled and there is a 'fields' config defined
-      if Flipper.enabled?(:dpl_831_enable_simpler_config_sample_sheets) && 'fields' in configuration
-        sample_sheet_generator = PacbioSampleSheetMessage
-      end
-      sample_sheet = sample_sheet_generator.new(run: self, configuration:)
-      sample_sheet.generate
+      sample_sheet_generator = PacbioSampleSheet
+      sample_sheet_generator = PacbioSampleSheetMessage if use_simpler_sample_sheets?
+      sample_sheet = sample_sheet_generator.new(object: self, configuration:)
+      sample_sheet.payload
     end
 
     # Revio has changed to use instrument_name
@@ -81,6 +79,12 @@ module Pacbio
     # e.g. Pipelines.pacbio.sample_sheet.by_version('v10')
     def pacbio_run_sample_sheet_config
       Pipelines.pacbio.sample_sheet.by_version(smrt_link_version.name)
+    end
+
+    # if the feature flag is enabled and there is a 'fields' config defined
+    def use_simpler_sample_sheets?
+      Flipper.enabled?(:dpl_831_enable_simpler_config_sample_sheets) &&
+        pacbio_run_sample_sheet_config.fields.present?
     end
 
     def generate_name

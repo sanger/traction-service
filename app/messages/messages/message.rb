@@ -3,11 +3,7 @@
 module Messages
   # Message
   # Creates a message in the correct structure for the warehouse
-  class Message
-    include ActiveModel::Model
-
-    attr_accessor :object, :configuration
-
+  class Message < DataStructureBuilder
     # Produces the message in the correct format
     # Example:
     #   {"lims"=>"Traction", "bmap_flowcell"=>{"sample_uuid"=>"5",
@@ -18,57 +14,13 @@ module Messages
     #     "last_updated"=>Mon, 12 Aug 2019 12:37:51 UTC +00:00}}
     def content
       { lims: configuration.lims }.with_indifferent_access.tap do |result|
-        result[configuration.key] = configuration.fields.each_with_object({}) do |(k, v), r|
-          r[k] = instance_value(object, v)
-        end
+        result[configuration.key] = data_structure
       end
     end
 
     # Content as json
     def payload
       content.to_json
-    end
-
-    # If the message contains a number of children for example
-    # with Pacbio each well will have a number of samples
-    # For each field get the value
-    # This is applied to the nested object not the
-    # original object
-    def build_children(object, field)
-      Array(object.send(field[:value])).collect do |o|
-        field[:children].each_with_object({}) do |(k, v), r|
-          r[k] = instance_value(o, v)
-        end
-      end
-    end
-
-    # Find the instance value for each field
-    # If the field is a:
-    # * [string]    - return the value
-    # * [model]     - take the value split it by the full stop
-    #                 and recursively send the method to the object
-    #                 e.g. it is object.foo.bar will first evaluate
-    #                 foo and then apply bar
-    # * [constant]  - Takes the constant and applies the method chain
-    #                 to it e.g DateTime.now
-    # * [array]     - usually an array of fields
-    def instance_value(object, field)
-      case field[:type]
-      when :string
-        field[:value]
-      when :model
-        evaluate_method_chain(object, field[:value].split('.'))
-      when :constant
-        evaluate_method_chain(field[:value].split('.').first.constantize,
-                              field[:value].split('.')[1..])
-      when :array
-        build_children(object, field)
-      end
-    end
-
-    # we need to do this via try as certain fields may be nil
-    def evaluate_method_chain(object, chain)
-      chain.inject(object) { |o, meth| o.try(:send, meth) }
     end
   end
 end

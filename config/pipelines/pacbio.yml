@@ -582,7 +582,7 @@ default: &default
         fields:
          _sorted_wells:
           type: :array
-          value: sorted_wells
+          value: sorted_wells # defined in 'app/models/concerns/sample_sheet.rb'
           children:
             Library Type:
               type: :string

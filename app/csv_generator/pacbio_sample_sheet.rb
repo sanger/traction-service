@@ -3,17 +3,11 @@
 # PacbioSampleSheet
 # Used to generate sample sheets specific to the Pacbio pipeline
 # For usage documentation see 'app/csv_generator/README.md'
-class PacbioSampleSheet
-  include ActiveModel::Model
-
-  # run           => Pacbio::Run
-  # configuration => Pipelines::Configuration::Item
-  attr_accessor :run, :configuration
-
+class PacbioSampleSheet < DataStructureBuilder
   # return a CSV String
   # using run and configuration attributes
   # to generate headers and data
-  def generate
+  def payload
     CSV.generate do |csv|
       csv << csv_headers
 
@@ -30,15 +24,14 @@ class PacbioSampleSheet
 
   private
 
-  def wells
-    run.plates.flat_map(&:wells)
-  end
-
   # Returns a list of wells associated with the plate in column order
   # Example: [<Well position:'A1'>, <Well position:'A2'>, <Well position:'B1'>]) =>
   #          [<Well position:'A1'>, <Well position:'B1'>, <Well position:'A2'>]
+  #
+  # **DEPRECATED:** replaced by SampleSheet::Run#sorted_wells
   def sorted_wells
-    wells.sort_by { |well| [well.column.to_i, well.row] }
+    run = object
+    run.wells.sort_by { |well| [well.column.to_i, well.row] }
   end
 
   # return a list of column names ie headers
@@ -81,32 +74,6 @@ class PacbioSampleSheet
     return nil unless populate[:for].include?(options[:row_type])
 
     obj = populate[:with] == :row_type ? options[options[:row_type]] : options[populate[:with]]
-    instance_value(obj, options[:column_options])
-  end
-
-  # TODO: refactor duplication with messages/message.rb
-  # Find the instance value for each field
-  # If the field is a:
-  # * [string]    - return the value
-  # * [model]     - take the value split it by the full stop
-  #                 and recursively send the method to the object
-  #                 e.g. it is object.foo.bar will first evaluate
-  #                 foo and then apply bar
-  # * [constant]  - Takes the constant and applies the method chain
-  #                 to it e.g DateTime.now
-  def instance_value(obj, field)
-    case field[:type]
-    when :string
-      field[:value]
-    when :model
-      evaluate_method_chain(obj, field[:value].split('.'))
-    when :constant
-      const_obj, *methods = field[:value].split('.')
-      evaluate_method_chain(const_obj.constantize, methods)
-    end
-  end
-
-  def evaluate_method_chain(object, chain)
-    chain.inject(object, :send)
+    instance_value(obj, options[:column_options], :column)
   end
 end

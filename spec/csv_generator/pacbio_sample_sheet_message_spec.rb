@@ -6,12 +6,13 @@ require 'rails_helper'
 
 RSpec.describe PacbioSampleSheetMessage, type: :model do
   describe '#payload' do
-    subject(:csv_string) { csv.payload_csv }
+    subject(:csv_string) { csv.payload }
 
     let(:plate)       { create(:pacbio_plate, plate_number: 1, wells: [well1, well2]) }
     let(:run)         { create(:pacbio_run, smrt_link_version:, plates: [plate]) }
     let(:parsed_csv)  { CSV.parse(csv_string) }
-    let(:csv)         { described_class.new(object: run, configuration: Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name)) }
+    let(:csv)         { described_class.new(object: run, configuration:) }
+    let(:configuration) { Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name) }
 
     context 'v12_revio' do
       let(:smrt_link_version) { create(:pacbio_smrt_link_version, name: 'v12_revio', default: true) }
