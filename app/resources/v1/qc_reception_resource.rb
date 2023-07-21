@@ -41,7 +41,7 @@ module V1
     end
 
     def publish_messages
-      # Messages.publish(@model.messages, Pipelines.qc_result.qc_reception_message)
+      Messages.publish(@model.messages, Pipelines.qc_result.qc_reception_message)
     end
 
     def permitted_attributes

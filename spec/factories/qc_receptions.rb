@@ -26,6 +26,7 @@ FactoryBot.define do
 
   factory :qc_reception do
     source { 'tol-lab-share.tol' }
+    # TODO: DPL-754: Don't think the below should be here, it lives with the factory
     qc_results_list { qc_results_list_stringified }
   end
 
