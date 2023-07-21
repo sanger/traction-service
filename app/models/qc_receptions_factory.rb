@@ -17,6 +17,10 @@ class QcReceptionsFactory
     @qc_results_list ||= []
   end
 
+  # def qc_results_list=(attributes)
+  #   @qc_results_list = attributes
+  # end
+
   def create_qc_results!
     if @qc_results_list.empty?
       errors.add('QcReceptionsFactory', 'the qc_results_list is empty')
