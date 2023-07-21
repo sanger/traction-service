@@ -52,12 +52,12 @@ module Pacbio
     # using pipelines.yml configuration to generate data
     def generate_sample_sheet
       sample_sheet_generator = PacbioSampleSheet
-      # if the feature flag is enabled and there is a 'fields' config defined, use the new-style generator
-      if Flipper.enabled?(:dpl_831_enable_simpler_config_sample_sheets) && 'fields' in pacbio_run_sample_sheet_config
-        sample_sheet_generator = SampleSheetMessage
+      configuration = pacbio_run_sample_sheet_config
+      # if the feature flag is enabled and there is a 'fields' config defined
+      if Flipper.enabled?(:dpl_831_enable_simpler_config_sample_sheets) && 'fields' in configuration
+        sample_sheet_generator = PacbioSampleSheetMessage
       end
-      sample_sheet = sample_sheet_generator.new(run: self,
-                                                configuration: pacbio_run_sample_sheet_config)
+      sample_sheet = sample_sheet_generator.new(run: self, configuration:)
       sample_sheet.generate
     end
 
