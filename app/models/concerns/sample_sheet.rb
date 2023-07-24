@@ -28,6 +28,24 @@ module SampleSheet
       pools.first.tube.barcode
     end
 
+    # find the plate given the plate_number
+    # returns `nil` if no plate found
+    def get_plate(plate_number)
+      plate.run.plates.filter { |plate| plate.plate_number == plate_number }.first
+    end
+
+    # return the sequencing_kit_box_barcode of plate 1
+    # used for 2-plate sample sheets
+    def sequencing_kit_box_barcode_plate_1
+      get_plate(1)&.sequencing_kit_box_barcode
+    end
+
+    # return the sequencing_kit_box_barcode of plate 2
+    # used for 2-plate sample sheets
+    def sequencing_kit_box_barcode_plate_2
+      get_plate(2)&.sequencing_kit_box_barcode
+    end
+
     # Used to indicate to the sample sheet whether it should treat a sample as barcoded
     # Note: This doesn't actually indicate that a sample *is* barcoded, as :hidden
     # tag sets (such as IsoSeq) lie.
