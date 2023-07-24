@@ -21,6 +21,20 @@ RSpec.describe QcReceptionsFactory do
     end
   end
 
+  describe '#assay_types' do
+    it 'fetches the correct qc assay types for TOL' do
+      qc_assay_types = QcAssayType.where(used_by: 'tol').pluck(:key)
+      expect(qc_assay_types.count).to eq 7
+      expect(qc_assay_types.include?('sheared_femto_fragment_size')).to be true
+      expect(qc_assay_types.include?('post_spri_concentration')).to be true
+      expect(qc_assay_types.include?('post_spri_volume')).to be true
+      expect(qc_assay_types.include?('final_nano_drop_280')).to be true
+      expect(qc_assay_types.include?('final_nano_drop_230')).to be true
+      expect(qc_assay_types.include?('final_nano_drop')).to be true
+      expect(qc_assay_types.include?('shearing_qc_comments')).to be true
+    end
+  end
+
   describe '#create_qc_results' do
     let(:factory) { build(:qc_receptions_factory) }
 
