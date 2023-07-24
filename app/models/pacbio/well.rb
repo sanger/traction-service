@@ -72,7 +72,7 @@ module Pacbio
     def summary
       "#{sample_names} #{comment}".strip
     end
-    
+
     # collection of all of the requests for a library
     # useful for messaging
     def request_libraries
