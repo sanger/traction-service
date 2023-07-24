@@ -46,8 +46,8 @@ RSpec.describe 'SampleSheet', type: :model do
     it 'will have library type' do
       column = sample_sheet_configuration.columns.children['Reagent Plate']
       expect(column).to be_present
-      expect(column.fetch('type')).to eq(:string)
-      expect(column.fetch('value')).to eq(1)
+      expect(column.fetch('type')).to eq(:model)
+      expect(column.fetch('value')).to eq('plate.plate_number')
       expect(column.fetch('populate')).to eq(populate_with_sample)
     end
 
@@ -114,8 +114,8 @@ RSpec.describe 'SampleSheet', type: :model do
     it 'will have library type' do
       column = sample_sheet_configuration.columns.children['Reagent Plate']
       expect(column).to be_present
-      expect(column.fetch('type')).to eq(:string)
-      expect(column.fetch('value')).to eq(1)
+      expect(column.fetch('type')).to eq(:model)
+      expect(column.fetch('value')).to eq('plate.plate_number')
       expect(column.fetch('populate')).to eq(populate_with_sample)
     end
 
