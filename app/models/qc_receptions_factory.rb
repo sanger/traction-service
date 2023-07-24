@@ -9,17 +9,13 @@ class QcReceptionsFactory
   attr_accessor :qc_reception
   attr_writer :qc_results_list
 
-  validates :qc_results_list, presence: true
-
   USED_BY = 'tol'
+  validates :qc_results_list, presence: true
+  validates_with QcReceptionsFactoryValidator, used_by: USED_BY
 
   def qc_results_list
     @qc_results_list ||= []
   end
-
-  # def qc_results_list=(attributes)
-  #   @qc_results_list = attributes
-  # end
 
   def create_qc_results!
     if @qc_results_list.empty?

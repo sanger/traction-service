@@ -85,21 +85,20 @@ RSpec.describe '/qc_receptions' do
         post v1_qc_receptions_url, params: body, headers: json_api_headers
       end
 
-      it 'renders a JSON response with the new qc_results_upload' do
+      it 'renders a JSON response with the new qc_receptions' do
         post v1_qc_receptions_url, params: body, headers: json_api_headers
         expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
       end
 
-      # TODO: DPL-754: Update after behaviour corrected
       context 'when there are no matching QcAssayTypes' do
         before do
           QcAssayType.destroy_all
         end
 
-        it 'creates a new QcReception' do
+        it 'does not create a new QcReception' do
           expect do
             post v1_qc_receptions_url, params: body, headers: json_api_headers
-          end.to change(QcReception, :count).by(1)
+          end.not_to change(QcReception, :count)
         end
 
         it 'does not create any QcResults' do
@@ -130,7 +129,7 @@ RSpec.describe '/qc_receptions' do
           end.not_to change(QcReception, :count)
         end
 
-        it 'renders a JSON response with errors for the new qc_results_upload' do
+        it 'renders a JSON response with errors for the new qc_receptions' do
           post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
@@ -157,7 +156,7 @@ RSpec.describe '/qc_receptions' do
           end.not_to change(QcReception, :count)
         end
 
-        it 'renders a JSON response with errors for the new qc_results_upload' do
+        it 'renders a JSON response with errors for the new qc_receptions' do
           post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
@@ -165,7 +164,6 @@ RSpec.describe '/qc_receptions' do
         end
       end
 
-      # TODO: DPL-754: Update after behaviour corrected
       context 'when qc_results_list is an empty object' do
         let(:invalid_body) do
           {
@@ -179,18 +177,18 @@ RSpec.describe '/qc_receptions' do
           }.to_json
         end
 
-        it 'does create a new QcReception' do
+        it 'does not create a new QcReception' do
           expect do
             post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
-          end.to change(QcReception, :count).by 1
+          end.not_to change(QcReception, :count)
         end
 
-        # it 'renders a JSON response with errors for the new qc_results_upload' do
-        #   post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
-        #   expect(response).to have_http_status(:unprocessable_entity)
-        #   expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-        #   expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "qc_results_list - can't be blank"
-        # end
+        it 'renders a JSON response with errors for the qc_results_list' do
+          post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
+          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'qc_results_list - Is empty'
+        end
       end
 
       context 'when source is missing' do
@@ -211,7 +209,7 @@ RSpec.describe '/qc_receptions' do
           end.not_to change(QcReception, :count)
         end
 
-        it 'renders a JSON response with errors for the new qc_results_upload' do
+        it 'renders a JSON response with errors for the new qc_receptions' do
           post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
@@ -238,7 +236,7 @@ RSpec.describe '/qc_receptions' do
           end.not_to change(QcReception, :count)
         end
 
-        it 'renders a JSON response with errors for the new qc_results_upload' do
+        it 'renders a JSON response with errors for the new qc_results_list' do
           post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
@@ -257,7 +255,7 @@ RSpec.describe '/qc_receptions' do
           end.not_to change(QcReception, :count)
         end
 
-        it 'renders a JSON response with errors for the new qc_results_upload' do
+        it 'renders a JSON response with errors for the new qc_receptions' do
           post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:bad_request)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))

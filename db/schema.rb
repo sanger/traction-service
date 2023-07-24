@@ -343,7 +343,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_091815) do
     t.string "value", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.datetime "date_submitted"
     t.string "priority_level"
     t.string "date_required_by"
     t.string "reason_for_priority"

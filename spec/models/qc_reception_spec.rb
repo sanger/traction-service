@@ -32,6 +32,19 @@ RSpec.describe QcReception do
         end.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
+
+    context 'when the qc_results_list is an empty object' do
+      let(:qc_reception) { build(:qc_reception, qc_results_list: [{}]) }
+
+      it 'raises validation error' do
+        expect do
+          described_class.create!(
+            source: qc_reception.source,
+            qc_results_list: qc_reception.qc_results_list
+          )
+        end.to raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
   end
 
   describe '#check delegation' do
