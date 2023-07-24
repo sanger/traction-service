@@ -38,17 +38,17 @@ class DataStructureBuilder
   # * [constant]  - Takes the constant and applies the method chain
   #                 to it e.g DateTime.now
   # * [array]     - usually an array of fields
-  def instance_value(object, field, parent)
-    chain = field[:value].split('.')
+  def instance_value(object, field, parent) # rubocop:disable Metrics/MethodLength
     case field[:type]
     when :string
       field[:value]
     when :model
-      evaluate_method_chain(object, chain)
+      evaluate_method_chain(object, field[:value].split('.'))
     when :parent_model
-      evaluate_method_chain(parent, chain)
+      evaluate_method_chain(parent, field[:value].split('.'))
     when :constant
-      evaluate_method_chain(chain.first.constantize, chain[1..])
+      evaluate_method_chain(field[:value].split('.').first.constantize,
+                            field[:value].split('.')[1..])
     when :array
       build_children(object, field)
     end
