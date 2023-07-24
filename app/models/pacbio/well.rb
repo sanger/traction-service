@@ -73,18 +73,6 @@ module Pacbio
       "#{sample_names} #{comment}".strip
     end
 
-    # return the sequencing_kit_box_barcode of plate 1
-    # used for 2-plate sample sheets
-    def sequencing_kit_box_barcode_plate_1
-      plate.run.plates.filter { |plate| plate.plate_number == 1 }.first&.sequencing_kit_box_barcode
-    end
-
-    # return the sequencing_kit_box_barcode of plate 2
-    # used for 2-plate sample sheets
-    def sequencing_kit_box_barcode_plate_2
-      plate.run.plates.filter { |plate| plate.plate_number == 2 }.first&.sequencing_kit_box_barcode
-    end
-
     # collection of all of the requests for a library
     # useful for messaging
     def request_libraries
