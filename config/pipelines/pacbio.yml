@@ -437,8 +437,8 @@ default: &default
                 - :well
               with: :well
           Reagent Plate:
-            type: :string
-            value: 1
+            type: :model
+            value: plate.plate_number
             populate:
               for:
                 - :well

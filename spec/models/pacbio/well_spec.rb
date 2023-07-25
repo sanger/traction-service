@@ -424,13 +424,13 @@ RSpec.describe Pacbio::Well, pacbio: true do
       end
 
       context 'for the sample sheets' do
-        it 'a well on plate 1 must have a sequencing kit box barcode for plate 1 only' do
+        it 'a well on plate 1 must have a sequencing kit box barcode for both plates' do
           expect(well_plate1.sequencing_kit_box_barcode_plate_1).to be(well_plate1.plate.sequencing_kit_box_barcode)
-          expect(well_plate1.sequencing_kit_box_barcode_plate_2).to be_nil
+          expect(well_plate1.sequencing_kit_box_barcode_plate_2).to be(well_plate2.plate.sequencing_kit_box_barcode)
         end
 
-        it 'a well on plate 2 must have a sequencing kit box barcode for plate 2 only' do
-          expect(well_plate2.sequencing_kit_box_barcode_plate_1).to be_nil
+        it 'a well on plate 2 must have a sequencing kit box barcode for both plates' do
+          expect(well_plate2.sequencing_kit_box_barcode_plate_1).to be(well_plate1.plate.sequencing_kit_box_barcode)
           expect(well_plate2.sequencing_kit_box_barcode_plate_2).to be(well_plate2.plate.sequencing_kit_box_barcode)
         end
       end
