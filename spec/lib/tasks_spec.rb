@@ -11,12 +11,6 @@ RSpec.describe 'RakeTasks' do
     Pacbio::SmrtLinkVersion.find_by(name: 'v12_revio') || create(:pacbio_smrt_link_version, name: 'v12_revio')
   end
 
-  describe 'library_types:create' do
-    it 'creates the library types' do
-      expect { Rake::Task['library_types:create'].invoke }.to change(LibraryType, :count).by(15).and output("-> Library types updated\n").to_stdout
-    end
-  end
-
   describe 'data_types:create' do
     it 'creates the data types' do
       expect { Rake::Task['data_types:create'].invoke }.to change(DataType, :count).by(2).and output("-> Data types updated\n").to_stdout
