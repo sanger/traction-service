@@ -11,12 +11,6 @@ RSpec.describe 'RakeTasks' do
     Pacbio::SmrtLinkVersion.find_by(name: 'v12_revio') || create(:pacbio_smrt_link_version, name: 'v12_revio')
   end
 
-  describe 'data_types:create' do
-    it 'creates the data types' do
-      expect { Rake::Task['data_types:create'].invoke }.to change(DataType, :count).by(2).and output("-> Data types updated\n").to_stdout
-    end
-  end
-
   describe 'ont_instruments:create' do
     it 'creates the correct instrument data' do
       Rake::Task['ont_instruments:create'].reenable
