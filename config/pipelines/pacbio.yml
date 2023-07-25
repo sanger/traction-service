@@ -562,7 +562,7 @@ default: &default
               with: :row_type
       v12_sequel_iie:
         columns:
-          System Name:
+          Instrument Type:
             type: :model
             value: plate.run.system_name
             populate:
@@ -613,7 +613,7 @@ default: &default
               for:
                 - :well
               with: :well
-          Template Prep Kit Box Barcode:
+          SMRTbell Adapter Design:
             type: :model
             value: template_prep_kit_box_barcode
             populate:
@@ -638,13 +638,6 @@ default: &default
           On-Plate Loading Concentration (pM):
             type: :model
             value: on_plate_loading_concentration
-            populate:
-              for:
-                - :well
-              with: :well
-          DNA Control Complex Box Barcode:
-            type: :model
-            value: plate.run.dna_control_complex_box_barcode
             populate:
               for:
                 - :well

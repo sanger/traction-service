@@ -633,7 +633,6 @@ RSpec.describe PacbioSampleSheet, type: :model do
               well.binding_kit_box_barcode,
               well.plate.sequencing_kit_box_barcode,
               well.on_plate_loading_concentration.to_s,
-              well.plate.run.dna_control_complex_box_barcode,
               well.plate.run.comments,
               well.show_row_per_sample?.to_s,
               '', # barcode name - does not apply
@@ -667,7 +666,6 @@ RSpec.describe PacbioSampleSheet, type: :model do
               '',
               'false', # well.collection?
               well.position,
-              '',
               '',
               '',
               '',
@@ -738,7 +736,6 @@ RSpec.describe PacbioSampleSheet, type: :model do
               well.binding_kit_box_barcode,
               well.plate.sequencing_kit_box_barcode,
               well.on_plate_loading_concentration.to_s,
-              well.plate.run.dna_control_complex_box_barcode,
               well.plate.run.comments,
               well.sample_is_barcoded.to_s,
               '', # barcode name - does not apply

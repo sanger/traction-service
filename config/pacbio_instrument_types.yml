@@ -4,6 +4,7 @@ default: &default
     name: Sequel IIe
     smrt_link_versions:
       - v11
+      - v12
     models:
       run:
         # the run is the root. This could be used to kick off validation
@@ -15,10 +16,11 @@ default: &default
               attribute: :plates
               minimum: 1
               maximum: 1
-          required_attributes:
-            options:
-              required_attributes:
-                - :dna_control_complex_box_barcode
+          # TODO: fix this to have separate behaviour for v11 and v12
+          # required_attributes:
+          #   options:
+          #     required_attributes:
+          #       - :dna_control_complex_box_barcode
       plates:
         children: :wells
         # we want to validate each plate and plate
@@ -110,4 +112,3 @@ test: *default
 production: *default
 uat: *default
 training: *default
-
