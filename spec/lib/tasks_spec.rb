@@ -97,19 +97,21 @@ RSpec.describe 'RakeTasks' do
       Rake::Task['tags:create:pacbio_isoseq'].reenable
       expect { Rake::Task['pacbio_data:create'].invoke }
         .to output(
-          "-> Creating Sequel_16_barcodes_v3 tag set and tags\n" \
-          "-> Tag Set successfully created\n" \
-          "-> Sequel_16_barcodes_v3 tags successfully created\n" \
-          "-> Creating Pacbio IsoSeq tag set and tags\n" \
-          "-> Tag Set successfully created\n" \
-          "-> IsoSeq_Primers_12_Barcodes_v1 created\n" \
-          "-> Creating pacbio plates and tubes...\b\b\b √ \n" \
-          "-> Creating pacbio libraries...\b\b\b √ \n" \
-          "-> Finding Pacbio SMRT Link versions...\b\b\b √ \n" \
-          "-> Creating pacbio runs:\n   " \
-          "-> Creating runs for v11...\b\b\b √ \n   " \
-          "-> Creating runs for v12_revio...\b\b\b √ \n" \
-          "-> Pacbio runs successfully created\n"
+          <<~HEREDOC
+            -> Creating Sequel_16_barcodes_v3 tag set and tags
+            -> Tag Set successfully created
+            -> Sequel_16_barcodes_v3 tags successfully created
+            -> Creating Pacbio IsoSeq tag set and tags
+            -> Tag Set successfully created
+            -> IsoSeq_Primers_12_Barcodes_v1 created
+            -> Creating pacbio plates and tubes...\b\b\b √#{' '}
+            -> Creating pacbio libraries...\b\b\b √#{' '}
+            -> Finding Pacbio SMRT Link versions...\b\b\b √#{' '}
+            -> Creating pacbio runs:
+               -> Creating runs for v11...\b\b\b √#{' '}
+               -> Creating runs for v12_revio...\b\b\b √#{' '}
+            -> Pacbio runs successfully created
+          HEREDOC
         ).to_stdout
       expect(Pacbio::Run.count)
         .to eq(12)
@@ -118,26 +120,42 @@ RSpec.describe 'RakeTasks' do
 
   describe 'library_types:create' do
     it 'creates the library types' do
-      expect { Rake::Task['library_types:create'].invoke }.to change(LibraryType, :count).by(15).and output("-> Library types updated\n").to_stdout
+      expect { Rake::Task['library_types:create'].invoke }.to change(LibraryType, :count).by(15).and output(
+        <<~HEREDOC
+          -> Library types updated
+        HEREDOC
+      ).to_stdout
     end
   end
 
   describe 'data_types:create' do
     it 'creates the data types' do
-      expect { Rake::Task['data_types:create'].invoke }.to change(DataType, :count).by(2).and output("-> Data types updated\n").to_stdout
+      expect { Rake::Task['data_types:create'].invoke }.to change(DataType, :count).by(2).and output(
+        <<~HEREDOC
+          -> Data types updated
+        HEREDOC
+      ).to_stdout
     end
   end
 
   describe 'ont_instruments:create' do
     it 'creates the correct instrument data' do
       Rake::Task['ont_instruments:create'].reenable
-      expect { Rake::Task['ont_instruments:create'].invoke }.to change(Ont::Instrument, :count).and output("-> ONT Instruments successfully created\n").to_stdout
+      expect { Rake::Task['ont_instruments:create'].invoke }.to change(Ont::Instrument, :count).and output(
+        <<~HEREDOC
+          -> ONT Instruments successfully created
+        HEREDOC
+      ).to_stdout
     end
   end
 
   describe 'min_know_versions:create' do
     it 'creates the correct MinKnowVersion data' do
-      expect { Rake::Task['min_know_versions:create'].invoke }.to change(Ont::MinKnowVersion, :count).and output("-> ONT MinKnow versions successfully created\n").to_stdout
+      expect { Rake::Task['min_know_versions:create'].invoke }.to change(Ont::MinKnowVersion, :count).and output(
+        <<~HEREDOC
+          -> ONT MinKnow versions successfully created
+        HEREDOC
+      ).to_stdout
     end
   end
 
@@ -223,7 +241,11 @@ RSpec.describe 'RakeTasks' do
 
   describe 'qc_assay_types:create' do
     it 'creates the correct number of qc assay types' do
-      expect { Rake::Task['qc_assay_types:create'].invoke }.to change(QcAssayType, :count).by(10).and output("-> QC Assay Types updated\n").to_stdout
+      expect { Rake::Task['qc_assay_types:create'].invoke }.to change(QcAssayType, :count).by(10).and output(
+        <<~HEREDOC
+          -> QC Assay Types updated
+        HEREDOC
+      ).to_stdout
     end
   end
 
