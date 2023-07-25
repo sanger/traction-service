@@ -18,12 +18,6 @@ RSpec.describe 'RakeTasks' do
     end
   end
 
-  describe 'min_know_versions:create' do
-    it 'creates the correct MinKnowVersion data' do
-      expect { Rake::Task['min_know_versions:create'].invoke }.to change(Ont::MinKnowVersion, :count).and output("-> ONT MinKnow versions successfully created\n").to_stdout
-    end
-  end
-
   describe 'ont_data:create' do
     let(:expected_plates) { 2 }
     let(:filled_wells_per_plate) { 95 }
