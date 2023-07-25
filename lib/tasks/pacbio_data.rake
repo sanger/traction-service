@@ -169,7 +169,6 @@ namespace :pacbio_data do
         name: "Run12#{pool.id}",
         system_name: Pacbio::Run.system_names['Sequel IIe'],
         smrt_link_version: v12_sequel_iie,
-        dna_control_complex_box_barcode: "DCCB#{pool.id}",
         plates: [Pacbio::Plate.new(
           sequencing_kit_box_barcode: "SKB#{pool.id}",
           plate_number: 1,

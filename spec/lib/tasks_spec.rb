@@ -111,11 +111,12 @@ RSpec.describe 'RakeTasks' do
             -> Creating pacbio runs:
                -> Creating runs for v11...\b\b\b √#{' '}
                -> Creating runs for v12_revio...\b\b\b √#{' '}
+               -> Creating runs for v12_sequel_iie...\b\b\b √#{' '}
             -> Pacbio runs successfully created
           HEREDOC
         ).to_stdout
       expect(Pacbio::Run.count)
-        .to eq(12)
+        .to eq(18)
     end
   end
 
