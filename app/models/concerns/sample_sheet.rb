@@ -16,18 +16,6 @@ module SampleSheet
 
   # Provides well helper methods for sample sheet generation
   module Well
-    # The sequencing_kit_box_barcode of this plate if well belongs to plate 1
-    # used for 2-plate sample sheets
-    def sequencing_kit_box_barcode_plate_1
-      plate.sequencing_kit_box_barcode if plate.plate_number == 1
-    end
-
-    # The sequencing_kit_box_barcode of this plate if well belongs to plate 2
-    # used for 2-plate sample sheets
-    def sequencing_kit_box_barcode_plate_2
-      plate.sequencing_kit_box_barcode if plate.plate_number == 2
-    end
-
     # Sample Well field
     def position_leading_zero
       "#{row}#{column.rjust(2, '0')}"
