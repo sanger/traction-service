@@ -53,7 +53,7 @@ module Pacbio
     # using pipelines.yml configuration to generate data
     def generate_sample_sheet
       configuration = pacbio_run_sample_sheet_config
-      sample_sheet_generator = PacbioSampleSheet
+      sample_sheet_generator = DeprecatedPacbioSampleSheet
       sample_sheet_generator = PacbioSampleSheetMessage if use_simpler_sample_sheets?
       sample_sheet = sample_sheet_generator.new(object: self, configuration:)
       sample_sheet.payload
