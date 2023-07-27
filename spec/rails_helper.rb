@@ -57,6 +57,11 @@ RSpec.configure do |config|
   # https://relishapp.com/rspec/rspec-rails/docs
   config.infer_spec_type_from_file_location!
 
+  config.expect_with :rspec do |expectations|
+    # Trucates (or not) expected and got output
+    expectations.max_formatted_output_length = nil
+  end
+
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
