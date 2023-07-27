@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-# Creates a message in the correct structure for the warehouse
-class PacbioSampleSheetMessage < DataStructureBuilder
+# Used to generate sample sheets specific to the PacBio pipeline for v12 and above
+class PacbioSampleSheet < DataStructureBuilder
   # return a list of column names ie headers
   # eg ['System Name', 'Run Name']
   def csv_headers
