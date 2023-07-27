@@ -162,7 +162,7 @@ RSpec.describe 'RakeTasks' do
 
   describe 'qc_assay_types:create' do
     it 'creates the correct number of qc assay types' do
-      expect { Rake::Task['qc_assay_types:create'].invoke }.to change(QcAssayType, :count).by(17).and output("-> QC Assay Types updated\n").to_stdout
+      expect { Rake::Task['qc_assay_types:create'].invoke }.to change(QcAssayType, :count).by(16).and output("-> QC Assay Types updated\n").to_stdout
     end
   end
 

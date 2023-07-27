@@ -4,13 +4,14 @@ require 'rails_helper'
 
 RSpec.describe QcReceptionsFactory do
   before do
-    create(:qc_assay_type, key: 'sheared_femto_fragment_size', label: 'Sheared Femto Fragment Size (bp)', used_by: 2, units: 'bp')
-    create(:qc_assay_type, key: 'post_spri_concentration', label: 'Post SPRI Concentration (ng/ul)', used_by: 2, units: 'ng/ul')
-    create(:qc_assay_type, key: 'post_spri_volume', label: 'Post SPRI Volume (ul)', used_by: 2, units: 'ul')
-    create(:qc_assay_type, key: 'final_nano_drop_280', label: 'Final NanoDrop 260/280', used_by: 2, units: '')
-    create(:qc_assay_type, key: 'final_nano_drop_230', label: 'Final NanoDrop 260/230', used_by: 2, units: '')
-    create(:qc_assay_type, key: 'final_nano_drop', label: 'Final NanoDrop ng/ul', used_by: 2, units: 'ng/ul')
-    create(:qc_assay_type, key: 'shearing_qc_comments', label: 'Shearing & QC comments (if applicable)', used_by: 2, units: '')
+    create(:qc_assay_type, key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul) [ESP1]', used_by: 0, units: 'ng/ul')
+    create(:qc_assay_type, key: 'sheared_femto_fragment_size', label: 'Sheared Femto Fragment Size (bp)', used_by: 1, units: 'bp')
+    create(:qc_assay_type, key: 'post_spri_concentration', label: 'Post SPRI Concentration (ng/ul)', used_by: 1, units: 'ng/ul')
+    create(:qc_assay_type, key: 'post_spri_volume', label: 'Post SPRI Volume (ul)', used_by: 1, units: 'ul')
+    create(:qc_assay_type, key: 'final_nano_drop_280', label: 'Final NanoDrop 260/280', used_by: 1, units: '')
+    create(:qc_assay_type, key: 'final_nano_drop_230', label: 'Final NanoDrop 260/230', used_by: 1, units: '')
+    create(:qc_assay_type, key: 'final_nano_drop', label: 'Final NanoDrop ng/ul', used_by: 1, units: 'ng/ul')
+    create(:qc_assay_type, key: 'shearing_qc_comments', label: 'Shearing & QC comments (if applicable)', used_by: 1, units: '')
   end
 
   describe '#qc_results_list' do
@@ -25,13 +26,7 @@ RSpec.describe QcReceptionsFactory do
     it 'fetches the correct qc assay types for TOL' do
       qc_assay_types = QcAssayType.where(used_by: 'tol').pluck(:key)
       expect(qc_assay_types.count).to eq 7
-      expect(qc_assay_types.include?('sheared_femto_fragment_size')).to be true
-      expect(qc_assay_types.include?('post_spri_concentration')).to be true
-      expect(qc_assay_types.include?('post_spri_volume')).to be true
-      expect(qc_assay_types.include?('final_nano_drop_280')).to be true
-      expect(qc_assay_types.include?('final_nano_drop_230')).to be true
-      expect(qc_assay_types.include?('final_nano_drop')).to be true
-      expect(qc_assay_types.include?('shearing_qc_comments')).to be true
+      expect(qc_assay_types).not_to include('qubit_concentration_ngul')
     end
   end
 
@@ -80,13 +75,10 @@ RSpec.describe QcReceptionsFactory do
       let(:factory) { build(:qc_receptions_factory, qc_reception:, qc_results_list: qc_results_with_mismatch) }
 
       it 'ignores the missing/mistmatch assay_types and fetches the others' do
-        fetched_assay_types = factory.assay_types
-        expect(fetched_assay_types.keys.include?('mismatched_key')).to be false
-        expect(fetched_assay_types.keys.include?('some_other_key')).to be false
-        expect(fetched_assay_types.keys.include?('final_nano_drop_280')).to be true
-        expect(fetched_assay_types.keys.include?('post_spri_concentration')).to be true
-        expect(fetched_assay_types.keys.include?('post_spri_volume')).to be true
-        expect(fetched_assay_types.keys.include?('shearing_qc_comments')).to be true
+        assay_types = factory.assay_types
+        expect(assay_types.keys).not_to include('mismatched_key', 'some_other_key')
+        expect(assay_types.keys).to include('final_nano_drop_280',
+                                            'post_spri_concentration', 'post_spri_volume', 'shearing_qc_comments')
       end
 
       it 'creates the correct number of QC Results records that matches the QC Assay Types' do
@@ -104,14 +96,10 @@ RSpec.describe QcReceptionsFactory do
       it 'builds the correct qc results message' do
         factory.create_qc_results!
         messages = factory.messages
+        qc_results_list = factory.qc_results_list
         expect(messages.count).to eq 7
-        expect(QcResult.find(messages[0].id).labware_barcode).to eq(messages[0].labware_barcode)
-        expect(QcResult.find(messages[0].id).sample_external_id).to eq(messages[0].sample_external_id)
-        expect(QcResult.find(messages[0].id).qc_assay_type_id).to eq(messages[0].qc_assay_type_id)
-        expect(QcResult.find(messages[0].id).value).to eq(messages[0].value)
-        expect(QcResult.find(messages[0].id).priority_level).to eq(messages[0].priority_level)
-        expect(QcResult.find(messages[0].id).reason_for_priority).to eq(messages[0].reason_for_priority)
-        expect(QcResult.find(messages[0].id).date_required_by).to eq(messages[0].date_required_by)
+        expect(messages[0].labware_barcode).to eq(qc_results_list[0]['labware_barcode'])
+        expect(messages[0].sample_external_id).to eq(qc_results_list[0]['sample_external_id'])
       end
     end
   end

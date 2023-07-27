@@ -343,9 +343,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_091815) do
     t.string "value", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "priority_level"
-    t.string "date_required_by"
-    t.string "reason_for_priority"
+    t.string "priority_level", comment: "Priority level eg Medium, High etc"
+    t.string "date_required_by", comment: "Date required by eg tol, etc"
+    t.text "reason_for_priority", comment: "Reason for priority"
     t.index ["qc_assay_type_id"], name: "index_qc_results_on_qc_assay_type_id"
   end
 

@@ -20,14 +20,13 @@ namespace :qc_assay_types do
       { key: 'average_fragment_size', label: 'Femto Frag Size [ESP1]', used_by: 0, units: 'Kb' },
       { key: 'gqn_dnaex', label: 'GQN >30000 [ESP1]', used_by: 0, units: '' },
       { key: 'results_pdf', label: 'Femto pdf [ESP1]', used_by: 0, units: '' },
-      { key: 'some_future_key', label: 'Some Future Label', used_by: 1, units: '' },
-      { key: 'sheared_femto_fragment_size', label: 'Sheared Femto Fragment Size (bp)', used_by: 2, units: 'bp' },
-      { key: 'post_spri_concentration', label: 'Post SPRI Concentration (ng/ul)', used_by: 2, units: 'ng/ul' },
-      { key: 'post_spri_volume', label: 'Post SPRI Volume (ul)', used_by: 2, units: 'ul' },
-      { key: 'final_nano_drop_280', label: 'Final NanoDrop 260/280', used_by: 2, units: '' },
-      { key: 'final_nano_drop_230', label: 'Final NanoDrop 260/230', used_by: 2, units: '' },
-      { key: 'final_nano_drop', label: 'Final NanoDrop ng/ul', used_by: 2, units: 'ng/ul' },
-      { key: 'shearing_qc_comments', label: 'Shearing & QC comments (if applicable)', used_by: 2, units: '' }
+      { key: 'sheared_femto_fragment_size', label: 'Sheared Femto Fragment Size (bp)', used_by: 1, units: 'bp' },
+      { key: 'post_spri_concentration', label: 'Post SPRI Concentration (ng/ul)', used_by: 1, units: 'ng/ul' },
+      { key: 'post_spri_volume', label: 'Post SPRI Volume (ul)', used_by: 1, units: 'ul' },
+      { key: 'final_nano_drop_280', label: 'Final NanoDrop 260/280', used_by: 1, units: '' },
+      { key: 'final_nano_drop_230', label: 'Final NanoDrop 260/230', used_by: 1, units: '' },
+      { key: 'final_nano_drop', label: 'Final NanoDrop ng/ul', used_by: 1, units: 'ng/ul' },
+      { key: 'shearing_qc_comments', label: 'Shearing & QC comments (if applicable)', used_by: 1, units: '' }
     ].each do |options|
       QcAssayType.create_with(options).find_or_create_by!(key: options[:key])
     end

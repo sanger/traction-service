@@ -38,6 +38,11 @@ en:
           attributes:
             wells:
               empty: there are no wells
+        qc_receptions_factory:
+          attributes:
+            qc_results_list:
+              empty_array: Is empty
+              invalid: No valid Qc fields
   activerecord:
     errors:
       models:

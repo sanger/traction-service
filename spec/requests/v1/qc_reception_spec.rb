@@ -8,9 +8,12 @@ RSpec.describe '/qc_receptions' do
       # QcAssayType for Extraction - to be ignored
       create(:qc_assay_type, key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul) [ESP1]', used_by: 0, units: 'ng/ul')
       # Relevant QcAssayType for ToL
-      create(:qc_assay_type, key: 'sheared_femto_fragment_size', label: 'Sheared Femto Fragment Size (bp)', used_by: 2, units: 'bp')
+      create(:qc_assay_type, key: 'sheared_femto_fragment_size', label: 'Sheared Femto Fragment Size (bp)', used_by: 1, units: 'bp')
     end
 
+    # Load config file
+    let(:config) { YAML.load_file(Rails.root.join('config/locales//en.yml'), aliases: true) }
+    let(:error_config) { config['en']['activemodel']['errors']['models']['qc_receptions_factory'] }
     let(:qc_results_list) do
       [
         {
@@ -68,17 +71,18 @@ RSpec.describe '/qc_receptions' do
       end
 
       it 'creates the relevant QcResult data' do
+        qc_results = qc_results_list[0]
+        assay_type_id = QcAssayType.find_by(key: 'sheared_femto_fragment_size').id
         post v1_qc_receptions_url, params: body, headers: json_api_headers
-        expect(QcResult.last.labware_barcode).to eq 'FD20706500'
-        expect(QcResult.last.sample_external_id).to eq 'supplier_sample_name_DDD'
-        expect(QcResult.last.qc_assay_type_id).to eq QcAssayType.find_by(key: 'sheared_femto_fragment_size').id
+        expect(QcResult.last.labware_barcode).to eq qc_results[:labware_barcode]
+        expect(QcResult.last.sample_external_id).to eq qc_results[:sample_external_id]
+        expect(QcResult.last.qc_assay_type_id).to eq assay_type_id
         expect(QcResult.last.value).to eq '5'
-        expect(QcResult.last.date_required_by).to eq 'Long Read'
-        expect(QcResult.last.priority_level).to eq 'Medium'
-        expect(QcResult.last.reason_for_priority).to eq 'Reason goes here'
+        expect(QcResult.last.date_required_by).to eq qc_results[:date_required_by]
+        expect(QcResult.last.priority_level).to eq qc_results[:priority_level]
+        expect(QcResult.last.reason_for_priority).to eq qc_results[:reason_for_priority]
       end
 
-      # TODO: DPL-754: test message data?
       it 'sends the messages' do
         # 1 as there is 1 QcResult created
         expect(Broker::Handle).to receive(:publish).once
@@ -184,10 +188,11 @@ RSpec.describe '/qc_receptions' do
         end
 
         it 'renders a JSON response with errors for the qc_results_list' do
+          error_message = error_config['attributes']['qc_results_list']['empty_array']
           post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'qc_results_list - Is empty'
+          expect(JSON.parse(response.parsed_body)['errors'][0]['title']).to eq error_message
         end
       end
 

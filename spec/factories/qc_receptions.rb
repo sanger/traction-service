@@ -26,12 +26,11 @@ FactoryBot.define do
 
   factory :qc_reception do
     source { 'tol-lab-share.tol' }
-    # TODO: DPL-754: Don't think the below should be here, it lives with the factory
     qc_results_list { qc_results_list_stringified }
   end
 
   factory :qc_receptions_factory, class: 'QcReceptionsFactory' do
     qc_reception { create(:qc_reception) }
-    qc_results_list { qc_results_list_stringified }
+    qc_results_list { qc_reception.qc_results_list }
   end
 end
