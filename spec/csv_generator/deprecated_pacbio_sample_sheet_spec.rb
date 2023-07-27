@@ -4,7 +4,7 @@ require 'rails_helper'
 
 # See additional sample sheet specs at 'spec/pipelines/pacbio/sample_sheet_spec.rb'
 
-RSpec.describe PacbioSampleSheet, type: :model do
+RSpec.describe DeprecatedPacbioSampleSheet, type: :model do
   describe '#generate' do
     subject(:csv_string) { csv.payload }
 

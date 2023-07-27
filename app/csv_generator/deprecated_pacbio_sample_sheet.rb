@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 # PacbioSampleSheet
-# Used to generate sample sheets specific to the Pacbio pipeline
+# Used to generate sample sheets specific to the Pacbio pipeline for v10 & v11
 # For usage documentation see 'app/csv_generator/README.md'
-class PacbioSampleSheet < DataStructureBuilder
+class DeprecatedPacbioSampleSheet < DataStructureBuilder
   # return a CSV String
   # using run and configuration attributes
   # to generate headers and data
