@@ -4,7 +4,7 @@ require 'rails_helper'
 
 # See additional sample sheet specs at 'spec/pipelines/pacbio/sample_sheet_spec.rb'
 
-RSpec.describe PacbioSampleSheetMessage, type: :model do
+RSpec.describe PacbioSampleSheet, type: :model do
   describe '#payload' do
     subject(:csv_string) { csv.payload }
 
