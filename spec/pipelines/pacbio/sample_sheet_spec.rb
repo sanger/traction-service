@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-# See additional sample sheet specs at 'spec/csv_generator/pacbio_sample_sheet_spec.rb'
+# See additional sample sheet specs at 'spec/exchanges/run_csv/pacbio_sample_sheet_spec.rb'
 
 RSpec.describe 'SampleSheet', type: :model do
   let(:populate) { { for: [:well], with: :well }.with_indifferent_access }
