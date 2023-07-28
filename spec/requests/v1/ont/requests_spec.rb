@@ -169,8 +169,6 @@ RSpec.describe 'Ont::RequestsController', ont: true do
       request.reload
       expect(request.cost_code).to eq('fraud')
     end
-
-    it 'publishes a message'
   end
 
   describe '#update - failure' do
