@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Messages
-  # Message
+module Message
+  # Message::Message
   # Creates a message in the correct structure for the warehouse
   class Message < DataStructureBuilder
     # Produces the message in the correct format
@@ -19,6 +19,7 @@ module Messages
     end
 
     # Content as json
+    # Called by the message broker
     def payload
       content.to_json
     end

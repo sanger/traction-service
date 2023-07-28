@@ -7,7 +7,7 @@ RSpec.describe 'Saphyr', saphyr: true, type: :model do
   let(:pipeline_config)   { config.saphyr }
   let(:flowcell)          { create(:saphyr_flowcell_with_library) }
   let(:message)           do
-    Messages::Message.new(object: flowcell, configuration: pipeline_config.message)
+    Message::Message.new(object: flowcell, configuration: pipeline_config.message)
   end
 
   it 'has a lims' do

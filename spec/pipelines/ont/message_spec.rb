@@ -11,7 +11,7 @@ RSpec.describe 'Ont', ont: true, type: :model do
   let(:pipeline_config)   { config.ont.message }
   let(:run) { create(:ont_run, flowcell_count: 2) }
   let(:message) do
-    Messages::Message.new(object: run, configuration: pipeline_config.message)
+    Message::Message.new(object: run, configuration: pipeline_config.message)
   end
 
   it 'has a lims' do

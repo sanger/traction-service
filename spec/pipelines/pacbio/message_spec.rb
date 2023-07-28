@@ -100,7 +100,7 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
     let(:libraries)      { create_list(:pacbio_library, 5, :tagged) }
     let(:pool)           { create(:pacbio_pool, libraries:) }
 
-    let(:message)        { Messages::Message.new(object: run, configuration: pacbio_config.message) }
+    let(:message)        { Message::Message.new(object: run, configuration: pacbio_config.message) }
     let(:key)            { message.content[pacbio_config.key] }
 
     let(:message_wells)  { key[:wells] }
@@ -119,7 +119,7 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
     let(:libraries)      { create_list(:pacbio_library, 5, :tagged) }
     let(:pool)           { create(:pacbio_pool, libraries:) }
 
-    let(:message)        { Messages::Message.new(object: run, configuration: pacbio_config.message) }
+    let(:message)        { Message::Message.new(object: run, configuration: pacbio_config.message) }
     let(:key)            { message.content[pacbio_config.key] }
 
     let(:message_wells)  { key[:wells] }
