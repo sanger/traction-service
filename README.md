@@ -109,7 +109,7 @@ A web interface to administrate RabbitMQ is always available at [http://localhos
 
 Sample sheets can be generated for upload to SMRT Link.
 
-For more details see the notes on the [Sample Sheet Generator](app/csv_generator/README.md).
+For more details see the notes on the [Sample Sheet Generator](app/exchanges/README.md).
 
 ## Miscellaneous
 

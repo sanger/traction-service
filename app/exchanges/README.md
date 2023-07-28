@@ -4,7 +4,7 @@ The sample sheets are defined through configuration in
 [/config/pipelines/](/config/pipelines/)`{pipeline}.yml` for ONT and PacBio.
 
 This configuration is parsed using
-[/app/csv_generator/](/app/csv_generator/)`{pipeline}_sample_sheet.rb` as appropriate.
+[/app/exchanges/run_csv/](/app/exchanges/run_csv/)`{pipeline}_sample_sheet.rb` as appropriate.
 
 The required format of the sample sheets can be found on page 27 of the [SMRT Link User Guide
 v12.0](https://www.pacb.com/wp-content/uploads/SMRT_Link_User_Guide_v12.0.pdf).
