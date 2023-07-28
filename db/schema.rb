@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_15_123313) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_28_123446) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -229,7 +229,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_15_123313) do
     t.datetime "updated_at", precision: nil, null: false
     t.integer "state", default: 0
     t.datetime "deactivated_at", precision: nil
-    t.string "smrt_link_version_deprecated"
     t.bigint "pacbio_smrt_link_version_id"
     t.index ["name"], name: "index_pacbio_runs_on_name", unique: true
     t.index ["pacbio_smrt_link_version_id"], name: "index_pacbio_runs_on_pacbio_smrt_link_version_id"
@@ -283,17 +282,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_15_123313) do
     t.bigint "pacbio_plate_id"
     t.string "row"
     t.string "column"
-    t.decimal "movie_time_deprecated", precision: 3, scale: 1
-    t.float "on_plate_loading_concentration_deprecated"
     t.string "comment"
     t.string "uuid"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.decimal "pre_extension_time_deprecated", precision: 3, scale: 1
-    t.integer "generate_hifi_deprecated"
-    t.string "ccs_analysis_output_deprecated"
-    t.string "binding_kit_box_barcode_deprecated"
-    t.decimal "loading_target_p1_plus_p2_deprecated", precision: 3, scale: 2
     t.json "smrt_link_options"
     t.index ["pacbio_plate_id"], name: "index_pacbio_wells_on_pacbio_plate_id"
   end
