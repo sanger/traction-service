@@ -413,8 +413,6 @@ RSpec.describe 'RakeTasks' do
     it 'sets pacbio smrt link versions' do
       run10 = create(:pacbio_run, system_name: 0, smrt_link_version_deprecated: 'v10')
       run11 = create(:pacbio_run, system_name: 0, smrt_link_version_deprecated: 'v11')
-      run12_revio = create(:pacbio_run, system_name: 0, smrt_link_version_deprecated: 'v12_revio')
-      run12_sequel_iie = create(:pacbio_run, system_name: 0, smrt_link_version_deprecated: 'v12_sequel_iie')
 
       Rake::Task['smrt_link_versions:create'].reenable
       Rake::Task['pacbio_runs:migrate_pacbio_run_smrt_link_versions'].reenable
