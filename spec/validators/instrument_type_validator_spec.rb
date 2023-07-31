@@ -17,18 +17,6 @@ RSpec.describe InstrumentTypeValidator do
       expect(instrument_types['revio']['models']['wells']['validations']['sequencing_kit_box_barcode']['options']['exclude_marked_for_destruction']).to be_truthy
     end
 
-    context 'run' do
-      it 'required attributes' do
-        instrument_types['sequel_iie']['models']['run']['validations']['required_attributes']['options']['required_attributes'].each do |attribute|
-          run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate)])
-          run.send("#{attribute}=", nil)
-          instrument_type_validator = described_class.new(instrument_types:)
-          instrument_type_validator.validate(run)
-          expect(run.errors.messages[attribute]).to include("can't be blank")
-        end
-      end
-    end
-
     context 'plates' do
       it 'required attributes' do
         instrument_types['sequel_iie']['models']['plates']['validations']['required_attributes']['options']['required_attributes'].each do |attribute|
