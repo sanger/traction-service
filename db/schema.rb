@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_18_091815) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_17_132910) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -343,9 +343,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_18_091815) do
     t.string "value", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "priority_level", comment: "Priority level eg Medium, High etc"
-    t.string "date_required_by", comment: "Date required by eg tol, etc"
-    t.text "reason_for_priority", comment: "Reason for priority"
     t.index ["qc_assay_type_id"], name: "index_qc_results_on_qc_assay_type_id"
   end
 

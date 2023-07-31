@@ -60,10 +60,7 @@ class QcReceptionsFactory
       labware_barcode: request_obj['labware_barcode'],
       sample_external_id: request_obj['sample_external_id'],
       qc_assay_type_id:,
-      value:,
-      priority_level: request_obj['priority_level'],
-      date_required_by: request_obj['date_required_by'],
-      reason_for_priority: request_obj['reason_for_priority']
+      value:
     )
   end
 

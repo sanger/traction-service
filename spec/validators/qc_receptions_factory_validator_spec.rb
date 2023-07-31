@@ -51,11 +51,8 @@ RSpec.describe QcReceptionsFactoryValidator do
         qc_reults_list = [
           {
             'qubit_concentration_ngul' => '5.6',
-            'date_required_by' => 'Long Read',
             'date_submitted' => '1689078551564.2458',
             'labware_barcode' => 'FD20706500',
-            'priority_level' => 'Medium',
-            'reason_for_priority' => 'Reason goes here',
             'sample_external_id' => 'supplier_sample_name_DDD'
           }
         ]

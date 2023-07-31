@@ -23,9 +23,6 @@ module V1
       final_nano_drop
       shearing_qc_comments
       date_submitted
-      priority_level
-      date_required_by
-      reason_for_priority
     ].freeze
 
     def qc_results_list=(request_parameters)

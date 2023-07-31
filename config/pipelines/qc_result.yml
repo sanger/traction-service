@@ -69,16 +69,6 @@ default: &default
         last_updated:
           type: :constant
           value: Time.current
-        priority_level:
-          type: model
-          value: priority_level
-        date_required_by:
-          type: model
-          value: date_required_by
-        reason_for_priority:
-          type: model
-          value: reason_for_priority
-
 development: *default
 test: *default
 uat: *default

@@ -24,10 +24,7 @@ RSpec.describe '/qc_receptions' do
           post_spri_volume: '20',
           sheared_femto_fragment_size: '5',
           shearing_qc_comments: 'Comments',
-          date_required_by: 'Long Read',
           labware_barcode: 'FD20706500',
-          priority_level: 'Medium',
-          reason_for_priority: 'Reason goes here',
           sample_external_id: 'supplier_sample_name_DDD'
         }
       ]
@@ -78,9 +75,6 @@ RSpec.describe '/qc_receptions' do
         expect(QcResult.last.sample_external_id).to eq qc_results[:sample_external_id]
         expect(QcResult.last.qc_assay_type_id).to eq assay_type_id
         expect(QcResult.last.value).to eq '5'
-        expect(QcResult.last.date_required_by).to eq qc_results[:date_required_by]
-        expect(QcResult.last.priority_level).to eq qc_results[:priority_level]
-        expect(QcResult.last.reason_for_priority).to eq qc_results[:reason_for_priority]
       end
 
       it 'sends the messages' do
