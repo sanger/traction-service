@@ -82,7 +82,7 @@ RSpec.describe InstrumentTypeValidator do
       it 'required attributes' do
         instrument_types['revio']['models']['plates']['validations']['required_attributes']['options']['required_attributes'].each do |attribute|
           plate = build(:pacbio_plate)
-          run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [plate])
+          run = build(:pacbio_run, system_name: 'Revio', plates: [plate])
           plate.send("#{attribute}=", nil)
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
