@@ -28,17 +28,15 @@ namespace :pacbio_data do
 
     print '-> Creating pacbio libraries...'
 
-    # TODO: refactor the pools array below to better correspond to requests, libraries, and pools
-    pools = [
-      { library_type: 'Pacbio_HiFi', tag_set: nil, size: 1 },
-      { library_type: 'Pacbio_HiFi', tag_set: 'Sequel_16_barcodes_v3', size: 1 },
-      { library_type: 'Pacbio_HiFi_mplx', tag_set: 'Sequel_16_barcodes_v3', size: 5 },
-      { library_type: 'PacBio_IsoSeq_mplx', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 1 },
-      { library_type: 'Pacbio_IsoSeq', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 5 },
-      { library_type: 'Pacbio_IsoSeq', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 5 }
+    tag_sets = [
+      {  tag_set: nil, size: 1 },
+      {  tag_set: 'Sequel_16_barcodes_v3', size: 1 },
+      {  tag_set: 'Sequel_16_barcodes_v3', size: 5 },
+      {  tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 1 },
+      {  tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 5 }
     ]
 
-    pool_records = pools.map do |data|
+    pool_records = tag_sets.map do |data|
       tube = Tube.create
       tags = data[:tag_set] ? TagSet.find_by!(name: data[:tag_set]).tags : []
 
@@ -51,13 +49,14 @@ namespace :pacbio_data do
           request: request.requestable,
           tag: tags[tag_index]
         ) do |lib|
-          lib.pool = pool ||
-                     Pacbio::Pool.new(tube:,
-                                      volume: lib.volume,
-                                      concentration: lib.concentration,
-                                      template_prep_kit_box_barcode: lib.template_prep_kit_box_barcode,
-                                      insert_size: lib.insert_size,
-                                      libraries: [lib])
+          lib.pool = pool || Pacbio::Pool.new(
+            tube:,
+            volume: lib.volume,
+            concentration: lib.concentration,
+            template_prep_kit_box_barcode: lib.template_prep_kit_box_barcode,
+            insert_size: lib.insert_size,
+            libraries: [lib]
+          )
         end.pool
       end
     end
@@ -88,9 +87,9 @@ namespace :pacbio_data do
     # TODO: create the seed data below with the appropiate options dynamically sourced from config
 
     print "   -> Creating runs for #{v11.name}..."
-    pool_records.each_with_index do |pool, i|
+    pool_records.zip(tag_sets).each_with_index do |(pool, tag_set), i|
       Pacbio::Run.create!(
-        name: "Run11#{pool.id}",
+        name: "RUN-#{v11.name}-#{tag_set[:tag_set]}x#{tag_set[:size]}",
         system_name: Pacbio::Run.system_names['Sequel IIe'],
         smrt_link_version: v11,
         dna_control_complex_box_barcode: "DCCB#{pool.id}",
@@ -115,7 +114,7 @@ namespace :pacbio_data do
     print COMPLETED
 
     print "   -> Creating runs for #{v12_revio.name}..."
-    pool_records.each_with_index do |pool, i|
+    pool_records.zip(tag_sets).each_with_index do |(pool, tag_set), i|
       plate1 = Pacbio::Plate.new(
         sequencing_kit_box_barcode: "SKB#{pool.id}1",
         plate_number: 1,
@@ -154,6 +153,7 @@ namespace :pacbio_data do
         )]
       )
       Pacbio::Run.create!(
+        name: "RUN-#{v12_revio.name}-#{tag_set[:tag_set]}x#{tag_set[:size]}",
         system_name: Pacbio::Run.system_names['Revio'],
         smrt_link_version: v12_revio,
         dna_control_complex_box_barcode: "DCCB#{pool.id}",
