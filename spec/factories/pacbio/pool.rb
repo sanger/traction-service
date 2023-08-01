@@ -7,7 +7,7 @@ FactoryBot.define do
       library_factory { :pacbio_library }
     end
 
-    libraries { build_list(library_factory, library_count, pool: instance) }
+    libraries { create_list(library_factory, library_count, pool: instance) }
     template_prep_kit_box_barcode { 'ABC1' }
     concentration { 10 }
     volume { 10 }

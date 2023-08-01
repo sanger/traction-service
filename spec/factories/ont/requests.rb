@@ -5,8 +5,8 @@ FactoryBot.define do
     external_study_id
     cost_code
 
-    association :library_type, :ont
-    association :data_type, :ont
+    library_type factory: %i[library_type ont]
+    data_type factory: %i[data_type ont]
 
     after(:create) do |req|
       req.request = create(:request, requestable: req, sample: create(:sample))

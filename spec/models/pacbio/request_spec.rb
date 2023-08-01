@@ -39,14 +39,17 @@ RSpec.describe Pacbio::Request, pacbio: true do
 
   describe '#sequencing_plates' do
     it 'if the request belongs to a run' do
-      plate = create(:pacbio_plate_with_wells, :pooled)
+      plate = build(:pacbio_plate_with_wells, :pooled)
+      create(:pacbio_run, plates: [plate])
       request = plate.wells.first.libraries.first.request
       expect(request.sequencing_plates).to eq([plate])
     end
 
     it 'when the request belongs to multiple runs' do
-      plate1 = create(:pacbio_plate)
-      plate2 = create(:pacbio_plate)
+      plate1 = build(:pacbio_plate)
+      plate2 = build(:pacbio_plate)
+      create(:pacbio_run, plates: [plate1])
+      create(:pacbio_run, plates: [plate2])
       request = create(:pacbio_request)
       library1 = create(:pacbio_library, request:)
       library2 = create(:pacbio_library, request:)
@@ -64,14 +67,17 @@ RSpec.describe Pacbio::Request, pacbio: true do
 
   describe '#sequencing_runs' do
     it 'if the request belongs to a run' do
-      plate = create(:pacbio_plate_with_wells, :pooled)
+      plate = build(:pacbio_plate_with_wells, :pooled)
+      create(:pacbio_run, plates: [plate])
       request = plate.wells.first.libraries.first.request
       expect(request.sequencing_runs).to eq([plate.run])
     end
 
     it 'when the request belongs to multiple runs' do
-      plate1 = create(:pacbio_plate)
-      plate2 = create(:pacbio_plate)
+      plate1 = build(:pacbio_plate)
+      plate2 = build(:pacbio_plate)
+      create(:pacbio_run, plates: [plate1])
+      create(:pacbio_run, plates: [plate2])
       request = create(:pacbio_request)
       library1 = create(:pacbio_library, request:)
       library2 = create(:pacbio_library, request:)
