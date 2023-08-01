@@ -8,7 +8,7 @@ RSpec.describe Reception do
   context 'without a source' do
     let(:attributes) { { source: nil } }
 
-    it { is_expected.to be_invalid }
+    it { is_expected.not_to be_valid }
   end
 
   context 'with a source' do
@@ -22,18 +22,18 @@ RSpec.describe Reception do
   context 'with a space' do
     let(:attributes) { { source: 'traction-ui sequencescape' } }
 
-    it { is_expected.to be_invalid }
+    it { is_expected.not_to be_valid }
   end
 
   context 'with an underscore' do
     let(:attributes) { { source: 'traction_ui.sequencescape' } }
 
-    it { is_expected.to be_invalid }
+    it { is_expected.not_to be_valid }
   end
 
   context 'with uppercase' do
     let(:attributes) { { source: 'traction-ui.Sequencescape' } }
 
-    it { is_expected.to be_invalid }
+    it { is_expected.not_to be_valid }
   end
 end

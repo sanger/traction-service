@@ -1344,7 +1344,7 @@ RSpec.describe 'RunsController' do
   describe '#sample_sheet' do
     let(:well1)   { create(:pacbio_well_with_pools) }
     let(:well2)   { create(:pacbio_well_with_pools) }
-    let(:plate)   { create(:pacbio_plate, wells: [well1, well2]) }
+    let(:plate)   { build(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_run, smrt_link_version: version10, plates: [plate]) }
 
     after { FileUtils.rm_rf("#{run.name}.csv") }
