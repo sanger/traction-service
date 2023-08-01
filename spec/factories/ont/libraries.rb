@@ -6,8 +6,7 @@ FactoryBot.define do
     concentration { 10.0 }
     insert_size { 10000 }
     kit_barcode { 'kit_barcode' }
-    request { create(:ont_request) }
-    # request factory: %i[ont_request]
+    request { association :ont_request }
     tag
     pool { association :ont_pool, libraries: [instance] }
 
