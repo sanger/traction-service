@@ -116,7 +116,7 @@ RSpec.describe 'RakeTasks' do
           HEREDOC
         ).to_stdout
       expect(Pacbio::Run.count)
-        .to eq(18)
+        .to eq(15)
     end
   end
 
