@@ -45,7 +45,7 @@ namespace :pacbio_data do
         Pacbio::Library.create!(
           volume: 1,
           concentration: 1,
-          template_prep_kit_box_barcode: 'LK12345',
+          template_prep_kit_box_barcode: '029979102141700063023',
           insert_size: 100,
           request: request.requestable,
           tag: tags[tag_index]
@@ -169,18 +169,18 @@ namespace :pacbio_data do
         system_name: Pacbio::Run.system_names['Sequel IIe'],
         smrt_link_version: v12_sequel_iie,
         plates: [Pacbio::Plate.new(
-          sequencing_kit_box_barcode: "SKB#{pool.id}",
+          sequencing_kit_box_barcode: '130429101826100021624',
           plate_number: 1,
           wells: [Pacbio::Well.new(
             pools: [pool],
             row: 'A',
             column: i + 1,
-            ccs_analysis_output_include_kinetics_information:	'Yes',
-            ccs_analysis_output_include_low_quality_reads:	'Yes',
+            ccs_analysis_output_include_kinetics_information:	'No',
+            ccs_analysis_output_include_low_quality_reads:	'No',
             include_fivemc_calls_in_cpg_motifs:	'Yes',
             demultiplex_barcodes:	'In SMRT Link',
             on_plate_loading_concentration: 1,
-            binding_kit_box_barcode: "BKB#{pool.id}",
+            binding_kit_box_barcode: '030425102194100010424',
             movie_time: '20.0'
           )]
         )]
