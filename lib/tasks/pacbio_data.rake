@@ -34,7 +34,6 @@ namespace :pacbio_data do
       { library_type: 'Pacbio_HiFi', tag_set: 'Sequel_16_barcodes_v3', size: 1 },
       { library_type: 'Pacbio_HiFi_mplx', tag_set: 'Sequel_16_barcodes_v3', size: 5 },
       { library_type: 'PacBio_IsoSeq_mplx', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 1 },
-      { library_type: 'Pacbio_IsoSeq', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 5 },
       { library_type: 'Pacbio_IsoSeq', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 5 }
     ]
 
@@ -164,9 +163,9 @@ namespace :pacbio_data do
     print COMPLETED
 
     print "   -> Creating runs for #{v12_sequel_iie.name}..."
-    pool_records.each_with_index do |pool, i|
+    pool_records.zip(pools).each_with_index do |(pool, tag_set), i|
       Pacbio::Run.create!(
-        name: "Run12#{pool.id}",
+        name: "RUN-#{v12_sequel_iie.name}-#{tag_set[:tag_set]}x#{tag_set[:size]}",
         system_name: Pacbio::Run.system_names['Sequel IIe'],
         smrt_link_version: v12_sequel_iie,
         plates: [Pacbio::Plate.new(
