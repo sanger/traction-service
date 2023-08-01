@@ -46,4 +46,41 @@ RSpec.describe QcReception do
       end
     end
   end
+
+  describe '#destroy' do
+    it 'cannot be destroyed if there are associated records in qc_results' do
+      qc_assay_type = create(:qc_assay_type,
+                             key: 'sheared_femto_fragment_size',
+                             label: 'Sheared Femto Fragment Size (bp)',
+                             used_by: 1,
+                             units: 'bp')
+      qc_reception = create(:qc_reception)
+      create(:qc_result, qc_assay_type:, qc_reception:)
+      expect do
+        qc_reception.destroy!
+      end.to raise_error(ActiveRecord::RecordNotDestroyed)
+    end
+  end
+
+  describe '#association' do
+    it 'has the correct association with qc_results' do
+      qc_assay_type = create(:qc_assay_type,
+                             key: 'sheared_femto_fragment_size',
+                             label: 'Sheared Femto Fragment Size (bp)',
+                             used_by: 1,
+                             units: 'bp')
+      qc_reception = create(:qc_reception, qc_results_list: [{
+                              'sheared_femto_fragment_size' => '5',
+                              'labware_barcode' => 'FD20706500',
+                              'sample_external_id' => 'supplier_sample_name_DDD'
+                            }])
+      qc_result = create(:qc_result,
+                         labware_barcode: 'FD20706500',
+                         sample_external_id: 'supplier_sample_name_DDD',
+                         value: '5',
+                         qc_assay_type:,
+                         qc_reception:)
+      expect(qc_reception.qc_results).to eq [qc_result]
+    end
+  end
 end

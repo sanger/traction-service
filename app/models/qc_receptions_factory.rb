@@ -60,7 +60,8 @@ class QcReceptionsFactory
       labware_barcode: request_obj['labware_barcode'],
       sample_external_id: request_obj['sample_external_id'],
       qc_assay_type_id:,
-      value:
+      value:,
+      qc_reception_id: @qc_reception.id
     )
   end
 

@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
-# A QcReception makes an entry in qc_receptions for the requests from
-# TOL consumer to store the qc data in qc_results table
+# A QcReception makes an entry in qc_receptions for all the requests
+# received TOL consumer on the qc_reception endpoint.
+# Stores the qc data in qc_results table with the associated qc_reception_id
 class QcReception < ApplicationRecord
   extend NestedValidation
+  has_many :qc_results, dependent: :restrict_with_error
+  # dependent: :restrict_with_error to stop destroying a record in qc_receptions
+  # when there are associated records in qc_results
 
   validates :source, presence: true
   validates_nested :qc_receptions_factory, flatten_keys: true
