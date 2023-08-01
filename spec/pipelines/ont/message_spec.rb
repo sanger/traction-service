@@ -9,7 +9,20 @@ RSpec.describe 'Ont', ont: true, type: :model do
 
   let(:config)            { Pipelines.configure(Pipelines.load_yaml) }
   let(:pipeline_config)   { config.ont.message }
-  let(:run) { create(:ont_run, flowcell_count: 2) }
+
+  # TODO: Think this exposes there is something not quite right
+  # in the way ONTRuns (with libraries/request/samples) are being
+  # built in the factories
+  let(:request1) { create(:ont_request) }
+  let(:request2) { create(:ont_request) }
+  let(:library1) { build(:ont_library, request: request1) }
+  let(:library2) { build(:ont_library, request: request2) }
+  let(:pool1) { build(:ont_pool, libraries: [library1]) }
+  let(:pool2) { build(:ont_pool, libraries: [library2]) }
+  let(:flowcell1) { build(:ont_flowcell, pool: pool1, position: 1) }
+  let(:flowcell2) { build(:ont_flowcell, pool: pool2, position: 2) }
+  let(:run) { create(:ont_run, flowcells: [flowcell1, flowcell2]) }
+
   let(:message) do
     Messages::Message.new(object: run, configuration: pipeline_config.message)
   end

@@ -7,6 +7,6 @@ FactoryBot.define do
     position { 1 }
     flowcell_id { format(Ont::Flowcell::FLOWCELL_ID_FORMAT, Integer(position, exception: false) || 1) }
     pool { association :ont_pool }
-    run { build(:ont_run, flowcells: [instance]) }
+    run { association :ont_run, flowcells: [instance] }
   end
 end
