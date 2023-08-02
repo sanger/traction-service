@@ -8,8 +8,8 @@ FactoryBot.define do
     library_type factory: %i[library_type ont]
     data_type factory: %i[data_type ont]
 
-    after(:create) do |req|
-      req.request = create(:request, requestable: req, sample: create(:sample))
+    after(:build) do |req|
+      req.request = build(:request, requestable: req, sample: build(:sample))
     end
   end
 end
