@@ -83,7 +83,7 @@ module Pacbio
 
     # if there is a 'fields' config defined
     def use_simpler_sample_sheets?
-      pacbio_run_sample_sheet_config.fields.present?
+      pacbio_run_sample_sheet_config.respond_to?('fields')
     end
 
     def generate_name
