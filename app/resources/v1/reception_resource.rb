@@ -33,5 +33,16 @@ module V1
     def permitted_request_attributes
       [*::Pacbio.request_attributes, *::Ont.request_attributes, *::Saphyr.request_attributes].uniq
     end
+
+    def publish_messages
+      Messages.publish(
+        @model.requests.map(&:sample),
+        Pipelines.reception.sample.message
+      )
+      Messages.publish(
+        @model.requests,
+        Pipelines.reception.stock_resource.message
+      )
+    end
   end
 end
