@@ -54,7 +54,7 @@ module Pacbio
     def generate_sample_sheet
       configuration = pacbio_run_sample_sheet_config
       sample_sheet_generator = RunCsv::DeprecatedPacbioSampleSheet
-      sample_sheet_generator = RunCsv::PacbioSample if use_simpler_sample_sheets?
+      sample_sheet_generator = RunCsv::PacbioSampleSheet if use_simpler_sample_sheets?
       sample_sheet = sample_sheet_generator.new(object: self, configuration:)
       sample_sheet.payload
     end
@@ -81,10 +81,9 @@ module Pacbio
       Pipelines.pacbio.sample_sheet.by_version(smrt_link_version.name)
     end
 
-    # if the feature flag is enabled and there is a 'fields' config defined
+    # if there is a 'fields' config defined
     def use_simpler_sample_sheets?
-      Flipper.enabled?(:dpl_831_enable_simpler_config_sample_sheets) &&
-        pacbio_run_sample_sheet_config.fields.present?
+      pacbio_run_sample_sheet_config.fields.present?
     end
 
     def generate_name
