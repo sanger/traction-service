@@ -8,8 +8,8 @@ FactoryBot.define do
     cost_code
     external_study_id
 
-    after(:create) do |req|
-      req.request = create(:request, requestable: req, sample: create(:sample))
+    after(:build) do |req|
+      req.request = build(:request, requestable: req, sample: build(:sample))
     end
   end
 end
