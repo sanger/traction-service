@@ -5,5 +5,6 @@ FactoryBot.define do
     name { generate(:sample_name) }
     external_id
     species { 'human' }
+    priority_level { 'Medium' }
   end
 end

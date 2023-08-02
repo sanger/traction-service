@@ -53,6 +53,9 @@ default: &default
           common_name:
             type: :model
             value: species
+          priority_level:
+            type: :model
+            value: priority_level
 
 
 development: *default

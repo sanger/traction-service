@@ -20,7 +20,7 @@ module V1
 
       @model.request_attributes = request_parameters.map do |request|
         request.permit(request: permitted_request_attributes,
-                       sample: %i[name external_id species study_uuid],
+                       sample: %i[name external_id species study_uuid priority_level],
                        container: %i[type barcode position])
                .to_h
                .with_indifferent_access

@@ -58,6 +58,7 @@ RSpec.describe 'ReceptionsController' do
         post v1_receptions_path, params: body, headers: json_api_headers
         expect(response).to have_http_status(:success), response.body
         expect(Broker::Handle.test_received_messages.length).to eq(2)
+        expect(Broker::Handle.test_received_messages[0].include?('priority_level')).to be true
         assert match_json(Broker::Handle.test_received_messages[0],
                           {
                             'lims' => 'Traction', 'sample' => {
@@ -65,7 +66,8 @@ RSpec.describe 'ReceptionsController' do
                               'last_updated' => /.*/,
                               'id_sample_lims' => /\d/,
                               'uuid_sample_lims' => /.*/,
-                              'name' => /.*/
+                              'name' => /.*/,
+                              'priority_level' => 'Medium'
                             }
                           })
 
