@@ -8,7 +8,7 @@ module Pipelines
   # In order to maintain consistent numbering, this has been pulled out into
   # a constant. Please do *not* remove entries from this list, as it could
   # result in legacy data being reassigned to the incorrect pipelines
-  ENUMS = { pacbio: 0, ont: 1, saphyr: 2, qc_result: 3, reception: 4 }.freeze
+  NAMES = { pacbio: 0, ont: 1, saphyr: 2, qc_result: 3, reception: 4 }.freeze
   HANDLERS = {
     pacbio: Pacbio,
     ont: Ont,
