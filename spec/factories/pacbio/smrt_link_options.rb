@@ -14,7 +14,7 @@ FactoryBot.define do
     factory :pacbio_smrt_link_option_with_versions do
       transient do
         version_count { 1 }
-        version { create(:pacbio_smrt_link_version) }
+        version { association :pacbio_smrt_link_version }
       end
 
       after(:create) do |smrt_link_option, evaluator|
