@@ -125,8 +125,10 @@ namespace :pacbio_data do
         smrt_link_version: v12_revio,
         dna_control_complex_box_barcode: "DCCB_#{barcode}",
         plates: (1..total_plate).map do |plate_number|
+          serial = barcode(length: 3)
+          sequencing_kit_box_barcode = "10211880003110400#{serial}20231226"
           Pacbio::Plate.new(
-            sequencing_kit_box_barcode: "SKB_#{barcode(length: 28 - 4)}",
+            sequencing_kit_box_barcode:,
             plate_number:,
             wells: [Pacbio::Well.new(
               pools: [pool],
@@ -136,7 +138,7 @@ namespace :pacbio_data do
               movie_acquisition_time:	'24.0',
               include_base_kinetics: 'True',
               library_concentration: 1,
-              polymerase_kit:	"PK#{barcode}"
+              polymerase_kit:	'030116102739100011124'
             )]
           )
         end
