@@ -16,11 +16,7 @@ default: &default
               attribute: :plates
               minimum: 1
               maximum: 1
-          # TODO: fix this to have separate behaviour for v11 and v12
-          # required_attributes:
-          #   options:
-          #     required_attributes:
-          #       - :dna_control_complex_box_barcode
+          # TODO: fix this to have separate behaviour for v11 and v12 (see commit 05bfe764a8eafe)
       plates:
         children: :wells
         # we want to validate each plate and plate
