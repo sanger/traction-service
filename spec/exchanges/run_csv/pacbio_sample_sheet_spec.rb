@@ -8,14 +8,14 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
   describe '#payload' do
     subject(:csv_string) { csv.payload }
 
-    let(:plate)       { create(:pacbio_plate, plate_number: 1, wells: [well1, well2]) }
+    let(:plate)       { build(:pacbio_plate, wells:, plate_number: 1) }
     let(:run)         { create(:pacbio_run, smrt_link_version:, plates: [plate]) }
     let(:parsed_csv)  { CSV.parse(csv_string) }
     let(:csv)         { described_class.new(object: run, configuration:) }
     let(:configuration) { Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name) }
 
     context 'v12_revio' do
-      let(:smrt_link_version) { create(:pacbio_smrt_link_version, name: 'v12_revio', default: true) }
+      let(:smrt_link_version) { create(:pacbio_smrt_link_version_default, name: 'v12_revio') }
 
       context 'when the libraries are tagged' do
         let(:well1) do
@@ -34,6 +34,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
             ccs_analysis_output: 'No'
           )
         end
+        let(:wells) { [well1, well2] }
 
         it 'must return a csv string' do
           expect(csv_string.class).to eq String
@@ -124,6 +125,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
           create(:pacbio_well, generate_hifi: 'On Instrument', ccs_analysis_output: 'No',
                                pools: pool2)
         end
+        let(:wells) { [well1, well2] }
 
         it 'must return a csv string' do
           expect(csv_string).to be_a String
@@ -174,13 +176,13 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
       end
 
       context 'with lots of wells in unpredictable orders' do
-        let(:pool1)   { create_list(:pacbio_pool, 1, :untagged) }
-        let(:pool2)   { create_list(:pacbio_pool, 1, :untagged) }
-        let(:pool3)   { create_list(:pacbio_pool, 1, :untagged) }
-        let(:well1)   { create(:pacbio_well, pools: pool1, row: 'A', column: 10) }
-        let(:well2)   { create(:pacbio_well, pools: pool2, row: 'A', column: 5) }
-        let(:well3)   { create(:pacbio_well, pools: pool3, row: 'B', column: 1) }
-        let(:plate)   { create(:pacbio_plate, wells: [well1, well2, well3]) }
+        let(:pool1) { create_list(:pacbio_pool, 1, :untagged) }
+        let(:pool2) { create_list(:pacbio_pool, 1, :untagged) }
+        let(:pool3) { create_list(:pacbio_pool, 1, :untagged) }
+        let(:well1) { create(:pacbio_well, pools: pool1, row: 'A', column: 10) }
+        let(:well2) { create(:pacbio_well, pools: pool2, row: 'A', column: 5) }
+        let(:well3) { create(:pacbio_well, pools: pool3, row: 'B', column: 1) }
+        let(:wells) { [well1, well2, well3] }
 
         it 'sorts the wells by column' do
           sorted_well_positions = parsed_csv[1..].pluck(8)
