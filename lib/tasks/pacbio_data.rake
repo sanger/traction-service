@@ -63,9 +63,9 @@ namespace :pacbio_data do
     print COMPLETED
 
     print '-> Finding Pacbio SMRT Link versions...'
-    v11 = Pacbio::SmrtLinkVersion.find_by(name: 'v11')
-    v12_revio = Pacbio::SmrtLinkVersion.find_by(name: 'v12_revio')
-    v12_sequel_iie = Pacbio::SmrtLinkVersion.find_by(name: 'v12_sequel_iie')
+    v11 = Pacbio::SmrtLinkVersion.find_by!(name: 'v11')
+    v12_revio = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_revio')
+    v12_sequel_iie = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_sequel_iie')
     print COMPLETED
 
     puts '-> Creating pacbio runs:'
