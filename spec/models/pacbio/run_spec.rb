@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Pacbio::Run, pacbio: true do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
-  let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12_sequel', default: true) }
+  let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12_sequel_iie') }
 
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_revio_run }
