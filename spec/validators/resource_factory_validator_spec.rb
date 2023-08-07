@@ -48,7 +48,7 @@ RSpec.describe 'ResourceFactoryValidator' do
       end
 
       it 'does add an error to the record' do
-        expect(resource_factory).to be_invalid
+        expect(resource_factory).not_to be_valid
         expect(resource_factory.errors.count).to eq(2)
       end
     end

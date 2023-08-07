@@ -165,14 +165,17 @@ RSpec.describe Pacbio::Library, pacbio: true do
     end
 
     it 'when there is a single run' do
-      plate = create(:pacbio_plate_with_wells, :pooled)
+      plate = build(:pacbio_plate_with_wells, :pooled)
+      create(:pacbio_run, plates: [plate])
       library = plate.wells.first.pools.first.libraries.first
       expect(library.sequencing_plates).to eq([plate])
     end
 
     it 'when there are multiple runs' do
-      plate1 = create(:pacbio_plate)
-      plate2 = create(:pacbio_plate)
+      plate1 = build(:pacbio_plate)
+      plate2 = build(:pacbio_plate)
+      create(:pacbio_run, plates: [plate1])
+      create(:pacbio_run, plates: [plate2])
       pool = create(:pacbio_pool)
       create(:pacbio_well, pools: [pool], plate: plate1)
       create(:pacbio_well, pools: [pool], plate: plate2)

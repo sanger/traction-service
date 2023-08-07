@@ -9,9 +9,11 @@ RSpec.describe Pacbio::Plate, pacbio: true do
   end
 
   context 'uuidable' do
-    let(:uuidable_model) { :pacbio_plate }
-
-    it_behaves_like 'uuidable'
+    it 'must have a uuid after create' do
+      plate = build(:pacbio_plate)
+      create(:pacbio_run, plates: [plate])
+      expect(plate.uuid).to be_present
+    end
   end
 
   it 'must have a run' do

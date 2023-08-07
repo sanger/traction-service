@@ -9,7 +9,8 @@ RSpec.describe Pacbio::SmrtLinkOption, pacbio: true do
     end
 
     it 'is possible to create multiple smrt link versions' do
-      smrt_link_option = create(:pacbio_smrt_link_option_with_versions, version_count: 3)
+      smrt_link_option = build(:pacbio_smrt_link_option)
+      create_list(:pacbio_smrt_link_option_version, 3, smrt_link_option:)
       expect(smrt_link_option.smrt_link_versions.length).to eq(3)
     end
 
