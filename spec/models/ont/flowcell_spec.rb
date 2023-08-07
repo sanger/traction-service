@@ -103,7 +103,7 @@ RSpec.describe Ont::Flowcell, ont: true do
       display0 = run.flowcells[0].position_name
       display1 = run.flowcells[1].position_name
 
-      expect(run).to be_invalid
+      expect(run).not_to be_valid
 
       expect(run.errors.full_messages).to include("Flowcells flowcell_id #{flowcell_id} at position #{display0} is duplicated in the same run")
       expect(run.errors.full_messages).to include("Flowcells flowcell_id #{flowcell_id} at position #{display1} is duplicated in the same run")

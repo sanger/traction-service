@@ -3,8 +3,8 @@
 FactoryBot.define do
   factory :saphyr_library, class: 'Saphyr::Library' do
     state { 'pending' }
-    request { create(:saphyr_request) }
-    association :enzyme, factory: :saphyr_enzyme
+    request { association :saphyr_request }
+    enzyme { association :saphyr_enzyme }
 
     factory :library_no_state do
       state { nil }

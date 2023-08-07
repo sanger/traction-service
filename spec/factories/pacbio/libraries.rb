@@ -6,8 +6,8 @@ FactoryBot.define do
     concentration { 2.222 }
     template_prep_kit_box_barcode { 'LK1234567' }
     insert_size { 100 }
-    request { create(:pacbio_request) }
-    tag { create(:tag) }
+    request { association :pacbio_request }
+    tag
     pool { association :pacbio_pool, libraries: [instance] }
 
     factory :pacbio_incomplete_library do
@@ -39,7 +39,7 @@ FactoryBot.define do
     end
 
     trait :hidden_tagged do
-      association(:tag, factory: :hidden_tag)
+      tag { association :hidden_tag }
     end
   end
 end
