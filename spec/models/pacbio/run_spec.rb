@@ -73,14 +73,15 @@ RSpec.describe Pacbio::Run, pacbio: true do
 
   context 'associations' do
     it 'can have multiple plates for Revio' do
-      plates = create_list(:pacbio_plate, 2, wells: [build(:pacbio_well, row: 'A', column: '1')])
+      plates = build_list(:pacbio_plate, 2, wells: [build(:pacbio_well, row: 'A', column: '1')])
       run = create(:pacbio_run, system_name: 'Revio', plates:)
       expect(run.plates).to eq(plates)
       expect(run.wells.count).to eq(2)
     end
 
     it 'can have some wells' do
-      run = create(:pacbio_run, plates: [create(:pacbio_plate, wells: build_list(:pacbio_well, 5))])
+      plates = [build(:pacbio_plate, wells: build_list(:pacbio_well, 5))]
+      run = create(:pacbio_run, plates:)
       expect(run.wells.count).to eq(5)
     end
   end
@@ -100,7 +101,7 @@ RSpec.describe Pacbio::Run, pacbio: true do
 
     it 'can have the wells summary when no run comments exist' do
       wells = create_list(:pacbio_well_with_pools, 2)
-      plate = create(:pacbio_plate, wells:)
+      plate = build(:pacbio_plate, wells:)
       run = create(:pacbio_run, plates: [plate], comments: nil)
       expect(run.comments).to eq("#{wells.first.summary}:#{wells[1].summary}")
     end
@@ -108,10 +109,10 @@ RSpec.describe Pacbio::Run, pacbio: true do
 
   describe '#generate_sample_sheet' do
     it 'must return a String' do
-      well1 = create(:pacbio_well_with_pools)
-      well2 = create(:pacbio_well_with_pools)
+      well1 = build(:pacbio_well_with_pools)
+      well2 = build(:pacbio_well_with_pools)
 
-      plate = create(:pacbio_plate, wells: [well1, well2])
+      plate = build(:pacbio_plate, wells: [well1, well2])
       run = create(:pacbio_run, plates: [plate])
 
       sample_sheet = run.generate_sample_sheet
@@ -214,12 +215,14 @@ RSpec.describe Pacbio::Run, pacbio: true do
     end
 
     it 'removes existing wells' do
-      run = create(:pacbio_revio_run, plates: [create(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1')])])
+      plates = [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1')])]
+      run = create(:pacbio_revio_run, plates:)
       expect { run.update(plates_attributes: { id: run.plates.first.id, sequencing_kit_box_barcode: 'DM0001100861800123121', plate_number: 1, wells_attributes: [{ id: run.plates.first.wells.first.id, _destroy: true }] }) }.to change(run.plates.first.wells, :count).by(-1)
     end
 
     it 'removes existing wells and readds the with the same position' do
-      run = create(:pacbio_revio_run, plates: [create(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])
+      plates = [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])]
+      run = create(:pacbio_revio_run, plates:)
       run.update(plates_attributes: { id: run.plates.first.id, sequencing_kit_box_barcode: 'DM0001100861800123121', plate_number: 1, wells_attributes: [{ id: run.plates.first.wells.first.id, _destroy: true }, build(:pacbio_well, row: 'A', column: '1').attributes.merge(pool_ids: pools.pluck(:id))] })
       run.reload
       expect(run.plates.first.wells.count).to eq(1)
@@ -227,7 +230,8 @@ RSpec.describe Pacbio::Run, pacbio: true do
     end
 
     it 'updates the run with the new attributes' do
-      run = create(:pacbio_revio_run, plates: [create(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])
+      plates = [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])]
+      run = create(:pacbio_revio_run, plates:)
       run.update(state: 'started')
       run.reload
       expect(run.state).to eq('started')

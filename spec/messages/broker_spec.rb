@@ -41,8 +41,7 @@ RSpec.describe Messages::Broker do
     allow(bunny).to receive(:new).and_return(connection)
     allow(connection).to receive(:start)
     allow(connection).to receive(:create_channel).and_return(channel)
-    allow(channel).to receive(:topic).and_return(exchange)
-    allow(channel).to receive(:queue).and_return(queue)
+    allow(channel).to receive_messages(topic: exchange, queue:)
     allow(queue).to receive(:bind)
   end
 
