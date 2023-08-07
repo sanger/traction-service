@@ -21,7 +21,7 @@ RSpec.describe Reception::ResourceFactory do
         }]
       end
 
-      it { is_expected.to be_invalid }
+      it { is_expected.not_to be_valid }
     end
 
     context 'with unknown containers' do
@@ -36,7 +36,7 @@ RSpec.describe Reception::ResourceFactory do
         }]
       end
 
-      it { is_expected.to be_invalid }
+      it { is_expected.not_to be_valid }
     end
 
     context 'with invalid tubes' do
@@ -51,7 +51,7 @@ RSpec.describe Reception::ResourceFactory do
         }]
       end
 
-      it { is_expected.to be_invalid }
+      it { is_expected.not_to be_valid }
     end
 
     context 'with invalid wells' do
@@ -66,7 +66,7 @@ RSpec.describe Reception::ResourceFactory do
         }]
       end
 
-      it { is_expected.to be_invalid }
+      it { is_expected.not_to be_valid }
     end
 
     context 'with invalid plates' do
@@ -81,7 +81,7 @@ RSpec.describe Reception::ResourceFactory do
         }]
       end
 
-      it { is_expected.to be_invalid }
+      it { is_expected.not_to be_valid }
     end
 
     context 'with invalid requests' do
@@ -95,7 +95,7 @@ RSpec.describe Reception::ResourceFactory do
         }]
       end
 
-      it { is_expected.to be_invalid }
+      it { is_expected.not_to be_valid }
     end
 
     context 'with duplicate containers' do
@@ -117,7 +117,7 @@ RSpec.describe Reception::ResourceFactory do
         }]
       end
 
-      it { is_expected.to be_invalid }
+      it { is_expected.not_to be_valid }
     end
 
     context 'with everything in order' do

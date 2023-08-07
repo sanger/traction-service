@@ -10,6 +10,7 @@ RSpec.describe 'Ont', ont: true, type: :model do
   let(:config)            { Pipelines.configure(Pipelines.load_yaml) }
   let(:pipeline_config)   { config.ont.message }
   let(:run) { create(:ont_run, flowcell_count: 2) }
+
   let(:message) do
     Messages::Message.new(object: run, configuration: pipeline_config.message)
   end
