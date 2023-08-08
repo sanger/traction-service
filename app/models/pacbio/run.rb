@@ -81,9 +81,14 @@ module Pacbio
       Pipelines.pacbio.sample_sheet.by_version(smrt_link_version.name)
     end
 
-    # if there is a 'fields' config defined
+    # Is the simpler-style config is defined?
+    # Requires:
+    # - fields
+    # - column_order
     def use_simpler_sample_sheets?
-      pacbio_run_sample_sheet_config.respond_to?('fields')
+      responds_to_fields = pacbio_run_sample_sheet_config.respond_to?('fields')
+      responds_to_column_order = pacbio_run_sample_sheet_config.respond_to?('column_order')
+      responds_to_fields && responds_to_column_order
     end
 
     def generate_name
