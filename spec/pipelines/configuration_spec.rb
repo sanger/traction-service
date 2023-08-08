@@ -110,10 +110,12 @@ RSpec.describe Pipelines::Configuration, type: :model do
         pipeline_c: {
           sample_sheet: {
             v10: {
-              field_a: 'a'
+              field_a: 'a',
+              field_10: 'b'
             },
             v20: {
-              field_a: 'a'
+              field_a: 'a',
+              field_20: 'c'
             }
           }
         }
@@ -130,6 +132,16 @@ RSpec.describe Pipelines::Configuration, type: :model do
 
     it 'will raise an error if it is not a valid version' do
       expect { configuration.pipeline_c.sample_sheet.by_version('v30') }.to raise_error(Version::Error, 'Not a valid version')
+    end
+
+    it 'will be able to access fields for a specific version' do
+      expect(configuration.pipeline_c.sample_sheet.by_version('v10').field_10).to eq('b')
+    end
+
+    it 'will not be able to access fields from another version' do
+      assert_raises NoMethodError do
+        configuration.pipeline_c.sample_sheet.by_version('v10').field_20
+      end
     end
   end
 end
