@@ -70,6 +70,16 @@ module Pacbio
       plates.collect(&:wells).flatten
     end
 
+    # Is the simpler-style config is defined?
+    # Requires:
+    # - fields
+    # - column_order
+    def use_simpler_sample_sheets?
+      responds_to_fields = pacbio_run_sample_sheet_config.respond_to?('fields')
+      responds_to_column_order = pacbio_run_sample_sheet_config.respond_to?('column_order')
+      responds_to_fields && responds_to_column_order
+    end
+
     private
 
     # We now have SMRT Link versioning
@@ -79,16 +89,6 @@ module Pacbio
     # e.g. Pipelines.pacbio.sample_sheet.by_version('v10')
     def pacbio_run_sample_sheet_config
       Pipelines.pacbio.sample_sheet.by_version(smrt_link_version.name)
-    end
-
-    # Is the simpler-style config is defined?
-    # Requires:
-    # - fields
-    # - column_order
-    def use_simpler_sample_sheets?
-      responds_to_fields = pacbio_run_sample_sheet_config.respond_to?('fields')
-      responds_to_column_order = pacbio_run_sample_sheet_config.respond_to?('column_order')
-      responds_to_fields && responds_to_column_order
     end
 
     def generate_name

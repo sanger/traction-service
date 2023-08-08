@@ -4,6 +4,8 @@ require 'rails_helper'
 
 RSpec.describe Pacbio::Run, pacbio: true do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
+  let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
+  let!(:version12_revio) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
 
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_revio_run }
@@ -95,6 +97,21 @@ RSpec.describe Pacbio::Run, pacbio: true do
   end
 
   describe '#generate_sample_sheet' do
+    it 'must use the deprecated config style for v10' do
+      run = create(:pacbio_sequel_run, smrt_link_version: version10)
+      expect(run.use_simpler_sample_sheets?).to be(false)
+    end
+
+    it 'must use the deprecated config style for v11' do
+      run = create(:pacbio_sequel_run, smrt_link_version: version11)
+      expect(run.use_simpler_sample_sheets?).to be(false)
+    end
+
+    it 'must use the simple config style for v12_revio' do
+      run = create(:pacbio_sequel_run, smrt_link_version: version12_revio)
+      expect(run.use_simpler_sample_sheets?).to be(true)
+    end
+
     it 'must return a String' do
       well1 = build(:pacbio_well_with_pools)
       well2 = build(:pacbio_well_with_pools)
