@@ -27,7 +27,7 @@ FactoryBot.define do
   end
 
   factory :qc_receptions_factory, class: 'QcReceptionsFactory' do
-    association :qc_reception
+    qc_reception
     qc_results_list { qc_reception.qc_results_list }
   end
 end
