@@ -32,6 +32,8 @@ RSpec.describe QcReceptionsFactory do
 
   describe '#create_qc_results' do
     let(:factory) { build(:qc_receptions_factory) }
+    let(:config) { YAML.load_file(Rails.root.join('config/locales/en.yml'), aliases: true) }
+    let(:error_config) { config['en']['activerecord']['errors']['models']['qc_reception'] }
 
     context 'when the data is valid' do
       it 'creates QC Results' do
@@ -49,6 +51,31 @@ RSpec.describe QcReceptionsFactory do
         expect do
           factory.create_qc_results!
         end.not_to change(QcReception, :count)
+      end
+    end
+
+    context 'when the values in the qc_results_list are empty' do
+      let(:qc_results_with_empty_values) do
+        [
+          {
+            'final_nano_drop_280' => '',
+            'post_spri_concentration' => '',
+            'post_spri_volume' => '',
+            'shearing_qc_comments' => '',
+            'date_submitted' => '',
+            'labware_barcode' => 'FD20706500',
+            'sample_external_id' => 'supplier_sample_name_DDD'
+          }
+        ]
+      end
+      let(:qc_reception) { build(:qc_reception, qc_results_list: qc_results_with_empty_values) }
+      let(:factory) { build(:qc_receptions_factory, qc_reception:, qc_results_list: qc_results_with_empty_values) }
+
+      it 'raises validation error' do
+        error_message = error_config['attributes']['qc_results_list']['blank']
+        expect do
+          factory.create_qc_results!
+        end.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Value #{error_message}")
       end
     end
 

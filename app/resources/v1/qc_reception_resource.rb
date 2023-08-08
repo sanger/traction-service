@@ -10,6 +10,9 @@ module V1
   class QcReceptionResource < JSONAPI::Resource
     attributes :qc_results_list, :source
 
+    # The after_create happens in a transaction, and since there are
+    # multiple callbacks, they are executed is reverse order.
+    # create_qc_results! is executed first, followed by publish_messages
     after_create :publish_messages, :create_qc_results!
 
     PERMITTED_QC_FIELDS = %w[

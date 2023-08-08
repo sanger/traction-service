@@ -6,8 +6,6 @@
 class QcReception < ApplicationRecord
   extend NestedValidation
   has_many :qc_results, dependent: :restrict_with_error
-  # dependent: :restrict_with_error to stop destroying a record in qc_receptions
-  # when there are associated records in qc_results
 
   validates :source, presence: true
   validates_nested :qc_receptions_factory, flatten_keys: true

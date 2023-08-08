@@ -372,7 +372,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_02_131059) do
     t.string "species"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.string "priority_level", comment: "Priority level eg Medium, High etc"
+    t.string "priority_level", comment: "Priority level e.g. Medium, High etc"
     t.index ["external_id"], name: "index_samples_on_external_id", unique: true
     t.index ["name", "external_id", "species"], name: "index_samples_on_name_and_external_id_and_species"
     t.index ["name"], name: "index_samples_on_name", unique: true

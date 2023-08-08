@@ -7,7 +7,7 @@ module V1
 
     # When a pool is updated and it is attached to a run we need
     # to republish the messages for the run
-    after_create :construct_resources!
+    after_create :publish_messages, :construct_resources!
 
     def fetchable_fields
       [:source]
@@ -29,7 +29,6 @@ module V1
 
     def construct_resources!
       @model.construct_resources!
-      publish_messages
     end
 
     def permitted_request_attributes
@@ -37,14 +36,20 @@ module V1
     end
 
     def publish_messages
-      Messages.publish(
+      # Publish message for the sample table
+      publish_message(
         @model.requests.map(&:sample),
         Pipelines.reception.sample.message
       )
-      Messages.publish(
+      # Publish message for the stock_resource table
+      publish_message(
         @model.requests,
         Pipelines.reception.stock_resource.message
       )
+    end
+
+    def publish_message(message, config)
+      Messages.publish(message, config)
     end
   end
 end

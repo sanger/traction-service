@@ -86,6 +86,13 @@ en:
               duplicated_in_tag_set: must only appear once within a set
             group_id:
               duplicated_in_tag_set: must only appear once within a set
+        qc_reception:
+          attributes:
+            source:
+              blank: can't be blank
+            qc_results_list:
+              blank: can't be blank
+              empty: Is empty
   errors:
     messages:
       uuid: is not a valid uuid

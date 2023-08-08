@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 # Receives an array of qc_results for multiple samples
-# converts them into rows to saves them in qc_results table
-# constructs the rabbitmq message for each qc_result
+# Converts them into rows to save them in the qc_results table
+# Constructs the RabbitMQ message for each qc_result
 class QcReceptionsFactory
   include ActiveModel::Model
 

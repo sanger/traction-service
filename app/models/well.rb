@@ -34,6 +34,6 @@ class Well < ApplicationRecord
   end
 
   def labware_type
-    'well'
+    self.class.name.downcase
   end
 end

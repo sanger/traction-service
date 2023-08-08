@@ -9,6 +9,8 @@ RSpec.describe QcReception do
     end
 
     let(:qc_reception) { build(:qc_reception) }
+    let(:config) { YAML.load_file(Rails.root.join('config/locales/en.yml'), aliases: true) }
+    let(:error_config) { config['en']['activerecord']['errors']['models']['qc_reception'] }
 
     it 'is possible to create a new record' do
       expect do
@@ -21,15 +23,17 @@ RSpec.describe QcReception do
 
     describe '#validates_nested' do
       it 'errors if missing required source field' do
+        error_message = error_config['attributes']['source']['blank']
         expect do
           described_class.create!(qc_results_list: qc_reception.qc_results_list)
-        end.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Source can't be blank")
+        end.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Source #{error_message}")
       end
 
       it 'errors if missing required qc_results_list' do
+        error_message = error_config['attributes']['qc_results_list']['blank']
         expect do
           described_class.create!(source: qc_reception.source)
-        end.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Qc results list can't be blank")
+        end.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Qc results list #{error_message}")
       end
     end
 
@@ -37,12 +41,13 @@ RSpec.describe QcReception do
       let(:qc_reception) { build(:qc_reception, qc_results_list: [{}]) }
 
       it 'raises validation error' do
+        error_message = error_config['attributes']['qc_results_list']['empty']
         expect do
           described_class.create!(
             source: qc_reception.source,
             qc_results_list: qc_reception.qc_results_list
           )
-        end.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Qc results list Is empty')
+        end.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Qc results list #{error_message}")
       end
     end
   end

@@ -12,7 +12,7 @@ RSpec.describe '/qc_receptions' do
     end
 
     # Load config file
-    let(:config) { YAML.load_file(Rails.root.join('config/locales//en.yml'), aliases: true) }
+    let(:config) { YAML.load_file(Rails.root.join('config/locales/en.yml'), aliases: true) }
     let(:error_config) { config['en']['activemodel']['errors']['models']['qc_receptions_factory'] }
     let(:qc_results_list) do
       [
@@ -62,9 +62,11 @@ RSpec.describe '/qc_receptions' do
       end
 
       it 'creates the relevant QcResult' do
+        create(:qc_assay_type, key: 'post_spri_concentration', label: 'Post SPRI Concentration (ng/ul)', used_by: 1, units: 'ng/ul')
+        create(:qc_assay_type, key: 'post_spri_volume', label: 'Post SPRI Volume (ul)', used_by: 1, units: 'ul')
         expect do
           post v1_qc_receptions_url, params: body, headers: json_api_headers
-        end.to change(QcResult, :count).by(1)
+        end.to change(QcResult, :count).by(3)
       end
 
       it 'creates the relevant QcResult data' do

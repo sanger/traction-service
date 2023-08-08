@@ -14,16 +14,12 @@ class QcReceptionsFactoryValidator < ActiveModel::Validator
   end
 
   def validate_qc_results_list(record)
-    # Check if array is not empty
-    if record.qc_results_list.empty?
+    # Add error if the array is not empty
+    # or all the objects inside the array are empty
+    if record.qc_results_list.empty? ||
+       record.qc_results_list.all?(&:empty?)
       record.errors.add :qc_results_list, :empty_array
-      return
     end
-    # Return if any object inside the qc_results_list array has values
-    return nil if record.qc_results_list.any? { |value| !value.empty? }
-
-    # Add error if the objects inside the qc_results_list array is empty
-    record.errors.add :qc_results_list, :empty_array
     nil
   end
 

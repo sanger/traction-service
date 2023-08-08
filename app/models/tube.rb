@@ -33,6 +33,6 @@ class Tube < ApplicationRecord
   end
 
   def labware_type
-    'tube'
+    self.class.name.downcase
   end
 end
