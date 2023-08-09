@@ -5,7 +5,23 @@ require 'rails_helper'
 RSpec.describe QcReceptionsFactoryValidator do
   describe '#validate' do
     let(:used_by) { 'tol' }
-    let(:record) { build(:qc_receptions_factory) }
+    let(:qc_results_list) do
+      [
+        {
+          'final_nano_drop' => '200',
+          'final_nano_drop_230' => '230',
+          'final_nano_drop_280' => '280',
+          'post_spri_concentration' => '10',
+          'post_spri_volume' => '20',
+          'sheared_femto_fragment_size' => '5',
+          'shearing_qc_comments' => 'Comments',
+          'date_submitted' => '1689078551564.2458',
+          'labware_barcode' => 'FD20706500',
+          'sample_external_id' => 'supplier_sample_name_DDD'
+        }
+      ]
+    end
+    let(:record) { build(:qc_receptions_factory, qc_results_list:) }
 
     before do
       create(:qc_assay_type, key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul) [ESP1]', used_by: 0, units: 'ng/ul')
@@ -30,16 +46,14 @@ RSpec.describe QcReceptionsFactoryValidator do
 
     describe '#validate_qc_results_list' do
       it 'when qc_results_list is an empty array' do
-        qc_reception = build(:qc_reception, qc_results_list: [])
-        record = build(:qc_receptions_factory, qc_reception:)
+        record = build(:qc_receptions_factory, qc_results_list: [])
         described_class.new.validate(record)
         expect(record).not_to be_valid
         expect(record.errors.messages[:qc_results_list]).to eq ["can't be blank"]
       end
 
       it 'when qc_results_list is an array with empty hash' do
-        qc_reception = build(:qc_reception, qc_results_list: [{}])
-        record = build(:qc_receptions_factory, qc_reception:)
+        record = build(:qc_receptions_factory, qc_results_list: [{}])
         described_class.new.validate(record)
         expect(record).not_to be_valid
         expect(record.errors.messages[:qc_results_list]).to eq ['Is empty']

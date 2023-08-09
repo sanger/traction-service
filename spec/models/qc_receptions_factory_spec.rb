@@ -14,8 +14,25 @@ RSpec.describe QcReceptionsFactory do
     create(:qc_assay_type, key: 'shearing_qc_comments', label: 'Shearing & QC comments (if applicable)', used_by: 1, units: '')
   end
 
+  let(:qc_results_list) do
+    [
+      {
+        'final_nano_drop' => '200',
+        'final_nano_drop_230' => '230',
+        'final_nano_drop_280' => '280',
+        'post_spri_concentration' => '10',
+        'post_spri_volume' => '20',
+        'sheared_femto_fragment_size' => '5',
+        'shearing_qc_comments' => 'Comments',
+        'date_submitted' => '1689078551564.2458',
+        'labware_barcode' => 'FD20706500',
+        'sample_external_id' => 'supplier_sample_name_DDD'
+      }
+    ]
+  end
+
   describe '#qc_results_list' do
-    let(:factory) { build(:qc_receptions_factory) }
+    let(:factory) { build(:qc_receptions_factory, qc_results_list:) }
 
     it 'returns qc_results_list' do
       expect(factory.qc_results_list).to eq factory.qc_reception.qc_results_list
@@ -31,7 +48,7 @@ RSpec.describe QcReceptionsFactory do
   end
 
   describe '#create_qc_results' do
-    let(:factory) { build(:qc_receptions_factory) }
+    let(:factory) { build(:qc_receptions_factory, qc_results_list:) }
     let(:config) { YAML.load_file(Rails.root.join('config/locales/en.yml'), aliases: true) }
     let(:error_config) { config['en']['activerecord']['errors']['models']['qc_reception'] }
 
@@ -114,7 +131,7 @@ RSpec.describe QcReceptionsFactory do
   end
 
   describe '#messages' do
-    let(:factory) { build(:qc_receptions_factory) }
+    let(:factory) { build(:qc_receptions_factory, qc_results_list:) }
 
     context 'when the data is valid' do
       it 'builds the correct qc results message' do

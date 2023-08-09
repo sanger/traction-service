@@ -28,6 +28,5 @@ FactoryBot.define do
 
   factory :qc_receptions_factory, class: 'QcReceptionsFactory' do
     qc_reception
-    qc_results_list { qc_reception.qc_results_list }
   end
 end
