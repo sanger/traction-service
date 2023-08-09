@@ -143,5 +143,12 @@ RSpec.describe Pipelines::Configuration, type: :model do
         configuration.pipeline_c.sample_sheet.by_version('v10').field_20
       end
     end
+
+    it 'will not be able to access fields from another version once another version has been loaded' do
+      expect(configuration.pipeline_c.sample_sheet.by_version('v20').field_20).to eq('c')
+      assert_raises NoMethodError do
+        configuration.pipeline_c.sample_sheet.by_version('v10').field_20
+      end
+    end
   end
 end
