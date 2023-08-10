@@ -29,7 +29,7 @@ module Pipelines
     # @param key [String] the name of the method to be defined
     # @param block [Block] the body of the method to be defined
     def create_instance_method(key, &block)
-      self.class.send(:define_method, key, block)
+      define_singleton_method(key) { block.call }
     end
   end
 
