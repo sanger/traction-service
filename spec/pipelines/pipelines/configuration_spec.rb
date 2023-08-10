@@ -89,6 +89,11 @@ RSpec.describe Pipelines::Configuration, type: :model do
     expect(message.fields.field_c.value).to eq('Time.current')
   end
 
+  it 'each configuration will obey its hierarchy' do
+    expect(configuration.pipeline_a.message.fields.field_a.value).to eq('blah, blah, blah')
+    expect { configuration.pipeline_a.message.field_a.value }.to raise_error(NameError) # field_a returns 'blah, blah, blah'
+  end
+
   it 'will have a list of pipelines' do
     expect(configuration.pipelines).to eq(%w[pipeline_a pipeline_b])
   end
