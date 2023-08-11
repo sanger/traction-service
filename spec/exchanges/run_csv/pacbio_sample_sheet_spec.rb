@@ -43,7 +43,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
         it 'must have the correct headers' do
           headers = parsed_csv[0]
 
-          expected_headers = Pipelines.pacbio.sample_sheet.column_order
+          expected_headers = configuration.column_order
           expect(headers).to eq(expected_headers)
         end
 
@@ -134,7 +134,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
         it 'must have the correct headers' do
           headers = parsed_csv[0]
 
-          expected_headers = Pipelines.pacbio.sample_sheet.column_order
+          expected_headers = configuration.column_order
           expect(headers).to eq(expected_headers)
         end
 
