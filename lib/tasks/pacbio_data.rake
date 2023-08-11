@@ -15,12 +15,13 @@ namespace :pacbio_data do
 
     print '-> Creating pacbio plates and tubes...'
 
-    @reception_generator = ReceptionGenerator.new(
+    reception_generator = ReceptionGenerator.new(
       number_of_plates: 5,
       number_of_tubes: 5,
       wells_per_plate: 48,
       pipeline: :pacbio
     ).tap(&:construct_resources!)
+    @requests_generator = reception_generator.reception.requests.cycle # set as instance variable to be used in library creation
 
     print COMPLETED
 
@@ -42,7 +43,7 @@ namespace :pacbio_data do
         template_prep_kit_box_barcode: 'LK12345',
         insert_size: 100
       }
-      request = @reception_generator.reception.requests.first.requestable
+      request = @requests_generator.next.requestable
       tag = TagSet.find_by!(name: tag_name).tags.first if tag_name
       Pacbio::Library.create!(request:, tag:, **contents) do |lib|
         lib.pool = Pacbio::Pool.new(tube: Tube.create, libraries: [lib], **contents)
@@ -50,8 +51,13 @@ namespace :pacbio_data do
     end
 
     # pools
-    untagged_pool = library nil
-    tagged_pool = library 'Sequel_16_barcodes_v3'
+    def untagged_pool
+      library(nil)
+    end
+
+    def tagged_pool
+      library('Sequel_16_barcodes_v3')
+    end
 
     print COMPLETED
 
