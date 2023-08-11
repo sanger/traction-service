@@ -40,7 +40,7 @@ namespace :pacbio_data do
       contents = {
         volume: 1,
         concentration: 1,
-        template_prep_kit_box_barcode: barcode(length: 21),
+        template_prep_kit_box_barcode: '029979102141700063023',
         insert_size: 100
       }
       request = @requests_generator.next.requestable
@@ -62,8 +62,9 @@ namespace :pacbio_data do
     print COMPLETED
 
     print '-> Finding Pacbio SMRT Link versions...'
-    v11 = Pacbio::SmrtLinkVersion.find_by(name: 'v11')
-    v12_revio = Pacbio::SmrtLinkVersion.find_by(name: 'v12_revio')
+    v11 = Pacbio::SmrtLinkVersion.find_by!(name: 'v11')
+    v12_revio = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_revio')
+    v12_sequel_iie = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_sequel_iie')
     print COMPLETED
 
     puts '-> Creating pacbio runs:'
@@ -145,6 +146,34 @@ namespace :pacbio_data do
               include_base_kinetics: 'True',
               library_concentration: 1,
               polymerase_kit:	'030116102739100011124'
+            )]
+          )
+        end
+      )
+    end
+    print COMPLETED
+
+    print "   -> Creating runs for #{v12_sequel_iie.name}..."
+    total_plates[:sequel_iie].product(pools[:sequel_iie]).each do |total_plate, (pool_name, pool)|
+      Pacbio::Run.create!(
+        name: "RUN-#{v12_sequel_iie.name}-#{pool_name}-#{total_plate}_plate",
+        system_name: Pacbio::Run.system_names['Sequel IIe'],
+        smrt_link_version: v12_sequel_iie,
+        plates: (1..total_plate).map do |plate_number|
+          Pacbio::Plate.new(
+            sequencing_kit_box_barcode: '130429101826100021624',
+            plate_number:,
+            wells: [Pacbio::Well.new(
+              pools: [pool],
+              row: 'A',
+              column: 1,
+              ccs_analysis_output_include_kinetics_information:	'No',
+              ccs_analysis_output_include_low_quality_reads:	'No',
+              include_fivemc_calls_in_cpg_motifs:	'Yes',
+              demultiplex_barcodes:	'In SMRT Link',
+              on_plate_loading_concentration: 1,
+              binding_kit_box_barcode: '030425102194100010424',
+              movie_time: '20.0'
             )]
           )
         end

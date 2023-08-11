@@ -7,11 +7,11 @@ FactoryBot.define do
     tag_set
 
     factory :ont_tag do
-      association(:tag_set, factory: :ont_tag_set)
+      tag_set { association :ont_tag_set }
     end
 
     factory :hidden_tag do
-      association(:tag_set, factory: :hidden_tag_set)
+      tag_set { association :hidden_tag_set }
     end
 
     factory :tag_with_taggables do

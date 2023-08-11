@@ -3,6 +3,6 @@
 FactoryBot.define do
   factory :request do
     sample
-    requestable { create(:pacbio_request) }
+    requestable { association :pacbio_request }
   end
 end
