@@ -40,7 +40,7 @@ namespace :pacbio_data do
       contents = {
         volume: 1,
         concentration: 1,
-        template_prep_kit_box_barcode: 'LK12345',
+        template_prep_kit_box_barcode: barcode(length: 21),
         insert_size: 100
       }
       request = @requests_generator.next.requestable
