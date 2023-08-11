@@ -642,10 +642,10 @@ RSpec.describe RunCsv::DeprecatedPacbioSampleSheet, type: :model do
               well.on_plate_loading_concentration.to_s,
               well.plate.run.comments,
               well.show_row_per_sample?.to_s,
-              '', # barcode name - does not apply
+              nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
-              '', # sample name - does not apply
+              nil, # sample name - does not apply
               well.automation_parameters,
               well.ccs_analysis_output_include_kinetics_information,
               well.loading_target_p1_plus_p2.to_s,
@@ -669,30 +669,30 @@ RSpec.describe RunCsv::DeprecatedPacbioSampleSheet, type: :model do
           ]
           sample_expectations.each do |sample_data, well|
             expect(sample_data).to eq([
-              '',
-              '',
+              nil,
+              nil,
               'false', # well.collection?
               well.position,
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
               well.libraries.first.barcode_name,
-              '',
-              '',
+              nil,
+              nil,
               well.libraries.first.request.sample_name,
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              ''
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil
             ])
           end
         end
@@ -745,7 +745,7 @@ RSpec.describe RunCsv::DeprecatedPacbioSampleSheet, type: :model do
               well.on_plate_loading_concentration.to_s,
               well.plate.run.comments,
               well.sample_is_barcoded.to_s,
-              '', # barcode name - does not apply
+              nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
               well.find_sample_name,
