@@ -419,7 +419,9 @@ RSpec.describe 'PoolsController', pacbio: true do
     context 'when there is an associated run' do
       let!(:pool) { create(:pacbio_pool) }
       let!(:updated_library) { pool.libraries.first }
-      let!(:plate) { create(:pacbio_plate) }
+      let!(:plate) { build(:pacbio_plate) }
+      let(:run) { create(:pacbio_run, plates: [plate]) }
+
       let(:body) do
         {
           data: {
