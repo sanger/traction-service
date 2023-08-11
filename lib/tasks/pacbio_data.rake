@@ -83,12 +83,12 @@ namespace :pacbio_data do
     # combinations
     total_plates = { sequel_iie: [1], revio: [1, 2] }
     pools = {
-      sequel_iie: { untagged: untagged_pool, tagged: tagged_pool },
-      revio: { untagged: untagged_pool, tagged: tagged_pool }
+      sequel_iie: [[:untagged, untagged_pool], [:tagged, tagged_pool]],
+      revio: [[:untagged, untagged_pool], [:tagged, tagged_pool]]
     }
 
     print "   -> Creating runs for #{v11.name}..."
-    total_plates[:sequel_iie].product(pools[:sequel_iie].to_a).each do |total_plate, (pool_name, pool)|
+    total_plates[:sequel_iie].product(pools[:sequel_iie]).each do |total_plate, (pool_name, pool)|
       Pacbio::Run.create!(
         name: "RUN-#{v11.name}-#{pool_name}-#{total_plate}_plate",
         system_name: Pacbio::Run.system_names['Sequel IIe'],
@@ -118,7 +118,7 @@ namespace :pacbio_data do
     print COMPLETED
 
     print "   -> Creating runs for #{v12_revio.name}..."
-    total_plates[:revio].product(pools[:revio].to_a).each do |total_plate, (pool_name, pool)|
+    total_plates[:revio].product(pools[:revio]).each do |total_plate, (pool_name, pool)|
       Pacbio::Run.create!(
         name: "RUN-#{v12_revio.name}-#{pool_name}-#{total_plate}_plate",
         system_name: Pacbio::Run.system_names['Revio'],
