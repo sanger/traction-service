@@ -3,26 +3,27 @@
 require 'rails_helper'
 
 RSpec.describe 'QcResult Message', type: :model do
-  let(:configuration)       { Pipelines.configure(Pipelines.load_yaml).qc_result.message }
+  let(:configuration) { Pipelines.configure(Pipelines.load_yaml) }
+  let(:message_configuration) { configuration.qc_result.message }
   let(:qc_result)           { create(:qc_result) }
   let(:qc_decision)         { create(:qc_decision) }
   let(:qc_result_message)   { QcResultsUploadFactory::QcResultMessage.new(qc_result:, decision_made_by: qc_decision.decision_made_by) }
-  let(:message)             { Messages::Message.new(object: qc_result_message, configuration:) }
+  let(:message)             { Messages::Message.new(object: qc_result_message, configuration: message_configuration) }
 
   before do
     create(:qc_decision_result, qc_result:, qc_decision:)
   end
 
   it 'has a lims' do
-    expect(message.content[:lims]).to eq(configuration.lims)
+    expect(message.content[:lims]).to eq(message_configuration.lims)
   end
 
   it 'has a key' do
-    expect(message.content[configuration.key]).not_to be_empty
+    expect(message.content[message_configuration.key]).not_to be_empty
   end
 
   describe 'key' do
-    let(:key) { message.content[configuration.key] }
+    let(:key) { message.content[message_configuration.key] }
 
     let(:timestamp) { Time.zone.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
 
