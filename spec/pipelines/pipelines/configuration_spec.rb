@@ -91,7 +91,7 @@ RSpec.describe Pipelines::Configuration, type: :model do
 
   it 'each configuration will obey its hierarchy' do
     expect(configuration.pipeline_a.message.fields.field_a.value).to eq('blah, blah, blah')
-    expect { configuration.pipeline_a.message.field_a.value }.to raise_error(NameError) # field_a returns 'blah, blah, blah'
+    expect { configuration.pipeline_a.message.field_a.value }.to raise_error(NameError)
   end
 
   it 'will have a list of pipelines' do
@@ -144,17 +144,17 @@ RSpec.describe Pipelines::Configuration, type: :model do
     end
 
     it 'will not be able to access fields from another version' do
-      expect { configuration.pipeline_c.sample_sheet.by_version('v10').field_20 }.to raise_error(NoMethodError) # passes
+      expect { configuration.pipeline_c.sample_sheet.by_version('v10').field_20 }.to raise_error(NoMethodError)
     end
 
     it 'will not be able to access fields from another version without by_version' do
-      expect(configuration.pipeline_c.sample_sheet.v20.field_20).to eq('c') # passes
-      expect { configuration.pipeline_c.sample_sheet.v10.field_20 }.to raise_error(NoMethodError) # field_20 returns 'c'
+      expect(configuration.pipeline_c.sample_sheet.v20.field_20).to eq('c')
+      expect { configuration.pipeline_c.sample_sheet.v10.field_20 }.to raise_error(NoMethodError)
     end
 
     it 'will not be able to access fields from another version once another version has been loaded' do
-      expect(configuration.pipeline_c.sample_sheet.by_version('v20').field_20).to eq('c') # passes
-      expect { configuration.pipeline_c.sample_sheet.by_version('v10').field_20 }.to raise_error(NoMethodError) # field_20 returns 'c'
+      expect(configuration.pipeline_c.sample_sheet.by_version('v20').field_20).to eq('c')
+      expect { configuration.pipeline_c.sample_sheet.by_version('v10').field_20 }.to raise_error(NoMethodError)
     end
   end
 end
