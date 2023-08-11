@@ -3,20 +3,21 @@
 require 'rails_helper'
 
 RSpec.describe 'Saphyr', saphyr: true, type: :model do
-  let(:configuration)     { Pipelines.configure(Pipelines.load_yaml).saphyr.message }
+  let(:configuration) { Pipelines.configure(Pipelines.load_yaml) }
+  let(:message_configuration) { configuration.saphyr.message }
   let(:flowcell)          { create(:saphyr_flowcell_with_library) }
-  let(:message)           { Messages::Message.new(object: flowcell, configuration:) }
+  let(:message)           { Messages::Message.new(object: flowcell, configuration: message_configuration) }
 
   it 'has a lims' do
-    expect(message.content[:lims]).to eq(configuration.lims)
+    expect(message.content[:lims]).to eq(message_configuration.lims)
   end
 
   it 'has a key' do
-    expect(message.content[configuration.key]).not_to be_empty
+    expect(message.content[message_configuration.key]).not_to be_empty
   end
 
   describe 'key' do
-    let(:key) { message.content[configuration.key] }
+    let(:key) { message.content[message_configuration.key] }
 
     let(:timestamp) { Time.zone.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
 
