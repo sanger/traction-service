@@ -25,38 +25,36 @@ namespace :pacbio_data do
 
     print COMPLETED
 
-    print '-> Creating pacbio libraries...'
+    print '-> Creating pacbio libraries and pools...'
 
-    # Generate a psuedo-unique barcode
-    # default => 12345678
-    # length: 4 => 1234
-    # bits: 36 => uur0cj2h
-    # Inspired by http://web.archive.org/web/20120925034700/http://blog.logeek.fr/2009/7/2/creating-small-unique-tokens-in-ruby
-    def barcode(length: 8, bits: 10)
-      rand(bits**length).to_s(bits).rjust(length, '0')
-    end
-
-    def library(tag_name)
-      contents = {
-        volume: 1,
-        concentration: 1,
-        template_prep_kit_box_barcode: '029979102141700063023',
-        insert_size: 100
-      }
-      request = @requests_generator.next.requestable
-      tag = TagSet.find_by!(name: tag_name).tags.first if tag_name
-      Pacbio::Library.create!(request:, tag:, **contents) do |lib|
-        lib.pool = Pacbio::Pool.new(tube: Tube.create, libraries: [lib], **contents)
-      end.pool
+    def pool(tag_name, lib_count = 1)
+      tags = TagSet.find_by!(name: tag_name).tags.cycle if tag_name
+      libs = (1..lib_count).collect do
+        {
+          volume: 1,
+          concentration: 1,
+          template_prep_kit_box_barcode: '029979102141700063023',
+          insert_size: 100,
+          pacbio_request_id: @requests_generator.next.requestable.id,
+          tag_id: (tags.next.id if tag_name)
+        }
+      end
+      Pacbio::Pool.create!(tube: Tube.create, library_attributes: libs, volume: 1, concentration: 1, insert_size: 100, template_prep_kit_box_barcode: '029979102141700063023')
     end
 
     # pools
     def untagged_pool
-      library(nil)
+      pool(nil)
     end
 
     def tagged_pool
-      library('Sequel_16_barcodes_v3')
+      pool('Sequel_16_barcodes_v3', 4)
+    end
+
+    # Create 10 pools with libraries that have no runs
+    5.times do
+      untagged_pool
+      tagged_pool
     end
 
     print COMPLETED
@@ -86,6 +84,15 @@ namespace :pacbio_data do
     #     option_versions.id
 
     # TODO: create the seed data below with the appropiate options dynamically sourced from config
+
+    # Generate a psuedo-unique barcode
+    # default => 12345678
+    # length: 4 => 1234
+    # bits: 36 => uur0cj2h
+    # Inspired by http://web.archive.org/web/20120925034700/http://blog.logeek.fr/2009/7/2/creating-small-unique-tokens-in-ruby
+    def barcode(length: 8, bits: 10)
+      rand(bits**length).to_s(bits).rjust(length, '0')
+    end
 
     # combinations
     total_plates = { sequel_iie: [1], revio: [1, 2] }
