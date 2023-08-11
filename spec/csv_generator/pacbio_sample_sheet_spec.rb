@@ -11,7 +11,8 @@ RSpec.describe PacbioSampleSheet, type: :model do
     let(:plate)       { build(:pacbio_plate, wells:) }
     let(:run)         { create(:pacbio_run, smrt_link_version:, plates: [plate]) }
     let(:parsed_csv)  { CSV.parse(csv_string) }
-    let(:csv)         { described_class.new(run:, configuration: Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name)) }
+    let(:configuration) { Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name) }
+    let(:csv) { described_class.new(run:, configuration:) }
 
     context 'v10' do
       let(:smrt_link_version) { create(:pacbio_smrt_link_version_default, name: 'v10') }
@@ -44,7 +45,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
         it 'must have the correct headers' do
           headers = parsed_csv[0]
 
-          expected_headers = Pipelines.pacbio.sample_sheet.columns.map(&:first)
+          expected_headers = configuration.columns.map(&:first)
           expect(headers).to eq(expected_headers)
         end
 
@@ -146,7 +147,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
         it 'must have the correct headers' do
           headers = parsed_csv[0]
 
-          expected_headers = Pipelines.pacbio.sample_sheet.columns.map(&:first)
+          expected_headers = configuration.columns.map(&:first)
           expect(headers).to eq(expected_headers)
         end
 
@@ -237,7 +238,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
         it 'must have the correct headers' do
           headers = parsed_csv[0]
 
-          expected_headers = Pipelines.pacbio.sample_sheet.columns.map(&:first)
+          expected_headers = configuration.columns.map(&:first)
           expect(headers).to eq(expected_headers)
         end
 
@@ -342,7 +343,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
         it 'must have the correct headers' do
           headers = parsed_csv[0]
 
-          expected_headers = Pipelines.pacbio.sample_sheet.columns.map(&:first)
+          expected_headers = configuration.columns.map(&:first)
           expect(headers).to eq(expected_headers)
         end
 
@@ -435,7 +436,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
         it 'must have the correct headers' do
           headers = parsed_csv[0]
 
-          expected_headers = Pipelines.pacbio.sample_sheet.columns.map(&:first)
+          expected_headers = configuration.columns.map(&:first)
           expect(headers).to eq(expected_headers)
         end
 
@@ -526,7 +527,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
         it 'must have the correct headers' do
           headers = parsed_csv[0]
 
-          expected_headers = Pipelines.pacbio.sample_sheet.columns.map(&:first)
+          expected_headers = configuration.columns.map(&:first)
           expect(headers).to eq(expected_headers)
         end
 
