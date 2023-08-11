@@ -23,16 +23,6 @@ module Pipelines
     end
   end
 
-  # InstanceMethodCreator
-  module InstanceMethodCreator
-    # Creates an instance method in the included class
-    # @param key [String] the name of the method to be defined
-    # @param block [Block] the body of the method to be defined
-    def create_instance_method(key, &block)
-      define_singleton_method(key) { block.call }
-    end
-  end
-
   # create methods for each pipeline so can use Pipelines.pipeline_name
   # instead of Pipelines.configuration.pipeline_name
   NAMES.each do |k, _v|
