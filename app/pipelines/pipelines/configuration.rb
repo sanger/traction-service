@@ -44,10 +44,10 @@ module Pipelines
 
         children.each do |key, child|
           if child.instance_of?(ActiveSupport::HashWithIndifferentAccess)
-            unless respond_to?(key)
-              child_item = Item.new(pipeline, child)
-              create_instance_method(key) { child_item }
-            end
+            next if respond_to?(key)
+
+            child_item = Item.new(pipeline, child)
+            create_instance_method(key) { child_item }
           else
             create_instance_method(key) { child }
           end
