@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Pacbio::Run, pacbio: true do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
+  let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12_sequel_iie') }
 
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_revio_run }
@@ -16,8 +17,20 @@ RSpec.describe Pacbio::Run, pacbio: true do
       expect(build(:pacbio_sequel_run, sequencing_kit_box_barcode: nil)).to be_valid
     end
 
-    it 'must have a DNA control complex kit box barcode' do
-      expect(build(:pacbio_sequel_run, dna_control_complex_box_barcode: nil)).not_to be_valid
+    context 'v10 and v11' do
+      it 'does not need a DNA control complex kit box barcode' do
+        expect(build(:pacbio_sequel_run, smrt_link_version: version10, dna_control_complex_box_barcode: nil)).to be_valid
+      end
+
+      it 'can have a DNA control complex kit box barcode' do
+        expect(build(:pacbio_sequel_run, smrt_link_version: version10, dna_control_complex_box_barcode: 'DCCB1234')).to be_valid
+      end
+    end
+
+    context 'v12' do
+      it 'must not have a DNA control complex kit box barcode' do
+        expect(build(:pacbio_sequel_run, smrt_link_version: version12, dna_control_complex_box_barcode: nil)).to be_valid
+      end
     end
 
     it 'must have a system name' do
