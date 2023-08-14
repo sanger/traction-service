@@ -6,5 +6,6 @@ FactoryBot.define do
     external_id
     species { 'human' }
     priority_level { 'Medium' }
+    country_of_origin { 'United Kingdom' }
   end
 end

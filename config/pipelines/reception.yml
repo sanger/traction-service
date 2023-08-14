@@ -56,6 +56,25 @@ default: &default
           priority_level:
             type: :model
             value: priority_level
+          sanger_sample_id:
+            type: :model
+            value: sanger_sample_id
+          supplier_name:
+            type: :model
+            value: supplier_name
+          taxon_id:
+            type: :model
+            value: taxon_id
+          donor_id:
+            type: :model
+            value: donor_id
+          country_of_origin:
+            type: :model
+            value: country_of_origin
+          accession_number:
+            type: :model
+            value: accession_number
+          
 
 
 development: *default
