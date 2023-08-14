@@ -8,8 +8,6 @@
 namespace :qc_assay_types do
   desc 'Create QC Assay Types'
   task create: :environment do
-    QcAssayType.destroy_all
-
     [
       { key: 'qubit_concentration_ngul', label: 'Qubit DNA Quant (ng/ul) [ESP1]', used_by: 0, units: 'ng/ul' },
       { key: 'volume_si', label: 'DNA vol (ul)', used_by: 0, units: 'ul' },
