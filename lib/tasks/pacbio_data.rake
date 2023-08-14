@@ -34,7 +34,6 @@ namespace :pacbio_data do
       { library_type: 'Pacbio_HiFi', tag_set: 'Sequel_16_barcodes_v3', size: 1 },
       { library_type: 'Pacbio_HiFi_mplx', tag_set: 'Sequel_16_barcodes_v3', size: 5 },
       { library_type: 'PacBio_IsoSeq_mplx', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 1 },
-      { library_type: 'Pacbio_IsoSeq', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 5 },
       { library_type: 'Pacbio_IsoSeq', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 5 }
     ]
 
@@ -46,7 +45,7 @@ namespace :pacbio_data do
         Pacbio::Library.create!(
           volume: 1,
           concentration: 1,
-          template_prep_kit_box_barcode: 'LK12345',
+          template_prep_kit_box_barcode: '029979102141700063023',
           insert_size: 100,
           request: request.requestable,
           tag: tags[tag_index]
@@ -64,8 +63,9 @@ namespace :pacbio_data do
     print COMPLETED
 
     print '-> Finding Pacbio SMRT Link versions...'
-    v11 = Pacbio::SmrtLinkVersion.find_by(name: 'v11')
-    v12_revio = Pacbio::SmrtLinkVersion.find_by(name: 'v12_revio')
+    v11 = Pacbio::SmrtLinkVersion.find_by!(name: 'v11')
+    v12_revio = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_revio')
+    v12_sequel_iie = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_sequel_iie')
     print COMPLETED
 
     puts '-> Creating pacbio runs:'
@@ -158,6 +158,32 @@ namespace :pacbio_data do
         smrt_link_version: v12_revio,
         dna_control_complex_box_barcode: "DCCB#{pool.id}",
         plates: [plate1] + (i > 2 ? [plate2] : [])
+      )
+    end
+    print COMPLETED
+
+    print "   -> Creating runs for #{v12_sequel_iie.name}..."
+    pool_records.zip(pools).each_with_index do |(pool, tag_set), i|
+      Pacbio::Run.create!(
+        name: "RUN-#{v12_sequel_iie.name}-#{tag_set[:tag_set]}x#{tag_set[:size]}",
+        system_name: Pacbio::Run.system_names['Sequel IIe'],
+        smrt_link_version: v12_sequel_iie,
+        plates: [Pacbio::Plate.new(
+          sequencing_kit_box_barcode: '130429101826100021624',
+          plate_number: 1,
+          wells: [Pacbio::Well.new(
+            pools: [pool],
+            row: 'A',
+            column: i + 1,
+            ccs_analysis_output_include_kinetics_information:	'No',
+            ccs_analysis_output_include_low_quality_reads:	'No',
+            include_fivemc_calls_in_cpg_motifs:	'Yes',
+            demultiplex_barcodes:	'In SMRT Link',
+            on_plate_loading_concentration: 1,
+            binding_kit_box_barcode: '030425102194100010424',
+            movie_time: '20.0'
+          )]
+        )]
       )
     end
     print COMPLETED
