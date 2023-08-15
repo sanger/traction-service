@@ -74,6 +74,9 @@ default: &default
           accession_number:
             type: :model
             value: accession_number
+          date_of_sample_collection:
+            type: :model
+            value: date_of_sample_collection
           
 
 

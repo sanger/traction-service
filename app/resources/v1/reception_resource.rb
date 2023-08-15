@@ -22,7 +22,7 @@ module V1
         request.permit(request: permitted_request_attributes,
                        sample: %i[name external_id species study_uuid priority_level
                                   sanger_sample_id supplier_name taxon_id donor_id country_of_origin
-                                  accession_number],
+                                  accession_number date_of_sample_collection],
                        container: %i[type barcode position])
                .to_h
                .with_indifferent_access
