@@ -12,7 +12,8 @@ RSpec.describe OntSampleSheet, type: :model do
 
     let(:run) { create(:ont_run, flowcell_count: 2) }
     let(:parsed_csv) { CSV.parse(csv_string) }
-    let(:csv) { described_class.new(run:, configuration: Pipelines.ont.sample_sheet.by_version(run.min_know_version.name)) }
+    let(:configuration) { Pipelines.ont.sample_sheet.by_version(run.min_know_version.name) }
+    let(:csv) { described_class.new(run:, configuration:) }
 
     it 'must return a csv string' do
       expect(csv_string.class).to eq String
@@ -21,7 +22,7 @@ RSpec.describe OntSampleSheet, type: :model do
     it 'must have the correct headers' do
       headers = parsed_csv[0]
 
-      expected_headers = Pipelines.ont.sample_sheet.columns.map(&:first)
+      expected_headers = configuration.columns.map(&:first)
       expect(headers).to eq(expected_headers)
     end
 
