@@ -106,7 +106,7 @@ RSpec.describe 'RakeTasks' do
             -> Tag Set successfully created
             -> IsoSeq_Primers_12_Barcodes_v1 created
             -> Creating pacbio plates and tubes...\b\b\b √#{' '}
-            -> Creating pacbio libraries...\b\b\b √#{' '}
+            -> Creating pacbio libraries and pools...\b\b\b √#{' '}
             -> Finding Pacbio SMRT Link versions...\b\b\b √#{' '}
             -> Creating pacbio runs:
                -> Creating runs for v11...\b\b\b √#{' '}
@@ -115,8 +115,7 @@ RSpec.describe 'RakeTasks' do
             -> Pacbio runs successfully created
           HEREDOC
         ).to_stdout
-      expect(Pacbio::Run.count)
-        .to eq(15)
+      expect(Pacbio::Run.count).to eq(8)
     end
   end
 
