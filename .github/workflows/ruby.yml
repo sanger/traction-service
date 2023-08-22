@@ -15,7 +15,7 @@ jobs:
     services:
       mysql:
         # Use the Mysql docker image https://hub.docker.com/_/mysql
-        image: mysql:5.7
+        image: mysql:8.0
         ports:
          - 3306 # Default port mappings
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3

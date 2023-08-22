@@ -21,54 +21,52 @@ namespace :pacbio_data do
       wells_per_plate: 48,
       pipeline: :pacbio
     ).tap(&:construct_resources!)
-
-    requests = reception_generator.reception.requests.each
+    @requests_generator = reception_generator.reception.requests.cycle # set as instance variable to be used in library creation
 
     print COMPLETED
 
-    print '-> Creating pacbio libraries...'
+    print '-> Creating pacbio libraries and pools...'
 
-    # TODO: refactor the pools array below to better correspond to requests, libraries, and pools
-    pools = [
-      { library_type: 'Pacbio_HiFi', tag_set: nil, size: 1 },
-      { library_type: 'Pacbio_HiFi', tag_set: 'Sequel_16_barcodes_v3', size: 1 },
-      { library_type: 'Pacbio_HiFi_mplx', tag_set: 'Sequel_16_barcodes_v3', size: 5 },
-      { library_type: 'PacBio_IsoSeq_mplx', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 1 },
-      { library_type: 'Pacbio_IsoSeq', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 5 },
-      { library_type: 'Pacbio_IsoSeq', tag_set: 'IsoSeq_Primers_12_Barcodes_v1', size: 5 }
-    ]
-
-    pool_records = pools.map do |data|
-      tube = Tube.create
-      tags = data[:tag_set] ? TagSet.find_by!(name: data[:tag_set]).tags : []
-
-      requests.take(data[:size]).each_with_index.reduce(nil) do |pool, (request, tag_index)|
-        Pacbio::Library.create!(
+    def pool(tag_name, lib_count = 1)
+      tags = TagSet.find_by!(name: tag_name).tags.cycle if tag_name
+      libs = (1..lib_count).collect do
+        {
           volume: 1,
           concentration: 1,
-          template_prep_kit_box_barcode: 'LK12345',
+          template_prep_kit_box_barcode: '029979102141700063023',
           insert_size: 100,
-          request: request.requestable,
-          tag: tags[tag_index]
-        ) do |lib|
-          lib.pool = pool ||
-                     Pacbio::Pool.new(tube:,
-                                      volume: lib.volume,
-                                      concentration: lib.concentration,
-                                      template_prep_kit_box_barcode: lib.template_prep_kit_box_barcode,
-                                      insert_size: lib.insert_size,
-                                      libraries: [lib])
-        end.pool
+          pacbio_request_id: @requests_generator.next.requestable.id,
+          tag_id: (tags.next.id if tag_name)
+        }
       end
+      Pacbio::Pool.create!(tube: Tube.create, library_attributes: libs, volume: 1, concentration: 1, insert_size: 100, template_prep_kit_box_barcode: '029979102141700063023')
     end
+
+    # pools
+    def untagged_pool
+      pool(nil)
+    end
+
+    def tagged_pool
+      pool('Sequel_16_barcodes_v3', 4)
+    end
+
+    # Create 10 pools with libraries that have no runs
+    5.times do
+      untagged_pool
+      tagged_pool
+    end
+
     print COMPLETED
 
     print '-> Finding Pacbio SMRT Link versions...'
-    v11 = Pacbio::SmrtLinkVersion.find_by(name: 'v11')
-    v12_revio = Pacbio::SmrtLinkVersion.find_by(name: 'v12_revio')
+    v11 = Pacbio::SmrtLinkVersion.find_by!(name: 'v11')
+    v12_revio = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_revio')
+    v12_sequel_iie = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_sequel_iie')
     print COMPLETED
 
     puts '-> Creating pacbio runs:'
+
     # See required structure in 'config/pacbio_smrt_link_versions.yml'
     # Or execute the DB query below:
     #
@@ -87,77 +85,105 @@ namespace :pacbio_data do
 
     # TODO: create the seed data below with the appropiate options dynamically sourced from config
 
+    # Generate a psuedo-unique barcode
+    # default => 12345678
+    # length: 4 => 1234
+    # bits: 36 => uur0cj2h
+    # Inspired by http://web.archive.org/web/20120925034700/http://blog.logeek.fr/2009/7/2/creating-small-unique-tokens-in-ruby
+    def barcode(length: 8, bits: 10)
+      rand(bits**length).to_s(bits).rjust(length, '0')
+    end
+
+    # combinations
+    total_plates = { sequel_iie: [1], revio: [1, 2] }
+    pools = {
+      sequel_iie: [[:untagged, untagged_pool], [:tagged, tagged_pool]],
+      revio: [[:untagged, untagged_pool], [:tagged, tagged_pool]]
+    }
+
     print "   -> Creating runs for #{v11.name}..."
-    pool_records.each_with_index do |pool, i|
+    total_plates[:sequel_iie].product(pools[:sequel_iie]).each do |total_plate, (pool_name, pool)|
       Pacbio::Run.create!(
-        name: "Run11#{pool.id}",
+        name: "RUN-#{v11.name}-#{pool_name}-#{total_plate}_plate",
         system_name: Pacbio::Run.system_names['Sequel IIe'],
         smrt_link_version: v11,
-        dna_control_complex_box_barcode: "DCCB#{pool.id}",
-        plates: [Pacbio::Plate.new(
-          sequencing_kit_box_barcode: "SKB#{pool.id}",
-          plate_number: 1,
-          wells: [Pacbio::Well.new(
-            pools: [pool],
-            row: 'A',
-            column: i + 1,
-            ccs_analysis_output_include_kinetics_information:	'Yes',
-            ccs_analysis_output_include_low_quality_reads:	'Yes',
-            include_fivemc_calls_in_cpg_motifs:	'Yes',
-            demultiplex_barcodes:	'In SMRT Link',
-            on_plate_loading_concentration: 1,
-            binding_kit_box_barcode: "BKB#{pool.id}",
-            movie_time: '20.0'
-          )]
-        )]
+        dna_control_complex_box_barcode: "DCCB_#{barcode}",
+        plates: (1..total_plate).map do |plate_number|
+          Pacbio::Plate.new(
+            sequencing_kit_box_barcode: "SKB_#{barcode(length: 21 - 4)}",
+            plate_number:,
+            wells: [Pacbio::Well.new(
+              pools: [pool],
+              row: 'A',
+              column: 1,
+              ccs_analysis_output_include_kinetics_information:	'Yes',
+              ccs_analysis_output_include_low_quality_reads:	'Yes',
+              include_fivemc_calls_in_cpg_motifs:	'Yes',
+              demultiplex_barcodes:	'In SMRT Link',
+              generate_hifi: 'In SMRT Link',
+              on_plate_loading_concentration: 1,
+              binding_kit_box_barcode: "BKB_#{barcode}",
+              movie_time: '20.0'
+            )]
+          )
+        end
       )
     end
     print COMPLETED
 
     print "   -> Creating runs for #{v12_revio.name}..."
-    pool_records.each_with_index do |pool, i|
-      plate1 = Pacbio::Plate.new(
-        sequencing_kit_box_barcode: "SKB#{pool.id}1",
-        plate_number: 1,
-        wells: [Pacbio::Well.new(
-          pools: [pool],
-          row: 'A',
-          column: 1,
-          pre_extension_time: 2,
-          movie_acquisition_time:	'24.0',
-          include_base_kinetics:	'True',
-          library_concentration:	1,
-          polymerase_kit:	"PK12#{i}"
-        )]
-      )
-      plate2 = Pacbio::Plate.new(
-        sequencing_kit_box_barcode: "SKB#{pool.id}2",
-        plate_number: 2,
-        wells: [Pacbio::Well.new(
-          pools: [pool],
-          row: 'A',
-          column: 1,
-          pre_extension_time: 2,
-          movie_acquisition_time:	'24.0',
-          include_base_kinetics:	'True',
-          library_concentration:	1,
-          polymerase_kit:	"PK12#{i}"
-        ), Pacbio::Well.new(
-          pools: [pool],
-          row: 'B',
-          column: 1,
-          pre_extension_time: 2,
-          movie_acquisition_time:	'24.0',
-          include_base_kinetics:	'True',
-          library_concentration:	1,
-          polymerase_kit:	"PK12#{i}"
-        )]
-      )
+    total_plates[:revio].product(pools[:revio]).each do |total_plate, (pool_name, pool)|
       Pacbio::Run.create!(
+        name: "RUN-#{v12_revio.name}-#{pool_name}-#{total_plate}_plate",
         system_name: Pacbio::Run.system_names['Revio'],
         smrt_link_version: v12_revio,
-        dna_control_complex_box_barcode: "DCCB#{pool.id}",
-        plates: [plate1] + (i > 2 ? [plate2] : [])
+        dna_control_complex_box_barcode: "DCCB_#{barcode}",
+        plates: (1..total_plate).map do |plate_number|
+          serial = barcode(length: 3)
+          sequencing_kit_box_barcode = "10211880003110400#{serial}20231226"
+          Pacbio::Plate.new(
+            sequencing_kit_box_barcode:,
+            plate_number:,
+            wells: [Pacbio::Well.new(
+              pools: [pool],
+              row: 'A',
+              column: 1,
+              pre_extension_time: 2,
+              movie_acquisition_time:	'24.0',
+              include_base_kinetics: 'True',
+              library_concentration: 1,
+              polymerase_kit:	'030116102739100011124'
+            )]
+          )
+        end
+      )
+    end
+    print COMPLETED
+
+    print "   -> Creating runs for #{v12_sequel_iie.name}..."
+    total_plates[:sequel_iie].product(pools[:sequel_iie]).each do |total_plate, (pool_name, pool)|
+      Pacbio::Run.create!(
+        name: "RUN-#{v12_sequel_iie.name}-#{pool_name}-#{total_plate}_plate",
+        system_name: Pacbio::Run.system_names['Sequel IIe'],
+        smrt_link_version: v12_sequel_iie,
+        plates: (1..total_plate).map do |plate_number|
+          Pacbio::Plate.new(
+            sequencing_kit_box_barcode: '130429101826100021624',
+            plate_number:,
+            wells: [Pacbio::Well.new(
+              pools: [pool],
+              row: 'A',
+              column: 1,
+              ccs_analysis_output_include_kinetics_information:	'No',
+              ccs_analysis_output_include_low_quality_reads:	'No',
+              include_fivemc_calls_in_cpg_motifs:	'Yes',
+              demultiplex_barcodes:	'In SMRT Link',
+              on_plate_loading_concentration: 1,
+              binding_kit_box_barcode: '030425102194100010424',
+              movie_time: '20.0'
+            )]
+          )
+        end
       )
     end
     print COMPLETED

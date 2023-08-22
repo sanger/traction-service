@@ -4,7 +4,8 @@ require 'rails_helper'
 
 RSpec.describe 'PacBio', pacbio: true, type: :model do
   let(:timestamp) { Time.zone.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
-  let(:pacbio_config) { Pipelines.configure(Pipelines.load_yaml).pacbio }
+  let(:configuration) { Pipelines.configure(Pipelines.load_yaml) }
+  let(:message_configuration) { configuration.pacbio.message }
 
   before do
     allow(Time).to receive(:current).and_return timestamp
@@ -15,11 +16,11 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
 
   shared_examples 'check the high level content' do
     it 'has a lims' do
-      expect(message.content[:lims]).to eq(pacbio_config.lims)
+      expect(message.content[:lims]).to eq(message_configuration.lims)
     end
 
     it 'has a key' do
-      expect(message.content[pacbio_config.key]).not_to be_empty
+      expect(message.content[message_configuration.key]).not_to be_empty
     end
   end
 
@@ -100,8 +101,8 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
     let(:libraries)      { create_list(:pacbio_library, 5, :tagged) }
     let(:pool)           { create(:pacbio_pool, libraries:) }
 
-    let(:message)        { Message::Message.new(object: run, configuration: pacbio_config.message) }
-    let(:key)            { message.content[pacbio_config.key] }
+    let(:message)        { Message::Message.new(object: run, configuration: message_configuration) }
+    let(:key)            { message.content[message_configuration.key] }
 
     let(:message_wells)  { key[:wells] }
     let(:wells)          { run.plates[0].wells }
@@ -118,9 +119,9 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
     let(:run)            { create(:pacbio_revio_run) }
     let(:libraries)      { create_list(:pacbio_library, 5, :tagged) }
     let(:pool)           { create(:pacbio_pool, libraries:) }
-
-    let(:message)        { Message::Message.new(object: run, configuration: pacbio_config.message) }
-    let(:key)            { message.content[pacbio_config.key] }
+  
+    let(:message)        { Message::Message.new(object: run, configuration: message_configuration) }
+    let(:key)            { message.content[message_configuration.key] }
 
     let(:message_wells)  { key[:wells] }
     let(:wells)          { [run.plates[0].wells, run.plates[1].wells].flatten }
