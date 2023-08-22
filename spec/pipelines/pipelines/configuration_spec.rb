@@ -89,6 +89,11 @@ RSpec.describe Pipelines::Configuration, type: :model do
     expect(message.fields.field_c.value).to eq('Time.current')
   end
 
+  it 'each configuration will obey its hierarchy' do
+    expect(configuration.pipeline_a.message.fields.field_a.value).to eq('blah, blah, blah')
+    expect { configuration.pipeline_a.message.field_a.value }.to raise_error(NameError)
+  end
+
   it 'will have a list of pipelines' do
     expect(configuration.pipelines).to eq(%w[pipeline_a pipeline_b])
   end
@@ -110,10 +115,12 @@ RSpec.describe Pipelines::Configuration, type: :model do
         pipeline_c: {
           sample_sheet: {
             v10: {
-              field_a: 'a'
+              field_a: 'a',
+              field_10: 'b'
             },
             v20: {
-              field_a: 'a'
+              field_a: 'a',
+              field_20: 'c'
             }
           }
         }
@@ -130,6 +137,24 @@ RSpec.describe Pipelines::Configuration, type: :model do
 
     it 'will raise an error if it is not a valid version' do
       expect { configuration.pipeline_c.sample_sheet.by_version('v30') }.to raise_error(Version::Error, 'Not a valid version')
+    end
+
+    it 'will be able to access fields for a specific version' do
+      expect(configuration.pipeline_c.sample_sheet.by_version('v10').field_10).to eq('b')
+    end
+
+    it 'will not be able to access fields from another version' do
+      expect { configuration.pipeline_c.sample_sheet.by_version('v10').field_20 }.to raise_error(NoMethodError)
+    end
+
+    it 'will not be able to access fields from another version without by_version' do
+      expect(configuration.pipeline_c.sample_sheet.v20.field_20).to eq('c')
+      expect { configuration.pipeline_c.sample_sheet.v10.field_20 }.to raise_error(NoMethodError)
+    end
+
+    it 'will not be able to access fields from another version once another version has been loaded' do
+      expect(configuration.pipeline_c.sample_sheet.by_version('v20').field_20).to eq('c')
+      expect { configuration.pipeline_c.sample_sheet.by_version('v10').field_20 }.to raise_error(NoMethodError)
     end
   end
 end
