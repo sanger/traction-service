@@ -125,6 +125,11 @@ RSpec.describe Pacbio::Run, pacbio: true do
       expect(run.use_simpler_sample_sheets?).to be(true)
     end
 
+    it 'must use the deprecated config style for v12_sequel_iie' do
+      run = create(:pacbio_sequel_run, smrt_link_version: version12_sequel_iie)
+      expect(run.use_simpler_sample_sheets?).to be(false)
+    end
+
     it 'must return a String' do
       well1 = build(:pacbio_well_with_pools)
       well2 = build(:pacbio_well_with_pools)
