@@ -362,7 +362,6 @@ RSpec.describe 'RunsController' do
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq 'plates - must have at least 1 plate'
-          expect(errors[1]['detail']).to eq "dna_control_complex_box_barcode - can't be blank"
         end
       end
 

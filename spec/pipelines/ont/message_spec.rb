@@ -7,24 +7,21 @@ RSpec.describe 'Ont', ont: true, type: :model do
     create(:ont_min_know_version, name: 'v22', default: true)
   end
 
-  let(:config)            { Pipelines.configure(Pipelines.load_yaml) }
-  let(:pipeline_config)   { config.ont.message }
+  let(:configuration) { Pipelines.configure(Pipelines.load_yaml) }
+  let(:message_configuration) { configuration.ont.message }
   let(:run) { create(:ont_run, flowcell_count: 2) }
-
-  let(:message) do
-    Message::Message.new(object: run, configuration: pipeline_config.message)
-  end
+  let(:message) { Message::Message.new(object: run, configuration: message_configuration) }
 
   it 'has a lims' do
-    expect(message.content[:lims]).to eq(pipeline_config.lims)
+    expect(message.content[:lims]).to eq(message_configuration.lims)
   end
 
   it 'has a key' do
-    expect(message.content[pipeline_config.key]).not_to be_empty
+    expect(message.content[message_configuration.key]).not_to be_empty
   end
 
   describe 'key' do
-    let(:key) { message.content[pipeline_config.key] }
+    let(:key) { message.content[message_configuration.key] }
 
     let(:timestamp) { Time.zone.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
 

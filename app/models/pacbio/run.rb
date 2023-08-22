@@ -59,7 +59,7 @@ module Pacbio
       sample_sheet.payload
     end
 
-    # Revio has changed to use instrument_name
+    # v12 has changed to use instrument_name
     # We can't alias it as it is an enum
     def instrument_name
       system_name
