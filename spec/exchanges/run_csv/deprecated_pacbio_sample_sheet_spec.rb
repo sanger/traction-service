@@ -14,7 +14,7 @@ RSpec.describe RunCsv::DeprecatedPacbioSampleSheet, type: :model do
     let(:run)         { create(:pacbio_run, smrt_link_version:, plates: [plate]) }
     let(:parsed_csv)  { CSV.parse(csv_string) }
     let(:configuration) { Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name) }
-    let(:csv)         { described_class.new(object: run, configuration:) }
+    let(:csv) { described_class.new(object: run, configuration:) }
 
     context 'v10' do
       let(:smrt_link_version) { create(:pacbio_smrt_link_version_default, name: 'v10') }

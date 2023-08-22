@@ -119,7 +119,7 @@ RSpec.describe 'PacBio', pacbio: true, type: :model do
     let(:run)            { create(:pacbio_revio_run) }
     let(:libraries)      { create_list(:pacbio_library, 5, :tagged) }
     let(:pool)           { create(:pacbio_pool, libraries:) }
-  
+
     let(:message)        { Message::Message.new(object: run, configuration: message_configuration) }
     let(:key)            { message.content[message_configuration.key] }
 
