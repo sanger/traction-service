@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+HOST=$1
+FROM_SHEET_NUMBER=$2
+TO_SHEET_NUMBER=$3
+STORAGE_DIR=$4
+DIR="storage/$STORAGE_DIR"
+
+if [ $1 == "--help" ]; then 
+    echo "Usage:"
+    echo -e "\tdownload-sample-sheets HOST FROM_SHEET_NUMBER TO_SHEET_NUMBER STORAGE_DIR"
+else
+    mkdir -p $DIR
+    curl --parallel --fail "$HOST/v1/pacbio/runs/[$FROM_SHEET_NUMBER-$TO_SHEET_NUMBER]/sample_sheet" -o "$DIR/TRACTION-RUN-#1.csv"
+    rm -f $(find $DIR/*.csv -size 0) # remove empty files
+fi
