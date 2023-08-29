@@ -6,8 +6,8 @@ The sample sheets are defined through configuration in
 This configuration is parsed using
 [/app/exchanges/run_csv/](/app/exchanges/run_csv/)`{pipeline}_sample_sheet.rb` as appropriate.
 
-The required format of the sample sheets can be found on page 27 of the [SMRT Link User Guide
-v12.0](https://www.pacb.com/wp-content/uploads/SMRT_Link_User_Guide_v12.0.pdf).
+The required format of the sample sheets can be found in the SMRT Link User Guides
+(https://www.pacb.com/support/documentation/).
 
 Once generated, the sample sheets are uploaded to SMRT Link, a test instance can be found on UAT.
 
