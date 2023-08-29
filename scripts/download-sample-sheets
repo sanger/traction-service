@@ -7,7 +7,7 @@ DIR="storage/$STORAGE_DIR"
 
 if [ $1 == "--help" ]; then 
     echo "Usage:"
-    echo -e "\tdownload-sample-sheets HOST FROM_SHEET_NUMBER TO_SHEET_NUMBER STORAGE_DIR"
+    echo -e "\tdownload-sample-sheets FROM_SHEET_NUMBER TO_SHEET_NUMBER STORAGE_DIR [HOST]"
 else
     mkdir -p $DIR
     # note --parallel seems to be buggy on macOS
