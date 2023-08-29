@@ -11,6 +11,6 @@ if [ $1 == "--help" ]; then
 else
     mkdir -p $DIR
     # note --parallel seems to be buggy on macOS
-    curl --fail "$HOST/v1/pacbio/runs/[$FROM_SHEET_NUMBER-$TO_SHEET_NUMBER]/sample_sheet" -o "$DIR/TRACTION-RUN-#1.csv"
+    curl -sw '%{response_code} %{url_effective} %{size_download} B\n' --fail "$HOST/v1/pacbio/runs/[$FROM_SHEET_NUMBER-$TO_SHEET_NUMBER]/sample_sheet" -o "$DIR/TRACTION-RUN-#1.csv"
     rm -f $(find $DIR/*.csv -size 0) # remove empty files
 fi
