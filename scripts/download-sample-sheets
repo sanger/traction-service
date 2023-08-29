@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-HOST=$1
-FROM_SHEET_NUMBER=$2
-TO_SHEET_NUMBER=$3
-STORAGE_DIR=$4
+FROM_SHEET_NUMBER=$1
+TO_SHEET_NUMBER=$2
+STORAGE_DIR=$3
+HOST="${4:-http://localhost:3100}"
 DIR="storage/$STORAGE_DIR"
 
 if [ $1 == "--help" ]; then 

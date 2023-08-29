@@ -9,6 +9,12 @@ The command should be run from the project-root directory. For convenience, a `.
 To download all the sheets for the PacBio seed data in the development environment, run:
 
 ```sh
+./scripts/download-sample-sheets 1 8 development
+```
+
+To download all the sheets for the PacBio seed data in the UAT environment, run:
+
+```sh
 source scripts/.env
-./scripts/download-sample-sheets $TRACTION_DEV_HOST 1 8 development
+./scripts/download-sample-sheets 1 8 uat $TRACTION_UAT_HOST
 ```
