@@ -588,8 +588,8 @@ default: &default
               type: :string
               value: Standard
             Reagent Plate:
-              type: :string
-              value: 1
+              type: :model
+              value: plate.plate_number
             Plate 1:
               type: :model
               value: sequencing_kit_box_barcode_plate_1
@@ -640,8 +640,8 @@ default: &default
               value: libraries_to_show_per_row
               children:
                 Reagent Plate:
-                  type: :string
-                  value: 1
+                  type: :parent_model
+                  value: plate.plate_number
                 Is Collection:
                   type: :model
                   value: collection?
