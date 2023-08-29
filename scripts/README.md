@@ -18,3 +18,6 @@ To download all the sheets for the PacBio seed data in the UAT environment, run:
 source scripts/.env
 ./scripts/download-sample-sheets 1 8 uat $TRACTION_UAT_HOST
 ```
+
+Downloaded sample sheets will be saved to `storage/<directory>`, ie `storage/development/` or
+`storage/uat/` for the examples above.
