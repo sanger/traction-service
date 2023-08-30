@@ -698,6 +698,31 @@ default: &default
               for:
                 - :well
               with: :well
+        column_order:
+          - Instrument Type
+          - Run Name
+          - Is Collection
+          - Sample Well
+          - Sample Name
+          - Movie Time per SMRT Cell (hours)
+          - Insert Size (bp)
+          - SMRTbell Adapter Design
+          - Binding Kit Box Barcode
+          - Sequencing Kit Box Barcode
+          - On-Plate Loading Concentration (pM)
+          - Run Comments
+          - Sample is Barcoded
+          - Barcode Name
+          - Barcode Set
+          - Same Barcodes on Both Ends of Sequence
+          - Bio Sample Name
+          - Automation Parameters
+          - CCS Analysis Output - Include Kinetics Information
+          - Loading Target (P1 + P2)
+          - Use Adaptive Loading
+          - CCS Analysis Output - Include Low Quality Reads
+          - Include 5mC Calls in CpG Motifs
+          - Demultiplex Barcodes
 
 development: *default
 test: *default
