@@ -36,6 +36,7 @@ lcov.info
 config/database.yml
 config/mailer.yml
 config/bunny.yml
+scripts/.env
 
 release.tar.gz
 

@@ -122,6 +122,10 @@ To do this, refer to the documentation in `.githooks/README.txt`.
 
 To see all the commands available from rails: `bundle exec rails -T`
 
+### Sample Sheet Downloads
+
+Sample sheets can be downloaded en masse for debugging and development purposes using the `download_sample_sheets` command in the `scripts` directory. See the [scripts README](scripts/README.md) for more information.
+
 ### Entity-Relationship Diagrams
 
 An ERD was created using the `rails-erd` gem by executing: `bundle exec erd`
