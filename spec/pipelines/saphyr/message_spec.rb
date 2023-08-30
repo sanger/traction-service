@@ -6,7 +6,7 @@ RSpec.describe 'Saphyr', saphyr: true, type: :model do
   let(:configuration) { Pipelines.configure(Pipelines.load_yaml) }
   let(:message_configuration) { configuration.saphyr.message }
   let(:flowcell)          { create(:saphyr_flowcell_with_library) }
-  let(:message)           { Messages::Message.new(object: flowcell, configuration: message_configuration) }
+  let(:message)           { Message::Message.new(object: flowcell, configuration: message_configuration) }
 
   it 'has a lims' do
     expect(message.content[:lims]).to eq(message_configuration.lims)

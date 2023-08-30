@@ -6,15 +6,15 @@ require 'rails_helper'
 
 # TODO: refactor this test file into separate smaller files, possibly by version
 
-RSpec.describe PacbioSampleSheet, type: :model do
+RSpec.describe RunCsv::DeprecatedPacbioSampleSheet, type: :model do
   describe '#generate' do
-    subject(:csv_string) { csv.generate }
+    subject(:csv_string) { csv.payload }
 
     let(:plate)       { build(:pacbio_plate, wells:) }
     let(:run)         { create(:pacbio_run, smrt_link_version:, plates: [plate]) }
     let(:parsed_csv)  { CSV.parse(csv_string) }
     let(:configuration) { Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name) }
-    let(:csv) { described_class.new(run:, configuration:) }
+    let(:csv) { described_class.new(object: run, configuration:) }
 
     context 'v10' do
       let(:smrt_link_version) { create(:pacbio_smrt_link_version_default, name: 'v10') }
@@ -75,10 +75,10 @@ RSpec.describe PacbioSampleSheet, type: :model do
               well.plate.run.dna_control_complex_box_barcode,
               well.plate.run.comments,
               well.show_row_per_sample?.to_s,
-              '', # barcode name - does not apply
+              nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
-              '', # sample name - does not apply
+              nil, # sample name - does not apply
               well.automation_parameters,
               well.generate_hifi,
               well.ccs_analysis_output,
@@ -101,29 +101,29 @@ RSpec.describe PacbioSampleSheet, type: :model do
           sample_expectations.each do |sample_data, well|
             expect(sample_data).to eq([
 
-              '',
-              '',
+              nil,
+              nil,
               'false', # well.collection?
               well.position,
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
               well.libraries.first.barcode_name,
-              '',
-              '',
+              nil,
+              nil,
               well.libraries.first.request.sample_name,
-              '',
-              '',
-              '',
-              '',
-              ''
+              nil,
+              nil,
+              nil,
+              nil,
+              nil
             ])
           end
         end
@@ -177,7 +177,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
               well.plate.run.dna_control_complex_box_barcode,
               well.plate.run.comments,
               well.sample_is_barcoded.to_s,
-              '', # barcode name - does not apply
+              nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
               well.find_sample_name,
@@ -268,10 +268,10 @@ RSpec.describe PacbioSampleSheet, type: :model do
               well.plate.run.dna_control_complex_box_barcode,
               well.plate.run.comments,
               well.show_row_per_sample?.to_s,
-              '', # barcode name - does not apply
+              nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
-              '', # sample name - does not apply
+              nil, # sample name - does not apply
               well.automation_parameters,
               well.ccs_analysis_output_include_kinetics_information,
               well.loading_target_p1_plus_p2.to_s,
@@ -295,31 +295,31 @@ RSpec.describe PacbioSampleSheet, type: :model do
           ]
           sample_expectations.each do |sample_data, well|
             expect(sample_data).to eq([
-              '',
-              '',
+              nil,
+              nil,
               'false', # well.collection?
               well.position,
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
               well.libraries.first.barcode_name,
-              '',
-              '',
+              nil,
+              nil,
               well.libraries.first.request.sample_name,
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              ''
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil
             ])
           end
         end
@@ -373,7 +373,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
               well.plate.run.dna_control_complex_box_barcode,
               well.plate.run.comments,
               well.sample_is_barcoded.to_s,
-              '', # barcode name - does not apply
+              nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
               well.find_sample_name,
@@ -468,8 +468,8 @@ RSpec.describe PacbioSampleSheet, type: :model do
               well.polymerase_kit,
               well.automation_parameters,
               well.barcode_set,
-              '', # barcode name - does not apply
-              '' # sample name - does not apply
+              nil, # barcode name - does not apply
+              nil # sample name - does not apply
             ])
           end
         end
@@ -486,22 +486,22 @@ RSpec.describe PacbioSampleSheet, type: :model do
           ]
           sample_expectations.each do |sample_data, well|
             expect(sample_data).to eq([
-              '',
+              nil,
               well.plate.plate_number.to_s,
-              '',
-              '',
-              '',
-              '',
-              '',
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
               'false', # well.collection?
               well.position,
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
               well.libraries.first.barcode_name,
               well.libraries.first.request.sample_name
             ])
@@ -559,7 +559,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
               well.polymerase_kit,
               well.automation_parameters,
               well.barcode_set,
-              '', # barcode name - does not apply
+              nil, # barcode name - does not apply
               well.find_sample_name
             ])
           end
@@ -642,10 +642,10 @@ RSpec.describe PacbioSampleSheet, type: :model do
               well.on_plate_loading_concentration.to_s,
               well.plate.run.comments,
               well.show_row_per_sample?.to_s,
-              '', # barcode name - does not apply
+              nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
-              '', # sample name - does not apply
+              nil, # sample name - does not apply
               well.automation_parameters,
               well.ccs_analysis_output_include_kinetics_information,
               well.loading_target_p1_plus_p2.to_s,
@@ -669,30 +669,30 @@ RSpec.describe PacbioSampleSheet, type: :model do
           ]
           sample_expectations.each do |sample_data, well|
             expect(sample_data).to eq([
-              '',
-              '',
+              nil,
+              nil,
               'false', # well.collection?
               well.position,
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
               well.libraries.first.barcode_name,
-              '',
-              '',
+              nil,
+              nil,
               well.libraries.first.request.sample_name,
-              '',
-              '',
-              '',
-              '',
-              '',
-              '',
-              ''
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil
             ])
           end
         end
@@ -745,7 +745,7 @@ RSpec.describe PacbioSampleSheet, type: :model do
               well.on_plate_loading_concentration.to_s,
               well.plate.run.comments,
               well.sample_is_barcoded.to_s,
-              '', # barcode name - does not apply
+              nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
               well.find_sample_name,

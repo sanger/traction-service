@@ -8,7 +8,7 @@ RSpec.describe 'QcResult Message', type: :model do
   let(:qc_result)           { create(:qc_result) }
   let(:qc_decision)         { create(:qc_decision) }
   let(:qc_result_message)   { QcResultsUploadFactory::QcResultMessage.new(qc_result:, decision_made_by: qc_decision.decision_made_by) }
-  let(:message)             { Messages::Message.new(object: qc_result_message, configuration: message_configuration) }
+  let(:message)             { Message::Message.new(object: qc_result_message, configuration: message_configuration) }
 
   before do
     create(:qc_decision_result, qc_result:, qc_decision:)

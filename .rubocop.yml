@@ -131,7 +131,7 @@ RSpec/IndexedLet:
 # what they are in advance. Precisely what OpenStruct is for.
 Style/OpenStructUse:
   Exclude:
-    - 'spec/messages/message_spec.rb'
+    - 'spec/exchanges/message/message_spec.rb'
 
 # The work needed to try and make this work is brutal. We would need to reimplement
 # or use OpenStruct

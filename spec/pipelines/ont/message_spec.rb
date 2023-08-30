@@ -10,7 +10,7 @@ RSpec.describe 'Ont', ont: true, type: :model do
   let(:configuration) { Pipelines.configure(Pipelines.load_yaml) }
   let(:message_configuration) { configuration.ont.message }
   let(:run) { create(:ont_run, flowcell_count: 2) }
-  let(:message) { Messages::Message.new(object: run, configuration: message_configuration) }
+  let(:message) { Message::Message.new(object: run, configuration: message_configuration) }
 
   it 'has a lims' do
     expect(message.content[:lims]).to eq(message_configuration.lims)

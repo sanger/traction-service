@@ -105,6 +105,12 @@ making sure you match the exchange name with the one specified in `config/bunny.
 
 A web interface to administrate RabbitMQ is always available at [http://localhost:15672/](http://localhost:15672/) once the service is running.
 
+## Sample sheets
+
+Sample sheets can be generated for upload to SMRT Link.
+
+For more details see the notes on the [Sample Sheet Generator](app/exchanges/README.md).
+
 ## Miscellaneous
 
 ### Git commit hook
