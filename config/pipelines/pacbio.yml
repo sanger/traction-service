@@ -723,6 +723,97 @@ default: &default
           - CCS Analysis Output - Include Low Quality Reads
           - Include 5mC Calls in CpG Motifs
           - Demultiplex Barcodes
+        fields:
+         _sorted_wells:
+          type: :array
+          value: sorted_wells # defined in 'app/models/concerns/sample_sheet.rb'
+          children:
+            Instrument Type:
+              type: :model
+              value: plate.run.system_name
+            Run Name:
+              type: :model
+              value: plate.run.name
+            Is Collection:
+              type: :model
+              value: collection?
+            Sample Well:
+              type: :model
+              value: position_leading_zero
+            Sample Name:
+              type: :model
+              value: pool_barcode
+            Movie Time per SMRT Cell (hours):
+              type: :model
+              value: movie_time
+            Insert Size (bp):
+              type: :model
+              value: insert_size
+            SMRTbell Adapter Design:
+              type: :model
+              value: template_prep_kit_box_barcode
+            Binding Kit Box Barcode:
+              type: :model
+              value: binding_kit_box_barcode
+            Sequencing Kit Box Barcode:
+              type: :model
+              value: plate.sequencing_kit_box_barcode
+            On-Plate Loading Concentration (pM):
+              type: :model
+              value: on_plate_loading_concentration
+            Run Comments:
+              type: :model
+              value: plate.run.comments
+            Sample is Barcoded:
+              type: :model
+              value: sample_is_barcoded
+            Barcode Set:
+              type: :model
+              value: barcode_set
+            Same Barcodes on Both Ends of Sequence:
+              type: :model
+              value: same_barcodes_on_both_ends_of_sequence
+            Bio Sample Name:
+              type: :model
+              value: find_sample_name
+            Automation Parameters:
+              type: :model
+              value: automation_parameters
+            CCS Analysis Output - Include Kinetics Information:
+              type: :model
+              value: ccs_analysis_output_include_kinetics_information
+            Loading Target (P1 + P2):
+              type: :model
+              value: loading_target_p1_plus_p2
+            Use Adaptive Loading:
+              type: :model
+              value: adaptive_loading_check
+            CCS Analysis Output - Include Low Quality Reads:
+              type: :model
+              value: ccs_analysis_output_include_low_quality_reads
+            Include 5mC Calls in CpG Motifs:
+              type: :model
+              value: include_fivemc_calls_in_cpg_motifs
+            Demultiplex Barcodes:
+              type: :model
+              value: demultiplex_barcodes
+            samples:
+              type: :array
+              value: libraries_to_show_per_row
+              children:
+                Is Collection:
+                  type: :model
+                  value: collection?
+                Sample Well:
+                  type: :parent_model
+                  value: position_leading_zero
+                Barcode Name:
+                  type: :model
+                  value: barcode_name
+                Bio Sample Name:
+                  type: :model
+                  value: find_sample_name
+
 
 development: *default
 test: *default
