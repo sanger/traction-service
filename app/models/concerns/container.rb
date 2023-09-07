@@ -16,13 +16,5 @@ module Container
 
       self.class.by_barcode_and_position(barcode, position)
     end
-
-    def already_exists?
-      existing_records.count > 0
-    end
-
-    def existing_records_have_requests?
-      existing_records.joins(:container_materials).count > 0
-    end
   end
 end
