@@ -30,10 +30,8 @@ class Reception
     def request_attributes=(attributes)
       @request_attributes = attributes.filter_map do |request_attribute|
         rf = RequestFactory.new(resource_factory: self, reception:, **request_attribute)
-        # We only want to return the request factory if it's container does not already exist
-        if rf.container.present?
-          rf.container.existing_records.empty? ? rf : false
-        end
+        # We only want to return the request if it's container does not already exist
+        rf.container.present? && rf.container.existing_records.present? ? false : rf
       end
     end
 
