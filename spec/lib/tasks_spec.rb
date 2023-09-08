@@ -48,9 +48,12 @@ RSpec.describe 'RakeTasks' do
           -> Creating SQK-NBD114.96 tag set and tags
           -> Tag Set successfully created
           -> SQK-NBD114.96 tags successfully created
+          -> Creating SQK-RBK114.96 tag set and tags
+          -> Tag Set successfully created
+          -> SQK-RBK114.96 tags successfully created
         HEREDOC
       ).to_stdout
-      expect(TagSet.count).to eq(1)
+      expect(TagSet.count).to eq(2)
     end
 
     it 'creates all of the tag sets' do
@@ -82,9 +85,12 @@ RSpec.describe 'RakeTasks' do
           -> Creating SQK-NBD114.96 tag set and tags
           -> Tag Set successfully created
           -> SQK-NBD114.96 tags successfully created
+          -> Creating SQK-RBK114.96 tag set and tags
+          -> Tag Set successfully created
+          -> SQK-RBK114.96 tags successfully created
         HEREDOC
       ).to_stdout
-      expect(TagSet.count).to eq(8)
+      expect(TagSet.count).to eq(9)
     end
   end
 
@@ -203,6 +209,9 @@ RSpec.describe 'RakeTasks' do
           "-> Creating SQK-NBD114.96 tag set and tags\n" \
           "-> Tag Set successfully created\n" \
           "-> SQK-NBD114.96 tags successfully created\n" \
+          "-> Creating SQK-RBK114.96 tag set and tags\n" \
+          "-> Tag Set successfully created\n" \
+          "-> SQK-RBK114.96 tags successfully created\n" \
           "-> Created #{expected_single_plexed_pools} single plexed pools\n" \
           "-> Created #{expected_multi_plexed_pools} multiplexed pools\n" \
           "-> ONT Instruments successfully created\n" \
