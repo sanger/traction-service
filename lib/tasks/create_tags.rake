@@ -25,6 +25,7 @@ namespace :tags do
     desc 'Create all ont tags'
     task ont_all: :environment do
       Rake::Task['tags:create:SQK-NBD114.96'].invoke
+      Rake::Task['tags:create:SQK-RBK114.96'].invoke
     end
 
     desc 'Create pacbio sequel tags'
@@ -618,6 +619,115 @@ namespace :tags do
         set.tags.find_or_create_by!(tag_attributes)
       end
       puts '-> SQK-NBD114.96 tags successfully created'
+    end
+
+    desc 'Create SQK-RBK114.96 tags'
+    task 'SQK-RBK114.96': :environment do
+      puts '-> Creating SQK-RBK114.96 tag set and tags'
+      set = TagSet.ont_pipeline
+                  .find_or_create_by!(name: 'SQK-RBK114.96')
+      puts '-> Tag Set successfully created'
+      [
+        { group_id: 'RB01', oligo: 'AAGAAAGTTGTCGGTGTCTTTGTG' },
+        { group_id: 'RB02', oligo: 'TCGATTCCGTTTGTAGTCGTCTGT' },
+        { group_id: 'RB03', oligo: 'GAGTCTTGTGTCCCAGTTACCAGG' },
+        { group_id: 'RB04', oligo: 'TTCGGATTCTATCGTGTTTCCCTA' },
+        { group_id: 'RB05', oligo: 'CTTGTCCAGGGTTTGTGTAACCTT' },
+        { group_id: 'RB06', oligo: 'TTCTCGCAAAGGCAGAAAGTAGTC' },
+        { group_id: 'RB07', oligo: 'GTGTTACCGTGGGAATGAATCCTT' },
+        { group_id: 'RB08', oligo: 'TTCAGGGAACAAACCAAGTTACGT' },
+        { group_id: 'RB09', oligo: 'AACTAGGCACAGCGAGTCTTGGTT' },
+        { group_id: 'RB10', oligo: 'AAGCGTTGAAACCTTTGTCCTCTC' },
+        { group_id: 'RB11', oligo: 'GTTTCATCTATCGGAGGGAATGGA' },
+        { group_id: 'RB12', oligo: 'CAGGTAGAAAGAAGCAGAATCGGA' },
+        { group_id: 'RB13', oligo: 'AGAACGACTTCCATACTCGTGTGA' },
+        { group_id: 'RB14', oligo: 'AACGAGTCTCTTGGGACCCATAGA' },
+        { group_id: 'RB15', oligo: 'AGGTCTACCTCGCTAACACCACTG' },
+        { group_id: 'RB16', oligo: 'CGTCAACTGACAGTGGTTCGTACT' },
+        { group_id: 'RB17', oligo: 'ACCCTCCAGGAAAGTACCTCTGAT' },
+        { group_id: 'RB18', oligo: 'CCAAACCCAACAACCTAGATAGGC' },
+        { group_id: 'RB19', oligo: 'GTTCCTCGTGCAGTGTCAAGAGAT' },
+        { group_id: 'RB20', oligo: 'TTGCGTCCTGTTACGAGAACTCAT' },
+        { group_id: 'RB21', oligo: 'GAGCCTCTCATTGTCCGTTCTCTA' },
+        { group_id: 'RB22', oligo: 'ACCACTGCCATGTATCAAAGTACG' },
+        { group_id: 'RB23', oligo: 'CTTACTACCCAGTGAACCTCCTCG' },
+        { group_id: 'RB24', oligo: 'GCATAGTTCTGCATGATGGGTTAG' },
+        { group_id: 'RB25', oligo: 'GTAAGTTGGGTATGCAACGCAATG' },
+        { group_id: 'RB26', oligo: 'CATACAGCGACTACGCATTCTCAT' },
+        { group_id: 'RB27', oligo: 'CGACGGTTAGATTCACCTCTTACA' },
+        { group_id: 'RB28', oligo: 'TGAAACCTAAGAAGGCACCGTATC' },
+        { group_id: 'RB29', oligo: 'CTAGACACCTTGGGTTGACAGACC' },
+        { group_id: 'RB30', oligo: 'TCAGTGAGGATCTACTTCGACCCA' },
+        { group_id: 'RB31', oligo: 'TGCGTACAGCAATCAGTTACATTG' },
+        { group_id: 'RB32', oligo: 'CCAGTAGAAGTCCGACAACGTCAT' },
+        { group_id: 'RB33', oligo: 'CAGACTTGGTACGGTTGGGTAACT' },
+        { group_id: 'RB34', oligo: 'GGACGAAGAACTCAAGTCAAAGGC' },
+        { group_id: 'RB35', oligo: 'CTACTTACGAAGCTGAGGGACTGC' },
+        { group_id: 'RB36', oligo: 'ATGTCCCAGTTAGAGGAGGAAACA' },
+        { group_id: 'RB37', oligo: 'GCTTGCGATTGATGCTTAGTATCA' },
+        { group_id: 'RB38', oligo: 'ACCACAGGAGGACGATACAGAGAA' },
+        { group_id: 'RB39', oligo: 'CCACAGTGTCAACTAGAGCCTCTC' },
+        { group_id: 'RB40', oligo: 'TAGTTTGGATGACCAAGGATAGCC' },
+        { group_id: 'RB41', oligo: 'GGAGTTCGTCCAGAGAAGTACACG' },
+        { group_id: 'RB42', oligo: 'CTACGTGTAAGGCATACCTGCCAG' },
+        { group_id: 'RB43', oligo: 'CTTTCGTTGTTGACTCGACGGTAG' },
+        { group_id: 'RB44', oligo: 'AGTAGAAAGGGTTCCTTCCCACTC' },
+        { group_id: 'RB45', oligo: 'GATCCAACAGAGATGCCTTCAGTG' },
+        { group_id: 'RB46', oligo: 'GCTGTGTTCCACTTCATTCTCCTG' },
+        { group_id: 'RB47', oligo: 'GTGCAACTTTCCCACAGGTAGTTC' },
+        { group_id: 'RB48', oligo: 'CATCTGGAACGTGGTACACCTGTA' },
+        { group_id: 'RB49', oligo: 'ACTGGTGCAGCTTTGAACATCTAG' },
+        { group_id: 'RB50', oligo: 'ATGGACTTTGGTAACTTCCTGCGT' },
+        { group_id: 'RB51', oligo: 'GTTGAATGAGCCTACTGGGTCCTC' },
+        { group_id: 'RB52', oligo: 'TGAGAGACAAGATTGTTCGTGGAC' },
+        { group_id: 'RB53', oligo: 'AGATTCAGACCGTCTCATGCAAAG' },
+        { group_id: 'RB54', oligo: 'CAAGAGCTTTGACTAAGGAGCATG' },
+        { group_id: 'RB55', oligo: 'TGGAAGATGAGACCCTGATCTACG' },
+        { group_id: 'RB56', oligo: 'TCACTACTCAACAGGTGGCATGAA' },
+        { group_id: 'RB57', oligo: 'GCTAGGTCAATCTCCTTCGGAAGT' },
+        { group_id: 'RB58', oligo: 'CAGGTTACTCCTCCGTGAGTCTGA' },
+        { group_id: 'RB59', oligo: 'TCAATCAAGAAGGGAAAGCAAGGT' },
+        { group_id: 'RB60', oligo: 'CATGTTCAACCAAGGCTTCTATGG' },
+        { group_id: 'RB61', oligo: 'AGAGGGTACTATGTGCCTCAGCAC' },
+        { group_id: 'RB62', oligo: 'CACCCACACTTACTTCAGGACGTA' },
+        { group_id: 'RB63', oligo: 'TTCTGAAGTTCCTGGGTCTTGAAC' },
+        { group_id: 'RB64', oligo: 'GACAGACACCGTTCATCGACTTTC' },
+        { group_id: 'RB65', oligo: 'TTCTCAGTCTTCCTCCAGACAAGG' },
+        { group_id: 'RB66', oligo: 'CCGATCCTTGTGGCTTCTAACTTC' },
+        { group_id: 'RB67', oligo: 'GTTTGTCATACTCGTGTGCTCACC' },
+        { group_id: 'RB68', oligo: 'GAATCTAAGCAAACACGAAGGTGG' },
+        { group_id: 'RB69', oligo: 'TACAGTCCGAGCCTCATGTGATCT' },
+        { group_id: 'RB70', oligo: 'ACCGAGATCCTACGAATGGAGTGT' },
+        { group_id: 'RB71', oligo: 'CCTGGGAGCATCAGGTAGTAACAG' },
+        { group_id: 'RB72', oligo: 'TAGCTGACTGTCTTCCATACCGAC' },
+        { group_id: 'RB73', oligo: 'AAGAAACAGGATGACAGAACCCTC' },
+        { group_id: 'RB74', oligo: 'TACAAGCATCCCAACACTTCCACT' },
+        { group_id: 'RB75', oligo: 'GACCATTGTGATGAACCCTGTTGT' },
+        { group_id: 'RB76', oligo: 'ATGCTTGTTACATCAACCCTGGAC' },
+        { group_id: 'RB77', oligo: 'CGACCTGTTTCTCAGGGATACAAC' },
+        { group_id: 'RB78', oligo: 'AACAACCGAACCTTTGAATCAGAA' },
+        { group_id: 'RB79', oligo: 'TCTCGGAGATAGTTCTCACTGCTG' },
+        { group_id: 'RB80', oligo: 'CGGATGAACATAGGATAGCGATTC' },
+        { group_id: 'RB81', oligo: 'CCTCATCTTGTGAAGTTGTTTCGG' },
+        { group_id: 'RB82', oligo: 'ACGGTATGTCGAGTTCCAGGACTA' },
+        { group_id: 'RB83', oligo: 'TGGCTTGATCTAGGTAAGGTCGAA' },
+        { group_id: 'RB84', oligo: 'GTAGTGGACCTAGAACCTGTGCCA' },
+        { group_id: 'RB85', oligo: 'AACGGAGGAGTTAGTTGGATGATC' },
+        { group_id: 'RB86', oligo: 'AGGTGATCCCAACAAGCGTAAGTA' },
+        { group_id: 'RB87', oligo: 'TACATGCTCCTGTTGTTAGGGAGG' },
+        { group_id: 'RB88', oligo: 'TCTTCTACTACCGATCCGAAGCAG' },
+        { group_id: 'RB89', oligo: 'ACAGCATCAATGTTTGGCTAGTTG' },
+        { group_id: 'RB90', oligo: 'GATGTAGAGGGTACGGTTTGAGGC' },
+        { group_id: 'RB91', oligo: 'GGCTCCATAGGAACTCACGCTACT' },
+        { group_id: 'RB92', oligo: 'TTGTGAGTGGAAAGATACAGGACC' },
+        { group_id: 'RB93', oligo: 'AGTTTCCATCACTTCAGACTTGGG' },
+        { group_id: 'RB94', oligo: 'GATTGTCCTCAAACTGCCACCTAC' },
+        { group_id: 'RB95', oligo: 'CCTGTCTGGAAGAAGAATGGACTT' },
+        { group_id: 'RB96', oligo: 'CTGAACGGTCATAGAGTCCACCAT' }
+      ].each do |tag_attributes|
+        set.tags.find_or_create_by!(tag_attributes)
+      end
+      puts '-> SQK-RBK114.96 tags successfully created'
     end
   end
 
