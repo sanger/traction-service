@@ -38,6 +38,37 @@ default: &default
           type: :model
           value: qc_decision.decision_made_by
 
+    qc_reception_message:
+      lims: Traction
+      key: long_read_qc_result
+      fields:
+        labware_barcode:
+          type: :model
+          value: labware_barcode
+        sample_id:
+          type: :model
+          value: sample_external_id
+        assay_type:
+          type: :model
+          value: qc_assay_type.label
+        assay_type_key:
+          type: :model
+          value: qc_assay_type.key
+        units:
+          type: :model
+          value: qc_assay_type.units
+        value:
+          type: :model
+          value: value
+        id_long_read_qc_result_lims:
+          type: :model
+          value: id
+        created:
+          type: :model
+          value: created_at
+        last_updated:
+          type: :constant
+          value: Time.current
 development: *default
 test: *default
 uat: *default

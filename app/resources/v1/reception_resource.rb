@@ -7,7 +7,7 @@ module V1
 
     # When a pool is updated and it is attached to a run we need
     # to republish the messages for the run
-    after_create :construct_resources!
+    after_create :publish_messages, :construct_resources!
 
     def fetchable_fields
       [:source]
@@ -20,7 +20,10 @@ module V1
 
       @model.request_attributes = request_parameters.map do |request|
         request.permit(request: permitted_request_attributes,
-                       sample: %i[name external_id species], container: %i[type barcode position])
+                       sample: %i[name external_id species study_uuid priority_level
+                                  sanger_sample_id supplier_name taxon_id donor_id country_of_origin
+                                  accession_number date_of_sample_collection],
+                       container: %i[type barcode position])
                .to_h
                .with_indifferent_access
       end
@@ -32,6 +35,23 @@ module V1
 
     def permitted_request_attributes
       [*::Pacbio.request_attributes, *::Ont.request_attributes, *::Saphyr.request_attributes].uniq
+    end
+
+    def publish_messages
+      # Publish message for the sample table
+      publish_message(
+        @model.requests.map(&:sample),
+        Pipelines.reception.sample.message
+      )
+      # Publish message for the stock_resource table
+      publish_message(
+        @model.requests,
+        Pipelines.reception.stock_resource.message
+      )
+    end
+
+    def publish_message(message, config)
+      Messages.publish(message, config)
     end
   end
 end
