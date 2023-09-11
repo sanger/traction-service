@@ -6,5 +6,6 @@ FactoryBot.define do
     sample_external_id { 'Samp-1234' }
     qc_assay_type
     value { '34' }
+    qc_reception { nil }
   end
 end
