@@ -28,10 +28,13 @@ class Reception
     # @option request [Hash] sample: Hash containing the attributes for the sample
     # @option request [Hash] container: Hash containing the attributes for the container
     def request_attributes=(attributes)
-      @request_attributes = attributes.filter_map do |request_attribute|
-        rf = RequestFactory.new(resource_factory: self, reception:, **request_attribute)
-        # We only want to return the request if it's container does not already exist
-        rf.container.present? && rf.container.existing_records.present? ? false : rf
+      @request_attributes = attributes.map do |request_attribute|
+        RequestFactory.new(resource_factory: self, reception:, **request_attribute)
+      end
+      # We only keep the request if its container does not already exist
+      # We can't filter in the above because labware caches require request_attributes to be defined
+      @request_attributes.select! do |request|
+        request.container.blank? || request.container.existing_records.blank?
       end
     end
 
