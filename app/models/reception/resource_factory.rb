@@ -19,8 +19,6 @@ class Reception
 
     validates_nested :request_attributes, flatten_keys: false
 
-    validates_with ResourceFactoryValidator
-
     #
     # Array describing the requests to create.
     # Each request consists of:
@@ -32,6 +30,11 @@ class Reception
     def request_attributes=(attributes)
       @request_attributes = attributes.map do |request_attribute|
         RequestFactory.new(resource_factory: self, reception:, **request_attribute)
+      end
+      # We only keep the request if its container does not already exist
+      # We can't filter in the above because labware caches require request_attributes to be defined
+      @request_attributes.select! do |request|
+        request.container.blank? || request.container.existing_records.blank?
       end
     end
 
@@ -89,11 +92,11 @@ class Reception
     private
 
     def library_type_cache
-      @library_type_cache = LibraryType.all.index_by(&:name)
+      @library_type_cache ||= LibraryType.all.index_by(&:name)
     end
 
     def data_type_cache
-      @data_type_cache = DataType.all.index_by(&:name)
+      @data_type_cache ||= DataType.all.index_by(&:name)
     end
 
     def tube_cache

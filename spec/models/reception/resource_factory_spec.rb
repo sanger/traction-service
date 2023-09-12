@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Reception::ResourceFactory do
-  subject { build(:reception_resource_factory, request_attributes:) }
+  subject(:resource_factory) { build(:reception_resource_factory, request_attributes:) }
 
   let(:library_type) { create(:library_type, :ont) }
   let(:data_type) { create(:data_type, :ont) }
@@ -98,6 +98,17 @@ RSpec.describe Reception::ResourceFactory do
       it { is_expected.not_to be_valid }
     end
 
+    context 'with no requests' do
+      let(:request_attributes) do
+        []
+      end
+
+      it 'is not valid and returns a custom error message' do
+        expect(resource_factory.valid?).to be(false)
+        expect(resource_factory.errors.full_messages).to include('Request attributes there are no new samples to import')
+      end
+    end
+
     context 'with duplicate containers' do
       let(:request_attributes) do
         [{
@@ -153,33 +164,37 @@ RSpec.describe Reception::ResourceFactory do
     let(:existing_sample_b1) { attributes_for(:sample) }
     let(:request_attributes) do
       [{
+        # New sample in new tube (valid)
         request: request_parameters,
         sample: attributes_for(:sample),
         container: { type: 'tubes', **attributes_for(:tube, :with_barcode) }
       }, {
+        # New sample in existing tube (invalid)
         request: request_parameters,
         sample: attributes_for(:sample),
         container: { type: 'tubes', **existing_tube }
       }, {
+        # New well in new plate with new sample (valid)
         request: request_parameters,
         sample: attributes_for(:sample),
         container: { type: 'wells', **attributes_for(:well, position: 'A1', barcode: new_plate_barcode) }
       }, {
+        # New well in new plate with existing sample (valid)
         request: request_parameters,
         sample: existing_sample_b1,
         container: { type: 'wells', **attributes_for(:well, position: 'B1', barcode: new_plate_barcode) }
       }, {
+        # Existing well in existing plate with existing sample (invalid)
         request: request_parameters,
         sample: existing_sample_a1,
         container: { type: 'wells', **existing_well_a1 }
       }, {
+        # New well in existing plate with new sample (valid)
         request: request_parameters,
         sample: attributes_for(:sample),
         container: { type: 'wells', **attributes_for(:well, position: 'C1', barcode: existing_plate_barcode) }
       }, {
-        # Generate a second new plate, as I have a potential issue with the
-        # reception where I'm not sure I'm generating a new plate instance for
-        # each barcode.
+        # New well in new plate with new sample (valid)
         request: request_parameters,
         sample: attributes_for(:sample),
         container: { type: 'wells', **attributes_for(:well, position: 'A1', barcode: generate(:barcode)) }
@@ -204,16 +219,16 @@ RSpec.describe Reception::ResourceFactory do
         )
       end
 
-      it 'creates 6 Requests' do
-        expect { construct_resources }.to change(Request, :count).by(7)
+      it 'creates 5 Requests' do
+        expect { construct_resources }.to change(Request, :count).by(5)
       end
 
-      it 'creates 6 ONT::Requests' do
-        expect { construct_resources }.to change(Ont::Request, :count).by(7)
+      it 'creates 5 ONT::Requests' do
+        expect { construct_resources }.to change(Ont::Request, :count).by(5)
       end
 
       it 'creates new samples' do
-        expect { construct_resources }.to change(Sample, :count).by(5)
+        expect { construct_resources }.to change(Sample, :count).by(4)
       end
 
       it 'creates new tubes' do
@@ -230,7 +245,7 @@ RSpec.describe Reception::ResourceFactory do
 
       it 'associates the requests with the reception' do
         construct_resources
-        expect(reception.requests.reload.count).to eq 7
+        expect(reception.requests.reload.count).to eq 5
       end
     end
 
@@ -242,16 +257,16 @@ RSpec.describe Reception::ResourceFactory do
         )
       end
 
-      it 'creates 6 Requests' do
-        expect { construct_resources }.to change(Request, :count).by(7)
+      it 'creates 5 Requests' do
+        expect { construct_resources }.to change(Request, :count).by(5)
       end
 
-      it 'creates 6 ONT::Requests' do
-        expect { construct_resources }.to change(Pacbio::Request, :count).by(7)
+      it 'creates 5 Pacbio::Requests' do
+        expect { construct_resources }.to change(Pacbio::Request, :count).by(5)
       end
 
       it 'creates new samples' do
-        expect { construct_resources }.to change(Sample, :count).by(5)
+        expect { construct_resources }.to change(Sample, :count).by(4)
       end
 
       it 'creates new tubes' do
@@ -268,7 +283,7 @@ RSpec.describe Reception::ResourceFactory do
 
       it 'associates the requests with the reception' do
         construct_resources
-        expect(reception.requests.reload.count).to eq 7
+        expect(reception.requests.reload.count).to eq 5
       end
     end
 
@@ -280,16 +295,16 @@ RSpec.describe Reception::ResourceFactory do
         )
       end
 
-      it 'creates 6 Requests' do
-        expect { construct_resources }.to change(Request, :count).by(7)
+      it 'creates 5 Requests' do
+        expect { construct_resources }.to change(Request, :count).by(5)
       end
 
-      it 'creates 6 ONT::Requests' do
-        expect { construct_resources }.to change(Saphyr::Request, :count).by(7)
+      it 'creates 5 Saphyr::Requests' do
+        expect { construct_resources }.to change(Saphyr::Request, :count).by(5)
       end
 
       it 'creates new samples' do
-        expect { construct_resources }.to change(Sample, :count).by(5)
+        expect { construct_resources }.to change(Sample, :count).by(4)
       end
 
       it 'creates new tubes' do
@@ -306,7 +321,7 @@ RSpec.describe Reception::ResourceFactory do
 
       it 'associates the requests with the reception' do
         construct_resources
-        expect(reception.requests.reload.count).to eq 7
+        expect(reception.requests.reload.count).to eq 5
       end
     end
   end
