@@ -4,7 +4,7 @@
 module Messages
   def self.publish(objects, configuration)
     Array(objects).each do |object|
-      ::Broker::Handle.publish(Message.new(object:, configuration:))
+      ::Broker::Handle.publish(Message::Message.new(object:, configuration:))
     end
   end
 end

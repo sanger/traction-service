@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     jsonapi_resources :qc_assay_types, only: %i[index show]
     jsonapi_resources :qc_results, only: %i[index create show]
     jsonapi_resources :qc_results_uploads, only: %i[create]
+    jsonapi_resources :qc_receptions, only: %i[create]
 
     namespace :saphyr do
       jsonapi_resources :runs,          only: %i[index create show update destroy]

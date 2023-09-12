@@ -126,7 +126,8 @@ module Ont
     # returns sample sheet csv for a Ont::Run
     # using pipelines.yml configuration to generate data
     def generate_sample_sheet
-      sample_sheet = OntSampleSheet.new(run: self, configuration: ont_run_sample_sheet_config)
+      sample_sheet = RunCsv::OntSampleSheet.new(run: self,
+                                                configuration: ont_run_sample_sheet_config)
       sample_sheet.generate
     end
 

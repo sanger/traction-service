@@ -375,4 +375,25 @@ RSpec.describe 'RunsController' do
       end
     end
   end
+
+  describe '#sample_sheet' do
+    let(:run) { create(:ont_gridion_run, flowcell_count: 5) }
+
+    after { FileUtils.rm_rf("#{run.experiment_name}.csv") }
+
+    it 'returns the correct status' do
+      get v1_ont_run_sample_sheet_path(run).to_s, headers: json_api_headers
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'returns a CSV file' do
+      get v1_ont_run_sample_sheet_path(run).to_s, headers: json_api_headers
+      expect(response.header['Content-Type']).to include 'text/csv'
+    end
+
+    it 'the attached csv file is named after the run its associated with' do
+      get v1_ont_run_sample_sheet_path(run).to_s, headers: json_api_headers
+      expect(response.header['Content-Disposition']).to include "#{run.experiment_name}.csv"
+    end
+  end
 end

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+FROM_SHEET_NUMBER=$1
+TO_SHEET_NUMBER=$2
+STORAGE_DIR=$3
+HOST="${4:-http://localhost:3100}"
+DIR="storage/$STORAGE_DIR"
+
+if [ $1 == "--help" ]; then 
+    echo "Usage:"
+    echo -e "\tdownload-sample-sheets FROM_SHEET_NUMBER TO_SHEET_NUMBER STORAGE_DIR [HOST]"
+else
+    mkdir -p $DIR
+    # note --parallel seems to be buggy on macOS
+    curl -sw '%{response_code} %{url_effective} %{size_download} B\n' --fail "$HOST/v1/pacbio/runs/[$FROM_SHEET_NUMBER-$TO_SHEET_NUMBER]/sample_sheet" -o "$DIR/TRACTION-RUN-#1.csv"
+    rm -f $(find $DIR/*.csv -size 0) # remove empty files
+fi

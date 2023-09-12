@@ -112,7 +112,7 @@ RSpec.describe 'RakeTasks' do
             -> Tag Set successfully created
             -> IsoSeq_Primers_12_Barcodes_v1 created
             -> Creating pacbio plates and tubes...\b\b\b √#{' '}
-            -> Creating pacbio libraries...\b\b\b √#{' '}
+            -> Creating pacbio libraries and pools...\b\b\b √#{' '}
             -> Finding Pacbio SMRT Link versions...\b\b\b √#{' '}
             -> Creating pacbio runs:
                -> Creating runs for v11...\b\b\b √#{' '}
@@ -121,8 +121,7 @@ RSpec.describe 'RakeTasks' do
             -> Pacbio runs successfully created
           HEREDOC
         ).to_stdout
-      expect(Pacbio::Run.count)
-        .to eq(15)
+      expect(Pacbio::Run.count).to eq(8)
     end
   end
 
@@ -224,7 +223,7 @@ RSpec.describe 'RakeTasks' do
 
   describe 'qc_assay_types:create' do
     it 'creates the correct number of qc assay types' do
-      expect { Rake::Task['qc_assay_types:create'].invoke }.to change(QcAssayType, :count).by(10).and output(
+      expect { Rake::Task['qc_assay_types:create'].invoke }.to change(QcAssayType, :count).by(16).and output(
         <<~HEREDOC
           -> QC Assay Types updated
         HEREDOC

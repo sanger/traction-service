@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_28_123446) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_15_114710) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -322,6 +322,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_123446) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "qc_receptions", charset: "utf8mb3", force: :cascade do |t|
+    t.string "source"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "qc_results", charset: "utf8mb3", force: :cascade do |t|
     t.string "labware_barcode", null: false
     t.string "sample_external_id", null: false
@@ -329,7 +335,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_123446) do
     t.string "value", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "qc_reception_id"
     t.index ["qc_assay_type_id"], name: "index_qc_results_on_qc_assay_type_id"
+    t.index ["qc_reception_id"], name: "index_qc_results_on_qc_reception_id"
   end
 
   create_table "qc_results_uploads", charset: "utf8mb3", force: :cascade do |t|
@@ -364,6 +372,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_123446) do
     t.string "species"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.string "priority_level", comment: "Priority level e.g. Medium, High etc"
+    t.string "sanger_sample_id", comment: "Sanger sample id"
+    t.string "supplier_name", comment: "Supplier name"
+    t.string "taxon_id", comment: "Taxon Id"
+    t.string "donor_id", comment: "Donor Id"
+    t.string "country_of_origin", comment: "Country of origin"
+    t.string "accession_number", comment: "Accession Number"
+    t.datetime "date_of_sample_collection", comment: "Date of sample collection"
     t.index ["external_id"], name: "index_samples_on_external_id", unique: true
     t.index ["name", "external_id", "species"], name: "index_samples_on_name_and_external_id_and_species"
     t.index ["name"], name: "index_samples_on_name", unique: true
@@ -481,5 +497,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_28_123446) do
   add_foreign_key "qc_decision_results", "qc_decisions"
   add_foreign_key "qc_decision_results", "qc_results"
   add_foreign_key "qc_results", "qc_assay_types"
+  add_foreign_key "qc_results", "qc_receptions"
   add_foreign_key "requests", "receptions"
 end
