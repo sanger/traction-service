@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'rake'
 
-Rails.application.load_tasks
+# only load Rake tasks if they haven't been loaded already
+Rails.application.load_tasks if Rake::Task.tasks.empty?
 
 RSpec.describe 'RakeTasks' do
   describe 'ont_data:create' do
