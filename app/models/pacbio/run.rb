@@ -7,6 +7,7 @@ module Pacbio
 
     include Uuidable
     include Stateful
+    include SampleSheet::Run
 
     # Sequel II and Sequel I are now deprecated
     enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2, 'Revio' => 3 }
@@ -51,11 +52,14 @@ module Pacbio
     # returns sample sheet csv for a Pacbio::Run
     # using pipelines.yml configuration to generate data
     def generate_sample_sheet
-      sample_sheet = PacbioSampleSheet.new(run: self, configuration: pacbio_run_sample_sheet_config)
-      sample_sheet.generate
+      configuration = pacbio_run_sample_sheet_config
+      sample_sheet_generator = RunCsv::DeprecatedPacbioSampleSheet
+      sample_sheet_generator = RunCsv::PacbioSampleSheet if use_simpler_sample_sheets?
+      sample_sheet = sample_sheet_generator.new(object: self, configuration:)
+      sample_sheet.payload
     end
 
-    # Revio has changed to use instrument_name
+    # v12 has changed to use instrument_name
     # We can't alias it as it is an enum
     def instrument_name
       system_name
@@ -64,6 +68,16 @@ module Pacbio
     # This is needed to generate the comments
     def wells
       plates.collect(&:wells).flatten
+    end
+
+    # Is the simpler-style config is defined?
+    # Requires:
+    # - fields
+    # - column_order
+    def use_simpler_sample_sheets?
+      responds_to_fields = pacbio_run_sample_sheet_config.respond_to?('fields')
+      responds_to_column_order = pacbio_run_sample_sheet_config.respond_to?('column_order')
+      responds_to_fields && responds_to_column_order
     end
 
     private

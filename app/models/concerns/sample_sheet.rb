@@ -4,6 +4,16 @@
 # Namespace for helper modules to assist ActiveRecord classes in rendering
 # sample sheets
 module SampleSheet
+  # Provides run helper methods for sample sheet generation
+  module Run
+    # Returns a list of wells associated with the plate in column order
+    # Example: [<Well position:'A1'>, <Well position:'A2'>, <Well position:'B1'>]) =>
+    #          [<Well position:'A1'>, <Well position:'B1'>, <Well position:'A2'>]
+    def sorted_wells
+      wells.sort_by { |well| [well.column.to_i, well.row] }
+    end
+  end
+
   # Provides well helper methods for sample sheet generation
   module Well
     # Sample Well field
@@ -20,6 +30,13 @@ module SampleSheet
     # Determines rendering of a row-per sample
     def show_row_per_sample?
       sample_sheet_behaviour.show_row_per_sample?(libraries)
+    end
+
+    # Returns libraries only if they should be shown per row
+    def libraries_to_show_per_row
+      return unless show_row_per_sample?
+
+      libraries
     end
 
     # Sample Name field
@@ -68,7 +85,7 @@ module SampleSheet
 
     # Sample bio Name field
     def find_sample_name
-      sample_is_barcoded ? '' : sample_names
+      sample_is_barcoded ? nil : sample_names
     end
   end
 

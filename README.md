@@ -44,8 +44,8 @@ Note:
   ...
   ```
 
-- The fix is to add the mysql-client to the PATH [^1]:
-  `export PATH=$PATH:~/homebrew/Cellar/mysql-client@5.7/5.7.34/bin`
+- The fix is to add the mysql-client to the PATH [^1] similar to the following:
+  `export PATH=$PATH:~/homebrew/Cellar/mysql-client/8.0.33_1/bin`
 
 [^1]: https://stackoverflow.com/a/69106302
 
@@ -105,6 +105,12 @@ making sure you match the exchange name with the one specified in `config/bunny.
 
 A web interface to administrate RabbitMQ is always available at [http://localhost:15672/](http://localhost:15672/) once the service is running.
 
+## Sample sheets
+
+Sample sheets can be generated for upload to SMRT Link.
+
+For more details see the notes on the [Sample Sheet Generator](app/exchanges/README.md).
+
 ## Miscellaneous
 
 ### Git commit hook
@@ -115,6 +121,10 @@ To do this, refer to the documentation in `.githooks/README.txt`.
 ### Rails
 
 To see all the commands available from rails: `bundle exec rails -T`
+
+### Sample Sheet Downloads
+
+Sample sheets can be downloaded en masse for debugging and development purposes using the `download_sample_sheets` command in the `scripts` directory. See the [scripts README](scripts/README.md) for more information.
 
 ### Entity-Relationship Diagrams
 

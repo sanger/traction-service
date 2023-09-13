@@ -8,7 +8,7 @@ module Pipelines
   # In order to maintain consistent numbering, this has been pulled out into
   # a constant. Please do *not* remove entries from this list, as it could
   # result in legacy data being reassigned to the incorrect pipelines
-  NAMES = { pacbio: 0, ont: 1, saphyr: 2, qc_result: 3 }.freeze
+  NAMES = { pacbio: 0, ont: 1, saphyr: 2, qc_result: 3, reception: 4 }.freeze
   HANDLERS = {
     pacbio: Pacbio,
     ont: Ont,
@@ -20,16 +20,6 @@ module Pipelines
   def self.handler(pipeline)
     HANDLERS.fetch(pipeline) do
       raise "Unknown pipeline #{pipeline}"
-    end
-  end
-
-  # InstanceMethodCreator
-  module InstanceMethodCreator
-    # Creates an instance method in the included class
-    # @param key [String] the name of the method to be defined
-    # @param block [Block] the body of the method to be defined
-    def create_instance_method(key, &block)
-      self.class.send(:define_method, key, block)
     end
   end
 
