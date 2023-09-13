@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Saphyr::Enzyme, saphyr: true do
+RSpec.describe Saphyr::Enzyme, :saphyr do
   context 'on creation' do
     it 'has a name' do
       expect(create(:saphyr_enzyme).name).to be_present

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'LibrariesController', pacbio: true do
+RSpec.describe 'LibrariesController', :pacbio do
   describe '#get' do
     let!(:libraries) { create_list(:pacbio_library_in_tube, 5, :tagged) }
 
@@ -19,7 +19,7 @@ RSpec.describe 'LibrariesController', pacbio: true do
         expect(json['data'].length).to eq(5)
       end
 
-      it 'returns the correct attributes', aggregate_failures: true do
+      it 'returns the correct attributes', :aggregate_failures do
         libraries.each do |library|
           library_attributes = find_resource(type: 'libraries', id: library.id)['attributes']
           expect(library_attributes['volume']).to eq(library.volume)
@@ -82,7 +82,7 @@ RSpec.describe 'LibrariesController', pacbio: true do
         expect(response).to have_http_status(:success)
       end
 
-      it 'returns the correct relationships and included data', aggregate_failures: true do
+      it 'returns the correct relationships and included data', :aggregate_failures do
         request = library.request
         request_relationship = library_relationships.dig('request', 'data')
         expect(request_relationship['id']).to eq(request.id.to_s)
@@ -153,7 +153,7 @@ RSpec.describe 'LibrariesController', pacbio: true do
           expect(json['data'].length).to eq(5)
         end
 
-        it 'returns the correct attributes', aggregate_failures: true do
+        it 'returns the correct attributes', :aggregate_failures do
           expected_libraries.each do |library|
             library_attributes = find_resource(type: 'libraries', id: library.id)['attributes']
             expect(library_attributes).to include(
