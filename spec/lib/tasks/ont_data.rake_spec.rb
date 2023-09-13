@@ -53,6 +53,9 @@ RSpec.describe 'RakeTasks' do
           "-> Creating SQK-NBD114.96 tag set and tags\n" \
           "-> Tag Set successfully created\n" \
           "-> SQK-NBD114.96 tags successfully created\n" \
+          "-> Creating SQK-RBK114.96 tag set and tags\n" \
+          "-> Tag Set successfully created\n" \
+          "-> SQK-RBK114.96 tags successfully created\n" \
           "-> Created #{expected_single_plexed_pools} single plexed pools\n" \
           "-> Created #{expected_multi_plexed_pools} multiplexed pools\n" \
           "-> ONT Instruments successfully created\n" \
