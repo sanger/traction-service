@@ -67,6 +67,7 @@ RSpec.describe 'ReceptionsController' do
                               'id_sample_lims' => /\d/,
                               'uuid_sample_lims' => /.*/,
                               'name' => /.*/,
+                              'public_name' => 'PublicName',
                               'priority_level' => 'Medium',
                               'country_of_origin' => 'United Kingdom'
                             }
