@@ -50,6 +50,9 @@ default: &default
           name:
             type: :model
             value: name
+          public_name:
+            type: :model
+            value: public_name
           common_name:
             type: :model
             value: species
