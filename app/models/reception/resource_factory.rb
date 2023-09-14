@@ -14,61 +14,70 @@ class Reception
     extend NestedValidation
     attr_accessor :reception
 
-    validates :duplicate_containers, absence: true
-    validates :request_attributes, presence: true
+    validates_nested :plates_attributes, flatten_keys: false
+    validates_nested :tubes_attributes, flatten_keys: false
 
-    validates_nested :request_attributes, flatten_keys: false
-
-    validates_with ResourceFactoryValidator
-
-    #
-    # Array describing the requests to create.
-    # Each request consists of:
-    #
-    # @param attributes [Array<request>] Array containing a hash describing the requests to build
-    # @option request [Hash] request: Hash containing the attributes for the request
-    # @option request [Hash] sample: Hash containing the attributes for the sample
-    # @option request [Hash] container: Hash containing the attributes for the container
-    def request_attributes=(attributes)
-      @request_attributes = attributes.map do |request_attribute|
-        RequestFactory.new(resource_factory: self, reception:, **request_attribute)
-      end
+    def plates_attributes=(attributes)
+      @plates_attributes = attributes
     end
 
-    def request_attributes
-      @request_attributes ||= []
+    def tubes_attributes=(attributes)
+      @tubes_attributes = attributes
+    end
+
+    def plates_attributes
+      @tubes_attributes ||= []
+    end
+
+    def tubes_attributes
+      @tubes_attributes ||= []
     end
 
     def construct_resources!
-      ApplicationRecord.transaction do
-        # Ensure we correctly populate the cache is we haven't done so already
-        request_attributes.each(&:request)
-        request_attributes.each(&:save!)
+      create_plates
+      create_tubes
+    end
+
+    def create_plates
+      @plates_attributes.each do |plate_attr|
+        # Get existing plate or make new plate
+        plate = Plate.find_by(barcode: plate_attr[:barcode]) || Plate.new(plate_attr.slice(:barcode))
+  
+        # Attempt to create each well in the plate
+        plate_attr[:wells_attributes].each do |well_attr|
+          # Gets existing well or makes empty well
+          well = plate.wells.located_at(well_attr[:position])
+          # If well has existing records, skip and add errror
+          if well.existing_records.present?
+            self.errors.add(:base, "#{well.position} already has a sample")
+          end
+  
+
+          # Use the library type to identify the pipeline
+          # If library type is not found, skip
+          # TODO: We want to add an error saying library type is not found for well
+          lt = library_type_for(well_attr[:request])
+          next if lt.nil?
+
+          # Get existing sample or make new sample
+          sample = sample_for(well_attr[:sample])
+  
+          # Using the library type, create a request
+          request = lt.request_factory(
+            sample: sample,
+            container: well,
+            library_type: lt,
+            request_attributes: well_attr[:request],
+            reception:
+          )
+  
+          # Save the request which also saves related records (sample, well, plate etc)
+          request.save!
+        end
       end
     end
 
-    def sample_for(attributes)
-      sample_cache[attributes[:external_id]] ||= Sample.new(attributes)
-    end
-
-    #
-    # Finds or creates the container with the given attributes
-    #
-    # @param attributes [Hash] Hash describing the container
-    # @option attributes ['tubes','wells'] type: The type of container to create
-    # @option attributes [String] barcode: The tube or plate barcode
-    # @option attributes [String] position: The well co-ordinate (eg. A1)
-    #
-    # @return [Tube,Well] The container
-    #
-    def container_for(attributes)
-      case attributes[:type]
-      when 'tubes'
-        tube_cache[attributes[:barcode]] ||= Tube.new(attributes.slice(:barcode))
-      when 'wells'
-        plate = plate_cache[attributes[:barcode]] ||= Plate.new(attributes.slice(:barcode))
-        plate.wells.located_at(attributes[:position])
-      end
+    def create_tubes
     end
 
     def library_type_for(attributes)
@@ -82,8 +91,8 @@ class Reception
       end
     end
 
-    def data_type_for(attributes)
-      data_type_cache.fetch(attributes[:data_type], nil)
+    def sample_for(attributes)
+      sample_cache[attributes[:external_id]] ||= Sample.find_by(external_id: attributes[:external_id]) || Sample.new(attributes)
     end
 
     private
@@ -92,39 +101,9 @@ class Reception
       @library_type_cache = LibraryType.all.index_by(&:name)
     end
 
-    def data_type_cache
-      @data_type_cache = DataType.all.index_by(&:name)
-    end
-
-    def tube_cache
-      @tube_cache ||= build_tube_cache
-    end
-
-    def plate_cache
-      @plate_cache ||= build_plate_cache
-    end
-
     def sample_cache
-      @sample_cache ||= build_sample_cache
+      @sample_cache ||= {}
     end
 
-    def build_tube_cache
-      barcodes = request_attributes.filter_map(&:tube_barcode)
-      Tube.where(barcode: barcodes).index_by(&:barcode)
-    end
-
-    def build_plate_cache
-      barcodes = request_attributes.filter_map(&:plate_barcode)
-      Plate.where(barcode: barcodes).includes(:wells).index_by(&:barcode)
-    end
-
-    def build_sample_cache
-      sample_external_ids = request_attributes.filter_map(&:sample_external_id)
-      Sample.where(external_id: sample_external_ids).index_by(&:external_id)
-    end
-
-    def duplicate_containers
-      request_attributes.filter_map(&:container).uniq!
-    end
   end
 end

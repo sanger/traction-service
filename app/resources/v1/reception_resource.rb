@@ -3,7 +3,7 @@
 module V1
   # A Reception handles the import of resources into traction
   class ReceptionResource < JSONAPI::Resource
-    attributes :request_attributes, :source
+    attributes :source, :plates_attributes, :tubes_attributes
 
     # When a pool is updated and it is attached to a run we need
     # to republish the messages for the run
@@ -15,17 +15,30 @@ module V1
 
     private
 
-    def request_attributes=(request_parameters)
-      raise ArgumentError unless request_parameters.is_a?(Array)
+    def plates_attributes=(plate_parameters)
+      raise ArgumentError unless plate_parameters.is_a?(Array)
 
-      @model.request_attributes = request_parameters.map do |request|
-        request.permit(request: permitted_request_attributes,
-                       sample: %i[name external_id species study_uuid priority_level
-                                  sanger_sample_id supplier_name taxon_id donor_id country_of_origin
-                                  accession_number date_of_sample_collection],
-                       container: %i[type barcode position])
-               .to_h
-               .with_indifferent_access
+      @model.plates_attributes = plate_parameters.map do |plate|
+        plate.permit(
+          :barcode,
+          wells_attributes: [
+            :position,
+            request: permitted_request_attributes,
+            sample: permitted_sample_attributes
+          ]
+        ).to_h.with_indifferent_access
+      end
+    end
+
+    def tubes_attributes=(tube_parameters)
+      raise ArgumentError unless tube_parameters.is_a?(Array)
+
+      @model.tubes_attributes = tube_parameters.map do |tube|
+        tube.permit(
+          :barcode,
+          request: permitted_request_attributes,
+          sample: permitted_sample_attributes
+        ).to_h.with_indifferent_access
       end
     end
 
@@ -35,6 +48,12 @@ module V1
 
     def permitted_request_attributes
       [*::Pacbio.request_attributes, *::Ont.request_attributes, *::Saphyr.request_attributes].uniq
+    end
+
+    def permitted_sample_attributes
+      %i[name external_id species study_uuid priority_level
+          sanger_sample_id supplier_name taxon_id donor_id country_of_origin
+          accession_number date_of_sample_collection]
     end
 
     def publish_messages
