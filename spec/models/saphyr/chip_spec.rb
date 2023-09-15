@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Saphyr::Chip, saphyr: true do
+RSpec.describe Saphyr::Chip, :saphyr do
   let(:barcode) { 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX' }
   let(:serial_number) { 'FLEVEAOLPTOWPNWU' }
 

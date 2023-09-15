@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Saphyr::Library, saphyr: true do
+RSpec.describe Saphyr::Library, :saphyr do
   context 'tube material' do
     let(:material_model) { :saphyr_library }
 

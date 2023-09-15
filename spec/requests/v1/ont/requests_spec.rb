@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Ont::RequestsController', ont: true do
+RSpec.describe 'Ont::RequestsController', :ont do
   let(:request_resource_attributes) do
     {
       ** request.attributes.slice(Ont.direct_request_attributes),
@@ -46,7 +46,7 @@ RSpec.describe 'Ont::RequestsController', ont: true do
           expect(json['data'].length).to eq(5)
         end
 
-        it 'returns the correct attributes', aggregate_failures: true do
+        it 'returns the correct attributes', :aggregate_failures do
           expected_requests.each do |request|
             request_attributes = find_resource(type: 'requests', id: request.id)['attributes']
             expect(request_attributes).to include(
@@ -80,7 +80,7 @@ RSpec.describe 'Ont::RequestsController', ont: true do
           expect(json['data'].length).to eq(5)
         end
 
-        it 'returns the correct attributes', aggregate_failures: true do
+        it 'returns the correct attributes', :aggregate_failures do
           expected_requests.each do |request|
             request_attributes = find_resource(type: 'requests', id: request.id)['attributes']
             expect(request_attributes).to include(

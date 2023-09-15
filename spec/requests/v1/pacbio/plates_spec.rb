@@ -109,7 +109,7 @@ RSpec.describe 'PlatesController' do
         expect(json['data'].length).to eq(5)
       end
 
-      it 'returns the correct attributes', aggregate_failures: true do
+      it 'returns the correct attributes', :aggregate_failures do
         expected_plates.each do |plate|
           plate_attributes = find_resource(type: 'plates', id: plate.id)['attributes']
           expect(plate_attributes).to include(

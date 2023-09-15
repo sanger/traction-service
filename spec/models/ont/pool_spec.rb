@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Ont::Pool, ont: true do
+RSpec.describe Ont::Pool, :ont do
   subject(:pool) { build(:ont_pool, params) }
 
   let(:libraries) { create_list(:ont_library, 5) }

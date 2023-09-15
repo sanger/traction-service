@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Ont::Run, ont: true do
+RSpec.describe Ont::Run, :ont do
   let!(:default_min_know_version) { create(:ont_min_know_version_default) }
 
   context 'on creation' do

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Ont::Request, ont: true do
+RSpec.describe Ont::Request, :ont do
   describe '#valid?' do
     subject { build(:ont_request, attributes) }
 

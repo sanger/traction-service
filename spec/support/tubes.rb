@@ -24,7 +24,7 @@ shared_examples_for 'tubes' do
     context 'when material is a request' do
       let!(:pipeline_tube_requests)        { create_list(pipeline_tube_request_factory, 2) }
 
-      it 'returns the correct attributes', aggregate_failures: true do
+      it 'returns the correct attributes', :aggregate_failures do
         create(other_pipeline_tube_request_factory)
         get send(tubes_path), headers: json_api_headers
         expect(response).to have_http_status(:success)
