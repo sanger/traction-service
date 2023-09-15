@@ -39,8 +39,7 @@ class Reception
 
     def create_plates
       @plates_attributes.each do |plate_attr|
-        # Get existing plate or make new plate
-        plate = Plate.find_by(barcode: plate_attr[:barcode]) || Plate.new(plate_attr.slice(:barcode))
+        plate = find_or_create_plate(plate_attr[:barcode])
 
         # Attempt to create each well in the plate
         plate_attr[:wells_attributes].each do |well_attr|
@@ -56,8 +55,9 @@ class Reception
           lt = library_type_cache.fetch(well_attr[:request][:library_type], nil)
           # Raise missing library type error
           if lt.nil?
-            reception_errors.add(:base,
-                                 "#{plate.barcode}:#{well.position} Library type #{well_attr[:request][:library_type]} not found")
+            reception_errors.add(
+              :base, "#{plate.barcode}:#{well.position} Library type #{well_attr[:request][:library_type]} not found"
+            )
             next
           end
 
@@ -65,13 +65,7 @@ class Reception
           sample = sample_for(well_attr[:sample])
 
           # Using the library type, create a request
-          request = lt.request_factory(
-            sample:,
-            container: well,
-            library_type: lt,
-            request_attributes: well_attr[:request],
-            reception:
-          )
+          request = create_request(lt, sample, well, well_attr[:request])
 
           # Save the request which also saves related records (sample, well, plate)
           request.save!
@@ -81,8 +75,7 @@ class Reception
 
     def create_tubes
       @tubes_attributes.each do |tube_attr|
-
-        tube = Tube.find_by(barcode: tube_attr[:barcode]) || Tube.new(tube_attr.slice(:barcode))
+        tube = find_or_create_tube(tube_attr[:barcode])
 
         if tube.existing_records.present?
           reception_errors.add(:base, "#{tube.barcode} already has a sample")
@@ -93,8 +86,9 @@ class Reception
         lt = library_type_cache.fetch(tube_attr[:request][:library_type], nil)
         # Raise missing library type error
         if lt.nil?
-          reception_errors.add(:base,
-                               "#{tube.barcode} Library type #{tube_attr[:request][:library_type]} not found")
+          reception_errors.add(
+            :base, "#{tube.barcode} Library type #{tube_attr[:request][:library_type]} not found"
+          )
           next
         end
 
@@ -102,24 +96,37 @@ class Reception
         sample = sample_for(tube_attr[:sample])
 
         # Using the library type, create a request
-        request = lt.request_factory(
-          sample:,
-          container: tube,
-          library_type: lt,
-          request_attributes: tube_attr[:request],
-          reception:
-        )
+        request = create_request(lt, sample, tube, tube_attr[:request])
 
         # Save the request which also saves related records (sample, tube)
         request.save!
       end
     end
 
+    private
+
     def sample_for(attributes)
-      sample_cache[attributes[:external_id]] ||= Sample.find_by(external_id: attributes[:external_id]) || Sample.new(attributes)
+      sample_cache[attributes[:external_id]] ||=
+        Sample.find_by(external_id: attributes[:external_id]) || Sample.new(attributes)
     end
 
-    private
+    def find_or_create_plate(barcode)
+      Plate.find_by(barcode:) || Plate.new(barcode:)
+    end
+
+    def find_or_create_tube(barcode)
+      Tube.find_by(barcode:) || Tube.new(barcode:)
+    end
+
+    def create_request(library_type, sample, container, request_attributes)
+      library_type.request_factory(
+        sample:,
+        container:,
+        library_type:,
+        request_attributes:,
+        reception:
+      )
+    end
 
     def library_type_cache
       @library_type_cache ||= LibraryType.all.index_by(&:name)
