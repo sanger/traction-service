@@ -24,7 +24,6 @@ module Pacbio
   end
 
   # We have this argument here for API compatibility
-  # rubocop:disable Lint/UnusedMethodArgument
   def self.request_factory(sample:, container:, library_type:, request_attributes:, reception:)
     ::Request.new(
       sample:,
@@ -36,8 +35,6 @@ module Pacbio
       )
     )
   end
-  # rubocop:enable Lint/UnusedMethodArgument
-
   # Valid values for smrt link options. These are used by several tests, but we
   # removed the old Pacbio::SmrtLink::Versions module.
   YES_NO = %w[Yes No].freeze

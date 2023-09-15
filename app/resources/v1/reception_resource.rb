@@ -3,14 +3,20 @@
 module V1
   # A Reception handles the import of resources into traction
   class ReceptionResource < JSONAPI::Resource
-    attributes :source, :plates_attributes, :tubes_attributes
+    attributes :source, :reception_errors, :plates_attributes, :tubes_attributes
 
-    # When a pool is updated and it is attached to a run we need
-    # to republish the messages for the run
     after_create :publish_messages, :construct_resources!
 
     def fetchable_fields
-      [:source]
+      %i[source reception_errors]
+    end
+
+    def self.creatable_fields(context)
+      super - [:reception_errors]
+    end
+
+    def reception_errors
+      context[:reception_errors] || []
     end
 
     private
@@ -23,8 +29,8 @@ module V1
           :barcode,
           wells_attributes: [
             :position,
-            request: permitted_request_attributes,
-            sample: permitted_sample_attributes
+            { request: permitted_request_attributes,
+              sample: permitted_sample_attributes }
           ]
         ).to_h.with_indifferent_access
       end
@@ -43,7 +49,8 @@ module V1
     end
 
     def construct_resources!
-      @model.construct_resources!
+      # Use context to cache the reception_errors to be used in the response
+      context[:reception_errors] = @model.construct_resources!
     end
 
     def permitted_request_attributes
@@ -52,8 +59,8 @@ module V1
 
     def permitted_sample_attributes
       %i[name external_id species study_uuid priority_level
-          sanger_sample_id supplier_name taxon_id donor_id country_of_origin
-          accession_number date_of_sample_collection]
+         sanger_sample_id supplier_name taxon_id donor_id country_of_origin
+         accession_number date_of_sample_collection]
     end
 
     def publish_messages
