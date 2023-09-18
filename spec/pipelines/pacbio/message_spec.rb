@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'PacBio', pacbio: true, type: :model do
+RSpec.describe 'PacBio', :pacbio, type: :model do
   let(:timestamp) { Time.zone.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
   let(:configuration) { Pipelines.configure(Pipelines.load_yaml) }
   let(:message_configuration) { configuration.pacbio.message }

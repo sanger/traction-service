@@ -53,7 +53,7 @@ RSpec.describe 'RunsController' do
       expect(run2_attributes['name']).to eq(run2.name)
     end
 
-    it 'returns the correct relationships', aggregate_failures: true do
+    it 'returns the correct relationships', :aggregate_failures do
       get "#{v1_pacbio_runs_path}?include=plates,smrt_link_version", headers: json_api_headers
 
       expect(response).to have_http_status(:success), response.body
@@ -97,7 +97,7 @@ RSpec.describe 'RunsController' do
         expect(json['data'][1]['id'].to_i).to eq(run1.id)
       end
 
-      it 'returns the correct attributes', aggregate_failures: true do
+      it 'returns the correct attributes', :aggregate_failures do
         expected_runs.each do |run|
           get "#{v1_pacbio_runs_path}/#{run.id}", headers: json_api_headers
 

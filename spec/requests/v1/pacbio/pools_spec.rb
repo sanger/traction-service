@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'PoolsController', pacbio: true do
+RSpec.describe 'PoolsController', :pacbio do
   before do
     # Create a default smrt link version for pacbio runs.
     create(:pacbio_smrt_link_version_default)
@@ -22,7 +22,7 @@ RSpec.describe 'PoolsController', pacbio: true do
       expect(json['data'].length).to eq(2)
     end
 
-    it 'returns pool attributes', aggregate_failures: true do
+    it 'returns pool attributes', :aggregate_failures do
       get v1_pacbio_pools_path, headers: json_api_headers
 
       expect(response).to have_http_status(:success)
@@ -70,7 +70,7 @@ RSpec.describe 'PoolsController', pacbio: true do
       end
     end
 
-    it 'returns the correct attributes', aggregate_failures: true do
+    it 'returns the correct attributes', :aggregate_failures do
       get "#{v1_pacbio_pools_path}?include=libraries", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
@@ -101,7 +101,7 @@ RSpec.describe 'PoolsController', pacbio: true do
         expect(json['data'].length).to eq(2)
       end
 
-      it 'returns the correct attributes', aggregate_failures: true do
+      it 'returns the correct attributes', :aggregate_failures do
         expected_pools.each do |pool|
           pool_attributes = find_resource(type: 'pools', id: pool.id)['attributes']
           expect(pool_attributes).to include(

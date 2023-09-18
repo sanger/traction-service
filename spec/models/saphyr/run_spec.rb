@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Saphyr::Run, saphyr: true do
+RSpec.describe Saphyr::Run, :saphyr do
   context 'on creation' do
     it 'state is pending' do
       run = create(:saphyr_run)

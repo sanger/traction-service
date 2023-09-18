@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Saphyr::Request, saphyr: true do
+RSpec.describe Saphyr::Request, :saphyr do
   let(:model) { described_class.to_s.split('::').join('_').downcase }
 
   it 'can have many libraries' do

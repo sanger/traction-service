@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Pacbio::WellPool, pacbio: true do
+RSpec.describe Pacbio::WellPool, :pacbio do
   before do
     # Create a default pacbio smrt link version for pacbio runs.
     create(:pacbio_smrt_link_version, name: 'v11', default: true)

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Pacbio::Run, pacbio: true do
+RSpec.describe Pacbio::Run, :pacbio do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
   let!(:version12_revio) { create(:pacbio_smrt_link_version, name: 'v12_revio') }

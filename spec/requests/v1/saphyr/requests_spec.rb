@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'RequestsController', saphyr: true do
+RSpec.describe 'RequestsController', :saphyr do
   describe '#get' do
     let!(:requests) { create_list(:saphyr_request, 2) }
 

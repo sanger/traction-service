@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_15_114710) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_14_111434) do
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -380,6 +380,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_15_114710) do
     t.string "country_of_origin", comment: "Country of origin"
     t.string "accession_number", comment: "Accession Number"
     t.datetime "date_of_sample_collection", comment: "Date of sample collection"
+    t.string "public_name", comment: "Public name"
     t.index ["external_id"], name: "index_samples_on_external_id", unique: true
     t.index ["name", "external_id", "species"], name: "index_samples_on_name_and_external_id_and_species"
     t.index ["name"], name: "index_samples_on_name", unique: true
