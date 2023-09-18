@@ -41,34 +41,17 @@ class Reception
       @plates_attributes.each do |plate_attr|
         plate = find_or_create_plate(plate_attr[:barcode])
 
-        # Attempt to create each well in the plate
         plate_attr[:wells_attributes].each do |well_attr|
           # Gets existing well or makes empty well
           well = plate.wells.located_at(well_attr[:position])
-          # If well has existing records, skip and add error
+
           if well.existing_records.present?
             reception_errors.add(:base, "#{plate.barcode}:#{well.position} already has a sample")
             next
           end
 
-          # Use the library type to identify the pipeline
-          lt = library_type_cache.fetch(well_attr[:request][:library_type], nil)
-          # Raise missing library type error
-          if lt.nil?
-            reception_errors.add(
-              :base, "#{plate.barcode}:#{well.position} Library type #{well_attr[:request][:library_type]} not found"
-            )
-            next
-          end
-
-          # Get existing sample or make new sample
-          sample = sample_for(well_attr[:sample])
-
-          # Using the library type, create a request
-          request = create_request(lt, sample, well, well_attr[:request])
-
-          # Save the request which also saves related records (sample, well, plate)
-          request.save!
+          create_request_for_container(well_attr[:request], well,
+                                       "#{plate.barcode}:#{well.position}")
         end
       end
     end
@@ -82,28 +65,25 @@ class Reception
           next
         end
 
-        # Use the library type to identify the pipeline
-        lt = library_type_cache.fetch(tube_attr[:request][:library_type], nil)
-        # Raise missing library type error
-        if lt.nil?
-          reception_errors.add(
-            :base, "#{tube.barcode} Library type #{tube_attr[:request][:library_type]} not found"
-          )
-          next
-        end
-
-        # Get existing sample or make new sample
-        sample = sample_for(tube_attr[:sample])
-
-        # Using the library type, create a request
-        request = create_request(lt, sample, tube, tube_attr[:request])
-
-        # Save the request which also saves related records (sample, tube)
-        request.save!
+        create_request_for_container(tube_attr[:request], tube, tube.barcode)
       end
     end
 
     private
+
+    def create_request_for_container(request_attributes, container, container_barcode)
+      lt = library_type_cache.fetch(request_attributes[:library_type], nil)
+      if lt.nil?
+        reception_errors.add(
+          :base, "#{container_barcode} Library type #{request_attributes[:library_type]} not found"
+        )
+        return
+      end
+
+      sample = sample_for(request_attributes[:sample])
+      request = create_request(lt, sample, container, request_attributes)
+      request.save!
+    end
 
     def sample_for(attributes)
       sample_cache[attributes[:external_id]] ||=
