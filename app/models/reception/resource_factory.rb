@@ -38,7 +38,7 @@ class Reception
     end
 
     def create_plates
-      @plates_attributes.each do |plate_attr|
+      plates_attributes.each do |plate_attr|
         plate = find_or_create_plate(plate_attr[:barcode])
 
         plate_attr[:wells_attributes].each do |well_attr|
@@ -57,7 +57,7 @@ class Reception
     end
 
     def create_tubes
-      @tubes_attributes.each do |tube_attr|
+      tubes_attributes.each do |tube_attr|
         tube = find_or_create_tube(tube_attr[:barcode])
 
         if tube.existing_records.present?

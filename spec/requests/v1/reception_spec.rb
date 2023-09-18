@@ -6,8 +6,6 @@ require './spec/support/json_matcher'
 
 RSpec.describe 'ReceptionsController' do
   before do
-    Flipper.enable(:dpl_277_enable_general_reception)
-
     Broker::Handle.class_eval do
       def test_received_messages
         @test_received_messages ||= []
@@ -30,14 +28,15 @@ RSpec.describe 'ReceptionsController' do
             type: 'receptions',
             attributes: {
               source: 'traction-ui.sequencescape',
-              request_attributes: [
+              tubes_attributes: [
                 {
+                  type: 'tubes',
+                  barcode: 'NT1',
                   request: attributes_for(:ont_request).merge(
                     library_type: library_type.name,
                     data_type: data_type.name
                   ),
                   sample: attributes_for(:sample),
-                  container: { type: 'tubes', barcode: 'NT1' }
                 }
               ]
             }
@@ -100,16 +99,17 @@ RSpec.describe 'ReceptionsController' do
               type: 'receptions',
               attributes: {
                 source: 'traction-ui.sequencescape',
-                request_attributes: [
+                tubes_attributes: [
                   {
+                    type: 'tubes',
+                    barcode: 'NT1',
                     request: attributes_for(:ont_request).merge(
                       library_type: library_type.name,
                       data_type: data_type.name
                     ),
                     sample: attributes_for(:sample).merge({
-                                                            species: 'blablabla'
-                                                          }),
-                    container: { type: 'tubes', barcode: 'NT1' }
+                      species: 'blablabla'
+                    }),
                   }
                 ]
               }
@@ -133,14 +133,20 @@ RSpec.describe 'ReceptionsController' do
               type: 'receptions',
               attributes: {
                 source: 'traction-ui.sequencescape',
-                request_attributes: [
+                plates_attributes: [
                   {
-                    request: attributes_for(:ont_request).merge(
-                      library_type: library_type.name,
-                      data_type: data_type.name
-                    ),
-                    sample: attributes_for(:sample),
-                    container: { type: 'wells', barcode: 'NT1', position: 'A1' }
+                    type: 'plates',
+                    barcode: 'NT1',
+                    wells_attributes: [
+                      {
+                        position: 'A1',
+                        request: attributes_for(:ont_request).merge(
+                          library_type: library_type.name,
+                          data_type: data_type.name
+                        ),
+                        sample: attributes_for(:sample),
+                      }
+                    ]
                   }
                 ]
               }
@@ -153,14 +159,20 @@ RSpec.describe 'ReceptionsController' do
               type: 'receptions',
               attributes: {
                 source: 'traction-ui.sequencescape',
-                request_attributes: [
+                plates_attributes: [
                   {
-                    request: attributes_for(:ont_request).merge(
-                      library_type: library_type.name,
-                      data_type: data_type.name
-                    ),
-                    sample: attributes_for(:sample),
-                    container: { type: 'wells', barcode: 'NT1', position: 'A2' }
+                    type: 'plates',
+                    barcode: 'NT1',
+                    wells_attributes: [
+                      {
+                        position: 'A2',
+                        request: attributes_for(:ont_request).merge(
+                          library_type: library_type.name,
+                          data_type: data_type.name
+                        ),
+                        sample: attributes_for(:sample),
+                      }
+                    ]
                   }
                 ]
               }
@@ -184,14 +196,15 @@ RSpec.describe 'ReceptionsController' do
             type: 'receptions',
             attributes: {
               source: 'Not_A valid SOURCE!!!',
-              request_attributes: [
+              tubes_attributes: [
                 {
+                  type: 'tubes',
+                  barcode: 'NT1',
                   request: attributes_for(:ont_request).merge(
                     library_type: library_type.name,
                     data_type: data_type.name
                   ),
-                  sample: attributes_for(:sample),
-                  container: { type: 'tubes', barcode: 'NT1' }
+                  sample: attributes_for(:sample)
                 }
               ]
             }
@@ -218,16 +231,17 @@ RSpec.describe 'ReceptionsController' do
             type: 'receptions',
             attributes: {
               source: 'traction-ui.sequencescape',
-              request_attributes: [
-                {
-                  request: attributes_for(:ont_request).merge(
-                    library_type: 'Invalid library type',
-                    data_type: data_type.name
-                  ),
-                  sample: attributes_for(:sample),
-                  container: { type: 'tubes', barcode: 'NT1' }
-                }
-              ]
+              tubes_attributes: [
+                  {
+                    type: 'tubes',
+                    barcode: 'NT1',
+                    request: attributes_for(:ont_request).merge(
+                      library_type: "Invalid Library Type",
+                      data_type: data_type.name
+                    ),
+                    sample: attributes_for(:sample)
+                  }
+                ]
             }
           }
         }.to_json
@@ -252,14 +266,15 @@ RSpec.describe 'ReceptionsController' do
             type: 'receptions',
             attributes: {
               source: 'traction-ui.sequencescape',
-              request_attributes: [
+              tubes_attributes: [
                 {
+                  type: 'tubes',
+                  barcode: 'NT1',
                   request: attributes_for(:ont_request).merge(
                     library_type: library_type.name,
                     data_type: data_type.name
                   ),
-                  sample: {},
-                  container: { type: 'tubes', barcode: 'NT1' }
+                  sample: {}
                 }
               ]
             }
@@ -289,7 +304,7 @@ RSpec.describe 'ReceptionsController' do
             type: 'receptions',
             attributes: {
               source: 'traction-ui.sequencescape',
-              request_attributes: ''
+              tubes_attributes: ''
             }
           }
         }.to_json

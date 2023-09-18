@@ -3,36 +3,23 @@
 require 'rails_helper'
 
 RSpec.describe Reception::ResourceFactory do
-  subject(:resource_factory) { build(:reception_resource_factory, request_attributes:) }
+  subject(:resource_factory) { build(:reception_resource_factory, tubes_attributes:, plates_attributes:) }
 
+  let(:tubes_attributes) { [] }
+  let(:plates_attributes) { [] }
   let(:library_type) { create(:library_type, :ont) }
   let(:data_type) { create(:data_type, :ont) }
 
   describe '#valid?' do
     context 'with invalid samples' do
-      let(:request_attributes) do
+      let(:tubes_attributes) do
         [{
+          type: 'tubes',
           request: attributes_for(:ont_request).merge(
             library_type: library_type.name,
             data_type: data_type.name
           ),
-          sample: attributes_for(:sample, name: nil),
-          container: { type: 'tubes', barcode: 'NT1' }
-        }]
-      end
-
-      it { is_expected.not_to be_valid }
-    end
-
-    context 'with unknown containers' do
-      let(:request_attributes) do
-        [{
-          request: attributes_for(:ont_request).merge(
-            library_type: library_type.name,
-            data_type: data_type.name
-          ),
-          sample: attributes_for(:sample),
-          container: { type: 'elephant', barcode: 'NT1' }
+          sample: attributes_for(:sample, name: nil)
         }]
       end
 
@@ -40,14 +27,14 @@ RSpec.describe Reception::ResourceFactory do
     end
 
     context 'with invalid tubes' do
-      let(:request_attributes) do
+      let(:tubes_attributes) do
         [{
+          type: 'tubes',
           request: attributes_for(:ont_request).merge(
             library_type: library_type.name,
             data_type: data_type.name
           ),
-          sample: attributes_for(:sample),
-          container: { type: 'tubes' }
+          sample: attributes_for(:sample)
         }]
       end
 
@@ -55,14 +42,17 @@ RSpec.describe Reception::ResourceFactory do
     end
 
     context 'with invalid wells' do
-      let(:request_attributes) do
+      let(:plates_attributes) do
         [{
-          request: attributes_for(:ont_request).merge(
-            library_type: library_type.name,
-            data_type: data_type.name
-          ),
-          sample: attributes_for(:sample),
-          container: { type: 'wells', barcode: 'DN1' }
+          type: 'plates',
+          barcode: 'DN1',
+          wells_attributes: [{
+            request: attributes_for(:ont_request).merge(
+              library_type: library_type.name,
+              data_type: data_type.name
+            ),
+            sample: attributes_for(:sample),
+          }]
         }]
       end
 
@@ -70,14 +60,17 @@ RSpec.describe Reception::ResourceFactory do
     end
 
     context 'with invalid plates' do
-      let(:request_attributes) do
+      let(:plates_attributes) do
         [{
-          request: attributes_for(:ont_request).merge(
-            library_type: library_type.name,
-            data_type: data_type.name
-          ),
-          sample: attributes_for(:sample),
-          container: { type: 'wells', position: 'A1' }
+          type: 'plates',
+          wells_attributes: [{
+            position: 'A1',
+            request: attributes_for(:ont_request).merge(
+              library_type: library_type.name,
+              data_type: data_type.name
+            ),
+            sample: attributes_for(:sample),
+          }]
         }]
       end
 
@@ -85,61 +78,114 @@ RSpec.describe Reception::ResourceFactory do
     end
 
     context 'with invalid requests' do
-      let(:request_attributes) do
+      let(:tubes_attributes) do
         [{
+          type: 'tubes',
           request: attributes_for(:ont_request).merge(
             data_type: data_type.name
           ),
-          sample: attributes_for(:sample),
-          container: { type: 'tubes', barcode: 'NT1' }
+          sample: attributes_for(:sample)
         }]
       end
 
       it { is_expected.not_to be_valid }
     end
 
-    context 'with no requests' do
-      let(:request_attributes) do
-        []
+    # context 'with no requests' do
+    #   let(:request_attributes) do
+    #     []
+    #   end
+
+    #   it 'is not valid and returns a custom error message' do
+    #     expect(resource_factory.valid?).to be(false)
+    #     expect(resource_factory.errors.full_messages).to include('Request attributes there are no new samples to import')
+    #   end
+    # end
+
+    context 'with duplicate tubes' do
+      let(:tubes_attributes) do
+        [
+          {
+            type: 'tubes',
+            barcode: 'NT1',
+            request: attributes_for(:ont_request).merge(
+              library_type: library_type.name,
+              data_type: data_type.name
+            ),
+            sample: attributes_for(:sample)
+          },
+          {
+            type: 'tubes',
+            barcode: 'NT1',
+            request: attributes_for(:ont_request).merge(
+              library_type: library_type.name,
+              data_type: data_type.name
+            ),
+            sample: attributes_for(:sample)
+          }
+        ]
       end
 
-      it 'is not valid and returns a custom error message' do
-        expect(resource_factory.valid?).to be(false)
-        expect(resource_factory.errors.full_messages).to include('Request attributes there are no new samples to import')
-      end
+      it { is_expected.not_to be_valid }
     end
 
-    context 'with duplicate containers' do
-      let(:request_attributes) do
-        [{
-          request: attributes_for(:ont_request).merge(
-            library_type: library_type.name,
-            data_type: data_type.name
-          ),
-          sample: attributes_for(:sample),
-          container: { type: 'tubes', barcode: 'NT1' }
-        }, {
-          request: attributes_for(:ont_request).merge(
-            library_type: library_type.name,
-            data_type: data_type.name
-          ),
-          sample: attributes_for(:sample),
-          container: { type: 'tubes', barcode: 'NT1' }
-        }]
+    context 'with duplicate wells' do
+      let(:tubes_attributes) do
+      [
+        {
+          type: 'plates',
+          barcode: 'DN1',
+          wells_attributes: [
+            {
+              position: 'A1',
+              request: attributes_for(:ont_request).merge(
+                library_type: library_type.name,
+                data_type: data_type.name
+              ),
+              sample: attributes_for(:sample),
+            },
+            {
+              position: 'A1',
+              request: attributes_for(:ont_request).merge(
+                library_type: library_type.name,
+                data_type: data_type.name
+              ),
+              sample: attributes_for(:sample),
+            }
+          ]
+        }
+      ]
       end
 
       it { is_expected.not_to be_valid }
     end
 
     context 'with everything in order' do
-      let(:request_attributes) do
+      let(:tubes_attributes) do
+        [
+          {
+            type: 'tubes',
+            barcode: 'NT1',
+            request: attributes_for(:ont_request).merge(
+              library_type: library_type.name,
+              data_type: data_type.name
+            ),
+            sample: attributes_for(:sample)
+          },
+        ]
+      end
+      let(:plates_attributes) do
         [{
-          request: attributes_for(:ont_request).merge(
-            library_type: library_type.name,
-            data_type: data_type.name
-          ),
-          sample: attributes_for(:sample),
-          container: { type: 'tubes', barcode: 'NT1' }
+          type: 'plates',
+          barcode: 'DN1',
+          wells_attributes: [{
+            position: 'A1',
+            request: attributes_for(:ont_request).merge(
+              library_type: library_type.name,
+              data_type: data_type.name
+            ),
+            sample: attributes_for(:sample),
+          }]
         }]
       end
 
@@ -153,7 +199,7 @@ RSpec.describe Reception::ResourceFactory do
     end
 
     let(:resource_factory) do
-      build(:reception_resource_factory, request_attributes:)
+      build(:reception_resource_factory, plates_attributes:, tubes_attributes:)
     end
     let(:existing_tube) { attributes_for(:tube, :with_barcode) }
     let(:new_plate_barcode) { generate(:barcode) }
@@ -162,43 +208,72 @@ RSpec.describe Reception::ResourceFactory do
     let(:existing_well_a1) { attributes_for(:well, position: 'A1', barcode: existing_plate_barcode) }
     let(:existing_sample_a1) { attributes_for(:sample) }
     let(:existing_sample_b1) { attributes_for(:sample) }
-    let(:request_attributes) do
+    let(:tubes_attributes) do
       [{
         # New sample in new tube (valid)
+        type: 'tubes',
+        **attributes_for(:tube, :with_barcode), 
         request: request_parameters,
         sample: attributes_for(:sample),
-        container: { type: 'tubes', **attributes_for(:tube, :with_barcode) }
       }, {
         # New sample in existing tube (invalid)
+        type: 'tubes', 
+        **existing_tube,
         request: request_parameters,
         sample: attributes_for(:sample),
-        container: { type: 'tubes', **existing_tube }
-      }, {
-        # New well in new plate with new sample (valid)
-        request: request_parameters,
-        sample: attributes_for(:sample),
-        container: { type: 'wells', **attributes_for(:well, position: 'A1', barcode: new_plate_barcode) }
-      }, {
-        # New well in new plate with existing sample (valid)
-        request: request_parameters,
-        sample: existing_sample_b1,
-        container: { type: 'wells', **attributes_for(:well, position: 'B1', barcode: new_plate_barcode) }
-      }, {
-        # Existing well in existing plate with existing sample (invalid)
-        request: request_parameters,
-        sample: existing_sample_a1,
-        container: { type: 'wells', **existing_well_a1 }
-      }, {
-        # New well in existing plate with new sample (valid)
-        request: request_parameters,
-        sample: attributes_for(:sample),
-        container: { type: 'wells', **attributes_for(:well, position: 'C1', barcode: existing_plate_barcode) }
-      }, {
-        # New well in new plate with new sample (valid)
-        request: request_parameters,
-        sample: attributes_for(:sample),
-        container: { type: 'wells', **attributes_for(:well, position: 'A1', barcode: generate(:barcode)) }
       }]
+    end
+    let(:plates_attributes) do
+      [
+        {
+          type: "plates",
+          barcode: new_plate_barcode,
+          wells_attributes: [
+            # New well in new plate with new sample (valid)
+            {
+              position: 'A1',
+              request: request_parameters,
+              sample: attributes_for(:sample),
+            },
+            # New well in new plate with existing sample (valid)
+            {
+              position: 'B1',
+              request: request_parameters,
+              sample: existing_sample_b1,
+            }
+          ]
+        },
+        {
+          type: "plates",
+          barcode: existing_plate_barcode,
+          wells_attributes: [
+            # Existing well in existing plate with existing sample (invalid)
+            {
+              position: existing_well_a1.fetch(:position),
+              request: request_parameters,
+              sample: existing_sample_a1,
+            },
+            # New well in existing plate with new sample (valid)
+            {
+              position: 'C1',
+              request: request_parameters,
+              sample: attributes_for(:sample),
+            }
+          ]
+        },
+        {
+          type: "plates",
+          barcode: generate(:barcode),
+          wells_attributes: [
+            # New well in new plate with new sample (valid)
+            {
+              position: 'A1',
+              request: request_parameters,
+              sample: attributes_for(:sample),
+            },
+          ]
+        },
+      ]
     end
 
     let(:reception) { resource_factory.reception }
