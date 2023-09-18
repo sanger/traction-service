@@ -50,7 +50,7 @@ class Reception
             next
           end
 
-          create_request_for_container(well_attr[:request], well,
+          create_request_for_container(well_attr, well,
                                        "#{plate.barcode}:#{well.position}")
         end
       end
@@ -65,23 +65,23 @@ class Reception
           next
         end
 
-        create_request_for_container(tube_attr[:request], tube, tube.barcode)
+        create_request_for_container(tube_attr, tube, tube.barcode)
       end
     end
 
     private
 
-    def create_request_for_container(request_attributes, container, container_barcode)
-      lt = library_type_cache.fetch(request_attributes[:library_type], nil)
+    def create_request_for_container(attributes, container, container_barcode)
+      lt = library_type_cache.fetch(attributes[:request][:library_type], nil)
       if lt.nil?
         reception_errors.add(
-          :base, "#{container_barcode} Library type #{request_attributes[:library_type]} not found"
+          :base, "#{container_barcode} Library type #{attributes[:request][:library_type]} not found"
         )
         return
       end
 
-      sample = sample_for(request_attributes[:sample])
-      request = create_request(lt, sample, container, request_attributes)
+      sample = sample_for(attributes[:sample])
+      request = create_request(lt, sample, container, attributes[:request])
       request.save!
     end
 
