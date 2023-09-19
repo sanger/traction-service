@@ -51,7 +51,7 @@ RSpec.describe Reception::ResourceFactory do
               library_type: library_type.name,
               data_type: data_type.name
             ),
-            sample: attributes_for(:sample),
+            sample: attributes_for(:sample)
           }]
         }]
       end
@@ -69,7 +69,7 @@ RSpec.describe Reception::ResourceFactory do
               library_type: library_type.name,
               data_type: data_type.name
             ),
-            sample: attributes_for(:sample),
+            sample: attributes_for(:sample)
           }]
         }]
       end
@@ -131,30 +131,30 @@ RSpec.describe Reception::ResourceFactory do
 
     context 'with duplicate wells' do
       let(:plates_attributes) do
-      [
-        {
-          type: 'plates',
-          barcode: 'DN1',
-          wells_attributes: [
-            {
-              position: 'A1',
-              request: attributes_for(:ont_request).merge(
-                library_type: library_type.name,
-                data_type: data_type.name
-              ),
-              sample: attributes_for(:sample),
-            },
-            {
-              position: 'A1',
-              request: attributes_for(:ont_request).merge(
-                library_type: library_type.name,
-                data_type: data_type.name
-              ),
-              sample: attributes_for(:sample),
-            }
-          ]
-        }
-      ]
+        [
+          {
+            type: 'plates',
+            barcode: 'DN1',
+            wells_attributes: [
+              {
+                position: 'A1',
+                request: attributes_for(:ont_request).merge(
+                  library_type: library_type.name,
+                  data_type: data_type.name
+                ),
+                sample: attributes_for(:sample)
+              },
+              {
+                position: 'A1',
+                request: attributes_for(:ont_request).merge(
+                  library_type: library_type.name,
+                  data_type: data_type.name
+                ),
+                sample: attributes_for(:sample)
+              }
+            ]
+          }
+        ]
       end
 
       it { is_expected.not_to be_valid }
@@ -171,7 +171,7 @@ RSpec.describe Reception::ResourceFactory do
               data_type: data_type.name
             ),
             sample: attributes_for(:sample)
-          },
+          }
         ]
       end
       let(:plates_attributes) do
@@ -184,7 +184,7 @@ RSpec.describe Reception::ResourceFactory do
               library_type: library_type.name,
               data_type: data_type.name
             ),
-            sample: attributes_for(:sample),
+            sample: attributes_for(:sample)
           }]
         }]
       end
@@ -212,67 +212,67 @@ RSpec.describe Reception::ResourceFactory do
       [{
         # New sample in new tube (valid)
         type: 'tubes',
-        **attributes_for(:tube, :with_barcode), 
+        **attributes_for(:tube, :with_barcode),
         request: request_parameters,
-        sample: attributes_for(:sample),
+        sample: attributes_for(:sample)
       }, {
         # New sample in existing tube (invalid)
-        type: 'tubes', 
+        type: 'tubes',
         **existing_tube,
         request: request_parameters,
-        sample: attributes_for(:sample),
+        sample: attributes_for(:sample)
       }]
     end
     let(:plates_attributes) do
       [
         {
-          type: "plates",
+          type: 'plates',
           barcode: new_plate_barcode,
           wells_attributes: [
             # New well in new plate with new sample (valid)
             {
               position: 'A1',
               request: request_parameters,
-              sample: attributes_for(:sample),
+              sample: attributes_for(:sample)
             },
             # New well in new plate with existing sample (valid)
             {
               position: 'B1',
               request: request_parameters,
-              sample: existing_sample_b1,
+              sample: existing_sample_b1
             }
           ]
         },
         {
-          type: "plates",
+          type: 'plates',
           barcode: existing_plate_barcode,
           wells_attributes: [
             # Existing well in existing plate with existing sample (invalid)
             {
               position: existing_well_a1.fetch(:position),
               request: request_parameters,
-              sample: existing_sample_a1,
+              sample: existing_sample_a1
             },
             # New well in existing plate with new sample (valid)
             {
               position: 'C1',
               request: request_parameters,
-              sample: attributes_for(:sample),
+              sample: attributes_for(:sample)
             }
           ]
         },
         {
-          type: "plates",
+          type: 'plates',
           barcode: generate(:barcode),
           wells_attributes: [
             # New well in new plate with new sample (valid)
             {
               position: 'A1',
               request: request_parameters,
-              sample: attributes_for(:sample),
-            },
+              sample: attributes_for(:sample)
+            }
           ]
-        },
+        }
       ]
     end
 

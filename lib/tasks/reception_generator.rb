@@ -27,10 +27,10 @@ class ReceptionGenerator
     @reception ||= Reception.create!(
       source: 'traction-service.rake-task',
       plates_attributes: [
-        *plates,
+        *plates
       ],
       tubes_attributes: [
-        *tubes,
+        *tubes
       ]
     )
   end
@@ -46,16 +46,9 @@ class ReceptionGenerator
       library_type = @library_types.next
       data_type = @data_types.next if @data_types.size > 0
       wells_attributes = @well_positions.take(@wells_per_plate).map do |position|
-        {
-          position:,
-          request: request(library_type, data_type),
-          sample:,
-        }
+        { position:, request: request(library_type, data_type), sample: }
       end
-      {
-        barcode:,
-        wells_attributes:
-      }
+      { barcode:, wells_attributes: }
     end
   end
 

@@ -12,7 +12,7 @@ FactoryBot.define do
             {
               position: 'A1',
               request: { library_type: create(:library_type, :ont).name, data_type: create(:data_type, :ont).name, cost_code: generate(:cost_code), external_study_id: generate(:external_study_id) },
-              sample: { name: generate(:sample_name), species: 'Human', external_id: generate(:uuid) },
+              sample: { name: generate(:sample_name), species: 'Human', external_id: generate(:uuid) }
             }
           ]
         }
@@ -21,10 +21,10 @@ FactoryBot.define do
     tubes_attributes do
       [
         {
-          type: 'tubes', 
-          barcode: generate(:barcode) ,
+          type: 'tubes',
+          barcode: generate(:barcode),
           request: { library_type: create(:library_type, :ont).name, data_type: create(:data_type, :ont).name, cost_code: generate(:cost_code), external_study_id: generate(:external_study_id) },
-          sample: { name: generate(:sample_name), species: 'Human', external_id: generate(:uuid) },
+          sample: { name: generate(:sample_name), species: 'Human', external_id: generate(:uuid) }
         }
       ]
     end

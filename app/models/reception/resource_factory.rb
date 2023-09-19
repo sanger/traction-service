@@ -16,7 +16,6 @@ class Reception
 
     validates :requests, presence: true
     validates_nested :requests, flatten_keys: false
-    attr_writer :plates_attributes, :tubes_attributes
 
     def plates_attributes=(plates_attributes)
       create_plates(plates_attributes)
@@ -24,14 +23,6 @@ class Reception
 
     def tubes_attributes=(tubes_attributes)
       create_tubes(tubes_attributes)
-    end
-
-    def plates_attributes
-      @plates_attributes ||= []
-    end
-
-    def tubes_attributes
-      @tubes_attributes ||= []
     end
 
     def requests
@@ -45,7 +36,6 @@ class Reception
 
     def construct_resources!
       ApplicationRecord.transaction do
-        # Ensure we correctly populate the cache is we haven't done so already
         requests.each(&:save!)
       end
 
@@ -91,7 +81,7 @@ class Reception
 
     def library_type_for(attributes)
       library_type_cache[attributes[:library_type]] ||=
-        LibraryType.find_by(name: attributes[:library_type]) || nil
+        LibraryType.find_by(name: attributes[:library_type]) ||
         UnknownLibraryType.new(
           library_type: attributes[:library_type],
           permitted: library_type_cache.keys
@@ -110,7 +100,6 @@ class Reception
       sample = sample_for(attributes[:sample])
       requests << create_request(lt, sample, container, attributes[:request])
     end
-
 
     def find_or_create_plate(barcode)
       Plate.find_by(barcode:) || Plate.new(barcode:)

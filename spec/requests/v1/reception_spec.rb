@@ -36,7 +36,7 @@ RSpec.describe 'ReceptionsController' do
                     library_type: library_type.name,
                     data_type: data_type.name
                   ),
-                  sample: attributes_for(:sample),
+                  sample: attributes_for(:sample)
                 }
               ]
             }
@@ -108,8 +108,8 @@ RSpec.describe 'ReceptionsController' do
                       data_type: data_type.name
                     ),
                     sample: attributes_for(:sample).merge({
-                      species: 'blablabla'
-                    }),
+                                                            species: 'blablabla'
+                                                          })
                   }
                 ]
               }
@@ -144,7 +144,7 @@ RSpec.describe 'ReceptionsController' do
                           library_type: library_type.name,
                           data_type: data_type.name
                         ),
-                        sample: attributes_for(:sample),
+                        sample: attributes_for(:sample)
                       }
                     ]
                   }
@@ -170,7 +170,7 @@ RSpec.describe 'ReceptionsController' do
                           library_type: library_type.name,
                           data_type: data_type.name
                         ),
-                        sample: attributes_for(:sample),
+                        sample: attributes_for(:sample)
                       }
                     ]
                   }
@@ -236,7 +236,7 @@ RSpec.describe 'ReceptionsController' do
                   type: 'tubes',
                   barcode: 'NT1',
                   request: attributes_for(:ont_request).merge(
-                    library_type: "Invalid Library Type",
+                    library_type: 'Invalid Library Type',
                     data_type: data_type.name
                   ),
                   sample: attributes_for(:sample)
