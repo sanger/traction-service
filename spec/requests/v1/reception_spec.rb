@@ -232,16 +232,16 @@ RSpec.describe 'ReceptionsController' do
             attributes: {
               source: 'traction-ui.sequencescape',
               tubes_attributes: [
-                  {
-                    type: 'tubes',
-                    barcode: 'NT1',
-                    request: attributes_for(:ont_request).merge(
-                      library_type: "Invalid Library Type",
-                      data_type: data_type.name
-                    ),
-                    sample: attributes_for(:sample)
-                  }
-                ]
+                {
+                  type: 'tubes',
+                  barcode: 'NT1',
+                  request: attributes_for(:ont_request).merge(
+                    library_type: "Invalid Library Type",
+                    data_type: data_type.name
+                  ),
+                  sample: attributes_for(:sample)
+                }
+              ]
             }
           }
         }.to_json
@@ -255,7 +255,7 @@ RSpec.describe 'ReceptionsController' do
       it 'generates a valid json-api error response' do
         post v1_receptions_path, params: body, headers: json_api_headers
         pointer = json.dig('errors', 0, 'source', 'pointer')
-        expect(pointer).to eq('/data/attributes/request_attributes/0/request/library_type')
+        expect(pointer).to eq('/data/attributes/requests/0/library_type')
       end
     end
 
@@ -292,8 +292,8 @@ RSpec.describe 'ReceptionsController' do
         pointers = json.fetch('errors').map do |error|
           error.dig('source', 'pointer')
         end
-        expect(pointers).to include('/data/attributes/request_attributes/0/sample/name')
-        expect(pointers).to include('/data/attributes/request_attributes/0/sample/external_id')
+        expect(pointers).to include('/data/attributes/requests/0/sample')
+        expect(pointers).to include('/data/attributes/requests/0/sample')
       end
     end
 

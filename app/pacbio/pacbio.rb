@@ -24,13 +24,12 @@ module Pacbio
   end
 
   # We have this argument here for API compatibility
-  def self.request_factory(sample:, container:, library_type:, request_attributes:, reception:)
+  def self.request_factory(sample:, container:, request_attributes:, resource_factory:, reception:)
     ::Request.new(
       sample:,
       reception:,
       requestable: Pacbio::Request.new(
         container:,
-        library_type:,
         **request_attributes.slice(*self.request_attributes)
       )
     )

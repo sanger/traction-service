@@ -130,7 +130,7 @@ RSpec.describe Reception::ResourceFactory do
     end
 
     context 'with duplicate wells' do
-      let(:tubes_attributes) do
+      let(:plates_attributes) do
       [
         {
           type: 'plates',

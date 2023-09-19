@@ -11,9 +11,20 @@ class Reception
   # new plates, making it easier to prevent registration of duplicate records.
   class ResourceFactory
     include ActiveModel::Model
+    extend NestedValidation
     attr_accessor :reception
 
+    validates :requests, presence: true
+    validates_nested :requests, flatten_keys: false
     attr_writer :plates_attributes, :tubes_attributes
+
+    def plates_attributes=(plates_attributes)
+      create_plates(plates_attributes)
+    end
+
+    def tubes_attributes=(tubes_attributes)
+      create_tubes(tubes_attributes)
+    end
 
     def plates_attributes
       @plates_attributes ||= []
@@ -23,21 +34,26 @@ class Reception
       @tubes_attributes ||= []
     end
 
+    def requests
+      @requests ||= []
+    end
+
     def reception_errors
       # We use a custom errors object to record non-blocking errors
       @reception_errors ||= ActiveModel::Errors.new(self)
     end
 
     def construct_resources!
-      # Create the resources
-      create_plates
-      create_tubes
+      ApplicationRecord.transaction do
+        # Ensure we correctly populate the cache is we haven't done so already
+        requests.each(&:save!)
+      end
 
       # Return the errors
       reception_errors.full_messages.join(', ')
     end
 
-    def create_plates
+    def create_plates(plates_attributes)
       plates_attributes.each do |plate_attr|
         plate = find_or_create_plate(plate_attr[:barcode])
 
@@ -50,13 +66,12 @@ class Reception
             next
           end
 
-          create_request_for_container(well_attr, well,
-                                       "#{plate.barcode}:#{well.position}")
+          create_request_for_container(well_attr, well)
         end
       end
     end
 
-    def create_tubes
+    def create_tubes(tubes_attributes)
       tubes_attributes.each do |tube_attr|
         tube = find_or_create_tube(tube_attr[:barcode])
 
@@ -65,30 +80,37 @@ class Reception
           next
         end
 
-        create_request_for_container(tube_attr, tube, tube.barcode)
+        create_request_for_container(tube_attr, tube)
       end
     end
 
-    private
+    def data_type_for(attributes)
+      data_type_cache[attributes[:library_type]] ||=
+        DataType.find_by(name: attributes[:data_type]) || nil
+    end
 
-    def create_request_for_container(attributes, container, container_barcode)
-      lt = library_type_cache.fetch(attributes[:request][:library_type], nil)
-      if lt.nil?
-        reception_errors.add(
-          :base, "#{container_barcode} Library type #{attributes[:request][:library_type]} not found"
+    def library_type_for(attributes)
+      library_type_cache[attributes[:library_type]] ||=
+        LibraryType.find_by(name: attributes[:library_type]) || nil
+        UnknownLibraryType.new(
+          library_type: attributes[:library_type],
+          permitted: library_type_cache.keys
         )
-        return
-      end
-
-      sample = sample_for(attributes[:sample])
-      request = create_request(lt, sample, container, attributes[:request])
-      request.save!
     end
 
     def sample_for(attributes)
       sample_cache[attributes[:external_id]] ||=
         Sample.find_by(external_id: attributes[:external_id]) || Sample.new(attributes)
     end
+
+    private
+
+    def create_request_for_container(attributes, container)
+      lt = library_type_for(attributes[:request])
+      sample = sample_for(attributes[:sample])
+      requests << create_request(lt, sample, container, attributes[:request])
+    end
+
 
     def find_or_create_plate(barcode)
       Plate.find_by(barcode:) || Plate.new(barcode:)
@@ -102,10 +124,14 @@ class Reception
       library_type.request_factory(
         sample:,
         container:,
-        library_type:,
         request_attributes:,
+        resource_factory: self,
         reception:
       )
+    end
+
+    def data_type_cache
+      @data_type_cache ||= DataType.all.index_by(&:name)
     end
 
     def library_type_cache
