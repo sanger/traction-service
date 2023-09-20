@@ -91,16 +91,19 @@ RSpec.describe Reception::ResourceFactory do
       it { is_expected.not_to be_valid }
     end
 
-    # context 'with no requests' do
-    #   let(:request_attributes) do
-    #     []
-    #   end
+    context 'with no requests' do
+      let(:tubes_attributes) do
+        []
+      end
+      let(:plates_attributes) do
+        []
+      end
 
-    #   it 'is not valid and returns a custom error message' do
-    #     expect(resource_factory.valid?).to be(false)
-    #     expect(resource_factory.errors.full_messages).to include('Request attributes there are no new samples to import')
-    #   end
-    # end
+      it 'is not valid and returns a custom error message' do
+        expect(resource_factory.valid?).to be(false)
+        expect(resource_factory.errors.full_messages).to include('Requests there are no new samples to import')
+      end
+    end
 
     context 'with duplicate tubes' do
       let(:tubes_attributes) do

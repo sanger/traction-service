@@ -40,7 +40,7 @@ en:
               empty: there are no wells
         reception/resource_factory:
           attributes:
-            request_attributes:
+            requests:
               blank: there are no new samples to import
         qc_receptions_factory:
           attributes:

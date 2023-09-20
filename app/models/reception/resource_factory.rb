@@ -14,15 +14,30 @@ class Reception
     extend NestedValidation
     attr_accessor :reception
 
+    validates :duplicate_containers, absence: true
     validates :requests, presence: true
-    validates_nested :requests, flatten_keys: false
+    validates_nested :requests, :containers, flatten_keys: false, context: :reception
 
     def plates_attributes=(plates_attributes)
+      @plates_attributes = plates_attributes
       create_plates(plates_attributes)
     end
 
     def tubes_attributes=(tubes_attributes)
+      @tubes_attributes = tubes_attributes
       create_tubes(tubes_attributes)
+    end
+
+    def plates_attributes
+      @plates_attributes ||= []
+    end
+
+    def tubes_attributes
+      @tubes_attributes ||= []
+    end
+
+    def containers
+      @containers ||= []
     end
 
     def requests
@@ -30,62 +45,43 @@ class Reception
     end
 
     def reception_errors
-      # We use a custom errors object to record non-blocking errors
       @reception_errors ||= ActiveModel::Errors.new(self)
     end
 
     def construct_resources!
-      ApplicationRecord.transaction do
-        requests.each(&:save!)
-      end
-
-      # Return the errors
+      requests.each(&:save!)
       reception_errors.full_messages.join(', ')
     end
 
     def create_plates(plates_attributes)
       plates_attributes.each do |plate_attr|
         plate = find_or_create_plate(plate_attr[:barcode])
-
         plate_attr[:wells_attributes].each do |well_attr|
-          # Gets existing well or makes empty well
           well = plate.wells.located_at(well_attr[:position])
-
-          if well.existing_records.present?
-            reception_errors.add(:base, "#{plate.barcode}:#{well.position} already has a sample")
-            next
-          end
+          next if container_has_records(well, "#{plate.barcode}:#{well.position}")
 
           create_request_for_container(well_attr, well)
+          containers << well
         end
+        containers << plate
       end
     end
 
     def create_tubes(tubes_attributes)
       tubes_attributes.each do |tube_attr|
         tube = find_or_create_tube(tube_attr[:barcode])
-
-        if tube.existing_records.present?
-          reception_errors.add(:base, "#{tube.barcode} already has a sample")
-          next
-        end
+        next if container_has_records(tube, tube.barcode)
 
         create_request_for_container(tube_attr, tube)
+        containers << tube
       end
-    end
-
-    def data_type_for(attributes)
-      data_type_cache[attributes[:library_type]] ||=
-        DataType.find_by(name: attributes[:data_type]) || nil
     end
 
     def library_type_for(attributes)
       library_type_cache[attributes[:library_type]] ||=
         LibraryType.find_by(name: attributes[:library_type]) ||
-        UnknownLibraryType.new(
-          library_type: attributes[:library_type],
-          permitted: library_type_cache.keys
-        )
+        UnknownLibraryType.new(library_type: attributes[:library_type],
+                               permitted: library_type_cache.keys)
     end
 
     def sample_for(attributes)
@@ -94,6 +90,13 @@ class Reception
     end
 
     private
+
+    def container_has_records(container, barcode)
+      return if container.existing_records.blank?
+
+      reception_errors.add(:base, "#{barcode} already has a sample")
+      true
+    end
 
     def create_request_for_container(attributes, container)
       lt = library_type_for(attributes[:request])
@@ -119,16 +122,19 @@ class Reception
       )
     end
 
-    def data_type_cache
-      @data_type_cache ||= DataType.all.index_by(&:name)
-    end
-
     def library_type_cache
       @library_type_cache ||= LibraryType.all.index_by(&:name)
     end
 
     def sample_cache
       @sample_cache ||= {}
+    end
+
+    def duplicate_containers
+      plates_attributes.any? do |plate|
+        plate[:wells_attributes].flat_map { |well| well[:position] }.uniq!
+      end ||
+        tubes_attributes.flat_map { |tube| tube[:barcode] }.uniq!
     end
   end
 end
