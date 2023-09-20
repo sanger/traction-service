@@ -24,7 +24,7 @@ shared_examples_for 'requestor factory' do
       factory = described_class.new(attributes)
       expect(factory).to be_valid
       expect(factory.save).to be_truthy
-      expect(described_class.request_model.all.count).to eq(attributes.length)
+      expect(described_class.request_model.count).to eq(attributes.length)
       expect(described_class.request_model.first.tube).to be_present
     end
 
@@ -71,7 +71,7 @@ shared_examples_for 'requestor factory' do
       factory = described_class.new(attributes)
       expect(factory).not_to be_valid
       expect(factory.save).to be_falsey
-      expect(Tube.all.count).to eq(0)
+      expect(Tube.count).to eq(0)
     end
   end
 end

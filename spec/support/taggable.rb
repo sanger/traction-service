@@ -16,12 +16,12 @@ RSpec.shared_examples 'taggable' do
     num_tags = 3
     taggable = create(taggable_model, tags_count: num_tags)
     # sanity check
-    expect(Tag.all.count).to eq(num_tags)
+    expect(Tag.count).to eq(num_tags)
     # destroy the taggable
     taggable.destroy
     # test outcome
-    expect(TagTaggable.all.count).to eq(0)
-    expect(Tag.all.count).to eq(num_tags)
+    expect(TagTaggable.count).to eq(0)
+    expect(Tag.count).to eq(num_tags)
   end
 
   it 'returns expected sorted tags' do

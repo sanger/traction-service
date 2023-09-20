@@ -30,7 +30,7 @@ RSpec.describe Saphyr::LibraryFactory, :saphyr do
       factory = described_class.new(attributes)
       expect(factory).to be_valid
       expect(factory.save).to be_truthy
-      expect(Saphyr::Library.all.count).to eq(attributes.length)
+      expect(Saphyr::Library.count).to eq(attributes.length)
       expect(Saphyr::Library.first.tube.materials.first).to eq(Saphyr::Library.first)
     end
 
@@ -38,8 +38,8 @@ RSpec.describe Saphyr::LibraryFactory, :saphyr do
       factory = described_class.new({})
       expect(factory).not_to be_valid
       expect(factory.save).to be_falsey
-      expect(Saphyr::Library.all.count).to eq(0)
-      expect(Tube.all.count).to eq(0)
+      expect(Saphyr::Library.count).to eq(0)
+      expect(Tube.count).to eq(0)
     end
   end
 end
