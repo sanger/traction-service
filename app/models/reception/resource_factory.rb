@@ -78,10 +78,13 @@ class Reception
     end
 
     def library_type_for(attributes)
-      library_type_cache[attributes[:library_type]] ||=
-        LibraryType.find_by(name: attributes[:library_type]) ||
-        UnknownLibraryType.new(library_type: attributes[:library_type],
-                               permitted: library_type_cache.keys)
+      library_type_cache.fetch(attributes[:library_type],
+                               UnknownLibraryType.new(library_type: attributes[:library_type],
+                                                      permitted: library_type_cache.keys))
+    end
+
+    def data_type_for(attributes)
+      data_type_cache.fetch(attributes[:data_type], nil)
     end
 
     def sample_for(attributes)
@@ -124,6 +127,10 @@ class Reception
 
     def library_type_cache
       @library_type_cache ||= LibraryType.all.index_by(&:name)
+    end
+
+    def data_type_cache
+      @data_type_cache ||= DataType.all.index_by(&:name)
     end
 
     def sample_cache
