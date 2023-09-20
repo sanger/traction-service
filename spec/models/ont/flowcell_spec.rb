@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Ont::Flowcell, ont: true do
+RSpec.describe Ont::Flowcell, :ont do
   before do
     # Create a MinKnow default version so that associated runs can be saved
     create(:ont_min_know_version_default, name: 'v22')

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Ont::Instrument, ont: true do
+RSpec.describe Ont::Instrument, :ont do
   describe '#create' do
     it 'is possible to create a new instrument record' do
       expect { create(:ont_instrument) }.to change(described_class, :count).by(1)

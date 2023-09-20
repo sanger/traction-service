@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Saphyr::LibraryFactory, saphyr: true do
+RSpec.describe Saphyr::LibraryFactory, :saphyr do
   let(:request) { create(:saphyr_request) }
   let(:saphyr_enzyme) { create(:saphyr_enzyme) }
   let(:attributes) do

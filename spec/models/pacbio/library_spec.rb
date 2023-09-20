@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Pacbio::Library, pacbio: true do
+RSpec.describe Pacbio::Library, :pacbio do
   subject { build(:pacbio_library, params) }
 
   before do

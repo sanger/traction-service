@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Ont', ont: true, type: :model do
+RSpec.describe 'Ont', :ont, type: :model do
   before do
     create(:ont_min_know_version, name: 'v22', default: true)
   end

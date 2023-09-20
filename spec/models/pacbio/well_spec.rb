@@ -6,7 +6,7 @@ require 'rails_helper'
 # when this work is merged with yaml file for validations it would be better to load those
 # validations rather than setting them here
 # Make sure there is a default version to be able to create a run
-RSpec.describe Pacbio::Well, pacbio: true do
+RSpec.describe Pacbio::Well, :pacbio do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10') }
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11', default: true) }
   let!(:version12_revio) { create(:pacbio_smrt_link_version, name: 'v12_revio') }

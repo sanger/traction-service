@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Ont::MinKnowVersion, ont: true do
+RSpec.describe Ont::MinKnowVersion, :ont do
   describe '#create' do
     it 'is possible to create a new record' do
       expect { create(:ont_min_know_version) }.to change(described_class, :count).by(1)
