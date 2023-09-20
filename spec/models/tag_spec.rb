@@ -49,11 +49,11 @@ RSpec.describe Tag do
     num_taggables = 3
     tag = create(:tag_with_taggables, taggables_count: num_taggables)
     # sanity check
-    expect(Pacbio::Request.all.count).to eq(num_taggables)
+    expect(Pacbio::Request.count).to eq(num_taggables)
     # destroy the tag
     tag.destroy
     # test outcome
-    expect(TagTaggable.all.count).to eq(0)
-    expect(Pacbio::Request.all.count).to eq(num_taggables)
+    expect(TagTaggable.count).to eq(0)
+    expect(Pacbio::Request.count).to eq(num_taggables)
   end
 end

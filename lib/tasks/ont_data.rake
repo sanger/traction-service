@@ -23,7 +23,7 @@ namespace :ont_data do
     Rake::Task['tags:create:ont_all'].invoke
     ont_tag_set = TagSet.find_by(pipeline: 'ont')
 
-    requests = Ont::Request.all.limit(5)
+    requests = Ont::Request.limit(5)
     requests.each_with_index do |req, i|
       Ont::Pool.create!(
         kit_barcode: "barcode-#{i}",
@@ -44,7 +44,7 @@ namespace :ont_data do
     end
 
     puts "-> Created #{requests.length} single plexed pools"
-    requests = Ont::Request.all.limit(10).offset(5)
+    requests = Ont::Request.limit(10).offset(5)
     requests.each_with_index do |_req, i|
       Ont::Pool.create!(
         kit_barcode: "barcode-#{i}",

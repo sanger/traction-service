@@ -192,7 +192,7 @@ namespace :pacbio_data do
   end
 
   task destroy: :environment do
-    Sample.all.each do |sample|
+    Sample.find_each do |sample|
       sample.destroy if sample.requests[0].requestable_type == 'Pacbio::Request'
     end
     [Pacbio::Request, Pacbio::Library, Pacbio::Run, Pacbio::Plate, Pacbio::Well,

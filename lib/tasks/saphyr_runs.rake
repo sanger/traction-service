@@ -16,7 +16,7 @@ namespace :saphyr_runs do
 
     # binding.pry
 
-    Saphyr::Request.all.each do |request|
+    Saphyr::Request.find_each do |request|
       library = Saphyr::Library.create!(request:, saphyr_enzyme_id: 1)
       ContainerMaterial.create(container: Tube.create, material: library)
       chip = Saphyr::Chip.create!(barcode: 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX')
@@ -30,7 +30,7 @@ namespace :saphyr_runs do
   end
 
   task destroy: :environment do
-    Sample.all.each do |sample|
+    Sample.find_each do |sample|
       sample.destroy if sample.requests[0].requestable_type == 'Saphyr::Request'
     end
     [Saphyr::Request, Saphyr::Library, Saphyr::Flowcell, Saphyr::Chip, Saphyr::Run].each(&:delete_all)
