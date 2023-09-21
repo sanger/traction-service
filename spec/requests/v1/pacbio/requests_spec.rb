@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'RequestsController', pacbio: true do
+RSpec.describe 'RequestsController', :pacbio do
   before do
     # Create a default pacbio smrt link version for pacbio runs.
     create(:pacbio_smrt_link_version, name: 'v10', default: true)
@@ -56,7 +56,7 @@ RSpec.describe 'RequestsController', pacbio: true do
           expect(json['data'].length).to eq(2)
         end
 
-        it 'returns the correct attributes', aggregate_failures: true do
+        it 'returns the correct attributes', :aggregate_failures do
           expected_requests.each do |request|
             request_attributes = find_resource(type: 'requests', id: request.id)['attributes']
             expect(request_attributes).to include(
