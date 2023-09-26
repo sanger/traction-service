@@ -43,9 +43,13 @@ class Reception
       @requests ||= []
     end
 
+    def labware_status
+      @labware_status ||= {}
+    end
+
     def construct_resources!
       requests.each(&:save!)
-      errors.full_messages.join(', ')
+      labware_status
     end
 
     # Populates containers and requests from plates_attributes
@@ -54,16 +58,20 @@ class Reception
         # Gets the existing plate or creates a new one
         plate = Plate.find_by(barcode: plate_attr[:barcode]) ||
                 Plate.new(barcode: plate_attr[:barcode])
+        containers << plate
+        labware_status[plate.barcode] = { imported: true, errors: [] }
         plate_attr[:wells_attributes].each do |well_attr|
           # Gets the existing well or creates a new one
           well = plate.wells.located_at(well_attr[:position])
           # If a well already exists with records, we want to add an error
-          next if container_has_records(well, "#{plate.barcode}:#{well.position}")
+          if well.existing_records.present?
+            labware_status[plate.barcode][:errors] << "#{well_attr[:position]} already has a sample"
+            next
+          end
 
           # Creates a request for the well
           create_request_for_container(well_attr, well)
         end
-        containers << plate
       end
     end
 
@@ -72,8 +80,15 @@ class Reception
       tubes_attributes.each do |tube_attr|
         # Gets the existing tube or creates a new one
         tube = Tube.find_by(barcode: tube_attr[:barcode]) || Tube.new(barcode: tube_attr[:barcode])
+        labware_status[tube.barcode] = { imported: true, errors: [] }
         # If a tube already exists with records, we want to add an error
-        next if container_has_records(tube, tube.barcode)
+        if tube.existing_records.present?
+          labware_status[tube.barcode] = {
+            imported: false,
+            errors: ['Tube already has a sample']
+          }
+          next
+        end
 
         # Creates a request for the tube
         create_request_for_container(tube_attr, tube)
@@ -100,13 +115,6 @@ class Reception
     end
 
     private
-
-    def container_has_records(container, barcode)
-      return if container.existing_records.blank?
-
-      errors.add(:base, "#{barcode} already has a sample")
-      true
-    end
 
     def create_request_for_container(attributes, container)
       library_type = library_type_for(attributes[:request])

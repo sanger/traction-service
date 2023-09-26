@@ -3,20 +3,20 @@
 module V1
   # A Reception handles the import of resources into traction
   class ReceptionResource < JSONAPI::Resource
-    attributes :source, :reception_errors, :plates_attributes, :tubes_attributes
+    attributes :source, :labware, :plates_attributes, :tubes_attributes
 
     after_create :publish_messages, :construct_resources!
 
     def fetchable_fields
-      %i[source reception_errors]
+      %i[source labware]
     end
 
     def self.creatable_fields(context)
-      super - [:reception_errors]
+      super - [:labware]
     end
 
-    def reception_errors
-      context[:reception_errors] || []
+    def labware
+      context[:labware] || []
     end
 
     private
@@ -49,8 +49,8 @@ module V1
     end
 
     def construct_resources!
-      # Use context to cache the reception_errors to be used in the response
-      context[:reception_errors] = @model.construct_resources!
+      # Use context to cache the labware to be used in the response
+      context[:labware] = @model.construct_resources!
     end
 
     def permitted_request_attributes

@@ -325,6 +325,21 @@ RSpec.describe Reception::ResourceFactory do
         construct_resources
         expect(reception.requests.reload.count).to eq 5
       end
+
+      it 'returns the correct labware' do
+        labware = construct_resources
+        expected_data = {
+          existing_plate.fetch(:barcode) => {
+            imported: true,
+            errors: ["#{existing_well_a1.fetch(:position)} already has a sample"]
+          },
+          existing_tube.fetch(:barcode) => {
+            imported: false,
+            errors: ['Tube already has a sample']
+          }
+        }
+        expect(labware).to include(expected_data)
+      end
     end
 
     context 'pacbio' do
@@ -363,6 +378,21 @@ RSpec.describe Reception::ResourceFactory do
         construct_resources
         expect(reception.requests.reload.count).to eq 5
       end
+
+      it 'returns the correct labware' do
+        labware = construct_resources
+        expected_data = {
+          existing_plate.fetch(:barcode) => {
+            imported: true,
+            errors: ["#{existing_well_a1.fetch(:position)} already has a sample"]
+          },
+          existing_tube.fetch(:barcode) => {
+            imported: false,
+            errors: ['Tube already has a sample']
+          }
+        }
+        expect(labware).to include(expected_data)
+      end
     end
 
     context 'saphyr' do
@@ -400,6 +430,21 @@ RSpec.describe Reception::ResourceFactory do
       it 'associates the requests with the reception' do
         construct_resources
         expect(reception.requests.reload.count).to eq 5
+      end
+
+      it 'returns the correct labware' do
+        labware = construct_resources
+        expected_data = {
+          existing_plate.fetch(:barcode) => {
+            imported: true,
+            errors: ["#{existing_well_a1.fetch(:position)} already has a sample"]
+          },
+          existing_tube.fetch(:barcode) => {
+            imported: false,
+            errors: ['Tube already has a sample']
+          }
+        }
+        expect(labware).to include(expected_data)
       end
     end
   end
