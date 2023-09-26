@@ -3,12 +3,11 @@
 class Reception
   # Acts on behalf of a {Reception} to construct all associated requests, as well
   # as any necessary samples, plates, wells and tubes.
-  # In order to improve performance, the ResourceFactory implments caching of
-  # associated wells, tubes, plates and samples, as well as library and data
-  # types.
+  # In order to improve performance, the ResourceFactory implements caching of
+  # samples and library and data types.
   # This allows up to retrieve all records in a single query upfront, avoiding
   # N+1 query problems. It also ensures we can centralize the registration of
-  # new plates, making it easier to prevent registration of duplicate records.
+  # new plates and tubes, making it easier to prevent registration of duplicate records.
   class ResourceFactory
     include ActiveModel::Model
     extend NestedValidation
@@ -44,40 +43,45 @@ class Reception
       @requests ||= []
     end
 
-    def reception_errors
-      @reception_errors ||= ActiveModel::Errors.new(self)
-    end
-
     def construct_resources!
       requests.each(&:save!)
-      reception_errors.full_messages.join(', ')
+      errors.full_messages.join(', ')
     end
 
+    # Populates containers and requests from plates_attributes
     def create_plates(plates_attributes)
       plates_attributes.each do |plate_attr|
-        plate = find_or_create_plate(plate_attr[:barcode])
+        # Gets the existing plate or creates a new one
+        plate = Plate.find_by(barcode: plate_attr[:barcode]) ||
+                Plate.new(barcode: plate_attr[:barcode])
         plate_attr[:wells_attributes].each do |well_attr|
+          # Gets the existing well or creates a new one
           well = plate.wells.located_at(well_attr[:position])
+          # If a well already exists with records, we want to add an error
           next if container_has_records(well, "#{plate.barcode}:#{well.position}")
 
+          # Creates a request for the well
           create_request_for_container(well_attr, well)
-          containers << well
         end
         containers << plate
       end
     end
 
+    # Populates containers and requests from tubes_attributes
     def create_tubes(tubes_attributes)
       tubes_attributes.each do |tube_attr|
-        tube = find_or_create_tube(tube_attr[:barcode])
+        # Gets the existing tube or creates a new one
+        tube = Tube.find_by(barcode: tube_attr[:barcode]) || Tube.new(barcode: tube_attr[:barcode])
+        # If a tube already exists with records, we want to add an error
         next if container_has_records(tube, tube.barcode)
 
+        # Creates a request for the tube
         create_request_for_container(tube_attr, tube)
-        containers << tube
       end
     end
 
     def library_type_for(attributes)
+      # Gets a library type from the cache or returns an unknown type
       library_type_cache.fetch(attributes[:library_type],
                                UnknownLibraryType.new(library_type: attributes[:library_type],
                                                       permitted: library_type_cache.keys))
@@ -88,6 +92,9 @@ class Reception
     end
 
     def sample_for(attributes)
+      # Used to reduce database queries.
+      # It gets a sample from the cache, if it doesn't exist it searches the database
+      # or creates a new one
       sample_cache[attributes[:external_id]] ||=
         Sample.find_by(external_id: attributes[:external_id]) || Sample.new(attributes)
     end
@@ -97,25 +104,19 @@ class Reception
     def container_has_records(container, barcode)
       return if container.existing_records.blank?
 
-      reception_errors.add(:base, "#{barcode} already has a sample")
+      errors.add(:base, "#{barcode} already has a sample")
       true
     end
 
     def create_request_for_container(attributes, container)
-      lt = library_type_for(attributes[:request])
+      library_type = library_type_for(attributes[:request])
       sample = sample_for(attributes[:sample])
-      requests << create_request(lt, sample, container, attributes[:request])
-    end
-
-    def find_or_create_plate(barcode)
-      Plate.find_by(barcode:) || Plate.new(barcode:)
-    end
-
-    def find_or_create_tube(barcode)
-      Tube.find_by(barcode:) || Tube.new(barcode:)
+      requests << create_request(library_type, sample, container, attributes[:request])
+      containers << container
     end
 
     def create_request(library_type, sample, container, request_attributes)
+      # The library type is used to help build the correct request in the correct pipeline
       library_type.request_factory(
         sample:,
         container:,
@@ -126,10 +127,12 @@ class Reception
     end
 
     def library_type_cache
+      # Used to reduce database queries.
       @library_type_cache ||= LibraryType.all.index_by(&:name)
     end
 
     def data_type_cache
+      # Used to reduce database queries.
       @data_type_cache ||= DataType.all.index_by(&:name)
     end
 
@@ -138,10 +141,12 @@ class Reception
     end
 
     def duplicate_containers
+      # Scans both plates and tubes for duplicate barcodes or duplicate wells
       plates_attributes.any? do |plate|
         plate[:wells_attributes].flat_map { |well| well[:position] }.uniq!
       end ||
-        tubes_attributes.flat_map { |tube| tube[:barcode] }.uniq!
+        tubes_attributes.flat_map { |tube| tube[:barcode] }.uniq! ||
+        plates_attributes.flat_map { |plate| plate[:barcode] }.uniq!
     end
   end
 end
