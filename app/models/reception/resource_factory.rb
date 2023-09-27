@@ -18,21 +18,11 @@ class Reception
     validates_nested :requests, :containers, flatten_keys: false, context: :reception
 
     def plates_attributes=(plates_attributes)
-      @plates_attributes = plates_attributes
       create_plates(plates_attributes)
     end
 
     def tubes_attributes=(tubes_attributes)
-      @tubes_attributes = tubes_attributes
       create_tubes(tubes_attributes)
-    end
-
-    def plates_attributes
-      @plates_attributes ||= []
-    end
-
-    def tubes_attributes
-      @tubes_attributes ||= []
     end
 
     def containers
@@ -56,16 +46,14 @@ class Reception
     def create_plates(plates_attributes)
       plates_attributes.each do |plate_attr|
         # Gets the existing plate or creates a new one
-        plate = Plate.find_by(barcode: plate_attr[:barcode]) ||
-                Plate.new(barcode: plate_attr[:barcode])
+        plate = find_or_create_labware(plate_attr[:barcode], Plate)
         containers << plate
-        labware_status[plate.barcode] = { imported: true, errors: [] }
         plate_attr[:wells_attributes].each do |well_attr|
           # Gets the existing well or creates a new one
           well = plate.wells.located_at(well_attr[:position])
           # If a well already exists with records, we want to add an error
           if well.existing_records.present?
-            labware_status[plate.barcode][:errors] << "#{well_attr[:position]} already has a sample"
+            update_labware_status(plate.barcode, true, "#{well.position} already has a sample")
             next
           end
 
@@ -79,14 +67,10 @@ class Reception
     def create_tubes(tubes_attributes)
       tubes_attributes.each do |tube_attr|
         # Gets the existing tube or creates a new one
-        tube = Tube.find_by(barcode: tube_attr[:barcode]) || Tube.new(barcode: tube_attr[:barcode])
-        labware_status[tube.barcode] = { imported: true, errors: [] }
+        tube = find_or_create_labware(tube_attr[:barcode], Tube)
         # If a tube already exists with records, we want to add an error
         if tube.existing_records.present?
-          labware_status[tube.barcode] = {
-            imported: false,
-            errors: ['Tube already has a sample']
-          }
+          update_labware_status(tube.barcode, false, 'Tube already has a sample')
           next
         end
 
@@ -116,6 +100,20 @@ class Reception
 
     private
 
+    def find_or_create_labware(barcode, type)
+      # Takes a type (Plate or Tube) and searches for an existing record
+      # or creates a new one and then populates the labware_status hash
+      labware = type.find_by(barcode:) || type.new(barcode:)
+      update_labware_status(labware.barcode, true, nil)
+      labware
+    end
+
+    def update_labware_status(barcode, imported, error)
+      labware_status[barcode] ||= { imported: false, errors: [] }
+      labware_status[barcode][:imported] = imported
+      labware_status[barcode][:errors] << error if error
+    end
+
     def create_request_for_container(attributes, container)
       library_type = library_type_for(attributes[:request])
       sample = sample_for(attributes[:sample])
@@ -125,13 +123,8 @@ class Reception
 
     def create_request(library_type, sample, container, request_attributes)
       # The library type is used to help build the correct request in the correct pipeline
-      library_type.request_factory(
-        sample:,
-        container:,
-        request_attributes:,
-        resource_factory: self,
-        reception:
-      )
+      library_type.request_factory(sample:, container:, request_attributes:,
+                                   resource_factory: self, reception:)
     end
 
     def library_type_cache
@@ -149,12 +142,11 @@ class Reception
     end
 
     def duplicate_containers
-      # Scans both plates and tubes for duplicate barcodes or duplicate wells
-      plates_attributes.any? do |plate|
-        plate[:wells_attributes].flat_map { |well| well[:position] }.uniq!
-      end ||
-        tubes_attributes.flat_map { |tube| tube[:barcode] }.uniq! ||
-        plates_attributes.flat_map { |plate| plate[:barcode] }.uniq!
+      # Groups the containers by class name (Plate, Well, Tube)
+      cons = containers.group_by { |container| container.class.name }
+      # Checks the wells position/plate are unique and the tubes and plate barcodes are unique
+      cons.fetch('Well', []).map { |well| [well.position, well.plate] }.uniq! ||
+        cons.fetch('Tube', []).map(&:barcode).uniq! || cons.fetch('Plate', []).map(&:barcode).uniq!
     end
   end
 end
