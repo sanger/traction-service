@@ -8,7 +8,7 @@ class Reception
   # This allows up to retrieve all records in a single query upfront, avoiding
   # N+1 query problems. It also ensures we can centralize the registration of
   # new plates and tubes, making it easier to prevent registration of duplicate records.
-  class ResourceFactory
+  class ResourceFactoryV2
     include ActiveModel::Model
     extend NestedValidation
     attr_accessor :reception

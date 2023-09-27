@@ -38,7 +38,11 @@ en:
           attributes:
             wells:
               empty: there are no wells
-        reception/resource_factory:
+        reception/resource_factory_v1:
+          attributes:
+            request_attributes:
+              blank: there are no new samples to import
+        reception/resource_factory_v2:
           attributes:
             requests:
               blank: there are no new samples to import

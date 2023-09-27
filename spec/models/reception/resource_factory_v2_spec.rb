@@ -2,8 +2,8 @@
 
 require 'rails_helper'
 
-RSpec.describe Reception::ResourceFactory do
-  subject(:resource_factory) { build(:reception_resource_factory, tubes_attributes:, plates_attributes:) }
+RSpec.describe Reception::ResourceFactoryV2 do
+  subject(:resource_factory) { build(:reception_resource_factory_v2, tubes_attributes:, plates_attributes:) }
 
   let(:tubes_attributes) { [] }
   let(:plates_attributes) { [] }
@@ -202,7 +202,7 @@ RSpec.describe Reception::ResourceFactory do
     end
 
     let(:resource_factory) do
-      build(:reception_resource_factory, plates_attributes:, tubes_attributes:)
+      build(:reception_resource_factory_v2, plates_attributes:, tubes_attributes:)
     end
     let(:existing_tube) { attributes_for(:tube, :with_barcode) }
     let(:new_plate_barcode) { generate(:barcode) }

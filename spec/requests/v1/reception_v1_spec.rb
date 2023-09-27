@@ -28,15 +28,14 @@ RSpec.describe 'ReceptionsController' do
             type: 'receptions',
             attributes: {
               source: 'traction-ui.sequencescape',
-              tubes_attributes: [
+              request_attributes: [
                 {
-                  type: 'tubes',
-                  barcode: 'NT1',
                   request: attributes_for(:ont_request).merge(
                     library_type: library_type.name,
                     data_type: data_type.name
                   ),
-                  sample: attributes_for(:sample)
+                  sample: attributes_for(:sample),
+                  container: { type: 'tubes', barcode: 'NT1' }
                 }
               ]
             }
@@ -99,17 +98,16 @@ RSpec.describe 'ReceptionsController' do
               type: 'receptions',
               attributes: {
                 source: 'traction-ui.sequencescape',
-                tubes_attributes: [
+                request_attributes: [
                   {
-                    type: 'tubes',
-                    barcode: 'NT1',
                     request: attributes_for(:ont_request).merge(
                       library_type: library_type.name,
                       data_type: data_type.name
                     ),
                     sample: attributes_for(:sample).merge({
                                                             species: 'blablabla'
-                                                          })
+                                                          }),
+                    container: { type: 'tubes', barcode: 'NT1' }
                   }
                 ]
               }
@@ -133,20 +131,14 @@ RSpec.describe 'ReceptionsController' do
               type: 'receptions',
               attributes: {
                 source: 'traction-ui.sequencescape',
-                plates_attributes: [
+                request_attributes: [
                   {
-                    type: 'plates',
-                    barcode: 'NT1',
-                    wells_attributes: [
-                      {
-                        position: 'A1',
-                        request: attributes_for(:ont_request).merge(
-                          library_type: library_type.name,
-                          data_type: data_type.name
-                        ),
-                        sample: attributes_for(:sample)
-                      }
-                    ]
+                    request: attributes_for(:ont_request).merge(
+                      library_type: library_type.name,
+                      data_type: data_type.name
+                    ),
+                    sample: attributes_for(:sample),
+                    container: { type: 'wells', barcode: 'NT1', position: 'A1' }
                   }
                 ]
               }
@@ -159,20 +151,14 @@ RSpec.describe 'ReceptionsController' do
               type: 'receptions',
               attributes: {
                 source: 'traction-ui.sequencescape',
-                plates_attributes: [
+                request_attributes: [
                   {
-                    type: 'plates',
-                    barcode: 'NT1',
-                    wells_attributes: [
-                      {
-                        position: 'A2',
-                        request: attributes_for(:ont_request).merge(
-                          library_type: library_type.name,
-                          data_type: data_type.name
-                        ),
-                        sample: attributes_for(:sample)
-                      }
-                    ]
+                    request: attributes_for(:ont_request).merge(
+                      library_type: library_type.name,
+                      data_type: data_type.name
+                    ),
+                    sample: attributes_for(:sample),
+                    container: { type: 'wells', barcode: 'NT1', position: 'A2' }
                   }
                 ]
               }
@@ -187,84 +173,6 @@ RSpec.describe 'ReceptionsController' do
           expect(response).to have_http_status(:created), response.body
         end
       end
-
-      context 'when receiving an update on labware with some duplicates' do
-        let(:body) do
-          {
-            data: {
-              type: 'receptions',
-              attributes: {
-                source: 'traction-ui.sequencescape',
-                plates_attributes: [
-                  {
-                    type: 'plates',
-                    barcode: 'NT1',
-                    wells_attributes: [
-                      {
-                        position: 'A1',
-                        request: attributes_for(:ont_request).merge(
-                          library_type: library_type.name,
-                          data_type: data_type.name
-                        ),
-                        sample: attributes_for(:sample)
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          }.to_json
-        end
-        let(:updated_body) do
-          {
-            data: {
-              type: 'receptions',
-              attributes: {
-                source: 'traction-ui.sequencescape',
-                plates_attributes: [
-                  {
-                    type: 'plates',
-                    barcode: 'NT1',
-                    wells_attributes: [
-                      {
-                        position: 'A1',
-                        request: attributes_for(:ont_request).merge(
-                          library_type: library_type.name,
-                          data_type: data_type.name
-                        ),
-                        sample: attributes_for(:sample)
-                      },
-                      {
-                        position: 'A2',
-                        request: attributes_for(:ont_request).merge(
-                          library_type: library_type.name,
-                          data_type: data_type.name
-                        ),
-                        sample: attributes_for(:sample)
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          }.to_json
-        end
-
-        it 'can accept an update on labware with duplicates' do
-          post v1_receptions_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:created), response.body
-          post v1_receptions_path, params: updated_body, headers: json_api_headers
-          expect(response).to have_http_status(:created), response.body
-
-          json = ActiveSupport::JSON.decode(response.body)
-          expect(json['data']['attributes']['labware']['NT1']).to eq(
-            {
-              'imported' => true,
-              'errors' => ['A1 already has a sample']
-            }
-          )
-        end
-      end
     end
 
     context 'with a invalid payload' do
@@ -274,15 +182,14 @@ RSpec.describe 'ReceptionsController' do
             type: 'receptions',
             attributes: {
               source: 'Not_A valid SOURCE!!!',
-              tubes_attributes: [
+              request_attributes: [
                 {
-                  type: 'tubes',
-                  barcode: 'NT1',
                   request: attributes_for(:ont_request).merge(
                     library_type: library_type.name,
                     data_type: data_type.name
                   ),
-                  sample: attributes_for(:sample)
+                  sample: attributes_for(:sample),
+                  container: { type: 'tubes', barcode: 'NT1' }
                 }
               ]
             }
@@ -309,15 +216,14 @@ RSpec.describe 'ReceptionsController' do
             type: 'receptions',
             attributes: {
               source: 'traction-ui.sequencescape',
-              tubes_attributes: [
+              request_attributes: [
                 {
-                  type: 'tubes',
-                  barcode: 'NT1',
                   request: attributes_for(:ont_request).merge(
-                    library_type: 'Invalid Library Type',
+                    library_type: 'Invalid library type',
                     data_type: data_type.name
                   ),
-                  sample: attributes_for(:sample)
+                  sample: attributes_for(:sample),
+                  container: { type: 'tubes', barcode: 'NT1' }
                 }
               ]
             }
@@ -333,7 +239,7 @@ RSpec.describe 'ReceptionsController' do
       it 'generates a valid json-api error response' do
         post v1_receptions_path, params: body, headers: json_api_headers
         pointer = json.dig('errors', 0, 'source', 'pointer')
-        expect(pointer).to eq('/data/attributes/requests/0/library_type')
+        expect(pointer).to eq('/data/attributes/request_attributes/0/request/library_type')
       end
     end
 
@@ -344,15 +250,14 @@ RSpec.describe 'ReceptionsController' do
             type: 'receptions',
             attributes: {
               source: 'traction-ui.sequencescape',
-              tubes_attributes: [
+              request_attributes: [
                 {
-                  type: 'tubes',
-                  barcode: 'NT1',
                   request: attributes_for(:ont_request).merge(
                     library_type: library_type.name,
                     data_type: data_type.name
                   ),
-                  sample: {}
+                  sample: {},
+                  container: { type: 'tubes', barcode: 'NT1' }
                 }
               ]
             }
@@ -370,8 +275,8 @@ RSpec.describe 'ReceptionsController' do
         pointers = json.fetch('errors').map do |error|
           error.dig('source', 'pointer')
         end
-        expect(pointers).to include('/data/attributes/requests/0/sample')
-        expect(pointers).to include('/data/attributes/requests/0/sample')
+        expect(pointers).to include('/data/attributes/request_attributes/0/sample/name')
+        expect(pointers).to include('/data/attributes/request_attributes/0/sample/external_id')
       end
     end
 
@@ -382,7 +287,7 @@ RSpec.describe 'ReceptionsController' do
             type: 'receptions',
             attributes: {
               source: 'traction-ui.sequencescape',
-              tubes_attributes: ''
+              request_attributes: ''
             }
           }
         }.to_json
@@ -391,42 +296,6 @@ RSpec.describe 'ReceptionsController' do
       it 'has a bad_request status' do
         post v1_receptions_path, params: body, headers: json_api_headers
         expect(response).to have_http_status(:bad_request)
-      end
-    end
-
-    context 'with all duplicated samples' do
-      let(:body) do
-        {
-          data: {
-            type: 'receptions',
-            attributes: {
-              source: 'traction-ui.sequencescape',
-              plates_attributes: [
-                {
-                  type: 'plates',
-                  barcode: 'NT1',
-                  wells_attributes: [
-                    {
-                      position: 'A1',
-                      request: attributes_for(:ont_request).merge(
-                        library_type: library_type.name,
-                        data_type: data_type.name
-                      ),
-                      sample: attributes_for(:sample)
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        }.to_json
-      end
-
-      it 'has a bad_request status and correct errors' do
-        create(:plate_with_wells_and_requests, barcode: 'NT1', pipeline: 'pacbio')
-        post v1_receptions_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
-        expect(json['errors'][0]['detail']).to eq('requests - there are no new samples to import')
       end
     end
   end

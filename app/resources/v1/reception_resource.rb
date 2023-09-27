@@ -2,8 +2,9 @@
 
 module V1
   # A Reception handles the import of resources into traction
+  # Reception TODO: Remove references to request_attributes after reception deprecation
   class ReceptionResource < JSONAPI::Resource
-    attributes :source, :labware, :plates_attributes, :tubes_attributes
+    attributes :source, :labware, :plates_attributes, :tubes_attributes, :request_attributes
 
     after_create :publish_messages, :construct_resources!
 
@@ -20,6 +21,18 @@ module V1
     end
 
     private
+
+    def request_attributes=(request_parameters)
+      raise ArgumentError unless request_parameters.is_a?(Array)
+
+      @model.request_attributes = request_parameters.map do |request|
+        request.permit(request: permitted_request_attributes,
+                       sample: permitted_sample_attributes,
+                       container: %i[type barcode position])
+               .to_h
+               .with_indifferent_access
+      end
+    end
 
     def plates_attributes=(plate_parameters)
       raise ArgumentError unless plate_parameters.is_a?(Array)
