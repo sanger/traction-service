@@ -5,16 +5,22 @@ require 'rails_helper'
 require './spec/support/json_matcher'
 
 RSpec.describe 'ReceptionsController' do
-  before do
-    Broker::Handle.class_eval do
-      def test_received_messages
-        @test_received_messages ||= []
-      end
-
-      def publish(message)
-        test_received_messages.push(message.payload)
-      end
+  Broker::Handle.class_eval do
+    def test_received_messages
+      @test_received_messages ||= []
     end
+
+    def clear_test_received_messages
+      @test_received_messages = []
+    end
+
+    def publish(message)
+      test_received_messages.push(message.payload)
+    end
+  end
+
+  before do
+    Broker::Handle.clear_test_received_messages
   end
 
   describe '#post' do
@@ -42,6 +48,7 @@ RSpec.describe 'ReceptionsController' do
           }
         }
       end
+
       let(:body) do
         object_body.to_json
       end
@@ -52,6 +59,7 @@ RSpec.describe 'ReceptionsController' do
       end
 
       it 'publishes a message' do
+        allow(Messages).to receive(:publish).and_call_original
         expect(Messages).to receive(:publish).twice
         post v1_receptions_path, params: body, headers: json_api_headers
         expect(response).to have_http_status(:success), response.body
@@ -296,6 +304,29 @@ RSpec.describe 'ReceptionsController' do
       it 'has a bad_request status' do
         post v1_receptions_path, params: body, headers: json_api_headers
         expect(response).to have_http_status(:bad_request)
+      end
+    end
+
+    context 'with a mixed reception (v1 and v2)' do
+      let(:body) do
+        {
+          data: {
+            type: 'receptions',
+            attributes: {
+              source: 'traction-ui.sequencescape',
+              request_attributes: [],
+              plates_attributes: [],
+              tubes_attributes: []
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a bad_request status' do
+        post v1_receptions_path, params: body, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(response).to have_http_status(:bad_request)
+        expect(json['errors'][0]['detail']).to eq('Cannot mix v1 and v2 reception resources')
       end
     end
   end

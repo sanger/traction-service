@@ -16,31 +16,42 @@ class Reception < ApplicationRecord
 
   delegate :plates_attributes=, :tubes_attributes=, to: :resource_factory_v2
   delegate :request_attributes=, to: :resource_factory_v1
-  delegate :construct_resources!, to: :resource_factory
   # We flatten the keys here as they map back directly to the correpsonding
   # attributes in Reception. We're merely using the ResourceFactory to
   # encapsulate the behaviour
   validates_nested :resource_factory, flatten_keys: true
 
+  def construct_resources!
+    # Instead of delegating to resource factory
+    # We need to check the factory exists first since it can be nil
+    @resource_factory&.construct_resources!
+  end
+
   private
 
   attr_reader :resource_factory
 
+  # We use a memoized instance variable here to ensure we only
+  # ever have one resource factory per reception and that we use
+  # the correct behaviour given the parameters passed in
+
+  # rubocop:disable Naming/MemoizedInstanceVariableName
   def resource_factory_v1
-    # Returns V1 factory unless factory has been set to v2
-    if @resource_factory.nil? || @resource_factory.is_a?(ResourceFactoryV1)
-      return @resource_factory ||= ResourceFactoryV1.new(reception: self)
+    # Returns V1 factory unless V2 factory has been set
+    if @resource_factory.is_a?(ResourceFactoryV2)
+      raise JSONAPI::Exceptions::BadRequest, 'Cannot mix v1 and v2 reception resources'
     end
 
-    raise 'Cannot mix v1 and v2 reception resources'
+    @resource_factory ||= ResourceFactoryV1.new(reception: self)
   end
 
   def resource_factory_v2
-    # Returns V2 factory unless factory has been set to v1
-    if @resource_factory.nil? || @resource_factory.is_a?(ResourceFactoryV2)
-      return @resource_factory ||= ResourceFactoryV2.new(reception: self)
+    # Returns V2 factory unless V1 factory has been set
+    if @resource_factory.is_a?(ResourceFactoryV1)
+      raise JSONAPI::Exceptions::BadRequest, 'Cannot mix v1 and v2 reception resources'
     end
 
-    raise 'Cannot mix v1 and v2 reception resources'
+    @resource_factory ||= ResourceFactoryV2.new(reception: self)
   end
+  # rubocop:enable Naming/MemoizedInstanceVariableName
 end
