@@ -265,7 +265,7 @@ RSpec.describe 'ReceptionsController' do
           json = ActiveSupport::JSON.decode(response.body)
           expect(json['data']['attributes']['labware']['NT1']).to eq(
             {
-              'imported' => true,
+              'imported' => 'partial',
               'errors' => ['A1 already has a sample']
             }
           )

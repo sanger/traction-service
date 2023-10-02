@@ -53,7 +53,7 @@ class Reception
           well = plate.wells.located_at(well_attr[:position])
           # If a well already exists with records, we want to add an error
           if well.existing_records.present?
-            update_labware_status(plate.barcode, true, "#{well.position} already has a sample")
+            update_labware_status(plate.barcode, 'partial', "#{well.position} already has a sample")
             next
           end
 
@@ -70,7 +70,7 @@ class Reception
         tube = find_or_create_labware(tube_attr[:barcode], Tube)
         # If a tube already exists with records, we want to add an error
         if tube.existing_records.present?
-          update_labware_status(tube.barcode, false, 'Tube already has a sample')
+          update_labware_status(tube.barcode, 'failed', 'Tube already has a sample')
           next
         end
 
@@ -104,12 +104,12 @@ class Reception
       # Takes a type (Plate or Tube) and searches for an existing record
       # or creates a new one and then populates the labware_status hash
       labware = type.find_by(barcode:) || type.new(barcode:)
-      update_labware_status(labware.barcode, true, nil)
+      update_labware_status(labware.barcode, 'success', nil)
       labware
     end
 
     def update_labware_status(barcode, imported, error)
-      labware_status[barcode] ||= { imported: false, errors: [] }
+      labware_status[barcode] ||= { imported: 'failed', errors: [] }
       labware_status[barcode][:imported] = imported
       labware_status[barcode][:errors] << error if error
     end

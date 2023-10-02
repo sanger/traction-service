@@ -205,7 +205,9 @@ RSpec.describe Reception::ResourceFactoryV2 do
       build(:reception_resource_factory_v2, plates_attributes:, tubes_attributes:)
     end
     let(:existing_tube) { attributes_for(:tube, :with_barcode) }
+    let(:new_tube_barcode) { generate(:barcode) }
     let(:new_plate_barcode) { generate(:barcode) }
+    let(:new_plate_barcode_2) { generate(:barcode) }
     let(:existing_plate_barcode) { generate(:barcode) }
     let(:existing_plate) { attributes_for(:plate, barcode: existing_plate_barcode) }
     let(:existing_well_a1) { attributes_for(:well, position: 'A1', barcode: existing_plate_barcode) }
@@ -215,7 +217,7 @@ RSpec.describe Reception::ResourceFactoryV2 do
       [{
         # New sample in new tube (valid)
         type: 'tubes',
-        **attributes_for(:tube, :with_barcode),
+        barcode: new_tube_barcode,
         request: request_parameters,
         sample: attributes_for(:sample)
       }, {
@@ -266,7 +268,7 @@ RSpec.describe Reception::ResourceFactoryV2 do
         },
         {
           type: 'plates',
-          barcode: generate(:barcode),
+          barcode: new_plate_barcode_2,
           wells_attributes: [
             # New well in new plate with new sample (valid)
             {
@@ -330,15 +332,27 @@ RSpec.describe Reception::ResourceFactoryV2 do
         labware = construct_resources
         expected_data = {
           existing_plate.fetch(:barcode) => {
-            imported: true,
+            imported: 'partial',
             errors: ["#{existing_well_a1.fetch(:position)} already has a sample"]
           },
+          new_plate_barcode => {
+            imported: 'success',
+            errors: []
+          },
+          new_plate_barcode_2 => {
+            imported: 'success',
+            errors: []
+          },
           existing_tube.fetch(:barcode) => {
-            imported: false,
+            imported: 'failed',
             errors: ['Tube already has a sample']
-          }
+          },
+          new_tube_barcode => {
+            imported: 'success',
+            errors: []
+          },
         }
-        expect(labware).to include(expected_data)
+        expect(labware).to eq(expected_data)
       end
     end
 
@@ -383,15 +397,27 @@ RSpec.describe Reception::ResourceFactoryV2 do
         labware = construct_resources
         expected_data = {
           existing_plate.fetch(:barcode) => {
-            imported: true,
+            imported: 'partial',
             errors: ["#{existing_well_a1.fetch(:position)} already has a sample"]
           },
+          new_plate_barcode => {
+            imported: 'success',
+            errors: []
+          },
+          new_plate_barcode_2 => {
+            imported: 'success',
+            errors: []
+          },
           existing_tube.fetch(:barcode) => {
-            imported: false,
+            imported: 'failed',
             errors: ['Tube already has a sample']
-          }
+          },
+          new_tube_barcode => {
+            imported: 'success',
+            errors: []
+          },
         }
-        expect(labware).to include(expected_data)
+        expect(labware).to eq(expected_data)
       end
     end
 
@@ -436,15 +462,27 @@ RSpec.describe Reception::ResourceFactoryV2 do
         labware = construct_resources
         expected_data = {
           existing_plate.fetch(:barcode) => {
-            imported: true,
+            imported: 'partial',
             errors: ["#{existing_well_a1.fetch(:position)} already has a sample"]
           },
+          new_plate_barcode => {
+            imported: 'success',
+            errors: []
+          },
+          new_plate_barcode_2 => {
+            imported: 'success',
+            errors: []
+          },
           existing_tube.fetch(:barcode) => {
-            imported: false,
+            imported: 'failed',
             errors: ['Tube already has a sample']
-          }
+          },
+          new_tube_barcode => {
+            imported: 'success',
+            errors: []
+          },
         }
-        expect(labware).to include(expected_data)
+        expect(labware).to eq(expected_data)
       end
     end
   end
