@@ -15,6 +15,7 @@ RSpec.describe Reception::ResourceFactoryV2 do
       let(:tubes_attributes) do
         [{
           type: 'tubes',
+          barcode: generate(:barcode),
           request: attributes_for(:ont_request).merge(
             library_type: library_type.name,
             data_type: data_type.name
@@ -208,11 +209,9 @@ RSpec.describe Reception::ResourceFactoryV2 do
     let(:new_tube_barcode) { generate(:barcode) }
     let(:new_plate_barcode) { generate(:barcode) }
     let(:new_plate_barcode_2) { generate(:barcode) }
-    let(:existing_plate_barcode) { generate(:barcode) }
-    let(:existing_plate) { attributes_for(:plate, barcode: existing_plate_barcode) }
-    let(:existing_well_a1) { attributes_for(:well, position: 'A1', barcode: existing_plate_barcode) }
-    let(:existing_sample_a1) { attributes_for(:sample) }
-    let(:existing_sample_b1) { attributes_for(:sample) }
+    let(:existing_plate) { attributes_for(:plate, barcode: generate(:barcode)) }
+    let(:existing_well_a1) { attributes_for(:well, position: 'A1', barcode: existing_plate.fetch(:barcode)) }
+    let(:existing_sample) { attributes_for(:sample) }
     let(:tubes_attributes) do
       [{
         # New sample in new tube (valid)
@@ -244,19 +243,19 @@ RSpec.describe Reception::ResourceFactoryV2 do
             {
               position: 'B1',
               request: request_parameters,
-              sample: existing_sample_b1
+              sample: existing_sample
             }
           ]
         },
         {
           type: 'plates',
-          barcode: existing_plate_barcode,
+          barcode: existing_plate.fetch(:barcode),
           wells_attributes: [
             # Existing well in existing plate with existing sample (invalid)
             {
               position: existing_well_a1.fetch(:position),
               request: request_parameters,
-              sample: existing_sample_a1
+              sample: existing_sample
             },
             # New well in existing plate with new sample (valid)
             {
@@ -287,8 +286,7 @@ RSpec.describe Reception::ResourceFactoryV2 do
       create(:tube, existing_tube)
       exists = create(:plate, existing_plate)
       create(:well, **existing_well_a1.except(:barcode), plate: exists)
-      create(:sample, existing_sample_a1)
-      create(:sample, existing_sample_b1)
+      create(:sample, existing_sample)
     end
 
     context 'ont' do
@@ -350,7 +348,7 @@ RSpec.describe Reception::ResourceFactoryV2 do
           new_tube_barcode => {
             imported: 'success',
             errors: []
-          },
+          }
         }
         expect(labware).to eq(expected_data)
       end
@@ -415,7 +413,7 @@ RSpec.describe Reception::ResourceFactoryV2 do
           new_tube_barcode => {
             imported: 'success',
             errors: []
-          },
+          }
         }
         expect(labware).to eq(expected_data)
       end
@@ -480,7 +478,7 @@ RSpec.describe Reception::ResourceFactoryV2 do
           new_tube_barcode => {
             imported: 'success',
             errors: []
-          },
+          }
         }
         expect(labware).to eq(expected_data)
       end
