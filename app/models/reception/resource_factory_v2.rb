@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# DEPRECATE-Reception-V1:
+# Rename this file to resource_factory.rb and class to ResourceFactory
+
 class Reception
   # Acts on behalf of a {Reception} to construct all associated requests, as well
   # as any necessary samples, plates, wells and tubes.

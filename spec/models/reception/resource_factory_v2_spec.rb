@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# DEPRECATE-Reception-V1:
+# Rename this file to resource_factory and change describe to ResourceFactory
 require 'rails_helper'
 
 RSpec.describe Reception::ResourceFactoryV2 do

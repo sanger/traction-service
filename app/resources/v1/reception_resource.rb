@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+# DEPRECATE-Reception-V1:
+# Remove references to request_attributes
+
 module V1
   # A Reception handles the import of resources into traction
-  # Reception TODO: Remove references to request_attributes after reception deprecation
   class ReceptionResource < JSONAPI::Resource
     attributes :source, :labware, :plates_attributes, :tubes_attributes, :request_attributes
 

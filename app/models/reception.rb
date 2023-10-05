@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+# DEPRECATE-Reception-V1:
+# Delegate constructue_resources! to resource_factory directly
+# Remove resource_factory_v1 and set resource_factory_v2 as resource_factory
+
 # A reception handles the import of samples and requests from external sources
 # While it is not necessary to persist it, is does provide a useful point for
 # auditing and event tracking purposes.

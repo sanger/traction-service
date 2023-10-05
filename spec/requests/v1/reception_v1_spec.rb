@@ -4,6 +4,9 @@ require 'rails_helper'
 
 require './spec/support/json_matcher'
 
+# DEPRECATE-Reception-V1:
+# Remove this file
+
 RSpec.describe 'ReceptionsController' do
   Broker::Handle.class_eval do
     def test_received_messages

@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# DEPRECATE-Reception-V1:
+# Delete this file
+
 require 'rails_helper'
 
 RSpec.describe Reception::ResourceFactoryV1 do

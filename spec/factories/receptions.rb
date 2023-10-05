@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# DEPRECATE-Reception-V1:
+# Remove reception_resource_factory_v1 references and rename resource_factory_v2 to resource_factory
 FactoryBot.define do
   factory :reception do
     source { 'traction-ui.sequencescape' }
