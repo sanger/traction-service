@@ -14,7 +14,7 @@ gem 'jsonapi-resources'
 gem 'mysql2'
 gem 'puma', '~> 6.0' # Use Puma as the app server
 gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX possible
-gem 'rails', '~> 7.0.3'
+gem 'rails', '~> 7.1.0'
 
 group :development do
   gem 'listen'
