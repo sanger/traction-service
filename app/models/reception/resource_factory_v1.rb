@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# DEPRECATE-Reception-V1:
+# Delete this file
+
 class Reception
   # Acts on behalf of a {Reception} to construct all associated requests, as well
   # as any necessary samples, plates, wells and tubes.
@@ -9,7 +12,7 @@ class Reception
   # This allows up to retrieve all records in a single query upfront, avoiding
   # N+1 query problems. It also ensures we can centralize the registration of
   # new plates, making it easier to prevent registration of duplicate records.
-  class ResourceFactory
+  class ResourceFactoryV1
     include ActiveModel::Model
     extend NestedValidation
     attr_accessor :reception

@@ -29,6 +29,10 @@
 # To learn more, please read the Rails Internationalization guide
 # available at https://guides.rubyonrails.org/i18n.html.
 
+# DEPRECATE-Reception-V1:
+# Remove resource_factory_v1 references
+# Rename resource_factory_v2 to resource_factory
+
 en:
   hello: "Hello world"
   activemodel:
@@ -38,9 +42,13 @@ en:
           attributes:
             wells:
               empty: there are no wells
-        reception/resource_factory:
+        reception/resource_factory_v1:
           attributes:
             request_attributes:
+              blank: there are no new samples to import
+        reception/resource_factory_v2:
+          attributes:
+            requests:
               blank: there are no new samples to import
         qc_receptions_factory:
           attributes:
