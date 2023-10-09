@@ -6,14 +6,9 @@ module V1
     class SmrtLinkVersionResource < JSONAPI::Resource
       model_name 'Pacbio::SmrtLinkVersion'
 
-      attributes :name, :default
+      attributes :name, :default, :active
 
       has_many :smrt_link_option_versions, class_name: 'SmrtLinkOptionVersion'
-
-      # Returns active versions.
-      def self.records(_options = {})
-        super.active
-      end
     end
   end
 end
