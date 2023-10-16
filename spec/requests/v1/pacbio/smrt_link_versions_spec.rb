@@ -21,13 +21,15 @@ RSpec.describe 'SmrtLinkVersionsController' do
       expect(response).to have_http_status(:success)
     end
 
-    it 'only includes active versions' do
-      expect(json['data'].length).to eq(6)
+    it 'includes active and inactive versions' do
+      expect(json['data'].length).to eq(8)
     end
 
     it 'will include the correct data' do
       expect(json['data'][0]['attributes']['name']).to eq(default_smrt_link_version.name)
       expect(json['data'][0]['attributes']['default']).to be_truthy
+      expect(json['data'][0]['attributes']['active']).to be true
+      expect(json['data'][7]['attributes']['active']).to be false
     end
   end
 

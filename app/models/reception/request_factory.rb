@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# DEPRECATE-Reception-V1:
+# Delete this file
+
 class Reception
   # Acts on behalf of a {Reception::ResourceFactory} to handle the creation and validation
   # of individual requests
