@@ -21,6 +21,65 @@ RSpec.describe 'RunsController' do
     end
   end
 
+  describe 'filter' do
+    let(:run1) { create(:ont_gridion_run, flowcell_count: 5, state: 'pending') }
+    let(:run2) { create(:ont_gridion_run, flowcell_count: 5, state: 'restart') }
+
+    describe 'experiment_name' do
+      before do
+        get "#{v1_ont_runs_path}?filter[experiment_name]=#{run1.experiment_name}",
+            headers: json_api_headers
+      end
+
+      it 'has a success status' do
+        expect(response).to have_http_status(:success), response.body
+      end
+
+      it 'returns a list of runs' do
+        expect(json['data'].length).to eq(1)
+      end
+
+      it 'returns the correct attributes' do
+        json = ActiveSupport::JSON.decode(response.body)
+        run_attributes = json['data'][0]['attributes']
+
+        expect(run_attributes).to include(
+          'ont_instrument_id' => run1.instrument.id,
+          'experiment_name' => run1.experiment_name,
+          'state' => run1.state,
+          'created_at' => run1.created_at.to_fs(:us)
+        )
+      end
+    end
+
+    describe 'state' do
+      before do
+        get "#{v1_ont_runs_path}?filter[state]=#{run1.state}",
+            headers: json_api_headers
+      end
+
+      it 'has a success status' do
+        expect(response).to have_http_status(:success), response.body
+      end
+
+      it 'returns a list of runs' do
+        expect(json['data'].length).to eq(1)
+      end
+
+      it 'returns the correct attributes' do
+        json = ActiveSupport::JSON.decode(response.body)
+        run_attributes = json['data'][0]['attributes']
+
+        expect(run_attributes).to include(
+          'ont_instrument_id' => run1.instrument.id,
+          'experiment_name' => run1.experiment_name,
+          'state' => run1.state,
+          'created_at' => run1.created_at.to_fs(:us)
+        )
+      end
+    end
+  end
+
   describe 'create' do
     context 'on success' do
       let(:instrument) { create(:ont_gridion) }
