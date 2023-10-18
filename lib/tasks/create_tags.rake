@@ -20,6 +20,7 @@ namespace :tags do
       Rake::Task['tags:create:pacbio_isoseq'].invoke
       Rake::Task['tags:create:nextera_ud'].invoke
       Rake::Task['tags:create:pacbio_96_barcode_plate_v3'].invoke
+      Rake::Task['tags:create:mas_smrtbell_barcoded_adapters_(v2)'].invoke
     end
 
     desc 'Create all ont tags'
@@ -510,6 +511,24 @@ namespace :tags do
         set.tags.find_or_create_by!(tag_attributes)
       end
       puts '-> Pacbio_96_barcode_plate_v3 tags successfully created'
+    end
+
+    desc 'Create MAS SMRTBell barcoded tags'
+    task 'mas_smrtbell_barcoded_adapters_(v2)': :environment do
+      puts '-> Creating MAS_SMRTbell_barcoded_adapters_(v2) tag set and tags'
+      set = TagSet.pacbio_pipeline
+                  .find_or_create_by!(name: 'MAS_SMRTbell_barcoded_adapters_(v2)', uuid: 'd5109545-7f84-97b7-6ab6-ce2ca778e1f5')
+      puts '-> Tag Set successfully created'
+      [
+        { oligo: 'ACAGTC', group_id: 'bcM0001' },
+        { oligo: 'ATGACG', group_id: 'bcM0002' },
+        { oligo: 'CACGTG', group_id: 'bcM0003' },
+        { oligo: 'CATCGC', group_id: 'bcM0004' }
+      ]
+        .each do |tag_attributes|
+        set.tags.find_or_create_by!(tag_attributes)
+      end
+      puts '-> MAS_SMRTbell_barcoded_adapters_(v2) tags successfully created'
     end
 
     desc 'Create SQK-NBD114.96 tags'
