@@ -17,6 +17,8 @@ module V1
                foreign_key: 'ont_run_id',
                class_name: 'Flowcell'
 
+      filters :experiment_name, :state
+
       paginator :paged
 
       def self.default_sort
