@@ -16,7 +16,12 @@ default: &default
               attribute: :plates
               minimum: 1
               maximum: 1
-          # TODO: fix this to have separate behaviour for v11 and v12 (see commit 05bfe764a8eafe)
+          required_attributes:
+            options:
+              versions:
+                - v12_sequel_iie
+              required_attributes:
+                - :dna_control_complex_box_barcode
       plates:
         children: :wells
         # we want to validate each plate and plate
@@ -73,31 +78,31 @@ default: &default
             options:
               exclude_marked_for_destruction: true
               valid_positions:
-              - A1
-              - B1
-              - C1
-              - D1
+                - A1
+                - B1
+                - C1
+                - D1
           well_combinations:
             invalid_combinations:
-              - [A1,D1]
-              - [A1,C1]
-              - [B1,D1]
-              - [A1,C1,D1]
-              - [A1,B1,D1]
-              - [D1,B1]
+              - [A1, D1]
+              - [A1, C1]
+              - [B1, D1]
+              - [A1, C1, D1]
+              - [A1, B1, D1]
+              - [D1, B1]
             options:
               exclude_marked_for_destruction: true
               valid_combinations:
-              - [A1]
-              - [A1,B1]
-              - [A1,B1,C1]
-              - [A1,B1,C1,D1]
-              - [B1]
-              - [B1,C1]
-              - [B1,C1,D1]
-              - [C1]
-              - [C1,D1]
-              - [D1]
+                - [A1]
+                - [A1, B1]
+                - [A1, B1, C1]
+                - [A1, B1, C1, D1]
+                - [B1]
+                - [B1, C1]
+                - [B1, C1, D1]
+                - [C1]
+                - [C1, D1]
+                - [D1]
           sequencing_kit_box_barcode:
             options:
               exclude_marked_for_destruction: true
