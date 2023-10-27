@@ -10,7 +10,9 @@ module SampleSheet
     # Example: [<Well position:'A1'>, <Well position:'A2'>, <Well position:'B1'>]) =>
     #          [<Well position:'A1'>, <Well position:'B1'>, <Well position:'A2'>]
     def sorted_wells
-      wells.sort_by { |well| [well.column.to_i, well.row] }
+      sorted_plates = plates.sort_by(&:plate_number)
+      sorted_plates.flat_map { |plate| plate.wells.sort_by { |well| [well.column.to_i, well.row] } }
+      # wells.sort_by { |well| [well.column.to_i, well.row] }
     end
   end
 
