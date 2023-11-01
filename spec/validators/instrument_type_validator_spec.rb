@@ -4,12 +4,10 @@ require 'rails_helper'
 
 RSpec.describe InstrumentTypeValidator do
   let!(:instrument_types) { YAML.load_file(Rails.root.join('config/pacbio_instrument_types.yml'), aliases: true)[Rails.env] }
+  let!(:version12_sequel_iie) { create(:pacbio_smrt_link_version, name: 'v12_sequel_iie') }
+  let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
 
   describe 'when the instrument type is Sequel IIe' do
-    before do
-      create(:pacbio_smrt_link_version, name: 'v11', default: true)
-    end
-
     # This is a test for the config. It would be better to use other tests but want to time box this for now ...
     it 'Sequel IIe and Revio should both exclude records marked for destruction from limits validation' do
       expect(instrument_types['sequel_iie']['models']['plates']['validations']['limits']['options']['exclude_marked_for_destruction']).to be_truthy
@@ -21,7 +19,7 @@ RSpec.describe InstrumentTypeValidator do
       it 'required attributes' do
         instrument_types['sequel_iie']['models']['plates']['validations']['required_attributes']['options']['required_attributes'].each do |attribute|
           plate = build(:pacbio_plate)
-          run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [plate])
+          run = build(:pacbio_run, system_name: 'Sequel IIe', smrt_link_version: version12_sequel_iie, plates: [plate])
           plate.send("#{attribute}=", nil)
           instrument_type_validator = described_class.new(instrument_types:)
           instrument_type_validator.validate(run)
@@ -32,19 +30,19 @@ RSpec.describe InstrumentTypeValidator do
       it 'minimum or maximum number of plates' do
         plates = build_list(:pacbio_plate, 2)
 
-        run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [plates.first])
+        run = build(:pacbio_run, system_name: 'Sequel IIe', smrt_link_version: version12_sequel_iie, plates: [plates.first])
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
         expect(run.errors.messages[:plates]).to be_empty
 
         # Minimum
-        run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [])
+        run = build(:pacbio_run, system_name: 'Sequel IIe', smrt_link_version: version12_sequel_iie, plates: [])
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
         expect(run.errors.messages[:plates]).to include('must have at least 1 plate')
 
         # Maximum
-        run = build(:pacbio_run, system_name: 'Sequel IIe', plates:)
+        run = build(:pacbio_run, system_name: 'Sequel IIe', smrt_link_version: version12_sequel_iie, plates:)
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
         expect(run.errors.messages[:plates]).to include('must have at most 1 plate')
@@ -53,19 +51,19 @@ RSpec.describe InstrumentTypeValidator do
 
     context 'wells' do
       it 'minimum or maximum number of wells' do
-        run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate, well_count: 1)])
+        run = build(:pacbio_run, system_name: 'Sequel IIe', smrt_link_version: version11, plates: [build(:pacbio_plate, well_count: 1)])
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
         expect(run.errors.messages).to be_empty
 
         # Minimum
-        run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate, well_count: 0)])
+        run = build(:pacbio_run, system_name: 'Sequel IIe', smrt_link_version: version11, plates: [build(:pacbio_plate, well_count: 0)])
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
         expect(run.errors.messages[:plates].first).to include("plate #{run.plates.first.plate_number} wells must have at least 1 well")
 
         # Maximum
-        run = build(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate, well_count: 97)])
+        run = build(:pacbio_run, system_name: 'Sequel IIe', smrt_link_version: version11, plates: [build(:pacbio_plate, well_count: 97)])
         instrument_type_validator = described_class.new(instrument_types:)
         instrument_type_validator.validate(run)
         expect(run.errors.messages[:plates].first).to include("plate #{run.plates.first.plate_number} wells must have at most 96 well")

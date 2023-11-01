@@ -30,8 +30,8 @@ RSpec.describe Pacbio::Run, :pacbio do
     end
 
     context 'v12_sequel_iie' do
-      it 'must not have a DNA control complex kit box barcode' do
-        expect(build(:pacbio_sequel_run, smrt_link_version: version12_sequel_iie, dna_control_complex_box_barcode: nil)).to be_valid
+      it 'must have a DNA control complex kit box barcode' do
+        expect(build(:pacbio_sequel_run, smrt_link_version: version12_sequel_iie, dna_control_complex_box_barcode: nil)).not_to be_valid
       end
     end
 
