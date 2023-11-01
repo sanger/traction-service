@@ -2,6 +2,8 @@
 
 require 'rails_helper'
 
+Flipper.enable(:dpl947_enable_dna_control_barcode_pacbio_sequel_ii_v12)
+
 RSpec.describe Pacbio::Run, :pacbio do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
