@@ -6,13 +6,17 @@
 module SampleSheet
   # Provides run helper methods for sample sheet generation
   module Run
-    # Returns a list of wells associated with the plate in column order
-    # Example: [<Well position:'A1'>, <Well position:'A2'>, <Well position:'B1'>]) =>
-    #          [<Well position:'A1'>, <Well position:'B1'>, <Well position:'A2'>]
+    # Returns a list of wells associated with all plates which are sorted by plate first and
+    # then by wells in column order
+    # Example: ([<Plate plate_number:1>
+    #             [<Well position:'A1'>, <Well position:'A2'>,<Well position:'B1'>]<Plate>
+    #           <Plate plate_number:2>
+    #             [<Well position:'A3'>, <Well position:'A4'>,<Well position:'B3'>]<Plate>]) =>
+    #       [<Well position:'A1'>, <Well position:'B1'>, <Well position:'A2'>,<Well position:'A3'>
+    #        <Well position:'A3'>,<Well position:'B3'>,<Well position:'A4'>],
     def sorted_wells
       sorted_plates = plates.sort_by(&:plate_number)
       sorted_plates.flat_map { |plate| plate.wells.sort_by { |well| [well.column.to_i, well.row] } }
-      # wells.sort_by { |well| [well.column.to_i, well.row] }
     end
   end
 
