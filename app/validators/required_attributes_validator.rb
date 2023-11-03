@@ -26,7 +26,8 @@ class RequiredAttributesValidator < ActiveModel::Validator
   # @param [ActiveRecord::Base] record
   # @param [Symbol] required_attribute
   def validate_required_attribute(record, required_attribute)
-    # If versions are specified, check that the record's smrt_link_version version is included in the list
+    # If versions are specified, check that the record's smrt_link_version version
+    # is included in the list
     if versions.present? && versions.exclude?(record.smrt_link_version.name)
       nil
     else
