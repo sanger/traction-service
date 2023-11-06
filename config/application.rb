@@ -59,8 +59,8 @@ module TractionService
     # RabbitMQ config
     config.bunny = config_for(:bunny)
 
-    # TODO: once feature flag is removed uncomment
-    # config.pacbio_instrument_types = config_for(:pacbio_instrument_types)
+    config.pacbio_instrument_types_v1 = config_for(:pacbio_instrument_types_v1)
+    config.pacbio_instrument_types_v2 = config_for(:pacbio_instrument_types_v2)
 
     # Pacbio default request cost code
     config.pacbio_request_cost_code = 'S4699'
