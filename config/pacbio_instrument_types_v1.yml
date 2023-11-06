@@ -1,4 +1,5 @@
 ---
+# TODO: remove this file to pacbio_instrument_types.yml once feature flag removed
 default: &default
   sequel_iie:
     name: Sequel IIe

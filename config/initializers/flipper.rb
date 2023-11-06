@@ -29,3 +29,15 @@ rescue ActiveRecord::ActiveRecordError => e
   Rails.logger.warn(e.message)
   Rails.logger.warn('Features not registered with flipper')
 end
+
+# rubocop has got this very wrong. It removes the literal and breaks everything
+# TODO: once feature flags are removed move this back to the config/application.rb
+# rubocop:disable Layout/LineLength
+Rails.configuration.pacbio_instrument_types = if Flipper.enabled?(:dpl947_enable_dna_control_barcode_pacbio_sequel_ii_v12)
+                                                Rails.application
+                                                     .config_for(:pacbio_instrument_types_v2)
+                                              else
+                                                Rails.application
+                                                     .config_for(:pacbio_instrument_types_v1)
+                                              end
+# rubocop:enable Layout/LineLength

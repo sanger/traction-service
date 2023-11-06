@@ -58,16 +58,14 @@ module TractionService
 
     # RabbitMQ config
     config.bunny = config_for(:bunny)
-    config.pacbio_instrument_types_v1 = config_for(:pacbio_instrument_types_v1)
-    config.pacbio_instrument_types_v2 = config_for(:pacbio_instrument_types_v2)
+
+    # TODO: once feature flag is removed uncomment
+    # config.pacbio_instrument_types = config_for(:pacbio_instrument_types)
 
     # Pacbio default request cost code
     config.pacbio_request_cost_code = 'S4699'
 
     # Fix for Psych::DisallowedClass. Added the four top classes as this may guard against hidden errors.
     config.active_record.yaml_column_permitted_classes = [Symbol, Hash, Array, ActiveSupport::HashWithIndifferentAccess, BigDecimal]
-  end
-  def initializeInstrumentTypes
-
   end
 end

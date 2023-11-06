@@ -2,8 +2,6 @@
 
 require 'rails_helper'
 
-Flipper.enable(:dpl947_enable_dna_control_barcode_pacbio_sequel_ii_v12)
-
 RSpec.describe Pacbio::Run, :pacbio do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
@@ -17,6 +15,14 @@ RSpec.describe Pacbio::Run, :pacbio do
   end
 
   context 'validation' do
+    before do
+      Flipper.enable(:dpl947_enable_dna_control_barcode_pacbio_sequel_ii_v12)
+    end
+
+    after do
+      Flipper.disable(:dpl947_enable_dna_control_barcode_pacbio_sequel_ii_v12)
+    end
+
     it 'does not need a sequencing kit box barcode' do
       expect(build(:pacbio_sequel_run, sequencing_kit_box_barcode: nil)).to be_valid
     end
