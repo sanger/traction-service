@@ -18,8 +18,6 @@ default: &default
               maximum: 1
           required_attributes:
             options:
-              versions:
-                - v12_sequel_iie
               required_attributes:
                 - :dna_control_complex_box_barcode
       plates:
