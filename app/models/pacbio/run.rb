@@ -12,11 +12,6 @@ module Pacbio
     # Sequel II and Sequel I are now deprecated
     enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2, 'Revio' => 3 }
 
-    instrument_types = Rails.configuration.pacbio_instrument_types_v1
-    if Flipper.enabled?(:dpl947_enable_dna_control_barcode_pacbio_sequel_ii_v12)
-      instrument_types = Rails.configuration.pacbio_instrument_types_v2
-    end
-
     after_create :generate_name
 
     has_many :plates, foreign_key: :pacbio_run_id,
@@ -34,7 +29,7 @@ module Pacbio
     validates :system_name, presence: true
 
     validates_with InstrumentTypeValidator,
-                   instrument_types:,
+                   instrument_types: Rails.configuration.pacbio_instrument_types,
                    if: lambda {
                          system_name.present?
                        }

@@ -1,5 +1,4 @@
 ---
-# TODO: remove this file to pacbio_instrument_types.yml once feature flag removed
 default: &default
   sequel_iie:
     name: Sequel IIe
@@ -17,6 +16,12 @@ default: &default
               attribute: :plates
               minimum: 1
               maximum: 1
+          required_attributes:
+            options:
+              versions:
+                - v12_sequel_iie
+              required_attributes:
+                - :dna_control_complex_box_barcode
       plates:
         children: :wells
         # we want to validate each plate and plate
