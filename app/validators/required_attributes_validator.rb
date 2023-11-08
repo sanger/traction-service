@@ -9,8 +9,6 @@ class RequiredAttributesValidator < ActiveModel::Validator
   # @option options [Array] :required_attributes
   def initialize(options)
     super
-
-    @versions = options[:versions]
     @required_attributes = options[:required_attributes]
   end
 
