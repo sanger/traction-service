@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Validator for required attributes
-# Validates the presence of required attributes and versions
+# Validates the presence of required attributes
 class RequiredAttributesValidator < ActiveModel::Validator
   attr_reader :required_attributes
 
