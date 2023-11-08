@@ -3,7 +3,7 @@
 # Validator for required attributes
 # Validates the presence of required attributes and versions
 class RequiredAttributesValidator < ActiveModel::Validator
-  attr_reader :required_attributes, :versions
+  attr_reader :required_attributes
 
   # @param [Hash] options
   # @option options [Array] :required_attributes
