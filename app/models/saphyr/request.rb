@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'saphyr/saphyr'
-
 module Saphyr
   # Saphyr::Request
   # A saphyr request is a material

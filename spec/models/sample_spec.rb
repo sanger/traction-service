@@ -48,9 +48,7 @@ RSpec.describe Sample do
   context 'on update' do
     it 'name cannot be updated' do
       sample = create(:sample)
-      name = sample.name
-      sample.update(name: 'sample3')
-      expect(sample.reload.name).to eq(name)
+      expect { sample.update(name: 'sample3') }.to raise_error(ActiveRecord::ReadonlyAttributeError)
     end
   end
 
