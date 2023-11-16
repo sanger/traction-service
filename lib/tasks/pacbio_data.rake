@@ -61,8 +61,10 @@ namespace :pacbio_data do
 
     print '-> Finding Pacbio SMRT Link versions...'
     v11 = Pacbio::SmrtLinkVersion.find_by!(name: 'v11')
+    v11.update(default: false, active: false)
     v12_revio = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_revio')
     v12_sequel_iie = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_sequel_iie')
+    v12_sequel_iie.update(default: true, active: true)
     print COMPLETED
 
     puts '-> Creating pacbio runs:'
@@ -166,6 +168,7 @@ namespace :pacbio_data do
         name: "RUN-#{v12_sequel_iie.name}-#{pool_name}-#{total_plate}_plate",
         system_name: Pacbio::Run.system_names['Sequel IIe'],
         smrt_link_version: v12_sequel_iie,
+        dna_control_complex_box_barcode: "DCCB_#{barcode}",
         plates: (1..total_plate).map do |plate_number|
           Pacbio::Plate.new(
             sequencing_kit_box_barcode: '130429101826100021624',
