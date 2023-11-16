@@ -535,6 +535,7 @@ default: &default
           - Binding Kit Box Barcode
           - Sequencing Kit Box Barcode
           - On-Plate Loading Concentration (pM)
+          - DNA Control Complex Box Barcode
           - Run Comments
           - Sample is Barcoded
           - Barcode Name
@@ -586,6 +587,9 @@ default: &default
             On-Plate Loading Concentration (pM):
               type: :model
               value: on_plate_loading_concentration
+            DNA Control Complex Box Barcode:
+              type: :model
+              value: plate.run.dna_control_complex_box_barcode
             Run Comments:
               type: :model
               value: plate.run.comments
