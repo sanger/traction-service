@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'pacbio/pacbio'
-
 module Pacbio
   # Pacbio::Request
   # A request can have many libraries
