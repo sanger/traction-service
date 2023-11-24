@@ -26,7 +26,8 @@ end
 
 group :test do
   gem 'database_cleaner'
-  gem 'factory_bot_rails'
+  # without require: false it will load the gem before the rails environment
+  gem 'factory_bot_rails', require: false
 end
 
 group :development, :test do

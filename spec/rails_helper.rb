@@ -10,6 +10,9 @@ require 'rspec/rails'
 Dir['./spec/support/**/*.rb'].each { |f| require f }
 # Add additional requires below this line. Rails is not loaded until this point!
 
+# we need this as factory_bot_rails is no longer eager loaded
+require 'factory_bot_rails'
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end
