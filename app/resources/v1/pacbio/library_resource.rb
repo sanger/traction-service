@@ -52,7 +52,7 @@ module V1
         #       If we want to support multiple values in one filter we would need to update this
         plate, well = value[0].split(':')
         recs = records.joins(:source_plate).where(source_plate: { barcode: plate })
-        return well ? recs.joins(:source_well).where(source_well: { position: well }) : recs
+        well ? recs.joins(:source_well).where(source_well: { position: well }) : recs
       }
 
       def self.records_for_populate(*_args)

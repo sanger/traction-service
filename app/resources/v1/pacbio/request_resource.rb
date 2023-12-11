@@ -41,7 +41,7 @@ module V1
         #       If we want to support multiple values in one filter we would need to update this
         plate, well = value[0].split(':')
         recs = records.joins(:plate).where(plate: { barcode: plate })
-        return well ? recs.joins(:well).where(well: { position: well }) : recs
+        well ? recs.joins(:well).where(well: { position: well }) : recs
       }
 
       def self.default_sort
