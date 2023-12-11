@@ -37,7 +37,7 @@ module V1
       private
 
       def current_library
-        @library = (params[:id] && ::Saphyr::Library.find_by(id: params[:id]))
+        @library = params[:id] && ::Saphyr::Library.find_by(id: params[:id])
       end
 
       def params_names

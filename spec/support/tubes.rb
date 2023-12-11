@@ -3,10 +3,10 @@
 require 'rails_helper'
 
 shared_examples_for 'tubes' do
-  let(:pipeline_tube_request_factory)       { "tube_with_#{pipeline_name}_request".to_sym }
-  let(:other_pipeline_tube_request_factory) { "tube_with_#{other_pipeline_name}_request".to_sym }
-  let(:pipeline_tube_library_factory)       { "tube_with_#{pipeline_name}_library".to_sym }
-  let(:other_pipeline_tube_library_factory) { "tube_with_#{other_pipeline_name}_library".to_sym }
+  let(:pipeline_tube_request_factory)       { :"tube_with_#{pipeline_name}_request" }
+  let(:other_pipeline_tube_request_factory) { :"tube_with_#{other_pipeline_name}_request" }
+  let(:pipeline_tube_library_factory)       { :"tube_with_#{pipeline_name}_library" }
+  let(:other_pipeline_tube_library_factory) { :"tube_with_#{other_pipeline_name}_library" }
   let(:tubes_path)                          { "v1_#{pipeline_name}_tubes_path" }
 
   describe '#get' do
