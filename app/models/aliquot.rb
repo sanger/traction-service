@@ -9,6 +9,7 @@ class Aliquot < ApplicationRecord
   enum aliquot_type: { primary: 0, derived: 1 }
 
   belongs_to :tag, optional: true
+  belongs_to :source, polymorphic: true
 
   validates :volume, :concentration, presence: true
 end

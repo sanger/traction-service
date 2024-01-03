@@ -42,5 +42,9 @@ RSpec.describe Aliquot do
     it_behaves_like 'uuidable'
   end
 
-  skip 'is invalid without a source'
+  it 'is invalid without a source' do
+    aliquot = build(:aliquot, source: nil)
+    expect(aliquot).not_to be_valid
+    expect(aliquot.errors[:source]).to include('must exist')
+  end
 end
