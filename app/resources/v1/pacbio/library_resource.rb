@@ -39,7 +39,7 @@ module V1
           return records.joins(pool: :tube).where('tubes.barcode LIKE ?', "%#{value[0]}%")
         end
 
-        records.joins(pool: :tube).where(tube: { barcode: value })
+        records.joins(pool: :tube).where(tubes: { barcode: value })
       }
       filter :source_identifier, apply: lambda { |records, value, _options|
         # First we check tubes to see if there are any given the source identifier
