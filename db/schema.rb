@@ -10,7 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_09_14_111434) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_03_084837) do
+  create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
+    t.float "volume"
+    t.float "concentration"
+    t.string "template_prep_kit_box_barcode"
+    t.integer "insert_size"
+    t.string "uuid"
+    t.string "state"
+    t.bigint "tag_id"
+    t.string "source_type"
+    t.bigint "source_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["source_type", "source_id"], name: "index_aliquots_on_source"
+    t.index ["tag_id"], name: "index_aliquots_on_tag_id"
+  end
+
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
