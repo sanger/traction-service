@@ -17,7 +17,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_03_084837) do
     t.string "template_prep_kit_box_barcode"
     t.integer "insert_size"
     t.string "uuid"
-    t.string "state"
+    t.integer "state", default: 0, null: false
+    t.integer "aliquot_type", default: 0, null: false
     t.bigint "tag_id"
     t.string "source_type"
     t.bigint "source_id"
