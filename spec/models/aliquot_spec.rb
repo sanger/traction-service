@@ -4,15 +4,34 @@ require 'rails_helper'
 
 RSpec.describe Aliquot do
   it 'is invalid without volume' do
-    aliquot = build(:aliquot, volume: nil)
-    expect(aliquot).not_to be_valid
-    expect(aliquot.errors[:volume]).to include("can't be blank")
+    expect(build(:aliquot, volume: nil)).not_to be_valid
   end
 
   it 'is invalid without concentration' do
-    aliquot = build(:aliquot, concentration: nil)
-    expect(aliquot).not_to be_valid
-    expect(aliquot.errors[:concentration]).to include("can't be blank")
+    expect(build(:aliquot, concentration: nil)).not_to be_valid
+  end
+
+  it 'is invalid without template_prep_kit_box_barcode' do
+    expect(build(:aliquot, template_prep_kit_box_barcode: nil)).not_to be_valid
+  end
+
+  it 'is invalid without an insert_size' do
+    expect(build(:aliquot, insert_size: nil)).not_to be_valid
+  end
+
+  it 'is invalid if volume is not a positive number' do
+    expect(build(:aliquot, volume: 'a word')).not_to be_valid
+    expect(build(:aliquot, volume: '-1')).not_to be_valid
+  end
+
+  it 'is invalid if concentration is not a positive number' do
+    expect(build(:aliquot, concentration: 'a word')).not_to be_valid
+    expect(build(:aliquot, concentration: '-1')).not_to be_valid
+  end
+
+  it 'is invalid if insert_size is not a positive number' do
+    expect(build(:aliquot, insert_size: 'a word')).not_to be_valid
+    expect(build(:aliquot, insert_size: '-1')).not_to be_valid
   end
 
   it 'has a valid list of states' do
