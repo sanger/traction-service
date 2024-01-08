@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'LibrariesController', :pacbio do
   describe '#get' do
-    let!(:libraries) { create_list(:pacbio_library_in_tube, 5, :tagged) }
+    let!(:libraries) { create_list(:pacbio_library, 5, :tagged, tube: Tube.new) }
 
     context 'without includes' do
       before do
@@ -43,7 +43,7 @@ RSpec.describe 'LibrariesController', :pacbio do
       end
 
       context 'when not suited for run creation' do
-        let!(:libraries) { create_list(:pacbio_library_in_tube, 1, :tagged, insert_size: nil) }
+        let!(:libraries) { create_list(:pacbio_library, 1, :tagged, insert_size: nil, tube: Tube.new) }
 
         it 'includes invalid library run suitability' do
           get v1_pacbio_libraries_path, headers: json_api_headers
@@ -232,12 +232,12 @@ RSpec.describe 'LibrariesController', :pacbio do
 
       context 'filters - barcode' do
         it 'returns the correct library' do
+          # We need to use the library from the pool until the aliquot work is finished.
           pacbio_library = create(:pacbio_library)
           # Create extra libraries to prevent false positive
           create_list(:pacbio_library, 5)
-          get "#{v1_pacbio_libraries_path}?filter[barcode]=#{pacbio_library.tube.barcode}",
+          get "#{v1_pacbio_libraries_path}?filter[barcode]=#{pacbio_library.pool.tube.barcode}",
               headers: json_api_headers
-
           expect(response).to have_http_status(:success)
           expect(json['data'].length).to eq(1)
           library_attributes = find_resource(type: 'libraries', id: pacbio_library.id)['attributes']
@@ -255,7 +255,8 @@ RSpec.describe 'LibrariesController', :pacbio do
           pacbio_libraries = []
           (1..5).each do |i|
             pacbio_tube = create(:tube_with_pacbio_request, barcode: "test-100#{i}")
-            pacbio_libraries << create(:pacbio_library, tube: pacbio_tube)
+            pacbio_pool = create(:pacbio_pool, library_count: 1, tube: pacbio_tube)
+            pacbio_libraries << pacbio_pool.libraries.first
           end
           # Create extra libraries to prevent false positive
           create_list(:pacbio_library, 5)

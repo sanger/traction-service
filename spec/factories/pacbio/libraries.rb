@@ -9,6 +9,7 @@ FactoryBot.define do
     request { association :pacbio_request }
     tag
     pool { association :pacbio_pool, libraries: [instance] }
+    tube { nil }
 
     factory :pacbio_incomplete_library do
       insert_size { nil }
@@ -21,13 +22,6 @@ FactoryBot.define do
 
     factory :pacbio_library_with_tag do
       tagged
-    end
-
-    factory :pacbio_library_in_tube do
-      after :create do |library|
-        tube = create(:tube)
-        create(:container_material, container: tube, material: library)
-      end
     end
 
     trait :tagged do
