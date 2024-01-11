@@ -16,9 +16,9 @@ module V1
       # attempts to use_related_resource_records_for_joins
       # In this case I can see it using container_associations
       # so seems to be linking the wrong tube relationship.
-      has_one :tube, relation_name: :tube
       has_one :tag, always_include_optional_linkage_data: true
       has_one :pool, always_include_optional_linkage_data: true
+      has_one :tube, relation_name: :tube, always_include_optional_linkage_data: true
       has_one :source_well, relation_name: :source_well, class_name: 'Well'
       has_one :source_plate, relation_name: :source_plate, class_name: 'Plate'
 
@@ -36,10 +36,10 @@ module V1
       filter :barcode, apply: lambda { |records, value, _options|
         # If wildcard is the last value passed we want to do a wildcard search
         if value.last == 'wildcard'
-          return records.joins(:tube).where('tubes.barcode LIKE ?', "%#{value[0]}%")
+          return records.joins(pool: :tube).where('tubes.barcode LIKE ?', "%#{value[0]}%")
         end
 
-        records.joins(:tube).where(tube: { barcode: value })
+        records.joins(pool: :tube).where(tubes: { barcode: value })
       }
       filter :source_identifier, apply: lambda { |records, value, _options|
         # First we check tubes to see if there are any given the source identifier
@@ -52,7 +52,7 @@ module V1
         #       If we want to support multiple values in one filter we would need to update this
         plate, well = value[0].split(':')
         recs = records.joins(:source_plate).where(source_plate: { barcode: plate })
-        return well ? recs.joins(:source_well).where(source_well: { position: well }) : recs
+        well ? recs.joins(:source_well).where(source_well: { position: well }) : recs
       }
 
       def self.records_for_populate(*_args)

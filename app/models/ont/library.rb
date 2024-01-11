@@ -3,7 +3,7 @@
 module Ont
   # Ont::Library
   class Library < ApplicationRecord
-    include TubeMaterial
+    include Material
     include Uuidable
     include Librarian
 

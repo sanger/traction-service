@@ -8,7 +8,8 @@ module Pacbio
   # A library can be sequenced in more than one well.
   # This is achieved using a has many through relationship
   class Library < ApplicationRecord
-    include TubeMaterial
+    # Material is needed to support source identification
+    include Material
     include Uuidable
     include Librarian
     include SampleSheet::Library
@@ -23,12 +24,12 @@ module Pacbio
     belongs_to :tag, optional: true
     belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :pacbio_pool_id,
                       inverse_of: :libraries
+    belongs_to :tube, optional: true
 
     has_one :sample, through: :request
-    has_one :tube, through: :pool
     has_one :tag_set, through: :tag
 
-    # # This is dependent on the request association, so needs to be included
+    # # This is dependent on the request and material associations, so needs to be included
     # # after that is defined
     include DualSourcedLibrary
 

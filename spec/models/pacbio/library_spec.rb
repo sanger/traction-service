@@ -108,9 +108,14 @@ RSpec.describe Pacbio::Library, :pacbio do
     expect(build(:pacbio_library, pool:).pool).to eq(pool)
   end
 
+  it 'can have a tube' do
+    tube = create(:tube)
+    expect(build(:pacbio_library, tube:).tube).to eq(tube)
+  end
+
   it 'can have a tube through pool' do
-    pool = build(:pacbio_pool)
-    expect(build(:pacbio_library, pool:).tube).to eq(pool.tube)
+    pool = create(:pacbio_pool)
+    expect(create(:pacbio_library, pool:).pool.tube).to eq(pool.tube)
   end
 
   describe '#request' do

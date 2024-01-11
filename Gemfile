@@ -14,7 +14,7 @@ gem 'jsonapi-resources'
 gem 'mysql2'
 gem 'puma', '~> 6.0' # Use Puma as the app server
 gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX possible
-gem 'rails', '~> 7.1.1'
+gem 'rails', '~> 7.1.2'
 
 group :development do
   gem 'listen'
@@ -26,7 +26,8 @@ end
 
 group :test do
   gem 'database_cleaner'
-  gem 'factory_bot_rails'
+  # without require: false it will load the gem before the rails environment
+  gem 'factory_bot_rails', require: false
 end
 
 group :development, :test do

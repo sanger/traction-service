@@ -33,7 +33,7 @@ module V1
       # Finds request based on the id, used by destroy or edit
       # @return [ActiveRecord Object] e.g. +Pacbio::Request.find(1)
       def pipeline_request
-        @pipeline_request = (params[:id] && ::Pacbio::Request.find_by(id: params[:id]))
+        @pipeline_request = params[:id] && ::Pacbio::Request.find_by(id: params[:id])
       end
     end
   end

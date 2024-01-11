@@ -10,7 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_09_14_111434) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_03_084837) do
+  create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
+    t.float "volume"
+    t.float "concentration"
+    t.string "template_prep_kit_box_barcode"
+    t.integer "insert_size"
+    t.string "uuid"
+    t.integer "state", default: 0, null: false
+    t.integer "aliquot_type", default: 0, null: false
+    t.bigint "tag_id"
+    t.string "source_type"
+    t.bigint "source_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["source_type", "source_id"], name: "index_aliquots_on_source"
+    t.index ["tag_id"], name: "index_aliquots_on_tag_id"
+  end
+
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
     t.string "container_type", null: false
     t.bigint "container_id", null: false
@@ -170,9 +187,11 @@ ActiveRecord::Schema[7.1].define(version: 2023_09_14_111434) do
     t.bigint "pacbio_request_id", null: false
     t.bigint "tag_id"
     t.bigint "pacbio_pool_id", null: false
+    t.bigint "tube_id"
     t.index ["pacbio_pool_id"], name: "index_pacbio_libraries_on_pacbio_pool_id"
     t.index ["pacbio_request_id"], name: "index_pacbio_libraries_on_pacbio_request_id"
     t.index ["tag_id"], name: "index_pacbio_libraries_on_tag_id"
+    t.index ["tube_id"], name: "index_pacbio_libraries_on_tube_id"
   end
 
   create_table "pacbio_plates", charset: "utf8mb3", force: :cascade do |t|
@@ -491,6 +510,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_09_14_111434) do
   add_foreign_key "ont_runs", "ont_min_know_versions"
   add_foreign_key "pacbio_libraries", "pacbio_pools"
   add_foreign_key "pacbio_libraries", "pacbio_requests"
+  add_foreign_key "pacbio_libraries", "tubes"
   add_foreign_key "pacbio_pools", "tubes"
   add_foreign_key "pacbio_runs", "pacbio_smrt_link_versions"
   add_foreign_key "pacbio_smrt_link_option_versions", "pacbio_smrt_link_options"
