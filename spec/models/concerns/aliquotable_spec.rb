@@ -25,7 +25,7 @@ RSpec.describe Aliquotable do
     end
 
     # Should this error instead?
-    it 'returns nil if there are no primary aliquots' do
+    it 'returns empty array if there are no dervied aliquots' do
       pacbio_pool = create(:pacbio_pool)
       expect(pacbio_pool.derived_aliquots).to eq []
     end
