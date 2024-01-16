@@ -8,5 +8,9 @@ FactoryBot.define do
     insert_size { 100 }
     tag
     source { association(:pacbio_library) }
+
+    trait :primary do
+      aliquot_type { :primary }
+    end
   end
 end

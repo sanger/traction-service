@@ -283,4 +283,18 @@ RSpec.describe Pacbio::Pool, :pacbio do
       expect(pool.sequencing_runs).to eq([plate1.run, plate2.run])
     end
   end
+
+  describe '#aliquots', :skip, reason: 'yet to be implemented' do
+    it 'can have a primary aliquot' do
+      primary_aliquot = create(:aliquot, :primary)
+      pool = create(:pacbio_pool, primary_aliquot:)
+      expect(pool.primary_aliquot).to eq(primary_aliquot)
+    end
+
+    it 'can have multiple derived aliquots' do
+      derived_aliquots = create_list(:aliquot, 5, :derived)
+      pool = create(:pacbio_pool, derived_aliquots:)
+      expect(pool.derived_aliquots).to eq(derived_aliquots)
+    end
+  end
 end
