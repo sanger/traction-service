@@ -30,7 +30,7 @@ RSpec.describe SequencingKitBoxBarcodeValidator do
     expect(new_pacbio_run.errors.full_messages).to include('Plates plate 1 plates A1 have already been used for plate 1234')
   end
 
-  it 'will not include wells that are marked for destruction' do
+  it 'does not include wells that are marked for destruction' do
     well = build(:pacbio_well, row: 'A', column: '1')
     create(:pacbio_run, system_name: 'Revio', plates: [build(:pacbio_plate, plate_number: 1, sequencing_kit_box_barcode: '5678', wells: [well])])
     well.reload.mark_for_destruction
@@ -38,7 +38,7 @@ RSpec.describe SequencingKitBoxBarcodeValidator do
     expect(new_pacbio_run.plates.first).to be_valid
   end
 
-  it 'will not validate plates that are from Sequel IIe' do
+  it 'does not validate plates that are from Sequel IIe' do
     create(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate, plate_number: 1, sequencing_kit_box_barcode: '1234', wells: [build(:pacbio_well, row: 'A', column: '1')])])
     new_pacbio_run = create(:pacbio_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate, plate_number: 1, sequencing_kit_box_barcode: '1234', wells: [build(:pacbio_well, row: 'A', column: '1')])])
     expect(new_pacbio_run.plates.first).to be_valid

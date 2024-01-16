@@ -22,13 +22,13 @@ RSpec.describe Tube do
     let(:saphyr_request_tubes) { create_list(:tube_with_saphyr_request, 5) }
     let(:saphyr_library_tubes) { create_list(:tube_with_saphyr_library, 5) }
 
-    it 'will return the correct tubes' do
+    it 'returns the correct tubes' do
       expect(described_class.by_barcode(saphyr_request_tubes.first.barcode).length).to eq(1)
       expect(described_class.by_barcode(saphyr_request_tubes.pluck(:barcode)).length).to eq(5)
       expect(described_class.by_barcode(saphyr_request_tubes.pluck(:barcode).concat(saphyr_library_tubes.pluck(:barcode))).length).to eq(10)
     end
 
-    it('will return nothing if barcode is dodgy') do
+    it('returns nothing if barcode is dodgy') do
       expect(described_class.by_barcode('DODGY-BARCODE')).to be_empty
     end
   end

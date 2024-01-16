@@ -13,7 +13,7 @@ RSpec.describe Saphyr::Request, :saphyr do
 
   module_ = described_class.to_s.deconstantize.constantize
 
-  it 'will have a sample name' do
+  it 'has a sample name' do
     expect(create(model).sample_name).to be_present
   end
 

@@ -38,7 +38,7 @@ RSpec.describe Pacbio::SmrtLinkVersion, :pacbio do
   end
 
   describe '#active' do
-    it 'will only show versions that are active' do
+    it 'onlies show versions that are active' do
       create_list(:pacbio_smrt_link_version, 5)
       create_list(:pacbio_smrt_link_version, 2, active: false)
 
@@ -47,7 +47,7 @@ RSpec.describe Pacbio::SmrtLinkVersion, :pacbio do
   end
 
   describe '#ordered_by_default' do
-    it 'will show the default version first' do
+    it 'shows the default version first' do
       create_list(:pacbio_smrt_link_version, 5)
       default_version = create(:pacbio_smrt_link_version, default: true)
       ordered_by_default = described_class.ordered_by_default
