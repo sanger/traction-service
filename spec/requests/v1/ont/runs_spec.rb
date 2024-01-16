@@ -263,7 +263,7 @@ RSpec.describe 'RunsController' do
           }.to_json
         end
 
-        it 'will be published' do
+        it 'is published' do
           expect(Messages).to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
           patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: json_api_headers
           expect(response).to have_http_status(:success), response.body
@@ -328,7 +328,7 @@ RSpec.describe 'RunsController' do
           }.to_json
         end
 
-        it 'will not be published' do
+        it 'does not be published' do
           expect(Messages).not_to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
           patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity), response.body

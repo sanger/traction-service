@@ -120,7 +120,7 @@ RSpec.describe Pacbio::Library, :pacbio do
       expect(library.request).to be_present
     end
 
-    it 'will not delete the requests when the library is deleted' do
+    it 'does not delete the requests when the library is deleted' do
       expect { library.destroy }.not_to change(Pacbio::Request, :count)
     end
   end

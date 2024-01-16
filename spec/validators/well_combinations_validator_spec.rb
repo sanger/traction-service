@@ -55,7 +55,7 @@ RSpec.describe WellCombinationsValidator do
     expect(well_list.errors).not_to be_empty
   end
 
-  it 'will not validate wells that are marked for destruction' do
+  it 'does not validate wells that are marked for destruction' do
     well_list = WellList.new(positions: %w[A1 D1])
     well_list.wells.last.mark_for_destruction
     validator.validate(well_list)

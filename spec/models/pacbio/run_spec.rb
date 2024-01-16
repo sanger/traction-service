@@ -211,14 +211,14 @@ RSpec.describe Pacbio::Run, :pacbio do
   end
 
   context 'smrt_link_version' do
-    it 'will set a default value' do
+    it 'sets a default value' do
       run = create(:pacbio_revio_run)
       expect(run.smrt_link_version).to eq(version10)
     end
   end
 
   context 'instrument name' do
-    it 'will set a default value' do
+    it 'sets a default value' do
       run = create(:pacbio_revio_run)
       expect(run.instrument_name).to eq(run.system_name)
     end

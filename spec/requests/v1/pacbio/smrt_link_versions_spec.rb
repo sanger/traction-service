@@ -25,7 +25,7 @@ RSpec.describe 'SmrtLinkVersionsController' do
       expect(json['data'].length).to eq(8)
     end
 
-    it 'will include the correct data' do
+    it 'includes the correct data' do
       expect(json['data'][0]['attributes']['name']).to eq(default_smrt_link_version.name)
       expect(json['data'][0]['attributes']['default']).to be_truthy
       expect(json['data'][0]['attributes']['active']).to be true
@@ -45,12 +45,12 @@ RSpec.describe 'SmrtLinkVersionsController' do
       expect(response).to have_http_status(:success)
     end
 
-    it 'will include all of the options' do
+    it 'includes all of the options' do
       expect(json['data'][0]['relationships']['smrt_link_option_versions']['data'].length).to eq(smrt_link_version_1.smrt_link_options.length)
       expect(json['data'][1]['relationships']['smrt_link_option_versions']['data'].length).to eq(smrt_link_version_2.smrt_link_options.length)
     end
 
-    it 'will include the data for each option' do
+    it 'includes the data for each option' do
       option = smrt_link_version_1.smrt_link_options.first
       option_json = json['included'].detect { |opt| opt['id'] == option.id.to_s && opt['type'] == 'smrt_link_options' }
       expect(option_json['attributes']).to be_present

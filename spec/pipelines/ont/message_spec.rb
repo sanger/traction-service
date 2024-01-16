@@ -49,7 +49,7 @@ RSpec.describe 'Ont', :ont, type: :model do
       let(:flowcell) { run.flowcells.first }
       let(:message_flowcell) { key[:flowcells].first }
 
-      it 'will have the correct number' do
+      it 'has the correct number' do
         expect(key[:flowcells].length).to eq(run.flowcells.count)
       end
 
@@ -72,7 +72,7 @@ RSpec.describe 'Ont', :ont, type: :model do
         let(:message_sample) { message_flowcell[:samples].first }
         let(:library) { libraries.first }
 
-        it 'will have the correct number' do
+        it 'has the correct number' do
           expect(message_flowcell[:samples].length).to eq(libraries.length)
         end
 

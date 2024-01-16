@@ -43,7 +43,7 @@ RSpec.describe 'PacBio', :pacbio, type: :model do
   end
 
   shared_examples 'check the plate wells' do
-    it 'will have the correct number of wells for each plate' do
+    it 'has the correct number of wells for each plate' do
       expect(key[:wells].length).to eq(run.wells.count)
     end
   end
@@ -60,7 +60,7 @@ RSpec.describe 'PacBio', :pacbio, type: :model do
   end
 
   shared_examples 'check the plate samples' do
-    it 'will have the correct number of samples for each well' do
+    it 'has the correct number of samples for each well' do
       message_wells.each do |message_well|
         message_samples = message_well[:samples]
         expect(message_samples.length).to eq(5)

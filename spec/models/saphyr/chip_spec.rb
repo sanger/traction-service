@@ -38,7 +38,7 @@ RSpec.describe Saphyr::Chip, :saphyr do
     end
 
     context 'serial number' do
-      it 'will be updated when the barcode is updated' do
+      it 'is updated when the barcode is updated' do
         chip = create(:saphyr_chip, barcode: 'FLEVEAOLPTOWPNWU20319131581014320190911XXXXXXXXXXXXX')
         expect(chip.serial_number).to eq 'FLEVEAOLPTOWPNWU'
       end
