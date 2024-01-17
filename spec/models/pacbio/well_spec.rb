@@ -139,7 +139,7 @@ RSpec.describe Pacbio::Well, :pacbio do
   context 'collection?' do
     let(:well) { create(:pacbio_well) }
 
-    it 'will always be true' do
+    it 'alwayses be true' do
       expect(well).to be_collection
     end
   end
@@ -150,7 +150,7 @@ RSpec.describe Pacbio::Well, :pacbio do
     let(:yes_no) { Pacbio::YES_NO }
     let(:true_false) { Pacbio::TRUE_FALSE }
 
-    it 'will include the relevant options' do
+    it 'includes the relevant options' do
       expect(described_class.stored_attributes[:smrt_link_options]).to eq(%i[
         ccs_analysis_output
         generate_hifi

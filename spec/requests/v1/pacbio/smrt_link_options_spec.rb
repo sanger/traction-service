@@ -22,7 +22,7 @@ RSpec.describe 'SmrtLinkOptionsController' do
       expect(json['data'].length).to eq(5)
     end
 
-    it 'will include the correct data' do
+    it 'includes the correct data' do
       resource = json['data'][0]['attributes']
       option = smrt_link_options.first
       expect(resource['key']).to eq(option.key)

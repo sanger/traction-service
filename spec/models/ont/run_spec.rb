@@ -324,7 +324,7 @@ RSpec.describe Ont::Run, :ont do
   end
 
   context 'min_know_version' do
-    it 'will set a default value' do
+    it 'sets a default value' do
       run = create(:ont_run)
 
       expect(run.min_know_version).to eq(default_min_know_version)
