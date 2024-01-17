@@ -63,7 +63,11 @@ RSpec.describe 'RakeTasks' do
 
       # Run the inital migration rake task, reenable it and invoke it again
       Rake::Task['pacbio_aliquot_data:migrate_pool_data'].reenable
-      Rake::Task['pacbio_aliquot_data:migrate_pool_data'].invoke
+      expect { Rake::Task['pacbio_aliquot_data:migrate_pool_data'].invoke }.to output(
+        <<~HEREDOC
+          -> Creating primary aliquots for all pools
+        HEREDOC
+      ).to_stdout
 
       # Should be 10 primary aliquots and 10 derived aliquots
       expect(Aliquot.count).to eq(20)
