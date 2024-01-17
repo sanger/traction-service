@@ -23,7 +23,7 @@ namespace :pacbio_aliquot_data do
       # For each instance this pool is used in a well, create a derived aliquot
       pool.wells.each do |well|
         # To be safe we assume the volumes are the same for existing pools
-        derived_aliquot.create!(
+        Aliquot.create!(
           volume: pool.volume,
           concentration: pool.concentration,
           template_prep_kit_box_barcode: pool.template_prep_kit_box_barcode,
@@ -35,5 +35,13 @@ namespace :pacbio_aliquot_data do
         )
       end
     end
+  end
+
+  # This task is used to revert the changes made by the migrate_pool_data task
+  # This can be more sophisticated as we add more elements to the migration
+  task revert_pool_data: :environment do
+    puts '-> Deleting all aliquots'
+    # Delete all primary and derived aliquots
+    Aliquot.destroy_all
   end
 end
