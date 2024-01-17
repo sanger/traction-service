@@ -7,6 +7,10 @@ require 'rake'
 Rails.application.load_tasks if Rake::Task.tasks.empty?
 
 RSpec.describe 'RakeTasks' do
+  before do
+    Pacbio::SmrtLinkVersion.find_by(name: 'v12_sequel_iie') || create(:pacbio_smrt_link_version, name: 'v12_sequel_iie', default: true)
+  end
+
   describe 'pacbio_aliquot_data:migrate_pool_data' do
     it 'creates primary and derived aliquots for each pool and well pool' do
       # Create some pools with wells
@@ -55,12 +59,12 @@ RSpec.describe 'RakeTasks' do
     it 'deletes all aliquots' do
       # Create some pools with wells
       wells = create_list(:pacbio_well, 5, pool_count: 2, aliquots: [])
-      pools = wells.map(&:pools).flatten
+      wells.map(&:pools).flatten
 
       # Run the inital migration rake task, reenable it and invoke it again
       Rake::Task['pacbio_aliquot_data:migrate_pool_data'].reenable
       Rake::Task['pacbio_aliquot_data:migrate_pool_data'].invoke
-      
+
       # Should be 10 primary aliquots and 10 derived aliquots
       expect(Aliquot.count).to eq(20)
 
@@ -71,7 +75,7 @@ RSpec.describe 'RakeTasks' do
           -> Deleting all aliquots
         HEREDOC
       ).to_stdout
-      .and change { Aliquot.count }.from(20).to(0)
+        .and change(Aliquot, :count).from(20).to(0)
     end
   end
 end
