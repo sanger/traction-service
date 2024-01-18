@@ -13,6 +13,7 @@ module Pacbio
     include Uuidable
     include Librarian
     include SampleSheet::Library
+    include Aliquotable
 
     validates :volume, :concentration,
               :insert_size, presence: true, on: :run_creation
@@ -23,7 +24,7 @@ module Pacbio
                          inverse_of: :libraries
     belongs_to :tag, optional: true
     belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :pacbio_pool_id,
-                      inverse_of: :libraries
+                      inverse_of: :libraries, optional: true
     belongs_to :tube, optional: true
 
     has_one :sample, through: :request

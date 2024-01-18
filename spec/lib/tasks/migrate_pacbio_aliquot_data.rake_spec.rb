@@ -11,6 +11,45 @@ RSpec.describe 'RakeTasks' do
     Pacbio::SmrtLinkVersion.find_by(name: 'v12_sequel_iie') || create(:pacbio_smrt_link_version, name: 'v12_sequel_iie', default: true)
   end
 
+  describe 'pacbio_aliquot_data:migrate_library_data' do
+    it 'creates primary and derived aliquots for each library' do
+      # Create some libraries with pools
+      libraries_with_pools = create_list(:pacbio_library, 5, pool: create(:pacbio_pool), aliquots: [])
+      # In theory shouldnt exist but just in case
+      libraries_without_pools = create_list(:pacbio_library, 5, pool: nil, aliquots: [])
+
+      expect { Rake::Task['pacbio_aliquot_data:migrate_library_data'].invoke }.to output(
+        <<~HEREDOC
+          -> Creating primary aliquots for all libraries
+        HEREDOC
+      ).to_stdout
+
+      # Check if the primary and derived aliquots have been created
+      libraries_with_pools.each do |library|
+        expect(library.primary_aliquot.volume).to eq(library.volume)
+        expect(library.primary_aliquot.concentration).to eq(library.concentration)
+        expect(library.primary_aliquot.template_prep_kit_box_barcode).to eq(library.template_prep_kit_box_barcode)
+        expect(library.primary_aliquot.insert_size).to eq(library.insert_size)
+
+        library.derived_aliquots.each do |derived_aliquot|
+          expect(derived_aliquot.volume).to eq(library.volume)
+          expect(derived_aliquot.concentration).to eq(library.concentration)
+          expect(derived_aliquot.template_prep_kit_box_barcode).to eq(library.template_prep_kit_box_barcode)
+          expect(derived_aliquot.insert_size).to eq(library.insert_size)
+        end
+      end
+
+      libraries_without_pools.each do |library|
+        expect(library.primary_aliquot.volume).to eq(library.volume)
+        expect(library.primary_aliquot.concentration).to eq(library.concentration)
+        expect(library.primary_aliquot.template_prep_kit_box_barcode).to eq(library.template_prep_kit_box_barcode)
+        expect(library.primary_aliquot.insert_size).to eq(library.insert_size)
+
+        expect(library.derived_aliquots).to be_empty
+      end
+    end
+  end
+
   describe 'pacbio_aliquot_data:migrate_pool_data' do
     it 'creates primary and derived aliquots for each pool and well pool' do
       # Create some pools with wells
@@ -55,31 +94,36 @@ RSpec.describe 'RakeTasks' do
     end
   end
 
-  describe 'pacbio_aliquot_data:revert_pool_data' do
+  describe 'pacbio_aliquot_data:revert_all_data' do
     it 'deletes all aliquots' do
-      # Create some pools with wells
-      wells = create_list(:pacbio_well, 5, pool_count: 2, aliquots: [])
-      wells.map(&:pools).flatten
+      # Create some libraries
+      create_list(:pacbio_pool, 5, library_count: 2)
+      # Create some pools with wells and libraries
+      create_list(:pacbio_well, 5, pool_count: 2, aliquots: [])
 
       # Run the inital migration rake task, reenable it and invoke it again
+      Rake::Task['pacbio_aliquot_data:migrate_all_data'].reenable
       Rake::Task['pacbio_aliquot_data:migrate_pool_data'].reenable
-      expect { Rake::Task['pacbio_aliquot_data:migrate_pool_data'].invoke }.to output(
+      Rake::Task['pacbio_aliquot_data:migrate_library_data'].reenable
+      expect { Rake::Task['pacbio_aliquot_data:migrate_all_data'].invoke }.to output(
         <<~HEREDOC
+          -> Creating primary aliquots for all libraries
           -> Creating primary aliquots for all pools
         HEREDOC
       ).to_stdout
 
-      # Should be 10 primary aliquots and 10 derived aliquots
-      expect(Aliquot.count).to eq(20)
+      # Libraries: Should be 20 primary aliquots and 20 (2x10 pools) derived aliquots
+      # Pools: Should be 15 primary aliquots and 10 (2x5 wells) derived aliquots
+      expect(Aliquot.count).to eq(65)
 
       # Run the revert task
       # It outputs the correct text
-      expect { Rake::Task['pacbio_aliquot_data:revert_pool_data'].invoke }.to output(
+      expect { Rake::Task['pacbio_aliquot_data:revert_all_data'].invoke }.to output(
         <<~HEREDOC
           -> Deleting all aliquots
         HEREDOC
       ).to_stdout
-        .and change(Aliquot, :count).from(20).to(0)
+        .and change(Aliquot, :count).from(65).to(0)
     end
   end
 end

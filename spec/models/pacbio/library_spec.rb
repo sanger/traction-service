@@ -108,6 +108,18 @@ RSpec.describe Pacbio::Library, :pacbio do
     expect(build(:pacbio_library, pool:).pool).to eq(pool)
   end
 
+  it 'can have a primary aliquot' do
+    library = create(:pacbio_library)
+    aliquot = create(:aliquot, aliquot_type: :primary, source: library)
+    expect(library.primary_aliquot).to eq(aliquot)
+  end
+
+  it 'can have derived aliquots' do
+    library = create(:pacbio_library)
+    aliquots = create_list(:aliquot, 5, aliquot_type: :derived, source: library)
+    expect(library.derived_aliquots).to eq(aliquots)
+  end
+
   it 'can have a tube' do
     tube = create(:tube)
     expect(build(:pacbio_library, tube:).tube).to eq(tube)
