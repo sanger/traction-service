@@ -66,6 +66,8 @@ RSpec.describe 'RakeTasks' do
 
       # Check if the primary and derived aliquots have been created
       pools.each do |pool|
+        # Reload the pool to get the updated data after the rake task has been run
+        pool.reload
         expect(pool.primary_aliquot.volume).to eq(pool.volume)
         expect(pool.primary_aliquot.concentration).to eq(pool.concentration)
         expect(pool.primary_aliquot.template_prep_kit_box_barcode).to eq(pool.template_prep_kit_box_barcode)
@@ -81,6 +83,8 @@ RSpec.describe 'RakeTasks' do
       end
 
       wells.each do |well|
+        # Reload the well to get the updated data after the rake task has been run
+        well.reload
         # Each well should have 2 derived aliquots, one for each pool
         expect(well.aliquots.count).to eq(2)
         well.aliquots.each do |aliquot|
