@@ -110,6 +110,15 @@ RSpec.describe Pacbio::Well, :pacbio do
     end
   end
 
+  context 'aliquots' do
+    let(:aliquots) { create_list(:aliquot, 2) }
+    let(:well) { create(:pacbio_well, aliquots:) }
+
+    it 'can have one or more' do
+      expect(well.aliquots.length).to eq(2)
+    end
+  end
+
   context 'sample sheet mixin' do
     let(:well) { create(:pacbio_well) }
 
