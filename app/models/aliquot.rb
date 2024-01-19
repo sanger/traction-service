@@ -18,7 +18,7 @@ class Aliquot < ApplicationRecord
   # maybe we need to do this when the state is set to used?
   # we also need to consider that aliquot can be attached to a sample
   # which will not have a barcode or insert size
-  validates :volume, :concentration, :template_prep_kit_box_barcode, :insert_size, presence: true
+  # validates :volume, :concentration, :template_prep_kit_box_barcode, :insert_size, presence: true
   validates :volume, :concentration, :insert_size,
             numericality: { greater_than_or_equal_to: 0, allow_nil: true }
 end

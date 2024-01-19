@@ -6,6 +6,7 @@ module Pacbio
   class Request < ApplicationRecord
     include TubeMaterial
     include WellMaterial
+    include Aliquotable
 
     attribute :cost_code, default: -> { Rails.application.config.pacbio_request_cost_code }
 

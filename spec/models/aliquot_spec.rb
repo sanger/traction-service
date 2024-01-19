@@ -3,21 +3,21 @@
 require 'rails_helper'
 
 RSpec.describe Aliquot do
-  it 'is invalid without volume' do
-    expect(build(:aliquot, volume: nil)).not_to be_valid
-  end
+  # it 'is invalid without volume' do
+  #   expect(build(:aliquot, volume: nil)).not_to be_valid
+  # end
 
-  it 'is invalid without concentration' do
-    expect(build(:aliquot, concentration: nil)).not_to be_valid
-  end
+  # it 'is invalid without concentration' do
+  #   expect(build(:aliquot, concentration: nil)).not_to be_valid
+  # end
 
-  it 'is invalid without template_prep_kit_box_barcode' do
-    expect(build(:aliquot, template_prep_kit_box_barcode: nil)).not_to be_valid
-  end
+  # it 'is invalid without template_prep_kit_box_barcode' do
+  #   expect(build(:aliquot, template_prep_kit_box_barcode: nil)).not_to be_valid
+  # end
 
-  it 'is invalid without an insert_size' do
-    expect(build(:aliquot, insert_size: nil)).not_to be_valid
-  end
+  # it 'is invalid without an insert_size' do
+  #   expect(build(:aliquot, insert_size: nil)).not_to be_valid
+  # end
 
   it 'is invalid if volume is not a positive number' do
     expect(build(:aliquot, volume: 'a word')).not_to be_valid
