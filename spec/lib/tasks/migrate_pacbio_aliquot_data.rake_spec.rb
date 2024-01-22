@@ -14,7 +14,9 @@ RSpec.describe 'RakeTasks' do
   describe 'pacbio_aliquot_data:migrate_request_data' do
     it 'creates primary aliquots for each request' do
       # Create some requests
-      requests = create_list(:pacbio_request, 5, aliquots: [])
+      requests = create_list(:pacbio_request, 5)
+      # Get rid of aliqutos
+      requests.map(&:primary_aliquot).flatten.each(&:destroy)
 
       # Run the rake task
       # It outputs the correct text

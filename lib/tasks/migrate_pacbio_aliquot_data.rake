@@ -22,6 +22,14 @@ namespace :pacbio_aliquot_data do
     end
   end
 
+  task revert_request_data: :environment do
+    puts '-> Deleting all request primary aliquots'
+    # Delete all primary and derived aliquots
+    Pacbio::Request.find_each do |request|
+      request.primary_aliquot.delete
+    end
+  end
+
   task migrate_pool_data: :environment do
     puts '-> Creating primary aliquots for all pools'
     # Create primary aliquots for all pools
