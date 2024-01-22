@@ -23,6 +23,17 @@ module Pacbio
 
     validates(*Pacbio.required_request_attributes, presence: true)
 
+    after_create :generate_primary_aliquot
+
+    # While this aliquot is not volume tracked we can just create it with empty data
+    def generate_primary_aliquot
+      Aliquot.create!(
+        source: self,
+        aliquot_type: :primary,
+        state: :created
+      )
+    end
+
     def container
       tube || well
     end

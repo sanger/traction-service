@@ -38,10 +38,9 @@ RSpec.describe Pacbio::Request, :pacbio do
   end
 
   context 'aliquots' do
-    it 'can have a primary aliquot' do
+    it 'is created with a primary aliquot' do
       request = create(:pacbio_request)
-      aliquot = create(:aliquot, aliquot_type: :primary, source: request)
-      expect(request.primary_aliquot).to eq(aliquot)
+      expect(request.primary_aliquot).to be_present
     end
 
     it 'can have derived aliquots' do
