@@ -15,7 +15,7 @@ RSpec.describe 'RakeTasks' do
     it 'creates primary aliquots for each request' do
       # Create some requests
       requests = create_list(:pacbio_request, 5)
-      # Get rid of aliqutos
+      # Get rid of aliquots that were created by the factory
       requests.map(&:primary_aliquot).flatten.each(&:destroy)
 
       # Run the rake task
@@ -35,6 +35,41 @@ RSpec.describe 'RakeTasks' do
         expect(request.primary_aliquot.template_prep_kit_box_barcode).to be_nil
         expect(request.primary_aliquot.insert_size).to be_nil
       end
+    end
+
+    it 'doesnt create primary aliquots for ont requests' do
+      # Create some ont requests
+      create_list(:ont_request, 5)
+
+      # Run the rake task
+      # It outputs the correct text
+      Rake::Task['pacbio_aliquot_data:migrate_request_data'].reenable
+      expect { Rake::Task['pacbio_aliquot_data:migrate_request_data'].invoke }.to output(
+        <<~HEREDOC
+          -> Creating primary aliquots for all requests
+        HEREDOC
+      ).to_stdout
+
+      expect(Aliquot.count).to eq(0)
+    end
+  end
+
+  describe 'pacbio_aliquot_data:revert_request_data' do
+    it 'destroys primary aliquots for each request' do
+      # Create some requests
+      requests = create_list(:pacbio_request, 5)
+      # Create some extra aliquots
+      create_list(:aliquot, 5)
+      # Get rid of aliquots that were created by the factory
+      requests.map(&:primary_aliquot).flatten.each(&:destroy)
+
+      # Run the rake task
+      # It outputs the correct text
+      expect { Rake::Task['pacbio_aliquot_data:revert_request_data'].invoke }.to output(
+        <<~HEREDOC
+          -> Deleting all request primary aliquots
+        HEREDOC
+      ).to_stdout.and change(Aliquot, :count).from(10).to(5)
     end
   end
 

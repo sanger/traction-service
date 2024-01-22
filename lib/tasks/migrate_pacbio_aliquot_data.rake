@@ -26,7 +26,7 @@ namespace :pacbio_aliquot_data do
     puts '-> Deleting all request primary aliquots'
     # Delete all primary and derived aliquots
     Pacbio::Request.find_each do |request|
-      request.primary_aliquot.delete
+      request.primary_aliquot.delete if request.primary_aliquot.present?
     end
   end
 
