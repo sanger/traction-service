@@ -56,7 +56,7 @@ RSpec.describe Messages::Broker do
   end
 
   describe '#configuration' do
-    it 'will be present' do
+    it 'is present' do
       expect(broker.bunny_config.enabled).to eq(bunny_config[:enabled])
     end
   end

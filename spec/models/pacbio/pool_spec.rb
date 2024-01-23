@@ -13,7 +13,7 @@ RSpec.describe Pacbio::Pool, :pacbio do
   let(:libraries) { create_list(:pacbio_library, 5) }
   let(:params) { {} }
 
-  it 'will have a tube on validation' do
+  it 'has a tube on validation' do
     pool.valid?
     expect(pool.tube).to be_a(Tube)
   end
@@ -209,11 +209,11 @@ RSpec.describe Pacbio::Pool, :pacbio do
   end
 
   context 'tags' do
-    it 'will be valid if there is a single library with no tag' do
+    it 'is valid if there is a single library with no tag' do
       expect(build(:pacbio_pool, libraries: [build(:pacbio_library, tag: nil)])).to be_valid
     end
 
-    it 'will not be valid if there are multiple libraries and any of them dont have tags' do
+    it 'does not be valid if there are multiple libraries and any of them dont have tags' do
       untagged_library = build(:pacbio_library, tag: nil)
 
       expect(build(:pacbio_pool, libraries: libraries + [untagged_library])).not_to be_valid

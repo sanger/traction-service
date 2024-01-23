@@ -23,6 +23,10 @@ FactoryBot.define do
       build_list(pool_factory, pool_count)
     end
 
+    aliquots do
+      build_list(:aliquot, pool_count)
+    end
+
     # v10
     generate_hifi { 'In SMRT Link' }
     ccs_analysis_output { 'Yes' }

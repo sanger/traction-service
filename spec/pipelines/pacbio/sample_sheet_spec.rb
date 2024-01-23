@@ -27,11 +27,11 @@ RSpec.describe 'SampleSheet', type: :model do
       expect(column.fetch('populate')).to eq(populate)
     end
 
-    it 'will not have generate hi fi' do
+    it 'does not have generate hi fi' do
       expect(sample_sheet_configuration.columns.children).not_to have_key('Generate HiFi Reads')
     end
 
-    it 'will have demultiplex barcodes' do
+    it 'has demultiplex barcodes' do
       column = sample_sheet_configuration.columns.children['Demultiplex Barcodes']
       expect(column).to be_present
       expect(column.fetch('type')).to eq(:model)

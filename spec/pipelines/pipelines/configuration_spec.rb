@@ -56,7 +56,7 @@ RSpec.describe Pipelines::Configuration, type: :model do
 
   let(:configuration) { described_class.new(params) }
 
-  it 'will have configuration for each pipeline' do
+  it 'has configuration for each pipeline' do
     expect(configuration).to respond_to(:pipeline_a)
     expect(configuration).to respond_to(:pipeline_b)
   end
@@ -94,11 +94,11 @@ RSpec.describe Pipelines::Configuration, type: :model do
     expect { configuration.pipeline_a.message.field_a.value }.to raise_error(NameError)
   end
 
-  it 'will have a list of pipelines' do
+  it 'has a list of pipelines' do
     expect(configuration.pipelines).to eq(%w[pipeline_a pipeline_b])
   end
 
-  it 'will still work if we create an item' do
+  it 'stills work if we create an item' do
     pipeline_a = Pipelines::Configuration::Item.new('pipeline_a',
                                                     params[:pipeline_a].with_indifferent_access)
     expect(pipeline_a.pipeline).to eq('pipeline_a')
@@ -127,32 +127,32 @@ RSpec.describe Pipelines::Configuration, type: :model do
       }
     end
 
-    it 'will return the version if it exists' do
+    it 'returns the version if it exists' do
       expect(configuration.pipeline_c.sample_sheet.by_version('v10').children).to eq(configuration.pipeline_c.sample_sheet.v10.children)
     end
 
-    it 'will raise an error if it is not a valid version format' do
+    it 'raises an error if it is not a valid version format' do
       expect { configuration.pipeline_c.sample_sheet.by_version('not a version') }.to raise_error(Version::Error, 'Not a valid version')
     end
 
-    it 'will raise an error if it is not a valid version' do
+    it 'raises an error if it is not a valid version' do
       expect { configuration.pipeline_c.sample_sheet.by_version('v30') }.to raise_error(Version::Error, 'Not a valid version')
     end
 
-    it 'will be able to access fields for a specific version' do
+    it 'is able to access fields for a specific version' do
       expect(configuration.pipeline_c.sample_sheet.by_version('v10').field_10).to eq('b')
     end
 
-    it 'will not be able to access fields from another version' do
+    it 'does not be able to access fields from another version' do
       expect { configuration.pipeline_c.sample_sheet.by_version('v10').field_20 }.to raise_error(NoMethodError)
     end
 
-    it 'will not be able to access fields from another version without by_version' do
+    it 'does not be able to access fields from another version without by_version' do
       expect(configuration.pipeline_c.sample_sheet.v20.field_20).to eq('c')
       expect { configuration.pipeline_c.sample_sheet.v10.field_20 }.to raise_error(NoMethodError)
     end
 
-    it 'will not be able to access fields from another version once another version has been loaded' do
+    it 'does not be able to access fields from another version once another version has been loaded' do
       expect(configuration.pipeline_c.sample_sheet.by_version('v20').field_20).to eq('c')
       expect { configuration.pipeline_c.sample_sheet.by_version('v10').field_20 }.to raise_error(NoMethodError)
     end

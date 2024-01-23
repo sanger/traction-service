@@ -55,6 +55,12 @@ RSpec.describe Aliquot do
     expect(build(:aliquot, tag:).tag).to eq(tag)
   end
 
+  it 'can have a well' do
+    create(:pacbio_smrt_link_version, name: 'v12_revio', default: true)
+    well = create(:pacbio_well)
+    expect(build(:aliquot, well:).well).to eq(well)
+  end
+
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_library }
 
