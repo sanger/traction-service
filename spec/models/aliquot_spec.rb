@@ -19,8 +19,8 @@ RSpec.describe Aliquot do
     expect(build(:aliquot, insert_size: nil)).not_to be_valid
   end
 
-  it 'is valid without volume, concentration, template_prep_kit_box_barcode and insert_size if source is a Pacbio::Request' do
-    expect(build(:aliquot, volume: nil, concentration: nil, template_prep_kit_box_barcode: nil, insert_size: nil, source: build(:pacbio_request))).to be_valid
+  it 'is valid without volume, concentration, template_prep_kit_box_barcode and insert_size if source is a Pacbio::Request and its a primary aliquot' do
+    expect(build(:aliquot, volume: nil, concentration: nil, template_prep_kit_box_barcode: nil, insert_size: nil, source: build(:pacbio_request), aliquot_type: :primary)).to be_valid
   end
 
   it 'is invalid if volume is not a positive number' do
