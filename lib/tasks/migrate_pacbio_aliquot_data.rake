@@ -2,6 +2,34 @@
 
 namespace :pacbio_aliquot_data do
   desc 'A series of rake tasks to migrate existing pacbio data to the new aliquot data model'
+  task migrate_request_data: :environment do
+    puts '-> Creating primary aliquots for all requests'
+    # Create aliquots for all requests
+    Pacbio::Request.find_each do |request|
+      # Skip if primary aliquot already exists (shouldn't happen but just in case)
+      next if request.primary_aliquot.present?
+
+      # Create aliquot with same attributes as request
+      Aliquot.create!(
+        volume: nil,
+        concentration: nil,
+        template_prep_kit_box_barcode: nil,
+        insert_size: nil,
+        source: request,
+        aliquot_type: :primary,
+        state: :created
+      )
+    end
+  end
+
+  task revert_request_data: :environment do
+    puts '-> Deleting all request primary aliquots'
+    # Delete all primary and derived aliquots
+    Pacbio::Request.find_each do |request|
+      request.primary_aliquot.delete if request.primary_aliquot.present?
+    end
+  end
+
   task migrate_pool_data: :environment do
     puts '-> Creating primary aliquots for all pools'
     # Create primary aliquots for all pools

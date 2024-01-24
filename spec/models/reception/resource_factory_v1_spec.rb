@@ -268,6 +268,11 @@ RSpec.describe Reception::ResourceFactoryV1 do
         expect { construct_resources }.to change(Pacbio::Request, :count).by(5)
       end
 
+      it 'creates 5 Aliquots' do
+        # 5 requests, 1 aliquot per Pacbio::Request
+        expect { construct_resources }.to change(Aliquot, :count).by(5)
+      end
+
       it 'creates new samples' do
         expect { construct_resources }.to change(Sample, :count).by(4)
       end

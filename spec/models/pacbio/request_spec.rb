@@ -37,6 +37,19 @@ RSpec.describe Pacbio::Request, :pacbio do
     end
   end
 
+  context 'aliquots' do
+    it 'is created with a primary aliquot' do
+      request = create(:pacbio_request)
+      expect(request.primary_aliquot).to be_present
+    end
+
+    it 'can have derived aliquots' do
+      request = create(:pacbio_request)
+      aliquots = create_list(:aliquot, 5, aliquot_type: :derived, source: request)
+      expect(request.derived_aliquots).to eq(aliquots)
+    end
+  end
+
   describe '#sequencing_plates' do
     it 'if the request belongs to a run' do
       plate = build(:pacbio_plate_with_wells, :pooled)
