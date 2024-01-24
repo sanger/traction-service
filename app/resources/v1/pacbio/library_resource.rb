@@ -8,8 +8,9 @@ module V1
 
       model_name 'Pacbio::Library'
 
-      attributes :state, :volume, :concentration, :template_prep_kit_box_barcode,
-                 :insert_size, :created_at, :deactivated_at, :source_identifier
+      attributes :state, :id, :volume, :concentration, :template_prep_kit_box_barcode,
+                 :insert_size, :created_at, :deactivated_at, :source_identifier,
+                 :pacbio_request_id, :tag_id
 
       has_one :request, always_include_optional_linkage_data: true
       # If we don't specify the relation_name here, jsonapi-resources
@@ -28,7 +29,6 @@ module V1
         [{ field: 'created_at', direction: :desc }]
       end
 
-      filter :pool
       filter :sample_name, apply: lambda { |records, value, _options|
         # We have to join requests and samples here in order to find by sample name
         records.joins(:sample).where(sample: { name: value })
@@ -36,10 +36,10 @@ module V1
       filter :barcode, apply: lambda { |records, value, _options|
         # If wildcard is the last value passed we want to do a wildcard search
         if value.last == 'wildcard'
-          return records.joins(pool: :tube).where('tubes.barcode LIKE ?', "%#{value[0]}%")
+          return records.joins(:tube).where('tubes.barcode LIKE ?', "%#{value[0]}%")
         end
 
-        records.joins(pool: :tube).where(tubes: { barcode: value })
+        records.joins(:tube).where(tubes: { barcode: value })
       }
       filter :source_identifier, apply: lambda { |records, value, _options|
         # First we check tubes to see if there are any given the source identifier

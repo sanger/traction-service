@@ -29,7 +29,6 @@ namespace :pacbio_aliquot_data do
           template_prep_kit_box_barcode: pool.template_prep_kit_box_barcode,
           insert_size: pool.insert_size,
           source: library.request,
-          well:,
           aliquot_type: :derived,
           state: :created
         )

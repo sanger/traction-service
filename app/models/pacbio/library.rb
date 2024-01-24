@@ -25,7 +25,7 @@ module Pacbio
     belongs_to :tag, optional: true
     belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :pacbio_pool_id,
                       inverse_of: :libraries, optional: true
-    belongs_to :tube, optional: true
+    belongs_to :tube, optional: true, default: -> { Tube.new }
 
     has_one :sample, through: :request
     has_one :tag_set, through: :tag

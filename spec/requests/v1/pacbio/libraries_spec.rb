@@ -236,7 +236,7 @@ RSpec.describe 'LibrariesController', :pacbio do
           pacbio_library = create(:pacbio_library)
           # Create extra libraries to prevent false positive
           create_list(:pacbio_library, 5)
-          get "#{v1_pacbio_libraries_path}?filter[barcode]=#{pacbio_library.pool.tube.barcode}",
+          get "#{v1_pacbio_libraries_path}?filter[barcode]=#{pacbio_library.tube.barcode}",
               headers: json_api_headers
           expect(response).to have_http_status(:success)
           expect(json['data'].length).to eq(1)
@@ -255,8 +255,7 @@ RSpec.describe 'LibrariesController', :pacbio do
           pacbio_libraries = []
           (1..5).each do |i|
             pacbio_tube = create(:tube_with_pacbio_request, barcode: "test-100#{i}")
-            pacbio_pool = create(:pacbio_pool, library_count: 1, tube: pacbio_tube)
-            pacbio_libraries << pacbio_pool.libraries.first
+            pacbio_libraries << create(:pacbio_library, tube: pacbio_tube)
           end
           # Create extra libraries to prevent false positive
           create_list(:pacbio_library, 5)
@@ -276,6 +275,82 @@ RSpec.describe 'LibrariesController', :pacbio do
               'created_at' => library.created_at.to_fs(:us)
             )
           end
+        end
+      end
+    end
+  end
+
+  describe '#create' do
+    context 'when creating a library' do
+      let(:request) { create(:pacbio_request) }
+      let(:tag) { create(:tag) }
+
+      context 'on success' do
+        let(:body) do
+          {
+            data: {
+              type: 'libraries',
+              attributes: {
+                volume: 1.11,
+                template_prep_kit_box_barcode: 'LK1234567',
+                concentration: 2.22,
+                insert_size: 100,
+                pacbio_request_id: request.id,
+                tag_id: tag.id
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a created status' do
+          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:created), response.body
+        end
+
+        it 'creates a library and aliquot' do
+          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }
+            .to change(Pacbio::Library, :count).by(1)
+            .and change(Aliquot, :count).by(1)
+        end
+
+        it 'returns the id' do
+          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          expect(json.dig('data', 'id').to_i).to eq(Pacbio::Library.first.id)
+        end
+
+        it 'includes the tube' do
+          post "#{v1_pacbio_libraries_path}?include=tube", params: body, headers: json_api_headers
+          tube = find_included_resource(id: Pacbio::Library.first.tube_id, type: 'tubes')
+          expect(tube.dig('attributes', 'barcode')).to be_present
+        end
+      end
+
+      context 'on failure - when library is invalid' do
+        let(:body) do
+          {
+            data: {
+              type: 'libraries',
+              attributes: {
+                template_prep_kit_box_barcode: 'LK1234567',
+                volume: 1.11,
+                concentration: 2.22,
+                insert_size: 'Sausages',
+                pacbio_request_id: request.id,
+                tag_id: tag.id
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns unprocessable entity status' do
+          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'cannot create a pool' do
+          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.not_to(
+            change(Pacbio::Library, :count)
+          )
         end
       end
     end
