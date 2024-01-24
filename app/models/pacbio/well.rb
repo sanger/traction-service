@@ -15,8 +15,6 @@ module Pacbio
                           dependent: :destroy, inverse_of: :well, autosave: true
     has_many :pools, class_name: 'Pacbio::Pool', through: :well_pools
 
-    has_many :aliquots, foreign_key: :pacbio_well_id, inverse_of: :well, dependent: :destroy,
-                        autosave: true
     has_many :libraries, through: :pools
     has_many :tag_sets, through: :libraries
 

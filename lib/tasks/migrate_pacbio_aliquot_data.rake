@@ -57,6 +57,7 @@ namespace :pacbio_aliquot_data do
           insert_size: pool.insert_size,
           source: library.request,
           aliquot_type: :derived,
+          used_by: pool,
           state: :created
         )
       end

@@ -76,7 +76,7 @@ RSpec.describe 'RakeTasks' do
   describe 'pacbio_aliquot_data:migrate_pool_data' do
     it 'creates primary aliquots for each pool and request used in the pool' do
       # Create some pools with wells
-      wells = create_list(:pacbio_well, 5, pool_count: 2, aliquots: [])
+      wells = create_list(:pacbio_well, 5, pool_count: 2)
       pools = wells.map(&:pools).flatten
 
       # Run the rake task
@@ -97,7 +97,7 @@ RSpec.describe 'RakeTasks' do
         expect(pool.primary_aliquot.insert_size).to eq(pool.insert_size)
 
         pool.libraries.each do |library|
-          expect(library.request.derived_aliquots).to include(pool.derived_aliquots.find_by(source: library.request))
+          expect(library.request.derived_aliquots).to include(pool.used_aliquots.find_by(source: library.request))
         end
       end
     end
@@ -108,7 +108,7 @@ RSpec.describe 'RakeTasks' do
       # Create some libraries
       create_list(:pacbio_pool, 5, library_count: 2)
       # Create some pools with wells and libraries
-      create_list(:pacbio_well, 5, pool_count: 2, aliquots: [])
+      create_list(:pacbio_well, 5, pool_count: 2)
 
       # Run the inital migration rake task, reenable it and invoke it again
       Rake::Task['pacbio_aliquot_data:migrate_request_data'].reenable
@@ -125,7 +125,7 @@ RSpec.describe 'RakeTasks' do
       ).to_stdout
 
       # Should be 10 primary aliquots and 10 derived aliquots
-      expect(Aliquot.count).to eq(30)
+      expect(Aliquot.count).to eq(55)
 
       # Run the revert task
       # It outputs the correct text
@@ -134,7 +134,7 @@ RSpec.describe 'RakeTasks' do
           -> Deleting all aliquots
         HEREDOC
       ).to_stdout
-        .and change(Aliquot, :count).from(30).to(0)
+        .and change(Aliquot, :count).from(55).to(0)
     end
   end
 end

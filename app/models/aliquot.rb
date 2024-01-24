@@ -10,8 +10,8 @@ class Aliquot < ApplicationRecord
 
   belongs_to :tag, optional: true
   belongs_to :source, polymorphic: true
-  belongs_to :well, class_name: 'Pacbio::Well', optional: true, foreign_key: :pacbio_well_id,
-                    inverse_of: :aliquots
+  # Used to identify where a derived aliquot has been used
+  belongs_to :used_by, polymorphic: true, optional: true
 
   # currently I have set these to be validated but not sure
   # as library only validates when a run is created
