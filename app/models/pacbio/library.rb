@@ -36,6 +36,10 @@ module Pacbio
 
     has_one :source_plate, through: :source_well, source: :plate, class_name: '::Plate'
 
+    # TODO: remove pool constraint this when pools are updated for aliquots
+    validates :primary_aliquot, presence: true, if: -> { pool.blank? }
+    accepts_nested_attributes_for :primary_aliquot, allow_destroy: true
+
     def collection?
       false
     end

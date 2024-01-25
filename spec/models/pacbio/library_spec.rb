@@ -88,6 +88,12 @@ RSpec.describe Pacbio::Library, :pacbio do
     it { is_expected.not_to be_valid }
   end
 
+  context 'when primary_aliquot is nil and its not a pool' do
+    let(:params) { { primary_aliquot: nil, pool: nil } }
+
+    it { is_expected.not_to be_valid }
+  end
+
   it 'can have a template prep kit box barcode' do
     expect(build(:pacbio_library, template_prep_kit_box_barcode: nil)).to be_valid
     expect(create(:pacbio_library).template_prep_kit_box_barcode).to be_present
@@ -109,15 +115,20 @@ RSpec.describe Pacbio::Library, :pacbio do
   end
 
   it 'can have a primary aliquot' do
-    library = create(:pacbio_library)
-    aliquot = create(:aliquot, aliquot_type: :primary, source: library)
-    expect(library.primary_aliquot).to eq(aliquot)
+    expect(create(:pacbio_library).primary_aliquot).to be_present
   end
 
   it 'can have derived aliquots' do
     library = create(:pacbio_library)
     aliquots = create_list(:aliquot, 5, aliquot_type: :derived, source: library)
     expect(library.derived_aliquots).to eq(aliquots)
+  end
+
+  it 'can have used aliquots' do
+    request = create(:pacbio_request)
+    library = create(:pacbio_library)
+    aliquot = create(:aliquot, aliquot_type: :derived, source: request, used_by: library)
+    expect(library.used_aliquots).to include(aliquot)
   end
 
   it 'can have a tube' do

@@ -58,8 +58,8 @@ RSpec.describe 'RakeTasks' do
     it 'destroys primary aliquots for each request' do
       # Create some requests
       requests = create_list(:pacbio_request, 5)
-      # Create some extra aliquots
-      create_list(:aliquot, 5)
+      # Create some extra aliquots (aliquots are automatically created when a library is created)
+      create_list(:pacbio_library, 5)
       # Get rid of aliquots that were created by the factory
       requests.map(&:primary_aliquot).flatten.each(&:destroy)
 
@@ -125,7 +125,7 @@ RSpec.describe 'RakeTasks' do
       ).to_stdout
 
       # Should be 10 primary aliquots and 10 derived aliquots
-      expect(Aliquot.count).to eq(55)
+      expect(Aliquot.count).to eq(75)
 
       # Run the revert task
       # It outputs the correct text
@@ -134,7 +134,7 @@ RSpec.describe 'RakeTasks' do
           -> Deleting all aliquots
         HEREDOC
       ).to_stdout
-        .and change(Aliquot, :count).from(55).to(0)
+        .and change(Aliquot, :count).from(75).to(0)
     end
   end
 end

@@ -8,9 +8,9 @@ module V1
 
       model_name 'Pacbio::Library'
 
-      attributes :state, :id, :volume, :concentration, :template_prep_kit_box_barcode,
+      attributes :state, :volume, :concentration, :template_prep_kit_box_barcode,
                  :insert_size, :created_at, :deactivated_at, :source_identifier,
-                 :pacbio_request_id, :tag_id
+                 :pacbio_request_id, :tag_id, :primary_aliquot_attributes
 
       has_one :request, always_include_optional_linkage_data: true
       # If we don't specify the relation_name here, jsonapi-resources
@@ -22,6 +22,9 @@ module V1
       has_one :tube, relation_name: :tube, always_include_optional_linkage_data: true
       has_one :source_well, relation_name: :source_well, class_name: 'Well'
       has_one :source_plate, relation_name: :source_plate, class_name: 'Plate'
+
+      has_one :primary_aliquot, always_include_optional_linkage_data: true,
+                                relation_name: :primary_aliquot, class_name: 'Aliquot'
 
       paginator :paged
 
@@ -59,6 +62,17 @@ module V1
         super.preload(source_well: :plate, request: :sample,
                       tag: :tag_set,
                       container_material: { container: :barcode })
+      end
+
+      def primary_aliquot_attributes=(primary_aliquot_parameters)
+        @model.primary_aliquot_attributes = primary_aliquot_parameters.permit(
+          :id, :volume, :template_prep_kit_box_barcode,
+          :concentration, :insert_size, :tag_id
+        )
+      end
+
+      def fetchable_fields
+        super - [:primary_aliquot_attributes]
       end
 
       def created_at

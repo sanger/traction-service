@@ -28,6 +28,7 @@ Rails.application.routes.draw do
     namespace :pacbio do
       jsonapi_resources :plates,        only: %i[index create]
       jsonapi_resources :tag_sets
+      jsonapi_resources :aliquots
 
       # This seems the best way to do this for now.
       # because we also have a namespace without the constraint
