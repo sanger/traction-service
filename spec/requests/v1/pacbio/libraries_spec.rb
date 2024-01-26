@@ -315,10 +315,10 @@ RSpec.describe 'LibrariesController', :pacbio do
           expect(response).to have_http_status(:created), response.body
         end
 
-        it 'creates a library and aliquot' do
+        it 'creates a library and aliquots' do
           expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }
             .to change(Pacbio::Library, :count).by(1)
-            .and change(Aliquot, :count).by(1)
+            .and change(Aliquot, :count).by(2) # We create a primary aliquot and a used_by aliquot
         end
 
         it 'returns the id' do
@@ -455,6 +455,11 @@ RSpec.describe 'LibrariesController', :pacbio do
       it 'updates the library primary aliquot' do
         library.reload
         expect(library.primary_aliquot.template_prep_kit_box_barcode).to eq('100')
+      end
+
+      it 'does not update the used_aliquots' do
+        library.reload
+        expect(library.used_aliquots.first.template_prep_kit_box_barcode).not_to eq('100')
       end
     end
 

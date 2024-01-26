@@ -124,11 +124,10 @@ RSpec.describe Pacbio::Library, :pacbio do
     expect(library.derived_aliquots).to eq(aliquots)
   end
 
-  it 'can have used aliquots' do
-    request = create(:pacbio_request)
-    library = create(:pacbio_library)
-    aliquot = create(:aliquot, aliquot_type: :derived, source: request, used_by: library)
-    expect(library.used_aliquots).to include(aliquot)
+  it 'can have a used aliquot if there is no pool' do
+    library = create(:pacbio_library, pool: nil)
+    expect(library.used_aliquots.length).to eq(1)
+    expect(library.used_aliquots.first.source).to eq(library.request)
   end
 
   it 'can have a tube' do

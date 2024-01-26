@@ -40,6 +40,20 @@ module Pacbio
     validates :primary_aliquot, presence: true, if: -> { pool.blank? }
     accepts_nested_attributes_for :primary_aliquot, allow_destroy: true
 
+    after_create :create_used_aliquot, if: -> { pool.blank? }
+
+    def create_used_aliquot
+      used_aliquots.create(
+        source: request,
+        aliquot_type: :derived,
+        volume:,
+        concentration:,
+        template_prep_kit_box_barcode:,
+        insert_size:,
+        tag:
+      )
+    end
+
     def collection?
       false
     end
