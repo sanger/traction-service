@@ -73,6 +73,45 @@ RSpec.describe 'RakeTasks' do
     end
   end
 
+  describe 'pacbio_aliquot_data:migrate_library_data' do
+    it 'creates primary aliquots for each library and request used in the library' do
+      # Create some singled-plexed pools (new libraries)
+      pools = create_list(:pacbio_pool, 5, library_count: 1)
+
+      # Create some multiplexed pools (these shouldnt be affected)
+      create_list(:pacbio_pool, 5, library_count: 2)
+
+      # Get rid of aliquots that were created by the factory
+      pools.each do |pool|
+        pool.libraries.map(&:primary_aliquot).flatten.each(&:destroy)
+        pool.libraries.map(&:used_aliquots).flatten.each(&:destroy)
+      end
+
+      # Run the rake task
+      # It outputs the correct text
+      expect { Rake::Task['pacbio_aliquot_data:migrate_library_data'].invoke }.to output(
+        <<~HEREDOC
+          -> Creating primary aliquots for all libraries and derived aliquots for all requests used in libraries
+        HEREDOC
+      ).to_stdout
+
+      # Check if the primary and derived aliquots have been created
+      pools.each do |pool|
+        # We created a new library which we can find via the tube
+        library = Pacbio::Library.find_by(tube: pool.tube)
+        # Reload the library to get the updated data after the rake task has been run
+        expect(library.primary_aliquot.volume).to eq(library.volume)
+        expect(library.primary_aliquot.concentration).to eq(library.concentration)
+        expect(library.primary_aliquot.template_prep_kit_box_barcode).to eq(library.template_prep_kit_box_barcode)
+        expect(library.primary_aliquot.insert_size).to eq(library.insert_size)
+        expect(library.primary_aliquot.tag).to eq(library.tag)
+
+        expect(library.used_aliquots.length).to eq(1)
+        expect(library.used_aliquots).to include(library.request.derived_aliquots.first)
+      end
+    end
+  end
+
   describe 'pacbio_aliquot_data:migrate_pool_data' do
     it 'creates primary aliquots for each pool and request used in the pool' do
       # Create some pools with wells

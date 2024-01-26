@@ -30,6 +30,37 @@ namespace :pacbio_aliquot_data do
     end
   end
 
+  task migrate_library_data: :environment do
+    puts '-> Creating primary aliquots for all libraries and derived aliquots for all requests used in libraries'
+
+    Pacbio::Pool.find_each do |pool|
+      next unless pool.libraries.count == 1
+
+      library = pool.libraries.first
+      new_lib = library.dup
+      # Set the libraries tube to the pools tube
+      new_lib.tube = pool.tube
+      new_lib.pool = nil
+      # Create the libraries primary aliquot
+      # A used_by aliquot is automatically created
+      new_lib.primary_aliquot = Aliquot.create(
+        volume: new_lib.volume,
+        concentration: new_lib.concentration,
+        template_prep_kit_box_barcode: new_lib.template_prep_kit_box_barcode,
+        insert_size: new_lib.insert_size,
+        source: new_lib,
+        tag: new_lib.tag,
+        aliquot_type: :primary,
+        state: :created
+      )
+
+      new_lib.save
+
+      # Here we will need to attach the new library to the wells the pool was attached to
+      pool.destroy
+    end
+  end
+
   task migrate_pool_data: :environment do
     puts '-> Creating primary aliquots for all pools and derived aliquots for all requests used in pools'
     # Create primary aliquots for all pools
