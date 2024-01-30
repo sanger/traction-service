@@ -7,6 +7,7 @@ RSpec.describe 'RunsController' do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
   let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
+  let!(:version13) { create(:pacbio_smrt_link_version, name: 'v13_revio') }
 
   shared_examples 'publish_messages_on_create' do
     it 'publishes a message' do
@@ -336,6 +337,79 @@ RSpec.describe 'RunsController' do
         expect(run.pacbio_smrt_link_version_id).to eq(version12.id)
         expect(run.plates.first.wells.first.libraries.first).to eq(library1)
         expect(run.plates.first.wells.first.pools.first).to eq(pool1)
+      end
+
+      it_behaves_like 'publish_messages_on_create'
+    end
+
+    context 'smrtlink v13_revio on success' do
+      let(:pool1) { create(:pacbio_pool) }
+
+      let(:body) do
+        {
+          data: {
+            type: 'runs',
+            attributes: {
+              dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
+              system_name: 'Sequel II',
+              comments: 'A Run Comment',
+              pacbio_smrt_link_version_id: version13.id,
+              plates_attributes: [{
+                sequencing_kit_box_barcode: 'DM0001100861800123121',
+                plate_number: 1,
+                wells_attributes: [
+                  {
+                    row: 'A',
+                    column: '1',
+                    movie_acquisition_time: 30,
+                    library_concentration: 8.35,
+                    pre_extension_time: '2',
+                    include_base_kinetics: 'True',
+                    polymerase_kit: 'ABC123',
+                    pool_ids: [pool1.id]
+                  }
+                ]
+              }]
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a created status' do
+        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        expect(response).to have_http_status(:created)
+      end
+
+      it 'creates a run' do
+        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Run, :count).by(1)
+      end
+
+      it 'creates a plate' do
+        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Plate, :count).by(1)
+      end
+
+      it 'creates a well' do
+        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
+      end
+
+      it 'creates a well pool' do
+        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::WellPool, :count).by(1)
+      end
+
+      it 'creates a run with the correct attributes' do
+        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+        run = Pacbio::Run.first
+
+        expect(run.id).to eq(json['data']['id'].to_i)
+        expect(run.name).to be_present
+        expect(run.state).to be_present
+        expect(run.dna_control_complex_box_barcode).to be_present
+        expect(run.system_name).to be_present
+        expect(run.comments).to be_present
+        expect(run.smrt_link_version).to be_present
+        expect(run.smrt_link_version).to eq(version13)
+        expect(run.pacbio_smrt_link_version_id).to eq(version13.id)
       end
 
       it_behaves_like 'publish_messages_on_create'
