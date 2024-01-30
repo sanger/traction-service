@@ -65,6 +65,7 @@ namespace :pacbio_data do
     v12_revio = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_revio')
     v12_sequel_iie = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_sequel_iie')
     v12_sequel_iie.update(default: true, active: true)
+    v13_revio = Pacbio::SmrtLinkVersion.find_by!(name: 'v13_revio')
     print COMPLETED
 
     puts '-> Creating pacbio runs:'
@@ -184,6 +185,35 @@ namespace :pacbio_data do
               on_plate_loading_concentration: 1,
               binding_kit_box_barcode: '030425102194100010424',
               movie_time: '20.0'
+            )]
+          )
+        end
+      )
+    end
+    print COMPLETED
+
+    print "   -> Creating runs for #{v13_revio.name}..."
+    total_plates[:revio].product(pools[:revio]).each do |total_plate, (pool_name, pool)|
+      Pacbio::Run.create!(
+        name: "RUN-#{v13_revio.name}-#{pool_name}-#{total_plate}_plate",
+        system_name: Pacbio::Run.system_names['Revio'],
+        smrt_link_version: v13_revio,
+        dna_control_complex_box_barcode: "DCCB_#{barcode}",
+        plates: (1..total_plate).map do |plate_number|
+          serial = barcode(length: 3)
+          sequencing_kit_box_barcode = "10211880003110400#{serial}20231226"
+          Pacbio::Plate.new(
+            sequencing_kit_box_barcode:,
+            plate_number:,
+            wells: [Pacbio::Well.new(
+              pools: [pool],
+              row: 'A',
+              column: 1,
+              pre_extension_time: 2,
+              movie_acquisition_time:	'24.0',
+              include_base_kinetics: 'True',
+              library_concentration: 1,
+              polymerase_kit:	'030116102739100011124'
             )]
           )
         end
