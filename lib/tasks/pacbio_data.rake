@@ -34,12 +34,12 @@ namespace :pacbio_data do
           volume: 1,
           concentration: 1,
           template_prep_kit_box_barcode: '029979102141700063023',
-          insert_size: 100,
+          insert_size: 1000,
           pacbio_request_id: @requests_generator.next.requestable.id,
           tag_id: (tags.next.id if tag_name)
         }
       end
-      Pacbio::Pool.create!(tube: Tube.create, library_attributes: libs, volume: 1, concentration: 1, insert_size: 100, template_prep_kit_box_barcode: '029979102141700063023')
+      Pacbio::Pool.create!(tube: Tube.create, library_attributes: libs, volume: 1, concentration: 1, insert_size: 1000, template_prep_kit_box_barcode: '029979102141700063023')
     end
 
     # pools
