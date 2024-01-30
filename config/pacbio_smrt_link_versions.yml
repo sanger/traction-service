@@ -26,6 +26,10 @@ default: &default
       name: v12_sequel_iie
       active: true
       default: true
+    v13_revio:
+      name: v13_revio
+      active: true
+      default: false
 
   options:
     ccs_analysis_output:
@@ -181,6 +185,7 @@ default: &default
       data_type: number
       versions:
         - v12_revio
+        - v13_revio
     include_base_kinetics:
       key: include_base_kinetics
       label: "Include Base Kinetics"
@@ -193,6 +198,7 @@ default: &default
       select_options: *select_true_false
       versions:
         - v12_revio
+        - v13_revio
     library_concentration:
       key: library_concentration
       label: "Library Concentration (pM)"
@@ -202,6 +208,7 @@ default: &default
       data_type: number
       versions:
         - v12_revio
+        - v13_revio
     polymerase_kit:
       key: polymerase_kit
       label: "Polymerase Kit"
@@ -211,6 +218,7 @@ default: &default
       data_type: string
       versions:
         - v12_revio
+        - v13_revio
 
 development: *default
 test: *default
