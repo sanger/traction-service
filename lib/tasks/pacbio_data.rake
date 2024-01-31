@@ -140,7 +140,7 @@ namespace :pacbio_data do
         name: "RUN-#{v12_revio.name}-#{pool_name}-#{total_plate}_plate",
         system_name: Pacbio::Run.system_names['Revio'],
         smrt_link_version: v12_revio,
-        dna_control_complex_box_barcode: "DCCB_#{barcode}",
+        dna_control_complex_box_barcode: 'Lxxxxx102249600123199',
         plates: (1..total_plate).map do |plate_number|
           serial = barcode(length: 3)
           sequencing_kit_box_barcode = "10211880003110400#{serial}20231226"
@@ -169,7 +169,7 @@ namespace :pacbio_data do
         name: "RUN-#{v12_sequel_iie.name}-#{pool_name}-#{total_plate}_plate",
         system_name: Pacbio::Run.system_names['Sequel IIe'],
         smrt_link_version: v12_sequel_iie,
-        dna_control_complex_box_barcode: "DCCB_#{barcode}",
+        dna_control_complex_box_barcode: 'Lxxxxx102249600123199',
         plates: (1..total_plate).map do |plate_number|
           Pacbio::Plate.new(
             sequencing_kit_box_barcode: '130429101826100021624',
@@ -178,11 +178,13 @@ namespace :pacbio_data do
               pools: [pool],
               row: 'A',
               column: 1,
+              pre_extension_time: 2,
+              loading_target_p1_plus_p2: 0.85,
               ccs_analysis_output_include_kinetics_information:	'No',
               ccs_analysis_output_include_low_quality_reads:	'No',
-              include_fivemc_calls_in_cpg_motifs:	'Yes',
+              include_fivemc_calls_in_cpg_motifs:	'No',
               demultiplex_barcodes:	'In SMRT Link',
-              on_plate_loading_concentration: 1,
+              on_plate_loading_concentration: 105,
               binding_kit_box_barcode: '030425102194100010424',
               movie_time: '20.0'
             )]
@@ -198,7 +200,7 @@ namespace :pacbio_data do
         name: "RUN-#{v13_revio.name}-#{pool_name}-#{total_plate}_plate",
         system_name: Pacbio::Run.system_names['Revio'],
         smrt_link_version: v13_revio,
-        dna_control_complex_box_barcode: "DCCB_#{barcode}",
+        dna_control_complex_box_barcode: 'Lxxxxx102249600123199',
         plates: (1..total_plate).map do |plate_number|
           serial = barcode(length: 3)
           sequencing_kit_box_barcode = "10211880003110400#{serial}20231226"
@@ -227,7 +229,7 @@ namespace :pacbio_data do
         name: "RUN-#{v13_sequel_iie.name}-#{pool_name}-#{total_plate}_plate",
         system_name: Pacbio::Run.system_names['Sequel IIe'],
         smrt_link_version: v13_sequel_iie,
-        dna_control_complex_box_barcode: "DCCB_#{barcode}",
+        dna_control_complex_box_barcode: 'Lxxxxx102249600123199',
         plates: (1..total_plate).map do |plate_number|
           Pacbio::Plate.new(
             sequencing_kit_box_barcode: '130429101826100021624',
@@ -236,11 +238,13 @@ namespace :pacbio_data do
               pools: [pool],
               row: 'A',
               column: 1,
+              pre_extension_time: 2,
+              loading_target_p1_plus_p2: 0.85,
               ccs_analysis_output_include_kinetics_information:	'No',
               ccs_analysis_output_include_low_quality_reads:	'No',
-              include_fivemc_calls_in_cpg_motifs:	'Yes',
+              include_fivemc_calls_in_cpg_motifs:	'No',
               demultiplex_barcodes:	'In SMRT Link',
-              on_plate_loading_concentration: 1,
+              on_plate_loading_concentration: 105,
               binding_kit_box_barcode: '030425102194100010424',
               movie_time: '20.0'
             )]
