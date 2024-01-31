@@ -522,7 +522,7 @@ default: &default
                 Bio Sample Name:
                   type: :model
                   value: find_sample_name
-      v12_sequel_iie:
+      v12_sequel_iie: &v12_sequel_iie
         column_order:
           - Instrument Type
           - Run Name
@@ -741,6 +741,8 @@ default: &default
                 Bio Sample Name:
                   type: :model
                   value: find_sample_name
+      # No changes required from v12_sequel_iie, added for consistency
+      v13_sequel_iie: *v12_sequel_iie
 
 
 development: *default
