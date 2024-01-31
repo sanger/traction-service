@@ -63,8 +63,8 @@ namespace :pacbio_data do
     v11 = Pacbio::SmrtLinkVersion.find_by!(name: 'v11')
     v12_revio = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_revio')
     v12_sequel_iie = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_sequel_iie')
-    v12_sequel_iie.update(default: true, active: true)
     v13_revio = Pacbio::SmrtLinkVersion.find_by!(name: 'v13_revio')
+    v13_revio.update(default: true, active: true)
     v13_sequel_iie = Pacbio::SmrtLinkVersion.find_by!(name: 'v13_sequel_iie')
     print COMPLETED
 

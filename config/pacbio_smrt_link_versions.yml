@@ -25,11 +25,11 @@ default: &default
     v12_sequel_iie:
       name: v12_sequel_iie
       active: true
-      default: true
+      default: false
     v13_revio:
       name: v13_revio
       active: true
-      default: false
+      default: true
     v13_sequel_iie:
       name: v13_sequel_iie
       active: true
