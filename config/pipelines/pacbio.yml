@@ -34,7 +34,7 @@ default: &default
               value: uuid
             samples:
               type: :array
-              value: libraries
+              value: all_libraries
               children:
                 cost_code:
                   type: :model
@@ -71,7 +71,7 @@ default: &default
                   value: request.library_type
                 pac_bio_library_tube_barcode:
                   type: :model
-                  value: pool.tube.barcode
+                  value: tube.barcode
 
     # For instructions on structure and syntax, see: 'app/exchanges/README.md'
     sample_sheet:

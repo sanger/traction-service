@@ -209,4 +209,12 @@ RSpec.describe Pacbio::Library, :pacbio do
       expect(pool.libraries.first.sequencing_plates).to eq([plate1, plate2])
     end
   end
+
+  context 'wells' do
+    it 'can have one or more' do
+      library = create(:pacbio_library)
+      library.wells << create_list(:pacbio_well, 5)
+      expect(library.wells.count).to eq(5)
+    end
+  end
 end

@@ -42,7 +42,7 @@ module RunCsv
     end
 
     def csv_sample_rows(well)
-      well.libraries.map do |library|
+      well.all_libraries.map do |library|
         # add row under well header for each sample in the well
         csv_data(sample: library, well:, row_type: :sample)
       end

@@ -74,12 +74,8 @@ RSpec.describe Pacbio::Well, :pacbio do
   context 'libraries' do
     let(:lib1)      { create(:pacbio_library, :tagged) }
     let(:lib2)      { create(:pacbio_library, :tagged) }
-    let(:pool1)     { create(:pacbio_pool, libraries: [lib1]) }
-    let(:pool2)     { create(:pacbio_pool, libraries: [lib2]) }
-
-    let(:pools)     { [pool1, pool2] }
     let(:libraries) { [lib1, lib2] }
-    let(:well)      { create(:pacbio_well, pools: [pool1, pool2]) }
+    let(:well)      { create(:pacbio_well, libraries:) }
 
     it 'can have one or more' do
       expect(well.libraries).to eq(libraries)
@@ -97,16 +93,29 @@ RSpec.describe Pacbio::Well, :pacbio do
     it 'can return a list of sample names' do
       sample_names = well.sample_names.split(':')
       expect(sample_names.length).to eq(2)
-      expect(sample_names.first).to eq(well.libraries.first.request.sample_name)
+      expect(sample_names.first).to eq(well.pools.first.libraries.first.request.sample_name)
 
       sample_names = well.sample_names(',').split(',')
       expect(sample_names.length).to eq(2)
-      expect(sample_names.first).to eq(well.libraries.first.request.sample_name)
+      expect(sample_names.first).to eq(well.pools.first.libraries.first.request.sample_name)
     end
 
     it 'can return a list of tags' do
-      tag_ids = well.libraries.collect(&:tag_id)
+      tag_ids = well.all_libraries.collect(&:tag_id)
       expect(well.tags).to eq(tag_ids)
+    end
+  end
+
+  context 'all_libraries' do
+    let(:pools) { create_list(:pacbio_pool, 2, library_count: 1) }
+    let(:libraries) { create_list(:pacbio_library, 2) }
+
+    it 'returns a combined list of libraries from pools and libraries' do
+      well = create(:pacbio_well, pools:, libraries:)
+
+      all_libraries = well.pools.collect(&:libraries).flatten + well.libraries
+      expect(well.all_libraries.length).to eq(4)
+      expect(well.all_libraries).to eq(all_libraries)
     end
   end
 

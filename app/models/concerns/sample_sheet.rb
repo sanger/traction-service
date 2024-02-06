@@ -35,14 +35,14 @@ module SampleSheet
 
     # Determines rendering of a row-per sample
     def show_row_per_sample?
-      sample_sheet_behaviour.show_row_per_sample?(libraries)
+      sample_sheet_behaviour.show_row_per_sample?(all_libraries)
     end
 
     # Returns libraries only if they should be shown per row
     def libraries_to_show_per_row
       return unless show_row_per_sample?
 
-      libraries
+      all_libraries
     end
 
     # Sample Name field

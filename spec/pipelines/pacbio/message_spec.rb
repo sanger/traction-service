@@ -76,14 +76,14 @@ RSpec.describe 'PacBio', :pacbio, type: :model do
         message_samples = message_well[:samples]
 
         message_samples.each_with_index do |message_sample, sample_index|
-          library = well.libraries[sample_index]
+          library = well.all_libraries[sample_index]
           request = library.request
 
           expect(message_sample[:cost_code]).to eq(request.cost_code)
           expect(message_sample[:pac_bio_library_tube_id_lims]).to eq(library.id)
           expect(message_sample[:pac_bio_library_tube_uuid]).to eq(library.uuid)
           expect(message_sample[:pac_bio_library_tube_name]).to eq(request.sample_name)
-          expect(message_sample[:pac_bio_library_tube_barcode]).to eq(library.pool.tube.barcode)
+          expect(message_sample[:pac_bio_library_tube_barcode]).to eq(library.tube.barcode)
           expect(message_sample[:sample_uuid]).to eq(request.sample.external_id)
           expect(message_sample[:study_uuid]).to eq(request.external_study_id)
           expect(message_sample[:tag_sequence]).to eq(library.tag.oligo)
@@ -99,7 +99,7 @@ RSpec.describe 'PacBio', :pacbio, type: :model do
   context 'when the run is Sequel IIe' do
     let(:run)            { create(:pacbio_sequel_run) }
     let(:libraries)      { create_list(:pacbio_library, 5, :tagged) }
-    let(:pool)           { create(:pacbio_pool, libraries:) }
+    let(:pool)           { create(:pacbio_pool) }
 
     let(:message)        { Message::Message.new(object: run, configuration: message_configuration) }
     let(:key)            { message.content[message_configuration.key] }
@@ -118,7 +118,7 @@ RSpec.describe 'PacBio', :pacbio, type: :model do
   context 'when the run is Revio' do
     let(:run)            { create(:pacbio_revio_run) }
     let(:libraries)      { create_list(:pacbio_library, 5, :tagged) }
-    let(:pool)           { create(:pacbio_pool, libraries:) }
+    let(:pool)           { create(:pacbio_pool) }
 
     let(:message)        { Message::Message.new(object: run, configuration: message_configuration) }
     let(:key)            { message.content[message_configuration.key] }

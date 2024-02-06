@@ -107,8 +107,8 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               nil,
               nil,
               nil,
-              well.libraries.first.barcode_name,
-              well.libraries.first.request.sample_name
+              well.all_libraries.first.barcode_name,
+              well.all_libraries.first.request.sample_name
             ])
           end
         end
@@ -289,10 +289,10 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               nil,
               nil,
               nil,
-              well.libraries.first.barcode_name,
+              well.all_libraries.first.barcode_name,
               nil,
               nil,
-              well.libraries.first.request.sample_name,
+              well.all_libraries.first.request.sample_name,
               nil,
               nil,
               nil,
