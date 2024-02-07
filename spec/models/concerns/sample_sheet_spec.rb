@@ -131,10 +131,10 @@ RSpec.describe SampleSheet do
     end
   end
 
-  context 'pool_barcode' do
-    it 'returns the first pools tube barcode in well' do
-      expected = well.pools.first.tube.barcode
-      expect(well.pool_barcode).to eq expected
+  context 'tube_barcode' do
+    it 'returns the first libraries tube barcode in well' do
+      expected = well.all_libraries.first.tube.barcode
+      expect(well.tube_barcode).to eq expected
     end
   end
 

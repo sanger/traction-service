@@ -46,9 +46,9 @@ module SampleSheet
     end
 
     # Sample Name field
-    def pool_barcode
-      # First pool in well's barcode as samples names are already contained in bio sample name
-      pools.first.tube.barcode
+    def tube_barcode
+      # Gets the firsts library barcode which will either be the pool barcode or the library barcode
+      all_libraries.first.tube.barcode
     end
 
     # find the plate given the plate_number

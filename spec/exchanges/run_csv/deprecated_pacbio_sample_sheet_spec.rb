@@ -65,7 +65,7 @@ RSpec.describe RunCsv::DeprecatedPacbioSampleSheet, type: :model do
               well.plate.run.name,
               'true', # well.collection?
               well.position,
-              well.pool_barcode,
+              well.tube_barcode,
               well.movie_time.to_s,
               well.insert_size.to_s,
               well.template_prep_kit_box_barcode,
@@ -167,7 +167,7 @@ RSpec.describe RunCsv::DeprecatedPacbioSampleSheet, type: :model do
               well.plate.run.name,
               'true', # well.collection?
               well.position,
-              well.pool_barcode,
+              well.tube_barcode,
               well.movie_time.to_s,
               well.insert_size.to_s,
               well.template_prep_kit_box_barcode,
@@ -258,7 +258,7 @@ RSpec.describe RunCsv::DeprecatedPacbioSampleSheet, type: :model do
               well.plate.run.name,
               'true', # well.collection?
               well.position,
-              well.pool_barcode,
+              well.tube_barcode,
               well.movie_time.to_s,
               well.insert_size.to_s,
               well.template_prep_kit_box_barcode,
@@ -363,7 +363,7 @@ RSpec.describe RunCsv::DeprecatedPacbioSampleSheet, type: :model do
               well.plate.run.name,
               'true', # well.collection?
               well.position,
-              well.pool_barcode,
+              well.tube_barcode,
               well.movie_time.to_s,
               well.insert_size.to_s,
               well.template_prep_kit_box_barcode,

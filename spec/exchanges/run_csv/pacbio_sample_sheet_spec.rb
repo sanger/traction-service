@@ -66,7 +66,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               well.plate.run.comments,
               'true', # well.collection?
               well.position_leading_zero,
-              well.pool_barcode,
+              well.tube_barcode,
               well.movie_acquisition_time.to_s,
               well.include_base_kinetics.to_s,
               well.library_concentration.to_s,
@@ -157,7 +157,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               well.plate.run.comments,
               'true', # well.collection?
               well.position_leading_zero,
-              well.pool_barcode,
+              well.tube_barcode,
               well.movie_acquisition_time.to_s,
               well.include_base_kinetics.to_s,
               well.library_concentration.to_s,
@@ -238,7 +238,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               well.plate.run.name,
               'true', # well.collection?
               well.position,
-              well.pool_barcode,
+              well.tube_barcode,
               well.movie_time.to_s,
               well.insert_size.to_s,
               well.template_prep_kit_box_barcode,
@@ -343,7 +343,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               well.plate.run.name,
               'true', # well.collection?
               well.position,
-              well.pool_barcode,
+              well.tube_barcode,
               well.movie_time.to_s,
               well.insert_size.to_s,
               well.template_prep_kit_box_barcode,
@@ -370,6 +370,74 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
 
         it 'must not have sample rows' do
           expect(parsed_csv.size).to eq 3
+        end
+      end
+
+      context 'when the run has libraries and pools' do
+        let(:pool) { create(:pacbio_pool, :tagged, library_count: 1) }
+        let(:library) { create(:pacbio_library, :tagged, pool: nil) }
+        let(:well1)   do
+          create(:pacbio_well, pre_extension_time: 2, generate_hifi: 'Do Not Generate',
+                               ccs_analysis_output: 'Yes', pools: [pool])
+        end
+        let(:well2) do
+          create(:pacbio_well, generate_hifi: 'On Instrument', ccs_analysis_output: 'No',
+                               libraries: [library], pools: [])
+        end
+        let(:wells) { [well1, well2] }
+
+        it 'must return a csv string' do
+          expect(csv_string).to be_a String
+        end
+
+        it 'must have the correct headers' do
+          headers = parsed_csv[0]
+
+          expected_headers = configuration.column_order
+          expect(headers).to eq(expected_headers)
+        end
+
+        it 'must have the correct well header rows' do
+          well_data_1 = parsed_csv[1]
+          well_data_2 = parsed_csv[3]
+          #  iterate through the wells under test
+          well_expectations = [
+            [well_data_1, well1],
+            [well_data_2, well2]
+          ]
+          well_expectations.each do |well_data, well|
+            expect(well_data).to eq([
+              well.plate.run.system_name,
+              well.plate.run.name,
+              'true', # well.collection?
+              well.position,
+              well.tube_barcode,
+              well.movie_time.to_s,
+              well.insert_size.to_s,
+              well.template_prep_kit_box_barcode,
+              well.binding_kit_box_barcode,
+              well.plate.sequencing_kit_box_barcode,
+              well.on_plate_loading_concentration.to_s,
+              well.plate.run.dna_control_complex_box_barcode,
+              well.plate.run.comments,
+              well.sample_is_barcoded.to_s,
+              nil, # barcode name - does not apply
+              well.barcode_set,
+              well.same_barcodes_on_both_ends_of_sequence.to_s,
+              well.find_sample_name,
+              well.automation_parameters,
+              well.ccs_analysis_output_include_kinetics_information,
+              well.loading_target_p1_plus_p2.to_s,
+              well.adaptive_loading_check.to_s,
+              well.ccs_analysis_output_include_low_quality_reads,
+              well.include_fivemc_calls_in_cpg_motifs,
+              well.demultiplex_barcodes
+            ])
+          end
+        end
+
+        it 'must not have sample rows' do
+          expect(parsed_csv.size).to eq 5
         end
       end
 

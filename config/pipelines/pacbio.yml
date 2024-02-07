@@ -109,7 +109,7 @@ default: &default
               with: :well
           Sample Name:
             type: :model
-            value: pool_barcode
+            value: tube_barcode
             populate:
               for:
                 - :well
@@ -278,7 +278,7 @@ default: &default
               with: :well
           Sample Name:
             type: :model
-            value: pool_barcode
+            value: tube_barcode
             populate:
               for:
                 - :well
@@ -481,7 +481,7 @@ default: &default
               value: position_leading_zero
             Well Name:
               type: :model
-              value: pool_barcode
+              value: tube_barcode
             Movie Acquisition Time (hours):
               type: :model
               value: movie_acquisition_time
@@ -568,7 +568,7 @@ default: &default
               value: position_leading_zero
             Sample Name:
               type: :model
-              value: pool_barcode
+              value: tube_barcode
             Movie Time per SMRT Cell (hours):
               type: :model
               value: movie_time
