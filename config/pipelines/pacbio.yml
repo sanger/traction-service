@@ -663,6 +663,7 @@ default: &default
           - Barcode Name
           - Bio Sample Name
           - Insert Size (bp)
+          - Use Adaptive Loading
         fields:
          _sorted_wells:
           type: :array
@@ -722,6 +723,9 @@ default: &default
             Insert Size (bp):
               type: :model
               value: insert_size
+            Use Adaptive Loading:
+              type: :string
+              value: FALSE
             samples:
               type: :array
               value: libraries_to_show_per_row
