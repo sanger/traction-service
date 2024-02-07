@@ -450,7 +450,8 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               well.barcode_set,
               nil, # barcode name - does not apply
               nil, # sample name - does not apply
-              well.insert_size.to_s
+              well.insert_size.to_s,
+              'false' # Default for Use Adaptive Loading
             ])
           end
         end
@@ -485,6 +486,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               nil,
               well.libraries.first.barcode_name,
               well.libraries.first.request.sample_name,
+              nil,
               nil
             ])
           end
@@ -543,7 +545,8 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               well.barcode_set,
               nil, # barcode name - does not apply
               well.find_sample_name,
-              well.insert_size.to_s
+              well.insert_size.to_s,
+              'false' # Default for Use Adaptive Loading
             ])
           end
         end
