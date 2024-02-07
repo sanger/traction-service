@@ -208,6 +208,14 @@ RSpec.describe Pacbio::Library, :pacbio do
       create(:pacbio_well, pools: [pool], plate: plate2)
       expect(pool.libraries.first.sequencing_plates).to eq([plate1, plate2])
     end
+
+    it 'goes through wells when the libary is not in a pool' do
+      plate = build(:pacbio_plate)
+      create(:pacbio_run, plates: [plate])
+      library = create(:pacbio_library, pool: nil)
+      create(:pacbio_well, libraries: [library], plate:)
+      expect(library.sequencing_plates).to eq([plate])
+    end
   end
 
   context 'wells' do
