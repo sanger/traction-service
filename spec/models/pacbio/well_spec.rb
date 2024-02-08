@@ -30,11 +30,16 @@ RSpec.describe Pacbio::Well, :pacbio do
   end
 
   context 'insert size' do
-    let(:pools)     { create_list(:pacbio_pool, 2) }
-    let(:well)      { create(:pacbio_well, pools:) }
+    it 'gets the insert size of the first pool in the well' do
+      pools = create_list(:pacbio_pool, 2)
+      well = create(:pacbio_well, pools:)
+      expect(pools[0].insert_size).to eq(well.insert_size)
+    end
 
-    it 'gest the fragment size of the first pool in the well' do
-      expect(well.pools[0].insert_size).to eq(well.insert_size)
+    it 'gets the insert size of the first library in the well' do
+      libraries = create_list(:pacbio_library, 2)
+      well = create(:pacbio_well, libraries:, pools: [])
+      expect(libraries[0].insert_size).to eq(well.insert_size)
     end
   end
 
@@ -62,12 +67,26 @@ RSpec.describe Pacbio::Well, :pacbio do
 
     it 'with pools' do
       well = create(:pacbio_well, pools:)
-      expect(well).to be_pools
+      expect(well.pools?).to be true
     end
 
     it 'no pools' do
       well = build(:pacbio_well, pool_count: 0)
-      expect(well).not_to be_pools
+      expect(well.pools?).to be false
+    end
+  end
+
+  describe '#libraries?' do
+    let(:libraries) { create_list(:pacbio_library, 2) }
+
+    it 'with libraries' do
+      well = create(:pacbio_well, libraries:)
+      expect(well.libraries?).to be true
+    end
+
+    it 'no libraries' do
+      well = build(:pacbio_well, libraries: [])
+      expect(well.libraries?).to be false
     end
   end
 
@@ -128,11 +147,16 @@ RSpec.describe Pacbio::Well, :pacbio do
   end
 
   context 'template prep kit box barcode' do
-    let(:well) { create(:pacbio_well_with_pools) }
+    it 'gets the template prep kit box barcode of the first pool in the well' do
+      pools = create_list(:pacbio_pool, 2)
+      well = create(:pacbio_well, pools:)
+      expect(pools[0].template_prep_kit_box_barcode).to eq(well.template_prep_kit_box_barcode)
+    end
 
-    it 'returns the well pools template_prep_kit_box_barcode' do
-      expected = well.pools.first.template_prep_kit_box_barcode
-      expect(well.template_prep_kit_box_barcode).to eq expected
+    it 'gets the template prep kit box barcode of the first library in the well' do
+      libraries = create_list(:pacbio_library, 2)
+      well = create(:pacbio_well, libraries:, pools: [])
+      expect(libraries[0].template_prep_kit_box_barcode).to eq(well.template_prep_kit_box_barcode)
     end
   end
 

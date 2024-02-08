@@ -95,12 +95,24 @@ module Pacbio
       pools.present?
     end
 
+    def libraries?
+      libraries.present?
+    end
+
     def template_prep_kit_box_barcode
-      pools? ? pools.first.template_prep_kit_box_barcode : ''
+      if pools?
+        pools.first.template_prep_kit_box_barcode
+      elsif libraries?
+        libraries.first.template_prep_kit_box_barcode
+      end
     end
 
     def insert_size
-      pools? ? pools.first.insert_size : ''
+      if pools?
+        pools.first.insert_size
+      elsif libraries?
+        libraries.first.insert_size
+      end
     end
 
     def collection?
