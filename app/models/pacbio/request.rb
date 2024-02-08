@@ -6,6 +6,7 @@ module Pacbio
   class Request < ApplicationRecord
     include TubeMaterial
     include WellMaterial
+    include Aliquotable
 
     attribute :cost_code, default: -> { Rails.application.config.pacbio_request_cost_code }
 
@@ -21,6 +22,17 @@ module Pacbio
     validates :external_study_id, uuid: true
 
     validates(*Pacbio.required_request_attributes, presence: true)
+
+    after_create :generate_primary_aliquot
+
+    # While this aliquot is not volume tracked we can just create it with empty data
+    def generate_primary_aliquot
+      Aliquot.create!(
+        source: self,
+        aliquot_type: :primary,
+        state: :created
+      )
+    end
 
     def container
       tube || well

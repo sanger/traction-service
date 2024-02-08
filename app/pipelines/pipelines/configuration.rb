@@ -51,8 +51,8 @@ module Pipelines
         end
       end
 
-      def each(&)
-        children.each(&)
+      def each(...)
+        children.each(...)
       end
 
       # Return the version of the item

@@ -34,12 +34,12 @@ namespace :pacbio_data do
           volume: 1,
           concentration: 1,
           template_prep_kit_box_barcode: '029979102141700063023',
-          insert_size: 100,
+          insert_size: 1000,
           pacbio_request_id: @requests_generator.next.requestable.id,
           tag_id: (tags.next.id if tag_name)
         }
       end
-      Pacbio::Pool.create!(tube: Tube.create, library_attributes: libs, volume: 1, concentration: 1, insert_size: 100, template_prep_kit_box_barcode: '029979102141700063023')
+      Pacbio::Pool.create!(tube: Tube.create, library_attributes: libs, volume: 1, concentration: 1, insert_size: 1000, template_prep_kit_box_barcode: '029979102141700063023')
     end
 
     # pools
@@ -61,10 +61,11 @@ namespace :pacbio_data do
 
     print '-> Finding Pacbio SMRT Link versions...'
     v11 = Pacbio::SmrtLinkVersion.find_by!(name: 'v11')
-    v11.update(default: false, active: false)
     v12_revio = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_revio')
     v12_sequel_iie = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_sequel_iie')
-    v12_sequel_iie.update(default: true, active: true)
+    v13_revio = Pacbio::SmrtLinkVersion.find_by!(name: 'v13_revio')
+    v13_revio.update(default: true, active: true)
+    v13_sequel_iie = Pacbio::SmrtLinkVersion.find_by!(name: 'v13_sequel_iie')
     print COMPLETED
 
     puts '-> Creating pacbio runs:'
@@ -139,7 +140,7 @@ namespace :pacbio_data do
         name: "RUN-#{v12_revio.name}-#{pool_name}-#{total_plate}_plate",
         system_name: Pacbio::Run.system_names['Revio'],
         smrt_link_version: v12_revio,
-        dna_control_complex_box_barcode: "DCCB_#{barcode}",
+        dna_control_complex_box_barcode: 'Lxxxxx102249600123199',
         plates: (1..total_plate).map do |plate_number|
           serial = barcode(length: 3)
           sequencing_kit_box_barcode = "10211880003110400#{serial}20231226"
@@ -168,7 +169,7 @@ namespace :pacbio_data do
         name: "RUN-#{v12_sequel_iie.name}-#{pool_name}-#{total_plate}_plate",
         system_name: Pacbio::Run.system_names['Sequel IIe'],
         smrt_link_version: v12_sequel_iie,
-        dna_control_complex_box_barcode: "DCCB_#{barcode}",
+        dna_control_complex_box_barcode: 'Lxxxxx102249600123199',
         plates: (1..total_plate).map do |plate_number|
           Pacbio::Plate.new(
             sequencing_kit_box_barcode: '130429101826100021624',
@@ -177,11 +178,73 @@ namespace :pacbio_data do
               pools: [pool],
               row: 'A',
               column: 1,
+              pre_extension_time: 2,
+              loading_target_p1_plus_p2: 0.85,
               ccs_analysis_output_include_kinetics_information:	'No',
               ccs_analysis_output_include_low_quality_reads:	'No',
-              include_fivemc_calls_in_cpg_motifs:	'Yes',
+              include_fivemc_calls_in_cpg_motifs:	'No',
               demultiplex_barcodes:	'In SMRT Link',
-              on_plate_loading_concentration: 1,
+              on_plate_loading_concentration: 105,
+              binding_kit_box_barcode: '030425102194100010424',
+              movie_time: '20.0'
+            )]
+          )
+        end
+      )
+    end
+    print COMPLETED
+
+    print "   -> Creating runs for #{v13_revio.name}..."
+    total_plates[:revio].product(pools[:revio]).each do |total_plate, (pool_name, pool)|
+      Pacbio::Run.create!(
+        name: "RUN-#{v13_revio.name}-#{pool_name}-#{total_plate}_plate",
+        system_name: Pacbio::Run.system_names['Revio'],
+        smrt_link_version: v13_revio,
+        dna_control_complex_box_barcode: 'Lxxxxx102249600123199',
+        plates: (1..total_plate).map do |plate_number|
+          serial = barcode(length: 3)
+          sequencing_kit_box_barcode = "10211880003110400#{serial}20231226"
+          Pacbio::Plate.new(
+            sequencing_kit_box_barcode:,
+            plate_number:,
+            wells: [Pacbio::Well.new(
+              pools: [pool],
+              row: 'A',
+              column: 1,
+              pre_extension_time: 2,
+              movie_acquisition_time:	'24.0',
+              include_base_kinetics: 'True',
+              library_concentration: 1,
+              polymerase_kit:	'030116102739100011124'
+            )]
+          )
+        end
+      )
+    end
+    print COMPLETED
+
+    print "   -> Creating runs for #{v13_sequel_iie.name}..."
+    total_plates[:sequel_iie].product(pools[:sequel_iie]).each do |total_plate, (pool_name, pool)|
+      Pacbio::Run.create!(
+        name: "RUN-#{v13_sequel_iie.name}-#{pool_name}-#{total_plate}_plate",
+        system_name: Pacbio::Run.system_names['Sequel IIe'],
+        smrt_link_version: v13_sequel_iie,
+        dna_control_complex_box_barcode: 'Lxxxxx102249600123199',
+        plates: (1..total_plate).map do |plate_number|
+          Pacbio::Plate.new(
+            sequencing_kit_box_barcode: '130429101826100021624',
+            plate_number:,
+            wells: [Pacbio::Well.new(
+              pools: [pool],
+              row: 'A',
+              column: 1,
+              pre_extension_time: 2,
+              loading_target_p1_plus_p2: 0.85,
+              ccs_analysis_output_include_kinetics_information:	'No',
+              ccs_analysis_output_include_low_quality_reads:	'No',
+              include_fivemc_calls_in_cpg_motifs:	'No',
+              demultiplex_barcodes:	'In SMRT Link',
+              on_plate_loading_concentration: 105,
               binding_kit_box_barcode: '030425102194100010424',
               movie_time: '20.0'
             )]

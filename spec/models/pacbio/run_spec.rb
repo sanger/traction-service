@@ -7,6 +7,8 @@ RSpec.describe Pacbio::Run, :pacbio do
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
   let!(:version12_revio) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
   let!(:version12_sequel_iie) { create(:pacbio_smrt_link_version, name: 'v12_sequel_iie') }
+  let!(:version13_revio) { create(:pacbio_smrt_link_version, name: 'v13_revio') }
+  let!(:version13_sequel_iie) { create(:pacbio_smrt_link_version, name: 'v13_sequel_iie') }
 
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_revio_run }
@@ -123,6 +125,16 @@ RSpec.describe Pacbio::Run, :pacbio do
 
     it 'must use the simple config style for v12_sequel_iie' do
       run = create(:pacbio_sequel_run, smrt_link_version: version12_sequel_iie)
+      expect(run.use_simpler_sample_sheets?).to be(true)
+    end
+
+    it 'must use the simple config style for v13_revio' do
+      run = create(:pacbio_sequel_run, smrt_link_version: version13_revio)
+      expect(run.use_simpler_sample_sheets?).to be(true)
+    end
+
+    it 'must use the simple config style for v13_sequel_iie' do
+      run = create(:pacbio_sequel_run, smrt_link_version: version13_sequel_iie)
       expect(run.use_simpler_sample_sheets?).to be(true)
     end
 

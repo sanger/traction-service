@@ -25,7 +25,15 @@ default: &default
     v12_sequel_iie:
       name: v12_sequel_iie
       active: true
+      default: false
+    v13_revio:
+      name: v13_revio
+      active: true
       default: true
+    v13_sequel_iie:
+      name: v13_sequel_iie
+      active: true
+      default: false
 
   options:
     ccs_analysis_output:
@@ -65,6 +73,7 @@ default: &default
       versions:
         - v11
         - v12_sequel_iie
+        - v13_sequel_iie
     ccs_analysis_output_include_low_quality_reads:
       key: ccs_analysis_output_include_low_quality_reads
       label: "Include Low Quality Reads"
@@ -78,6 +87,7 @@ default: &default
       versions:
         - v11
         - v12_sequel_iie
+        - v13_sequel_iie
     include_fivemc_calls_in_cpg_motifs:
       key: include_fivemc_calls_in_cpg_motifs
       label: "Include 5mC Calls In CpG Motifs"
@@ -91,6 +101,7 @@ default: &default
       versions:
         - v11
         - v12_sequel_iie
+        - v13_sequel_iie
     demultiplex_barcodes:
       key: demultiplex_barcodes
       label: "Demultiplex Barcodes"
@@ -104,6 +115,7 @@ default: &default
       versions:
         - v11
         - v12_sequel_iie
+        - v13_sequel_iie
     on_plate_loading_concentration:
       key: on_plate_loading_concentration
       label: "On Plate Loading Concentration (mP)"
@@ -115,6 +127,7 @@ default: &default
         - v10
         - v11
         - v12_sequel_iie
+        - v13_sequel_iie
     binding_kit_box_barcode:
       key: binding_kit_box_barcode
       label: "Binding Kit Box Barcode"
@@ -126,6 +139,7 @@ default: &default
         - v10
         - v11
         - v12_sequel_iie
+        - v13_sequel_iie
     pre_extension_time:
       key: pre_extension_time
       label: "Pre-extension time"
@@ -139,6 +153,7 @@ default: &default
         - v11
         - v12_revio
         - v12_sequel_iie
+        - v13_sequel_iie
     loading_target_p1_plus_p2:
       key: loading_target_p1_plus_p2
       label: "Loading Target (P1 + P2)"
@@ -153,6 +168,7 @@ default: &default
         - v10
         - v11
         - v12_sequel_iie
+        - v13_sequel_iie
     movie_time:
       key: movie_time
       label: "Movie Time (hrs)"
@@ -168,6 +184,7 @@ default: &default
         - v10
         - v11
         - v12_sequel_iie
+        - v13_sequel_iie
     movie_acquisition_time:
       key: movie_acquisition_time
       label: "Movie Acquisition Time (hrs)"
@@ -181,6 +198,7 @@ default: &default
       data_type: number
       versions:
         - v12_revio
+        - v13_revio
     include_base_kinetics:
       key: include_base_kinetics
       label: "Include Base Kinetics"
@@ -193,6 +211,7 @@ default: &default
       select_options: *select_true_false
       versions:
         - v12_revio
+        - v13_revio
     library_concentration:
       key: library_concentration
       label: "Library Concentration (pM)"
@@ -202,6 +221,7 @@ default: &default
       data_type: number
       versions:
         - v12_revio
+        - v13_revio
     polymerase_kit:
       key: polymerase_kit
       label: "Polymerase Kit"
@@ -211,6 +231,7 @@ default: &default
       data_type: string
       versions:
         - v12_revio
+        - v13_revio
 
 development: *default
 test: *default

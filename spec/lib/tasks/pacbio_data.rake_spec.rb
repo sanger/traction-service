@@ -12,6 +12,8 @@ RSpec.describe 'RakeTasks' do
     Pacbio::SmrtLinkVersion.find_by(name: 'v11') || create(:pacbio_smrt_link_version, name: 'v11')
     Pacbio::SmrtLinkVersion.find_by(name: 'v12_revio') || create(:pacbio_smrt_link_version, name: 'v12_revio')
     Pacbio::SmrtLinkVersion.find_by(name: 'v12_sequel_iie') || create(:pacbio_smrt_link_version, name: 'v12_sequel_iie', default: true)
+    Pacbio::SmrtLinkVersion.find_by(name: 'v13_revio') || create(:pacbio_smrt_link_version, name: 'v13_revio')
+    Pacbio::SmrtLinkVersion.find_by(name: 'v13_sequel_iie') || create(:pacbio_smrt_link_version, name: 'v13_sequel_iie')
   end
 
   describe 'create pacbio runs' do
@@ -38,10 +40,12 @@ RSpec.describe 'RakeTasks' do
                -> Creating runs for v11...\b\b\b √#{' '}
                -> Creating runs for v12_revio...\b\b\b √#{' '}
                -> Creating runs for v12_sequel_iie...\b\b\b √#{' '}
+               -> Creating runs for v13_revio...\b\b\b √#{' '}
+               -> Creating runs for v13_sequel_iie...\b\b\b √#{' '}
             -> Pacbio runs successfully created
           HEREDOC
         ).to_stdout
-      expect(Pacbio::Run.count).to eq(8)
+      expect(Pacbio::Run.count).to eq(14)
     end
   end
 end
