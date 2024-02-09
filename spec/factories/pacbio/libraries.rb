@@ -8,7 +8,6 @@ FactoryBot.define do
     insert_size { 100 }
     request { association :pacbio_request }
     tag
-    pool { association :pacbio_pool, libraries: [instance] }
     tube { nil }
     primary_aliquot { association :aliquot, source: instance, aliquot_type: :primary }
 

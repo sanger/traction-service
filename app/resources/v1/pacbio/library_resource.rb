@@ -32,6 +32,17 @@ module V1
         [{ field: 'created_at', direction: :desc }]
       end
 
+      def self.records(options = {})
+        # If we go directly to the library resource we want to include only libraries withput pools
+        # Otherwise we only want to return all libraries
+        if options[:include_directives]
+           .instance_variable_get(:@resource_klass) == V1::Pacbio::LibraryResource
+          _model_class.where(pool: nil)
+        else
+          _model_class.all
+        end
+      end
+
       filter :sample_name, apply: lambda { |records, value, _options|
         # We have to join requests and samples here in order to find by sample name
         records.joins(:sample).where(sample: { name: value })

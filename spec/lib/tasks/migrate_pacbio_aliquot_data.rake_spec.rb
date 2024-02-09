@@ -69,7 +69,7 @@ RSpec.describe 'RakeTasks' do
         <<~HEREDOC
           -> Deleting all request primary aliquots
         HEREDOC
-      ).to_stdout.and change(Aliquot, :count).from(10).to(5)
+      ).to_stdout.and change(Aliquot, :count).from(15).to(10)
     end
   end
 
