@@ -33,7 +33,7 @@ module V1
       end
 
       def self.records(options = {})
-        # If we go directly to the library resource we want to include only libraries withput pools
+        # If we go directly to the library resource we want to include only libraries without pools
         # Otherwise we only want to return all libraries
         if options[:include_directives]
            .instance_variable_get(:@resource_klass) == V1::Pacbio::LibraryResource
