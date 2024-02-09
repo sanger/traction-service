@@ -262,6 +262,7 @@ RSpec.describe 'RunsController' do
 
     context 'smrtlink v12_revio on success' do
       let(:pool1) { create(:pacbio_pool) }
+      let(:library1) { create(:pacbio_library) }
 
       let(:body) do
         {
@@ -284,7 +285,8 @@ RSpec.describe 'RunsController' do
                     pre_extension_time: '2',
                     include_base_kinetics: 'True',
                     polymerase_kit: 'ABC123',
-                    pool_ids: [pool1.id]
+                    pool_ids: [pool1.id],
+                    library_ids: [library1.id]
                   }
                 ]
               }]
@@ -314,6 +316,10 @@ RSpec.describe 'RunsController' do
         expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::WellPool, :count).by(1)
       end
 
+      it 'creates a well library' do
+        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::WellLibrary, :count).by(1)
+      end
+
       it 'creates a run with the correct attributes' do
         post v1_pacbio_runs_path, params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
@@ -328,6 +334,8 @@ RSpec.describe 'RunsController' do
         expect(run.smrt_link_version).to be_present
         expect(run.smrt_link_version).to eq(version12)
         expect(run.pacbio_smrt_link_version_id).to eq(version12.id)
+        expect(run.plates.first.wells.first.libraries.first).to eq(library1)
+        expect(run.plates.first.wells.first.pools.first).to eq(pool1)
       end
 
       it_behaves_like 'publish_messages_on_create'
@@ -398,8 +406,6 @@ RSpec.describe 'RunsController' do
       end
 
       context 'when there no wells' do
-        let(:pool1) { create(:pacbio_pool) }
-
         let(:body) do
           {
             data: {
@@ -444,6 +450,7 @@ RSpec.describe 'RunsController' do
 
       context 'when there is missing well data' do
         let(:pool1) { create(:pacbio_pool) }
+        let(:library1) { create(:pacbio_library) }
 
         let(:body) do
           {
@@ -459,7 +466,8 @@ RSpec.describe 'RunsController' do
                   plate_number: 1,
                   wells_attributes: [{
                     row: 'A',
-                    pool_ids: [pool1.id]
+                    pool_ids: [pool1.id],
+                    library_ids: [library1.id]
                   }]
                 }]
               }
@@ -494,7 +502,7 @@ RSpec.describe 'RunsController' do
         end
       end
 
-      context 'when there are no well pools' do
+      context 'when there are no well pools or well libraries' do
         let(:body) do
           {
             data: {
@@ -508,7 +516,8 @@ RSpec.describe 'RunsController' do
                   sequencing_kit_box_barcode: 'DM0001100861800123121',
                   plate_number: 1,
                   wells_attributes: [
-                    { row: 'A',
+                    {
+                      row: 'A',
                       column: '1',
                       movie_time: 8,
                       on_plate_loading_concentration: 8.35,
@@ -520,7 +529,9 @@ RSpec.describe 'RunsController' do
                       include_fivemc_calls_in_cpg_motifs: 'Yes',
                       ccs_analysis_output_include_kinetics_information: 'Yes',
                       demultiplex_barcodes: 'In SMRT Link',
-                      pool_ids: [] }
+                      pool_ids: [],
+                      library_ids: []
+                    }
                   ]
                 }]
               }
@@ -551,7 +562,7 @@ RSpec.describe 'RunsController' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq 'plates.wells.pools - there must be at least one pool'
+          expect(errors[0]['detail']).to eq 'plates.wells.base - There must be at least 1 pool or library for well A1'
         end
       end
 
@@ -645,6 +656,69 @@ RSpec.describe 'RunsController' do
                       ccs_analysis_output_include_kinetics_information: 'Yes',
                       demultiplex_barcodes: 'In SMRT Link',
                       pool_ids: [pool1.id, pool1.id] }
+                  ]
+                }]
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a unprocessable_entity status' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'does not create a run' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Run, :count)
+        end
+
+        it 'does not create a a well' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Well, :count)
+        end
+
+        it 'has the correct error messages' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq 'plates.wells.tags - are not unique within the libraries for well A1'
+        end
+      end
+
+      context 'when there is one well with two duplicate (library tags) libraries' do
+        let!(:library1) { create(:pacbio_library, :tagged) }
+
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
+                system_name: 'Sequel II',
+                comments: 'A Run Comment',
+                pacbio_smrt_link_version_id: version11.id,
+                plates_attributes: [{
+                  sequencing_kit_box_barcode: 'DM0001100861800123121',
+                  plate_number: 1,
+                  wells_attributes: [
+                    { row: 'A',
+                      column: '1',
+                      movie_time: 8,
+                      on_plate_loading_concentration: 8.35,
+                      pre_extension_time: '2',
+                      generate_hifi: 'In SMRT Link',
+                      ccs_analysis_output: 'Yes',
+                      binding_kit_box_barcode: 'DM1117100862200111711',
+                      ccs_analysis_output_include_low_quality_reads: 'Yes',
+                      include_fivemc_calls_in_cpg_motifs: 'Yes',
+                      ccs_analysis_output_include_kinetics_information: 'Yes',
+                      demultiplex_barcodes: 'In SMRT Link',
+                      library_ids: [library1.id, library1.id] }
                   ]
                 }]
               }

@@ -76,10 +76,6 @@ en:
           attributes:
             wells:
               plate_min_wells: there must be at least one well
-        pacbio/well:
-          attributes:
-            pools:
-              well_min_pools: there must be at least one pool
         ont/run:
           attributes:
             flowcells:
