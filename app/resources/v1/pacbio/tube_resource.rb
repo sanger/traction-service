@@ -9,7 +9,7 @@ module V1
       has_many :materials, class_name: 'ContainerMaterial', relation_name: :container_materials,
                            foreign_key_on: :related
       has_many :pools, relation_name: :pacbio_pools, class_name: 'Pool'
-      has_one :library, relation_name: :pacbio_libraries, class_name: 'Library'
+      has_one :library, relation_name: :pacbio_library, class_name: 'Library'
       has_many :requests, relation_name: :pacbio_requests
 
       # Filters

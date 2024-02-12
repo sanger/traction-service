@@ -20,9 +20,21 @@ class Tube < ApplicationRecord
   scope :by_barcode, ->(*barcodes) { where(barcode: barcodes) }
   scope :by_pipeline,
         lambda { |pipeline|
-          joins(:container_materials).where(
-            'container_materials.material_type LIKE ?', "#{pipeline.capitalize}::%"
-          )
+          case pipeline
+          when :pacbio
+            left_outer_joins(:pacbio_pools, :pacbio_library, :pacbio_requests).where(
+              'pacbio_pools.id IS NOT NULL OR pacbio_libraries.id IS NOT NULL OR
+               pacbio_requests.id IS NOT NULL'
+            )
+          when :ont
+            left_outer_joins(:ont_pools, :ont_requests).where(
+              'ont_pools.id IS NOT NULL OR ont_requests.id IS NOT NULL'
+            )
+          else
+            joins(:container_materials).where(
+              'container_materials.material_type LIKE ?', "#{pipeline.capitalize}::%"
+            )
+          end
         }
 
   def identifier

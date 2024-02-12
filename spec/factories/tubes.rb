@@ -6,10 +6,14 @@ FactoryBot.define do
       barcode
     end
 
+    ont_requests { [] }
+    ont_pools { [] }
+    pacbio_requests { [] }
+    pacbio_pools { [] }
+    pacbio_library { nil }
+
     transient do
-      requests { [] }
-      libraries { [] }
-      materials { requests + libraries }
+      materials { pacbio_requests + ont_requests }
     end
 
     after :create do |tube, evaluator|
@@ -20,40 +24,24 @@ FactoryBot.define do
       end
     end
 
-    factory :tube_with_saphyr_request do
-      transient do
-        requests { create_list(:saphyr_request, 1) }
-      end
-    end
-
-    factory :tube_with_saphyr_library do
-      transient do
-        libraries { create_list(:saphyr_library, 1) }
-      end
-    end
-
     factory :tube_with_pacbio_library do
-      transient do
-        libraries { create_list(:pacbio_library, 1) }
-      end
+      pacbio_library { association(:pacbio_library) }
+    end
+
+    factory :tube_with_pacbio_pool do
+      pacbio_pools { create_list(:pacbio_pool, 1, tube: instance) }
     end
 
     factory :tube_with_pacbio_request do
-      transient do
-        requests { create_list(:pacbio_request, 1) }
-      end
-    end
-
-    factory :tube_with_ont_library do
-      transient do
-        libraries { create_list(:ont_library, 1) }
-      end
+      pacbio_requests { create_list(:pacbio_request, 1) }
     end
 
     factory :tube_with_ont_request do
-      transient do
-        requests { create_list(:ont_request, 1) }
-      end
+      ont_requests { create_list(:ont_request, 1) }
+    end
+
+    factory :tube_with_ont_pool do
+      ont_pools { create_list(:ont_pool, 1, tube: instance) }
     end
   end
 end

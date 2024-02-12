@@ -176,7 +176,7 @@ RSpec.describe Pacbio::Library, :pacbio do
 
     context 'from a tube' do
       before do
-        create(:tube_with_pacbio_request, requests: [library.request], barcode: 'TRAC-2-757')
+        create(:tube_with_pacbio_request, pacbio_requests: [library.request], barcode: 'TRAC-2-757')
       end
 
       it 'returns the plate barcode and well' do
