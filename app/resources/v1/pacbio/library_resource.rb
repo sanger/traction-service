@@ -34,7 +34,7 @@ module V1
       def self.records(_options = {})
         # We only want to include only libraries without pools
         # Libraries with pools should be referenced via the LibraryPoolResource
-        _model_class.where(pool: nil)
+        super.where(pool: nil)
       end
 
       filter :sample_name, apply: lambda { |records, value, _options|
