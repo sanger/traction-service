@@ -11,7 +11,7 @@ module V1
 
       attributes :state, :volume, :concentration, :template_prep_kit_box_barcode,
                  :insert_size, :created_at, :deactivated_at, :source_identifier,
-                 :pacbio_request_id, :tag_id, :primary_aliquot_attributes
+                 :pacbio_request_id, :tag_id
 
       has_one :request, always_include_optional_linkage_data: true
       # If we don't specify the relation_name here, jsonapi-resources
@@ -31,17 +31,6 @@ module V1
         super.preload(source_well: :plate, request: :sample,
                       tag: :tag_set,
                       container_material: { container: :barcode })
-      end
-
-      def primary_aliquot_attributes=(primary_aliquot_parameters)
-        @model.primary_aliquot_attributes = primary_aliquot_parameters.permit(
-          :id, :volume, :template_prep_kit_box_barcode,
-          :concentration, :insert_size, :tag_id
-        )
-      end
-
-      def fetchable_fields
-        super - [:primary_aliquot_attributes]
       end
 
       def created_at
