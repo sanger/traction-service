@@ -2,8 +2,9 @@
 
 module V1
   module Pacbio
-    # LibraryResource
-    class LibraryResource < JSONAPI::Resource
+    # A temporary PacBio Library resource that returns all libraries
+    # This allows for pool libraries to be retrieved from the pools resource
+    class LibraryPoolResource < JSONAPI::Resource
       include Shared::RunSuitability
 
       model_name 'Pacbio::Library'
@@ -18,6 +19,7 @@ module V1
       # In this case I can see it using container_associations
       # so seems to be linking the wrong tube relationship.
       has_one :tag, always_include_optional_linkage_data: true
+      has_one :pool, always_include_optional_linkage_data: true
       has_one :tube, relation_name: :tube, always_include_optional_linkage_data: true
       has_one :source_well, relation_name: :source_well, class_name: 'Well'
       has_one :source_plate, relation_name: :source_plate, class_name: 'Plate'
@@ -29,12 +31,6 @@ module V1
 
       def self.default_sort
         [{ field: 'created_at', direction: :desc }]
-      end
-
-      def self.records(_options = {})
-        # We only want to include only libraries without pools
-        # Libraries with pools should be referenced via the LibraryPoolResource
-        _model_class.where(pool: nil)
       end
 
       filter :sample_name, apply: lambda { |records, value, _options|
