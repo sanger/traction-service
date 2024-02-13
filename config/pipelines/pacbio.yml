@@ -698,7 +698,7 @@ default: &default
               value: position_leading_zero
             Well Name:
               type: :model
-              value: pool_barcode
+              value: tube_barcode
             Movie Acquisition Time (hours):
               type: :model
               value: movie_acquisition_time

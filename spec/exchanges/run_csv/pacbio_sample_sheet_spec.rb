@@ -509,7 +509,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               well.plate.run.comments,
               'true', # well.collection?
               well.position_leading_zero,
-              well.pool_barcode,
+              well.tube_barcode,
               well.movie_acquisition_time.to_s,
               well.include_base_kinetics.to_s,
               well.library_concentration.to_s,
@@ -552,8 +552,8 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               nil,
               nil,
               nil,
-              well.libraries.first.barcode_name,
-              well.libraries.first.request.sample_name,
+              well.all_libraries.first.barcode_name,
+              well.all_libraries.first.request.sample_name,
               nil,
               nil
             ])
@@ -604,7 +604,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               well.plate.run.comments,
               'true', # well.collection?
               well.position_leading_zero,
-              well.pool_barcode,
+              well.tube_barcode,
               well.movie_acquisition_time.to_s,
               well.include_base_kinetics.to_s,
               well.library_concentration.to_s,
