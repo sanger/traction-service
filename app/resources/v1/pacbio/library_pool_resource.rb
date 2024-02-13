@@ -27,38 +27,6 @@ module V1
       has_one :primary_aliquot, always_include_optional_linkage_data: true,
                                 relation_name: :primary_aliquot, class_name: 'Aliquot'
 
-      paginator :paged
-
-      def self.default_sort
-        [{ field: 'created_at', direction: :desc }]
-      end
-
-      filter :sample_name, apply: lambda { |records, value, _options|
-        # We have to join requests and samples here in order to find by sample name
-        records.joins(:sample).where(sample: { name: value })
-      }
-      filter :barcode, apply: lambda { |records, value, _options|
-        # If wildcard is the last value passed we want to do a wildcard search
-        if value.last == 'wildcard'
-          return records.joins(:tube).where('tubes.barcode LIKE ?', "%#{value[0]}%")
-        end
-
-        records.joins(:tube).where(tubes: { barcode: value })
-      }
-      filter :source_identifier, apply: lambda { |records, value, _options|
-        # First we check tubes to see if there are any given the source identifier
-        recs = records.joins(:source_tube).where(source_tube: { barcode: value })
-        return recs unless recs.empty?
-
-        # If no tubes match the source identifier we check plates
-        # If source identifier specifies a well we need to match samples to well
-        # TODO: The below value[0] means we only take the first value passed in the filter
-        #       If we want to support multiple values in one filter we would need to update this
-        plate, well = value[0].split(':')
-        recs = records.joins(:source_plate).where(source_plate: { barcode: plate })
-        well ? recs.joins(:source_well).where(source_well: { position: well }) : recs
-      }
-
       def self.records_for_populate(*_args)
         super.preload(source_well: :plate, request: :sample,
                       tag: :tag_set,
