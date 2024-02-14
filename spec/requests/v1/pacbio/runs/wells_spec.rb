@@ -51,8 +51,8 @@ RSpec.describe 'WellsController' do
           )
         end
 
-        wells.collect(&:libraries).flatten.each do |library|
-          library_pools_attributes = find_included_resource(type: 'library_pools', id: pacbio_library.id)['attributes']
+        wells.collect(&:pools).flatten.collect(&:libraries).flatten.each do |library|
+          library_pools_attributes = find_included_resource(type: 'library_pools', id: library.id)['attributes']
           expect(library_pools_attributes).to include(
             'concentration' => library.concentration,
             'volume' => library.volume,
