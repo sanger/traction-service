@@ -3,8 +3,8 @@
 module V1
   module Pacbio
     module Runs
-      # LibraryResource
-      class LibraryResource < V1::Pacbio::LibraryResource
+      # LibraryPoolResource
+      class LibraryPoolResource < V1::Pacbio::LibraryPoolResource
       end
     end
   end
