@@ -18,7 +18,6 @@ module V1
       # In this case I can see it using container_associations
       # so seems to be linking the wrong tube relationship.
       has_one :tag, always_include_optional_linkage_data: true
-      has_one :pool, always_include_optional_linkage_data: true
       has_one :tube, relation_name: :tube, always_include_optional_linkage_data: true
       has_one :source_well, relation_name: :source_well, class_name: 'Well'
       has_one :source_plate, relation_name: :source_plate, class_name: 'Plate'
@@ -30,6 +29,12 @@ module V1
 
       def self.default_sort
         [{ field: 'created_at', direction: :desc }]
+      end
+
+      def self.records(_options = {})
+        # We only want to include only libraries without pools
+        # Libraries with pools should be referenced via the LibraryPoolResource
+        super.where(pool: nil)
       end
 
       filter :sample_name, apply: lambda { |records, value, _options|
