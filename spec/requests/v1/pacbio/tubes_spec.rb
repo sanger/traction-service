@@ -28,13 +28,13 @@ RSpec.describe 'TubesController' do
     let!(:pacbio_library) { create(:pacbio_library, tube: create(:tube)) }
 
     it 'returns a response' do
-      get "#{v1_pacbio_tubes_path}?include=library", headers: json_api_headers
+      get "#{v1_pacbio_tubes_path}?include=libraries", headers: json_api_headers
 
       expect(response).to have_http_status(:success)
     end
 
     it 'included library' do
-      get "#{v1_pacbio_tubes_path}?include=library", headers: json_api_headers
+      get "#{v1_pacbio_tubes_path}?include=libraries", headers: json_api_headers
 
       expect(find_included_resource(type: 'libraries', id: pacbio_library.id)).to be_present
     end
