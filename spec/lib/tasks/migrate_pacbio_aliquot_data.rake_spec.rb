@@ -108,6 +108,10 @@ RSpec.describe 'RakeTasks' do
 
         expect(library.used_aliquots.length).to eq(1)
         expect(library.used_aliquots).to include(library.request.derived_aliquots.first)
+
+        pool.wells.each do |well|
+          expect(well.libraries).to include(library)
+        end
       end
     end
   end

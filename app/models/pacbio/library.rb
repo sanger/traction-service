@@ -29,7 +29,7 @@ module Pacbio
     belongs_to :tag, optional: true
     belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :pacbio_pool_id,
                       inverse_of: :libraries, optional: true
-    belongs_to :tube, optional: true, default: -> { Tube.new }
+    belongs_to :tube, optional: true
 
     has_one :sample, through: :request
     has_one :tag_set, through: :tag
@@ -44,7 +44,7 @@ module Pacbio
     validates :primary_aliquot, presence: true, if: -> { pool.blank? }
     accepts_nested_attributes_for :primary_aliquot, allow_destroy: true
 
-    after_create :create_used_aliquot, if: -> { pool.blank? }
+    after_create :create_used_aliquot, :create_tube, if: -> { pool.blank? }
 
     def create_used_aliquot
       used_aliquots.create(
@@ -56,6 +56,15 @@ module Pacbio
         insert_size:,
         tag:
       )
+    end
+
+    def create_tube
+      self.tube = tube || Tube.create!
+      save
+    end
+
+    def tube
+      pool ? pool.tube : super
     end
 
     def collection?

@@ -130,14 +130,21 @@ RSpec.describe Pacbio::Library, :pacbio do
     expect(library.used_aliquots.first.source).to eq(library.request)
   end
 
-  it 'can have a tube' do
-    tube = create(:tube)
-    expect(build(:pacbio_library, tube:).tube).to eq(tube)
-  end
+  describe '#tube' do
+    it 'can have a tube' do
+      tube = create(:tube)
+      expect(build(:pacbio_library, tube:).tube).to eq(tube)
+    end
 
-  it 'can have a tube through pool' do
-    pool = create(:pacbio_pool)
-    expect(create(:pacbio_library, pool:).pool.tube).to eq(pool.tube)
+    it 'can have a tube through pool' do
+      pool = create(:pacbio_pool)
+      expect(create(:pacbio_library, pool:).tube).to eq(pool.tube)
+    end
+
+    it 'creates a tube by default if none are provided' do
+      pacbio_library = create(:pacbio_library, tube: nil)
+      expect(pacbio_library.tube).to be_present
+    end
   end
 
   describe '#request' do

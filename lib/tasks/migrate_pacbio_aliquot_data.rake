@@ -57,6 +57,11 @@ namespace :pacbio_aliquot_data do
       new_lib.save
 
       # Here we will need to attach the new library to the wells the pool was attached to
+      pool.wells.each do |well|
+        well.libraries << new_lib
+        well.save
+      end
+
       pool.destroy
     end
   end
