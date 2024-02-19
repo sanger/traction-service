@@ -75,6 +75,11 @@ module Pacbio
       SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour || :untagged)
     end
 
+    # @return [Array] of Runs that the pool is used in
+    def sequencing_runs
+      wells&.collect(&:run)&.uniq
+    end
+
     # @return [Array] of Plates attached to a sequencing run
     def sequencing_plates
       # TODO: remove this when pools are updated for aliquots
