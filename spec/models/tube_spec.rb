@@ -44,6 +44,12 @@ RSpec.describe Tube do
         create_list(:tube_with_ont_request, 3)
         expect(described_class.by_pipeline(:ont).length).to eq 3
       end
+
+      it 'does not include other pipeline data if given an invalid pipeline' do
+        create_list(:tube_with_ont_request, 3)
+        create_list(:tube_with_pacbio_request, 2)
+        expect(described_class.by_pipeline(:invalid).length).to eq 0
+      end
     end
   end
 end
