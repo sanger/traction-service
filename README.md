@@ -55,6 +55,14 @@ Note:
 The database should have been generated as part of the installation step above.
 If you need to create the database afresh: `bundle exec rails db:reset`.
 
+When doing the reset to the database, the TOL reporting view `tubes_report` may not be created due to Rails not capturing views in the schema.
+The statement to create the view is in `db/migrate/20240219180656_create_cost_code_and_study_report_view.rb` and this migration should be applied manually if the view is needed.
+To apply it you can use the following command:
+
+```shell
+rake db:migrate:redo VERSION=20240219180656
+```
+
 ### Seeded data
 
 The following tasks are run automatically by `rails db:seed` at the end of the
