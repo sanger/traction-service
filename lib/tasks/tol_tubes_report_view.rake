@@ -19,7 +19,7 @@ namespace :tol_tubes_report_view do
         ON t.id = pp.tube_id;
     END_OF_SQL
 
-    puts '-> TOL tubes report view successfully created'
+    puts '-> TOL tubes report view successfully created' unless Rails.env.test?
   end
 
   task destroy: [:environment] do
@@ -27,6 +27,6 @@ namespace :tol_tubes_report_view do
       DROP VIEW IF EXISTS tubes_report;
     END_OF_SQL
 
-    puts '-> TOL tubes report view successfully destroyed'
+    puts '-> TOL tubes report view successfully destroyed' unless Rails.env.test?
   end
 end
