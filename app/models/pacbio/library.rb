@@ -45,6 +45,7 @@ module Pacbio
     accepts_nested_attributes_for :primary_aliquot, allow_destroy: true
 
     after_create :create_used_aliquot, :create_tube, if: -> { pool.blank? }
+    before_destroy :check_for_associated_wells, prepend: true
 
     def create_used_aliquot
       used_aliquots.create(
@@ -87,6 +88,17 @@ module Pacbio
         pool.sequencing_plates
       else
         wells&.collect(&:plate)
+      end
+    end
+
+    private
+
+    def check_for_associated_wells
+      if wells.empty?
+        true
+      else
+        errors.add(:base, 'Cannot delete a library that is associated with wells')
+        throw(:abort)
       end
     end
   end

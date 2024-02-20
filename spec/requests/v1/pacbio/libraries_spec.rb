@@ -609,12 +609,21 @@ RSpec.describe 'LibrariesController', :pacbio do
         expect do
           delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
         end.to change(Pacbio::Library, :count).by(-1)
+                                              .and change(Aliquot, :count).by(-2) # We destroy the primary and used_by aliquots
       end
 
       it 'does not destroy the requests' do
         expect do
           delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
         end.not_to change(Pacbio::Request, :count)
+      end
+
+      it 'does not destroy the library if it has associated wells' do
+        create(:pacbio_well, libraries: [library])
+        expect do
+          delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
+        end.not_to change(Pacbio::Library, :count)
+        expect(json['errors'][0]['title']).to eq('Cannot delete a library that is associated with wells')
       end
     end
 

@@ -130,6 +130,19 @@ RSpec.describe Pacbio::Library, :pacbio do
     expect(library.used_aliquots.first.source).to eq(library.request)
   end
 
+  describe 'destroy' do
+    it 'gets destroyed if there are no associated wells' do
+      library = create(:pacbio_library)
+      expect { library.destroy }.to change(described_class, :count).by(-1).and change(Aliquot, :count).by(-2)
+    end
+
+    it 'does not get destroyed if there are associated wells' do
+      library = create(:pacbio_library)
+      create(:pacbio_well, libraries: [library])
+      expect { library.destroy }.not_to change(described_class, :count)
+    end
+  end
+
   describe '#tube' do
     it 'can have a tube' do
       tube = create(:tube)
