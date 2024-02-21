@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-# DEPRECATE-Reception-V1:
-# Rename this file to resource_factory and change describe to ResourceFactory
 require 'rails_helper'
 
-RSpec.describe Reception::ResourceFactoryV2 do
-  subject(:resource_factory) { build(:reception_resource_factory_v2, tubes_attributes:, plates_attributes:) }
+RSpec.describe Reception::ResourceFactory do
+  subject(:resource_factory) { build(:reception_resource_factory, tubes_attributes:, plates_attributes:) }
 
   let(:tubes_attributes) { [] }
   let(:plates_attributes) { [] }
@@ -205,7 +203,7 @@ RSpec.describe Reception::ResourceFactoryV2 do
     end
 
     let(:resource_factory) do
-      build(:reception_resource_factory_v2, plates_attributes:, tubes_attributes:)
+      build(:reception_resource_factory, plates_attributes:, tubes_attributes:)
     end
     let(:existing_tube) { attributes_for(:tube, :with_barcode) }
     let(:new_tube_barcode) { generate(:barcode) }
@@ -325,7 +323,7 @@ RSpec.describe Reception::ResourceFactoryV2 do
 
       it 'associates the requests with the reception' do
         construct_resources
-        expect(reception.requests.reload.count).to eq 5
+        expect(reception.plates_attributes.reload.count).to eq 5
       end
 
       it 'returns the correct labware' do

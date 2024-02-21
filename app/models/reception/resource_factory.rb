@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-# DEPRECATE-Reception-V1:
-# Rename this file to resource_factory.rb and class to ResourceFactory
-
 class Reception
   # Acts on behalf of a {Reception} to construct all associated requests, as well
   # as any necessary samples, plates, wells and tubes.
@@ -11,7 +8,7 @@ class Reception
   # This allows up to retrieve all records in a single query upfront, avoiding
   # N+1 query problems. It also ensures we can centralize the registration of
   # new plates and tubes, making it easier to prevent registration of duplicate records.
-  class ResourceFactoryV2
+  class ResourceFactory
     include ActiveModel::Model
     extend NestedValidation
     attr_accessor :reception
