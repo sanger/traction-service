@@ -130,14 +130,34 @@ RSpec.describe Pacbio::Library, :pacbio do
     expect(library.used_aliquots.first.source).to eq(library.request)
   end
 
-  it 'can have a tube' do
-    tube = create(:tube)
-    expect(build(:pacbio_library, tube:).tube).to eq(tube)
+  describe 'destroy' do
+    it 'gets destroyed if there are no associated wells' do
+      library = create(:pacbio_library)
+      expect { library.destroy }.to change(described_class, :count).by(-1).and change(Aliquot, :count).by(-2)
+    end
+
+    it 'does not get destroyed if there are associated wells' do
+      library = create(:pacbio_library)
+      create(:pacbio_well, libraries: [library])
+      expect { library.destroy }.not_to change(described_class, :count)
+    end
   end
 
-  it 'can have a tube through pool' do
-    pool = create(:pacbio_pool)
-    expect(create(:pacbio_library, pool:).pool.tube).to eq(pool.tube)
+  describe '#tube' do
+    it 'can have a tube' do
+      tube = create(:tube)
+      expect(build(:pacbio_library, tube:).tube).to eq(tube)
+    end
+
+    it 'can have a tube through pool' do
+      pool = create(:pacbio_pool)
+      expect(create(:pacbio_library, pool:).tube).to eq(pool.tube)
+    end
+
+    it 'creates a tube by default if none are provided' do
+      pacbio_library = create(:pacbio_library, tube: nil)
+      expect(pacbio_library.tube).to be_present
+    end
   end
 
   describe '#request' do
@@ -176,7 +196,7 @@ RSpec.describe Pacbio::Library, :pacbio do
 
     context 'from a tube' do
       before do
-        create(:tube_with_pacbio_request, requests: [library.request], barcode: 'TRAC-2-757')
+        create(:tube_with_pacbio_request, pacbio_requests: [library.request], barcode: 'TRAC-2-757')
       end
 
       it 'returns the plate barcode and well' do
@@ -215,6 +235,31 @@ RSpec.describe Pacbio::Library, :pacbio do
       library = create(:pacbio_library, pool: nil)
       create(:pacbio_well, libraries: [library], plate:)
       expect(library.sequencing_plates).to eq([plate])
+    end
+  end
+
+  describe '#sequencing_runs' do
+    it 'when there is no run' do
+      library = create(:pacbio_library)
+      expect(library.sequencing_runs).to be_empty
+    end
+
+    it 'when there is a single run' do
+      plate = build(:pacbio_plate_with_wells)
+      library = create(:pacbio_library, pool: nil, wells: [plate.wells.first])
+      create(:pacbio_run, plates: [plate])
+      expect(library.sequencing_runs).to eq([plate.run])
+    end
+
+    it 'when there are multiple runs' do
+      plate1 = build(:pacbio_plate)
+      plate2 = build(:pacbio_plate)
+      create(:pacbio_run, plates: [plate1])
+      create(:pacbio_run, plates: [plate2])
+      library = create(:pacbio_library)
+      create(:pacbio_well, libraries: [library], plate: plate1)
+      create(:pacbio_well, libraries: [library], plate: plate2)
+      expect(library.sequencing_runs).to eq([plate1.run, plate2.run])
     end
   end
 

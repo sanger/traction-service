@@ -29,7 +29,7 @@ module Pacbio
     belongs_to :tag, optional: true
     belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :pacbio_pool_id,
                       inverse_of: :libraries, optional: true
-    belongs_to :tube, optional: true, default: -> { Tube.new }
+    belongs_to :tube, optional: true
 
     has_one :sample, through: :request
     has_one :tag_set, through: :tag
@@ -44,7 +44,8 @@ module Pacbio
     validates :primary_aliquot, presence: true, if: -> { pool.blank? }
     accepts_nested_attributes_for :primary_aliquot, allow_destroy: true
 
-    after_create :create_used_aliquot, if: -> { pool.blank? }
+    after_create :create_used_aliquot, :create_tube, if: -> { pool.blank? }
+    before_destroy :check_for_associated_wells, prepend: true
 
     def create_used_aliquot
       used_aliquots.create(
@@ -58,12 +59,26 @@ module Pacbio
       )
     end
 
+    def create_tube
+      self.tube = tube || Tube.create!
+      save
+    end
+
+    def tube
+      pool ? pool.tube : super
+    end
+
     def collection?
       false
     end
 
     def sample_sheet_behaviour
       SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour || :untagged)
+    end
+
+    # @return [Array] of Runs that the pool is used in
+    def sequencing_runs
+      wells&.collect(&:run)&.uniq
     end
 
     # @return [Array] of Plates attached to a sequencing run
@@ -73,6 +88,17 @@ module Pacbio
         pool.sequencing_plates
       else
         wells&.collect(&:plate)
+      end
+    end
+
+    private
+
+    def check_for_associated_wells
+      if wells.empty?
+        true
+      else
+        errors.add(:base, 'Cannot delete a library that is associated with wells')
+        throw(:abort)
       end
     end
   end

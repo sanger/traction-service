@@ -75,8 +75,10 @@ RSpec.describe 'RakeTasks' do
 
   describe 'pacbio_aliquot_data:migrate_library_data' do
     it 'creates primary aliquots for each library and request used in the library' do
-      # Create some singled-plexed pools (new libraries)
-      pools = create_list(:pacbio_pool, 5, library_count: 1)
+      # Create some singled-plexed pools (new libraries) with wells
+      plate = build(:pacbio_plate_with_wells)
+      pools = create_list(:pacbio_pool, 5, library_count: 1, wells: [plate.wells.first])
+      create(:pacbio_run, plates: [plate])
 
       # Create some multiplexed pools (these shouldnt be affected)
       create_list(:pacbio_pool, 5, library_count: 2)
@@ -108,6 +110,11 @@ RSpec.describe 'RakeTasks' do
 
         expect(library.used_aliquots.length).to eq(1)
         expect(library.used_aliquots).to include(library.request.derived_aliquots.first)
+
+        pool.wells.each do |well|
+          well.reload
+          expect(well.libraries).to include(library)
+        end
       end
     end
   end

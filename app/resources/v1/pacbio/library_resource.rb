@@ -37,6 +37,10 @@ module V1
         super.where(pool: nil)
       end
 
+      # When a library is updated and it is attached to a run we need
+      # to republish the messages for the run
+      after_update :publish_messages
+
       filter :sample_name, apply: lambda { |records, value, _options|
         # We have to join requests and samples here in order to find by sample name
         records.joins(:sample).where(sample: { name: value })
@@ -86,6 +90,10 @@ module V1
 
       def deactivated_at
         @model&.deactivated_at&.to_fs(:us)
+      end
+
+      def publish_messages
+        Messages.publish(@model.sequencing_runs, Pipelines.pacbio.message)
       end
     end
   end

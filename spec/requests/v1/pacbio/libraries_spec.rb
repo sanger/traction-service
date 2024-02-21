@@ -3,6 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe 'LibrariesController', :pacbio do
+  before do
+    # Create a default smrt link version for pacbio runs.
+    create(:pacbio_smrt_link_version_default)
+  end
+
   describe '#get' do
     let!(:libraries) { create_list(:pacbio_library, 5, :tagged, tube: Tube.new) }
 
@@ -549,6 +554,46 @@ RSpec.describe 'LibrariesController', :pacbio do
         expect(response.body).to include('primary_aliquot.volume - is not a number')
       end
     end
+
+    context 'when there is an associated run' do
+      let!(:library) { create(:pacbio_library, pool: nil) }
+      let!(:plate) { build(:pacbio_plate) }
+      let(:run) { create(:pacbio_run, plates: [plate]) }
+
+      let(:body) do
+        {
+          data: {
+            type: 'libraries',
+            id: library.id.to_s,
+            attributes: {
+              volume: 100,
+              template_prep_kit_box_barcode: 'update',
+              concentration: library.concentration,
+              insert_size: library.insert_size,
+              pacbio_request_id: library.request.id,
+              tag_id: tag.id,
+              primary_aliquot_attributes: {
+                id: library.primary_aliquot.id.to_s,
+                volume: 100,
+                template_prep_kit_box_barcode: '10',
+                concentration: 2.22,
+                insert_size: 100,
+                state: 'created',
+                tag_id: tag.id
+              }
+            }
+          }
+        }.to_json
+      end
+
+      before { create(:pacbio_well, libraries: [library], plate:) }
+
+      it 'publishes a message' do
+        expect(Messages).to receive(:publish).with(library.sequencing_runs, having_attributes(pipeline: 'pacbio'))
+        patch v1_pacbio_library_path(library), params: body, headers: json_api_headers
+        expect(response).to have_http_status(:success), response.body
+      end
+    end
   end
 
   describe '#destroy' do
@@ -564,12 +609,21 @@ RSpec.describe 'LibrariesController', :pacbio do
         expect do
           delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
         end.to change(Pacbio::Library, :count).by(-1)
+                                              .and change(Aliquot, :count).by(-2) # We destroy the primary and used_by aliquots
       end
 
       it 'does not destroy the requests' do
         expect do
           delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
         end.not_to change(Pacbio::Request, :count)
+      end
+
+      it 'does not destroy the library if it has associated wells' do
+        create(:pacbio_well, libraries: [library])
+        expect do
+          delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
+        end.not_to change(Pacbio::Library, :count)
+        expect(json['errors'][0]['title']).to eq('Cannot delete a library that is associated with wells')
       end
     end
 
