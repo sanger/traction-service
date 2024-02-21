@@ -19,9 +19,9 @@ Rails app which exposes a RESTful API for a Long Read LIMS
 
 1. Ruby (check `.ruby-version` for the version) and ruby version manager
 1. Bundler `gem install bundler`
-1. Graphviz (for mac OS `brew install Graphviz`)
+1. Graphviz (for mac OS `brew install graphviz`)
 1. OpenSSL
-1. MySQL `brew install mysql`
+1. MySQL `brew install mysql@8.0`
 
 ## Installation
 
@@ -38,16 +38,17 @@ Note:
 
 - If the mysql-client cannot be found (possibly due to the homebrew installation path not being the default), the `mysql2` gem will fail to install with the exception:
 
-  ```
+  ```text
   ...
   /Users/<user>/.rbenv/versions/3.1.2/lib/ruby/3.1.0/mkmf.rb:1086:in `block in find_library': undefined method `split' for nil:NilClass (NoMethodError)
   ...
   ```
 
-- The fix is to add the mysql-client to the PATH [^1] similar to the following:
-  `export PATH=$PATH:~/homebrew/Cellar/mysql-client/8.0.33_1/bin`
+- The fix is to add mysql@8.0 binaries to the PATH [[^1](https://stackoverflow.com/a/69106302)] similar to the following:
 
-[^1]: https://stackoverflow.com/a/69106302
+  ```shell
+  export PATH=$PATH:(brew --prefix)/opt/mysql@8.0/bin
+  ```
 
 ## Database setup
 
@@ -66,6 +67,7 @@ setup process
 - To create pacbio Qc Assay Types: `bundle exec rails qc_assay_types:create`
 - To create pacbio smrt link versions: `bundle exec rails smrt_link_versions:create`
 - To create ont instruments: `bundle exec rails ont_instruments:create`
+- To create the tree of life tubes report view: `bundle exec rails tol_tubes_report_view:create`
 
 ### Useful support data
 
@@ -99,7 +101,9 @@ Sending messages is disabled by default but if you would like to test messages, 
 After installing RabbitMQ, you will need to create the exchange you will be sending messages over.
 You can do this by issuing a command in your terminal such as
 
-    rabbitmqadmin declare exchange name="bunny.examples.exchange" type="topic"
+```shell
+rabbitmqadmin declare exchange name="bunny.examples.exchange" type="topic"
+```
 
 making sure you match the exchange name with the one specified in `config/bunny.yml`.
 
@@ -155,11 +159,11 @@ index 4dd7083e..d3bde752 100644
 
 ## Releases
 
-#### UAT
+### UAT
 
 On merging a pull request into develop, a release will be created with the tag/name `<branch>/<timestamp>`
 
-#### PROD
+### PROD
 
 Update `.release-version` with major/minor/patch. On merging a pull request into master, a release will be created with the release version as the tag/name
 
