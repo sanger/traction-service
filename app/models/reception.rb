@@ -20,6 +20,10 @@ class Reception < ApplicationRecord
   # encapsulate the behaviour
   validates_nested :resource_factory, flatten_keys: true
 
+  def construct_resources!
+    @resource_factory&.construct_resources!
+  end
+
   private
 
   def resource_factory
