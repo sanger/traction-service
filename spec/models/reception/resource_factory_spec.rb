@@ -392,7 +392,7 @@ RSpec.describe Reception::ResourceFactory do
 
       it 'associates the requests with the reception' do
         construct_resources
-        expect(reception.requests.reload.count).to eq 5
+        expect(reception.requests.count).to eq 5
       end
 
       it 'returns the correct labware' do
@@ -457,7 +457,7 @@ RSpec.describe Reception::ResourceFactory do
 
       it 'associates the requests with the reception' do
         construct_resources
-        expect(reception.requests.reload.count).to eq 5
+        expect(reception.requests.count).to eq 5
       end
 
       it 'returns the correct labware' do
