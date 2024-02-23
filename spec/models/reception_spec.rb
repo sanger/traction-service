@@ -36,4 +36,10 @@ RSpec.describe Reception do
 
     it { is_expected.not_to be_valid }
   end
+
+  context 'without plate_attributes or tubes_attributes' do
+    let(:attributes) { { plates_attributes: [], tubes_attributes: [] } }
+
+    it { is_expected.not_to be_valid }
+  end
 end

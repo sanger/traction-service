@@ -199,12 +199,12 @@ RSpec.describe Reception::ResourceFactory do
 
   describe '#construct_resources!' do
     subject(:construct_resources) do
-      resource_factory.construct_resources!
+      # Reception will delegate to the resource_factory but will also build the correct relationships
+      reception.construct_resources!
     end
 
-    let(:resource_factory) do
-      build(:reception_resource_factory, plates_attributes:, tubes_attributes:)
-    end
+    let(:reception) { build(:reception, plates_attributes:, tubes_attributes:) }
+
     let(:existing_tube) { attributes_for(:tube, :with_barcode) }
     let(:new_tube_barcode) { generate(:barcode) }
     let(:new_plate_barcode) { generate(:barcode) }
@@ -280,8 +280,6 @@ RSpec.describe Reception::ResourceFactory do
       ]
     end
 
-    let(:reception) { resource_factory.reception }
-
     before do
       create(:tube, existing_tube)
       exists = create(:plate, existing_plate)
@@ -323,7 +321,8 @@ RSpec.describe Reception::ResourceFactory do
 
       it 'associates the requests with the reception' do
         construct_resources
-        expect(reception.requests.reload.count).to eq 5
+
+        expect(reception.requests.count).to eq 5
       end
 
       it 'returns the correct labware' do
