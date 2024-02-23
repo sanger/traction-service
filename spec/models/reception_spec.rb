@@ -137,10 +137,10 @@ RSpec.describe Reception do
 
       let(:request_parameters) do
         attributes_for(:ont_request)
-        .merge(
-          library_type: library_type.name,
-          data_type: data_type.name
-        )
+          .merge(
+            library_type: library_type.name,
+            data_type: data_type.name
+          )
       end
 
       it 'associates the requests with this reception' do
