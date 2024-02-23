@@ -41,6 +41,7 @@ namespace :pacbio_aliquot_data do
       # Set the libraries tube to the pools tube
       new_lib.tube = pool.tube
       new_lib.pool = nil
+      new_lib.created_at = pool.created_at
       # Create the libraries primary aliquot
       # A used_by aliquot is automatically created
       new_lib.primary_aliquot = Aliquot.create(
