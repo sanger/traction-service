@@ -60,7 +60,7 @@ module V1
     def permitted_sample_attributes
       %i[name external_id species study_uuid priority_level public_name
          sanger_sample_id supplier_name taxon_id donor_id country_of_origin
-         accession_number date_of_sample_collection]
+         accession_number date_of_sample_collection genome_size]
     end
 
     def publish_messages
