@@ -16,7 +16,6 @@ module Pacbio
     # after that is defined
     include DualSourcedPool
 
-    validates :libraries, presence: true
     validates_with TagValidator
 
     validates :volume, :concentration,
@@ -33,6 +32,10 @@ module Pacbio
         end
       end
     end
+
+    validates :primary_aliquot, presence: true
+    accepts_nested_attributes_for :primary_aliquot
+    accepts_nested_attributes_for :used_aliquots, allow_destroy: true
 
     # @return [Array] of Plates attached to a sequencing run
     def sequencing_plates

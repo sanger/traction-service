@@ -14,12 +14,16 @@ module V1
       # so seems to be linking the wrong tube relationship.
       has_one :tube, relation_name: :tube
       has_many :libraries, class_name: 'LibraryPool'
+      has_many :used_aliquots, class_name: 'Aliquot', relation_name: :used_aliquots
+      has_one :primary_aliquot, class_name: 'Aliquot', relation_name: :primary_aliquot
 
       attributes :volume, :concentration, :template_prep_kit_box_barcode,
                  :insert_size, :created_at, :updated_at,
-                 :library_attributes
+                 :library_attributes, :used_aliquots_attributes, :primary_aliquot_attributes
+
       attribute :source_identifier, readonly: true
 
+      ALIQUOT_ATTRIBUTES = %w[id volume concentration template_prep_kit_box_barcode insert_size tag_id source_id source_type].freeze
       paginator :paged
 
       def self.default_sort
@@ -46,8 +50,18 @@ module V1
         end
       end
 
+      def used_aliquots_attributes=(used_aliquot_parameters)
+        @model.used_aliquots_attributes = used_aliquot_parameters.map do |aliquot|
+          aliquot.permit(ALIQUOT_ATTRIBUTES, :_destroy)
+        end
+      end
+
+      def primary_aliquot_attributes=(primary_aliquot_parameters)
+        @model.primary_aliquot_attributes = primary_aliquot_parameters.permit(ALIQUOT_ATTRIBUTES)
+      end
+
       def fetchable_fields
-        super - [:library_attributes]
+        super - [:library_attributes, :used_aliquots_attributes, :primary_aliquot_attributes]
       end
 
       def self.records_for_populate(*_args)
