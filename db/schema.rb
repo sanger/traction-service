@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_19_180656) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_26_175347) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
@@ -402,6 +402,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_180656) do
     t.string "accession_number", comment: "Accession Number"
     t.datetime "date_of_sample_collection", comment: "Date of sample collection"
     t.string "public_name", comment: "Public name"
+    t.string "genome_size", comment: "The genome size (base pairs) for a sample."
     t.index ["external_id"], name: "index_samples_on_external_id", unique: true
     t.index ["name", "external_id", "species"], name: "index_samples_on_name_and_external_id_and_species"
     t.index ["name"], name: "index_samples_on_name", unique: true
