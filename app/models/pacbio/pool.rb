@@ -37,6 +37,8 @@ module Pacbio
     accepts_nested_attributes_for :primary_aliquot
     accepts_nested_attributes_for :used_aliquots, allow_destroy: true
 
+    before_save :sync_libraries_and_used_aliquots
+
     # @return [Array] of Plates attached to a sequencing run
     def sequencing_plates
       wells&.collect(&:plate)
@@ -48,6 +50,48 @@ module Pacbio
     end
 
     private
+
+    def sync_libraries_and_used_aliquots
+      # Prioritize libraries in the case both are changed
+      if libraries.any?(&:changed?)
+        libraries.each do |library|
+          # If its a new library it will need a new used aliquot
+          if library.id.nil?
+            used_aliquots << Aliquot.new(
+              library.attributes.slice('volume', 'concentration', 'library_kit_box_barcode',
+                                       'insert_size', 'tag_id').merge(source: library.request)
+            )
+          # We want to check the library being updated has a corresponding used aliquot
+          elsif used_aliquots.find_by(source_id: library.request.id).present?
+            used_aliquots.find_by(source_id: library.request.id).update(library.attributes.slice(
+                                                                          'volume', 'concentration', 'library_kit_box_barcode', 'insert_size', 'tag_id'
+                                                                        ))
+          # The library and used aliquot are out of sync
+          else
+            errors.add(:used_aliquots,
+                       'Unable to sync aliquots and libraries. Please contact support.')
+          end
+        end
+      elsif used_aliquots.any?(&:changed?)
+        used_aliquots.each do |aliquot|
+          # If its a new used aliquot it will need a new library
+          if aliquot.id.nil?
+            libraries << Pacbio::Library.new(
+              aliquot.attributes.slice('volume', 'concentration', 'library_kit_box_barcode',
+                                       'insert_size', 'tag_id').merge(request: aliquot.source)
+            )
+          # We want to check the used aliquot being updated has a corresponding library
+          elsif libraries.find_by(pacbio_request_id: aliquot.source_id).present?
+            libraries.find_by(pacbio_request_id: aliquot.source_id).update(aliquot.attributes.slice(
+                                                                             'volume', 'concentration', 'library_kit_box_barcode', 'insert_size', 'tag_id'
+                                                                           ))
+          # The library and used aliquot are out of sync
+          else
+            errors.add(:libraries, 'Unable to sync aliquots and libraries. Please contact support.')
+          end
+        end
+      end
+    end
 
     def update_library(attributes)
       id = attributes['id'].to_s

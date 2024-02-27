@@ -127,6 +127,12 @@ RSpec.describe 'RakeTasks' do
       wells = create_list(:pacbio_well, 5, pool_count: 2)
       pools = wells.map(&:pools).flatten
 
+      # Get rid of aliquots that were created by the factory
+      pools.each do |pool|
+        pool.primary_aliquot.destroy
+        pool.used_aliquots.destroy_all
+      end
+
       # Run the rake task
       # It outputs the correct text
       expect { Rake::Task['pacbio_aliquot_data:migrate_pool_data'].invoke }.to output(

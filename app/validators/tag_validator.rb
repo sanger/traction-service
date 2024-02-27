@@ -10,14 +10,12 @@ class TagValidator < ActiveModel::Validator
       return if record.used_aliquots.length < 2
 
       tags = record.used_aliquots.collect(&:tag)
-      record.errors.add(:tags, 'must be present on all libraries') if tags.any?(&:nil?)
-      record.errors.add(:tags, 'contain duplicates') unless tags.length == tags.uniq.length
     else
       return if record.libraries.length < 2
 
       tags = record.libraries.collect(&:tag)
-      record.errors.add(:tags, 'must be present on all libraries') if tags.any?(&:nil?)
-      record.errors.add(:tags, 'contain duplicates') unless tags.length == tags.uniq.length
     end
+    record.errors.add(:tags, 'must be present on all libraries') if tags.any?(&:nil?)
+    record.errors.add(:tags, 'contain duplicates') unless tags.length == tags.uniq.length
   end
 end

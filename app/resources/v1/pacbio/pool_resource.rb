@@ -23,7 +23,8 @@ module V1
 
       attribute :source_identifier, readonly: true
 
-      ALIQUOT_ATTRIBUTES = %w[id volume concentration template_prep_kit_box_barcode insert_size tag_id source_id source_type].freeze
+      ALIQUOT_ATTRIBUTES = %w[id volume concentration template_prep_kit_box_barcode insert_size
+                              tag_id source_id source_type].freeze
       paginator :paged
 
       def self.default_sort
@@ -61,7 +62,7 @@ module V1
       end
 
       def fetchable_fields
-        super - [:library_attributes, :used_aliquots_attributes, :primary_aliquot_attributes]
+        super - %i[library_attributes used_aliquots_attributes primary_aliquot_attributes]
       end
 
       def self.records_for_populate(*_args)

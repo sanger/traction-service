@@ -5,12 +5,9 @@ FactoryBot.define do
     transient do
       library_count { 1 }
       library_factory { :pacbio_library }
-      used_aliquot_factory { :aliquot}
-      aliquot_source { association(:pacbio_request) }
     end
     libraries { build_list(library_factory, library_count, pool: instance) }
     primary_aliquot { association :aliquot, source: instance, aliquot_type: :primary }
-    used_aliquots { build_list(used_aliquot_factory, library_count, source: aliquot_source, aliquot_type: :derived, used_by: instance ) }
     template_prep_kit_box_barcode { 'ABC1' }
     concentration { 10 }
     volume { 10 }
@@ -28,6 +25,17 @@ FactoryBot.define do
         library_count { 1 }
         library_factory { :pacbio_library_without_tag }
       end
+    end
+
+    factory :pacbio_pool_with_used_aliquots do
+      transient do
+        aliquot_count { 2 }
+        used_aliquot_factory { :aliquot }
+        aliquot_source { association(:pacbio_request) }
+      end
+
+      libraries { [] }
+      used_aliquots { build_list(used_aliquot_factory, aliquot_count, source: aliquot_source, aliquot_type: :derived, used_by: instance) }
     end
   end
 end

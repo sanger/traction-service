@@ -144,8 +144,8 @@ RSpec.describe 'PoolsController', :pacbio do
                   volume: '200',
                   concentration: '22',
                   template_prep_kit_box_barcode: '100',
-                  insert_size: '11',
-                },
+                  insert_size: '11'
+                }
               }
             }
           }.to_json
@@ -192,8 +192,8 @@ RSpec.describe 'PoolsController', :pacbio do
                   volume: '200',
                   concentration: '22',
                   template_prep_kit_box_barcode: '100',
-                  insert_size: '11',
-                },
+                  insert_size: '11'
+                }
               }
             }
           }.to_json
@@ -241,8 +241,8 @@ RSpec.describe 'PoolsController', :pacbio do
                   volume: '200',
                   concentration: '22',
                   template_prep_kit_box_barcode: '100',
-                  insert_size: '11',
-                },
+                  insert_size: '11'
+                }
               }
             }
           }.to_json
@@ -288,8 +288,8 @@ RSpec.describe 'PoolsController', :pacbio do
                   volume: '200',
                   concentration: '22',
                   template_prep_kit_box_barcode: '100',
-                  insert_size: '11',
-                },
+                  insert_size: '11'
+                }
               }
             }
           }.to_json
@@ -309,144 +309,19 @@ RSpec.describe 'PoolsController', :pacbio do
     end
   end
 
-  describe '#updating' do
-    describe 'via libraries' do
-      context 'when updating a multiplex library' do
-        let!(:pool) { create(:pacbio_pool, library_count: 2) }
-        # We let! this as we want to ensure we have the original state
-        let!(:updated_library) { pool.libraries.first }
-        let!(:removed_library) { pool.libraries.last }
-        let(:added_request) { create(:pacbio_request) }
+  describe '#updating via libraries' do
+    context 'when updating a multiplex library' do
+      let!(:pool) { create(:pacbio_pool, library_count: 2) }
+      # We let! this as we want to ensure we have the original state
+      let!(:updated_library) { pool.libraries.first }
+      let!(:removed_library) { pool.libraries.last }
+      let(:added_request) { create(:pacbio_request) }
 
-        before do
-          patch v1_pacbio_pool_path(pool), params: body, headers: json_api_headers
-        end
-
-        context 'on success' do
-          let(:body) do
-            {
-              data: {
-                type: 'pools',
-                id: pool.id.to_s,
-                attributes: {
-                  library_attributes: [
-                    {
-                      id: updated_library.id.to_s,
-                      pacbio_request_id: updated_library.pacbio_request_id.to_s,
-                      template_prep_kit_box_barcode: 'LK12345',
-                      tag_id: tag.id,
-                      volume: 1,
-                      concentration: 1,
-                      insert_size: 100
-                    },
-                    {
-                      pacbio_request_id: added_request.id.to_s,
-                      template_prep_kit_box_barcode: 'LK12345',
-                      tag_id: tag2.id,
-                      volume: 1,
-                      concentration: 1,
-                      insert_size: 100
-                    }
-                  ],
-                  volume: '200',
-                  concentration: '22',
-                  template_prep_kit_box_barcode: '100',
-                  insert_size: '11',
-                  created_at: '2021-08-04T14:35:47.208Z',
-                  updated_at: '2021-08-04T14:35:47.208Z'
-                }
-              }
-            }.to_json
-          end
-
-          it 'returns created status' do
-            expect(response).to have_http_status(:success), response.body
-          end
-
-          it 'updates a pool' do
-            pool.reload
-            expect(pool.template_prep_kit_box_barcode).to eq('100')
-          end
-
-          it 'update libraries' do
-            updated_library.reload
-            expect(updated_library.template_prep_kit_box_barcode).to eq('LK12345')
-          end
-
-          it 'destroys removed libraries' do
-            expect(Pacbio::Library.find_by(id: removed_library)).to be_nil
-          end
-
-          it 'adds new libraries' do
-            libraries = pool.libraries.reload
-            new_libraries = libraries.reject do |library|
-              [updated_library.id, removed_library.id].include?(library.id)
-            end
-            expect(new_libraries.length).to eq(1)
-            expect(new_libraries.first.pacbio_request_id).to eq(added_request.id)
-          end
-        end
-
-        context 'on failure - when there is a tag clash' do
-          let(:body) do
-            {
-              data: {
-                type: 'pools',
-                id: pool.id.to_s,
-                attributes: {
-                  library_attributes: [
-                    {
-                      id: updated_library.id.to_s,
-                      pacbio_request_id: updated_library.pacbio_request_id.to_s,
-                      template_prep_kit_box_barcode: 'LK12345',
-                      tag_id: tag.id,
-                      volume: 1,
-                      concentration: 1,
-                      insert_size: 100
-                    },
-                    {
-                      pacbio_request_id: added_request.id.to_s,
-                      template_prep_kit_box_barcode: 'LK12345',
-                      tag_id: tag.id,
-                      volume: 1,
-                      concentration: 1,
-                      insert_size: 100
-                    }
-                  ],
-                  volume: '200',
-                  concentration: '22',
-                  template_prep_kit_box_barcode: '100',
-                  insert_size: '11',
-                  created_at: '2021-08-04T14:35:47.208Z',
-                  updated_at: '2021-08-04T14:35:47.208Z'
-                }
-              }
-            }.to_json
-          end
-
-          it 'returns unprocessable entity status' do
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
-
-          it 'does not update a pool' do
-            pool.reload
-            expect(pool.template_prep_kit_box_barcode).not_to eq('100')
-          end
-
-          it 'does not change the libraries' do
-            attributes = pool.libraries.reload.map(&:attributes)
-            expect(attributes).to include(updated_library.attributes)
-            expect(attributes).to include(removed_library.attributes)
-          end
-        end
+      before do
+        patch v1_pacbio_pool_path(pool), params: body, headers: json_api_headers
       end
 
-      context 'when there is an associated run' do
-        let!(:pool) { create(:pacbio_pool) }
-        let!(:updated_library) { pool.libraries.first }
-        let!(:plate) { build(:pacbio_plate) }
-        let(:run) { create(:pacbio_run, plates: [plate]) }
-
+      context 'on success' do
         let(:body) do
           {
             data: {
@@ -462,6 +337,14 @@ RSpec.describe 'PoolsController', :pacbio do
                     volume: 1,
                     concentration: 1,
                     insert_size: 100
+                  },
+                  {
+                    pacbio_request_id: added_request.id.to_s,
+                    template_prep_kit_box_barcode: 'LK12345',
+                    tag_id: tag2.id,
+                    volume: 1,
+                    concentration: 1,
+                    insert_size: 100
                   }
                 ],
                 volume: '200',
@@ -475,189 +358,53 @@ RSpec.describe 'PoolsController', :pacbio do
           }.to_json
         end
 
-        before { create(:pacbio_well, pools: [pool], plate:) }
-
-        it 'publishes a message' do
-          expect(Messages).to receive(:publish).with(pool.sequencing_runs, having_attributes(pipeline: 'pacbio'))
-          patch v1_pacbio_pool_path(pool), params: body, headers: json_api_headers
+        it 'returns created status' do
           expect(response).to have_http_status(:success), response.body
         end
-      end
-    end
 
-    describe 'via aliquots' do
-      before do
-        Flipper.enable(:multiplexing_phase_2_aliquot)
-      end
-  
-      context 'when updating a multiplex pool' do
-        let!(:pool) { create(:pacbio_pool, library_count: 2, libraries: []) }
-        # We let! this as we want to ensure we have the original state
-        let!(:updated_aliquot) { pool.used_aliquots.first }
-        let!(:removed_aliquot) { pool.used_aliquots.last }
-        let!(:primary_aliquot) { pool.primary_aliquot }
-        let(:added_request) { create(:pacbio_request) }
-
-        before do
-          patch v1_pacbio_pool_path(pool), params: body, headers: json_api_headers
+        it 'updates a pool' do
+          pool.reload
+          expect(pool.template_prep_kit_box_barcode).to eq('100')
         end
 
-        context 'on success' do
-          let(:body) do
-            {
-              data: {
-                type: 'pools',
-                id: pool.id.to_s,
-                attributes: {
-                  used_aliquots_attributes: [
-                    {
-                      id: updated_aliquot.id.to_s,
-                      source_id: updated_aliquot.source.id.to_s,
-                      source_type: "Pacbio::Request",
-                      template_prep_kit_box_barcode: 'LK12345',
-                      tag_id: tag.id,
-                      volume: 1,
-                      concentration: 1,
-                      insert_size: 100
-                    },
-                    {
-                      source_id: added_request.id.to_s,
-                      source_type: "Pacbio::Request",
-                      template_prep_kit_box_barcode: 'LK12345',
-                      tag_id: tag2.id,
-                      volume: 1,
-                      concentration: 1,
-                      insert_size: 100
-                    },
-                    {
-                      id: removed_aliquot.id.to_s,
-                      _destroy: true
-                    }
-                  ],
-                  primary_aliquot_attributes: {
-                    id: pool.primary_aliquot.id.to_s,
-                    volume: '200',
-                    concentration: '22',
-                    template_prep_kit_box_barcode: '100',
-                    insert_size: '11',
-                  },
-                  volume: '200',
-                  concentration: '22',
-                  template_prep_kit_box_barcode: '100',
-                  insert_size: '11',
-                  created_at: '2021-08-04T14:35:47.208Z',
-                  updated_at: '2021-08-04T14:35:47.208Z'
-                }
-              }
-            }.to_json
-          end
-
-          it 'returns created status' do
-            expect(response).to have_http_status(:success), response.body
-          end
-
-          it 'updates a pool' do
-            pool.reload
-            expect(pool.template_prep_kit_box_barcode).to eq('100')
-          end
-
-          it 'updates the primary aliquot' do
-            pool.reload
-            expect(pool.primary_aliquot.template_prep_kit_box_barcode).to eq('100')
-          end
-
-          it 'update used_aliquots' do
-            updated_aliquot.reload
-            expect(updated_aliquot.template_prep_kit_box_barcode).to eq('LK12345')
-          end
-
-          it 'destroys removed used_aliquots' do
-            expect(Aliquot.find_by(id: removed_aliquot.id)).to be_nil
-          end
-
-          it 'adds new used_aliquots' do
-            pool.reload
-            expect(pool.used_aliquots.length).to eq(2)
-            expect(pool.used_aliquots.collect(&:source_id)).to include(added_request.id)
-          end
+        it 'update libraries' do
+          updated_library.reload
+          expect(updated_library.template_prep_kit_box_barcode).to eq('LK12345')
         end
 
-        context 'on failure - when there is a tag clash' do
-          let(:body) do
-            {
-              data: {
-                type: 'pools',
-                id: pool.id.to_s,
-                attributes: {
-                  used_aliquots_attributes: [
-                    {
-                      id: updated_aliquot.id.to_s,
-                      source_id: updated_aliquot.source.id.to_s,
-                      source_type: "Pacbio::Request",
-                      template_prep_kit_box_barcode: 'LK12345',
-                      tag_id: tag.id,
-                      volume: 1,
-                      concentration: 1,
-                      insert_size: 100
-                    },
-                    {
-                      source_id: added_request.id.to_s,
-                      source_type: "Pacbio::Request",
-                      template_prep_kit_box_barcode: 'LK12345',
-                      tag_id: tag.id,
-                      volume: 1,
-                      concentration: 1,
-                      insert_size: 100
-                    }
-                  ],
-                  volume: '200',
-                  concentration: '22',
-                  template_prep_kit_box_barcode: '100',
-                  insert_size: '11',
-                  created_at: '2021-08-04T14:35:47.208Z',
-                  updated_at: '2021-08-04T14:35:47.208Z'
-                }
-              }
-            }.to_json
-          end
+        it 'destroys removed libraries' do
+          expect(Pacbio::Library.find_by(id: removed_library)).to be_nil
+        end
 
-          it 'returns unprocessable entity status' do
-            expect(response).to have_http_status(:unprocessable_entity)
+        it 'adds new libraries' do
+          libraries = pool.libraries.reload
+          new_libraries = libraries.reject do |library|
+            [updated_library.id, removed_library.id].include?(library.id)
           end
-
-          it 'does not update a pool' do
-            pool.reload
-            expect(pool.template_prep_kit_box_barcode).not_to eq('100')
-          end
-
-          it 'does not change the aliquots' do
-            primary_aliquot_attributes = pool.primary_aliquot.reload.attributes
-            expect(primary_aliquot_attributes).to include(primary_aliquot.attributes)
-
-            used_aliquots_attributes = pool.used_aliquots.reload.map(&:attributes)
-            expect(used_aliquots_attributes).to include(updated_aliquot.attributes)
-            expect(used_aliquots_attributes).to include(removed_aliquot.attributes)
-          end
+          expect(new_libraries.length).to eq(1)
+          expect(new_libraries.first.pacbio_request_id).to eq(added_request.id)
         end
       end
 
-      context 'when there is an associated run' do
-        let!(:pool) { create(:pacbio_pool) }
-        let!(:updated_aliquot) { pool.used_aliquots.first }
-        let!(:plate) { build(:pacbio_plate) }
-        let(:run) { create(:pacbio_run, plates: [plate]) }
-
+      context 'on failure - when there is a tag clash' do
         let(:body) do
           {
             data: {
               type: 'pools',
               id: pool.id.to_s,
               attributes: {
-                used_aliquots_attributes: [
+                library_attributes: [
                   {
-                    id: updated_aliquot.id.to_s,
-                    source_id: updated_aliquot.source.id.to_s,
-                    source_type: "Pacbio::Request",
+                    id: updated_library.id.to_s,
+                    pacbio_request_id: updated_library.pacbio_request_id.to_s,
+                    template_prep_kit_box_barcode: 'LK12345',
+                    tag_id: tag.id,
+                    volume: 1,
+                    concentration: 1,
+                    insert_size: 100
+                  },
+                  {
+                    pacbio_request_id: added_request.id.to_s,
                     template_prep_kit_box_barcode: 'LK12345',
                     tag_id: tag.id,
                     volume: 1,
@@ -676,13 +423,263 @@ RSpec.describe 'PoolsController', :pacbio do
           }.to_json
         end
 
-        before { create(:pacbio_well, pools: [pool], plate:) }
+        it 'returns unprocessable entity status' do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
 
-        it 'publishes a message' do
-          expect(Messages).to receive(:publish).with(pool.sequencing_runs, having_attributes(pipeline: 'pacbio'))
-          patch v1_pacbio_pool_path(pool), params: body, headers: json_api_headers
+        it 'does not update a pool' do
+          pool.reload
+          expect(pool.template_prep_kit_box_barcode).not_to eq('100')
+        end
+
+        it 'does not change the libraries' do
+          attributes = pool.libraries.reload.map(&:attributes)
+          expect(attributes).to include(updated_library.attributes)
+          expect(attributes).to include(removed_library.attributes)
+        end
+      end
+    end
+
+    context 'when there is an associated run' do
+      let!(:pool) { create(:pacbio_pool) }
+      let!(:updated_library) { pool.libraries.first }
+      let!(:plate) { build(:pacbio_plate) }
+      let(:run) { create(:pacbio_run, plates: [plate]) }
+
+      let(:body) do
+        {
+          data: {
+            type: 'pools',
+            id: pool.id.to_s,
+            attributes: {
+              library_attributes: [
+                {
+                  id: updated_library.id.to_s,
+                  pacbio_request_id: updated_library.pacbio_request_id.to_s,
+                  template_prep_kit_box_barcode: 'LK12345',
+                  tag_id: tag.id,
+                  volume: 1,
+                  concentration: 1,
+                  insert_size: 100
+                }
+              ],
+              volume: '200',
+              concentration: '22',
+              template_prep_kit_box_barcode: '100',
+              insert_size: '11',
+              created_at: '2021-08-04T14:35:47.208Z',
+              updated_at: '2021-08-04T14:35:47.208Z'
+            }
+          }
+        }.to_json
+      end
+
+      before { create(:pacbio_well, pools: [pool], plate:) }
+
+      it 'publishes a message' do
+        expect(Messages).to receive(:publish).with(pool.sequencing_runs, having_attributes(pipeline: 'pacbio'))
+        patch v1_pacbio_pool_path(pool), params: body, headers: json_api_headers
+        expect(response).to have_http_status(:success), response.body
+      end
+    end
+  end
+
+  describe '#updating via aliquots' do
+    before do
+      Flipper.enable(:multiplexing_phase_2_aliquot)
+    end
+
+    context 'when updating a multiplex pool' do
+      let!(:pool) { create(:pacbio_pool_with_used_aliquots, aliquot_count: 2) }
+      # We let! this as we want to ensure we have the original state
+      let!(:updated_aliquot) { pool.used_aliquots.first }
+      let!(:removed_aliquot) { pool.used_aliquots.last }
+      let!(:primary_aliquot) { pool.primary_aliquot }
+      let(:added_request) { create(:pacbio_request) }
+
+      before do
+        patch v1_pacbio_pool_path(pool), params: body, headers: json_api_headers
+      end
+
+      context 'on success' do
+        let(:body) do
+          {
+            data: {
+              type: 'pools',
+              id: pool.id.to_s,
+              attributes: {
+                used_aliquots_attributes: [
+                  {
+                    id: updated_aliquot.id.to_s,
+                    source_id: updated_aliquot.source.id.to_s,
+                    source_type: 'Pacbio::Request',
+                    template_prep_kit_box_barcode: 'LK12345',
+                    tag_id: tag.id,
+                    volume: 1,
+                    concentration: 1,
+                    insert_size: 100
+                  },
+                  {
+                    source_id: added_request.id.to_s,
+                    source_type: 'Pacbio::Request',
+                    template_prep_kit_box_barcode: 'LK12345',
+                    tag_id: tag2.id,
+                    volume: 1,
+                    concentration: 1,
+                    insert_size: 100
+                  },
+                  {
+                    id: removed_aliquot.id.to_s,
+                    _destroy: true
+                  }
+                ],
+                primary_aliquot_attributes: {
+                  id: pool.primary_aliquot.id.to_s,
+                  volume: '200',
+                  concentration: '22',
+                  template_prep_kit_box_barcode: '100',
+                  insert_size: '11'
+                },
+                volume: '200',
+                concentration: '22',
+                template_prep_kit_box_barcode: '100',
+                insert_size: '11',
+                created_at: '2021-08-04T14:35:47.208Z',
+                updated_at: '2021-08-04T14:35:47.208Z'
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns created status' do
           expect(response).to have_http_status(:success), response.body
         end
+
+        it 'updates a pool' do
+          pool.reload
+          expect(pool.template_prep_kit_box_barcode).to eq('100')
+        end
+
+        it 'updates the primary aliquot' do
+          pool.reload
+          expect(pool.primary_aliquot.template_prep_kit_box_barcode).to eq('100')
+        end
+
+        it 'updates used_aliquots accordingly' do
+          # Adds new aliquots
+          pool.reload
+          expect(pool.used_aliquots.length).to eq(2)
+          expect(pool.used_aliquots.collect(&:source_id)).to include(added_request.id)
+
+          # Updates the existing aliquot
+          updated_aliquot.reload
+          expect(updated_aliquot.template_prep_kit_box_barcode).to eq('LK12345')
+
+          # Destroys the removed aliquot
+          expect(Aliquot.find_by(id: removed_aliquot.id)).to be_nil
+        end
+      end
+
+      context 'on failure - when there is a tag clash' do
+        let(:body) do
+          {
+            data: {
+              type: 'pools',
+              id: pool.id.to_s,
+              attributes: {
+                used_aliquots_attributes: [
+                  {
+                    id: updated_aliquot.id.to_s,
+                    source_id: updated_aliquot.source.id.to_s,
+                    source_type: 'Pacbio::Request',
+                    template_prep_kit_box_barcode: 'LK12345',
+                    tag_id: tag.id,
+                    volume: 1,
+                    concentration: 1,
+                    insert_size: 100
+                  },
+                  {
+                    source_id: added_request.id.to_s,
+                    source_type: 'Pacbio::Request',
+                    template_prep_kit_box_barcode: 'LK12345',
+                    tag_id: tag.id,
+                    volume: 1,
+                    concentration: 1,
+                    insert_size: 100
+                  }
+                ],
+                volume: '200',
+                concentration: '22',
+                template_prep_kit_box_barcode: '100',
+                insert_size: '11',
+                created_at: '2021-08-04T14:35:47.208Z',
+                updated_at: '2021-08-04T14:35:47.208Z'
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns unprocessable entity status' do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'does not update a pool' do
+          pool.reload
+          expect(pool.template_prep_kit_box_barcode).not_to eq('100')
+        end
+
+        it 'does not change the aliquots' do
+          primary_aliquot_attributes = pool.primary_aliquot.reload.attributes
+          expect(primary_aliquot_attributes).to include(primary_aliquot.attributes)
+
+          used_aliquots_attributes = pool.used_aliquots.reload.map(&:attributes)
+          expect(used_aliquots_attributes).to include(updated_aliquot.attributes)
+          expect(used_aliquots_attributes).to include(removed_aliquot.attributes)
+        end
+      end
+    end
+
+    context 'when there is an associated run' do
+      let!(:pool) { create(:pacbio_pool_with_used_aliquots, aliquot_count: 1) }
+      let!(:updated_aliquot) { pool.used_aliquots.first }
+      let!(:plate) { build(:pacbio_plate) }
+      let(:run) { create(:pacbio_run, plates: [plate]) }
+
+      let(:body) do
+        {
+          data: {
+            type: 'pools',
+            id: pool.id.to_s,
+            attributes: {
+              used_aliquots_attributes: [
+                {
+                  id: updated_aliquot.id.to_s,
+                  source_id: updated_aliquot.source.id.to_s,
+                  source_type: 'Pacbio::Request',
+                  template_prep_kit_box_barcode: 'LK12345',
+                  tag_id: tag.id,
+                  volume: 1,
+                  concentration: 1,
+                  insert_size: 100
+                }
+              ],
+              volume: '200',
+              concentration: '22',
+              template_prep_kit_box_barcode: '100',
+              insert_size: '11',
+              created_at: '2021-08-04T14:35:47.208Z',
+              updated_at: '2021-08-04T14:35:47.208Z'
+            }
+          }
+        }.to_json
+      end
+
+      before { create(:pacbio_well, pools: [pool], plate:) }
+
+      it 'publishes a message' do
+        expect(Messages).to receive(:publish).with(pool.sequencing_runs, having_attributes(pipeline: 'pacbio'))
+        patch v1_pacbio_pool_path(pool), params: body, headers: json_api_headers
+        expect(response).to have_http_status(:success), response.body
       end
     end
   end
