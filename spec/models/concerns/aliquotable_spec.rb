@@ -35,17 +35,20 @@ RSpec.describe Aliquotable do
   end
 
   describe '#used_aliquots' do
+    before do
+      Flipper.enable(:multiplexing_phase_2_aliquot)
+    end
+
     it 'returns the used aliquots' do
-      aliquots = create_list(:aliquot, 5, aliquot_type: :derived)
-      pacbio_pool = create(:pacbio_pool_with_used_aliquots, used_aliquots: aliquots)
-      pacbio_pool.reload
+      pacbio_pool = create(:pacbio_pool)
       # Because of the save hook in the pool model the created_at attributes are slightly different
       # But we can assert the ids are the same
-      expect(pacbio_pool.used_aliquots.pluck(:id)).to eq(aliquots.pluck(:id))
+      expect(pacbio_pool.used_aliquots.count).to eq(1)
     end
 
     it 'returns empty array if there are no used_by aliquots' do
-      pacbio_pool = create(:pacbio_pool, used_aliquots: [], libraries: [])
+      pacbio_pool = create(:pacbio_pool)
+      pacbio_pool.used_aliquots = []
       expect(pacbio_pool.used_aliquots).to eq []
     end
   end

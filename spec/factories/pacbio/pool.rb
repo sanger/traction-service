@@ -13,6 +13,12 @@ FactoryBot.define do
     volume { 10 }
     insert_size { 100 }
 
+    after(:build) do |pool|
+      pool.libraries.each do |lib|
+        pool.used_aliquots << build(:aliquot, source: lib.request, aliquot_type: :derived, used_by: pool)
+      end
+    end
+
     trait :tagged do
       transient do
         library_count { 2 }
@@ -25,17 +31,6 @@ FactoryBot.define do
         library_count { 1 }
         library_factory { :pacbio_library_without_tag }
       end
-    end
-
-    factory :pacbio_pool_with_used_aliquots do
-      transient do
-        aliquot_count { 2 }
-        used_aliquot_factory { :aliquot }
-        aliquot_source { association(:pacbio_request) }
-      end
-
-      libraries { [] }
-      used_aliquots { build_list(used_aliquot_factory, aliquot_count, source: aliquot_source, aliquot_type: :derived, used_by: instance) }
     end
   end
 end

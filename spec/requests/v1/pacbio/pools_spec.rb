@@ -490,7 +490,7 @@ RSpec.describe 'PoolsController', :pacbio do
     end
 
     context 'when updating a multiplex pool' do
-      let!(:pool) { create(:pacbio_pool_with_used_aliquots, aliquot_count: 2) }
+      let!(:pool) { create(:pacbio_pool, library_count: 2) }
       # We let! this as we want to ensure we have the original state
       let!(:updated_aliquot) { pool.used_aliquots.first }
       let!(:removed_aliquot) { pool.used_aliquots.last }
@@ -527,10 +527,6 @@ RSpec.describe 'PoolsController', :pacbio do
                     volume: 1,
                     concentration: 1,
                     insert_size: 100
-                  },
-                  {
-                    id: removed_aliquot.id.to_s,
-                    _destroy: true
                   }
                 ],
                 primary_aliquot_attributes: {
@@ -577,6 +573,20 @@ RSpec.describe 'PoolsController', :pacbio do
 
           # Destroys the removed aliquot
           expect(Aliquot.find_by(id: removed_aliquot.id)).to be_nil
+        end
+
+        it 'updates the libraries accordingly' do
+          # Adds new libraries
+          pool.reload
+          expect(pool.libraries.length).to eq(2)
+          expect(pool.libraries.collect(&:pacbio_request_id)).to include(added_request.id)
+
+          # Updates the existing library
+          updated_library = pool.libraries.find_by(pacbio_request_id: updated_aliquot.source_id)
+          expect(updated_library.template_prep_kit_box_barcode).to eq('LK12345')
+
+          # Destroys the removed library
+          expect(Pacbio::Library.find_by(pacbio_request_id: removed_aliquot.source_id)).to be_nil
         end
       end
 
@@ -640,7 +650,7 @@ RSpec.describe 'PoolsController', :pacbio do
     end
 
     context 'when there is an associated run' do
-      let!(:pool) { create(:pacbio_pool_with_used_aliquots, aliquot_count: 1) }
+      let!(:pool) { create(:pacbio_pool) }
       let!(:updated_aliquot) { pool.used_aliquots.first }
       let!(:plate) { build(:pacbio_plate) }
       let(:run) { create(:pacbio_run, plates: [plate]) }

@@ -39,8 +39,8 @@ RSpec.describe Pacbio::Pool, :pacbio do
     expect(pool.insert_size).to be_present
   end
 
-  it 'is not valid unless there is at least one library', skip: 'Unknown requirement' do
-    expect(build(:pacbio_pool, libraries: [], used_aliquots: [])).not_to be_valid
+  it 'is not valid unless there is at least one library' do
+    expect(build(:pacbio_pool, libraries: [])).not_to be_valid
   end
 
   it 'is not valid unless all of the associated libraries are valid' do
@@ -209,6 +209,10 @@ RSpec.describe Pacbio::Pool, :pacbio do
   end
 
   describe '#used_aliquot_attributes=' do
+    before do
+      Flipper.enable(:multiplexing_phase_2_aliquot)
+    end
+
     context 'with new used aliquots' do
       let(:used_aliquots_attributes) { attributes_for_list(:aliquot, 5, aliquot_type: :derived, source: nil) }
 
@@ -220,7 +224,7 @@ RSpec.describe Pacbio::Pool, :pacbio do
     end
 
     context 'with existing used aliquots' do
-      let(:pool) { create(:pacbio_pool_with_used_aliquots, aliquot_count: 5) }
+      let(:pool) { create(:pacbio_pool, library_count: 5) }
       let(:used_aliquots_attributes) do
         pool.used_aliquots.map do |aliquot|
           aliquot.attributes.merge(

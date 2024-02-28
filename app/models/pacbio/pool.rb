@@ -22,22 +22,43 @@ module Pacbio
               :insert_size, :template_prep_kit_box_barcode, presence: true, on: :run_creation
     validates :volume, :concentration,
               :insert_size, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
+    validates :libraries, presence: true
+
+    COMMON_LIBRARY_ATTRIBUTES = %w[volume concentration insert_size
+                                   template_prep_kit_box_barcode tag_id].freeze
 
     def library_attributes=(library_options)
       self.libraries = library_options.map do |attributes|
         if attributes['id']
+          aliquot = used_aliquots.find_by(source_id: attributes['pacbio_request_id'])
+          update_used_aliquot(attributes.slice(COMMON_LIBRARY_ATTRIBUTES).merge('id' => aliquot.id))
           update_library(attributes)
         else
+          used_aliquots.build(attributes.slice(COMMON_LIBRARY_ATTRIBUTES)
+            .merge(source_id: attributes['pacbio_request_id'], source_type: 'Pacbio::Request'))
           Pacbio::Library.new(attributes)
         end
       end
+      destroy_unused_aliquots
+    end
+
+    def used_aliquots_attributes=(used_aliquot_options)
+      self.used_aliquots = used_aliquot_options.map do |attributes|
+        if attributes['id']
+          library = libraries.find_by(pacbio_request_id: attributes['source_id'])
+          update_library(attributes.slice(COMMON_LIBRARY_ATTRIBUTES).merge('id' => library.id))
+          update_used_aliquot(attributes)
+        else
+          libraries.build(attributes.slice(COMMON_LIBRARY_ATTRIBUTES)
+                                    .merge(pacbio_request_id: attributes['source_id']))
+          Aliquot.new(attributes)
+        end
+      end
+      destroy_unused_libraries
     end
 
     validates :primary_aliquot, presence: true
     accepts_nested_attributes_for :primary_aliquot
-    accepts_nested_attributes_for :used_aliquots, allow_destroy: true
-
-    before_save :sync_libraries_and_used_aliquots
 
     # @return [Array] of Plates attached to a sequencing run
     def sequencing_plates
@@ -51,46 +72,16 @@ module Pacbio
 
     private
 
-    def sync_libraries_and_used_aliquots
-      # Prioritize libraries in the case both are changed
-      if libraries.any?(&:changed?)
-        libraries.each do |library|
-          # If its a new library it will need a new used aliquot
-          if library.id.nil?
-            used_aliquots << Aliquot.new(
-              library.attributes.slice('volume', 'concentration', 'library_kit_box_barcode',
-                                       'insert_size', 'tag_id').merge(source: library.request)
-            )
-          # We want to check the library being updated has a corresponding used aliquot
-          elsif used_aliquots.find_by(source_id: library.request.id).present?
-            used_aliquots.find_by(source_id: library.request.id).update(library.attributes.slice(
-                                                                          'volume', 'concentration', 'library_kit_box_barcode', 'insert_size', 'tag_id'
-                                                                        ))
-          # The library and used aliquot are out of sync
-          else
-            errors.add(:used_aliquots,
-                       'Unable to sync aliquots and libraries. Please contact support.')
-          end
-        end
-      elsif used_aliquots.any?(&:changed?)
-        used_aliquots.each do |aliquot|
-          # If its a new used aliquot it will need a new library
-          if aliquot.id.nil?
-            libraries << Pacbio::Library.new(
-              aliquot.attributes.slice('volume', 'concentration', 'library_kit_box_barcode',
-                                       'insert_size', 'tag_id').merge(request: aliquot.source)
-            )
-          # We want to check the used aliquot being updated has a corresponding library
-          elsif libraries.find_by(pacbio_request_id: aliquot.source_id).present?
-            libraries.find_by(pacbio_request_id: aliquot.source_id).update(aliquot.attributes.slice(
-                                                                             'volume', 'concentration', 'library_kit_box_barcode', 'insert_size', 'tag_id'
-                                                                           ))
-          # The library and used aliquot are out of sync
-          else
-            errors.add(:libraries, 'Unable to sync aliquots and libraries. Please contact support.')
-          end
-        end
-      end
+    def destroy_unused_libraries
+      libraries.filter do |lib|
+        used_aliquots.pluck(:source_id).exclude?(lib.pacbio_request_id)
+      end.each(&:destroy)
+    end
+
+    def destroy_unused_aliquots
+      used_aliquots.filter do |aliquot|
+        libraries.pluck(:pacbio_request_id).exclude?(aliquot.source_id)
+      end.each(&:destroy)
     end
 
     def update_library(attributes)
@@ -99,12 +90,26 @@ module Pacbio
                        .tap { |l| l.update(attributes) }
     end
 
+    def update_used_aliquot(attributes)
+      id = attributes['id'].to_s
+      indexed_used_aliquots.fetch(id) { missing_used_aliquot(id) }
+                           .tap { |a| a.update(attributes) }
+    end
+
     def missing_library(id)
-      raise ActiveRecord::RecordNotFound, "Pacbio request #{id} is not part of the pool"
+      raise ActiveRecord::RecordNotFound, "Pacbio library #{id} is not part of the pool"
+    end
+
+    def missing_used_aliquot(id)
+      raise ActiveRecord::RecordNotFound, "Aliquot #{id} is not part of the pool"
     end
 
     def indexed_libraries
       @indexed_libraries ||= libraries.index_by { |lib| lib.id.to_s }
+    end
+
+    def indexed_used_aliquots
+      @indexed_used_aliquots ||= used_aliquots.index_by { |aliquot| aliquot.id.to_s }
     end
   end
 end
