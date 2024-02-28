@@ -73,7 +73,7 @@ namespace :pacbio_aliquot_data do
       begin
         pool.destroy!
       rescue ActiveRecord::RecordNotDestroyed => e
-        puts "errors that prevented pool #{pool.barcode} destruction: #{e.record.errors.full_messages}"
+        puts "errors that prevented pool id:#{pool.id} destruction: #{e.record.errors.full_messages}"
       end
     end
   end
