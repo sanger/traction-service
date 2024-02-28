@@ -17,7 +17,8 @@ class Aliquot < ApplicationRecord
   # as library only validates when a run is created
   # maybe we need to do this when the state is set to used?
   # requests currently dont support these fields so we skip validation on primary aliquots
-  validates :volume, :concentration, :template_prep_kit_box_barcode, :insert_size,
+  # we dont validate insert size as it may not be known at the time of creation
+  validates :volume, :concentration, :template_prep_kit_box_barcode,
             presence: true,
             unless: -> { source.is_a?(Pacbio::Request) && aliquot_type == 'primary' }
   validates :volume, :concentration, :insert_size,

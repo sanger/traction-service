@@ -77,7 +77,7 @@ RSpec.describe 'RakeTasks' do
     it 'creates primary aliquots for each library and request used in the library' do
       # Create some singled-plexed pools (new libraries) with wells
       plate = build(:pacbio_plate_with_wells)
-      pools = create_list(:pacbio_pool, 5, library_count: 1, wells: [plate.wells.first])
+      pools = create_list(:pacbio_pool, 5, library_count: 1, wells: [plate.wells.first], created_at: 1.day.ago.round)
       create(:pacbio_run, plates: [plate])
 
       # Create some multiplexed pools (these shouldnt be affected)
@@ -101,6 +101,8 @@ RSpec.describe 'RakeTasks' do
       pools.each do |pool|
         # We created a new library which we can find via the tube
         library = Pacbio::Library.find_by(tube: pool.tube)
+        expect(library.created_at).to eq(pool.created_at)
+
         # Reload the library to get the updated data after the rake task has been run
         expect(library.primary_aliquot.volume).to eq(library.volume)
         expect(library.primary_aliquot.concentration).to eq(library.concentration)

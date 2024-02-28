@@ -33,6 +33,9 @@ namespace :pacbio_aliquot_data do
   task migrate_library_data: :environment do
     puts '-> Creating primary aliquots for all libraries and derived aliquots for all requests used in libraries'
 
+    # Clear well libraries table as we will be re-adding them and don't want duplicates or validation errors
+    Pacbio::WellLibrary.delete_all
+
     Pacbio::Pool.find_each do |pool|
       next unless pool.libraries.count == 1
 
@@ -41,6 +44,11 @@ namespace :pacbio_aliquot_data do
       # Set the libraries tube to the pools tube
       new_lib.tube = pool.tube
       new_lib.pool = nil
+      new_lib.created_at = pool.created_at
+      # Setup the library defaults in case they don't exist
+      new_lib.volume = new_lib.volume || 0
+      new_lib.concentration = new_lib.concentration || 0
+      new_lib.template_prep_kit_box_barcode = new_lib.template_prep_kit_box_barcode || '033000000000000000000'
       # Create the libraries primary aliquot
       # A used_by aliquot is automatically created
       new_lib.primary_aliquot = Aliquot.create(
@@ -62,7 +70,11 @@ namespace :pacbio_aliquot_data do
         well.save
       end
 
-      pool.destroy
+      begin
+        pool.destroy!
+      rescue ActiveRecord::RecordNotDestroyed => e
+        puts "errors that prevented pool id:#{pool.id} destruction: #{e.record.errors.full_messages}"
+      end
     end
   end
 
