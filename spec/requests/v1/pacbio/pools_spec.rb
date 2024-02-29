@@ -306,6 +306,56 @@ RSpec.describe 'PoolsController', :pacbio do
           )
         end
       end
+
+      context 'on failure - when there is aliquot id thats not part of the pool' do
+        let(:additional_library) { create(:pacbio_library) }
+        let(:body) do
+          {
+            data: {
+              type: 'pools',
+              attributes: {
+                library_attributes: [
+                  {
+                    id: additional_library.id.to_s,
+                    template_prep_kit_box_barcode: 'LK1234567',
+                    volume: 1.11,
+                    concentration: 2.22,
+                    insert_size: 100,
+                    pacbio_request_id: request.id,
+                    tag_id: tag.id
+                  },
+                  {
+                    template_prep_kit_box_barcode: 'LK1234567',
+                    volume: 1.11,
+                    concentration: 2.22,
+                    insert_size: 100,
+                    pacbio_request_id: request2.id,
+                    tag_id: tag2.id
+                  }
+                ],
+                primary_aliquot_attributes: {
+                  volume: '200',
+                  concentration: '22',
+                  template_prep_kit_box_barcode: '100',
+                  insert_size: '11'
+                }
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns internal_server_error status' do
+          post v1_pacbio_pools_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:internal_server_error)
+          expect(response.body).to include('Aliquot is not part of the pool')
+        end
+
+        it 'cannot create a pool' do
+          expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.not_to(
+            change(Pacbio::Pool, :count)
+          )
+        end
+      end
     end
   end
 
@@ -495,6 +545,58 @@ RSpec.describe 'PoolsController', :pacbio do
         it 'returns unprocessable entity status' do
           post v1_pacbio_pools_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'cannot create a pool' do
+          expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.not_to(
+            change(Pacbio::Pool, :count)
+          )
+        end
+      end
+
+      context 'on failure - when there is aliquot id thats not part of the pool' do
+        let(:additional_aliquot) { create(:aliquot) }
+        let(:body) do
+          {
+            data: {
+              type: 'pools',
+              attributes: {
+                used_aliquots_attributes: [
+                  {
+                    id: additional_aliquot.id.to_s,
+                    template_prep_kit_box_barcode: 'LK1234567',
+                    volume: 1.11,
+                    concentration: 2.22,
+                    insert_size: 100,
+                    source_id: request.id,
+                    source_type: 'Pacbio::Request',
+                    tag_id: tag.id
+                  },
+                  {
+                    template_prep_kit_box_barcode: 'LK1234567',
+                    volume: 1.11,
+                    concentration: 2.22,
+                    insert_size: 100,
+                    source_id: request.id,
+                    source_type: 'Pacbio::Request',
+                    tag_id: tag2.id
+                  }
+                ],
+                primary_aliquot_attributes: {
+                  volume: '200',
+                  concentration: '22',
+                  template_prep_kit_box_barcode: '100',
+                  insert_size: '11'
+                }
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns internal_server_error status' do
+          post v1_pacbio_pools_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:internal_server_error)
+          expect(response.body).to include('Pacbio library is not part of the pool')
         end
 
         it 'cannot create a pool' do

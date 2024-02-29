@@ -33,7 +33,7 @@ module Pacbio
       self.libraries = library_options.map do |attributes|
         if attributes['id']
           aliquot = used_aliquots.find_by(source_id: attributes['pacbio_request_id'])
-          update_used_aliquot(attributes.slice(*COMMON_ATTRIBUTES).merge('id' => aliquot.id))
+          update_used_aliquot(attributes.slice(*COMMON_ATTRIBUTES).merge('id' => aliquot&.id))
           update_library(attributes)
         else
           used_aliquots.build(attributes.slice(*COMMON_ATTRIBUTES)
@@ -48,7 +48,7 @@ module Pacbio
       self.used_aliquots = used_aliquot_options.map do |attributes|
         if attributes['id']
           library = libraries.find_by(pacbio_request_id: attributes['source_id'])
-          update_library(attributes.slice(*COMMON_ATTRIBUTES).merge('id' => library.id))
+          update_library(attributes.slice(*COMMON_ATTRIBUTES).merge('id' => library&.id))
           update_used_aliquot(attributes)
         else
           libraries.build(attributes.slice(*COMMON_ATTRIBUTES)
@@ -99,11 +99,11 @@ module Pacbio
     end
 
     def missing_library(id)
-      raise ActiveRecord::RecordNotFound, "Pacbio library #{id} is not part of the pool"
+      raise ActiveRecord::RecordNotFound, "Pacbio library is not part of the pool #{id}"
     end
 
     def missing_used_aliquot(id)
-      raise ActiveRecord::RecordNotFound, "Aliquot #{id} is not part of the pool"
+      raise ActiveRecord::RecordNotFound, "Aliquot is not part of the pool #{id}"
     end
 
     def indexed_libraries
