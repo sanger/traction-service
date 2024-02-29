@@ -118,7 +118,7 @@ RSpec.describe 'PoolsController', :pacbio do
     end
   end
 
-  describe '#create' do
+  describe '#create via libraries' do
     context 'when creating a singleplex library' do
       context 'on success' do
         let(:body) do
@@ -309,6 +309,203 @@ RSpec.describe 'PoolsController', :pacbio do
     end
   end
 
+  describe '#create via aliquots' do
+    context 'when creating a singleplex library' do
+      context 'on success' do
+        let(:body) do
+          {
+            data: {
+              type: 'pools',
+              attributes: {
+                template_prep_kit_box_barcode: 'LK1234567',
+                volume: 1.11,
+                concentration: 2.22,
+                insert_size: 100,
+                used_aliquots_attributes: [
+                  {
+                    volume: 1.11,
+                    template_prep_kit_box_barcode: 'LK1234567',
+                    concentration: 2.22,
+                    insert_size: 100,
+                    source_id: request.id,
+                    source_type: 'Pacbio::Request',
+                    tag_id: tag.id
+                  }
+                ],
+                primary_aliquot_attributes: {
+                  volume: '200',
+                  concentration: '22',
+                  template_prep_kit_box_barcode: '100',
+                  insert_size: '11'
+                }
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a created status' do
+          post v1_pacbio_pools_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:created), response.body
+        end
+
+        it 'creates a pool' do
+          expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to change(Pacbio::Pool, :count).by(1)
+        end
+
+        it 'returns the id' do
+          post v1_pacbio_pools_path, params: body, headers: json_api_headers
+          expect(json.dig('data', 'id').to_i).to eq(Pacbio::Pool.first.id)
+        end
+
+        it 'includes the tube' do
+          post "#{v1_pacbio_pools_path}?include=tube", params: body, headers: json_api_headers
+          tube = find_included_resource(id: Pacbio::Pool.first.tube_id, type: 'tubes')
+          expect(tube.dig('attributes', 'barcode')).to be_present
+        end
+      end
+
+      context 'on failure - when used_aliquot is invalid' do
+        let(:body) do
+          {
+            data: {
+              type: 'pools',
+              attributes: {
+                used_aliquots_attributes: [
+                  {
+                    template_prep_kit_box_barcode: 'LK1234567',
+                    volume: 1.11,
+                    concentration: 2.22,
+                    insert_size: 'Sausages',
+                    source_id: request.id,
+                    source_type: 'Pacbio::Request',
+                    tag_id: tag.id
+                  }
+                ],
+                primary_aliquot_attributes: {
+                  volume: '200',
+                  concentration: '22',
+                  template_prep_kit_box_barcode: '100',
+                  insert_size: '11'
+                }
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns unprocessable entity status' do
+          post v1_pacbio_pools_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'cannot create a pool' do
+          expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.not_to(
+            change(Pacbio::Pool, :count)
+          )
+        end
+      end
+    end
+
+    context 'when creating a multiplex library' do
+      context 'on success' do
+        let(:body) do
+          {
+            data: {
+              type: 'pools',
+              attributes: {
+                used_aliquots_attributes: [
+                  {
+                    template_prep_kit_box_barcode: 'LK1234567',
+                    volume: 1.11,
+                    concentration: 2.22,
+                    insert_size: 100,
+                    source_id: request.id,
+                    source_type: 'Pacbio::Request',
+                    tag_id: tag.id
+                  },
+                  {
+                    template_prep_kit_box_barcode: 'LK1234567',
+                    volume: 1.11,
+                    concentration: 2.22,
+                    insert_size: 100,
+                    source_id: request2.id,
+                    source_type: 'Pacbio::Request',
+                    tag_id: tag2.id
+                  }
+                ],
+                primary_aliquot_attributes: {
+                  volume: '200',
+                  concentration: '22',
+                  template_prep_kit_box_barcode: '100',
+                  insert_size: '11'
+                }
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns created status' do
+          post v1_pacbio_pools_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:created)
+        end
+
+        it 'creates a pool' do
+          expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to(
+            change(Pacbio::Pool, :count).by(1)
+          )
+        end
+      end
+
+      context 'on failure - when there is a tag clash' do
+        let(:body) do
+          {
+            data: {
+              type: 'pools',
+              attributes: {
+                used_aliquots_attributes: [
+                  {
+                    template_prep_kit_box_barcode: 'LK1234567',
+                    volume: 1.11,
+                    concentration: 2.22,
+                    insert_size: 100,
+                    source_id: request.id,
+                    source_type: 'Pacbio::Request',
+                    tag_id: tag.id
+                  },
+                  {
+                    template_prep_kit_box_barcode: 'LK1234567',
+                    volume: 1.11,
+                    concentration: 2.22,
+                    insert_size: 100,
+                    source_id: request2.id,
+                    source_type: 'Pacbio::Request',
+                    tag_id: tag.id
+                  }
+                ],
+                primary_aliquot_attributes: {
+                  volume: '200',
+                  concentration: '22',
+                  template_prep_kit_box_barcode: '100',
+                  insert_size: '11'
+                }
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns unprocessable entity status' do
+          post v1_pacbio_pools_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'cannot create a pool' do
+          expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.not_to(
+            change(Pacbio::Pool, :count)
+          )
+        end
+      end
+    end
+  end
+
   describe '#updating via libraries' do
     context 'when updating a multiplex library' do
       let!(:pool) { create(:pacbio_pool, library_count: 2) }
@@ -367,22 +564,32 @@ RSpec.describe 'PoolsController', :pacbio do
           expect(pool.template_prep_kit_box_barcode).to eq('100')
         end
 
-        it 'update libraries' do
+        it 'updates libraries accordingly' do
+          # Adds new libraries
+          pool.reload
+          expect(pool.libraries.length).to eq(2)
+          expect(pool.libraries.collect(&:pacbio_request_id)).to include(added_request.id)
+
+          # Updates the existing library
           updated_library.reload
           expect(updated_library.template_prep_kit_box_barcode).to eq('LK12345')
+
+          # Destroys the removed library
+          expect(Pacbio::Library.find_by(pacbio_request_id: removed_library.pacbio_request_id)).to be_nil
         end
 
-        it 'destroys removed libraries' do
-          expect(Pacbio::Library.find_by(id: removed_library)).to be_nil
-        end
+        it 'updates used_aliquots accordingly' do
+          # Adds new aliquots
+          pool.reload
+          expect(pool.used_aliquots.length).to eq(2)
+          expect(pool.used_aliquots.collect(&:source_id)).to include(added_request.id)
 
-        it 'adds new libraries' do
-          libraries = pool.libraries.reload
-          new_libraries = libraries.reject do |library|
-            [updated_library.id, removed_library.id].include?(library.id)
-          end
-          expect(new_libraries.length).to eq(1)
-          expect(new_libraries.first.pacbio_request_id).to eq(added_request.id)
+          # Updates the existing aliquot
+          updated_aliquot = pool.used_aliquots.find_by(source_id: updated_library.pacbio_request_id)
+          expect(updated_aliquot.template_prep_kit_box_barcode).to eq('LK12345')
+
+          # Destroys the removed aliquot
+          expect(Aliquot.find_by(source_id: removed_library.pacbio_request_id, used_by: pool)).to be_nil
         end
       end
 
@@ -436,6 +643,14 @@ RSpec.describe 'PoolsController', :pacbio do
           attributes = pool.libraries.reload.map(&:attributes)
           expect(attributes).to include(updated_library.attributes)
           expect(attributes).to include(removed_library.attributes)
+        end
+
+        it 'does not change the used aliquots' do
+          attributes = pool.used_aliquots.reload.map(&:attributes)
+          updated_aliquot = pool.used_aliquots.find_by(source_id: updated_library.pacbio_request_id)
+          removed_aliquot = pool.used_aliquots.find_by(source_id: removed_library.pacbio_request_id)
+          expect(attributes).to include(updated_aliquot.attributes)
+          expect(attributes).to include(removed_aliquot.attributes)
         end
       end
     end
@@ -572,7 +787,7 @@ RSpec.describe 'PoolsController', :pacbio do
           expect(updated_aliquot.template_prep_kit_box_barcode).to eq('LK12345')
 
           # Destroys the removed aliquot
-          expect(Aliquot.find_by(id: removed_aliquot.id)).to be_nil
+          expect(Aliquot.find_by(id: removed_aliquot.id, used_by: pool)).to be_nil
         end
 
         it 'updates the libraries accordingly' do
@@ -645,6 +860,14 @@ RSpec.describe 'PoolsController', :pacbio do
           used_aliquots_attributes = pool.used_aliquots.reload.map(&:attributes)
           expect(used_aliquots_attributes).to include(updated_aliquot.attributes)
           expect(used_aliquots_attributes).to include(removed_aliquot.attributes)
+        end
+
+        it 'does not change the libraries' do
+          attributes = pool.libraries.reload.map(&:attributes)
+          updated_library = pool.libraries.find_by(pacbio_request_id: updated_aliquot.source_id)
+          removed_library = pool.libraries.find_by(pacbio_request_id: removed_aliquot.source_id)
+          expect(attributes).to include(updated_library.attributes)
+          expect(attributes).to include(removed_library.attributes)
         end
       end
     end

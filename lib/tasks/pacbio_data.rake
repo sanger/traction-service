@@ -47,11 +47,15 @@ namespace :pacbio_data do
       libraries = (1..lib_count).collect do
         library(tag_name ? tags.next.id : nil)
       end
-      Pacbio::Pool.create!(tube: Tube.create, libraries:, volume: 1, concentration: 1, insert_size: 100, template_prep_kit_box_barcode: '029979102141700063023',
-                           primary_aliquot: Aliquot.new(volume: 1,
-                                                        concentration: 1,
-                                                        template_prep_kit_box_barcode: '029979102141700063023',
-                                                        insert_size: 500))
+      # Created a used_aliquot for each library so the data is consistent
+      used_aliquots = libraries.collect do |library|
+        Aliquot.new(
+          volume: library.volume, concentration: library.concentration, template_prep_kit_box_barcode: library.template_prep_kit_box_barcode,
+          insert_size: library.insert_size, tag_id: library.tag_id, source_id: library.pacbio_request_id, source_type: 'Pacbio::Request'
+        )
+      end
+      Pacbio::Pool.create!(tube: Tube.create, libraries:, used_aliquots:, volume: 1, concentration: 1, insert_size: 100, template_prep_kit_box_barcode: '029979102141700063023',
+                           primary_aliquot: Aliquot.new(volume: 1, concentration: 1, template_prep_kit_box_barcode: '029979102141700063023', insert_size: 500))
     end
 
     # pools

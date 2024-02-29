@@ -48,12 +48,13 @@ module V1
         @model.library_attributes = library_parameters.map do |library|
           library.permit(:id, :volume, :template_prep_kit_box_barcode,
                          :concentration, :insert_size, :pacbio_request_id, :tag_id)
+                 .to_h.with_indifferent_access
         end
       end
 
       def used_aliquots_attributes=(used_aliquot_parameters)
         @model.used_aliquots_attributes = used_aliquot_parameters.map do |aliquot|
-          aliquot.permit(ALIQUOT_ATTRIBUTES, :_destroy)
+          aliquot.permit(ALIQUOT_ATTRIBUTES, :_destroy).to_h.with_indifferent_access
         end
       end
 

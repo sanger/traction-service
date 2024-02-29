@@ -23,18 +23,20 @@ module Pacbio
     validates :volume, :concentration,
               :insert_size, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
     validates :libraries, presence: true
+    validates :used_aliquots, presence: true
 
-    COMMON_LIBRARY_ATTRIBUTES = %w[volume concentration insert_size
-                                   template_prep_kit_box_barcode tag_id].freeze
+    # List of common attributes between libraries and used aliquots
+    COMMON_ATTRIBUTES = %w[volume concentration insert_size
+                           template_prep_kit_box_barcode tag_id].freeze
 
     def library_attributes=(library_options)
       self.libraries = library_options.map do |attributes|
         if attributes['id']
           aliquot = used_aliquots.find_by(source_id: attributes['pacbio_request_id'])
-          update_used_aliquot(attributes.slice(COMMON_LIBRARY_ATTRIBUTES).merge('id' => aliquot.id))
+          update_used_aliquot(attributes.slice(*COMMON_ATTRIBUTES).merge('id' => aliquot.id))
           update_library(attributes)
         else
-          used_aliquots.build(attributes.slice(COMMON_LIBRARY_ATTRIBUTES)
+          used_aliquots.build(attributes.slice(*COMMON_ATTRIBUTES)
             .merge(source_id: attributes['pacbio_request_id'], source_type: 'Pacbio::Request'))
           Pacbio::Library.new(attributes)
         end
@@ -46,10 +48,10 @@ module Pacbio
       self.used_aliquots = used_aliquot_options.map do |attributes|
         if attributes['id']
           library = libraries.find_by(pacbio_request_id: attributes['source_id'])
-          update_library(attributes.slice(COMMON_LIBRARY_ATTRIBUTES).merge('id' => library.id))
+          update_library(attributes.slice(*COMMON_ATTRIBUTES).merge('id' => library.id))
           update_used_aliquot(attributes)
         else
-          libraries.build(attributes.slice(COMMON_LIBRARY_ATTRIBUTES)
+          libraries.build(attributes.slice(*COMMON_ATTRIBUTES)
                                     .merge(pacbio_request_id: attributes['source_id']))
           Aliquot.new(attributes)
         end
