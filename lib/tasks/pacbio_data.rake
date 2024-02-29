@@ -27,19 +27,27 @@ namespace :pacbio_data do
 
     print '-> Creating pacbio libraries and pools...'
 
+    def library(tag_id = nil)
+      Pacbio::Library.new(
+        volume: 1,
+        concentration: 1,
+        template_prep_kit_box_barcode: '029979102141700063023',
+        insert_size: 500,
+        tag_id:,
+        pacbio_request_id: @requests_generator.next.requestable.id,
+        primary_aliquot: Aliquot.new(volume: 1,
+                                     concentration: 1,
+                                     template_prep_kit_box_barcode: '029979102141700063023',
+                                     insert_size: 500, tag_id:)
+      )
+    end
+
     def pool(tag_name, lib_count = 1)
       tags = TagSet.find_by!(name: tag_name).tags.cycle if tag_name
-      libs = (1..lib_count).collect do
-        {
-          volume: 1,
-          concentration: 1,
-          template_prep_kit_box_barcode: '029979102141700063023',
-          insert_size: 1000,
-          pacbio_request_id: @requests_generator.next.requestable.id,
-          tag_id: (tags.next.id if tag_name)
-        }
+      libraries = (1..lib_count).collect do
+        library(tag_name ? tags.next.id : nil)
       end
-      Pacbio::Pool.create!(tube: Tube.create, library_attributes: libs, volume: 1, concentration: 1, insert_size: 1000, template_prep_kit_box_barcode: '029979102141700063023')
+      Pacbio::Pool.create!(tube: Tube.create, libraries:, volume: 1, concentration: 1, insert_size: 100, template_prep_kit_box_barcode: '029979102141700063023')
     end
 
     # pools
@@ -55,6 +63,7 @@ namespace :pacbio_data do
     5.times do
       untagged_pool
       tagged_pool
+      library.save!
     end
 
     print COMPLETED

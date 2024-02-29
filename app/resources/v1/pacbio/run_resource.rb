@@ -74,7 +74,7 @@ module V1
               # is used to mark wells for destruction
               :_destroy,
               PERMITTED_WELL_PARAMETERS,
-              { pool_ids: [] }
+              { pool_ids: [], library_ids: [] }
             ]
           )
         end

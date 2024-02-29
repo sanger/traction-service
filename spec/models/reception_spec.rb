@@ -3,18 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe Reception do
-  subject { build(:reception, attributes) }
+  subject(:reception) { build(:reception, attributes) }
 
   context 'without a source' do
     let(:attributes) { { source: nil } }
 
     it { is_expected.not_to be_valid }
-  end
-
-  context 'with a source' do
-    let(:attributes) { { source: 'traction-ui.sequencescape' } }
-
-    it { is_expected.to be_valid }
   end
 
   # We get a bit strict with validation, mainly to stop us getting a
@@ -35,5 +29,23 @@ RSpec.describe Reception do
     let(:attributes) { { source: 'traction-ui.Sequencescape' } }
 
     it { is_expected.not_to be_valid }
+  end
+
+  context 'without plate_attributes or tubes_attributes' do
+    let(:attributes) { { plates_attributes: [], tubes_attributes: [] } }
+
+    it { is_expected.not_to be_valid }
+  end
+
+  context 'with a valid source' do
+    let(:attributes) { { source: 'traction-ui.sequencescape' } }
+
+    it { is_expected.to be_valid }
+
+    describe '#construct_resources!' do
+      it 'associates requests with this reception' do
+        expect { reception.construct_resources! }.to change { reception.requests.count }.by(1)
+      end
+    end
   end
 end

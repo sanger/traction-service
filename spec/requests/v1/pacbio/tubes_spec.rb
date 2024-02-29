@@ -4,30 +4,45 @@ require 'rails_helper'
 
 RSpec.describe 'TubesController' do
   let(:pipeline_name)       { 'pacbio' }
-  let(:other_pipeline_name) { 'saphyr' }
+  let(:other_pipeline_name) { 'ont' }
 
   it_behaves_like 'tubes'
 
   describe '#get?include=pools' do
-    before do
-      pacbio_pool
-      get "#{v1_pacbio_tubes_path}?include=pools", headers: json_api_headers
-    end
-
-    let(:pacbio_pool) { create(:pacbio_pool, tube: create(:tube_with_pacbio_library)) }
+    let!(:pacbio_pool) { create(:pacbio_pool, tube: create(:tube)) }
 
     it 'returns a response' do
+      get "#{v1_pacbio_tubes_path}?include=pools", headers: json_api_headers
+
       expect(response).to have_http_status(:success)
     end
 
     it 'included pools' do
+      get "#{v1_pacbio_tubes_path}?include=pools", headers: json_api_headers
+
       expect(find_included_resource(type: 'pools', id: pacbio_pool.id)).to be_present
+    end
+  end
+
+  describe '#get?include=library' do
+    let!(:pacbio_library) { create(:pacbio_library, tube: create(:tube)) }
+
+    it 'returns a response' do
+      get "#{v1_pacbio_tubes_path}?include=libraries", headers: json_api_headers
+
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'included library' do
+      get "#{v1_pacbio_tubes_path}?include=libraries", headers: json_api_headers
+
+      expect(find_included_resource(type: 'libraries', id: pacbio_library.id)).to be_present
     end
   end
 
   describe 'filter' do
     context 'when filtering by barcode' do
-      let(:tubes_with_request) { create_list(:tube_with_pacbio_request, 2) }
+      let!(:tubes_with_request) { create_list(:tube_with_pacbio_request, 2) }
 
       it 'returns the correct tube' do
         barcode = tubes_with_request[0].barcode
@@ -50,7 +65,7 @@ RSpec.describe 'TubesController' do
     end
 
     context 'filtering by barcodes' do
-      let(:tubes_with_library) { create_list(:tube_with_pacbio_library, 4) }
+      let!(:tubes_with_library) { create_list(:tube_with_pacbio_library, 4) }
 
       it 'returns the correct tubes' do
         barcodes = tubes_with_library.map(&:barcode)[0..1]

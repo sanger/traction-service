@@ -4,10 +4,6 @@ require 'rails_helper'
 
 require './spec/support/json_matcher'
 
-# DEPRECATE-Reception-V1:
-# Rename this file to reception_spec
-# Remove mixed reception test
-
 RSpec.describe 'ReceptionsController' do
   Broker::Handle.class_eval do
     def test_received_messages
@@ -437,29 +433,6 @@ RSpec.describe 'ReceptionsController' do
         post v1_receptions_path, params: body, headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)
         expect(json['errors'][0]['detail']).to eq('requests - there are no new samples to import')
-      end
-    end
-
-    context 'with a mixed reception (v1 and v2)' do
-      let(:body) do
-        {
-          data: {
-            type: 'receptions',
-            attributes: {
-              source: 'traction-ui.sequencescape',
-              plates_attributes: [],
-              tubes_attributes: [],
-              request_attributes: []
-            }
-          }
-        }.to_json
-      end
-
-      it 'has a bad_request status' do
-        post v1_receptions_path, params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        expect(response).to have_http_status(:bad_request)
-        expect(json['errors'][0]['detail']).to eq('Cannot mix v1 and v2 reception resources')
       end
     end
   end

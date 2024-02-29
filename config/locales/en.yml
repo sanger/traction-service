@@ -29,10 +29,6 @@
 # To learn more, please read the Rails Internationalization guide
 # available at https://guides.rubyonrails.org/i18n.html.
 
-# DEPRECATE-Reception-V1:
-# Remove resource_factory_v1 references
-# Rename resource_factory_v2 to resource_factory
-
 en:
   hello: "Hello world"
   activemodel:
@@ -42,11 +38,7 @@ en:
           attributes:
             wells:
               empty: there are no wells
-        reception/resource_factory_v1:
-          attributes:
-            request_attributes:
-              blank: there are no new samples to import
-        reception/resource_factory_v2:
+        reception/resource_factory:
           attributes:
             requests:
               blank: there are no new samples to import
@@ -76,10 +68,6 @@ en:
           attributes:
             wells:
               plate_min_wells: there must be at least one well
-        pacbio/well:
-          attributes:
-            pools:
-              well_min_pools: there must be at least one pool
         ont/run:
           attributes:
             flowcells:
