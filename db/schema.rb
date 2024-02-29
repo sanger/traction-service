@@ -24,10 +24,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_180656) do
     t.bigint "source_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "pacbio_well_id"
-    t.index ["pacbio_well_id"], name: "index_aliquots_on_pacbio_well_id"
+    t.string "used_by_type"
+    t.bigint "used_by_id"
     t.index ["source_type", "source_id"], name: "index_aliquots_on_source"
     t.index ["tag_id"], name: "index_aliquots_on_tag_id"
+    t.index ["used_by_type", "used_by_id"], name: "index_aliquots_on_used_by"
   end
 
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
@@ -188,7 +189,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_180656) do
     t.datetime "deactivated_at", precision: nil
     t.bigint "pacbio_request_id", null: false
     t.bigint "tag_id"
-    t.bigint "pacbio_pool_id", null: false
+    t.bigint "pacbio_pool_id"
     t.bigint "tube_id"
     t.index ["pacbio_pool_id"], name: "index_pacbio_libraries_on_pacbio_pool_id"
     t.index ["pacbio_request_id"], name: "index_pacbio_libraries_on_pacbio_request_id"
@@ -504,7 +505,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_180656) do
     t.index ["plate_id"], name: "index_wells_on_plate_id"
   end
 
-  add_foreign_key "aliquots", "pacbio_wells"
   add_foreign_key "ont_flowcells", "ont_pools"
   add_foreign_key "ont_flowcells", "ont_runs"
   add_foreign_key "ont_requests", "data_types"

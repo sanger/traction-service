@@ -13,17 +13,22 @@ module Pacbio
     include Uuidable
     include Librarian
     include SampleSheet::Library
+    include Aliquotable
 
     validates :volume, :concentration,
               :insert_size, presence: true, on: :run_creation
     validates :volume, :concentration,
               :insert_size, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
 
+    has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_library_id,
+                              dependent: :nullify, inverse_of: :library
+    has_many :wells, class_name: 'Pacbio::Well', through: :well_libraries
+
     belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id,
                          inverse_of: :libraries
     belongs_to :tag, optional: true
     belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :pacbio_pool_id,
-                      inverse_of: :libraries
+                      inverse_of: :libraries, optional: true
     belongs_to :tube, optional: true
 
     has_one :sample, through: :request
@@ -35,6 +40,34 @@ module Pacbio
 
     has_one :source_plate, through: :source_well, source: :plate, class_name: '::Plate'
 
+    # TODO: remove pool constraint this when pools are updated for aliquots
+    validates :primary_aliquot, presence: true, if: -> { pool.blank? }
+    accepts_nested_attributes_for :primary_aliquot, allow_destroy: true
+
+    after_create :create_used_aliquot, :create_tube, if: -> { pool.blank? }
+    before_destroy :check_for_associated_wells, prepend: true
+
+    def create_used_aliquot
+      used_aliquots.create(
+        source: request,
+        aliquot_type: :derived,
+        volume:,
+        concentration:,
+        template_prep_kit_box_barcode:,
+        insert_size:,
+        tag:
+      )
+    end
+
+    def create_tube
+      self.tube = tube || Tube.create!
+      save
+    end
+
+    def tube
+      pool ? pool.tube : super
+    end
+
     def collection?
       false
     end
@@ -43,6 +76,30 @@ module Pacbio
       SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour || :untagged)
     end
 
-    delegate :sequencing_plates, to: :pool
+    # @return [Array] of Runs that the pool is used in
+    def sequencing_runs
+      wells&.collect(&:run)&.uniq
+    end
+
+    # @return [Array] of Plates attached to a sequencing run
+    def sequencing_plates
+      # TODO: remove this when pools are updated for aliquots
+      if pool
+        pool.sequencing_plates
+      else
+        wells&.collect(&:plate)
+      end
+    end
+
+    private
+
+    def check_for_associated_wells
+      if wells.empty?
+        true
+      else
+        errors.add(:base, 'Cannot delete a library that is associated with wells')
+        throw(:abort)
+      end
+    end
   end
 end

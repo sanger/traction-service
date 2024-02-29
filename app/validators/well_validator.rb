@@ -3,10 +3,13 @@
 # Failed validations return unprocessable_entity
 class WellValidator < ActiveModel::Validator
   def validate(record)
-    # return unless there are multiple libraries
-    return unless record.pools.map(&:libraries).flatten.many?
+    # First we want to check there is at least 1 library or pool
+    validate_library_presence(record)
 
-    validations = %i[validate_tag_presence validate_tag_uniqueness]
+    # The next validations rely on there being more than 1 library or pool
+    return unless record.all_libraries.many?
+
+    validations = %i[validate_library_presence validate_tag_presence validate_tag_uniqueness]
 
     validations.each do |validation|
       next if record.errors.present?
@@ -15,8 +18,15 @@ class WellValidator < ActiveModel::Validator
     end
   end
 
+  def validate_library_presence(record)
+    return unless record.all_libraries.empty?
+
+    record.errors.add(:base, "There must be at least 1 pool or library for well #{record.position}")
+    nil
+  end
+
   def validate_tag_presence(record)
-    all_tags = record.pools.map(&:libraries).flatten.collect(&:tag)
+    all_tags = record.all_libraries.collect(&:tag)
 
     return unless all_tags.empty? || all_tags.any?(nil)
 
@@ -25,7 +35,7 @@ class WellValidator < ActiveModel::Validator
   end
 
   def validate_tag_uniqueness(record)
-    all_tags = record.pools.map(&:libraries).flatten.collect(&:tag)
+    all_tags = record.all_libraries.collect(&:tag)
 
     return if all_tags.length == all_tags.uniq.length
 

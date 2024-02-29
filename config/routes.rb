@@ -28,6 +28,7 @@ Rails.application.routes.draw do
     namespace :pacbio do
       jsonapi_resources :plates,        only: %i[index create]
       jsonapi_resources :tag_sets
+      jsonapi_resources :aliquots
 
       # This seems the best way to do this for now.
       # because we also have a namespace without the constraint
@@ -51,7 +52,7 @@ Rails.application.routes.draw do
         # rubocop:enable Lint/EmptyBlock
       end
 
-      jsonapi_resources :libraries,           only: %i[index update destroy]
+      jsonapi_resources :libraries,           only: %i[index create update destroy]
       jsonapi_resources :requests,            only: %i[index create update destroy]
       jsonapi_resources :tubes,               only: %i[index]
       jsonapi_resources :pools,               except: %i[destroy]

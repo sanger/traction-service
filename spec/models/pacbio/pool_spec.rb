@@ -175,7 +175,7 @@ RSpec.describe Pacbio::Pool, :pacbio do
 
   describe '#library_attributes=' do
     context 'with new libraries' do
-      let(:library_attributes) { attributes_for_list(:pacbio_library, 5) }
+      let(:library_attributes) { attributes_for_list(:pacbio_library, 5, primary_aliquot: nil, used_aliquots: []) }
 
       it 'sets up libraries' do
         pool = build(:pacbio_pool, library_count: 0)

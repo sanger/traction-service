@@ -3,6 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe 'LibrariesController', :pacbio do
+  before do
+    # Create a default smrt link version for pacbio runs.
+    create(:pacbio_smrt_link_version_default)
+  end
+
   describe '#get' do
     let!(:libraries) { create_list(:pacbio_library, 5, :tagged, tube: Tube.new) }
 
@@ -119,11 +124,6 @@ RSpec.describe 'LibrariesController', :pacbio do
         tube_resource = find_included_resource(type: 'tubes', id: tube.id)
         tube_attributes = tube_resource['attributes']
         expect(tube_attributes['barcode']).to eq(tube.barcode)
-
-        pool = library.pool
-        pool_relationship = library_relationships.fetch('pool')
-        expect(pool_relationship['data']['id']).to eq(pool.id.to_s)
-        expect(pool_relationship['data']['type']).to eq('pools')
       end
 
       it 'has a relationship with source_well' do
@@ -236,7 +236,7 @@ RSpec.describe 'LibrariesController', :pacbio do
           pacbio_library = create(:pacbio_library)
           # Create extra libraries to prevent false positive
           create_list(:pacbio_library, 5)
-          get "#{v1_pacbio_libraries_path}?filter[barcode]=#{pacbio_library.pool.tube.barcode}",
+          get "#{v1_pacbio_libraries_path}?filter[barcode]=#{pacbio_library.tube.barcode}",
               headers: json_api_headers
           expect(response).to have_http_status(:success)
           expect(json['data'].length).to eq(1)
@@ -255,8 +255,7 @@ RSpec.describe 'LibrariesController', :pacbio do
           pacbio_libraries = []
           (1..5).each do |i|
             pacbio_tube = create(:tube_with_pacbio_request, barcode: "test-100#{i}")
-            pacbio_pool = create(:pacbio_pool, library_count: 1, tube: pacbio_tube)
-            pacbio_libraries << pacbio_pool.libraries.first
+            pacbio_libraries << create(:pacbio_library, tube: pacbio_tube)
           end
           # Create extra libraries to prevent false positive
           create_list(:pacbio_library, 5)
@@ -281,6 +280,322 @@ RSpec.describe 'LibrariesController', :pacbio do
     end
   end
 
+  describe '#create' do
+    context 'when creating a library' do
+      let!(:request) { create(:pacbio_request) }
+      let!(:tag) { create(:tag) }
+
+      context 'on success' do
+        let(:body) do
+          {
+            data: {
+              type: 'libraries',
+              attributes: {
+                volume: 1.11,
+                template_prep_kit_box_barcode: 'LK1234567',
+                concentration: 2.22,
+                insert_size: 100,
+                pacbio_request_id: request.id,
+                tag_id: tag.id,
+                primary_aliquot_attributes: {
+                  volume: 1.11,
+                  template_prep_kit_box_barcode: 'LK1234567',
+                  concentration: 2.22,
+                  insert_size: 100,
+                  state: 'created',
+                  tag_id: tag.id
+                }
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a created status' do
+          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:created), response.body
+        end
+
+        it 'creates a library and aliquots' do
+          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }
+            .to change(Pacbio::Library, :count).by(1)
+            .and change(Aliquot, :count).by(2) # We create a primary aliquot and a used_by aliquot
+        end
+
+        it 'returns the id' do
+          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          expect(json.dig('data', 'id').to_i).to eq(Pacbio::Library.first.id)
+        end
+
+        it 'includes the tube' do
+          post "#{v1_pacbio_libraries_path}?include=tube", params: body, headers: json_api_headers
+          tube = find_included_resource(id: Pacbio::Library.first.tube_id, type: 'tubes')
+          expect(tube.dig('attributes', 'barcode')).to be_present
+        end
+      end
+
+      context 'on failure - when library is invalid' do
+        let(:body) do
+          {
+            data: {
+              type: 'libraries',
+              attributes: {
+                template_prep_kit_box_barcode: 'LK1234567',
+                volume: 1.11,
+                concentration: 2.22,
+                insert_size: 'Sausages',
+                pacbio_request_id: request.id,
+                tag_id: tag.id,
+                primary_aliquot_attributes: {
+                  volume: 1.11,
+                  template_prep_kit_box_barcode: 'LK1234567',
+                  concentration: 2.22,
+                  insert_size: 100,
+                  state: 'created',
+                  tag_id: tag.id
+                }
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns unprocessable entity status' do
+          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'cannot create a library' do
+          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.not_to(
+            change(Pacbio::Library, :count) &&
+            change(Aliquot, :count)
+          )
+        end
+      end
+
+      context 'on failure - when primary aliquot is invalid' do
+        let(:body) do
+          {
+            data: {
+              type: 'libraries',
+              attributes: {
+                template_prep_kit_box_barcode: 'LK1234567',
+                volume: 1.11,
+                concentration: 2.22,
+                insert_size: 'Sausages',
+                pacbio_request_id: request.id,
+                tag_id: tag.id,
+                primary_aliquot_attributes: {
+                  volume: 'invalid volume',
+                  template_prep_kit_box_barcode: 'LK1234567',
+                  concentration: 2.22,
+                  insert_size: 100
+                }
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns unprocessable entity status' do
+          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'cannot create a library' do
+          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.not_to(
+            change(Pacbio::Library, :count) &&
+            change(Aliquot, :count)
+          )
+        end
+      end
+    end
+  end
+
+  describe '#updating' do
+    let!(:library) { create(:pacbio_library, pool: nil) }
+    let!(:tag) { create(:tag) }
+
+    before do
+      patch v1_pacbio_library_path(library), params: body, headers: json_api_headers
+    end
+
+    context 'on success' do
+      let(:body) do
+        {
+          data: {
+            type: 'libraries',
+            id: library.id.to_s,
+            attributes: {
+              volume: library.volume,
+              template_prep_kit_box_barcode: '100',
+              concentration: library.concentration,
+              insert_size: library.insert_size,
+              pacbio_request_id: library.request.id,
+              tag_id: tag.id,
+              primary_aliquot_attributes: {
+                volume: 1.11,
+                template_prep_kit_box_barcode: '100',
+                concentration: 2.22,
+                insert_size: 100,
+                state: 'created',
+                tag_id: tag.id
+              }
+            }
+          }
+        }.to_json
+      end
+
+      it 'returns created status' do
+        expect(response).to have_http_status(:success), response.body
+      end
+
+      it 'updates a library' do
+        library.reload
+        expect(library.template_prep_kit_box_barcode).to eq('100')
+      end
+
+      it 'updates the library primary aliquot' do
+        library.reload
+        expect(library.primary_aliquot.template_prep_kit_box_barcode).to eq('100')
+      end
+
+      it 'does not update the used_aliquots' do
+        library.reload
+        expect(library.used_aliquots.first.template_prep_kit_box_barcode).not_to eq('100')
+      end
+    end
+
+    context 'on failure - when there is invalid library data' do
+      let(:body) do
+        {
+          data: {
+            type: 'libraries',
+            id: library.id.to_s,
+            attributes: {
+              volume: 'This is not valid',
+              template_prep_kit_box_barcode: '100',
+              concentration: library.concentration,
+              insert_size: library.insert_size,
+              pacbio_request_id: library.request.id,
+              tag_id: tag.id,
+              primary_aliquot_attributes: {
+                id: library.primary_aliquot.id.to_s,
+                volume: 1.11,
+                template_prep_kit_box_barcode: '10',
+                concentration: 2.22,
+                insert_size: 100,
+                state: 'created',
+                tag_id: tag.id
+              }
+            }
+          }
+        }.to_json
+      end
+
+      it 'returns unprocessable entity status' do
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'does not update the library' do
+        library.reload
+        expect(library.volume).not_to eq('This is not valid')
+      end
+
+      it 'does not update the primary aliquot' do
+        library.reload
+        expect(library.primary_aliquot.volume).not_to eq('This is not valid')
+      end
+
+      it 'contains the correct error messages' do
+        expect(response.body).to include('volume - is not a number')
+      end
+    end
+
+    context 'on failure - when there is invalid primary aliquot data' do
+      let(:body) do
+        {
+          data: {
+            type: 'libraries',
+            id: library.id.to_s,
+            attributes: {
+              volume: 100,
+              template_prep_kit_box_barcode: '100',
+              concentration: library.concentration,
+              insert_size: library.insert_size,
+              pacbio_request_id: library.request.id,
+              tag_id: tag.id,
+              primary_aliquot_attributes: {
+                id: library.primary_aliquot.id.to_s,
+                volume: 'This is not valid',
+                template_prep_kit_box_barcode: '10',
+                concentration: 2.22,
+                insert_size: 100,
+                state: 'created',
+                tag_id: tag.id
+              }
+            }
+          }
+        }.to_json
+      end
+
+      it 'returns unprocessable entity status' do
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'does not update the library' do
+        library.reload
+        expect(library.volume).not_to eq('This is not valid')
+      end
+
+      it 'does not update the primary aliquot' do
+        library.reload
+        expect(library.primary_aliquot.volume).not_to eq('This is not valid')
+      end
+
+      it 'contains the correct error messages' do
+        expect(response.body).to include('primary_aliquot.volume - is not a number')
+      end
+    end
+
+    context 'when there is an associated run' do
+      let!(:library) { create(:pacbio_library, pool: nil) }
+      let!(:plate) { build(:pacbio_plate) }
+      let(:run) { create(:pacbio_run, plates: [plate]) }
+
+      let(:body) do
+        {
+          data: {
+            type: 'libraries',
+            id: library.id.to_s,
+            attributes: {
+              volume: 100,
+              template_prep_kit_box_barcode: 'update',
+              concentration: library.concentration,
+              insert_size: library.insert_size,
+              pacbio_request_id: library.request.id,
+              tag_id: tag.id,
+              primary_aliquot_attributes: {
+                id: library.primary_aliquot.id.to_s,
+                volume: 100,
+                template_prep_kit_box_barcode: '10',
+                concentration: 2.22,
+                insert_size: 100,
+                state: 'created',
+                tag_id: tag.id
+              }
+            }
+          }
+        }.to_json
+      end
+
+      before { create(:pacbio_well, libraries: [library], plate:) }
+
+      it 'publishes a message' do
+        expect(Messages).to receive(:publish).with(library.sequencing_runs, having_attributes(pipeline: 'pacbio'))
+        patch v1_pacbio_library_path(library), params: body, headers: json_api_headers
+        expect(response).to have_http_status(:success), response.body
+      end
+    end
+  end
+
   describe '#destroy' do
     context 'on success' do
       let!(:library) { create(:pacbio_library) }
@@ -294,12 +609,21 @@ RSpec.describe 'LibrariesController', :pacbio do
         expect do
           delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
         end.to change(Pacbio::Library, :count).by(-1)
+                                              .and change(Aliquot, :count).by(-2) # We destroy the primary and used_by aliquots
       end
 
       it 'does not destroy the requests' do
         expect do
           delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
         end.not_to change(Pacbio::Request, :count)
+      end
+
+      it 'does not destroy the library if it has associated wells' do
+        create(:pacbio_well, libraries: [library])
+        expect do
+          delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
+        end.not_to change(Pacbio::Library, :count)
+        expect(json['errors'][0]['title']).to eq('Cannot delete a library that is associated with wells')
       end
     end
 

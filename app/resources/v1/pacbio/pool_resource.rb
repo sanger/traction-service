@@ -13,7 +13,7 @@ module V1
       # In this case I can see it using container_associations
       # so seems to be linking the wrong tube relationship.
       has_one :tube, relation_name: :tube
-      has_many :libraries
+      has_many :libraries, class_name: 'LibraryPool'
 
       attributes :volume, :concentration, :template_prep_kit_box_barcode,
                  :insert_size, :created_at, :updated_at,

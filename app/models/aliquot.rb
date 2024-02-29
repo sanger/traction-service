@@ -10,14 +10,15 @@ class Aliquot < ApplicationRecord
 
   belongs_to :tag, optional: true
   belongs_to :source, polymorphic: true
-  belongs_to :well, class_name: 'Pacbio::Well', optional: true, foreign_key: :pacbio_well_id,
-                    inverse_of: :aliquots
+  # Used to identify where a derived aliquot has been used
+  belongs_to :used_by, polymorphic: true, optional: true
 
   # currently I have set these to be validated but not sure
   # as library only validates when a run is created
   # maybe we need to do this when the state is set to used?
   # requests currently dont support these fields so we skip validation on primary aliquots
-  validates :volume, :concentration, :template_prep_kit_box_barcode, :insert_size,
+  # we dont validate insert size as it may not be known at the time of creation
+  validates :volume, :concentration, :template_prep_kit_box_barcode,
             presence: true,
             unless: -> { source.is_a?(Pacbio::Request) && aliquot_type == 'primary' }
   validates :volume, :concentration, :insert_size,
