@@ -34,6 +34,7 @@ namespace :tol_tubes_report_view do
                 lib_tube.barcode
             END AS destination_barcode,
             samp.name AS sample_name,
+            pb_req.estimate_of_gb_required AS genome_size,
             pb_req.cost_code,
             pb_req.external_study_id AS study_uuid
           FROM pacbio_libraries pb_lib
