@@ -84,6 +84,42 @@ RSpec.describe 'PoolsController', :pacbio do
       expect(library_attributes['insert_size']).to eq(library.insert_size)
     end
 
+    context 'with includes' do
+      before do
+        get "#{v1_pacbio_pools_path}?include=libraries,primary_aliquot,used_aliquots,tube",
+            headers: json_api_headers
+      end
+
+      let(:pool_relationships) do
+        pool_resource = find_resource(type: 'pools', id: pools.first.id)
+        pool_resource.fetch('relationships')
+      end
+      let(:pool) { pools.first }
+
+      it 'has a success status' do
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'returns the correct included data', :aggregate_failures do
+        libraries_resource = find_included_resource(type: 'library_pools', id: pool.libraries.first.id)
+        expect(libraries_resource['id']).to eq(pool.libraries.first.id.to_s)
+        expect(libraries_resource['type']).to eq('library_pools')
+
+        primary_aliquot_resource = find_included_resource(type: 'aliquots', id: pool.primary_aliquot.id)
+        expect(primary_aliquot_resource['id']).to eq(pool.primary_aliquot.id.to_s)
+        expect(primary_aliquot_resource['type']).to eq('aliquots')
+
+        used_aliquot_resource = find_included_resource(type: 'aliquots', id: pool.used_aliquots.first.id)
+        expect(used_aliquot_resource['id']).to eq(pool.used_aliquots.first.id.to_s)
+        expect(used_aliquot_resource['type']).to eq('aliquots')
+
+        tube_resource = find_included_resource(type: 'tubes', id: pool.tube.id)
+        expect(tube_resource['id']).to eq(pool.tube.id.to_s)
+        expect(tube_resource['type']).to eq('tubes')
+        expect(tube_resource['attributes']['barcode']).to eq(pool.tube.barcode)
+      end
+    end
+
     context 'pagination' do
       let!(:expected_pools) { create_list(:pacbio_pool, 2, created_at: Time.zone.now + 10) }
 

@@ -54,7 +54,7 @@ module V1
 
       def used_aliquots_attributes=(used_aliquot_parameters)
         @model.used_aliquots_attributes = used_aliquot_parameters.map do |aliquot|
-          aliquot.permit(ALIQUOT_ATTRIBUTES, :_destroy).to_h.with_indifferent_access
+          aliquot.permit(ALIQUOT_ATTRIBUTES).to_h.with_indifferent_access
         end
       end
 
