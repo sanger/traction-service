@@ -106,6 +106,13 @@ namespace :pacbio_data do
       rand(bits**length).to_s(bits).rjust(length, '0')
     end
 
+    # Gets a random date in the next year
+    # This is mainly use when generating valid sequencing kit box barcodes to ensure uniqueness
+    # See https://www.pacb.com/wp-content/uploads/SMRT-Link-User-Guide-v13.0.pdf pg 42
+    def random_expiration_date
+      (DateTime.now + (rand * 365)).strftime('%Y%m%d')
+    end
+
     # combinations
     total_plates = { sequel_iie: [1], revio: [1, 2] }
     pools = {
@@ -152,7 +159,7 @@ namespace :pacbio_data do
         dna_control_complex_box_barcode: 'Lxxxxx102249600123199',
         plates: (1..total_plate).map do |plate_number|
           serial = barcode(length: 3)
-          sequencing_kit_box_barcode = "10211880003110400#{serial}20231226"
+          sequencing_kit_box_barcode = "10211880003110400#{serial}#{random_expiration_date}"
           Pacbio::Plate.new(
             sequencing_kit_box_barcode:,
             plate_number:,
@@ -212,7 +219,7 @@ namespace :pacbio_data do
         dna_control_complex_box_barcode: 'Lxxxxx102249600123199',
         plates: (1..total_plate).map do |plate_number|
           serial = barcode(length: 3)
-          sequencing_kit_box_barcode = "10211880003110400#{serial}20231226"
+          sequencing_kit_box_barcode = "10211880003110400#{serial}#{random_expiration_date}"
           Pacbio::Plate.new(
             sequencing_kit_box_barcode:,
             plate_number:,
