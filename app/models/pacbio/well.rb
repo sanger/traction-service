@@ -14,11 +14,9 @@ module Pacbio
     has_many :well_pools, class_name: 'Pacbio::WellPool', foreign_key: :pacbio_well_id,
                           dependent: :destroy, inverse_of: :well, autosave: true
     has_many :pools, class_name: 'Pacbio::Pool', through: :well_pools
-
-    has_many :aliquots, foreign_key: :pacbio_well_id, inverse_of: :well, dependent: :destroy,
-                        autosave: true
-    has_many :libraries, through: :pools
-    has_many :tag_sets, through: :libraries
+    has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_well_id,
+                              dependent: :destroy, inverse_of: :well, autosave: true
+    has_many :libraries, class_name: 'Pacbio::Library', through: :well_libraries
 
     # pacbio smrt link options for a well are kept in store field of the well
     # which is mapped to smrt_link_options column (JSON) of pacbio_wells table.
@@ -52,15 +50,10 @@ module Pacbio
 
     validates :row, :column, presence: true
 
-    validates :pools, length: {
-      minimum: 1,
-      message: :well_min_pools
-    }
-
     delegate :run, to: :plate, allow_nil: true
 
     def tag_set
-      tag_sets.first
+      all_libraries.collect(&:tag_set).first
     end
 
     def sample_sheet_behaviour
@@ -75,6 +68,11 @@ module Pacbio
       "#{sample_names} #{comment}".strip
     end
 
+    # A collection of all the libraries for a well
+    def all_libraries
+      pools.collect(&:libraries).flatten + libraries
+    end
+
     # collection of all of the requests for a library
     # useful for messaging
     def request_libraries
@@ -84,25 +82,37 @@ module Pacbio
     # a collection of all the sample names for a particular well
     # useful for comments
     def sample_names(separator = ':')
-      libraries.collect(&:request).collect(&:sample_name).join(separator)
+      all_libraries.collect(&:request).collect(&:sample_name).join(separator)
     end
 
     # a collection of all the tags for a well
     # useful to check whether they are unique
     def tags
-      libraries.collect(&:tag_id)
+      all_libraries.collect(&:tag_id)
     end
 
     def pools?
       pools.present?
     end
 
+    def libraries?
+      libraries.present?
+    end
+
     def template_prep_kit_box_barcode
-      pools? ? pools.first.template_prep_kit_box_barcode : ''
+      if pools?
+        pools.first.template_prep_kit_box_barcode
+      elsif libraries?
+        libraries.first.template_prep_kit_box_barcode
+      end
     end
 
     def insert_size
-      pools? ? pools.first.insert_size : ''
+      if pools?
+        pools.first.insert_size
+      elsif libraries?
+        libraries.first.insert_size
+      end
     end
 
     def collection?

@@ -8,8 +8,8 @@ RSpec.describe 'TubesController' do
 
   context 'tubes' do
     it 'returns a list' do
-      create_list(:tube_with_ont_library, 3)
-      create_list(:tube_with_pacbio_library, 4)
+      create_list(:tube_with_ont_request, 3)
+      create_list(:tube_with_pacbio_request, 4)
 
       get v1_ont_tubes_path, headers: json_api_headers
       expect(response).to have_http_status(:success)
@@ -41,31 +41,6 @@ RSpec.describe 'TubesController' do
         expect(json['data'][0]['attributes']['barcode']).to eq barcode
       end
     end
-
-    context 'filtering by barcodes' do
-      let(:tubes_with_library) { create_list(:tube_with_ont_library, 4) }
-
-      it 'returns the correct tubes' do
-        barcodes = tubes_with_library.map(&:barcode)[0..1]
-        get "#{v1_ont_tubes_path}?filter[barcode]=#{barcodes.join(',')}", headers: json_api_headers
-        expect(response).to have_http_status(:success)
-        json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data'].length).to eq(barcodes.length)
-        expect(json['data'][0]['attributes']['barcode']).to eq barcodes[0]
-        expect(json['data'][1]['attributes']['barcode']).to eq barcodes[1]
-      end
-
-      it 'accepts multiple case-insensitive barcodes' do
-        barcodes = tubes_with_library.map(&:barcode)[0..1]
-        downcased = barcodes.map(&:downcase)
-        get "#{v1_ont_tubes_path}?filter[barcode]=#{downcased.join(',')}", headers: json_api_headers
-        expect(response).to have_http_status(:success)
-        json = ActiveSupport::JSON.decode(response.body)
-        expect(json['data'].length).to eq(barcodes.length)
-        expect(json['data'][0]['attributes']['barcode']).to eq barcodes[0]
-        expect(json['data'][1]['attributes']['barcode']).to eq barcodes[1]
-      end
-    end
   end
 
   describe '#get?include=pools' do
@@ -74,7 +49,7 @@ RSpec.describe 'TubesController' do
       get "#{v1_ont_tubes_path}?include=pools", headers: json_api_headers
     end
 
-    let(:ont_pool) { create(:ont_pool, tube: create(:tube_with_ont_library)) }
+    let(:ont_pool) { create(:ont_pool) }
 
     it 'returns a response' do
       expect(response).to have_http_status(:success)

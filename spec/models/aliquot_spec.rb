@@ -15,8 +15,9 @@ RSpec.describe Aliquot do
     expect(build(:aliquot, template_prep_kit_box_barcode: nil)).not_to be_valid
   end
 
-  it 'is invalid without an insert_size' do
-    expect(build(:aliquot, insert_size: nil)).not_to be_valid
+  it 'is valid without an insert_size' do
+    # Insert size may not be known at the time of creation so we don't validate it
+    expect(build(:aliquot, insert_size: nil)).to be_valid
   end
 
   it 'is valid without volume, concentration, template_prep_kit_box_barcode and insert_size if source is a Pacbio::Request and its a primary aliquot' do
@@ -59,12 +60,6 @@ RSpec.describe Aliquot do
     expect(build(:aliquot, tag:).tag).to eq(tag)
   end
 
-  it 'can have a well' do
-    create(:pacbio_smrt_link_version, name: 'v12_revio', default: true)
-    well = create(:pacbio_well)
-    expect(build(:aliquot, well:).well).to eq(well)
-  end
-
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_library }
 
@@ -75,5 +70,12 @@ RSpec.describe Aliquot do
     aliquot = build(:aliquot, source: nil)
     expect(aliquot).not_to be_valid
     expect(aliquot.errors[:source]).to include('must exist')
+  end
+
+  it 'can have a library through the used_by relation' do
+    pacbio_library = create(:pacbio_library)
+    aliquot = build(:aliquot, used_by: pacbio_library)
+    expect(aliquot).to be_valid
+    expect(aliquot.used_by).to eq(pacbio_library)
   end
 end

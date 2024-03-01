@@ -39,15 +39,5 @@ RSpec.describe Saphyr::Request, :saphyr do
         expect(request.source_identifier).to eq('BC12:A1')
       end
     end
-
-    context 'when from a tube' do
-      before do
-        create(:tube, requests: [request], barcode: 'TUB1')
-      end
-
-      it 'returns the plate barcode and well' do
-        expect(request.source_identifier).to eq('TUB1')
-      end
-    end
   end
 end

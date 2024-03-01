@@ -9,7 +9,8 @@ module V1
       model_name 'Pacbio::Library'
 
       attributes :state, :volume, :concentration, :template_prep_kit_box_barcode,
-                 :insert_size, :created_at, :deactivated_at, :source_identifier
+                 :insert_size, :created_at, :deactivated_at, :source_identifier,
+                 :pacbio_request_id, :tag_id, :primary_aliquot_attributes
 
       has_one :request, always_include_optional_linkage_data: true
       # If we don't specify the relation_name here, jsonapi-resources
@@ -17,10 +18,12 @@ module V1
       # In this case I can see it using container_associations
       # so seems to be linking the wrong tube relationship.
       has_one :tag, always_include_optional_linkage_data: true
-      has_one :pool, always_include_optional_linkage_data: true
       has_one :tube, relation_name: :tube, always_include_optional_linkage_data: true
       has_one :source_well, relation_name: :source_well, class_name: 'Well'
       has_one :source_plate, relation_name: :source_plate, class_name: 'Plate'
+
+      has_one :primary_aliquot, always_include_optional_linkage_data: true,
+                                relation_name: :primary_aliquot, class_name: 'Aliquot'
 
       paginator :paged
 
@@ -28,7 +31,16 @@ module V1
         [{ field: 'created_at', direction: :desc }]
       end
 
-      filter :pool
+      def self.records(_options = {})
+        # We only want to include only libraries without pools
+        # Libraries with pools should be referenced via the LibraryPoolResource
+        super.where(pool: nil)
+      end
+
+      # When a library is updated and it is attached to a run we need
+      # to republish the messages for the run
+      after_update :publish_messages
+
       filter :sample_name, apply: lambda { |records, value, _options|
         # We have to join requests and samples here in order to find by sample name
         records.joins(:sample).where(sample: { name: value })
@@ -36,10 +48,10 @@ module V1
       filter :barcode, apply: lambda { |records, value, _options|
         # If wildcard is the last value passed we want to do a wildcard search
         if value.last == 'wildcard'
-          return records.joins(pool: :tube).where('tubes.barcode LIKE ?', "%#{value[0]}%")
+          return records.joins(:tube).where('tubes.barcode LIKE ?', "%#{value[0]}%")
         end
 
-        records.joins(pool: :tube).where(tubes: { barcode: value })
+        records.joins(:tube).where(tubes: { barcode: value })
       }
       filter :source_identifier, apply: lambda { |records, value, _options|
         # First we check tubes to see if there are any given the source identifier
@@ -61,12 +73,27 @@ module V1
                       container_material: { container: :barcode })
       end
 
+      def primary_aliquot_attributes=(primary_aliquot_parameters)
+        @model.primary_aliquot_attributes = primary_aliquot_parameters.permit(
+          :id, :volume, :template_prep_kit_box_barcode,
+          :concentration, :insert_size, :tag_id
+        )
+      end
+
+      def fetchable_fields
+        super - [:primary_aliquot_attributes]
+      end
+
       def created_at
         @model.created_at.to_fs(:us)
       end
 
       def deactivated_at
         @model&.deactivated_at&.to_fs(:us)
+      end
+
+      def publish_messages
+        Messages.publish(@model.sequencing_runs, Pipelines.pacbio.message)
       end
     end
   end
