@@ -13,7 +13,7 @@ RSpec.describe Pacbio::Request, :pacbio do
   context 'cost_code default value' do
     it 'sets cost_code to a default value if not entered' do
       request = described_class.create(library_type: 'library_type_1',
-                                       estimate_of_gb_required: 10,
+                                       estimate_of_gb_required: '10',
                                        number_of_smrt_cells: 1,
                                        external_study_id: 1)
       expect(request.cost_code).to eq(Rails.application.config.pacbio_request_cost_code) #= config value is'S4699'
@@ -21,7 +21,7 @@ RSpec.describe Pacbio::Request, :pacbio do
 
     it 'sets cost_code to entered value if inputted' do
       request = described_class.create(library_type: 'library_type_1',
-                                       estimate_of_gb_required: 10,
+                                       estimate_of_gb_required: '10',
                                        number_of_smrt_cells: 1,
                                        external_study_id: 1,
                                        cost_code: 'PSD123')
