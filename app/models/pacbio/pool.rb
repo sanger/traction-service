@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+# ALIQUOT-CLEANUP
+# - Remove the presence validation on libraries
+# - Remove the library_attributes= method and the library/used_aliquot sync behaviour
+# - Remove the used_aliquots_attributes= method
+# - Remove private methods referencing libraries
+
 module Pacbio
   # Pool
   class Pool < ApplicationRecord
@@ -22,6 +28,9 @@ module Pacbio
               :insert_size, :template_prep_kit_box_barcode, presence: true, on: :run_creation
     validates :volume, :concentration,
               :insert_size, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
+
+    # We check that both libraries and used_aliquots are present during the transition to aliquots
+    # so we can feature flag aliquot introduction and not break any data
     validates :libraries, presence: true
     validates :used_aliquots, presence: true
 
@@ -29,35 +38,40 @@ module Pacbio
     COMMON_ATTRIBUTES = %w[volume concentration insert_size
                            template_prep_kit_box_barcode tag_id].freeze
 
+    # Temporarily disables cops as this will be removed in the future
+    # rubocop:disable Metrics/MethodLength
     def library_attributes=(library_options)
       self.libraries = library_options.map do |attributes|
         if attributes['id']
           aliquot = used_aliquots.find_by(source_id: attributes['pacbio_request_id'])
-          update_used_aliquot(attributes.slice(*COMMON_ATTRIBUTES).merge('id' => aliquot&.id))
-          update_library(attributes)
+          update_item(attributes.slice(*COMMON_ATTRIBUTES).merge('id' => aliquot&.id),
+                      indexed_used_aliquots, 'Aliquot')
+          update_item(attributes, indexed_libraries, 'Library')
         else
           used_aliquots.build(attributes.slice(*COMMON_ATTRIBUTES)
             .merge(source_id: attributes['pacbio_request_id'], source_type: 'Pacbio::Request'))
           Pacbio::Library.new(attributes)
         end
       end
-      destroy_unused_aliquots
+      destroy_unused(used_aliquots, 'source_id')
     end
 
     def used_aliquots_attributes=(used_aliquot_options)
       self.used_aliquots = used_aliquot_options.map do |attributes|
         if attributes['id']
           library = libraries.find_by(pacbio_request_id: attributes['source_id'])
-          update_library(attributes.slice(*COMMON_ATTRIBUTES).merge('id' => library&.id))
-          update_used_aliquot(attributes)
+          update_item(attributes.slice(*COMMON_ATTRIBUTES).merge('id' => library&.id),
+                      indexed_libraries, 'Library')
+          update_item(attributes, indexed_used_aliquots, 'Aliquot')
         else
           libraries.build(attributes.slice(*COMMON_ATTRIBUTES)
                                     .merge(pacbio_request_id: attributes['source_id']))
           Aliquot.new(attributes)
         end
       end
-      destroy_unused_libraries
+      destroy_unused(libraries, 'pacbio_request_id')
     end
+    # rubocop:enable Metrics/MethodLength
 
     validates :primary_aliquot, presence: true
     accepts_nested_attributes_for :primary_aliquot
@@ -74,36 +88,27 @@ module Pacbio
 
     private
 
-    def destroy_unused_libraries
-      libraries.filter do |lib|
-        used_aliquots.pluck(:source_id).exclude?(lib.pacbio_request_id)
+    # Destroys unused libraries or used_aliquots to keep the pool in sync
+    def destroy_unused(collection, exclude_key)
+      collection.filter do |item|
+        if collection == libraries
+          used_aliquots.pluck(:source_id).exclude?(item.send(exclude_key))
+        else
+          libraries.pluck(:pacbio_request_id).exclude?(item.send(exclude_key))
+        end
       end.each(&:destroy)
     end
 
-    def destroy_unused_aliquots
-      used_aliquots.filter do |aliquot|
-        libraries.pluck(:pacbio_request_id).exclude?(aliquot.source_id)
-      end.each(&:destroy)
-    end
-
-    def update_library(attributes)
+    # Takes a collection of attributes and updates the item if it exists in the collection
+    # otherwise raises an error based on the type
+    def update_item(attributes, collection, type)
       id = attributes['id'].to_s
-      indexed_libraries.fetch(id) { missing_library(id) }
-                       .tap { |l| l.update(attributes) }
+      collection.fetch(id) { missing_data(id, type) }
+                .tap { |item| item.update(attributes) }
     end
 
-    def update_used_aliquot(attributes)
-      id = attributes['id'].to_s
-      indexed_used_aliquots.fetch(id) { missing_used_aliquot(id) }
-                           .tap { |a| a.update(attributes) }
-    end
-
-    def missing_library(id)
-      raise ActiveRecord::RecordNotFound, "Pacbio library is not part of the pool #{id}"
-    end
-
-    def missing_used_aliquot(id)
-      raise ActiveRecord::RecordNotFound, "Aliquot is not part of the pool #{id}"
+    def missing_data(id, type)
+      raise ActiveRecord::RecordNotFound, "#{type} is not part of the pool #{id}"
     end
 
     def indexed_libraries

@@ -632,7 +632,7 @@ RSpec.describe 'PoolsController', :pacbio do
         it 'returns internal_server_error status' do
           post v1_pacbio_pools_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:internal_server_error)
-          expect(response.body).to include('Pacbio library is not part of the pool')
+          expect(response.body).to include('Library is not part of the pool')
         end
 
         it 'cannot create a pool' do

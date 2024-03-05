@@ -25,6 +25,9 @@ module V1
 
       ALIQUOT_ATTRIBUTES = %w[id volume concentration template_prep_kit_box_barcode insert_size
                               tag_id source_id source_type].freeze
+      LIBRARY_ATTRIBUTES = %w[id volume concentration template_prep_kit_box_barcode insert_size
+                              tag_id pacbio_request_id].freeze
+
       paginator :paged
 
       def self.default_sort
@@ -46,9 +49,7 @@ module V1
 
       def library_attributes=(library_parameters)
         @model.library_attributes = library_parameters.map do |library|
-          library.permit(:id, :volume, :template_prep_kit_box_barcode,
-                         :concentration, :insert_size, :pacbio_request_id, :tag_id)
-                 .to_h.with_indifferent_access
+          library.permit(LIBRARY_ATTRIBUTES).to_h.with_indifferent_access
         end
       end
 
