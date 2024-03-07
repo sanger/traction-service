@@ -20,8 +20,7 @@ module V1
     # This fixes the polymorphic relationships in json-api resources
     # as json-api resources underscores and pluralizes the type
     def self.resource_klass_for(type)
-      type = type.underscore.pluralize.gsub('pacbio/', '')
-      super
+      super(type.underscore.pluralize.gsub('pacbio/', ''))
     end
   end
 end
