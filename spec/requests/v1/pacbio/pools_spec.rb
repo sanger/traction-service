@@ -108,6 +108,10 @@ RSpec.describe 'PoolsController', :pacbio do
         used_aliquot_resource = find_included_resource(type: 'aliquots', id: pool.used_aliquots.first.id)
         expect(used_aliquot_resource['id']).to eq(pool.used_aliquots.first.id.to_s)
         expect(used_aliquot_resource['type']).to eq('aliquots')
+        expect(used_aliquot_resource.dig('attributes', 'run_suitability')).to eq({
+                                                                                   'ready_for_run' => true,
+                                                                                   'errors' => []
+                                                                                 })
 
         used_aliquot_source_resource = find_included_resource(type: 'requests', id: pool.used_aliquots.first.source_id)
         expect(used_aliquot_source_resource['id']).to eq(pool.used_aliquots.first.source_id.to_s)

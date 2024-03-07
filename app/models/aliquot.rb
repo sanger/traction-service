@@ -30,6 +30,8 @@ class Aliquot < ApplicationRecord
   validates :volume, :concentration, :template_prep_kit_box_barcode,
             presence: true,
             unless: -> { source.is_a?(Pacbio::Request) && aliquot_type == 'primary' }
+  validates :volume, :concentration,
+            :insert_size, presence: true, on: :run_creation
   validates :volume, :concentration, :insert_size,
             numericality: { greater_than_or_equal_to: 0, allow_nil: true }
 end
