@@ -2,8 +2,8 @@
 
 module V1
   module Pacbio
-    # AliquotResource
-    class AliquotResource < V1::AliquotResource
+    # UsedByResource
+    class UsedByResource < V1::UsedByResource
     end
   end
 end

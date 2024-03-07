@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+# ALIQUOT-CLEANUP
+# - Remove this file and references in pool_resource.rb
+# - Remove references to library_pools in the UI
+
 module V1
   module Pacbio
     # A temporary PacBio Library resource that returns all libraries

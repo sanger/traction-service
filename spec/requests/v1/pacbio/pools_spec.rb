@@ -86,7 +86,7 @@ RSpec.describe 'PoolsController', :pacbio do
 
     context 'with includes' do
       before do
-        get "#{v1_pacbio_pools_path}?include=libraries,primary_aliquot,used_aliquots,tube",
+        get "#{v1_pacbio_pools_path}?include=libraries,primary_aliquot,used_aliquots.source,used_aliquots.tag,tube",
             headers: json_api_headers
       end
 
@@ -112,6 +112,14 @@ RSpec.describe 'PoolsController', :pacbio do
         used_aliquot_resource = find_included_resource(type: 'aliquots', id: pool.used_aliquots.first.id)
         expect(used_aliquot_resource['id']).to eq(pool.used_aliquots.first.id.to_s)
         expect(used_aliquot_resource['type']).to eq('aliquots')
+
+        used_aliquot_source_resource = find_included_resource(type: 'requests', id: pool.used_aliquots.first.source_id)
+        expect(used_aliquot_source_resource['id']).to eq(pool.used_aliquots.first.source_id.to_s)
+        expect(used_aliquot_source_resource['type']).to eq('requests')
+
+        used_aliquot_tag_resource = find_included_resource(type: 'tags', id: pool.used_aliquots.first.tag_id)
+        expect(used_aliquot_tag_resource['id']).to eq(pool.used_aliquots.first.tag_id.to_s)
+        expect(used_aliquot_tag_resource['type']).to eq('tags')
 
         tube_resource = find_included_resource(type: 'tubes', id: pool.tube.id)
         expect(tube_resource['id']).to eq(pool.tube.id.to_s)

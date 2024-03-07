@@ -13,6 +13,15 @@ class Aliquot < ApplicationRecord
   # Used to identify where a derived aliquot has been used
   belongs_to :used_by, polymorphic: true, optional: true
 
+  # These are the associations that are used to identify the source of the aliquot
+  # These are required for json api resources to understand the polymorphic relationships
+  belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :source_id, optional: true,
+                       inverse_of: :used_aliquots
+  belongs_to :library, class_name: 'Pacbio::Library', foreign_key: :source_id, optional: true,
+                       inverse_of: :used_aliquots
+  belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :source_id, optional: true,
+                    inverse_of: :used_aliquots
+
   # currently I have set these to be validated but not sure
   # as library only validates when a run is created
   # maybe we need to do this when the state is set to used?
