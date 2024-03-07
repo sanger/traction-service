@@ -90,10 +90,6 @@ RSpec.describe 'PoolsController', :pacbio do
             headers: json_api_headers
       end
 
-      let(:pool_relationships) do
-        pool_resource = find_resource(type: 'pools', id: pools.first.id)
-        pool_resource.fetch('relationships')
-      end
       let(:pool) { pools.first }
 
       it 'has a success status' do
