@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_19_180656) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_27_103930) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
@@ -231,7 +231,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_180656) do
 
   create_table "pacbio_requests", charset: "utf8mb3", force: :cascade do |t|
     t.string "library_type"
-    t.integer "estimate_of_gb_required"
+    t.string "estimate_of_gb_required"
     t.integer "number_of_smrt_cells"
     t.string "cost_code"
     t.string "external_study_id"
