@@ -51,7 +51,7 @@ namespace :pacbio_data do
       used_aliquots = libraries.collect do |library|
         Aliquot.new(
           volume: library.volume, concentration: library.concentration, template_prep_kit_box_barcode: library.template_prep_kit_box_barcode,
-          insert_size: library.insert_size, tag_id: library.tag_id, source_id: library.pacbio_request_id, source_type: 'Pacbio::Request'
+          insert_size: library.insert_size, tag_id: library.tag_id, source_id: library.pacbio_request_id, source_type: 'Pacbio::Request', aliquot_type: :derived
         )
       end
       Pacbio::Pool.create!(tube: Tube.create, libraries:, used_aliquots:, volume: 1, concentration: 1, insert_size: 100, template_prep_kit_box_barcode: '029979102141700063023',
