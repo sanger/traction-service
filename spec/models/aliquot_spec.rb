@@ -78,4 +78,56 @@ RSpec.describe Aliquot do
     expect(aliquot).to be_valid
     expect(aliquot.used_by).to eq(pacbio_library)
   end
+
+  describe '#valid?(:run_creation)' do
+    subject { build(:aliquot, params).valid?(:run_creation) }
+
+    context 'when volume is nil' do
+      let(:params) { { volume: nil } }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when concentration is nil' do
+      let(:params) { { concentration: nil } }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when insert_size is nil' do
+      let(:params) { { insert_size: nil } }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when template_prep_kit_box_barcode is nil' do
+      let(:params) { { template_prep_kit_box_barcode: nil } }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when volume is 12.0' do
+      let(:params) { { volume: 12.0 } }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when concentration is 12.0' do
+      let(:params) { { concentration: 12.0 } }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when insert_size is 12.0' do
+      let(:params) { { insert_size: 12.0 } }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when template_prep_kit_box_barcode is "1234"' do
+      let(:params) { { template_prep_kit_box_barcode: '1234' } }
+
+      it { is_expected.to be true }
+    end
+  end
 end

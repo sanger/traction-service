@@ -4,6 +4,8 @@ module V1
   module Pacbio
     # AliquotResource
     class AliquotResource < V1::AliquotResource
+      include Shared::RunSuitability
+
       # We could move this to a concern and dynamically build the polymorphic types
       # but no need to do this unless we use this for any other pipelines
       # for now this is best in here as it is specific to pacbio
