@@ -92,9 +92,9 @@ module Pacbio
     def destroy_unused(collection, exclude_key)
       collection.filter do |item|
         if collection == libraries
-          used_aliquots.pluck(:source_id).exclude?(item.send(exclude_key))
+          used_aliquots.collect(&:source_id).exclude?(item.send(exclude_key))
         else
-          libraries.pluck(:pacbio_request_id).exclude?(item.send(exclude_key))
+          libraries.collect(&:pacbio_request_id).exclude?(item.send(exclude_key))
         end
       end.each(&:destroy)
     end

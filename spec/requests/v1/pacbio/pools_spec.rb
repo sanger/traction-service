@@ -297,9 +297,13 @@ RSpec.describe 'PoolsController', :pacbio do
           expect(response).to have_http_status(:created)
         end
 
-        it 'creates a pool' do
+        it 'creates a pool, library and aliquots' do
           expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to(
-            change(Pacbio::Pool, :count).by(1)
+            change(Pacbio::Pool, :count).by(1).and(
+              change(Pacbio::Library, :count).by(2).and(
+                change(Aliquot, :count).by(3)
+              )
+            )
           )
         end
       end
@@ -544,7 +548,11 @@ RSpec.describe 'PoolsController', :pacbio do
 
         it 'creates a pool' do
           expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to(
-            change(Pacbio::Pool, :count).by(1)
+            change(Pacbio::Pool, :count).by(1).and(
+              change(Pacbio::Library, :count).by(2).and(
+                change(Aliquot, :count).by(3)
+              )
+            )
           )
         end
       end
