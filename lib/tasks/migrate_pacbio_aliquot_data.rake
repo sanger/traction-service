@@ -117,6 +117,15 @@ namespace :pacbio_aliquot_data do
     end
   end
 
+  task revert_pool_data: :environment do
+    puts '-> Deleting all pool primary and used aliquots'
+    # Delete all primary and derived aliquots
+    Pacbio::Pool.find_each do |pool|
+      pool.primary_aliquot.delete if pool.primary_aliquot.present?
+      pool.used_aliquots.each(&:delete)
+    end
+  end
+
   # This task is used to revert the changes made by the above tasks
   # This can be more sophisticated as we add more elements to the migration
   task revert_all_data: :environment do

@@ -157,6 +157,41 @@ RSpec.describe 'RakeTasks' do
     end
   end
 
+  describe 'pacbio_aliquot_data:revert_pool_data' do
+    it 'deletes primary and used aliquots for each pool' do
+      # Create some pools with wells
+      wells = create_list(:pacbio_well, 5, pool_count: 2)
+      pools = wells.map(&:pools).flatten
+
+      # Get rid of aliquots that were created by the factory
+      pools.each do |pool|
+        pool.primary_aliquot.destroy
+        pool.used_aliquots.destroy_all
+      end
+
+      # Run the rake task
+      # It outputs the correct text
+      Rake::Task['pacbio_aliquot_data:migrate_pool_data'].reenable
+      expect { Rake::Task['pacbio_aliquot_data:migrate_pool_data'].invoke }.to output(
+        <<~HEREDOC
+          -> Creating primary aliquots for all pools and derived aliquots for all requests used in pools
+        HEREDOC
+      ).to_stdout
+
+      # Run the revert task
+      # It outputs the correct text
+      expect { Rake::Task['pacbio_aliquot_data:revert_pool_data'].invoke }.to output(
+        <<~HEREDOC
+          -> Deleting all pool primary and used aliquots
+        HEREDOC
+      ).to_stdout
+        .and change(Aliquot, :count).from(40).to(20)
+
+      expect(Pacbio::Pool.all.select { |pool| pool.primary_aliquot.present? }).to be_empty
+      expect(Pacbio::Pool.all.map(&:used_aliquots).flatten).to be_empty
+    end
+  end
+
   describe 'pacbio_aliquot_data:revert_all_data' do
     it 'deletes all aliquots' do
       # Create some libraries
