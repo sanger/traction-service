@@ -17,10 +17,17 @@ FactoryBot.define do
       pool_count { 5 }
       pool_factory { :pacbio_pool }
       pool_max { 2 }
+      library_count { 0 }
+      library_factory { :pacbio_library }
+      library_max { 2 }
     end
 
     pools do
       build_list(pool_factory, pool_count)
+    end
+
+    libraries do
+      build_list(library_factory, library_count)
     end
 
     # v10

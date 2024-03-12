@@ -8,6 +8,7 @@ module Pacbio
 
     include Uuidable
     include SampleSheet::Well
+    include Aliquotable
 
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
                        inverse_of: :wells
