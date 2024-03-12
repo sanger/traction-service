@@ -126,6 +126,8 @@ RSpec.describe 'RakeTasks' do
       # Create some pools with wells
       wells = create_list(:pacbio_well, 5, pool_count: 2)
       pools = wells.map(&:pools).flatten
+      pool_missing_data = pools.first
+      pool_missing_data.update!(volume: nil, concentration: nil, template_prep_kit_box_barcode: nil, insert_size: nil)
 
       # Get rid of aliquots that were created by the factory
       pools.each do |pool|
@@ -140,6 +142,12 @@ RSpec.describe 'RakeTasks' do
           -> Creating primary aliquots for all pools and derived aliquots for all requests used in pools
         HEREDOC
       ).to_stdout
+
+      # Check pool defaults have been applied
+      pool_missing_data.reload
+      expect(pool_missing_data.volume).to eq(0)
+      expect(pool_missing_data.concentration).to eq(0)
+      expect(pool_missing_data.template_prep_kit_box_barcode).to eq('033000000000000000000')
 
       # Check if the primary and derived aliquots have been created
       pools.each do |pool|

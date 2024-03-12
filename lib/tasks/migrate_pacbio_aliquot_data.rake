@@ -114,6 +114,12 @@ namespace :pacbio_aliquot_data do
           state: :created
         )
       end
+
+      begin
+        pool.save!
+      rescue ActiveRecord::RecordInvalid => e
+        puts "Errors that prevented pool id:#{pool.id} being saved: #{e.record.errors.full_messages}"
+      end
     end
   end
 
