@@ -66,7 +66,7 @@ module Pacbio
         else
           libraries.build(attributes.slice(*COMMON_ATTRIBUTES)
                                     .merge(pacbio_request_id: attributes['source_id']))
-          Aliquot.new(attributes)
+          Aliquot.new(attributes.merge(aliquot_type: :derived))
         end
       end
       destroy_unused(libraries, 'pacbio_request_id')

@@ -18,7 +18,9 @@ module Aliquotable
     # they are intended to have a used_by association to the model that
     # they have been used by and a source association to the model that they were created from
     # Reverse of derived_aliquots
-    has_many :used_aliquots, as: :used_by, dependent: :destroy, class_name: 'Aliquot'
+    has_many :used_aliquots, -> { where(aliquot_type: :derived) },
+             as: :used_by, class_name: 'Aliquot',
+             dependent: :destroy, inverse_of: :used_by
 
     # Primary Aliquot is the aliquot that is created when a new entity is created. This aliquot
     # is intended to be used to track the metadata e.g. volume and concentration of the entity
