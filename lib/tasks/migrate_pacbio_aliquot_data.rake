@@ -85,6 +85,11 @@ namespace :pacbio_aliquot_data do
       # Skip if aliquots already exist (shouldn't happen but just in case)
       next if pool.aliquots.any?
 
+      # Set defaults if they don't exist
+      pool.volume = pool.volume || 0
+      pool.concentration = pool.concentration || 0
+      pool.template_prep_kit_box_barcode = pool.template_prep_kit_box_barcode || '033000000000000000000'
+
       # Create primary aliquot with same attributes as pool
       Aliquot.create!(
         volume: pool.volume,
@@ -109,6 +114,15 @@ namespace :pacbio_aliquot_data do
           state: :created
         )
       end
+    end
+  end
+
+  task revert_pool_data: :environment do
+    puts '-> Deleting all pool primary and used aliquots'
+    # Delete all primary and derived aliquots
+    Pacbio::Pool.find_each do |pool|
+      pool.primary_aliquot.delete if pool.primary_aliquot.present?
+      pool.used_aliquots.each(&:delete)
     end
   end
 

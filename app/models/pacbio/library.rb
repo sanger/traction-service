@@ -42,7 +42,7 @@ module Pacbio
 
     # TODO: remove pool constraint this when pools are updated for aliquots
     validates :primary_aliquot, presence: true, if: -> { pool.blank? }
-    accepts_nested_attributes_for :primary_aliquot, allow_destroy: true
+    accepts_nested_attributes_for :primary_aliquot
 
     after_create :create_used_aliquot, :create_tube, if: -> { pool.blank? }
     before_destroy :check_for_associated_wells, prepend: true
