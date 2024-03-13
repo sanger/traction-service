@@ -30,6 +30,15 @@ FactoryBot.define do
       build_list(library_factory, library_count)
     end
 
+    after(:build) do |well|
+      well.libraries.each do |lib|
+        well.used_aliquots << build(:aliquot, source: lib, aliquot_type: :derived, used_by: well)
+      end
+      well.pools.each do |pool|
+        well.used_aliquots << build(:aliquot, source: pool, aliquot_type: :derived, used_by: well)
+      end
+    end
+
     # v10
     generate_hifi { 'In SMRT Link' }
     ccs_analysis_output { 'Yes' }

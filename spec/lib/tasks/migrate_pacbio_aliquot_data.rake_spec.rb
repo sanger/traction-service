@@ -128,10 +128,7 @@ RSpec.describe 'RakeTasks' do
       pools = wells.map(&:pools).flatten
 
       # Get rid of aliquots that were created by the factory
-      pools.each do |pool|
-        pool.primary_aliquot.destroy
-        pool.used_aliquots.destroy_all
-      end
+      Aliquot.destroy_all
 
       # Run the rake task
       # It outputs the correct text
@@ -160,14 +157,10 @@ RSpec.describe 'RakeTasks' do
   describe 'pacbio_aliquot_data:revert_pool_data' do
     it 'deletes primary and used aliquots for each pool' do
       # Create some pools with wells
-      wells = create_list(:pacbio_well, 5, pool_count: 2)
-      pools = wells.map(&:pools).flatten
+      create_list(:pacbio_well, 5, pool_count: 2)
 
       # Get rid of aliquots that were created by the factory
-      pools.each do |pool|
-        pool.primary_aliquot.destroy
-        pool.used_aliquots.destroy_all
-      end
+      Aliquot.destroy_all
 
       # Run the rake task
       # It outputs the correct text
@@ -185,7 +178,7 @@ RSpec.describe 'RakeTasks' do
           -> Deleting all pool primary and used aliquots
         HEREDOC
       ).to_stdout
-        .and change(Aliquot, :count).from(40).to(20)
+        .and change(Aliquot, :count).from(20).to(0)
 
       expect(Pacbio::Pool.all.select { |pool| pool.primary_aliquot.present? }).to be_empty
       expect(Pacbio::Pool.all.map(&:used_aliquots).flatten).to be_empty
@@ -271,7 +264,7 @@ RSpec.describe 'RakeTasks' do
       ).to_stdout
 
       # Should be 10 primary aliquots and 10 derived aliquots
-      expect(Aliquot.count).to eq(75)
+      expect(Aliquot.count).to eq(85)
 
       # Run the revert task
       # It outputs the correct text
@@ -280,7 +273,7 @@ RSpec.describe 'RakeTasks' do
           -> Deleting all aliquots
         HEREDOC
       ).to_stdout
-        .and change(Aliquot, :count).from(75).to(0)
+        .and change(Aliquot, :count).from(85).to(0)
     end
   end
 end
