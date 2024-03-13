@@ -125,6 +125,62 @@ RSpec.describe Pacbio::Well, :pacbio do
     end
   end
 
+  context 'pool_ids=' do
+    it 'creates well_pools and used_aliquots from pool_ids' do
+      pools_ids = create_list(:pacbio_pool, 2).collect(&:id)
+      well = build(:pacbio_well, pool_count: 0)
+
+      expect(well.pools.length).to eq(0)
+      expect(well.used_aliquots.length).to eq(0)
+      well.pool_ids = pools_ids
+      well.save
+
+      expect(well.pools.length).to eq(2)
+      expect(well.used_aliquots.length).to eq(2)
+    end
+
+    it 'destroys well_pools and used_aliquots from pool_ids' do
+      well = create(:pacbio_well, pool_count: 2)
+
+      expect(well.pools.length).to eq(2)
+      expect(well.used_aliquots.length).to eq(2)
+
+      well.pool_ids = [well.pools.first.id]
+      well.reload
+
+      expect(well.pools.length).to eq(1)
+      expect(well.used_aliquots.length).to eq(1)
+    end
+  end
+
+  context 'library_ids=' do
+    it 'creates well_libraries and used_aliquots from library_ids' do
+      library_ids = create_list(:pacbio_library, 2).collect(&:id)
+      well = build(:pacbio_well, pool_count: 0, library_count: 0)
+
+      expect(well.libraries.length).to eq(0)
+      expect(well.used_aliquots.length).to eq(0)
+      well.library_ids = library_ids
+      well.save
+
+      expect(well.libraries.length).to eq(2)
+      expect(well.used_aliquots.length).to eq(2)
+    end
+
+    it 'destroys well_pools and used_aliquots from pool_ids' do
+      well = create(:pacbio_well, pool_count: 0, library_count: 2)
+
+      expect(well.libraries.length).to eq(2)
+      expect(well.used_aliquots.length).to eq(2)
+
+      well.library_ids = [well.libraries.first.id]
+      well.reload
+
+      expect(well.libraries.length).to eq(1)
+      expect(well.used_aliquots.length).to eq(1)
+    end
+  end
+
   context 'all_libraries' do
     let(:pools) { create_list(:pacbio_pool, 2, library_count: 1) }
     let(:libraries) { create_list(:pacbio_library, 2) }
