@@ -242,6 +242,12 @@ RSpec.describe 'RunsController' do
         expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::WellPool, :count).by(1)
       end
 
+      it 'creates a used_aliquot' do
+        # Preloaded so its aliquots are built and don't affect the test below
+        pool1.reload
+        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Aliquot, :count).by(1)
+      end
+
       it 'creates a run with the correct attributes' do
         post v1_pacbio_runs_path, params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
@@ -321,6 +327,14 @@ RSpec.describe 'RunsController' do
         expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::WellLibrary, :count).by(1)
       end
 
+      it 'creates 2 used_aliquots' do
+        # Preloaded so its aliquots are built and don't affect the test below
+        pool1.reload
+        library1.reload
+        # One aliquot for the library and one for the pool
+        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Aliquot, :count).by(2)
+      end
+
       it 'creates a run with the correct attributes' do
         post v1_pacbio_runs_path, params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
@@ -394,6 +408,12 @@ RSpec.describe 'RunsController' do
 
       it 'creates a well pool' do
         expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::WellPool, :count).by(1)
+      end
+
+      it 'creates a used_aliquot' do
+        # Preloaded so its aliquots are built and don't affect the test below
+        pool1.reload
+        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Aliquot, :count).by(1)
       end
 
       it 'creates a run with the correct attributes' do
@@ -568,6 +588,17 @@ RSpec.describe 'RunsController' do
           end.not_to change(Pacbio::Well, :count)
         end
 
+        it 'does not create any used_aliquots' do
+          # Preloaded so its aliquots are built and don't affect the test below
+          pool1.reload
+          library1.reload
+
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Aliquot, :count)
+        end
+
         it 'has the correct error messages' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
@@ -632,6 +663,13 @@ RSpec.describe 'RunsController' do
           end.not_to change(Pacbio::Well, :count)
         end
 
+        it 'does not create any used_aliquots' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Aliquot, :count)
+        end
+
         it 'has the correct error messages' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
@@ -691,6 +729,13 @@ RSpec.describe 'RunsController' do
             post v1_pacbio_runs_path, params: body,
                                       headers: json_api_headers
           end.not_to change(Pacbio::Well, :count)
+        end
+
+        it 'does not create any used_aliquots' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Aliquot, :count)
         end
 
         it 'has the correct error messages' do
@@ -756,6 +801,13 @@ RSpec.describe 'RunsController' do
           end.not_to change(Pacbio::Well, :count)
         end
 
+        it 'does not create any used_aliquots' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Aliquot, :count)
+        end
+
         it 'has the correct error messages' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
@@ -817,6 +869,13 @@ RSpec.describe 'RunsController' do
             post v1_pacbio_runs_path, params: body,
                                       headers: json_api_headers
           end.not_to change(Pacbio::Well, :count)
+        end
+
+        it 'does not create any used_aliquots' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Aliquot, :count)
         end
 
         it 'has the correct error messages' do
@@ -897,6 +956,10 @@ RSpec.describe 'RunsController' do
           expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::WellPool, :count).by(2)
         end
 
+        it 'creates 2 used_aliquots' do
+          expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Aliquot, :count).by(2)
+        end
+
         it 'creates a run with the correct attributes' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
@@ -956,11 +1019,22 @@ RSpec.describe 'RunsController' do
           end.not_to change(Pacbio::Run, :count)
         end
 
-        it 'does not create a a well' do
+        it 'does not create a well' do
           expect do
             post v1_pacbio_runs_path, params: body,
                                       headers: json_api_headers
           end.not_to change(Pacbio::Well, :count)
+        end
+
+        it 'does not create a used_aliquot' do
+          # Preloaded so its aliquots are built and don't affect the test below
+          pool1.reload
+          pool2.reload
+
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Aliquot, :count)
         end
 
         it 'has the correct error messages' do
@@ -1290,6 +1364,17 @@ RSpec.describe 'RunsController' do
           end.to change(Pacbio::WellPool, :count).from(10).to(2)
         end
 
+        it 'creates the correct number of used_aliquots' do
+          # Aliquot count should be reduced by 8, see above
+          # Preloaded so its aliquots are built and don't affect the test below
+          pool1.reload
+          well1.pools[0].reload
+
+          expect do
+            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          end.to change(Aliquot, :count).from(54).to(46)
+        end
+
         it 'updates a well' do
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
           run.reload
@@ -1358,6 +1443,12 @@ RSpec.describe 'RunsController' do
           expect do
             patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
           end.to change(Pacbio::WellPool, :count).from(20).to(13)
+        end
+
+        it 'creates the correct number of used_aliquots' do
+          expect do
+            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          end.to change(Aliquot, :count).by(-7)
         end
 
         it 'updates a well' do

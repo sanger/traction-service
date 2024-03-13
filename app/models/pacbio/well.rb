@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
+# ALIQUOT-CLEANUP
+# - Update references for libraries and pools to be through used_aliquots
+# - Update library_ids and pools_ids to only update used_aliquots
+
 module Pacbio
   # Pacbio::Well
   # A well can have many libraries
-  class Well < ApplicationRecord
+  class Well < ApplicationRecord # rubocop:disable Metrics/ClassLength
     GENERIC_KIT_BARCODE = 'Lxxxxx100938900123199'
 
     include Uuidable
@@ -52,6 +56,46 @@ module Pacbio
     validates :row, :column, presence: true
 
     delegate :run, to: :plate, allow_nil: true
+
+    def pool_ids=(ids)
+      ids.each do |id|
+        # If the used_aliquot already exists, skip it
+        next if used_aliquots.find_by(source_id: id)
+
+        # Create a new used_aliquot if it doesn't exist
+        used_aliquots << used_aliquots.build(source_id: id, source_type: 'Pacbio::Pool',
+                                             volume: 0, concentration: 0, aliquot_type: :derived,
+                                             template_prep_kit_box_barcode: '033000000000000000000')
+      end
+
+      # If the used_aliquot is not in the list of ids, remove it
+      used_aliquots.select do |used_aliquot|
+        ids.exclude?(used_aliquot.source_id) && used_aliquot.source_type == 'Pacbio::Pool'
+      end.each(&:destroy)
+
+      # Calls the parent method to build the well_libraries
+      super
+    end
+
+    def library_ids=(ids)
+      ids.each do |id|
+        # If the used_aliquot already exists, skip it
+        next if used_aliquots.find_by(source_id: id)
+
+        # Create a new used_aliquot if it doesn't exist
+        used_aliquots << used_aliquots.build(source_id: id, source_type: 'Pacbio::Library',
+                                             volume: 0, concentration: 0, aliquot_type: :derived,
+                                             template_prep_kit_box_barcode: '033000000000000000000')
+      end
+
+      # If the used_aliquot is not in the list of ids, remove it
+      used_aliquots.select do |used_aliquot|
+        ids.exclude?(used_aliquot.source_id) && used_aliquot.source_type == 'Pacbio::Library'
+      end.each(&:destroy)
+
+      # Calls the parent method to build the well_libraries
+      super
+    end
 
     def tag_set
       all_libraries.collect(&:tag_set).first
