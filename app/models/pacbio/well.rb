@@ -23,6 +23,8 @@ module Pacbio
                               dependent: :destroy, inverse_of: :well, autosave: true
     has_many :libraries, class_name: 'Pacbio::Library', through: :well_libraries
 
+    validates :used_aliquots, presence: true, if: -> { Flipper.enabled?(:dpl_1112) }
+
     # pacbio smrt link options for a well are kept in store field of the well
     # which is mapped to smrt_link_options column (JSON) of pacbio_wells table.
     # They are accessible on the model as well.
@@ -58,6 +60,12 @@ module Pacbio
     delegate :run, to: :plate, allow_nil: true
 
     def pool_ids=(ids)
+      # Don't update the used_aliquots if the feature flag is disabled
+      unless Flipper.enabled?(:dpl_1112)
+        super
+        return
+      end
+
       ids.each do |id|
         # If the used_aliquot already exists, skip it
         next if used_aliquots.find_by(source_id: id)
@@ -69,15 +77,19 @@ module Pacbio
       end
 
       # If the used_aliquot is not in the list of ids, remove it
-      used_aliquots.select do |used_aliquot|
-        ids.exclude?(used_aliquot.source_id) && used_aliquot.source_type == 'Pacbio::Pool'
-      end.each(&:destroy)
+      destroy_aliquots_by_source_type_and_id(ids, 'Pacbio::Pool')
 
       # Calls the parent method to build the well_libraries
       super
     end
 
     def library_ids=(ids)
+      # Don't update the used_aliquots if the feature flag is disabled
+      unless Flipper.enabled?(:dpl_1112)
+        super
+        return
+      end
+
       ids.each do |id|
         # If the used_aliquot already exists, skip it
         next if used_aliquots.find_by(source_id: id)
@@ -89,12 +101,18 @@ module Pacbio
       end
 
       # If the used_aliquot is not in the list of ids, remove it
-      used_aliquots.select do |used_aliquot|
-        ids.exclude?(used_aliquot.source_id) && used_aliquot.source_type == 'Pacbio::Library'
-      end.each(&:destroy)
+      destroy_aliquots_by_source_type_and_id(ids, 'Pacbio::Library')
 
       # Calls the parent method to build the well_libraries
       super
+    end
+
+    # Destroy aliquots based on their source_id and type
+    # Used to keep libraries, pools and aliqouts in sync
+    def destroy_aliquots_by_source_type_and_id(ids, source_type)
+      used_aliquots.select do |used_aliquot|
+        ids.exclude?(used_aliquot.source_id) && used_aliquot.source_type == source_type
+      end.each(&:destroy)
     end
 
     def tag_set

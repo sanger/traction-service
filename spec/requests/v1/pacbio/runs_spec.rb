@@ -9,6 +9,10 @@ RSpec.describe 'RunsController' do
   let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
   let!(:version13) { create(:pacbio_smrt_link_version, name: 'v13_revio') }
 
+  before do
+    Flipper.enable(:dpl_1112)
+  end
+
   shared_examples 'publish_messages_on_create' do
     it 'publishes a message' do
       expect(Messages).to receive(:publish).with(instance_of(Pacbio::Run), having_attributes(pipeline: 'pacbio'))
@@ -674,7 +678,8 @@ RSpec.describe 'RunsController' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq 'plates.wells.base - There must be at least 1 pool or library for well A1'
+          expect(errors[0]['detail']).to eq("plates.wells.used_aliquots - can't be blank")
+          expect(errors[1]['detail']).to eq 'plates.wells.base - There must be at least 1 pool or library for well A1'
         end
       end
 

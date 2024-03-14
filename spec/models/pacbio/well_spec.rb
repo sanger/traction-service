@@ -11,6 +11,10 @@ RSpec.describe Pacbio::Well, :pacbio do
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11', default: true) }
   let!(:version12_revio) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
 
+  before do
+    Flipper.enable(:dpl_1112)
+  end
+
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_well }
 
@@ -87,6 +91,26 @@ RSpec.describe Pacbio::Well, :pacbio do
     it 'no libraries' do
       well = build(:pacbio_well, libraries: [])
       expect(well.libraries?).to be false
+    end
+  end
+
+  describe 'used_aliquots' do
+    it 'is invalid without used_aliquots when feature flag is on' do
+      Flipper.enable(:dpl_1112)
+      # A pool will create a used_aliquot
+      well = create(:pacbio_well, pool_count: 1)
+      well.used_aliquots.destroy_all
+
+      expect(well).not_to be_valid
+    end
+
+    it 'is valid without used_aliquots when feature flag is off' do
+      Flipper.disable(:dpl_1112)
+      # A pool will create a used_aliquot
+      well = create(:pacbio_well, pool_count: 1)
+      well.used_aliquots.destroy_all
+
+      expect(well).to be_valid
     end
   end
 
