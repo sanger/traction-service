@@ -66,7 +66,8 @@ module Pacbio
         return
       end
 
-      ids.each do |id|
+      # Map the ids to integers as they may be strings
+      ids.map!(&:to_i).each do |id|
         # If the used_aliquot already exists, skip it
         next if used_aliquots.find_by(source_id: id)
 
@@ -90,7 +91,8 @@ module Pacbio
         return
       end
 
-      ids.each do |id|
+      # Map the ids to integers as they may be strings
+      ids.map!(&:to_i).each do |id|
         # If the used_aliquot already exists, skip it
         next if used_aliquots.find_by(source_id: id)
 
