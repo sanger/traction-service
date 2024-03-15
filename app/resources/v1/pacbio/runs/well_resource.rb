@@ -17,6 +17,7 @@ module V1
                    :demultiplex_barcodes, :movie_acquisition_time, :include_base_kinetics,
                    :library_concentration, :polymerase_kit
 
+        has_many :used_aliquots, class_name: 'Aliquot', relation_name: :used_aliquots
         has_many :libraries
         has_many :pools
 

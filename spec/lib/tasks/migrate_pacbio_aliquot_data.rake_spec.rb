@@ -130,10 +130,7 @@ RSpec.describe 'RakeTasks' do
       pool_missing_data.update!(volume: nil, concentration: nil, template_prep_kit_box_barcode: nil, insert_size: nil)
 
       # Get rid of aliquots that were created by the factory
-      pools.each do |pool|
-        pool.primary_aliquot.destroy
-        pool.used_aliquots.destroy_all
-      end
+      Aliquot.destroy_all
 
       # Run the rake task
       # It outputs the correct text
@@ -168,14 +165,10 @@ RSpec.describe 'RakeTasks' do
   describe 'pacbio_aliquot_data:revert_pool_data' do
     it 'deletes primary and used aliquots for each pool' do
       # Create some pools with wells
-      wells = create_list(:pacbio_well, 5, pool_count: 2)
-      pools = wells.map(&:pools).flatten
+      create_list(:pacbio_well, 5, pool_count: 2)
 
       # Get rid of aliquots that were created by the factory
-      pools.each do |pool|
-        pool.primary_aliquot.destroy
-        pool.used_aliquots.destroy_all
-      end
+      Aliquot.destroy_all
 
       # Run the rake task
       # It outputs the correct text
@@ -193,10 +186,67 @@ RSpec.describe 'RakeTasks' do
           -> Deleting all pool primary and used aliquots
         HEREDOC
       ).to_stdout
-        .and change(Aliquot, :count).from(40).to(20)
+        .and change(Aliquot, :count).from(20).to(0)
 
       expect(Pacbio::Pool.all.select { |pool| pool.primary_aliquot.present? }).to be_empty
       expect(Pacbio::Pool.all.map(&:used_aliquots).flatten).to be_empty
+    end
+  end
+
+  describe 'pacbio_aliquot_data:migrate_well_data' do
+    it 'creates derived aliquots for each library/pool used in a well' do
+      # Create some wells with libraries and pools
+      wells = create_list(:pacbio_well, 5, pool_count: 2, library_count: 2)
+
+      # Clear any aliquots created from the factories
+      Aliquot.destroy_all
+
+      # Run the rake task
+      # It outputs the correct text
+      expect { Rake::Task['pacbio_aliquot_data:migrate_well_data'].invoke }.to output(
+        <<~HEREDOC
+          -> Creating used aliquots for all libraries/pools used in wells
+        HEREDOC
+      ).to_stdout
+        # Changes 20 (5 wells * 4 libraries/pools per well * 1 aliquot per library/pool)
+        .and change(Aliquot, :count).from(0).to(20)
+
+      # Check if the derived/used aliquots have been created
+      wells.each do |well|
+        well.libraries.each do |library|
+          expect(library.derived_aliquots).to include(well.used_aliquots.find_by(source: library))
+        end
+        well.pools.each do |pool|
+          expect(pool.derived_aliquots).to include(well.used_aliquots.find_by(source: pool))
+        end
+      end
+    end
+  end
+
+  describe 'pacbio_aliquot_data:revert_well_data' do
+    it 'deletes all used aliquots from wells' do
+      # Create some wells with libraries and pools
+      create_list(:pacbio_well, 5, pool_count: 2, library_count: 2)
+
+      # Clear any aliquots created from the factories
+      Aliquot.destroy_all
+
+      # Run the inital migration rake task, reenable it and invoke it again
+      Rake::Task['pacbio_aliquot_data:migrate_well_data'].reenable
+      expect { Rake::Task['pacbio_aliquot_data:migrate_well_data'].invoke }.to output(
+        <<~HEREDOC
+          -> Creating used aliquots for all libraries/pools used in wells
+        HEREDOC
+      ).to_stdout
+
+      # Run the revert task
+      # It outputs the correct text
+      expect { Rake::Task['pacbio_aliquot_data:revert_well_data'].invoke }.to output(
+        <<~HEREDOC
+          -> Deleting all PacBio well used aliquots
+        HEREDOC
+      ).to_stdout
+        .and change(Aliquot, :count).from(20).to(0)
     end
   end
 
@@ -222,7 +272,7 @@ RSpec.describe 'RakeTasks' do
       ).to_stdout
 
       # Should be 10 primary aliquots and 10 derived aliquots
-      expect(Aliquot.count).to eq(75)
+      expect(Aliquot.count).to eq(85)
 
       # Run the revert task
       # It outputs the correct text
@@ -231,7 +281,7 @@ RSpec.describe 'RakeTasks' do
           -> Deleting all aliquots
         HEREDOC
       ).to_stdout
-        .and change(Aliquot, :count).from(75).to(0)
+        .and change(Aliquot, :count).from(85).to(0)
     end
   end
 end

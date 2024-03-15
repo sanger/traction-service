@@ -140,7 +140,7 @@ namespace :pacbio_data do
             sequencing_kit_box_barcode: "SKB_#{barcode(length: 21 - 4)}",
             plate_number:,
             wells: [Pacbio::Well.new(
-              pools: [pool],
+              pool_ids: [pool.id],
               row: 'A',
               column: 1,
               ccs_analysis_output_include_kinetics_information:	'Yes',
@@ -172,7 +172,7 @@ namespace :pacbio_data do
             sequencing_kit_box_barcode:,
             plate_number:,
             wells: [Pacbio::Well.new(
-              pools: [pool],
+              pool_ids: [pool.id],
               row: 'A',
               column: 1,
               pre_extension_time: 2,
@@ -199,7 +199,7 @@ namespace :pacbio_data do
             sequencing_kit_box_barcode: '130429101826100021624',
             plate_number:,
             wells: [Pacbio::Well.new(
-              pools: [pool],
+              pool_ids: [pool.id],
               row: 'A',
               column: 1,
               pre_extension_time: 2,
@@ -232,7 +232,7 @@ namespace :pacbio_data do
             sequencing_kit_box_barcode:,
             plate_number:,
             wells: [Pacbio::Well.new(
-              pools: [pool],
+              pool_ids: [pool.id],
               row: 'A',
               column: 1,
               pre_extension_time: 2,
@@ -259,7 +259,7 @@ namespace :pacbio_data do
             sequencing_kit_box_barcode: '130429101826100021624',
             plate_number:,
             wells: [Pacbio::Well.new(
-              pools: [pool],
+              pool_ids: [pool.id],
               row: 'A',
               column: 1,
               pre_extension_time: 2,

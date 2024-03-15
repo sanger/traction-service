@@ -11,6 +11,10 @@ RSpec.describe Pacbio::Well, :pacbio do
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11', default: true) }
   let!(:version12_revio) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
 
+  before do
+    Flipper.enable(:dpl_1112)
+  end
+
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_well }
 
@@ -90,6 +94,26 @@ RSpec.describe Pacbio::Well, :pacbio do
     end
   end
 
+  describe 'used_aliquots' do
+    it 'is invalid without used_aliquots when feature flag is on' do
+      Flipper.enable(:dpl_1112)
+      # A pool will create a used_aliquot
+      well = create(:pacbio_well, pool_count: 1)
+      well.used_aliquots.destroy_all
+
+      expect(well).not_to be_valid
+    end
+
+    it 'is valid without used_aliquots when feature flag is off' do
+      Flipper.disable(:dpl_1112)
+      # A pool will create a used_aliquot
+      well = create(:pacbio_well, pool_count: 1)
+      well.used_aliquots.destroy_all
+
+      expect(well).to be_valid
+    end
+  end
+
   context 'libraries' do
     let(:lib1)      { create(:pacbio_library, :tagged) }
     let(:lib2)      { create(:pacbio_library, :tagged) }
@@ -122,6 +146,62 @@ RSpec.describe Pacbio::Well, :pacbio do
     it 'can return a list of tags' do
       tag_ids = well.all_libraries.collect(&:tag_id)
       expect(well.tags).to eq(tag_ids)
+    end
+  end
+
+  context 'pool_ids=' do
+    it 'creates well_pools and used_aliquots from pool_ids' do
+      pools_ids = create_list(:pacbio_pool, 2).collect(&:id)
+      well = build(:pacbio_well, pool_count: 0)
+
+      expect(well.pools.length).to eq(0)
+      expect(well.used_aliquots.length).to eq(0)
+      well.pool_ids = pools_ids
+      well.save
+
+      expect(well.pools.length).to eq(2)
+      expect(well.used_aliquots.length).to eq(2)
+    end
+
+    it 'destroys well_pools and used_aliquots from pool_ids' do
+      well = create(:pacbio_well, pool_count: 2)
+
+      expect(well.pools.length).to eq(2)
+      expect(well.used_aliquots.length).to eq(2)
+
+      well.pool_ids = [well.pools.first.id]
+      well.reload
+
+      expect(well.pools.length).to eq(1)
+      expect(well.used_aliquots.length).to eq(1)
+    end
+  end
+
+  context 'library_ids=' do
+    it 'creates well_libraries and used_aliquots from library_ids' do
+      library_ids = create_list(:pacbio_library, 2).collect(&:id)
+      well = build(:pacbio_well, pool_count: 0, library_count: 0)
+
+      expect(well.libraries.length).to eq(0)
+      expect(well.used_aliquots.length).to eq(0)
+      well.library_ids = library_ids
+      well.save
+
+      expect(well.libraries.length).to eq(2)
+      expect(well.used_aliquots.length).to eq(2)
+    end
+
+    it 'destroys well_pools and used_aliquots from pool_ids' do
+      well = create(:pacbio_well, pool_count: 0, library_count: 2)
+
+      expect(well.libraries.length).to eq(2)
+      expect(well.used_aliquots.length).to eq(2)
+
+      well.library_ids = [well.libraries.first.id]
+      well.reload
+
+      expect(well.libraries.length).to eq(1)
+      expect(well.used_aliquots.length).to eq(1)
     end
   end
 

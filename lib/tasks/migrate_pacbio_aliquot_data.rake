@@ -132,6 +132,50 @@ namespace :pacbio_aliquot_data do
     end
   end
 
+  task migrate_well_data: :environment do
+    puts '-> Creating used aliquots for all libraries/pools used in wells'
+    # Create primary aliquots for all wells
+    Pacbio::Well.find_each do |well|
+      # Skip if aliquots already exist (shouldn't happen but just in case)
+      next if well.aliquots.any?
+
+      # Create used aliquots for all libraries/pools used in wells
+      well.libraries.each do |library|
+        Aliquot.create!(
+          volume: library.volume,
+          concentration: library.concentration,
+          template_prep_kit_box_barcode: library.template_prep_kit_box_barcode,
+          insert_size: library.insert_size,
+          source: library,
+          used_by: well,
+          aliquot_type: :derived,
+          state: :created
+        )
+      end
+
+      well.pools.each do |pool|
+        Aliquot.create!(
+          volume: pool.volume,
+          concentration: pool.concentration,
+          template_prep_kit_box_barcode: pool.template_prep_kit_box_barcode,
+          insert_size: pool.insert_size,
+          source: pool,
+          used_by: well,
+          aliquot_type: :derived,
+          state: :created
+        )
+      end
+    end
+  end
+
+  task revert_well_data: :environment do
+    puts '-> Deleting all PacBio well used aliquots'
+    # Delete all usedd aliquots
+    Pacbio::Well.find_each do |well|
+      well.used_aliquots.destroy_all
+    end
+  end
+
   # This task is used to revert the changes made by the above tasks
   # This can be more sophisticated as we add more elements to the migration
   task revert_all_data: :environment do
