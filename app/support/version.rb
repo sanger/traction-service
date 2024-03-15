@@ -12,7 +12,7 @@ module Version
   # Bespoke error class to highlight version errors
   class Error < StandardError
     def message
-      'Not a valid version'
+      'Unsupported or invalid version'
     end
   end
 end

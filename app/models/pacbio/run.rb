@@ -53,9 +53,7 @@ module Pacbio
     # using pipelines.yml configuration to generate data
     def generate_sample_sheet
       configuration = pacbio_run_sample_sheet_config
-      sample_sheet_generator = RunCsv::DeprecatedPacbioSampleSheet
-      sample_sheet_generator = RunCsv::PacbioSampleSheet if use_simpler_sample_sheets?
-      sample_sheet = sample_sheet_generator.new(object: self, configuration:)
+      sample_sheet = RunCsv::PacbioSampleSheet.new(object: self, configuration:)
       sample_sheet.payload
     end
 
@@ -70,16 +68,6 @@ module Pacbio
       plates.collect(&:wells).flatten
     end
 
-    # Is the simpler-style config is defined?
-    # Requires:
-    # - fields
-    # - column_order
-    def use_simpler_sample_sheets?
-      responds_to_fields = pacbio_run_sample_sheet_config.respond_to?('fields')
-      responds_to_column_order = pacbio_run_sample_sheet_config.respond_to?('column_order')
-      responds_to_fields && responds_to_column_order
-    end
-
     private
 
     # We now have SMRT Link versioning
@@ -87,6 +75,7 @@ module Pacbio
     # Each different version of SMRT Link has different columns
     # A version can be assigned to a run but changed
     # e.g. Pipelines.pacbio.sample_sheet.by_version('v10')
+    # Throws a Version::Error if the version cannot be found
     def pacbio_run_sample_sheet_config
       Pipelines.pacbio.sample_sheet.by_version(smrt_link_version.name)
     end
