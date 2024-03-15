@@ -4,10 +4,10 @@ require 'rails_helper'
 
 RSpec.describe 'RunsController' do
   # Create default and non-default smrt link versions for runs
-  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
+  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10') }
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
   let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
-  let!(:version13) { create(:pacbio_smrt_link_version, name: 'v13_revio') }
+  let!(:version13) { create(:pacbio_smrt_link_version, name: 'v13_revio', default: true) }
 
   before do
     Flipper.enable(:dpl_1112)
@@ -1097,7 +1097,7 @@ RSpec.describe 'RunsController' do
         run = Pacbio::Run.first
         version = Pacbio::SmrtLinkVersion.find_by(default: true)
         expect(run.id).to eq(json['data']['id'].to_i)
-        expect(version).to eq(version10)
+        expect(version).to eq(version13)
         expect(run.smrt_link_version).to be_present
         expect(run.smrt_link_version).to eq(version)
         expect(run.pacbio_smrt_link_version_id).to eq(version.id)
@@ -1149,7 +1149,7 @@ RSpec.describe 'RunsController' do
         post v1_pacbio_runs_path, params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         run = Pacbio::Run.first
-        version = Pacbio::SmrtLinkVersion.find_by(default: true)
+        version = Pacbio::SmrtLinkVersion.find_by(name: 'v10')
 
         expect(run.id).to eq(json['data']['id'].to_i)
         expect(version).to eq(version10)
@@ -1588,7 +1588,7 @@ RSpec.describe 'RunsController' do
     let(:well1)   { create(:pacbio_well_with_pools) }
     let(:well2)   { create(:pacbio_well_with_pools) }
     let(:plate)   { build(:pacbio_plate, wells: [well1, well2]) }
-    let(:run)     { create(:pacbio_run, smrt_link_version: version10, plates: [plate]) }
+    let(:run)     { create(:pacbio_run, smrt_link_version: version13, plates: [plate]) }
 
     after { FileUtils.rm_rf("#{run.name}.csv") }
 
@@ -1605,6 +1605,13 @@ RSpec.describe 'RunsController' do
     it 'the attached csv file is named after the run its associated with' do
       get v1_pacbio_run_sample_sheet_path(run).to_s, headers: json_api_headers
       expect(response.header['Content-Disposition']).to include "#{run.name}.csv"
+    end
+
+    it 'returns an error message if the smrt_link_version is not supported' do
+      run.update(smrt_link_version: version10)
+      get v1_pacbio_run_sample_sheet_path(run).to_s, headers: json_api_headers
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to include 'Unsupported or invalid version'
     end
   end
 end
