@@ -71,7 +71,7 @@ v12_revio: # version name
           value: plate.plate_number # the method chain should be (well).plate.plate_number
         Bio Sample Name: # yet another column name
           type: :model # call a method on the Well model
-          value: find_sample_name # call the find_sample_name method on the Well
+          value: bio_sample_name # call the bio_sample_name method on the Well
         samples: # this field is not in the column_order list above and so will not be included
           type: :array # process the returned value as an array
           value: libraries_to_show_per_row # well.libraries_to_show_per_row (might be nil)
@@ -81,5 +81,5 @@ v12_revio: # version name
               value: plate.plate_number # call well.plate.plate_number again
             Bio Sample Name: # this column is also repeated from above
               type: :model # this time call a method on the Sample
-              value: find_sample_name # call sample.find_sample_name
+              value: bio_sample_name # call sample.bio_sample_name
 ```

@@ -14,7 +14,7 @@ RSpec.describe SampleSheet do
     it 'returns a string of library tags when the well has one library' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :tagged))
       empty_well = create(:pacbio_well, pools: [pool])
-      tag_group_id = empty_well.pools.first.libraries.first.tag.group_id
+      tag_group_id = empty_well.all_used_aliquots.first.tag.group_id
       expected = "#{tag_group_id}--#{tag_group_id}"
       expect(empty_well.all_used_aliquots.last.barcode_name).to eq expected
     end
@@ -75,15 +75,15 @@ RSpec.describe SampleSheet do
     end
   end
 
-  describe '#find_sample_name' do
+  describe '#bio_sample_name' do
     context 'when tag set is :default type' do
       it 'returns nothing if row type is well' do
-        expect(well.find_sample_name).to be_nil
+        expect(well.bio_sample_name).to be_nil
       end
 
-      it 'returns library sample_name when well has libraries and row type is library' do
-        library = create(:pacbio_library)
-        expect(library.find_sample_name).to eq library.request.sample_name
+      it 'returns aliquot sample_name when well has libraries and row type is library' do
+        aliquot = create(:pacbio_library).used_aliquots.first
+        expect(aliquot.bio_sample_name).to eq aliquot.source.sample_name
       end
     end
 
@@ -93,11 +93,12 @@ RSpec.describe SampleSheet do
       it 'returns well sample_names if row type is well' do
         pool = create(:pacbio_pool, libraries: [library])
         empty_well = create(:pacbio_well, pools: [pool])
-        expect(empty_well.find_sample_name).to eq empty_well.sample_names
+        expect(empty_well.bio_sample_name).to eq empty_well.sample_names
       end
 
       it 'returns nothing when well has libraries and row type is library' do
-        expect(library.find_sample_name).to eq ''
+        aliquot = library.used_aliquots.first
+        expect(aliquot.bio_sample_name).to eq ''
       end
     end
   end

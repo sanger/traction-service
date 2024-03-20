@@ -150,7 +150,7 @@ default: &default
               value: barcode_set
             Bio Sample Name:
               type: :model
-              value: find_sample_name
+              value: bio_sample_name
             samples:
               type: :array
               value: libraries_to_show_per_row
@@ -169,7 +169,7 @@ default: &default
                   value: barcode_name
                 Bio Sample Name:
                   type: :model
-                  value: source.sample_name
+                  value: bio_sample_name
       v12_sequel_iie: &v12_sequel_iie
         column_order:
           - Instrument Type
@@ -252,7 +252,7 @@ default: &default
               value: same_barcodes_on_both_ends_of_sequence
             Bio Sample Name:
               type: :model
-              value: find_sample_name
+              value: bio_sample_name
             Automation Parameters:
               type: :model
               value: automation_parameters
@@ -289,7 +289,7 @@ default: &default
                   value: barcode_name
                 Bio Sample Name:
                   type: :model
-                  value: source.sample_name
+                  value: bio_sample_name
       v13_revio:
         column_order:
           - Library Type
@@ -367,7 +367,7 @@ default: &default
               value: barcode_set
             Bio Sample Name:
               type: :model
-              value: find_sample_name
+              value: bio_sample_name
             Insert Size (bp):
               type: :model
               value: insert_size
@@ -392,7 +392,7 @@ default: &default
                   value: barcode_name
                 Bio Sample Name:
                   type: :model
-                  value: source.sample_name
+                  value: bio_sample_name
       # No changes required from v12_sequel_iie, added for consistency
       v13_sequel_iie: *v12_sequel_iie
 

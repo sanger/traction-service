@@ -5,7 +5,7 @@
 # An aliquot can be a primary aliquot or a derived aliquot
 # An aliquot can be used to track volumes and concentrations of samples
 class Aliquot < ApplicationRecord
-  include SampleSheet::Library
+  include SampleSheet::Aliquot
 
   enum state: { created: 0, used: 1 }
   enum aliquot_type: { primary: 0, derived: 1 }
