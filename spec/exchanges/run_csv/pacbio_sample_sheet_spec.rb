@@ -108,7 +108,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               nil,
               nil,
               well.all_used_aliquots.first.barcode_name,
-              well.all_used_aliquots.first.source.sample_name
+              well.all_used_aliquots.first.bio_sample_name
             ])
           end
         end
@@ -165,7 +165,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               well.automation_parameters,
               well.barcode_set,
               nil, # barcode name - does not apply
-              well.find_sample_name
+              well.bio_sample_name
             ])
           end
         end
@@ -292,7 +292,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               well.all_used_aliquots.first.barcode_name,
               nil,
               nil,
-              well.all_used_aliquots.first.source.sample_name,
+              well.all_used_aliquots.first.bio_sample_name,
               nil,
               nil,
               nil,
@@ -356,7 +356,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
-              well.find_sample_name,
+              well.bio_sample_name,
               well.automation_parameters,
               well.ccs_analysis_output_include_kinetics_information,
               well.loading_target_p1_plus_p2.to_s,
@@ -424,7 +424,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
-              well.find_sample_name,
+              well.bio_sample_name,
               well.automation_parameters,
               well.ccs_analysis_output_include_kinetics_information,
               well.loading_target_p1_plus_p2.to_s,
@@ -553,7 +553,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               nil,
               nil,
               well.all_used_aliquots.first.barcode_name,
-              well.all_used_aliquots.first.source.sample_name,
+              well.all_used_aliquots.first.bio_sample_name,
               nil,
               nil
             ])
@@ -612,7 +612,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               well.automation_parameters,
               well.barcode_set,
               nil, # barcode name - does not apply
-              well.find_sample_name,
+              well.bio_sample_name,
               well.insert_size.to_s,
               'false' # Default for Use Adaptive Loading
             ])

@@ -90,27 +90,18 @@ module SampleSheet
     end
 
     # Sample bio Name field
-    def find_sample_name
+    def bio_sample_name
       sample_is_barcoded ? nil : sample_names
-    end
-  end
-
-  # Provides library helper methods for sample sheet generation
-  module Library
-    # Barcode Name field
-    # Used in context of Pacbio::Library model
-    def barcode_name
-      sample_sheet_behaviour.barcode_name(tag)
-    end
-
-    # Sample bio Name field
-    def find_sample_name
-      sample_sheet_behaviour.library_sample_name(self)
     end
   end
 
   # Provides aliquot helper methods for sample sheet generation
   module Aliquot
+    # Sample bio Name field
+    def bio_sample_name
+      sample_sheet_behaviour.aliquot_sample_name(self)
+    end
+
     # Barcode Name field
     # Used in context of Aliquot model
     def barcode_name

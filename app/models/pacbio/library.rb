@@ -12,7 +12,6 @@ module Pacbio
     include Material
     include Uuidable
     include Librarian
-    include SampleSheet::Library
     include Aliquotable
 
     validates :volume, :concentration,

@@ -5,7 +5,7 @@
 # barcode_name => nil
 # barcode_set => nil
 # barcoded_for_sample_sheet? => false
-# library_sample_name => 'my_sample'
+# aliquot_sample_name => 'my_sample'
 class SampleSheetBehaviour::Untagged < SampleSheetBehaviour::Default
   def barcode_name(_tag)
     nil
@@ -19,8 +19,8 @@ class SampleSheetBehaviour::Untagged < SampleSheetBehaviour::Default
     false
   end
 
-  def library_sample_name(library)
-    library.request.sample_name || ''
+  def aliquot_sample_name(aliquot)
+    aliquot.source.request.sample_name || ''
   end
 
   def show_row_per_sample?(_libraries)
