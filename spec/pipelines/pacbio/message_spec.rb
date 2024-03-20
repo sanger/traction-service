@@ -76,20 +76,20 @@ RSpec.describe 'PacBio', :pacbio, type: :model do
         message_samples = message_well[:samples]
 
         message_samples.each_with_index do |message_sample, sample_index|
-          library = well.all_libraries[sample_index]
-          request = library.request
+          aliquot = well.all_used_aliquots[sample_index]
+          request = aliquot.source
 
           expect(message_sample[:cost_code]).to eq(request.cost_code)
-          expect(message_sample[:pac_bio_library_tube_id_lims]).to eq(library.id)
-          expect(message_sample[:pac_bio_library_tube_uuid]).to eq(library.uuid)
+          expect(message_sample[:pac_bio_library_tube_id_lims]).to eq(aliquot.used_by.id)
+          expect(message_sample[:pac_bio_library_tube_uuid]).to eq('')
           expect(message_sample[:pac_bio_library_tube_name]).to eq(request.sample_name)
-          expect(message_sample[:pac_bio_library_tube_barcode]).to eq(library.tube.barcode)
+          expect(message_sample[:pac_bio_library_tube_barcode]).to eq(aliquot.used_by.tube.barcode)
           expect(message_sample[:sample_uuid]).to eq(request.sample.external_id)
           expect(message_sample[:study_uuid]).to eq(request.external_study_id)
-          expect(message_sample[:tag_sequence]).to eq(library.tag.oligo)
-          expect(message_sample[:tag_set_id_lims]).to eq(library.tag.tag_set.id)
-          expect(message_sample[:tag_identifier]).to eq(library.tag.group_id)
-          expect(message_sample[:tag_set_name]).to eq(library.tag.tag_set.name)
+          expect(message_sample[:tag_sequence]).to eq(aliquot.tag.oligo)
+          expect(message_sample[:tag_set_id_lims]).to eq(aliquot.tag.tag_set.id)
+          expect(message_sample[:tag_identifier]).to eq(aliquot.tag.group_id)
+          expect(message_sample[:tag_set_name]).to eq(aliquot.tag.tag_set.name)
           expect(message_sample[:pipeline_id_lims]).to eq(request.library_type)
         end
       end

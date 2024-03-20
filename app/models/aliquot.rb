@@ -5,10 +5,13 @@
 # An aliquot can be a primary aliquot or a derived aliquot
 # An aliquot can be used to track volumes and concentrations of samples
 class Aliquot < ApplicationRecord
+  include SampleSheet::Library
+
   enum state: { created: 0, used: 1 }
   enum aliquot_type: { primary: 0, derived: 1 }
 
   belongs_to :tag, optional: true
+  has_one :tag_set, through: :tag
   belongs_to :source, polymorphic: true
   # Used to identify where a derived aliquot has been used
   belongs_to :used_by, polymorphic: true, optional: true
@@ -34,4 +37,8 @@ class Aliquot < ApplicationRecord
             :insert_size, presence: true, on: :run_creation
   validates :volume, :concentration, :insert_size,
             numericality: { greater_than_or_equal_to: 0, allow_nil: true }
+
+  def sample_sheet_behaviour
+    SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour || :untagged)
+  end
 end
