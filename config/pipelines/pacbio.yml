@@ -34,26 +34,26 @@ default: &default
               value: uuid
             samples:
               type: :array
-              value: all_libraries
+              value: all_used_aliquots
               children:
                 cost_code:
                   type: :model
-                  value: request.cost_code
+                  value: source.cost_code
                 pac_bio_library_tube_id_lims:
                   type: :model
-                  value: id
+                  value: used_by.id
                 pac_bio_library_tube_uuid:
-                  type: :model
-                  value: uuid
+                  type: :string
+                  value: ''
                 pac_bio_library_tube_name:
                   type: :model
-                  value: request.sample_name
+                  value: source.sample_name
                 sample_uuid:
                   type: :model
-                  value: request.sample.external_id
+                  value: source.sample.external_id
                 study_uuid:
                   type: :model
-                  value: request.external_study_id
+                  value: source.external_study_id
                 tag_sequence:
                   type: :model
                   value: tag.oligo
@@ -68,10 +68,10 @@ default: &default
                   value: tag.tag_set_name
                 pipeline_id_lims:
                   type: :model
-                  value: request.library_type
+                  value: source.library_type
                 pac_bio_library_tube_barcode:
                   type: :model
-                  value: tube.barcode
+                  value: used_by.tube.barcode
 
     # For instructions on structure and syntax, see: 'app/exchanges/README.md'
     sample_sheet:
@@ -160,7 +160,7 @@ default: &default
                   value: plate.plate_number
                 Is Collection:
                   type: :model
-                  value: collection?
+                  value: used_by.collection?
                 Sample Well:
                   type: :parent_model
                   value: position_leading_zero
@@ -169,7 +169,7 @@ default: &default
                   value: barcode_name
                 Bio Sample Name:
                   type: :model
-                  value: find_sample_name
+                  value: source.sample_name
       v12_sequel_iie: &v12_sequel_iie
         column_order:
           - Instrument Type
@@ -280,7 +280,7 @@ default: &default
               children:
                 Is Collection:
                   type: :model
-                  value: collection?
+                  value: used_by.collection?
                 Sample Well:
                   type: :parent_model
                   value: position_leading_zero
@@ -289,7 +289,7 @@ default: &default
                   value: barcode_name
                 Bio Sample Name:
                   type: :model
-                  value: find_sample_name
+                  value: source.sample_name
       v13_revio:
         column_order:
           - Library Type
@@ -383,7 +383,7 @@ default: &default
                   value: plate.plate_number
                 Is Collection:
                   type: :model
-                  value: collection?
+                  value: used_by.collection?
                 Sample Well:
                   type: :parent_model
                   value: position_leading_zero
@@ -392,7 +392,7 @@ default: &default
                   value: barcode_name
                 Bio Sample Name:
                   type: :model
-                  value: find_sample_name
+                  value: source.sample_name
       # No changes required from v12_sequel_iie, added for consistency
       v13_sequel_iie: *v12_sequel_iie
 

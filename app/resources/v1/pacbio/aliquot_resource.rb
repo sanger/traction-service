@@ -16,9 +16,9 @@ module V1
 
       # Required to get around polymorphism when trying to access nested includes data
       # e.g. aliquot.source.x becomes aliquot.request.x, aliquot.pool.x, aliquot.library.x etc
-      has_one :request, class_name: 'Request', relation_name: :request
-      has_one :pool, class_name: 'Pool', relation_name: :pool
-      has_one :library, class_name: 'Library', relation_name: :library
+      # has_one :request, class_name: 'Request', relation_name: :request
+      # has_one :pool, class_name: 'Pool', relation_name: :pool
+      # has_one :library, class_name: 'Library', relation_name: :library
 
       #  # Aliquot polymorphism support
       # # This fixes the polymorphic relationships in json-api resources

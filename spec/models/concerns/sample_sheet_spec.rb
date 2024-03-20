@@ -16,25 +16,25 @@ RSpec.describe SampleSheet do
       empty_well = create(:pacbio_well, pools: [pool])
       tag_group_id = empty_well.pools.first.libraries.first.tag.group_id
       expected = "#{tag_group_id}--#{tag_group_id}"
-      expect(empty_well.all_libraries.last.barcode_name).to eq expected
+      expect(empty_well.all_used_aliquots.last.barcode_name).to eq expected
     end
 
     it 'returns nothing if the libraries are tagged with a :hidden tag set (egh. IsoSeq)' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :hidden_tagged))
       empty_well = create(:pacbio_well, pools: [pool])
-      expect(empty_well.all_libraries.last.barcode_name).to be_nil
+      expect(empty_well.all_used_aliquots.last.barcode_name).to be_nil
     end
 
     it 'returns nothing if the libraries are not tagged' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged))
       empty_well = create(:pacbio_well, pools: [pool])
-      expect(empty_well.all_libraries.last.barcode_name).to be_nil
+      expect(empty_well.all_used_aliquots.last.barcode_name).to be_nil
     end
   end
 
   describe '#barcode_set' do
     it 'returns the tag set uuid' do
-      expected_set_name = well.all_libraries.first.tag.tag_set.uuid
+      expected_set_name = well.all_used_aliquots.first.tag.tag_set.uuid
       expect(well.barcode_set).to eq expected_set_name
     end
 
@@ -133,7 +133,7 @@ RSpec.describe SampleSheet do
 
   context 'tube_barcode' do
     it 'returns the first libraries tube barcode in well' do
-      expected = well.all_libraries.first.tube.barcode
+      expected = well.all_used_aliquots.first.used_by.tube.barcode
       expect(well.tube_barcode).to eq expected
     end
   end
