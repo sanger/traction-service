@@ -15,12 +15,19 @@ class Aliquot < ApplicationRecord
 
   # These are the associations that are used to identify the source of the aliquot
   # These are required for json api resources to understand the polymorphic relationships
-  belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :source_id, optional: true,
-                       inverse_of: :used_aliquots
-  belongs_to :library, class_name: 'Pacbio::Library', foreign_key: :source_id, optional: true,
-                       inverse_of: :used_aliquots
-  belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :source_id, optional: true,
-                    inverse_of: :used_aliquots
+  # These are used to identify the source of the aliquot
+  belongs_to :request, lambda {
+    joins(:derived_aliquots)
+  }, class_name: 'Pacbio::Request', foreign_key: :source_id,
+     optional: true, inverse_of: :derived_aliquots
+  belongs_to :library, lambda {
+    joins(:derived_aliquots)
+  }, class_name: 'Pacbio::Library', foreign_key: :source_id,
+     optional: true, inverse_of: :derived_aliquots
+  belongs_to :pool, lambda {
+    joins(:derived_aliquots)
+  }, class_name: 'Pacbio::Pool', foreign_key: :source_id,
+     optional: true, inverse_of: :derived_aliquots
 
   # currently I have set these to be validated but not sure
   # as library only validates when a run is created
