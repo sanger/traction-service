@@ -156,7 +156,13 @@ RSpec.describe 'RakeTasks' do
         expect(pool.primary_aliquot.insert_size).to eq(pool.insert_size)
 
         pool.libraries.each do |library|
-          expect(library.request.derived_aliquots).to include(pool.used_aliquots.find_by(source: library.request))
+          matched_used_aliquot = pool.used_aliquots.find_by(source: library.request)
+          expect(library.request.derived_aliquots).to include(matched_used_aliquot)
+          expect(library.tag).to eq(matched_used_aliquot.tag)
+          expect(library.volume).to eq(matched_used_aliquot.volume)
+          expect(library.concentration).to eq(matched_used_aliquot.concentration)
+          expect(library.template_prep_kit_box_barcode).to eq(matched_used_aliquot.template_prep_kit_box_barcode)
+          expect(library.insert_size).to eq(matched_used_aliquot.insert_size)
         end
       end
     end
