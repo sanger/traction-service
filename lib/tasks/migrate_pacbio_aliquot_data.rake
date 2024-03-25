@@ -88,6 +88,7 @@ namespace :pacbio_aliquot_data do
       # Set defaults if they don't exist
       pool.volume = pool.volume || 0
       pool.concentration = pool.concentration || 0
+      pool.insert_size = pool.insert_size || 0
       pool.template_prep_kit_box_barcode = pool.template_prep_kit_box_barcode || '033000000000000000000'
 
       # Create primary aliquot with same attributes as pool
@@ -103,12 +104,19 @@ namespace :pacbio_aliquot_data do
 
       # For each library this pool has, create a derived aliquot from the library request
       pool.libraries.each do |library|
+        library.volume = library.volume || 0
+        library.concentration = library.concentration || 0
+        library.template_prep_kit_box_barcode = library.template_prep_kit_box_barcode || '033000000000000000000'
+        library.insert_size = library.insert_size || 0
+        library.save
+
         Aliquot.create!(
-          volume: pool.volume,
-          concentration: pool.concentration,
-          template_prep_kit_box_barcode: pool.template_prep_kit_box_barcode,
-          insert_size: pool.insert_size,
+          volume: library.volume,
+          concentration: library.concentration,
+          template_prep_kit_box_barcode: library.template_prep_kit_box_barcode,
+          insert_size: library.insert_size,
           source: library.request,
+          tag: library.tag,
           aliquot_type: :derived,
           used_by: pool,
           state: :created
