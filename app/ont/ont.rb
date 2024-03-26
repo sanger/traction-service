@@ -26,7 +26,7 @@ module Ont
 
   def self.library_factory(request:, library_attributes:)
     Ont::Library.new(
-      request: request,
+      request:,
       **library_attributes.slice(*self.library_attributes)
     )
   end
