@@ -42,6 +42,7 @@ module V1
       @model.tubes_attributes = tube_parameters.map do |tube|
         tube.permit(
           :barcode,
+          library: permitted_library_attributes,
           request: permitted_request_attributes,
           sample: permitted_sample_attributes
         ).to_h.with_indifferent_access
@@ -51,6 +52,10 @@ module V1
     def construct_resources!
       # Use context to cache the labware to be used in the response
       context[:labware] = @model.construct_resources!
+    end
+
+    def permitted_library_attributes
+      [*::Pacbio.library_attributes, *::Ont.library_attributes, *::Saphyr.library_attributes].uniq
     end
 
     def permitted_request_attributes

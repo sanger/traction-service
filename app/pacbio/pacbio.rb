@@ -6,6 +6,12 @@ module Pacbio
     'pacbio_'
   end
 
+  def self.library_attributes
+    %i[
+      volume template_prep_kit_box_barcode concentration insert_size tag_id
+    ]
+  end
+
   def self.request_attributes
     %i[
       library_type estimate_of_gb_required number_of_smrt_cells cost_code
@@ -13,14 +19,24 @@ module Pacbio
     ]
   end
 
-  def self.sample_attributes
-    %i[external_id name species]
-  end
-
   def self.required_request_attributes
     [
       :external_study_id
     ]
+  end
+
+  def self.sample_attributes
+    %i[external_id name species]
+  end
+
+  def self.library_factory(request:, library_attributes:)
+    filtered_attributes = library_attributes.slice(*self.library_attributes)
+
+    Pacbio::Library.new(
+      request: request,
+      primary_aliquot_attributes: { **filtered_attributes },
+      **filtered_attributes
+    )
   end
 
   # We have this argument here for API compatibility

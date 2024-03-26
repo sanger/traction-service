@@ -29,6 +29,10 @@ class Reception
       @containers ||= []
     end
 
+    def libraries
+      @libraries ||= []
+    end
+
     def requests
       @requests ||= []
     end
@@ -38,6 +42,7 @@ class Reception
     end
 
     def construct_resources!
+      libraries.each(&:save!)
       requests.each(&:save!)
       labware_status
     end
@@ -117,8 +122,17 @@ class Reception
     def create_request_for_container(attributes, container)
       library_type = library_type_for(attributes[:request])
       sample = sample_for(attributes[:sample])
-      requests << create_request(library_type, sample, container, attributes[:request])
+      request = create_request(library_type, sample, container, attributes[:request])
+      if attributes[:library]
+        libraries << create_library(library_type, request, attributes[:library])
+      end
+      requests << request
       containers << container
+    end
+
+    def create_library(library_type, request, library_attributes)
+      # The library type is used to help build the correct library in the correct pipeline
+      library_type.library_factory(request:, library_attributes:)
     end
 
     def create_request(library_type, sample, container, request_attributes)

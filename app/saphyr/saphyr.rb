@@ -6,6 +6,10 @@ module Saphyr
     'saphyr_'
   end
 
+  def self.library_attributes
+    []
+  end
+
   def self.request_attributes
     [
       :external_study_id
@@ -16,6 +20,13 @@ module Saphyr
     [
       :external_study_id
     ]
+  end
+
+  def self.library_factory(request:, library_attributes:)
+    Saphyr::Library.new(
+      request: request,
+      **library_attributes.slice(*self.library_attributes)
+    )
   end
 
   # We have this argument here for API compatibility
