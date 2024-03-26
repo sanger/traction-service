@@ -34,7 +34,7 @@ default: &default
               value: uuid
             samples:
               type: :array
-              value: all_used_aliquots
+              value: base_used_aliquots
               children:
                 cost_code:
                   type: :model

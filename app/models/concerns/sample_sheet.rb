@@ -35,20 +35,20 @@ module SampleSheet
 
     # Determines rendering of a row-per sample
     def show_row_per_sample?
-      sample_sheet_behaviour.show_row_per_sample?(all_used_aliquots)
+      sample_sheet_behaviour.show_row_per_sample?(base_used_aliquots)
     end
 
     # Returns libraries only if they should be shown per row
     def libraries_to_show_per_row
       return unless show_row_per_sample?
 
-      all_used_aliquots
+      base_used_aliquots
     end
 
     # Sample Name field
     def tube_barcode
       # Gets the first barcode which will either be the pool barcode or the library barcode
-      all_used_aliquots.first.used_by.tube.barcode
+      base_used_aliquots.first.used_by.tube.barcode
     end
 
     # find the plate given the plate_number

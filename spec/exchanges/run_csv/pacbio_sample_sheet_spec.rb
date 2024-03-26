@@ -107,8 +107,8 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               nil,
               nil,
               nil,
-              well.all_used_aliquots.first.barcode_name,
-              well.all_used_aliquots.first.bio_sample_name
+              well.base_used_aliquots.first.barcode_name,
+              well.base_used_aliquots.first.bio_sample_name
             ])
           end
         end
@@ -289,10 +289,10 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               nil,
               nil,
               nil,
-              well.all_used_aliquots.first.barcode_name,
+              well.base_used_aliquots.first.barcode_name,
               nil,
               nil,
-              well.all_used_aliquots.first.bio_sample_name,
+              well.base_used_aliquots.first.bio_sample_name,
               nil,
               nil,
               nil,
@@ -441,6 +441,108 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
         end
       end
 
+      context 'when the run has pools that use libraries and requests' do
+        let(:pool) { create(:pacbio_pool, :tagged, library_count: 1) }
+        let(:well) do
+          create(:pacbio_well, pre_extension_time: 2, generate_hifi: 'Do Not Generate',
+                               ccs_analysis_output: 'Yes', pools: [pool])
+        end
+        let(:wells) { [well] }
+
+        before do
+          pool.used_aliquots << create(:aliquot, source: create(:pacbio_library))
+        end
+
+        it 'must return a csv string' do
+          expect(csv_string).to be_a String
+        end
+
+        it 'must have the correct headers' do
+          headers = parsed_csv[0]
+
+          expected_headers = configuration.column_order
+          expect(headers).to eq(expected_headers)
+        end
+
+        it 'must have the correct well header rows' do
+          well_data_1 = parsed_csv[1]
+          #  iterate through the wells under test
+          well_expectations = [
+            [well_data_1, well]
+          ]
+          well_expectations.each do |well_data, well|
+            expect(well_data).to eq([
+              well.plate.run.system_name,
+              well.plate.run.name,
+              well.collection?.to_s,
+              well.position,
+              well.tube_barcode,
+              well.movie_time.to_s,
+              well.insert_size.to_s,
+              well.template_prep_kit_box_barcode,
+              well.binding_kit_box_barcode,
+              well.plate.sequencing_kit_box_barcode,
+              well.on_plate_loading_concentration.to_s,
+              well.plate.run.dna_control_complex_box_barcode,
+              well.plate.run.comments,
+              well.sample_is_barcoded.to_s,
+              nil, # barcode name - does not apply
+              well.barcode_set,
+              well.same_barcodes_on_both_ends_of_sequence.to_s,
+              well.bio_sample_name,
+              well.automation_parameters,
+              well.ccs_analysis_output_include_kinetics_information,
+              well.loading_target_p1_plus_p2.to_s,
+              well.adaptive_loading_check.to_s,
+              well.ccs_analysis_output_include_low_quality_reads,
+              well.include_fivemc_calls_in_cpg_motifs,
+              well.demultiplex_barcodes
+            ])
+          end
+        end
+
+        it 'must have the correct sample rows' do
+          # Note the increment in the parsed_csv index
+          sample_data_1 = parsed_csv[2]
+          sample_data_2 = parsed_csv[3]
+
+          # iterate through the samples under test
+          sample_expectations = [
+            [sample_data_1, well, 0],
+            [sample_data_2, well, 1]
+          ]
+          sample_expectations.each do |sample_data, well, aliquot_index|
+            expect(sample_data).to eq([
+              nil,
+              nil,
+              well.collection?.to_s,
+              well.position,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              well.base_used_aliquots[aliquot_index].barcode_name,
+              nil,
+              nil,
+              well.base_used_aliquots[aliquot_index].bio_sample_name,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil,
+              nil
+            ])
+          end
+        end
+      end
+
       context 'with lots of wells in unpredictable orders' do
         let(:pool1) { create_list(:pacbio_pool, 1, :untagged) }
         let(:pool2) { create_list(:pacbio_pool, 1, :untagged) }
@@ -552,8 +654,8 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               nil,
               nil,
               nil,
-              well.all_used_aliquots.first.barcode_name,
-              well.all_used_aliquots.first.bio_sample_name,
+              well.base_used_aliquots.first.barcode_name,
+              well.base_used_aliquots.first.bio_sample_name,
               nil,
               nil
             ])

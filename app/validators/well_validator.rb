@@ -7,7 +7,7 @@ class WellValidator < ActiveModel::Validator
     validate_library_presence(record)
 
     # The next validations rely on there being more than 1 library or pool
-    return unless record.all_used_aliquots.many?
+    return unless record.base_used_aliquots.many?
 
     validations = %i[validate_library_presence validate_tag_presence validate_tag_uniqueness]
 
@@ -19,14 +19,14 @@ class WellValidator < ActiveModel::Validator
   end
 
   def validate_library_presence(record)
-    return unless record.all_used_aliquots.empty?
+    return unless record.base_used_aliquots.empty?
 
     record.errors.add(:base, "There must be at least 1 pool or library for well #{record.position}")
     nil
   end
 
   def validate_tag_presence(record)
-    all_tags = record.all_used_aliquots.collect(&:tag)
+    all_tags = record.base_used_aliquots.collect(&:tag)
 
     return unless all_tags.empty? || all_tags.any?(nil)
 
@@ -35,7 +35,7 @@ class WellValidator < ActiveModel::Validator
   end
 
   def validate_tag_uniqueness(record)
-    all_tags = record.all_used_aliquots.collect(&:tag)
+    all_tags = record.base_used_aliquots.collect(&:tag)
 
     return if all_tags.length == all_tags.uniq.length
 
