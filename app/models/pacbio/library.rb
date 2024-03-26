@@ -103,15 +103,12 @@ module Pacbio
     end
 
     def check_for_associated_pools
-      # Gets the library derived aliquots and gets where they are used and checks if any are a pool
-      used_by_pool = derived_aliquots.collect(&:used_by)
-                                     .flatten.any? { |used_by| used_by.is_a? Pacbio::Pool }
-      if used_by_pool
-        errors.add(:base, 'Cannot delete a library that is associated with a pool')
-        throw(:abort)
-      else
-        true
-      end
+      return true unless derived_aliquots.any? do |aliquot|
+                           aliquot.used_by_is_a?(Pacbio::Pool)
+                         end
+
+      errors.add(:base, 'Cannot delete a library that is associated with a pool')
+      throw(:abort)
     end
   end
 end
