@@ -79,6 +79,16 @@ class Reception
       end
     end
 
+    def library_type_for(request_attributes)
+      # Gets a library type from the cache or returns an unknown type
+      library_type = request_attributes[:library_type]
+      library_type_cache.fetch(
+        library_type,
+        UnknownLibraryType.new(library_type:,
+                               permitted: library_type_cache.keys)
+      )
+    end
+
     def data_type_for(attributes)
       data_type_cache.fetch(attributes[:data_type], nil)
     end
@@ -108,9 +118,11 @@ class Reception
     end
 
     def create_request_for_container(attributes, container)
-      library_type_helper = LibraryTypeHelper.new(self, attributes)
+      library_type_helper = LibraryTypeHelper.new(library_type_for(attributes[:request]),
+                                                  self,
+                                                  attributes)
       sample = sample_for(attributes[:sample])
-      request = library_type_helper.create_request(sample, container)
+      request = library_type_helper.create_request(sample, container, reception)
       library_type_helper.create_library(request)
       requests << request
       containers << container
@@ -132,14 +144,19 @@ class Reception
       cons.fetch('Well', []).map { |well| [well.position, well.plate] }.uniq! ||
         cons.fetch('Tube', []).map(&:barcode).uniq! || cons.fetch('Plate', []).map(&:barcode).uniq!
     end
+
+    def library_type_cache
+      # Used to reduce database queries.
+      @library_type_cache ||= LibraryType.all.index_by(&:name)
+    end
   end
 
   # A helper that deals with the creation of library type specific records.
   class LibraryTypeHelper
-    def initialize(resource_factory, container_attributes)
+    def initialize(library_type, resource_factory, container_attributes)
+      @library_type = library_type
       @resource_factory = resource_factory
       @container_attributes = container_attributes
-      @library_type = library_type_with_name(container_attributes[:request][:library_type])
     end
 
     def create_library(request)
@@ -149,7 +166,7 @@ class Reception
       @library_type.library_factory(request:, library_attributes: @container_attributes[:library])
     end
 
-    def create_request(sample, container)
+    def create_request(sample, container, reception)
       # The library type is used to help build the correct request in the correct pipeline
       @library_type.request_factory(
         sample:,
@@ -159,21 +176,5 @@ class Reception
         reception:
       )
     end
-
-    private
-
-    def library_type_with_name(name)
-      # Gets a library type from the cache or returns an unknown type
-      library_type_cache.fetch(name,
-                               UnknownLibraryType.new(library_type: name,
-                                                      permitted: library_type_cache.keys))
-    end
-
-    def self.library_type_cache
-      # Used to reduce database queries.
-      @library_type_cache ||= LibraryType.all.index_by(&:name)
-    end
-
-    private_class_method :library_type_cache
   end
 end
