@@ -133,7 +133,7 @@ RSpec.describe Pacbio::Well, :pacbio do
     end
 
     it 'can return a list of tags' do
-      tag_ids = well.all_used_aliquots.collect(&:tag_id)
+      tag_ids = well.base_used_aliquots.collect(&:tag_id)
       expect(well.tags).to eq(tag_ids)
     end
   end
@@ -195,16 +195,16 @@ RSpec.describe Pacbio::Well, :pacbio do
     end
   end
 
-  context 'all_used_aliquots' do
+  context 'base_used_aliquots' do
     let(:pools) { create_list(:pacbio_pool, 2, library_count: 1) }
     let(:libraries) { create_list(:pacbio_library, 2) }
 
     it 'returns a combined list of used_aliquots from the wells libraries and pools' do
       well = create(:pacbio_well, pools:, libraries:)
 
-      all_used_aliquots = well.used_aliquots.collect(&:source).collect(&:used_aliquots).flatten
-      expect(well.all_used_aliquots.length).to eq(4)
-      expect(well.all_used_aliquots).to eq(all_used_aliquots)
+      base_used_aliquots = well.used_aliquots.collect(&:source).collect(&:used_aliquots).flatten
+      expect(well.base_used_aliquots.length).to eq(4)
+      expect(well.base_used_aliquots).to eq(base_used_aliquots)
     end
   end
 

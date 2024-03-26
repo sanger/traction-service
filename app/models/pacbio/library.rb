@@ -25,6 +25,7 @@ module Pacbio
 
     belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id,
                          inverse_of: :libraries
+    delegate :sample_name, :cost_code, :external_study_id, :library_type, to: :request
     belongs_to :tag, optional: true
     belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :pacbio_pool_id,
                       inverse_of: :libraries, optional: true

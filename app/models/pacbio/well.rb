@@ -118,7 +118,7 @@ module Pacbio
     end
 
     def tag_set
-      all_used_aliquots.collect(&:tag_set).first
+      base_used_aliquots.collect(&:tag_set).first
     end
 
     def sample_sheet_behaviour
@@ -133,8 +133,8 @@ module Pacbio
       "#{sample_names} #{comment}".strip
     end
 
-    # A collection of all the for a well
-    def all_used_aliquots
+    # A collection of all the used_aliquots for given libraries and pools in a well
+    def base_used_aliquots
       used_aliquots.collect(&:source).collect(&:used_aliquots).flatten
     end
 
@@ -147,13 +147,13 @@ module Pacbio
     # a collection of all the sample names for a particular well
     # useful for comments
     def sample_names(separator = ':')
-      all_used_aliquots.collect(&:source).collect(&:sample_name).join(separator)
+      base_used_aliquots.collect(&:source).collect(&:sample_name).join(separator)
     end
 
     # a collection of all the tags for a well
     # useful to check whether they are unique
     def tags
-      all_used_aliquots.collect(&:tag_id)
+      base_used_aliquots.collect(&:tag_id)
     end
 
     def pools?
@@ -165,11 +165,11 @@ module Pacbio
     end
 
     def template_prep_kit_box_barcode
-      all_used_aliquots.first.used_by.template_prep_kit_box_barcode
+      base_used_aliquots.first.used_by.template_prep_kit_box_barcode
     end
 
     def insert_size
-      all_used_aliquots.first.used_by.insert_size
+      base_used_aliquots.first.used_by.insert_size
     end
 
     def collection?
