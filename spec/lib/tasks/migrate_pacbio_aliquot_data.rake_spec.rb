@@ -126,6 +126,11 @@ RSpec.describe 'RakeTasks' do
       # Create some pools with wells
       wells = create_list(:pacbio_well, 5, pool_count: 2)
       pools = wells.map(&:pools).flatten
+      pool_missing_data = pools.first
+      pool_missing_data.update!(volume: nil, concentration: nil, template_prep_kit_box_barcode: nil, insert_size: nil)
+
+      # Get rid of aliquots that were created by the factory
+      Aliquot.destroy_all
 
       # Run the rake task
       # It outputs the correct text
@@ -134,6 +139,12 @@ RSpec.describe 'RakeTasks' do
           -> Creating primary aliquots for all pools and derived aliquots for all requests used in pools
         HEREDOC
       ).to_stdout
+
+      # Check pool defaults have been applied
+      pool_missing_data.reload
+      expect(pool_missing_data.volume).to eq(0)
+      expect(pool_missing_data.concentration).to eq(0)
+      expect(pool_missing_data.template_prep_kit_box_barcode).to eq('033000000000000000000')
 
       # Check if the primary and derived aliquots have been created
       pools.each do |pool|
@@ -145,9 +156,103 @@ RSpec.describe 'RakeTasks' do
         expect(pool.primary_aliquot.insert_size).to eq(pool.insert_size)
 
         pool.libraries.each do |library|
-          expect(library.request.derived_aliquots).to include(pool.used_aliquots.find_by(source: library.request))
+          matched_used_aliquot = pool.used_aliquots.find_by(source: library.request)
+          expect(library.request.derived_aliquots).to include(matched_used_aliquot)
+          expect(library.tag).to eq(matched_used_aliquot.tag)
+          expect(library.volume).to eq(matched_used_aliquot.volume)
+          expect(library.concentration).to eq(matched_used_aliquot.concentration)
+          expect(library.template_prep_kit_box_barcode).to eq(matched_used_aliquot.template_prep_kit_box_barcode)
+          expect(library.insert_size).to eq(matched_used_aliquot.insert_size)
         end
       end
+    end
+  end
+
+  describe 'pacbio_aliquot_data:revert_pool_data' do
+    it 'deletes primary and used aliquots for each pool' do
+      # Create some pools with wells
+      create_list(:pacbio_well, 5, pool_count: 2)
+
+      # Get rid of aliquots that were created by the factory
+      Aliquot.destroy_all
+
+      # Run the rake task
+      # It outputs the correct text
+      Rake::Task['pacbio_aliquot_data:migrate_pool_data'].reenable
+      expect { Rake::Task['pacbio_aliquot_data:migrate_pool_data'].invoke }.to output(
+        <<~HEREDOC
+          -> Creating primary aliquots for all pools and derived aliquots for all requests used in pools
+        HEREDOC
+      ).to_stdout
+
+      # Run the revert task
+      # It outputs the correct text
+      expect { Rake::Task['pacbio_aliquot_data:revert_pool_data'].invoke }.to output(
+        <<~HEREDOC
+          -> Deleting all pool primary and used aliquots
+        HEREDOC
+      ).to_stdout
+        .and change(Aliquot, :count).from(20).to(0)
+
+      expect(Pacbio::Pool.all.select { |pool| pool.primary_aliquot.present? }).to be_empty
+      expect(Pacbio::Pool.all.map(&:used_aliquots).flatten).to be_empty
+    end
+  end
+
+  describe 'pacbio_aliquot_data:migrate_well_data' do
+    it 'creates derived aliquots for each library/pool used in a well' do
+      # Create some wells with libraries and pools
+      wells = create_list(:pacbio_well, 5, pool_count: 2, library_count: 2)
+
+      # Clear any aliquots created from the factories
+      Aliquot.destroy_all
+
+      # Run the rake task
+      # It outputs the correct text
+      expect { Rake::Task['pacbio_aliquot_data:migrate_well_data'].invoke }.to output(
+        <<~HEREDOC
+          -> Creating used aliquots for all libraries/pools used in wells
+        HEREDOC
+      ).to_stdout
+        # Changes 20 (5 wells * 4 libraries/pools per well * 1 aliquot per library/pool)
+        .and change(Aliquot, :count).from(0).to(20)
+
+      # Check if the derived/used aliquots have been created
+      wells.each do |well|
+        well.libraries.each do |library|
+          expect(library.derived_aliquots).to include(well.used_aliquots.find_by(source: library))
+        end
+        well.pools.each do |pool|
+          expect(pool.derived_aliquots).to include(well.used_aliquots.find_by(source: pool))
+        end
+      end
+    end
+  end
+
+  describe 'pacbio_aliquot_data:revert_well_data' do
+    it 'deletes all used aliquots from wells' do
+      # Create some wells with libraries and pools
+      create_list(:pacbio_well, 5, pool_count: 2, library_count: 2)
+
+      # Clear any aliquots created from the factories
+      Aliquot.destroy_all
+
+      # Run the inital migration rake task, reenable it and invoke it again
+      Rake::Task['pacbio_aliquot_data:migrate_well_data'].reenable
+      expect { Rake::Task['pacbio_aliquot_data:migrate_well_data'].invoke }.to output(
+        <<~HEREDOC
+          -> Creating used aliquots for all libraries/pools used in wells
+        HEREDOC
+      ).to_stdout
+
+      # Run the revert task
+      # It outputs the correct text
+      expect { Rake::Task['pacbio_aliquot_data:revert_well_data'].invoke }.to output(
+        <<~HEREDOC
+          -> Deleting all PacBio well used aliquots
+        HEREDOC
+      ).to_stdout
+        .and change(Aliquot, :count).from(20).to(0)
     end
   end
 
@@ -173,7 +278,7 @@ RSpec.describe 'RakeTasks' do
       ).to_stdout
 
       # Should be 10 primary aliquots and 10 derived aliquots
-      expect(Aliquot.count).to eq(75)
+      expect(Aliquot.count).to eq(85)
 
       # Run the revert task
       # It outputs the correct text
@@ -182,7 +287,7 @@ RSpec.describe 'RakeTasks' do
           -> Deleting all aliquots
         HEREDOC
       ).to_stdout
-        .and change(Aliquot, :count).from(75).to(0)
+        .and change(Aliquot, :count).from(85).to(0)
     end
   end
 end

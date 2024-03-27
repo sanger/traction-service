@@ -20,7 +20,7 @@ RSpec.describe 'WellsController' do
 
     describe 'has the correct attributes' do
       before do
-        get "#{v1_pacbio_runs_wells_path}?include=pools.libraries", headers: json_api_headers
+        get "#{v1_pacbio_runs_wells_path}?include=pools.libraries,used_aliquots", headers: json_api_headers
       end
 
       let!(:well) { wells.first }
@@ -60,6 +60,15 @@ RSpec.describe 'WellsController' do
             'insert_size' => library.insert_size,
             'state' => library.state,
             'created_at' => library.created_at.to_fs(:us)
+          )
+        end
+
+        wells.collect(&:used_aliquots).flatten.each do |aliquot|
+          aliquot_attributes = find_included_resource(type: 'aliquots', id: aliquot.id)['attributes']
+          expect(aliquot_attributes).to include(
+            'volume' => aliquot.volume,
+            'concentration' => aliquot.concentration,
+            'aliquot_type' => aliquot.aliquot_type
           )
         end
       end

@@ -2,4 +2,5 @@
 # dpl202_enable_angry_cat_feature: When enabled this will add an angry cat to all pages that will try to catch the mouse pointer
 # The key should be lowecase and snake case, and prefixes with the issue number to allow easy identification
 
-{}
+multiplexing_phase_2_aliquot: Enables Revio Multiplexing Phase 2 via Aliquots
+dpl_1112: Enables used_aliquots in wells

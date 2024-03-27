@@ -208,6 +208,45 @@ RSpec.describe Pacbio::Pool, :pacbio do
     end
   end
 
+  describe '#used_aliquot_attributes=' do
+    before do
+      Flipper.enable(:multiplexing_phase_2_aliquot)
+    end
+
+    context 'with new used aliquots' do
+      let(:used_aliquots_attributes) { attributes_for_list(:aliquot, 5, aliquot_type: :derived, source: nil) }
+
+      it 'sets up used aliquots' do
+        pool = build(:pacbio_pool)
+        pool.used_aliquots_attributes = used_aliquots_attributes
+        expect(pool.used_aliquots.length).to eq 5
+      end
+    end
+
+    context 'with existing used aliquots' do
+      let(:pool) { create(:pacbio_pool, library_count: 5) }
+      let(:used_aliquots_attributes) do
+        pool.used_aliquots.map do |aliquot|
+          aliquot.attributes.merge(
+            'volume' => 100
+          )
+        end
+      end
+
+      it 'update existing used aliquots' do
+        pool.used_aliquots_attributes = used_aliquots_attributes
+        expect(pool.used_aliquots.length).to eq 5
+      end
+
+      it 'changes used aliquot attributes' do
+        pool.used_aliquots_attributes = used_aliquots_attributes
+        expect(
+          pool.used_aliquots.map(&:volume)
+        ).to all eq 100
+      end
+    end
+  end
+
   context 'tags' do
     it 'is valid if there is a single library with no tag' do
       expect(build(:pacbio_pool, libraries: [build(:pacbio_library, tag: nil)])).to be_valid

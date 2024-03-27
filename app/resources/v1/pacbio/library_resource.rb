@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# ALIQUOT-CLEANUP
+# - Remove the self.records method and use default
+
 module V1
   module Pacbio
     # LibraryResource
@@ -24,6 +27,8 @@ module V1
 
       has_one :primary_aliquot, always_include_optional_linkage_data: true,
                                 relation_name: :primary_aliquot, class_name: 'Aliquot'
+      has_many :used_aliquots, always_include_optional_linkage_data: true,
+                               relation_name: :used_aliquots, class_name: 'Aliquot'
 
       paginator :paged
 
@@ -31,10 +36,17 @@ module V1
         [{ field: 'created_at', direction: :desc }]
       end
 
-      def self.records(_options = {})
+      def self.records(options = {})
         # We only want to include only libraries without pools
         # Libraries with pools should be referenced via the LibraryPoolResource
-        super.where(pool: nil)
+        # This breaks aliquot polymorphism so we only filter if the resource
+        # Is accessed directly
+        if options[:include_directives]
+           .instance_variable_get(:@resource_klass) == V1::Pacbio::LibraryResource
+          super.where(pool: nil)
+        else
+          super
+        end
       end
 
       # When a library is updated and it is attached to a run we need
