@@ -2,6 +2,9 @@
 
 require 'rails_helper'
 
+# ALIQUOT-CLEANUP
+# - Create used_aliquots directly in factories instead of doing it via libraries
+
 RSpec.describe SampleSheet do
   before do
     # Create a default pacbio smrt link version for pacbio runs.
@@ -11,7 +14,7 @@ RSpec.describe SampleSheet do
   let(:well) { create(:pacbio_well_with_pools, pool_count: 5) }
 
   describe '#barcode_name' do
-    it 'returns a string of library tags when the well has one library' do
+    it 'returns a string of aliquot tags when the well has one aliquot' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :tagged))
       empty_well = create(:pacbio_well, pools: [pool])
       tag_group_id = empty_well.base_used_aliquots.first.tag.group_id
@@ -19,13 +22,13 @@ RSpec.describe SampleSheet do
       expect(empty_well.base_used_aliquots.last.barcode_name).to eq expected
     end
 
-    it 'returns nothing if the libraries are tagged with a :hidden tag set (egh. IsoSeq)' do
+    it 'returns nothing if the aliquots are tagged with a :hidden tag set (egh. IsoSeq)' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :hidden_tagged))
       empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.base_used_aliquots.last.barcode_name).to be_nil
     end
 
-    it 'returns nothing if the libraries are not tagged' do
+    it 'returns nothing if the aliquots are not tagged' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged))
       empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.base_used_aliquots.last.barcode_name).to be_nil
@@ -38,13 +41,13 @@ RSpec.describe SampleSheet do
       expect(well.barcode_set).to eq expected_set_name
     end
 
-    it 'returns nothing if the libraries are not tagged' do
+    it 'returns nothing if the aliquots are not tagged' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged))
       empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.barcode_set).to be_nil
     end
 
-    it 'returns nothing if the libraries are tagged with a :hidden tag set (egh. IsoSeq)' do
+    it 'returns nothing if the aliquots are tagged with a :hidden tag set (egh. IsoSeq)' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :hidden_tagged))
       empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.barcode_set).to be_nil
@@ -52,23 +55,23 @@ RSpec.describe SampleSheet do
   end
 
   describe '#sample_is_barcoded' do
-    it 'returns true if all well libraries are tagged and non isoSeq tags' do
+    it 'returns true if all well aliquots are tagged and non isoSeq tags' do
       expect(well.sample_is_barcoded).to be true
     end
 
-    it 'returns false if there is one library and it has no tag' do
+    it 'returns false if there is one aliquots and it has no tag' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :untagged))
       empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.sample_is_barcoded).to be false
     end
 
-    it 'returns true if there is only one library and it has a non isoSeq tag' do
+    it 'returns true if there is only one aliquots and it has a non isoSeq tag' do
       pool = create(:pacbio_pool)
       empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.sample_is_barcoded).to be true
     end
 
-    it 'returns false if the libraries are tagged with a :hidden tag set (egh. IsoSeq)' do
+    it 'returns false if the aliquots are tagged with a :hidden tag set (egh. IsoSeq)' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 1, :hidden_tagged))
       empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.sample_is_barcoded).to be false
@@ -104,7 +107,7 @@ RSpec.describe SampleSheet do
   end
 
   context 'show_row_per_sample?' do
-    it 'returns true if all well libraries are tagged' do
+    it 'returns true if all well aliquots are tagged' do
       expect(well.show_row_per_sample?).to be true
     end
 
@@ -120,12 +123,12 @@ RSpec.describe SampleSheet do
       expect(empty_well.show_row_per_sample?).to be true
     end
 
-    it 'returns true if at least one of the well libraries are tagged' do
+    it 'returns true if at least one of the well aliquots are tagged' do
       well.pools.first.libraries << create(:pacbio_library_without_tag)
       expect(well.show_row_per_sample?).to be true
     end
 
-    it 'returns nothing if the libraries are tagged with a :hidden tag set (egh. IsoSeq)' do
+    it 'returns nothing if the aliquots are tagged with a :hidden tag set (egh. IsoSeq)' do
       pool = create(:pacbio_pool, libraries: create_list(:pacbio_library, 3, :hidden_tagged))
       empty_well = create(:pacbio_well, pools: [pool])
       expect(empty_well.show_row_per_sample?).to be false
@@ -133,7 +136,7 @@ RSpec.describe SampleSheet do
   end
 
   context 'tube_barcode' do
-    it 'returns the first libraries tube barcode in well' do
+    it 'returns the first aliquots tube barcode in well' do
       expected = well.base_used_aliquots.first.used_by.tube.barcode
       expect(well.tube_barcode).to eq expected
     end

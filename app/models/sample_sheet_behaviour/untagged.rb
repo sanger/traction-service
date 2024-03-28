@@ -20,10 +20,10 @@ class SampleSheetBehaviour::Untagged < SampleSheetBehaviour::Default
   end
 
   def aliquot_sample_name(aliquot)
-    aliquot.source.request.sample_name || ''
+    aliquot.source.sample_name || ''
   end
 
-  def show_row_per_sample?(_libraries)
+  def show_row_per_sample?(_aliquots)
     false
   end
 end
