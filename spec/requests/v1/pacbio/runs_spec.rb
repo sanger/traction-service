@@ -1611,7 +1611,7 @@ RSpec.describe 'RunsController' do
       run.update(smrt_link_version: version10)
       get v1_pacbio_run_sample_sheet_path(run).to_s, headers: json_api_headers
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(response.body).to include 'Unsupported or invalid version'
+      expect(response.body).to include 'SMRTLink sample sheet (v10) is not supported or invalid'
     end
   end
 end

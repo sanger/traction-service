@@ -11,8 +11,8 @@ module Version
 
   # Bespoke error class to highlight version errors
   class Error < StandardError
-    def message
-      'Unsupported or invalid version'
+    def initialize(msg = 'Unsupported or invalid version')
+      super(msg)
     end
   end
 end
