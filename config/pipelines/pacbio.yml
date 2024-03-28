@@ -291,6 +291,7 @@ default: &default
                   type: :model
                   value: bio_sample_name
       v13_revio:
+        # This is only used for the samples section, see TODO: add class for rest of the settings
         column_order:
           - Library Type
           - Reagent Plate
