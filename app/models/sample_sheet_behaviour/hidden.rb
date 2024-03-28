@@ -25,7 +25,7 @@ class SampleSheetBehaviour::Hidden < SampleSheetBehaviour::Default
     ''
   end
 
-  def show_row_per_sample?(_libraries)
+  def show_row_per_sample?(_aliquots)
     false
   end
 end

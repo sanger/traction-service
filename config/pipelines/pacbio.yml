@@ -153,7 +153,7 @@ default: &default
               value: bio_sample_name
             samples:
               type: :array
-              value: libraries_to_show_per_row
+              value: aliquots_to_show_per_row
               children:
                 Reagent Plate:
                   type: :parent_model
@@ -276,7 +276,7 @@ default: &default
               value: demultiplex_barcodes
             samples:
               type: :array
-              value: libraries_to_show_per_row
+              value: aliquots_to_show_per_row
               children:
                 Is Collection:
                   type: :model
@@ -376,7 +376,7 @@ default: &default
               value: FALSE
             samples:
               type: :array
-              value: libraries_to_show_per_row
+              value: aliquots_to_show_per_row
               children:
                 Reagent Plate:
                   type: :parent_model

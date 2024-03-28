@@ -10,7 +10,7 @@ RSpec.describe 'RunsController' do
   let!(:version13) { create(:pacbio_smrt_link_version, name: 'v13_revio', default: true) }
 
   before do
-    Flipper.enable(:dpl_1112)
+    Flipper.enable(:dpl_1112) # Enables used_aliquots in wells, required to test used_aliquots are created/update correctly
   end
 
   shared_examples 'publish_messages_on_create' do

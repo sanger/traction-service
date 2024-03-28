@@ -39,7 +39,7 @@ module SampleSheet
     end
 
     # Returns libraries only if they should be shown per row
-    def libraries_to_show_per_row
+    def aliquots_to_show_per_row
       return unless show_row_per_sample?
 
       base_used_aliquots

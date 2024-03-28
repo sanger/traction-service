@@ -74,7 +74,7 @@ v12_revio: # version name
           value: bio_sample_name # call the bio_sample_name method on the Well
         samples: # this field is not in the column_order list above and so will not be included
           type: :array # process the returned value as an array
-          value: libraries_to_show_per_row # well.libraries_to_show_per_row (might be nil)
+          value: aliquots_to_show_per_row # well.aliquots_to_show_per_row (might be nil)
           children: # placeholder
             Reagent Plate: # as this column is repeated from above the same column in the sample sheet will be used
               type: :parent_model # call the method on the parent model (well)
