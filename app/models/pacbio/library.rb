@@ -12,7 +12,6 @@ module Pacbio
     include Material
     include Uuidable
     include Librarian
-    include SampleSheet::Library
     include Aliquotable
 
     validates :volume, :concentration,
@@ -26,6 +25,9 @@ module Pacbio
 
     belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id,
                          inverse_of: :libraries
+    # Delegation required for sample sheets and warehouse messaging when both library and request
+    # are used interchangeably
+    delegate :sample_name, :cost_code, :external_study_id, :library_type, to: :request
     belongs_to :tag, optional: true
     belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :pacbio_pool_id,
                       inverse_of: :libraries, optional: true
@@ -70,10 +72,6 @@ module Pacbio
 
     def collection?
       false
-    end
-
-    def sample_sheet_behaviour
-      SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour || :untagged)
     end
 
     # @return [Array] of Runs that the pool is used in

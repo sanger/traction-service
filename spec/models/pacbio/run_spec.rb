@@ -3,12 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Pacbio::Run, :pacbio do
-  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10', default: true) }
-  let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
-  let!(:version12_revio) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
+  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10') }
   let!(:version12_sequel_iie) { create(:pacbio_smrt_link_version, name: 'v12_sequel_iie') }
-  let!(:version13_revio) { create(:pacbio_smrt_link_version, name: 'v13_revio') }
-  let!(:version13_sequel_iie) { create(:pacbio_smrt_link_version, name: 'v13_sequel_iie') }
+  let!(:version13_revio) { create(:pacbio_smrt_link_version, name: 'v13_revio', default: true) }
 
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_revio_run }
@@ -108,36 +105,6 @@ RSpec.describe Pacbio::Run, :pacbio do
   end
 
   describe '#generate_sample_sheet' do
-    it 'must use the deprecated config style for v10' do
-      run = create(:pacbio_sequel_run, smrt_link_version: version10)
-      expect(run.use_simpler_sample_sheets?).to be(false)
-    end
-
-    it 'must use the deprecated config style for v11' do
-      run = create(:pacbio_sequel_run, smrt_link_version: version11)
-      expect(run.use_simpler_sample_sheets?).to be(false)
-    end
-
-    it 'must use the simple config style for v12_revio' do
-      run = create(:pacbio_sequel_run, smrt_link_version: version12_revio)
-      expect(run.use_simpler_sample_sheets?).to be(true)
-    end
-
-    it 'must use the simple config style for v12_sequel_iie' do
-      run = create(:pacbio_sequel_run, smrt_link_version: version12_sequel_iie)
-      expect(run.use_simpler_sample_sheets?).to be(true)
-    end
-
-    it 'must use the simple config style for v13_revio' do
-      run = create(:pacbio_sequel_run, smrt_link_version: version13_revio)
-      expect(run.use_simpler_sample_sheets?).to be(true)
-    end
-
-    it 'must use the simple config style for v13_sequel_iie' do
-      run = create(:pacbio_sequel_run, smrt_link_version: version13_sequel_iie)
-      expect(run.use_simpler_sample_sheets?).to be(true)
-    end
-
     it 'must return a String' do
       well1 = build(:pacbio_well_with_pools)
       well2 = build(:pacbio_well_with_pools)
@@ -146,7 +113,7 @@ RSpec.describe Pacbio::Run, :pacbio do
       run = create(:pacbio_run, plates: [plate])
 
       sample_sheet = run.generate_sample_sheet
-      expect(sample_sheet.class).to eq String
+      expect(sample_sheet.is_a?(String)).to be(true)
     end
   end
 
@@ -225,7 +192,7 @@ RSpec.describe Pacbio::Run, :pacbio do
   context 'smrt_link_version' do
     it 'sets a default value' do
       run = create(:pacbio_revio_run)
-      expect(run.smrt_link_version).to eq(version10)
+      expect(run.smrt_link_version).to eq(version13_revio)
     end
   end
 
@@ -237,6 +204,10 @@ RSpec.describe Pacbio::Run, :pacbio do
   end
 
   describe '#create with nested attributes' do
+    before do
+      Flipper.enable(:dpl_1112) # Enables used_aliquots in wells
+    end
+
     let!(:pools) { create_list(:pacbio_pool, 2) }
 
     it 'creates a run' do

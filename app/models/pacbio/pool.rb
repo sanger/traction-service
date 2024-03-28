@@ -86,6 +86,10 @@ module Pacbio
       wells&.collect(&:run)&.uniq
     end
 
+    def collection?
+      used_aliquots.length > 1
+    end
+
     private
 
     # Destroys unused libraries or used_aliquots to keep the pool in sync

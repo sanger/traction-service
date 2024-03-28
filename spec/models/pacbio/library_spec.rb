@@ -143,6 +143,27 @@ RSpec.describe Pacbio::Library, :pacbio do
     end
   end
 
+  describe '#sample_name' do
+    it 'returns the sample name of the request' do
+      request = create(:pacbio_request)
+      expect(create(:pacbio_library, request:).sample_name).to eq(request.sample_name)
+    end
+  end
+
+  describe '#cost_code' do
+    it 'returns the cost code of the request' do
+      request = create(:pacbio_request)
+      expect(create(:pacbio_library, request:).cost_code).to eq(request.cost_code)
+    end
+  end
+
+  describe '#external_study_id' do
+    it 'returns the cost code of the request' do
+      request = create(:pacbio_request)
+      expect(create(:pacbio_library, request:).external_study_id).to eq(request.external_study_id)
+    end
+  end
+
   describe '#tube' do
     it 'can have a tube' do
       tube = create(:tube)

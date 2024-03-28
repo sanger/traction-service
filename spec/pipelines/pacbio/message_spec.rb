@@ -76,21 +76,20 @@ RSpec.describe 'PacBio', :pacbio, type: :model do
         message_samples = message_well[:samples]
 
         message_samples.each_with_index do |message_sample, sample_index|
-          library = well.all_libraries[sample_index]
-          request = library.request
+          aliquot = well.base_used_aliquots[sample_index]
 
-          expect(message_sample[:cost_code]).to eq(request.cost_code)
-          expect(message_sample[:pac_bio_library_tube_id_lims]).to eq(library.id)
-          expect(message_sample[:pac_bio_library_tube_uuid]).to eq(library.uuid)
-          expect(message_sample[:pac_bio_library_tube_name]).to eq(request.sample_name)
-          expect(message_sample[:pac_bio_library_tube_barcode]).to eq(library.tube.barcode)
-          expect(message_sample[:sample_uuid]).to eq(request.sample.external_id)
-          expect(message_sample[:study_uuid]).to eq(request.external_study_id)
-          expect(message_sample[:tag_sequence]).to eq(library.tag.oligo)
-          expect(message_sample[:tag_set_id_lims]).to eq(library.tag.tag_set.id)
-          expect(message_sample[:tag_identifier]).to eq(library.tag.group_id)
-          expect(message_sample[:tag_set_name]).to eq(library.tag.tag_set.name)
-          expect(message_sample[:pipeline_id_lims]).to eq(request.library_type)
+          expect(message_sample[:cost_code]).to eq(aliquot.source.cost_code)
+          expect(message_sample[:pac_bio_library_tube_id_lims]).to eq(aliquot.used_by.id)
+          expect(message_sample[:pac_bio_library_tube_uuid]).to eq('')
+          expect(message_sample[:pac_bio_library_tube_name]).to eq(aliquot.source.sample_name)
+          expect(message_sample[:pac_bio_library_tube_barcode]).to eq(aliquot.used_by.tube.barcode)
+          expect(message_sample[:sample_uuid]).to eq(aliquot.source.sample.external_id)
+          expect(message_sample[:study_uuid]).to eq(aliquot.source.external_study_id)
+          expect(message_sample[:tag_sequence]).to eq(aliquot.tag.oligo)
+          expect(message_sample[:tag_set_id_lims]).to eq(aliquot.tag.tag_set.id)
+          expect(message_sample[:tag_identifier]).to eq(aliquot.tag.group_id)
+          expect(message_sample[:tag_set_name]).to eq(aliquot.tag.tag_set.name)
+          expect(message_sample[:pipeline_id_lims]).to eq(aliquot.source.library_type)
         end
       end
     end
@@ -98,6 +97,8 @@ RSpec.describe 'PacBio', :pacbio, type: :model do
 
   context 'when the run is Sequel IIe' do
     let(:run)            { create(:pacbio_sequel_run) }
+
+    # Create extra data to ensure only the correct data is included in the message
     let(:libraries)      { create_list(:pacbio_library, 5, :tagged) }
     let(:pool)           { create(:pacbio_pool) }
 
@@ -117,6 +118,8 @@ RSpec.describe 'PacBio', :pacbio, type: :model do
 
   context 'when the run is Revio' do
     let(:run)            { create(:pacbio_revio_run) }
+
+    # Create extra data to ensure only the correct data is included in the message
     let(:libraries)      { create_list(:pacbio_library, 5, :tagged) }
     let(:pool)           { create(:pacbio_pool) }
 
@@ -125,6 +128,12 @@ RSpec.describe 'PacBio', :pacbio, type: :model do
 
     let(:message_wells)  { key[:wells] }
     let(:wells)          { [run.plates[0].wells, run.plates[1].wells].flatten }
+
+    before do
+      # Adds a well to the second plate with mixed data including a pool with a library aliquot
+      pool.used_aliquots << create(:aliquot, source: libraries[0], tag: libraries[0].tag)
+      wells << create(:pacbio_well, plate: run.plates[1], pools: [pool], libraries: libraries[1..3])
+    end
 
     it_behaves_like 'check the high level content'
     it_behaves_like 'check the keys'

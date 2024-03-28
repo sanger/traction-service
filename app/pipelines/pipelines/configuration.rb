@@ -59,7 +59,10 @@ module Pipelines
       # Check if it is a valid version type as per Version::FORMAT
       # Otherwise raise an error
       def by_version(version)
-        raise Version::Error unless version.match(Version::FORMAT) && respond_to?(version)
+        unless version.match(Version::FORMAT) && respond_to?(version)
+          raise Version::Error,
+                "SMRTLink sample sheet (#{version}) is not supported or invalid"
+        end
 
         send(version)
       end
