@@ -79,6 +79,18 @@ RSpec.describe Aliquot do
     expect(aliquot.used_by).to eq(pacbio_library)
   end
 
+  it 'returns true if used_by is an instance of the specified class' do
+    pacbio_library = create(:pacbio_library)
+    aliquot = build(:aliquot, used_by: pacbio_library)
+    expect(aliquot.used_by_is_a?(Pacbio::Library)).to be true
+  end
+
+  it 'returns false if used_by is not an instance of the specified class' do
+    pacbio_library = create(:pacbio_library)
+    aliquot = build(:aliquot, used_by: pacbio_library)
+    expect(aliquot.used_by_is_a?(Pacbio::Pool)).to be false
+  end
+
   describe '#valid?(:run_creation)' do
     subject { build(:aliquot, params).valid?(:run_creation) }
 

@@ -38,6 +38,8 @@ class Aliquot < ApplicationRecord
   validates :volume, :concentration, :insert_size,
             numericality: { greater_than_or_equal_to: 0, allow_nil: true }
 
+  delegate :is_a?, to: :used_by, prefix: true
+
   def sample_sheet_behaviour
     SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour || :untagged)
   end

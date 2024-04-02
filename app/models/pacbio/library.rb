@@ -47,7 +47,7 @@ module Pacbio
     accepts_nested_attributes_for :primary_aliquot
 
     after_create :create_used_aliquot, :create_tube, if: -> { pool.blank? }
-    before_destroy :check_for_associated_wells, prepend: true
+    before_destroy :check_for_associated_wells, :check_for_associated_pools, prepend: true
 
     def create_used_aliquot
       used_aliquots.create(
@@ -98,6 +98,15 @@ module Pacbio
         errors.add(:base, 'Cannot delete a library that is associated with wells')
         throw(:abort)
       end
+    end
+
+    def check_for_associated_pools
+      return true unless derived_aliquots.any? do |aliquot|
+                           aliquot.used_by_is_a?(Pacbio::Pool)
+                         end
+
+      errors.add(:base, 'Cannot delete a library that is associated with a pool')
+      throw(:abort)
     end
   end
 end
