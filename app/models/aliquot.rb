@@ -34,4 +34,5 @@ class Aliquot < ApplicationRecord
             :insert_size, presence: true, on: :run_creation
   validates :volume, :concentration, :insert_size,
             numericality: { greater_than_or_equal_to: 0, allow_nil: true }
+  delegate :is_a?, to: :used_by, prefix: true
 end
