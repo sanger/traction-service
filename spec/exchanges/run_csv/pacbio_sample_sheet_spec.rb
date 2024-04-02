@@ -96,7 +96,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               nil,
               nil,
               nil,
-              'false', # well.collection?
+              'false', # aliquot.collection?
               well.position,
               nil,
               nil,
@@ -275,7 +275,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
             expect(sample_data).to eq([
               nil,
               nil,
-              'false', # well.collection?
+              'false', # aliquot.collection?
               well.position,
               nil,
               nil,
@@ -513,7 +513,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
             expect(sample_data).to eq([
               nil,
               nil,
-              well.collection?.to_s,
+              'false', # aliquot.collection?
               well.position,
               nil,
               nil,
@@ -643,7 +643,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               nil,
               nil,
               nil,
-              'false', # well.collection?
+              'false', # aliquot.collection?
               well.position,
               nil,
               nil,
