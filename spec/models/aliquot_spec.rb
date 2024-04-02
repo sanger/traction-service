@@ -147,4 +147,12 @@ RSpec.describe Aliquot do
       expect(aliquot.sample_sheet_behaviour.class).to eq(SampleSheetBehaviour::Untagged)
     end
   end
+
+  describe '#collection?' do
+    let(:aliquot) { create(:aliquot) }
+
+    it 'always be false' do
+      expect(aliquot).not_to be_collection
+    end
+  end
 end

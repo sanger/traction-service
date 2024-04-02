@@ -41,4 +41,10 @@ class Aliquot < ApplicationRecord
   def sample_sheet_behaviour
     SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour || :untagged)
   end
+
+  # Generic method used by pacbio sample sheet generation to
+  # determine whether the data is a collection or not
+  def collection?
+    false
+  end
 end

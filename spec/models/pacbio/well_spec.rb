@@ -233,7 +233,7 @@ RSpec.describe Pacbio::Well, :pacbio do
   context 'collection?' do
     let(:well) { create(:pacbio_well) }
 
-    it 'alwayses be true' do
+    it 'always be true' do
       expect(well).to be_collection
     end
   end
