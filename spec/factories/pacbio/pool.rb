@@ -15,7 +15,7 @@ FactoryBot.define do
 
     after(:build) do |pool|
       pool.libraries.each do |lib|
-        pool.used_aliquots << build(:aliquot, source: lib.request, aliquot_type: :derived, used_by: pool)
+        pool.used_aliquots << build(:aliquot, source: lib.request, aliquot_type: :derived, used_by: pool, tag: lib.tag)
       end
     end
 

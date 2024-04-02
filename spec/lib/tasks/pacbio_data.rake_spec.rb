@@ -8,6 +8,7 @@ Rails.application.load_tasks if Rake::Task.tasks.empty?
 
 RSpec.describe 'RakeTasks' do
   before do
+    Flipper.enable(:dpl_1112) # Enables used_aliquots in wells
     Pacbio::SmrtLinkVersion.find_by(name: 'v10') || create(:pacbio_smrt_link_version, name: 'v10')
     Pacbio::SmrtLinkVersion.find_by(name: 'v11') || create(:pacbio_smrt_link_version, name: 'v11')
     Pacbio::SmrtLinkVersion.find_by(name: 'v12_revio') || create(:pacbio_smrt_link_version, name: 'v12_revio')

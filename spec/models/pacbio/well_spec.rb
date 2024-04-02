@@ -12,7 +12,7 @@ RSpec.describe Pacbio::Well, :pacbio do
   let!(:version12_revio) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
 
   before do
-    Flipper.enable(:dpl_1112)
+    Flipper.enable(:dpl_1112) # Enables used_aliquots in wells, required for validation and various model methods
   end
 
   context 'uuidable' do
@@ -95,22 +95,11 @@ RSpec.describe Pacbio::Well, :pacbio do
   end
 
   describe 'used_aliquots' do
-    it 'is invalid without used_aliquots when feature flag is on' do
-      Flipper.enable(:dpl_1112)
-      # A pool will create a used_aliquot
+    it 'can have one or more' do
       well = create(:pacbio_well, pool_count: 1)
-      well.used_aliquots.destroy_all
 
-      expect(well).not_to be_valid
-    end
-
-    it 'is valid without used_aliquots when feature flag is off' do
-      Flipper.disable(:dpl_1112)
-      # A pool will create a used_aliquot
-      well = create(:pacbio_well, pool_count: 1)
-      well.used_aliquots.destroy_all
-
-      expect(well).to be_valid
+      expect(well.used_aliquots.length).to eq(1)
+      expect(well.used_aliquots.first.source).to eq(well.pools.first)
     end
   end
 
@@ -144,7 +133,7 @@ RSpec.describe Pacbio::Well, :pacbio do
     end
 
     it 'can return a list of tags' do
-      tag_ids = well.all_libraries.collect(&:tag_id)
+      tag_ids = well.base_used_aliquots.collect(&:tag_id)
       expect(well.tags).to eq(tag_ids)
     end
   end
@@ -191,8 +180,9 @@ RSpec.describe Pacbio::Well, :pacbio do
       expect(well.used_aliquots.length).to eq(2)
     end
 
-    it 'destroys well_pools and used_aliquots from pool_ids' do
-      well = create(:pacbio_well, pool_count: 0, library_count: 2)
+    it 'destroys well_pools and used_aliquots from library_ids' do
+      libraries = create_list(:pacbio_library, 2)
+      well = create(:pacbio_well, pool_count: 0, libraries:)
 
       expect(well.libraries.length).to eq(2)
       expect(well.used_aliquots.length).to eq(2)
@@ -205,16 +195,16 @@ RSpec.describe Pacbio::Well, :pacbio do
     end
   end
 
-  context 'all_libraries' do
+  context 'base_used_aliquots' do
     let(:pools) { create_list(:pacbio_pool, 2, library_count: 1) }
     let(:libraries) { create_list(:pacbio_library, 2) }
 
-    it 'returns a combined list of libraries from pools and libraries' do
+    it 'returns a combined list of used_aliquots from the wells libraries and pools' do
       well = create(:pacbio_well, pools:, libraries:)
 
-      all_libraries = well.pools.collect(&:libraries).flatten + well.libraries
-      expect(well.all_libraries.length).to eq(4)
-      expect(well.all_libraries).to eq(all_libraries)
+      base_used_aliquots = well.used_aliquots.collect(&:source).collect(&:used_aliquots).flatten
+      expect(well.base_used_aliquots.length).to eq(4)
+      expect(well.base_used_aliquots).to eq(base_used_aliquots)
     end
   end
 
@@ -243,7 +233,7 @@ RSpec.describe Pacbio::Well, :pacbio do
   context 'collection?' do
     let(:well) { create(:pacbio_well) }
 
-    it 'alwayses be true' do
+    it 'always be true' do
       expect(well).to be_collection
     end
   end

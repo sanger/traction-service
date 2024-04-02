@@ -35,20 +35,20 @@ module SampleSheet
 
     # Determines rendering of a row-per sample
     def show_row_per_sample?
-      sample_sheet_behaviour.show_row_per_sample?(all_libraries)
+      sample_sheet_behaviour.show_row_per_sample?(base_used_aliquots)
     end
 
     # Returns libraries only if they should be shown per row
-    def libraries_to_show_per_row
+    def aliquots_to_show_per_row
       return unless show_row_per_sample?
 
-      all_libraries
+      base_used_aliquots
     end
 
     # Sample Name field
     def tube_barcode
-      # Gets the firsts library barcode which will either be the pool barcode or the library barcode
-      all_libraries.first.tube.barcode
+      # Gets the first barcode which will either be the pool barcode or the library barcode
+      base_used_aliquots.first.used_by.tube.barcode
     end
 
     # find the plate given the plate_number
@@ -90,22 +90,22 @@ module SampleSheet
     end
 
     # Sample bio Name field
-    def find_sample_name
+    def bio_sample_name
       sample_is_barcoded ? nil : sample_names
     end
   end
 
-  # Provides library helper methods for sample sheet generation
-  module Library
-    # Barcode Name field
-    # Used in context of Pacbio::Library model
-    def barcode_name
-      sample_sheet_behaviour.barcode_name(tag)
+  # Provides aliquot helper methods for sample sheet generation
+  module Aliquot
+    # Sample bio Name field
+    def bio_sample_name
+      sample_sheet_behaviour.aliquot_sample_name(self)
     end
 
-    # Sample bio Name field
-    def find_sample_name
-      sample_sheet_behaviour.library_sample_name(self)
+    # Barcode Name field
+    # Used in context of Aliquot model
+    def barcode_name
+      sample_sheet_behaviour.barcode_name(tag)
     end
   end
 end

@@ -142,4 +142,29 @@ RSpec.describe Aliquot do
       it { is_expected.to be true }
     end
   end
+
+  describe '#sample_sheet_behaviour' do
+    it 'returns the hidden sample sheet behaviour when the aliquot has a hidden tag' do
+      aliquot = create(:aliquot, tag: create(:hidden_tag))
+      expect(aliquot.sample_sheet_behaviour.class).to eq(SampleSheetBehaviour::Hidden)
+    end
+
+    it 'returns the default sample sheet behaviour when the aliquot has a standard tag' do
+      aliquot = create(:aliquot, tag: create(:tag))
+      expect(aliquot.sample_sheet_behaviour.class).to eq(SampleSheetBehaviour::Default)
+    end
+
+    it 'returns the untagged sample sheet behaviour when the aliquot does not have a tag' do
+      aliquot = create(:aliquot, tag: nil)
+      expect(aliquot.sample_sheet_behaviour.class).to eq(SampleSheetBehaviour::Untagged)
+    end
+  end
+
+  describe '#collection?' do
+    let(:aliquot) { create(:aliquot) }
+
+    it 'always be false' do
+      expect(aliquot).not_to be_collection
+    end
+  end
 end
