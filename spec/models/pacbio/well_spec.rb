@@ -97,6 +97,12 @@ RSpec.describe Pacbio::Well, :pacbio do
       expect(well.used_aliquots.length).to eq(1)
       expect(well.used_aliquots.first.source).to eq(well.pools.first)
     end
+
+    it 'is not valid unless there is at least one used_aliquot' do
+      well = build(:pacbio_well, used_aliquots: [], pool_count: 0)
+      expect(well).not_to be_valid
+      expect(well.errors.messages[:used_aliquots]).to include("can't be blank")
+    end
   end
 
   context 'libraries' do

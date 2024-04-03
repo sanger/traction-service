@@ -10,7 +10,6 @@ RSpec.describe Pacbio::Pool, :pacbio do
     create(:pacbio_smrt_link_version, name: 'v10', default: true)
   end
 
-  let(:libraries) { create_list(:pacbio_library, 5) }
   let(:used_aliquots) { create_list(:aliquot, 5, source: build(:pacbio_library), aliquot_type: :derived) }
   let(:params) { {} }
 
@@ -19,9 +18,20 @@ RSpec.describe Pacbio::Pool, :pacbio do
     expect(pool.tube).to be_a(Tube)
   end
 
-  it 'can have many libraries', skip: 'We may want to get libraries through used_aliquots' do
-    pool = build(:pacbio_pool, libraries:)
-    expect(pool.libraries).to eq(libraries)
+  it 'can have many libraries through used_aliquots' do
+    pool = build(:pacbio_pool, library_count: 0)
+    expect(pool.libraries).to be_empty
+    pool.used_aliquots = build_list(:aliquot, 5, source: build(:pacbio_library), aliquot_type: :derived)
+    pool.save
+    expect(pool.libraries.length).to eq(5)
+  end
+
+  it 'can have many requests through used_aliquots' do
+    pool = build(:pacbio_pool, library_count: 0)
+    expect(pool.requests).to be_empty
+    pool.used_aliquots = build_list(:aliquot, 5, source: build(:pacbio_request), aliquot_type: :derived)
+    pool.save
+    expect(pool.requests.length).to eq(5)
   end
 
   it 'can have a template prep kit box barcode' do

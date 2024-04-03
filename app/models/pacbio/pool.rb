@@ -1,11 +1,5 @@
 # frozen_string_literal: true
 
-# ALIQUOT-CLEANUP
-# - Remove the presence validation on libraries
-# - Remove the library_attributes= method and the library/used_aliquot sync behaviour
-# - Remove the used_aliquots_attributes= method
-# - Remove private methods referencing libraries
-
 module Pacbio
   # Pool
   class Pool < ApplicationRecord
@@ -14,7 +8,7 @@ module Pacbio
 
     has_many :wells, through: :derived_aliquots, source: :used_by, source_type: 'Pacbio::Well'
     has_many :requests, through: :used_aliquots, source: :source, source_type: 'Pacbio::Request'
-    # has_many :libraries, through: :used_aliquots, source: :source, source_type: 'Pacbio::Library'
+    has_many :libraries, through: :used_aliquots, source: :source, source_type: 'Pacbio::Library'
 
     # This is dependent on the requests association, so needs to be included
     # after that is defined

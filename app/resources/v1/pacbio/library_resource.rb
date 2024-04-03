@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-# ALIQUOT-CLEANUP
-# - Remove the self.records method and use default
-
 module V1
   module Pacbio
     # LibraryResource

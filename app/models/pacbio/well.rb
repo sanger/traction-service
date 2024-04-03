@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-# ALIQUOT-CLEANUP
-# - Update references for libraries and pools to be through used_aliquots
-# - Update library_ids and pools_ids to only update used_aliquots
-
 module Pacbio
   # Pacbio::Well
   # A well can have many libraries

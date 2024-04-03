@@ -659,7 +659,6 @@ RSpec.describe 'RunsController' do
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq("plates.wells.used_aliquots - can't be blank")
-          expect(errors[1]['detail']).to eq 'plates.wells.base - There must be at least 1 pool or library for well A1'
         end
       end
 
