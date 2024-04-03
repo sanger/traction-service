@@ -162,7 +162,7 @@ RSpec.describe Ont::Pool, :ont do
       expect(build(:ont_pool, libraries: [build(:ont_library, tag: nil)])).to be_valid
     end
 
-    it 'does not be valid if there are multiple libraries and any of them dont have tags' do
+    it 'is not valid if there are multiple libraries and any of them dont have tags' do
       untagged_library = build(:ont_library, tag: nil)
 
       expect(build(:ont_pool, libraries: libraries + [untagged_library])).not_to be_valid

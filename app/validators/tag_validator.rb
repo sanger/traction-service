@@ -6,7 +6,7 @@
 # if there is more than one library each tag will need to be unique
 class TagValidator < ActiveModel::Validator
   def validate(record)
-    if Flipper.enabled?(:multiplexing_phase_2_aliquot)
+    if Flipper.enabled?(:multiplexing_phase_2_aliquot) && record.respond_to?(:used_aliquots)
       validate_used_aliquots(record)
     else
       validate_libraries(record)
