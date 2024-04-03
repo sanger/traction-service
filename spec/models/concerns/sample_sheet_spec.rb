@@ -8,7 +8,7 @@ RSpec.describe SampleSheet do
     create(:pacbio_smrt_link_version, name: 'v12_sequel_iie', default: true)
   end
 
-  let(:well) { create(:pacbio_well_with_pools, pool_count: 5) }
+  let(:well) { create(:pacbio_well, pool_count: 5) }
 
   describe '#barcode_name' do
     it 'returns a string of aliquot tags when the well has one aliquot' do

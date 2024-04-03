@@ -19,9 +19,8 @@ module Pacbio
     validates :volume, :concentration,
               :insert_size, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
 
-    has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_library_id,
-                              dependent: :nullify, inverse_of: :library
-    has_many :wells, class_name: 'Pacbio::Well', through: :well_libraries
+    has_many :wells, class_name: 'Pacbio::Well', through: :derived_aliquots, source: :used_by,
+                     source_type: 'Pacbio::Well'
 
     belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id,
                          inverse_of: :libraries

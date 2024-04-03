@@ -11,9 +11,8 @@ module Pacbio
   class Pool < ApplicationRecord
     include Aliquotable
     belongs_to :tube, default: -> { Tube.new }
-    has_many :well_pools, class_name: 'Pacbio::WellPool', foreign_key: :pacbio_pool_id,
-                          dependent: :nullify, inverse_of: :pool
-    has_many :wells, class_name: 'Pacbio::Well', through: :well_pools
+
+    has_many :wells, through: :derived_aliquots, source: :used_by, source_type: 'Pacbio::Well'
     has_many :requests, through: :used_aliquots, source: :source, source_type: 'Pacbio::Request'
     # has_many :libraries, through: :used_aliquots, source: :source, source_type: 'Pacbio::Library'
 

@@ -58,7 +58,7 @@ RSpec.describe Pacbio::Well, :pacbio do
   end
 
   it 'can have a summary' do
-    well = create(:pacbio_well_with_pools)
+    well = create(:pacbio_well)
     expect(well.summary).to eq("#{well.sample_names} #{well.comment}")
   end
 
@@ -111,8 +111,7 @@ RSpec.describe Pacbio::Well, :pacbio do
   end
 
   context 'pools' do
-    let(:pools) { create_list(:pacbio_pool, 2) }
-    let(:well)  { create(:pacbio_well, pools:) }
+    let(:well) { create(:pacbio_well, pool_count: 2) }
 
     it 'can have one or more' do
       expect(well.pools.length).to eq(2)
@@ -135,7 +134,7 @@ RSpec.describe Pacbio::Well, :pacbio do
   end
 
   context 'pool_ids=' do
-    it 'creates well_pools and used_aliquots from pool_ids' do
+    it 'creates used_aliquots from pool_ids' do
       pools_ids = create_list(:pacbio_pool, 2).collect(&:id)
       well = build(:pacbio_well, pool_count: 0)
 
@@ -143,12 +142,13 @@ RSpec.describe Pacbio::Well, :pacbio do
       expect(well.used_aliquots.length).to eq(0)
       well.pool_ids = pools_ids
       well.save
+      well.reload
 
       expect(well.pools.length).to eq(2)
       expect(well.used_aliquots.length).to eq(2)
     end
 
-    it 'destroys well_pools and used_aliquots from pool_ids' do
+    it 'destroys used_aliquots from pool_ids' do
       well = create(:pacbio_well, pool_count: 2)
 
       expect(well.pools.length).to eq(2)
@@ -163,7 +163,7 @@ RSpec.describe Pacbio::Well, :pacbio do
   end
 
   context 'library_ids=' do
-    it 'creates well_libraries and used_aliquots from library_ids' do
+    it 'creates used_aliquots from library_ids' do
       library_ids = create_list(:pacbio_library, 2).collect(&:id)
       well = build(:pacbio_well, pool_count: 0, library_count: 0)
 
@@ -171,12 +171,13 @@ RSpec.describe Pacbio::Well, :pacbio do
       expect(well.used_aliquots.length).to eq(0)
       well.library_ids = library_ids
       well.save
+      well.reload
 
       expect(well.libraries.length).to eq(2)
       expect(well.used_aliquots.length).to eq(2)
     end
 
-    it 'destroys well_pools and used_aliquots from library_ids' do
+    it 'destroys used_aliquots from library_ids' do
       libraries = create_list(:pacbio_library, 2)
       well = create(:pacbio_well, pool_count: 0, libraries:)
 
@@ -192,11 +193,8 @@ RSpec.describe Pacbio::Well, :pacbio do
   end
 
   context 'base_used_aliquots' do
-    let(:pools) { create_list(:pacbio_pool, 2, library_count: 1) }
-    let(:libraries) { create_list(:pacbio_library, 2) }
-
     it 'returns a combined list of used_aliquots from the wells libraries and pools' do
-      well = create(:pacbio_well, pools:, libraries:)
+      well = create(:pacbio_well, pool_count: 2, library_count: 2)
 
       base_used_aliquots = well.used_aliquots.collect(&:source).collect(&:used_aliquots).flatten
       expect(well.base_used_aliquots.length).to eq(4)

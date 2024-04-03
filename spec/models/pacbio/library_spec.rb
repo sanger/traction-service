@@ -283,7 +283,7 @@ RSpec.describe Pacbio::Library, :pacbio do
   context 'wells' do
     it 'can have one or more' do
       library = create(:pacbio_library)
-      library.wells << create_list(:pacbio_well, 5)
+      create_list(:pacbio_well, 5, libraries: [library])
       expect(library.wells.count).to eq(5)
     end
   end

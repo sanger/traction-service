@@ -16,12 +16,10 @@ module Pacbio
 
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
                        inverse_of: :wells
-    has_many :well_pools, class_name: 'Pacbio::WellPool', foreign_key: :pacbio_well_id,
-                          dependent: :destroy, inverse_of: :well, autosave: true
-    has_many :pools, class_name: 'Pacbio::Pool', through: :well_pools
-    has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_well_id,
-                              dependent: :destroy, inverse_of: :well, autosave: true
-    has_many :libraries, class_name: 'Pacbio::Library', through: :well_libraries
+    has_many :pools, class_name: 'Pacbio::Pool', through: :used_aliquots,
+                     source: :source, source_type: 'Pacbio::Pool'
+    has_many :libraries, class_name: 'Pacbio::Library', through: :used_aliquots,
+                         source: :source, source_type: 'Pacbio::Library'
 
     validates :used_aliquots, presence: true
 
@@ -73,9 +71,6 @@ module Pacbio
 
       # If the used_aliquot is not in the list of ids, remove it
       destroy_aliquots_by_source_type_and_id(ids, 'Pacbio::Pool')
-
-      # Calls the parent method to build the well_libraries
-      super
     end
 
     def library_ids=(ids)
@@ -92,9 +87,6 @@ module Pacbio
 
       # If the used_aliquot is not in the list of ids, remove it
       destroy_aliquots_by_source_type_and_id(ids, 'Pacbio::Library')
-
-      # Calls the parent method to build the well_libraries
-      super
     end
 
     # Destroy aliquots based on their source_id and type

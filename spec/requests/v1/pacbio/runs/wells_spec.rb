@@ -10,7 +10,7 @@ RSpec.describe 'WellsController' do
   end
 
   describe '#get' do
-    let!(:wells) { create_list(:pacbio_well_with_pools, 2, pool_count: 2) }
+    let!(:wells) { create_list(:pacbio_well, 2, pool_count: 2) }
 
     it 'returns a list of wells' do
       get v1_pacbio_runs_wells_path, headers: json_api_headers

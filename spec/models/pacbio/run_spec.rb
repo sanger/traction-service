@@ -97,7 +97,7 @@ RSpec.describe Pacbio::Run, :pacbio do
     end
 
     it 'can have the wells summary when no run comments exist' do
-      wells = create_list(:pacbio_well_with_pools, 2)
+      wells = create_list(:pacbio_well, 2)
       plate = build(:pacbio_plate, wells:)
       run = create(:pacbio_run, plates: [plate], comments: nil)
       expect(run.comments).to eq("#{wells.first.summary}:#{wells[1].summary}")
@@ -106,8 +106,8 @@ RSpec.describe Pacbio::Run, :pacbio do
 
   describe '#generate_sample_sheet' do
     it 'must return a String' do
-      well1 = build(:pacbio_well_with_pools)
-      well2 = build(:pacbio_well_with_pools)
+      well1 = build(:pacbio_well)
+      well2 = build(:pacbio_well)
 
       plate = build(:pacbio_plate, wells: [well1, well2])
       run = create(:pacbio_run, plates: [plate])

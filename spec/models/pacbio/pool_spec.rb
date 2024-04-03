@@ -230,7 +230,7 @@ RSpec.describe Pacbio::Pool, :pacbio do
   context 'wells' do
     it 'can have one or more' do
       pool = create(:pacbio_pool)
-      pool.wells << create_list(:pacbio_well, 5)
+      create_list(:pacbio_well, 5, pools: [pool])
       expect(pool.wells.count).to eq(5)
     end
   end
