@@ -12,7 +12,6 @@ module Pacbio
     include Material
     include Uuidable
     include Librarian
-    include SampleSheet::Library
     include Aliquotable
 
     validates :volume, :concentration,
@@ -26,6 +25,9 @@ module Pacbio
 
     belongs_to :request, class_name: 'Pacbio::Request', foreign_key: :pacbio_request_id,
                          inverse_of: :libraries
+    # Delegation required for sample sheets and warehouse messaging when both library and request
+    # are used interchangeably
+    delegate :sample_name, :cost_code, :external_study_id, :library_type, to: :request
     belongs_to :tag, optional: true
     belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :pacbio_pool_id,
                       inverse_of: :libraries, optional: true
@@ -45,7 +47,7 @@ module Pacbio
     accepts_nested_attributes_for :primary_aliquot
 
     after_create :create_used_aliquot, :create_tube, if: -> { pool.blank? }
-    before_destroy :check_for_associated_wells, prepend: true
+    before_destroy :check_for_associated_wells, :check_for_associated_pools, prepend: true
 
     def create_used_aliquot
       used_aliquots.create(
@@ -72,10 +74,6 @@ module Pacbio
       false
     end
 
-    def sample_sheet_behaviour
-      SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour || :untagged)
-    end
-
     # @return [Array] of Runs that the pool is used in
     def sequencing_runs
       wells&.collect(&:run)&.uniq
@@ -100,6 +98,15 @@ module Pacbio
         errors.add(:base, 'Cannot delete a library that is associated with wells')
         throw(:abort)
       end
+    end
+
+    def check_for_associated_pools
+      return true unless derived_aliquots.any? do |aliquot|
+                           aliquot.used_by_is_a?(Pacbio::Pool)
+                         end
+
+      errors.add(:base, 'Cannot delete a library that is associated with a pool')
+      throw(:abort)
     end
   end
 end

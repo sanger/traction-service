@@ -131,7 +131,7 @@ RSpec.describe Pacbio::Library, :pacbio do
   end
 
   describe 'destroy' do
-    it 'gets destroyed if there are no associated wells' do
+    it 'gets destroyed if there are no associated wells and associated pools' do
       library = create(:pacbio_library)
       expect { library.destroy }.to change(described_class, :count).by(-1).and change(Aliquot, :count).by(-2)
     end
@@ -140,6 +140,36 @@ RSpec.describe Pacbio::Library, :pacbio do
       library = create(:pacbio_library)
       create(:pacbio_well, libraries: [library])
       expect { library.destroy }.not_to change(described_class, :count)
+    end
+
+    it 'does not get destroyed if there are associated pools' do
+      pool = build(:pacbio_pool)
+      aliquot = create(:aliquot, used_by: pool)
+      library = create(:pacbio_library, derived_aliquots: [aliquot])
+      expect { library.destroy }.not_to change(described_class, :count)
+      # Check that the library has the expected error message
+      expect(library.errors[:base]).to include('Cannot delete a library that is associated with a pool')
+    end
+  end
+
+  describe '#sample_name' do
+    it 'returns the sample name of the request' do
+      request = create(:pacbio_request)
+      expect(create(:pacbio_library, request:).sample_name).to eq(request.sample_name)
+    end
+  end
+
+  describe '#cost_code' do
+    it 'returns the cost code of the request' do
+      request = create(:pacbio_request)
+      expect(create(:pacbio_library, request:).cost_code).to eq(request.cost_code)
+    end
+  end
+
+  describe '#external_study_id' do
+    it 'returns the cost code of the request' do
+      request = create(:pacbio_request)
+      expect(create(:pacbio_library, request:).external_study_id).to eq(request.external_study_id)
     end
   end
 

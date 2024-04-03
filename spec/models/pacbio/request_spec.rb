@@ -54,7 +54,7 @@ RSpec.describe Pacbio::Request, :pacbio do
     it 'if the request belongs to a run' do
       plate = build(:pacbio_plate_with_wells, :pooled)
       create(:pacbio_run, plates: [plate])
-      request = plate.wells.first.all_libraries.first.request
+      request = plate.wells.first.base_used_aliquots.first.source
       expect(request.sequencing_plates).to eq([plate])
     end
 
@@ -82,7 +82,7 @@ RSpec.describe Pacbio::Request, :pacbio do
     it 'if the request belongs to a run' do
       plate = build(:pacbio_plate_with_wells, :pooled)
       create(:pacbio_run, plates: [plate])
-      request = plate.wells.first.all_libraries.first.request
+      request = plate.wells.first.base_used_aliquots.first.source
       expect(request.sequencing_runs).to eq([plate.run])
     end
 

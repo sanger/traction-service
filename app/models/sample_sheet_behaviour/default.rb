@@ -17,11 +17,11 @@ class SampleSheetBehaviour::Default
     true
   end
 
-  def library_sample_name(library)
-    library.request.sample_name || ''
+  def aliquot_sample_name(aliquot)
+    aliquot.source.sample_name || ''
   end
 
-  def show_row_per_sample?(libraries)
-    libraries.any?(&:tag_id?)
+  def show_row_per_sample?(aliquots)
+    aliquots.any?(&:tag_id?)
   end
 end
