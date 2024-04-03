@@ -36,19 +36,6 @@ module V1
         [{ field: 'created_at', direction: :desc }]
       end
 
-      def self.records(options = {})
-        # We only want to include only libraries without pools
-        # Libraries with pools should be referenced via the LibraryPoolResource
-        # This breaks aliquot polymorphism so we only filter if the resource
-        # Is accessed directly
-        if options[:include_directives]
-           .instance_variable_get(:@resource_klass) == V1::Pacbio::LibraryResource
-          super.where(pool: nil)
-        else
-          super
-        end
-      end
-
       # When a library is updated and it is attached to a run we need
       # to republish the messages for the run
       after_update :publish_messages

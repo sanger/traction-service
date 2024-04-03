@@ -894,10 +894,6 @@ RSpec.describe 'PoolsController', :pacbio do
   end
 
   describe '#updating via aliquots' do
-    before do
-      Flipper.enable(:multiplexing_phase_2_aliquot)
-    end
-
     context 'when updating a multiplex pool' do
       let!(:pool) { create(:pacbio_pool, library_count: 2) }
       # We let! this as we want to ensure we have the original state

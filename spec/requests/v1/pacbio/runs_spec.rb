@@ -9,10 +9,6 @@ RSpec.describe 'RunsController' do
   let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
   let!(:version13) { create(:pacbio_smrt_link_version, name: 'v13_revio', default: true) }
 
-  before do
-    Flipper.enable(:dpl_1112) # Enables used_aliquots in wells, required to test used_aliquots are created/update correctly
-  end
-
   shared_examples 'publish_messages_on_create' do
     it 'publishes a message' do
       expect(Messages).to receive(:publish).with(instance_of(Pacbio::Run), having_attributes(pipeline: 'pacbio'))
@@ -976,8 +972,8 @@ RSpec.describe 'RunsController' do
       end
 
       context 'when there is one well with two pools, without tags' do
-        let(:pool1) { create(:pacbio_pool, libraries: create_list(:pacbio_library_without_tag, 1)) }
-        let(:pool2) { create(:pacbio_pool, libraries: create_list(:pacbio_library_without_tag, 1)) }
+        let(:pool1) { create(:pacbio_pool, :untagged) }
+        let(:pool2) { create(:pacbio_pool, :untagged) }
 
         let(:body) do
           {

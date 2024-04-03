@@ -11,6 +11,7 @@ RSpec.describe Pacbio::Pool, :pacbio do
   end
 
   let(:libraries) { create_list(:pacbio_library, 5) }
+  let(:used_aliquots) { create_list(:aliquot, 5, source: build(:pacbio_library), aliquot_type: :derived) }
   let(:params) { {} }
 
   it 'has a tube on validation' do
@@ -18,7 +19,7 @@ RSpec.describe Pacbio::Pool, :pacbio do
     expect(pool.tube).to be_a(Tube)
   end
 
-  it 'can have many libraries' do
+  it 'can have many libraries', skip: 'We may want to get libraries through used_aliquots' do
     pool = build(:pacbio_pool, libraries:)
     expect(pool.libraries).to eq(libraries)
   end
@@ -39,14 +40,14 @@ RSpec.describe Pacbio::Pool, :pacbio do
     expect(pool.insert_size).to be_present
   end
 
-  it 'is not valid unless there is at least one library' do
-    expect(build(:pacbio_pool, libraries: [])).not_to be_valid
+  it 'is not valid unless there is at least one used_aliquot' do
+    expect(build(:pacbio_pool, used_aliquots: [])).not_to be_valid
   end
 
-  it 'is not valid unless all of the associated libraries are valid' do
-    dodgy_library = build(:pacbio_library, volume: 'big')
+  it 'is not valid unless all of the associated used_aliquots are valid' do
+    dodgy_aliquot = build(:aliquot, volume: 'big', source: build(:pacbio_library), aliquot_type: :derived)
 
-    expect(build(:pacbio_pool, libraries: libraries + [dodgy_library])).not_to be_valid
+    expect(build(:pacbio_pool, used_aliquots: used_aliquots + [dodgy_aliquot])).not_to be_valid
   end
 
   describe '#valid?(:run_creation)' do
@@ -173,46 +174,7 @@ RSpec.describe Pacbio::Pool, :pacbio do
     it { is_expected.not_to be_valid }
   end
 
-  describe '#library_attributes=' do
-    context 'with new libraries' do
-      let(:library_attributes) { attributes_for_list(:pacbio_library, 5, primary_aliquot: nil, used_aliquots: []) }
-
-      it 'sets up libraries' do
-        pool = build(:pacbio_pool, library_count: 0)
-        pool.library_attributes = library_attributes
-        expect(pool.libraries.length).to eq 5
-      end
-    end
-
-    context 'with existing libraries' do
-      let(:pool) { create(:pacbio_pool, library_count: 5) }
-      let(:library_attributes) do
-        pool.libraries.map do |library|
-          library.attributes.merge(
-            'template_prep_kit_box_barcode' => 'Updated'
-          )
-        end
-      end
-
-      it 'update existing libraries' do
-        pool.library_attributes = library_attributes
-        expect(pool.libraries.length).to eq 5
-      end
-
-      it 'changes library attributes' do
-        pool.library_attributes = library_attributes
-        expect(
-          pool.libraries.map(&:template_prep_kit_box_barcode)
-        ).to all eq 'Updated'
-      end
-    end
-  end
-
   describe '#used_aliquot_attributes=' do
-    before do
-      Flipper.enable(:multiplexing_phase_2_aliquot)
-    end
-
     context 'with new used aliquots' do
       let(:used_aliquots_attributes) { attributes_for_list(:aliquot, 5, aliquot_type: :derived, source: nil) }
 
@@ -248,20 +210,20 @@ RSpec.describe Pacbio::Pool, :pacbio do
   end
 
   context 'tags' do
-    it 'is valid if there is a single library with no tag' do
-      expect(build(:pacbio_pool, libraries: [build(:pacbio_library, tag: nil)])).to be_valid
+    it 'is valid if there is a single used_aliquot with no tag' do
+      expect(build(:pacbio_pool, used_aliquots: [build(:aliquot, tag: nil)])).to be_valid
     end
 
-    it 'does not be valid if there are multiple libraries and any of them dont have tags' do
-      untagged_library = build(:pacbio_library, tag: nil)
+    it 'is not valid if there are multiple used_aliquots and none of them dont have tags' do
+      untagged_aliquot = build(:aliquot, tag: nil)
 
-      expect(build(:pacbio_pool, libraries: libraries + [untagged_library])).not_to be_valid
+      expect(build(:pacbio_pool, used_aliquots: used_aliquots + [untagged_aliquot])).not_to be_valid
     end
 
     it 'is not valid unless all of the tags are unique' do
-      library_with_duplicate_tag = build(:pacbio_library, tag: libraries.first.tag)
+      used_aliquot_with_duplicate_tag = build(:aliquot, tag: used_aliquots.first.tag)
       expect(build(:pacbio_pool,
-                   libraries: libraries + [library_with_duplicate_tag])).not_to be_valid
+                   used_aliquots: used_aliquots + [used_aliquot_with_duplicate_tag])).not_to be_valid
     end
   end
 

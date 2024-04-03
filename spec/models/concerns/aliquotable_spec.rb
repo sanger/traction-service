@@ -35,10 +35,6 @@ RSpec.describe Aliquotable do
   end
 
   describe '#used_aliquots' do
-    before do
-      Flipper.enable(:multiplexing_phase_2_aliquot)
-    end
-
     it 'returns the used aliquots' do
       pacbio_pool = create(:pacbio_pool)
       # Because of the save hook in the pool model the created_at attributes are slightly different

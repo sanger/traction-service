@@ -204,10 +204,6 @@ RSpec.describe Pacbio::Run, :pacbio do
   end
 
   describe '#create with nested attributes' do
-    before do
-      Flipper.enable(:dpl_1112) # Enables used_aliquots in wells
-    end
-
     let!(:pools) { create_list(:pacbio_pool, 2) }
 
     it 'creates a run' do

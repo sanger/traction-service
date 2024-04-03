@@ -11,10 +11,6 @@ RSpec.describe Pacbio::Well, :pacbio do
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11', default: true) }
   let!(:version12_revio) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
 
-  before do
-    Flipper.enable(:dpl_1112) # Enables used_aliquots in wells, required for validation and various model methods
-  end
-
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_well }
 

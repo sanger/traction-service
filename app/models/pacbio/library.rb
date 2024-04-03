@@ -29,9 +29,7 @@ module Pacbio
     # are used interchangeably
     delegate :sample_name, :cost_code, :external_study_id, :library_type, to: :request
     belongs_to :tag, optional: true
-    belongs_to :pool, class_name: 'Pacbio::Pool', foreign_key: :pacbio_pool_id,
-                      inverse_of: :libraries, optional: true
-    belongs_to :tube, optional: true
+    belongs_to :tube, default: -> { Tube.new }
 
     has_one :sample, through: :request
     has_one :tag_set, through: :tag
@@ -42,12 +40,11 @@ module Pacbio
 
     has_one :source_plate, through: :source_well, source: :plate, class_name: '::Plate'
 
-    # TODO: remove pool constraint this when pools are updated for aliquots
-    validates :primary_aliquot, presence: true, if: -> { pool.blank? }
+    validates :primary_aliquot, presence: true
     accepts_nested_attributes_for :primary_aliquot
 
-    after_create :create_used_aliquot, :create_tube, if: -> { pool.blank? }
-    before_destroy :check_for_associated_wells, :check_for_associated_pools, prepend: true
+    after_create :create_used_aliquot
+    before_destroy :check_for_derived_aliquots, prepend: true
 
     def create_used_aliquot
       used_aliquots.create(
@@ -61,51 +58,31 @@ module Pacbio
       )
     end
 
-    def create_tube
-      self.tube = tube || Tube.create!
-      save
-    end
-
-    def tube
-      pool ? pool.tube : super
-    end
-
     def collection?
       false
     end
 
+    # Note - This does not take into account when a library is used in a pool
+    # and that pool is used in a run
     # @return [Array] of Runs that the pool is used in
     def sequencing_runs
       wells&.collect(&:run)&.uniq
     end
 
+    # Note - This does not take into account when a library is used in a pool
+    # and that pool is used in a run
     # @return [Array] of Plates attached to a sequencing run
     def sequencing_plates
-      # TODO: remove this when pools are updated for aliquots
-      if pool
-        pool.sequencing_plates
-      else
-        wells&.collect(&:plate)
-      end
+      wells&.collect(&:plate)
     end
 
     private
 
-    def check_for_associated_wells
-      if wells.empty?
-        true
-      else
-        errors.add(:base, 'Cannot delete a library that is associated with wells')
-        throw(:abort)
-      end
-    end
+    # Derived aliquots indicate it has been used in a pool or run
+    def check_for_derived_aliquots
+      return true if derived_aliquots.empty?
 
-    def check_for_associated_pools
-      return true unless derived_aliquots.any? do |aliquot|
-                           aliquot.used_by_is_a?(Pacbio::Pool)
-                         end
-
-      errors.add(:base, 'Cannot delete a library that is associated with a pool')
+      errors.add(:base, 'Cannot delete a library that is used in a pool or run')
       throw(:abort)
     end
   end

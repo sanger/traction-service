@@ -373,7 +373,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
 
       context 'when the run has libraries and pools' do
         let(:pool) { create(:pacbio_pool, :tagged, library_count: 1) }
-        let(:library) { create(:pacbio_library, :tagged, pool: nil) }
+        let(:library) { create(:pacbio_library, :tagged) }
         let(:well1)   do
           create(:pacbio_well, pre_extension_time: 2, generate_hifi: 'Do Not Generate',
                                ccs_analysis_output: 'Yes', pools: [pool])
