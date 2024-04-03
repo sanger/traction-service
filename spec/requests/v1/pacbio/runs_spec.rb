@@ -1010,6 +1010,7 @@ RSpec.describe 'RunsController' do
 
         it 'has a unprocessable_entity status' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
+
           expect(response).to have_http_status(:unprocessable_entity)
         end
 
@@ -1373,7 +1374,7 @@ RSpec.describe 'RunsController' do
 
           expect do
             patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-          end.to change(Aliquot, :count).from(54).to(46)
+          end.to change(Aliquot, :count).from(65).to(57)
         end
 
         it 'updates a well' do

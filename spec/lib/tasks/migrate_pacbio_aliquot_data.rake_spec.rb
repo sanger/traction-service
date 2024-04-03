@@ -6,7 +6,7 @@ require 'rake'
 # only load Rake tasks if they haven't been loaded already
 Rails.application.load_tasks if Rake::Task.tasks.empty?
 
-RSpec.describe 'RakeTasks' do
+RSpec.describe 'RakeTasks', skip: 'Run in prod and no longer required' do
   before do
     Pacbio::SmrtLinkVersion.find_by(name: 'v12_sequel_iie') || create(:pacbio_smrt_link_version, name: 'v12_sequel_iie', default: true)
   end

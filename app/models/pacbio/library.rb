@@ -47,6 +47,8 @@ module Pacbio
     before_destroy :check_for_derived_aliquots, prepend: true
 
     def create_used_aliquot
+      return if used_aliquots.any?
+
       used_aliquots.create(
         source: request,
         aliquot_type: :derived,

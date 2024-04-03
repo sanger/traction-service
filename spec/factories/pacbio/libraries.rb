@@ -10,7 +10,7 @@ FactoryBot.define do
     tag
     tube { nil }
     primary_aliquot { association :aliquot, source: instance, aliquot_type: :primary }
-    used_aliquots { build_list(:aliquot, 1, source: build(:pacbio_request), tag: nil, aliquot_type: :derived, used_by: instance) }
+    used_aliquots { build_list(:aliquot, 1, source: request, tag:, aliquot_type: :derived, used_by: instance) }
 
     factory :pacbio_incomplete_library do
       insert_size { nil }
@@ -23,6 +23,10 @@ FactoryBot.define do
 
     factory :pacbio_library_with_tag do
       tagged
+    end
+
+    factory :pacbio_library_with_hidden_tag do
+      hidden_tagged
     end
 
     trait :tagged do

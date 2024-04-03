@@ -237,7 +237,7 @@ RSpec.describe Pacbio::Library, :pacbio do
     it 'when there is a single run' do
       plate = build(:pacbio_plate)
       library = create(:pacbio_library)
-      library.derived_aliquots << create(:aliquot, source: library, aliquot_type: :derived, used_by: create(:pacbio_well, plate:))
+      plate.wells << create(:pacbio_well, libraries: [library])
       create(:pacbio_run, plates: [plate])
       expect(library.sequencing_plates).to eq([plate])
     end
@@ -248,10 +248,8 @@ RSpec.describe Pacbio::Library, :pacbio do
       create(:pacbio_run, plates: [plate1])
       create(:pacbio_run, plates: [plate2])
       library = create(:pacbio_library)
-      well1 = create(:pacbio_well, plate: plate1)
-      well2 = create(:pacbio_well, plate: plate2)
-      well1.used_aliquots << create(:aliquot, source: library, aliquot_type: :derived)
-      well2.used_aliquots << create(:aliquot, source: library, aliquot_type: :derived)
+      plate1.wells << create(:pacbio_well, libraries: [library])
+      plate2.wells << create(:pacbio_well, libraries: [library])
       expect(library.sequencing_plates).to eq([plate1, plate2])
     end
   end
@@ -265,7 +263,7 @@ RSpec.describe Pacbio::Library, :pacbio do
     it 'when there is a single run' do
       plate = build(:pacbio_plate)
       library = create(:pacbio_library)
-      library.derived_aliquots << create(:aliquot, source: library, aliquot_type: :derived, used_by: create(:pacbio_well, plate:))
+      plate.wells << create(:pacbio_well, libraries: [library])
       create(:pacbio_run, plates: [plate])
       expect(library.sequencing_runs).to eq([plate.run])
     end
@@ -276,18 +274,16 @@ RSpec.describe Pacbio::Library, :pacbio do
       create(:pacbio_run, plates: [plate1])
       create(:pacbio_run, plates: [plate2])
       library = create(:pacbio_library)
-      well1 = create(:pacbio_well, plate: plate1)
-      well2 = create(:pacbio_well, plate: plate2)
-      well1.used_aliquots << create(:aliquot, source: library, aliquot_type: :derived)
-      well2.used_aliquots << create(:aliquot, source: library, aliquot_type: :derived)
+      plate1.wells << create(:pacbio_well, libraries: [library])
+      plate2.wells << create(:pacbio_well, libraries: [library])
       expect(library.sequencing_runs).to eq([plate1.run, plate2.run])
     end
   end
 
   context 'wells' do
-    it 'can have one or more through derived_aliquots' do
+    it 'can have one or more' do
       library = create(:pacbio_library)
-      library.derived_aliquots << create_list(:aliquot, 5, aliquot_type: :derived, source: library, used_by: create(:pacbio_well))
+      library.wells << create_list(:pacbio_well, 5)
       expect(library.wells.count).to eq(5)
     end
   end

@@ -121,11 +121,11 @@ RSpec.describe Pacbio::Well, :pacbio do
     it 'can return a list of sample names' do
       sample_names = well.sample_names.split(':')
       expect(sample_names.length).to eq(2)
-      expect(sample_names.first).to eq(well.pools.first.libraries.first.request.sample_name)
+      expect(sample_names.first).to eq(well.pools.first.used_aliquots.first.source.sample_name)
 
       sample_names = well.sample_names(',').split(',')
       expect(sample_names.length).to eq(2)
-      expect(sample_names.first).to eq(well.pools.first.libraries.first.request.sample_name)
+      expect(sample_names.first).to eq(well.pools.first.used_aliquots.first.source.sample_name)
     end
 
     it 'can return a list of tags' do

@@ -13,7 +13,12 @@ FactoryBot.define do
     volume { 10 }
     insert_size { 100 }
 
-    used_aliquots { build_list(:aliquot, library_count, source: build(library_factory), aliquot_type: :derived, used_by: instance) }
+    used_aliquots do
+      library_count.times.map do
+        library = build(library_factory)
+        build(:aliquot, source: library, tag: library.tag, aliquot_type: :derived, used_by: instance)
+      end
+    end
 
     trait :tagged do
       transient do
@@ -26,6 +31,13 @@ FactoryBot.define do
       transient do
         library_count { 1 }
         library_factory { :pacbio_library_without_tag }
+      end
+    end
+
+    trait :hidden_tagged do
+      transient do
+        library_count { 1 }
+        library_factory { :pacbio_library_with_hidden_tag }
       end
     end
   end

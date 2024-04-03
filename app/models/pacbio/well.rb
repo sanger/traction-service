@@ -7,7 +7,7 @@
 module Pacbio
   # Pacbio::Well
   # A well can have many libraries
-  class Well < ApplicationRecord # rubocop:disable Metrics/ClassLength
+  class Well < ApplicationRecord
     GENERIC_KIT_BARCODE = 'Lxxxxx100938900123199'
 
     include Uuidable
@@ -23,7 +23,7 @@ module Pacbio
                               dependent: :destroy, inverse_of: :well, autosave: true
     has_many :libraries, class_name: 'Pacbio::Library', through: :well_libraries
 
-    validates :used_aliquots, presence: true, if: -> { Flipper.enabled?(:dpl_1112) }
+    validates :used_aliquots, presence: true
 
     # pacbio smrt link options for a well are kept in store field of the well
     # which is mapped to smrt_link_options column (JSON) of pacbio_wells table.
@@ -60,12 +60,6 @@ module Pacbio
     delegate :run, to: :plate, allow_nil: true
 
     def pool_ids=(ids)
-      # Don't update the used_aliquots if the feature flag is disabled
-      unless Flipper.enabled?(:dpl_1112)
-        super
-        return
-      end
-
       # Map the ids to integers as they may be strings
       ids.map!(&:to_i).each do |id|
         # If the used_aliquot already exists, skip it
@@ -85,12 +79,6 @@ module Pacbio
     end
 
     def library_ids=(ids)
-      # Don't update the used_aliquots if the feature flag is disabled
-      unless Flipper.enabled?(:dpl_1112)
-        super
-        return
-      end
-
       # Map the ids to integers as they may be strings
       ids.map!(&:to_i).each do |id|
         # If the used_aliquot already exists, skip it
