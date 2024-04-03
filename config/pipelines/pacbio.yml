@@ -34,26 +34,26 @@ default: &default
               value: uuid
             samples:
               type: :array
-              value: all_libraries
+              value: base_used_aliquots
               children:
                 cost_code:
                   type: :model
-                  value: request.cost_code
+                  value: source.cost_code
                 pac_bio_library_tube_id_lims:
                   type: :model
-                  value: id
+                  value: used_by.id
                 pac_bio_library_tube_uuid:
-                  type: :model
-                  value: uuid
+                  type: :string
+                  value: ''
                 pac_bio_library_tube_name:
                   type: :model
-                  value: request.sample_name
+                  value: source.sample_name
                 sample_uuid:
                   type: :model
-                  value: request.sample.external_id
+                  value: source.sample.external_id
                 study_uuid:
                   type: :model
-                  value: request.external_study_id
+                  value: source.external_study_id
                 tag_sequence:
                   type: :model
                   value: tag.oligo
@@ -68,365 +68,13 @@ default: &default
                   value: tag.tag_set_name
                 pipeline_id_lims:
                   type: :model
-                  value: request.library_type
+                  value: source.library_type
                 pac_bio_library_tube_barcode:
                   type: :model
-                  value: tube.barcode
+                  value: used_by.tube.barcode
 
     # For instructions on structure and syntax, see: 'app/exchanges/README.md'
     sample_sheet:
-      v10:
-        columns:
-          System Name:
-            type: :model
-            value: plate.run.system_name
-            populate:
-              for:
-                - :well
-              with: :well
-          Run Name:
-            type: :model
-            value: plate.run.name
-            populate:
-              for:
-                - :well
-              with: :well
-          Is Collection:
-            type: :model
-            value: collection?
-            populate:
-              for:
-                - :well
-                - :sample
-              with: :row_type
-          Sample Well:
-            type: :model
-            value: position_leading_zero
-            populate:
-              for:
-                - :well
-                - :sample
-              with: :well
-          Sample Name:
-            type: :model
-            value: tube_barcode
-            populate:
-              for:
-                - :well
-              with: :well
-          Movie Time per SMRT Cell (hours):
-            type: :model
-            value: movie_time
-            populate:
-              for:
-                - :well
-              with: :well
-          Insert Size (bp):
-            type: :model
-            value: insert_size
-            populate:
-              for:
-                - :well
-              with: :well
-          Template Prep Kit Box Barcode:
-            type: :model
-            value: template_prep_kit_box_barcode
-            populate:
-              for:
-                - :well
-              with: :well
-          Binding Kit Box Barcode:
-            type: :model
-            value: binding_kit_box_barcode
-            populate:
-              for:
-                - :well
-              with: :well
-            populate_on_row_type: :well
-          Sequencing Kit Box Barcode:
-            type: :model
-            value: plate.sequencing_kit_box_barcode
-            populate:
-              for:
-                - :well
-              with: :well
-          On-Plate Loading Concentration (pM):
-            type: :model
-            value: on_plate_loading_concentration
-            populate:
-              for:
-                - :well
-              with: :well
-          DNA Control Complex Box Barcode:
-            type: :model
-            value: plate.run.dna_control_complex_box_barcode
-            populate:
-              for:
-                - :well
-              with: :well
-          Run Comments:
-            type: :model
-            value: plate.run.comments
-            populate:
-              for:
-                - :well
-              with: :well
-          Sample is Barcoded:
-            type: :model
-            value: sample_is_barcoded
-            populate:
-              for:
-                - :well
-              with: :well
-          Barcode Name:
-            type: :model
-            value: barcode_name
-            populate:
-              for:
-                - :sample
-              with: :sample
-          Barcode Set:
-            type: :model
-            value: barcode_set
-            populate:
-              for:
-                - :well
-              with: :well
-          Same Barcodes on Both Ends of Sequence:
-            type: :model
-            value: same_barcodes_on_both_ends_of_sequence
-            populate:
-              for:
-                - :well
-              with: :well
-          Bio Sample Name:
-            type: :model
-            value: find_sample_name
-            populate:
-              for:
-                - :well
-                - :sample
-              with: :row_type
-          Automation Parameters:
-            type: :model
-            value: automation_parameters
-            populate:
-              for:
-                - :well
-              with: :well
-          Generate HiFi Reads:
-            type: :model
-            value: generate_hifi
-            populate:
-              for:
-                - :well
-              with: :well
-          CCS Analysis Output - Include Kinetics Information:
-            type: :model
-            value: ccs_analysis_output
-            populate:
-              for:
-                - :well
-              with: :well
-          Loading Target (P1 + P2):
-            type: :model
-            value: loading_target_p1_plus_p2
-            populate:
-              for:
-                - :well
-              with: :well
-            populate_on_row_type: :well
-          Use Adaptive Loading:
-            type: :model
-            value: adaptive_loading_check
-            populate:
-              for:
-                - :well
-              with: :well
-            populate_on_row_type: :well
-      v11:
-        columns:
-          System Name:
-            type: :model
-            value: plate.run.system_name
-            populate:
-              for:
-                - :well
-              with: :well
-          Run Name:
-            type: :model
-            value: plate.run.name
-            populate:
-              for:
-                - :well
-              with: :well
-          Is Collection:
-            type: :model
-            value: collection?
-            populate:
-              for:
-                - :well
-                - :sample
-              with: :row_type
-          Sample Well:
-            type: :model
-            value: position_leading_zero
-            populate:
-              for:
-                - :well
-                - :sample
-              with: :well
-          Sample Name:
-            type: :model
-            value: tube_barcode
-            populate:
-              for:
-                - :well
-              with: :well
-          Movie Time per SMRT Cell (hours):
-            type: :model
-            value: movie_time
-            populate:
-              for:
-                - :well
-              with: :well
-          Insert Size (bp):
-            type: :model
-            value: insert_size
-            populate:
-              for:
-                - :well
-              with: :well
-          Template Prep Kit Box Barcode:
-            type: :model
-            value: template_prep_kit_box_barcode
-            populate:
-              for:
-                - :well
-              with: :well
-          Binding Kit Box Barcode:
-            type: :model
-            value: binding_kit_box_barcode
-            populate:
-              for:
-                - :well
-              with: :well
-            populate_on_row_type: :well
-          Sequencing Kit Box Barcode:
-            type: :model
-            value: plate.sequencing_kit_box_barcode
-            populate:
-              for:
-                - :well
-              with: :well
-          On-Plate Loading Concentration (pM):
-            type: :model
-            value: on_plate_loading_concentration
-            populate:
-              for:
-                - :well
-              with: :well
-          DNA Control Complex Box Barcode:
-            type: :model
-            value: plate.run.dna_control_complex_box_barcode
-            populate:
-              for:
-                - :well
-              with: :well
-          Run Comments:
-            type: :model
-            value: plate.run.comments
-            populate:
-              for:
-                - :well
-              with: :well
-          Sample is Barcoded:
-            type: :model
-            value: sample_is_barcoded
-            populate:
-              for:
-                - :well
-              with: :well
-          Barcode Name:
-            type: :model
-            value: barcode_name
-            populate:
-              for:
-                - :sample
-              with: :sample
-          Barcode Set:
-            type: :model
-            value: barcode_set
-            populate:
-              for:
-                - :well
-              with: :well
-          Same Barcodes on Both Ends of Sequence:
-            type: :model
-            value: same_barcodes_on_both_ends_of_sequence
-            populate:
-              for:
-                - :well
-              with: :well
-          Bio Sample Name:
-            type: :model
-            value: find_sample_name
-            populate:
-              for:
-                - :well
-                - :sample
-              with: :row_type
-          Automation Parameters:
-            type: :model
-            value: automation_parameters
-            populate:
-              for:
-                - :well
-              with: :well
-          CCS Analysis Output - Include Kinetics Information:
-            type: :model
-            value: ccs_analysis_output_include_kinetics_information
-            populate:
-              for:
-                - :well
-              with: :well
-          Loading Target (P1 + P2):
-            type: :model
-            value: loading_target_p1_plus_p2
-            populate:
-              for:
-                - :well
-              with: :well
-            populate_on_row_type: :well
-          Use Adaptive Loading:
-            type: :model
-            value: adaptive_loading_check
-            populate:
-              for:
-                - :well
-              with: :well
-            populate_on_row_type: :well
-          CCS Analysis Output - Include Low Quality Reads:
-            type: :model
-            value: ccs_analysis_output_include_low_quality_reads
-            populate:
-              for:
-                - :well
-              with: :well
-          Include 5mC Calls in CpG Motifs:
-            type: :model
-            value: include_fivemc_calls_in_cpg_motifs
-            populate:
-              for:
-                - :well
-              with: :well
-          Demultiplex Barcodes:
-            type: :model
-            value: demultiplex_barcodes
-            populate:
-              for:
-                - :well
-              with: :well
       v12_revio:
         column_order:
           - Library Type
@@ -502,10 +150,10 @@ default: &default
               value: barcode_set
             Bio Sample Name:
               type: :model
-              value: find_sample_name
+              value: bio_sample_name
             samples:
               type: :array
-              value: libraries_to_show_per_row
+              value: aliquots_to_show_per_row
               children:
                 Reagent Plate:
                   type: :parent_model
@@ -521,7 +169,7 @@ default: &default
                   value: barcode_name
                 Bio Sample Name:
                   type: :model
-                  value: find_sample_name
+                  value: bio_sample_name
       v12_sequel_iie: &v12_sequel_iie
         column_order:
           - Instrument Type
@@ -604,7 +252,7 @@ default: &default
               value: same_barcodes_on_both_ends_of_sequence
             Bio Sample Name:
               type: :model
-              value: find_sample_name
+              value: bio_sample_name
             Automation Parameters:
               type: :model
               value: automation_parameters
@@ -628,7 +276,7 @@ default: &default
               value: demultiplex_barcodes
             samples:
               type: :array
-              value: libraries_to_show_per_row
+              value: aliquots_to_show_per_row
               children:
                 Is Collection:
                   type: :model
@@ -641,7 +289,7 @@ default: &default
                   value: barcode_name
                 Bio Sample Name:
                   type: :model
-                  value: find_sample_name
+                  value: bio_sample_name
       v13_revio:
         column_order:
           - Library Type
@@ -719,7 +367,7 @@ default: &default
               value: barcode_set
             Bio Sample Name:
               type: :model
-              value: find_sample_name
+              value: bio_sample_name
             Insert Size (bp):
               type: :model
               value: insert_size
@@ -728,7 +376,7 @@ default: &default
               value: FALSE
             samples:
               type: :array
-              value: libraries_to_show_per_row
+              value: aliquots_to_show_per_row
               children:
                 Reagent Plate:
                   type: :parent_model
@@ -744,7 +392,7 @@ default: &default
                   value: barcode_name
                 Bio Sample Name:
                   type: :model
-                  value: find_sample_name
+                  value: bio_sample_name
       # No changes required from v12_sequel_iie, added for consistency
       v13_sequel_iie: *v12_sequel_iie
 
