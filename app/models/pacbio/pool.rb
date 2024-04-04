@@ -10,9 +10,9 @@ module Pacbio
     has_many :requests, through: :used_aliquots, source: :source, source_type: 'Pacbio::Request'
     has_many :libraries, through: :used_aliquots, source: :source, source_type: 'Pacbio::Library'
 
-    # This is dependent on the requests association, so needs to be included
+    # This is dependent on the requests and libraries associations, so needs to be included
     # after that is defined
-    include DualSourcedPool
+    include MultiSourcedPool
 
     validates_with TagValidator
 
