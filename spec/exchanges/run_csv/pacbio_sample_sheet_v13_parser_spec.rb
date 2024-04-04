@@ -3,11 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe RunCsv::PacbioSampleSheetV13Parser, type: :model do
-  let(:parser) { described_class.new }
+  let(:sample_sheet_parser) { described_class.new }
   let(:sample_sheet_string) { File.read('spec/exchanges/run_csv/pacbio_sample_sheet_v13_revio.csv') }
 
   describe '#split_into_sections' do
-    subject(:split_sections) { parser.split_into_sections(sample_sheet_string) }
+    subject(:split_sections) { sample_sheet_parser.split_into_sections(sample_sheet_string) }
 
     it 'returns a hash with three sections' do
       expect(split_sections.keys).to contain_exactly('Run Settings', 'SMRT Cell Settings', 'Samples')
@@ -45,7 +45,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV13Parser, type: :model do
   end
 
   describe '#parse_run_settings' do
-    subject(:parsed_run_settings) { parser.parse_run_settings(run_settings_string) }
+    subject(:parsed_run_settings) { sample_sheet_parser.parse_run_settings(run_settings_string) }
 
     let(:run_settings_string) do
       <<~RUN_SETTINGS
@@ -73,7 +73,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV13Parser, type: :model do
   end
 
   describe '#parse_sample_sheet' do
-    subject(:parsed_sample_sheet) { parser.parse_sample_sheet(sample_sheet_string) }
+    subject(:parsed_sample_sheet) { sample_sheet_parser.parse(sample_sheet_string) }
 
     it 'returns a hash with three sections' do
       expect(parsed_sample_sheet.keys).to contain_exactly('Run Settings', 'SMRT Cell Settings', 'Samples')

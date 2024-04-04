@@ -2,6 +2,9 @@
 
 module RunCsv
   # RunCsv::PacbioSampleSheetV13Parser
+  # Use to parse PacBio sample sheets of version 13
+  # Example usage:
+  #    parsed_sample_sheet = RunCsv::PacbioSampleSheetV13Parser.new.parse(sample_sheet_string)
   class PacbioSampleSheetV13Parser
     def split_into_sections(sample_sheet_string)
       # returns an hash of sections and their contents as strings
@@ -91,7 +94,7 @@ module RunCsv
     #
     # @param [String] sample_sheet_string
     # @return [Hash]
-    def parse_sample_sheet(sample_sheet_string)
+    def parse(sample_sheet_string)
       sections = split_into_sections(sample_sheet_string)
 
       run_settings = parse_run_settings(sections['Run Settings'])
