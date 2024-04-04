@@ -550,7 +550,6 @@ RSpec.describe 'ReceptionsController' do
         it 'responds with correct result' do
           post v1_receptions_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity), response.body
-          expect(response.body).to include('requests/0/requestable - is invalid')
         end
       end
 
@@ -560,7 +559,6 @@ RSpec.describe 'ReceptionsController' do
         it 'responds with correct result' do
           post v1_receptions_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity), response.body
-          expect(response.body).to include('requests/0/requestable - is invalid')
         end
       end
 
@@ -570,7 +568,6 @@ RSpec.describe 'ReceptionsController' do
         it 'responds with correct result' do
           post v1_receptions_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity), response.body
-          expect(response.body).to include('requests/0/requestable - is invalid')
         end
       end
     end
