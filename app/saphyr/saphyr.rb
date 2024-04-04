@@ -24,7 +24,7 @@ module Saphyr
 
   def self.library_factory(request:, library_attributes:)
     Saphyr::Library.new(
-      request:,
+      request: request.requestable,
       **library_attributes.slice(*self.library_attributes)
     )
   end

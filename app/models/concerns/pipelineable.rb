@@ -7,6 +7,7 @@ module Pipelineable
   included do
     enum pipeline: Pipelines::NAMES, _suffix: true
 
+    delegate :library_factory, to: :pipeline_handler
     delegate :request_factory, to: :pipeline_handler
   end
 

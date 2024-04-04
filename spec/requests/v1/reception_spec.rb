@@ -23,7 +23,7 @@ RSpec.describe 'ReceptionsController' do
     Broker::Handle.clear_test_received_messages
   end
 
-  describe '#post' do
+  describe '#post with ont data' do
     let!(:library_type) { create(:library_type, :ont) }
     let!(:data_type) { create(:data_type, :ont) }
 
@@ -433,6 +433,145 @@ RSpec.describe 'ReceptionsController' do
         post v1_receptions_path, params: body, headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_entity)
         expect(json['errors'][0]['detail']).to eq('requests - there are no new samples to import')
+      end
+    end
+  end
+
+  describe '#post with pacbio data' do
+    let!(:library_type) { create(:library_type, :pacbio) }
+    let!(:data_type) { create(:data_type, :pacbio) }
+
+    context 'with a valid payload' do
+      let(:object_body) do
+        {
+          data: {
+            type: 'receptions',
+            attributes: {
+              source: 'traction-ui.sequencescape',
+              tubes_attributes: [
+                {
+                  type: 'tubes',
+                  barcode: 'NT1',
+                  request: attributes_for(:pacbio_request).merge(
+                    library_type: library_type.name,
+                    data_type: data_type.name
+                  ),
+                  sample: attributes_for(:sample)
+                }
+              ]
+            }
+          }
+        }
+      end
+      let(:body) do
+        object_body.to_json
+      end
+
+      it 'has a created status' do
+        post v1_receptions_path, params: body, headers: json_api_headers
+        expect(response).to have_http_status(:created), response.body
+      end
+    end
+
+    context 'with library attributes' do
+      let(:object_body) do
+        {
+          data: {
+            type: 'receptions',
+            attributes: {
+              source: 'traction-ui.sequencescape',
+              tubes_attributes: [
+                {
+                  type: 'tubes',
+                  barcode: 'NT1',
+                  library:,
+                  request: attributes_for(:pacbio_request).merge(
+                    library_type: library_type.name,
+                    data_type: data_type.name
+                  ),
+                  sample: attributes_for(:sample)
+                }
+              ]
+            }
+          }
+        }
+      end
+      let(:body) do
+        object_body.to_json
+      end
+
+      context 'library has all attributes' do
+        let(:library) { { volume: 1, concentration: 2, insert_size: 3, template_prep_kit_box_barcode: 'barcode' } }
+
+        it 'has a created status' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:created), response.body
+        end
+
+        it 'creates the correct library for the request' do
+          expect { post v1_receptions_path, params: body, headers: json_api_headers }
+            .to change(Pacbio::Library, :count)
+            .from(0)
+            .to(1)
+
+          new_library = Pacbio::Library.last
+          expect(new_library.volume).to eq(1)
+          expect(new_library.concentration).to eq(2)
+          expect(new_library.insert_size).to eq(3)
+          expect(new_library.template_prep_kit_box_barcode).to eq('barcode')
+        end
+      end
+
+      context 'library has essential attributes' do
+        let(:library) { { volume: 1, concentration: 2, template_prep_kit_box_barcode: 'barcode' } }
+
+        it 'has a created status' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:created), response.body
+        end
+
+        it 'creates the correct library for the request' do
+          expect { post v1_receptions_path, params: body, headers: json_api_headers }
+            .to change(Pacbio::Library, :count)
+            .from(0)
+            .to(1)
+
+          new_library = Pacbio::Library.last
+          expect(new_library.volume).to eq(1)
+          expect(new_library.concentration).to eq(2)
+          expect(new_library.insert_size).to be_nil
+          expect(new_library.template_prep_kit_box_barcode).to eq('barcode')
+        end
+      end
+
+      context 'library is missing volume' do
+        let(:library) { { concentration: 2, template_prep_kit_box_barcode: 'barcode' } }
+
+        it 'responds with correct result' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity), response.body
+          expect(response.body).to include('requests/0/requestable - is invalid')
+        end
+      end
+
+      context 'library is missing concentration' do
+        let(:library) { { volume: 1, template_prep_kit_box_barcode: 'barcode' } }
+
+        it 'responds with correct result' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity), response.body
+          expect(response.body).to include('requests/0/requestable - is invalid')
+        end
+      end
+
+      context 'library is missing template prep kit box barcode' do
+        let(:library) { { volume: 1, concentration: 2 } }
+
+        it 'responds with correct result' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity), response.body
+          expect(response.body).to include('requests/0/requestable - is invalid')
+        end
       end
     end
   end

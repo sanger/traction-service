@@ -33,7 +33,7 @@ module Pacbio
     filtered_attributes = library_attributes.slice(*self.library_attributes)
 
     Pacbio::Library.new(
-      request:,
+      request: request.requestable,
       primary_aliquot_attributes: { **filtered_attributes },
       **filtered_attributes
     )
