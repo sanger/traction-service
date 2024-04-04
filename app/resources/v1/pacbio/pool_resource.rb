@@ -15,6 +15,8 @@ module V1
       has_one :tube, relation_name: :tube
       has_many :used_aliquots, class_name: 'Aliquot', relation_name: :used_aliquots
       has_one :primary_aliquot, class_name: 'Aliquot', relation_name: :primary_aliquot
+      has_many :requests
+      has_many :libraries
 
       attributes :volume, :concentration, :template_prep_kit_box_barcode,
                  :insert_size, :created_at, :updated_at,

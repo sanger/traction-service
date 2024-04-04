@@ -70,23 +70,11 @@ RSpec.describe 'PoolsController', :pacbio do
       end
     end
 
-    it 'returns the correct attributes', :aggregate_failures do
-      get "#{v1_pacbio_pools_path}?include=used_aliquots", headers: json_api_headers
-
-      expect(response).to have_http_status(:success)
-
-      used_aliquots_attributes = json['included'][0]['attributes']
-      used_aliquot = pools.first.used_aliquots.first
-
-      expect(used_aliquots_attributes['volume']).to eq(used_aliquot.volume)
-      expect(used_aliquots_attributes['concentration']).to eq(used_aliquot.concentration)
-      expect(used_aliquots_attributes['template_prep_kit_box_barcode']).to eq(used_aliquot.template_prep_kit_box_barcode)
-      expect(used_aliquots_attributes['insert_size']).to eq(used_aliquot.insert_size)
-    end
-
     context 'with includes' do
       before do
-        get "#{v1_pacbio_pools_path}?include=primary_aliquot,used_aliquots.source,used_aliquots.tag,tube",
+        # Add a aliquot from request to the pool
+        pools.first.used_aliquots << create(:aliquot, source: create(:pacbio_request), aliquot_type: :derived)
+        get "#{v1_pacbio_pools_path}?include=primary_aliquot,requests,libraries,used_aliquots.tag,tube",
             headers: json_api_headers
       end
 
@@ -109,9 +97,15 @@ RSpec.describe 'PoolsController', :pacbio do
                                                                                    'errors' => []
                                                                                  })
 
-        used_aliquot_source_resource = find_included_resource(type: 'libraries', id: pool.used_aliquots.first.source_id)
-        expect(used_aliquot_source_resource['id']).to eq(pool.used_aliquots.first.source_id.to_s)
-        expect(used_aliquot_source_resource['type']).to eq('libraries')
+        # Libraries are retrieved through used_aliquots
+        libraries_resource = find_included_resource(type: 'libraries', id: pool.used_aliquots.first.source_id)
+        expect(libraries_resource['id']).to eq(pool.used_aliquots.first.source_id.to_s)
+        expect(libraries_resource['type']).to eq('libraries')
+
+        # Requests are retrieved through used_aliquots
+        requests_resource = find_included_resource(type: 'requests', id: pool.used_aliquots.last.source_id)
+        expect(requests_resource['id']).to eq(pool.used_aliquots.last.source_id.to_s)
+        expect(requests_resource['type']).to eq('requests')
 
         used_aliquot_tag_resource = find_included_resource(type: 'tags', id: pool.used_aliquots.first.tag_id)
         expect(used_aliquot_tag_resource['id']).to eq(pool.used_aliquots.first.tag_id.to_s)
@@ -121,6 +115,27 @@ RSpec.describe 'PoolsController', :pacbio do
         expect(tube_resource['id']).to eq(pool.tube.id.to_s)
         expect(tube_resource['type']).to eq('tubes')
         expect(tube_resource['attributes']['barcode']).to eq(pool.tube.barcode)
+      end
+
+      it 'returns the correct used_aliquots attributes', :aggregate_failures do
+        get "#{v1_pacbio_pools_path}?include=used_aliquots.source", headers: json_api_headers
+
+        expect(response).to have_http_status(:success)
+        used_aliquot = pools.first.used_aliquots.first
+
+        used_aliquot_resource = find_included_resource(type: 'aliquots', id: used_aliquot.id)
+        expect(used_aliquot_resource['id']).to eq(used_aliquot.id.to_s)
+        expect(used_aliquot_resource['type']).to eq('aliquots')
+
+        used_aliquot_source_resource = find_included_resource(type: 'libraries', id: used_aliquot.source_id)
+        expect(used_aliquot_source_resource['id']).to eq(used_aliquot.source_id.to_s)
+        expect(used_aliquot_source_resource['type']).to eq('libraries')
+
+        used_aliquots_attributes = json['included'][0]['attributes']
+        expect(used_aliquots_attributes['volume']).to eq(used_aliquot.volume)
+        expect(used_aliquots_attributes['concentration']).to eq(used_aliquot.concentration)
+        expect(used_aliquots_attributes['template_prep_kit_box_barcode']).to eq(used_aliquot.template_prep_kit_box_barcode)
+        expect(used_aliquots_attributes['insert_size']).to eq(used_aliquot.insert_size)
       end
     end
 
