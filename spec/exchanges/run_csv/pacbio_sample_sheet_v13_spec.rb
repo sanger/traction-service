@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 # import parser to assist with testing
-require_relative '../../../app/exchanges/run_csv/pacbio_sample_sheet_v13_parser.rb'
+require_relative '../../../app/exchanges/run_csv/pacbio_sample_sheet_v13_parser'
 
 # See additional sample sheet specs at 'spec/pipelines/pacbio/sample_sheet_spec.rb'
 
@@ -11,14 +11,41 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
   describe '#payload' do
     subject(:sample_sheet_string) { sample_sheet.payload }
 
-    let(:plate)         { build(:pacbio_plate, wells:, plate_number: 1) }
-    let(:run)           { create(:pacbio_run, smrt_link_version:, plates: [plate]) }
+    let(:run)           { create(:pacbio_revio_run, smrt_link_version:) }
     let(:sample_sheet)  { described_class.new(object: run, configuration:) }
     let(:configuration) { Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name) }
-    let(:parsed_sample_sheet) { RunCsv::PacbioSampleSheetV13Parser.new(sample_sheet_string) }
+    let(:parsed_sample_sheet) { RunCsv::PacbioSampleSheetV13Parser.new().parse(sample_sheet_string) }
 
     context 'v13_revio' do
       let(:smrt_link_version) { create(:pacbio_smrt_link_version_default, name: 'v13_revio') }
+
+      it 'must have the three required sections' do
+        expect(sample_sheet_string).to include('[Run Settings]')
+        expect(sample_sheet_string).to include('[SMRT Cell Settings]')
+        expect(sample_sheet_string).to include('[Samples]')
+      end
+
+      it 'must have the three required sections in the correct order' do
+        expect(sample_sheet_string.index('[Run Settings]')).to be < sample_sheet_string.index('[SMRT Cell Settings]')
+        expect(sample_sheet_string.index('[SMRT Cell Settings]')).to be < sample_sheet_string.index('[Samples]')
+      end
+
+      it 'must have the correct run settings' do
+        expect(parsed_sample_sheet['Run Settings']).to eq(
+          {
+            'Instrument Type' => 'Revio',
+            'Run Name' => run.name,
+            'Run Comments' => run.comments,
+            'Plate 1' => run.plates[0].sequencing_kit_box_barcode,
+            'Plate 2' => run.plates[1].sequencing_kit_box_barcode,
+            'CSV Version' => '1'
+          }
+        )
+      end
+
+      it 'must return a csv string' do
+        expect(sample_sheet_string.class).to eq String
+      end
 
       context 'when the libraries are tagged' do
         let(:well1) do
@@ -38,10 +65,6 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
           )
         end
         let(:wells) { [well1, well2] }
-
-        it 'must return a csv string' do
-          expect(sample_sheet_string.class).to eq String
-        end
 
         it 'must have the correct headers' do
           headers = parsed_sample_sheet[0]
@@ -133,10 +156,6 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
                                pools: pool2)
         end
         let(:wells) { [well1, well2] }
-
-        it 'must return a csv string' do
-          expect(sample_sheet_string).to be_a String
-        end
 
         it 'must have the correct headers' do
           headers = parsed_sample_sheet[0]

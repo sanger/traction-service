@@ -8,12 +8,15 @@ module RunCsv
   class PacbioSampleSheetV13 < PacbioSampleSheet
     # Generate a hash of settings for the run
     def run_settings
+      run = object # Pacbio::Run
+      first_plate = run.plates[0]
+      second_plate = run.plates[1]
       {
-        'Instrument Type' => plate.run.system_name, # Revio
-        'Run Name' =>	plate.run.name, # TRACTION-RUN-1042
-        'Run Comments' =>	plate.run.comments, # TRAC-2-7242 245pM TRAC-2-782 247pM
-        'Plate 1' =>	plate.sequencing_kit_box_barcode_plate_1, # 1021188000328660070020240502
-        'Plate 2' =>	plate.sequencing_kit_box_barcode_plate_2, # 1021188000328660070020240503
+        'Instrument Type' => run.system_name, # Revio
+        'Run Name' =>	run.name, # TRACTION-RUN-1042
+        'Run Comments' =>	run.comments, # TRAC-2-7242 245pM TRAC-2-782 247pM
+        'Plate 1' =>	first_plate.sequencing_kit_box_barcode, # 1021188000328660070020240502
+        'Plate 2' =>	second_plate&.sequencing_kit_box_barcode, # 1021188000328660070020240503
         'CSV Version' =>	1
       }
     end
@@ -66,13 +69,13 @@ module RunCsv
       sample_sheet += run_settings.map { |k, v| "#{k},#{v}" }.join("\n")
 
       # Add the cell settings
-      sample_sheet += "[Cell Settings]\n"
+      sample_sheet += "\n[SMRT Cell Settings]\n"
       sample_sheet += smrt_cell_settings.map do |k, v|
         v.map { |k1, v1| "#{k},#{k1},#{v1}" }
       end.join("\n")
 
       # Add the sample settings
-      sample_sheet += "[Sample Settings]\n"
+      sample_sheet += "\n[Samples]\n"
       sample_sheet += sample_settings.map { |k, v| "#{k},#{v}" }.join("\n")
 
       sample_sheet
