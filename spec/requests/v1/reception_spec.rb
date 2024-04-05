@@ -435,6 +435,44 @@ RSpec.describe 'ReceptionsController' do
         expect(json['errors'][0]['detail']).to eq('requests - there are no new samples to import')
       end
     end
+
+    context 'with unwanted library attributes' do
+      let(:object_body) do
+        {
+          data: {
+            type: 'receptions',
+            attributes: {
+              source: 'traction-ui.sequencescape',
+              tubes_attributes: [
+                {
+                  type: 'tubes',
+                  barcode: 'NT1',
+                  library: {},
+                  request: attributes_for(:ont_request).merge(
+                    library_type: library_type.name,
+                    data_type: data_type.name
+                  ),
+                  sample: attributes_for(:sample)
+                }
+              ]
+            }
+          }
+        }
+      end
+      let(:body) do
+        object_body.to_json
+      end
+
+      it 'has a server error status' do
+        post v1_receptions_path, params: body, headers: json_api_headers
+        expect(response).to have_http_status(:server_error), response.body
+      end
+
+      it 'indicates the unsupported state in the response body' do
+        post v1_receptions_path, params: body, headers: json_api_headers
+        expect(response.body).to include('Unsupported')
+      end
+    end
   end
 
   describe '#post with pacbio data' do
@@ -520,6 +558,21 @@ RSpec.describe 'ReceptionsController' do
           expect(new_library.insert_size).to eq(3)
           expect(new_library.template_prep_kit_box_barcode).to eq('barcode')
         end
+
+        it 'creates the correct request associated with the library' do
+          expect { post v1_receptions_path, params: body, headers: json_api_headers }
+            .to change(::Request, :count)
+            .from(0)
+            .to(1)
+
+
+          new_request = ::Request.last
+          expect(new_request.requestable).to be_a(Pacbio::Request)
+
+          new_pacbio_request = new_request.requestable
+          new_library = Pacbio::Library.last
+          expect(new_library.request.id).to be(new_pacbio_request.id)
+        end
       end
 
       context 'library has essential attributes' do
@@ -550,6 +603,7 @@ RSpec.describe 'ReceptionsController' do
         it 'responds with correct result' do
           post v1_receptions_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity), response.body
+          expect(response.body).to include('requests/0/requestable - is invalid')
         end
       end
 
@@ -559,6 +613,7 @@ RSpec.describe 'ReceptionsController' do
         it 'responds with correct result' do
           post v1_receptions_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity), response.body
+          expect(response.body).to include('requests/0/requestable - is invalid')
         end
       end
 
@@ -568,6 +623,17 @@ RSpec.describe 'ReceptionsController' do
         it 'responds with correct result' do
           post v1_receptions_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity), response.body
+          expect(response.body).to include('requests/0/requestable - is invalid')
+        end
+      end
+
+      context 'library is an empty object' do
+        let(:library) { { } }
+
+        it 'responds with correct result' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity), response.body
+          expect(response.body).to include('requests/0/requestable - is invalid')
         end
       end
     end
