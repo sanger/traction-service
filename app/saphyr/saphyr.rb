@@ -22,7 +22,7 @@ module Saphyr
     ]
   end
 
-  def self.library_factory(request:, library_attributes:)
+  def self.library_factory(_request:, _library_attributes:)
     raise StandardError, 'Unsupported' # Only Pacbio is supported at the moment
   end
 

@@ -561,12 +561,11 @@ RSpec.describe 'ReceptionsController' do
 
         it 'creates the correct request associated with the library' do
           expect { post v1_receptions_path, params: body, headers: json_api_headers }
-            .to change(::Request, :count)
+            .to change(Request, :count)
             .from(0)
             .to(1)
 
-
-          new_request = ::Request.last
+          new_request = Request.last
           expect(new_request.requestable).to be_a(Pacbio::Request)
 
           new_pacbio_request = new_request.requestable
@@ -628,7 +627,7 @@ RSpec.describe 'ReceptionsController' do
       end
 
       context 'library is an empty object' do
-        let(:library) { { } }
+        let(:library) { {} }
 
         it 'responds with correct result' do
           post v1_receptions_path, params: body, headers: json_api_headers
