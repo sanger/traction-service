@@ -18,6 +18,13 @@ module Pacbio
     has_many :wells, class_name: 'Pacbio::Well', through: :well_pools
     has_many :requests, through: :libraries
 
+    # We explicitly declare some of the polymorphic relationships to get around json api
+    # polymorphism issues so they can retrieved correctly in the client
+    has_many :used_aliquot_requests, through: :used_aliquots,
+                                     source: :source, source_type: 'Pacbio::Request'
+    has_many :used_aliquot_libraries, through: :used_aliquots,
+                                      source: :source, source_type: 'Pacbio::Library'
+
     # This is dependent on the requests association, so needs to be included
     # after that is defined
     include DualSourcedPool

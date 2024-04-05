@@ -23,6 +23,27 @@ RSpec.describe Pacbio::Pool, :pacbio do
     expect(pool.libraries).to eq(libraries)
   end
 
+  it 'can have many libraries through used_aliquots' do
+    pool = build(:pacbio_pool)
+    libraries.each do |library|
+      pool.used_aliquots << build(:aliquot, source: library, aliquot_type: :derived)
+    end
+    pool.save
+
+    expect(pool.used_aliquot_libraries).to eq(libraries)
+  end
+
+  it 'can have many requests through used_aliquots' do
+    pool = build(:pacbio_pool, libraries:)
+    request = build(:pacbio_request)
+    # Get rid of aliquots created by the factory
+    pool.used_aliquots.destroy_all
+    pool.used_aliquots << build(:aliquot, source: request, aliquot_type: :derived)
+    pool.save
+
+    expect(pool.used_aliquot_requests).to eq([request])
+  end
+
   it 'can have a template prep kit box barcode' do
     expect(pool.template_prep_kit_box_barcode).to be_present
   end

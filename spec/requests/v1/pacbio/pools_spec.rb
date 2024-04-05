@@ -128,6 +128,34 @@ RSpec.describe 'PoolsController', :pacbio do
       end
     end
 
+    context 'with includes using used_aliquots' do
+      before do
+        pools.first.used_aliquots << create(:aliquot, source: create(:pacbio_library), aliquot_type: :derived)
+        get "#{v1_pacbio_pools_path}?include=used_aliquot_libraries.request,used_aliquot_requests",
+            headers: json_api_headers
+      end
+
+      let(:pool) { pools.first }
+
+      it 'has a success status' do
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'returns the correct included data', :aggregate_failures do
+        libraries_resource = find_included_resource(type: 'libraries', id: pool.used_aliquots.last.source_id)
+        expect(libraries_resource['id']).to eq(pool.used_aliquots.last.source_id.to_s)
+        expect(libraries_resource['type']).to eq('libraries')
+
+        library_requests_resource = find_included_resource(type: 'requests', id: pool.used_aliquots.last.source.request.id)
+        expect(library_requests_resource['id']).to eq(pool.used_aliquots.last.source.request.id.to_s)
+        expect(library_requests_resource['type']).to eq('requests')
+
+        requests_resource = find_included_resource(type: 'requests', id: pool.used_aliquots.first.source_id)
+        expect(requests_resource['id']).to eq(pool.used_aliquots.first.source_id.to_s)
+        expect(requests_resource['type']).to eq('requests')
+      end
+    end
+
     context 'pagination' do
       let!(:expected_pools) { create_list(:pacbio_pool, 2, created_at: Time.zone.now + 10) }
 
