@@ -14,7 +14,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
     let(:run)           { create(:pacbio_revio_run, smrt_link_version:) }
     let(:sample_sheet)  { described_class.new(object: run, configuration:) }
     let(:configuration) { Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name) }
-    let(:parsed_sample_sheet) { RunCsv::PacbioSampleSheetV13Parser.new().parse(sample_sheet_string) }
+    let(:parsed_sample_sheet) { RunCsv::PacbioSampleSheetV13Parser.new.parse(sample_sheet_string) }
 
     context 'v13_revio' do
       let(:smrt_link_version) { create(:pacbio_smrt_link_version_default, name: 'v13_revio') }
@@ -39,6 +39,58 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
             'Plate 1' => run.plates[0].sequencing_kit_box_barcode,
             'Plate 2' => run.plates[1].sequencing_kit_box_barcode,
             'CSV Version' => '1'
+          }
+        )
+      end
+
+      it 'must have the correct SMRT cell settings' do
+        expect(parsed_sample_sheet['SMRT Cell Settings']).to eq(
+          {
+            '1_A01' => {
+              'Well Name' => 'TRAC-2-6268',
+              'Library Type' => 'Standard',
+              'Movie Acquisition Time (hours)' => '15',
+              'Insert Size (bp)' => '100',
+              'Assign Data To Project' => '1',
+              'Library Concentration (pM)' => '10.1',
+              'Include Base Kinetics' => 'True',
+              'Polymerase Kit' => 'DM1117100862200111711',
+              'Indexes' => '1',
+              'Sample is indexed' => 'true',
+              'Use Adaptive Loading' => 'true',
+              'Consensus Mode' => 'molecule',
+              'Same Barcodes on Both Ends of Sequence' => 'true'
+            },
+            '1_B01' => {
+              'Well Name' => 'TRAC-2-6273',
+              'Library Type' => 'Standard',
+              'Movie Acquisition Time (hours)' => '15',
+              'Insert Size (bp)' => '100',
+              'Assign Data To Project' => '1',
+              'Library Concentration (pM)' => '10.2',
+              'Include Base Kinetics' => 'True',
+              'Polymerase Kit' => 'DM1117100862200111712',
+              'Indexes' => '21',
+              'Sample is indexed' => 'true',
+              'Use Adaptive Loading' => 'true',
+              'Consensus Mode' => 'molecule',
+              'Same Barcodes on Both Ends of Sequence' => 'true'
+            },
+            '2_A01' => {
+              'Well Name' => 'TRAC-2-6278',
+              'Library Type' => 'Standard',
+              'Movie Acquisition Time (hours)' => '15',
+              'Insert Size (bp)' => '100',
+              'Assign Data To Project' => '1',
+              'Library Concentration (pM)' => '10.3',
+              'Include Base Kinetics' => 'True',
+              'Polymerase Kit' => 'DM1117100862200111713',
+              'Indexes' => '41',
+              'Sample is indexed' => 'true',
+              'Use Adaptive Loading' => 'true',
+              'Consensus Mode' => 'molecule',
+              'Same Barcodes on Both Ends of Sequence' => 'true'
+            }
           }
         )
       end

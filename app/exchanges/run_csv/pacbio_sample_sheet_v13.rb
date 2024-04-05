@@ -21,37 +21,54 @@ module RunCsv
       }
     end
 
+    # Generate a list of plate-well identifiers.
+    # Eg. ['1_A01', '1_A02', '2_A01', ...]
+    def plate_well_names
+      wells = object.plates.flat_map(&:wells)
+      wells.map do |well|
+        "#{well.plate.plate_number}_#{well.position_leading_zero}"
+      end
+    end
+
+    # Generate a hash of settings for a single cell
+    def generate_smrt_cell_settings(well) # rubocop:disable Metrics/MethodLength
+      {
+        'Well Name'	=> well.pools.first.tube.barcode, # TRAC-2-7242
+        'Library Type'	=> 'Standard', # (potentially new field otherwise just string)
+        'Movie Acquisition Time (hours)'	=> well.movie_acquisition_time, # 24
+        'Insert Size (bp)'	=> well.insert_size, # 500
+        'Assign Data To Project'	=> 1, # (maybe we need to assign a run a project in traction)?
+        'Library Concentration (pM)'	=> well.library_concentration, # 250
+        'Include Base Kinetics'	=> well.include_base_kinetics, # FALSE
+        'Polymerase Kit'	=> well.polymerase_kit, # 032037102739100071224
+        'Indexes'	=> well.barcode_set, # 244d96c6-f3b2-4997-5ae3-23ed33ab925f
+        'Sample is indexed'	=> well.collection?, # TRUE
+        'Use Adaptive Loading'	=> well.adaptive_loading_check, # TRUE
+        'Consensus Mode'	=> 'molecule', # (default to molecule do we need a custom field)
+        'Same Barcodes on Both Ends of Sequence'	=> well.same_barcodes_on_both_ends_of_sequence # TRUE
+      }
+    end
+
     # Generate a hash of settings for the cell
     # Each key is a plate-well identifier and the value is a hash of settings for that particular cell
     def smrt_cell_settings
-      plate_wells = %w[1_A01 1_B01 1_C01 1_D01 2_A01 2_B01 2_C01 2_D01]
+      wells = object.plates.flat_map(&:wells)
+      wells = wells.each_with_object({}) do |well, hash|
+        plate_well_name = "#{well.plate.plate_number}_#{well.position_leading_zero}"
+        hash[plate_well_name] = well
+      end
 
-      # Initialize an empty hash to store the accumulated settings
-      accumulated_settings = {}
+      # Iterate over each plate_well, accumulating the settings for each
+      smrt_cells = wells.each_with_object({}) do |(plate_well, well), acc|
+        acc[plate_well] = generate_smrt_cell_settings(well)
+      end
 
-      # Iterate over each plate_well
-      plate_wells.each do |plate_well|
-        # If the plate_well is present in the settings hash
-        next unless settings.key?(plate_well)
-
-        # Accumulate the settings for that plate_well
-        plate_well_settings = {
-          'Well Name'	=> pool.tube.barcode, # TRAC-2-7242
-          'Library Type'	=> 'Standard', # (potentially new field otherwise just string)
-          'Movie Acquisition Time (hours)'	=> well.movie_acquisition_time, # 24
-          'Insert Size (bp)'	=> well.insert_size, # 500
-          'Assign Data To Project'	=> 1, # (maybe we need to assign a run a project in traction)?
-          'Library Concentration (pM)'	=> well.library_concentration, # 250
-          'Include Base Kinetics'	=> well.include_base_kinetics, # FALSE
-          'Polymerase Kit'	=> well.polymerase_kit, # 032037102739100071224
-          'Indexes'	=> well.barcode_set, # 244d96c6-f3b2-4997-5ae3-23ed33ab925f
-          'Sample is indexed'	=> well.isCollection, # TRUE
-          'Use Adaptive Loading'	=> well.adaptive_loading_check, # TRUE
-          'Consensus Mode'	=> 'molecule', # (default to molecule do we need a custom field)
-          'Same Barcodes on Both Ends of Sequence'	=> well.same_barcodes_on_both_ends_of_sequence # TRUE
-        }
-
-        accumulated_settings[plate_well] = plate_well_settings
+      # transpose the settings to be grouped by key, not by plate_well
+      smrt_cells.each_with_object({}) do |(plate_well, cell_data), result|
+        cell_data.each do |(key, value)|
+          result[key] ||= {}
+          result[key].merge!({ plate_well => value })
+        end
       end
     end
 
@@ -59,6 +76,7 @@ module RunCsv
       # Bio Sample Name	Plate Well	Adapter	Adapter2	Pipeline Id	Analysis Name	Entry Points	Task Options
       # find_sample_name TOL-123	plate.plate_number + '_' +  well.position_leading_zero e.g. 1_A01	tag.group_id bc2001	tag.group_id bc2001	(not needed)	(not needed)	(not needed)	(not needed)
       # TOL-124	1_B01	bc2002	bc2001
+      {}
     end
 
     def payload
@@ -69,9 +87,10 @@ module RunCsv
       sample_sheet += run_settings.map { |k, v| "#{k},#{v}" }.join("\n")
 
       # Add the cell settings
-      sample_sheet += "\n[SMRT Cell Settings]\n"
-      sample_sheet += smrt_cell_settings.map do |k, v|
-        v.map { |k1, v1| "#{k},#{k1},#{v1}" }
+      sample_sheet += "\n[SMRT Cell Settings]"
+      sample_sheet += ",#{plate_well_names.join(',')}\n"
+      sample_sheet += smrt_cell_settings.map do |key, cells|
+        "#{key}," + cells.values.join(',')
       end.join("\n")
 
       # Add the sample settings
