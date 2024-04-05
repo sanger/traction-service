@@ -26,8 +26,12 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
       end
 
       it 'must have the three required sections in the correct order' do
-        expect(sample_sheet_string.index('[Run Settings]')).to be < sample_sheet_string.index('[SMRT Cell Settings]')
-        expect(sample_sheet_string.index('[SMRT Cell Settings]')).to be < sample_sheet_string.index('[Samples]')
+        run_settings_index = sample_sheet_string.index('[Run Settings]')
+        cell_settings_index = sample_sheet_string.index('[SMRT Cell Settings]')
+        samples_index = sample_sheet_string.index('[Samples]')
+
+        expect(run_settings_index).to be < cell_settings_index
+        expect(cell_settings_index).to be < samples_index
       end
 
       it 'must have the correct run settings' do
