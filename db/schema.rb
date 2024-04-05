@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_27_103930) do
+ActiveRecord::Schema[7.1].define(version: 2024_04_05_075558) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
@@ -189,9 +189,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_27_103930) do
     t.datetime "deactivated_at", precision: nil
     t.bigint "pacbio_request_id", null: false
     t.bigint "tag_id"
-    t.bigint "pacbio_pool_id"
     t.bigint "tube_id"
-    t.index ["pacbio_pool_id"], name: "index_pacbio_libraries_on_pacbio_pool_id"
     t.index ["pacbio_request_id"], name: "index_pacbio_libraries_on_pacbio_request_id"
     t.index ["tag_id"], name: "index_pacbio_libraries_on_tag_id"
     t.index ["tube_id"], name: "index_pacbio_libraries_on_tube_id"
@@ -284,20 +282,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_27_103930) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_pacbio_smrt_link_versions_on_name", unique: true
-  end
-
-  create_table "pacbio_well_libraries", charset: "utf8mb3", force: :cascade do |t|
-    t.bigint "pacbio_well_id"
-    t.bigint "pacbio_library_id"
-    t.index ["pacbio_library_id"], name: "index_pacbio_well_libraries_on_pacbio_library_id"
-    t.index ["pacbio_well_id"], name: "index_pacbio_well_libraries_on_pacbio_well_id"
-  end
-
-  create_table "pacbio_well_pools", charset: "utf8mb3", force: :cascade do |t|
-    t.bigint "pacbio_well_id"
-    t.bigint "pacbio_pool_id"
-    t.index ["pacbio_pool_id"], name: "index_pacbio_well_pools_on_pacbio_pool_id"
-    t.index ["pacbio_well_id"], name: "index_pacbio_well_pools_on_pacbio_well_id"
   end
 
   create_table "pacbio_wells", charset: "utf8mb3", force: :cascade do |t|
@@ -511,7 +495,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_27_103930) do
   add_foreign_key "ont_requests", "library_types"
   add_foreign_key "ont_runs", "ont_instruments"
   add_foreign_key "ont_runs", "ont_min_know_versions"
-  add_foreign_key "pacbio_libraries", "pacbio_pools"
   add_foreign_key "pacbio_libraries", "pacbio_requests"
   add_foreign_key "pacbio_libraries", "tubes"
   add_foreign_key "pacbio_pools", "tubes"
