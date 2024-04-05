@@ -19,6 +19,10 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
     context 'v13_revio' do
       let(:smrt_link_version) { create(:pacbio_smrt_link_version_default, name: 'v13_revio') }
 
+      it 'must return a string' do
+        expect(sample_sheet_string.class).to eq String
+      end
+
       it 'must have the three required sections' do
         expect(sample_sheet_string).to include('[Run Settings]')
         expect(sample_sheet_string).to include('[SMRT Cell Settings]')
@@ -45,6 +49,12 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
             'CSV Version' => '1'
           }
         )
+      end
+
+      it 'must have the cells used listed on the same line as the section header' do
+        # get the line from sample_sheet_string containing [SMRT Cell Settings]
+        smrt_cell_settings_line = sample_sheet_string.lines.find { |line| line.include?('[SMRT Cell Settings]') }.strip
+        expect(smrt_cell_settings_line).to eq('[SMRT Cell Settings],1_A01,1_B01,2_A01')
       end
 
       it 'must have the correct SMRT cell settings' do
@@ -82,10 +92,6 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
         end
       end
 
-      it 'must return a csv string' do
-        expect(sample_sheet_string.class).to eq String
-      end
-
       context 'when the libraries are tagged' do
         let(:well1) do
           create(
@@ -106,8 +112,11 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
         let(:wells) { [well1, well2] }
 
         it 'must have the correct headers' do
-          headers = parsed_sample_sheet[0]
-
+          # get the line from sample_sheet_string after the one containing [Samples]
+          sample_sheet_lines = sample_sheet_string.lines
+          samples_section_index = sample_sheet_lines.find_index { |line| line.include?('[Samples]') }
+          headers_line = sample_sheet_lines[samples_section_index + 1]
+          headers = headers_line.strip.split(',')
           expected_headers = configuration.column_order
           expect(headers).to eq(expected_headers)
         end
@@ -197,8 +206,11 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
         let(:wells) { [well1, well2] }
 
         it 'must have the correct headers' do
-          headers = parsed_sample_sheet[0]
-
+          # get the line from sample_sheet_string after the one containing [Samples]
+          sample_sheet_lines = sample_sheet_string.lines
+          samples_section_index = sample_sheet_lines.find_index { |line| line.include?('[Samples]') }
+          headers_line = sample_sheet_lines[samples_section_index + 1]
+          headers = headers_line.strip.split(',')
           expected_headers = configuration.column_order
           expect(headers).to eq(expected_headers)
         end
