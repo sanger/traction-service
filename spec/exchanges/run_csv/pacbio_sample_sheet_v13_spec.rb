@@ -48,55 +48,38 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
       end
 
       it 'must have the correct SMRT cell settings' do
-        expect(parsed_sample_sheet['SMRT Cell Settings']).to eq(
-          {
-            '1_A01' => {
-              'Well Name' => 'TRAC-2-6268',
-              'Library Type' => 'Standard',
-              'Movie Acquisition Time (hours)' => '15',
-              'Insert Size (bp)' => '100',
-              'Assign Data To Project' => '1',
-              'Library Concentration (pM)' => '10.1',
-              'Include Base Kinetics' => 'True',
-              'Polymerase Kit' => 'DM1117100862200111711',
-              'Indexes' => '1',
-              'Sample is indexed' => 'true',
-              'Use Adaptive Loading' => 'true',
-              'Consensus Mode' => 'molecule',
-              'Same Barcodes on Both Ends of Sequence' => 'true'
-            },
-            '1_B01' => {
-              'Well Name' => 'TRAC-2-6273',
-              'Library Type' => 'Standard',
-              'Movie Acquisition Time (hours)' => '15',
-              'Insert Size (bp)' => '100',
-              'Assign Data To Project' => '1',
-              'Library Concentration (pM)' => '10.2',
-              'Include Base Kinetics' => 'True',
-              'Polymerase Kit' => 'DM1117100862200111712',
-              'Indexes' => '21',
-              'Sample is indexed' => 'true',
-              'Use Adaptive Loading' => 'true',
-              'Consensus Mode' => 'molecule',
-              'Same Barcodes on Both Ends of Sequence' => 'true'
-            },
-            '2_A01' => {
-              'Well Name' => 'TRAC-2-6278',
-              'Library Type' => 'Standard',
-              'Movie Acquisition Time (hours)' => '15',
-              'Insert Size (bp)' => '100',
-              'Assign Data To Project' => '1',
-              'Library Concentration (pM)' => '10.3',
-              'Include Base Kinetics' => 'True',
-              'Polymerase Kit' => 'DM1117100862200111713',
-              'Indexes' => '41',
-              'Sample is indexed' => 'true',
-              'Use Adaptive Loading' => 'true',
-              'Consensus Mode' => 'molecule',
-              'Same Barcodes on Both Ends of Sequence' => 'true'
-            }
+        smrt_cell_settings = parsed_sample_sheet['SMRT Cell Settings']
+
+        # create a hash of plate_well_name => well for easy comparison
+        plate_wells = run.plates.flat_map(&:wells).each_with_object({}) do |well, hash|
+          plate_well_name = "#{well.plate.plate_number}_#{well.position_leading_zero}"
+          hash[plate_well_name] = well
+        end
+
+        # confirm that the wells are as expected
+        plate_well_names = plate_wells.keys
+        expect(plate_well_names).to contain_exactly('1_A01', '1_B01', '2_A01')
+        expect(smrt_cell_settings.keys).to match_array(plate_well_names)
+
+        plate_well_names.each do |plate_well_name|
+          well = plate_wells[plate_well_name]
+          expected_settings = {
+            'Well Name' => well.pools.first.tube.barcode,
+            'Library Type' => 'Standard',
+            'Movie Acquisition Time (hours)' => well.movie_acquisition_time.to_s,
+            'Insert Size (bp)' => well.insert_size.to_s,
+            'Assign Data To Project' => '1',
+            'Library Concentration (pM)' => well.library_concentration.to_s,
+            'Include Base Kinetics' => well.include_base_kinetics.to_s,
+            'Polymerase Kit' => well.polymerase_kit,
+            'Indexes' => well.barcode_set,
+            'Sample is indexed' => well.collection?.to_s,
+            'Use Adaptive Loading' => well.adaptive_loading_check.to_s,
+            'Consensus Mode' => 'molecule',
+            'Same Barcodes on Both Ends of Sequence' => well.same_barcodes_on_both_ends_of_sequence.to_s
           }
-        )
+          expect(smrt_cell_settings[plate_well_name]).to eq(expected_settings)
+        end
       end
 
       it 'must return a csv string' do
