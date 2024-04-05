@@ -7,7 +7,7 @@ module Saphyr
   end
 
   def self.library_attributes
-    []
+    raise StandardError, 'Unsupported' # Only Pacbio is supported at the moment
   end
 
   def self.request_attributes
@@ -23,10 +23,7 @@ module Saphyr
   end
 
   def self.library_factory(request:, library_attributes:)
-    Saphyr::Library.new(
-      request: request.requestable,
-      **library_attributes.slice(*self.library_attributes)
-    )
+    raise StandardError, 'Unsupported' # Only Pacbio is supported at the moment
   end
 
   # We have this argument here for API compatibility

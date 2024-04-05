@@ -55,7 +55,7 @@ module V1
     end
 
     def permitted_library_attributes
-      [*::Pacbio.library_attributes, *::Ont.library_attributes, *::Saphyr.library_attributes].uniq
+      [*::Pacbio.library_attributes].uniq
     end
 
     def permitted_request_attributes

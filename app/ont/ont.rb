@@ -7,7 +7,7 @@ module Ont
   end
 
   def self.library_attributes
-    []
+    raise StandardError, 'Unsupported' # Only Pacbio is supported at the moment
   end
 
   def self.request_attributes
@@ -25,10 +25,7 @@ module Ont
   end
 
   def self.library_factory(request:, library_attributes:)
-    Ont::Library.new(
-      request: request.requestable,
-      **library_attributes.slice(*self.library_attributes)
-    )
+    raise StandardError, 'Unsupported' # Only Pacbio is supported at the moment
   end
 
   def self.request_factory(sample:, container:, request_attributes:, resource_factory:, reception:)
