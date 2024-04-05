@@ -6,6 +6,10 @@ module Saphyr
     'saphyr_'
   end
 
+  def self.library_attributes
+    raise StandardError, 'Unsupported' # Only Pacbio is supported at the moment
+  end
+
   def self.request_attributes
     [
       :external_study_id
@@ -16,6 +20,11 @@ module Saphyr
     [
       :external_study_id
     ]
+  end
+
+  # Parameters would be request: and library_attributes: if this was supported.
+  def self.library_factory(*)
+    raise StandardError, 'Unsupported' # Only Pacbio is supported at the moment
   end
 
   # We have this argument here for API compatibility
