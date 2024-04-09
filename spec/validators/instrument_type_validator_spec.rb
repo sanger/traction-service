@@ -131,7 +131,7 @@ RSpec.describe InstrumentTypeValidator do
 
       it 'well positions' do
         test_cases = [
-          { well_positions_plate_1: ['G1'], well_positions_plate_2: ['A1']},
+          { well_positions_plate_1: ['G1'], well_positions_plate_2: ['A1'] },
           { well_positions_plate_1: %w[A1 B1 C1 H1], well_positions_plate_2: ['A1'], system_name: 'Revio' }
         ]
 
