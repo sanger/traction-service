@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Parsers::PacbioSampleSheetV13Parser, type: :model do
   let(:sample_sheet_parser) { described_class.new }
-  let(:sample_sheet_string) { File.read('spec/exchanges/run_csv/pacbio_sample_sheet_v13_revio.csv') }
+  let(:sample_sheet_string) { File.read('spec/fixtures/sample_sheet_v13_revio_pacbio.csv') }
 
   describe '#split_into_sections' do
     subject(:split_sections) { sample_sheet_parser.split_into_sections(sample_sheet_string) }

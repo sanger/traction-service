@@ -42,10 +42,11 @@ module RunCsv
         'Include Base Kinetics'	=> well.include_base_kinetics, # FALSE
         'Polymerase Kit'	=> well.polymerase_kit, # 032037102739100071224
         'Indexes'	=> well.barcode_set, # 244d96c6-f3b2-4997-5ae3-23ed33ab925f
-        'Sample is indexed'	=> well.collection?, # TRUE
+        'Sample is indexed'	=> well.tagged?, # Set to True to Multiplex
+        'Bio Sample Name' => well.tagged? ? nil : well.bio_sample_name,
         'Use Adaptive Loading'	=> well.adaptive_loading_check, # TRUE
         'Consensus Mode'	=> 'molecule', # (default to molecule do we need a custom field)
-        'Same Barcodes on Both Ends of Sequence'	=> well.same_barcodes_on_both_ends_of_sequence # TRUE
+        'Same Barcodes on Both Ends of Sequence'	=> well.same_barcodes_on_both_ends_of_sequence
       }
     end
 
@@ -72,11 +73,10 @@ module RunCsv
       end
     end
 
-    def sample_settings
-      # Bio Sample Name	Plate Well	Adapter	Adapter2	Pipeline Id	Analysis Name	Entry Points	Task Options
-      # find_sample_name TOL-123	plate.plate_number + '_' +  well.position_leading_zero e.g. 1_A01	tag.group_id bc2001	tag.group_id bc2001	(not needed)	(not needed)	(not needed)	(not needed)
-      # TOL-124	1_B01	bc2002	bc2001
-      {}
+    # Generate an array of hashes containing the samples and their properties
+    def samples_csv
+      # call parent payload method
+      method(:payload).super_method.call
     end
 
     def payload
@@ -95,7 +95,7 @@ module RunCsv
 
       # Add the sample settings
       sample_sheet += "\n[Samples]\n"
-      sample_sheet += sample_settings.map { |k, v| "#{k},#{v}" }.join("\n")
+      sample_sheet += samples_csv
 
       sample_sheet
     end

@@ -353,7 +353,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               well.sample_is_barcoded.to_s,
               nil, # barcode name - does not apply
               well.barcode_set,
-              well.same_barcodes_on_both_ends_of_sequence.to_s,
+              well.same_barcodes_on_both_ends_of_sequence,
               well.bio_sample_name,
               well.automation_parameters,
               well.ccs_analysis_output_include_kinetics_information,

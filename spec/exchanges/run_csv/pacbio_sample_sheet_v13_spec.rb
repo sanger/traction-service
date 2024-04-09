@@ -5,20 +5,21 @@ require 'rails_helper'
 # import parser to assist with testing
 require_relative '../../../app/exchanges/parsers/pacbio_sample_sheet_v13_parser'
 
-# See additional sample sheet specs at 'spec/pipelines/pacbio/sample_sheet_spec.rb'
-
 RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
+  before do
+    # Create a default smrt link version
+    create(:pacbio_smrt_link_version, name: 'v13_revio', default: true)
+  end
+
   describe '#payload' do
     subject(:sample_sheet_string) { sample_sheet.payload }
 
-    let(:run)           { create(:pacbio_revio_run, smrt_link_version:) }
+    let(:run)           { create(:pacbio_revio_run) }
     let(:sample_sheet)  { described_class.new(object: run, configuration:) }
     let(:configuration) { Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name) }
     let(:parsed_sample_sheet) { Parsers::PacbioSampleSheetV13Parser.new.parse(sample_sheet_string) }
 
     context 'v13_revio' do
-      let(:smrt_link_version) { create(:pacbio_smrt_link_version_default, name: 'v13_revio') }
-
       it 'must return a string' do
         expect(sample_sheet_string.class).to eq String
       end
@@ -74,6 +75,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
         plate_well_names.each do |plate_well_name|
           well = plate_wells[plate_well_name]
           expected_settings = {
+            # for all wells
             'Well Name' => well.pools.first.tube.barcode,
             'Library Type' => 'Standard',
             'Movie Acquisition Time (hours)' => well.movie_acquisition_time.to_s,
@@ -82,12 +84,16 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
             'Library Concentration (pM)' => well.library_concentration.to_s,
             'Include Base Kinetics' => well.include_base_kinetics.to_s,
             'Polymerase Kit' => well.polymerase_kit,
-            'Indexes' => well.barcode_set,
-            'Sample is indexed' => well.collection?.to_s,
             'Use Adaptive Loading' => well.adaptive_loading_check.to_s,
             'Consensus Mode' => 'molecule',
-            'Same Barcodes on Both Ends of Sequence' => well.same_barcodes_on_both_ends_of_sequence.to_s
+
+            # specific to tagged wells
+            'Bio Sample Name' => '',
+            'Sample is indexed' => 'true',
+            'Indexes' => well.barcode_set,
+            'Same Barcodes on Both Ends of Sequence' => 'true' # well.same_barcodes_on_both_ends_of_sequence.to_s
           }
+
           expect(smrt_cell_settings[plate_well_name]).to eq(expected_settings)
         end
       end
@@ -98,7 +104,9 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
             :pacbio_well_with_pools,
             pre_extension_time: 2,
             generate_hifi: 'In SMRT Link',
-            ccs_analysis_output: 'Yes'
+            ccs_analysis_output: 'Yes',
+            row: 'A',
+            column: 1
           )
         end
         let(:well2) do
@@ -106,10 +114,26 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
             :pacbio_well_with_pools,
             pre_extension_time: 2,
             generate_hifi: 'In SMRT Link',
-            ccs_analysis_output: 'No'
+            ccs_analysis_output: 'No',
+            row: 'A',
+            column: 1
           )
         end
-        let(:wells) { [well1, well2] }
+        let(:well3) do
+          create(
+            :pacbio_well_with_pools,
+            pre_extension_time: 2,
+            generate_hifi: 'In SMRT Link',
+            ccs_analysis_output: 'No',
+            row: 'B',
+            column: 1
+          )
+        end
+        let(:plate1_wells)   { [well1] }
+        let(:plate2_wells)   { [well2, well3] }
+        let(:plate1)  { build(:pacbio_plate, wells: plate1_wells, plate_number: 1) }
+        let(:plate2)  { build(:pacbio_plate, wells: plate2_wells, plate_number: 2) }
+        let(:run)     { create(:pacbio_revio_run, plates: [plate1, plate2]) }
 
         it 'must have the correct headers' do
           # get the line from sample_sheet_string after the one containing [Samples]
@@ -121,73 +145,27 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
           expect(headers).to eq(expected_headers)
         end
 
-        it 'must have the correct well header rows' do
-          well_data_1 = parsed_sample_sheet[1]
-          well_data_2 = parsed_sample_sheet[7]
-          #  iterate through the wells under test
-          well_expectations = [
-            [well_data_1, well1],
-            [well_data_2, well2]
-          ]
-          well_expectations.each do |well_data, well|
-            expect(well_data).to eq([
-              'Standard', # library type
-              '1', # reagent plate
-              well.plate.sequencing_kit_box_barcode,
-              nil, # plate 2: sequencing_kit_box_barcode
-              well.plate.run.name,
-              well.plate.run.system_name,
-              well.plate.run.comments,
-              'true', # well.collection?
-              well.position_leading_zero,
-              well.tube_barcode,
-              well.movie_acquisition_time.to_s,
-              well.include_base_kinetics.to_s,
-              well.library_concentration.to_s,
-              well.polymerase_kit,
-              well.automation_parameters,
-              well.barcode_set,
-              nil, # barcode name - does not apply
-              nil, # sample name - does not apply
-              well.insert_size.to_s,
-              'false' # Default for Use Adaptive Loading
-            ])
-          end
-        end
-
         it 'must have the correct sample rows' do
-          # Note the increment in the parsed_sample_sheet index
-          sample_data_1 = parsed_sample_sheet[2]
-          sample_data_2 = parsed_sample_sheet[8]
+          # 5 pools per well
+          sample_data_1 = parsed_sample_sheet['Samples'][0]
+          sample_data_2 = parsed_sample_sheet['Samples'][1 * 5]
+          sample_data_3 = parsed_sample_sheet['Samples'][2 * 5]
 
           #  iterate through the samples under test
           sample_expectations = [
             [sample_data_1, well1],
-            [sample_data_2, well2]
+            [sample_data_2, well2],
+            [sample_data_3, well3]
           ]
           sample_expectations.each do |sample_data, well|
-            expect(sample_data).to eq([
-              nil,
-              '1', # reagent plate
-              nil,
-              nil,
-              nil,
-              nil,
-              nil,
-              'false', # aliquot.collection?
-              well.position,
-              nil,
-              nil,
-              nil,
-              nil,
-              nil,
-              nil,
-              nil,
-              well.base_used_aliquots.first.barcode_name,
-              well.base_used_aliquots.first.bio_sample_name,
-              nil,
-              nil
-            ])
+            expect(sample_data).to eq(
+              {
+                'Bio Sample Name' => well.base_used_aliquots.first.bio_sample_name,
+                'Plate Well' => well.plate_well_position,
+                'Adapter' => well.base_used_aliquots.first.tag.group_id,
+                'Adapter2' => well.base_used_aliquots.first.tag.group_id
+              }
+            )
           end
         end
       end
@@ -195,15 +173,45 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
       context 'when the libraries are untagged' do
         let(:pool1)   { create_list(:pacbio_pool, 1, :untagged) }
         let(:pool2)   { create_list(:pacbio_pool, 1, :untagged) }
-        let(:well1)   do
-          create(:pacbio_well, pre_extension_time: 2, generate_hifi: 'Do Not Generate',
-                               ccs_analysis_output: 'Yes', pools: pool1)
+        let(:pool3)   { create_list(:pacbio_pool, 1, :untagged) }
+        let(:well1) do
+          create(
+            :pacbio_well,
+            pre_extension_time: 2,
+            generate_hifi: 'In SMRT Link',
+            ccs_analysis_output: 'Yes',
+            pools: pool1, # the untagged pool
+            row: 'A',
+            column: 1
+          )
         end
         let(:well2) do
-          create(:pacbio_well, generate_hifi: 'On Instrument', ccs_analysis_output: 'No',
-                               pools: pool2)
+          create(
+            :pacbio_well,
+            pre_extension_time: 2,
+            generate_hifi: 'In SMRT Link',
+            ccs_analysis_output: 'No',
+            pools: pool3, # the untagged pool
+            row: 'A',
+            column: 1
+          )
         end
-        let(:wells) { [well1, well2] }
+        let(:well3) do
+          create(
+            :pacbio_well,
+            pre_extension_time: 2,
+            generate_hifi: 'In SMRT Link',
+            ccs_analysis_output: 'No',
+            pools: pool3, # the untagged pool
+            row: 'B',
+            column: 1
+          )
+        end
+        let(:plate1_wells)   { [well1] }
+        let(:plate2_wells)   { [well2, well3] }
+        let(:plate1)  { build(:pacbio_plate, wells: plate1_wells, plate_number: 1) }
+        let(:plate2)  { build(:pacbio_plate, wells: plate2_wells, plate_number: 2) }
+        let(:run)     { create(:pacbio_revio_run, plates: [plate1, plate2]) }
 
         it 'must have the correct headers' do
           # get the line from sample_sheet_string after the one containing [Samples]
@@ -215,57 +223,49 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
           expect(headers).to eq(expected_headers)
         end
 
-        it 'must have the correct well header rows' do
-          well_data_1 = parsed_sample_sheet[1]
-          well_data_2 = parsed_sample_sheet[2]
+        it 'must have the wells added to the SMRT Cell Settings section' do
+          smrt_cell_settings = parsed_sample_sheet['SMRT Cell Settings']
+
+          # create a hash of plate_well_name => well for easy comparison
+          plate_wells = run.plates.flat_map(&:wells).each_with_object({}) do |well, hash|
+            plate_well_name = "#{well.plate.plate_number}_#{well.position_leading_zero}"
+            hash[plate_well_name] = well
+          end
+
+          # confirm that the wells are as expected
+          plate_well_names = plate_wells.keys
+          expect(plate_well_names).to contain_exactly('1_A01', '2_A01', '2_B01')
+          expect(smrt_cell_settings.keys).to match_array(plate_well_names)
+
           #  iterate through the wells under test
-          well_expectations = [
-            [well_data_1, well1],
-            [well_data_2, well2]
-          ]
-          well_expectations.each do |well_data, well|
-            expect(well_data).to eq([
-              'Standard', # library type
-              '1', # reagent plate
-              well.plate.sequencing_kit_box_barcode,
-              nil, # plate 2: sequencing_kit_box_barcode
-              well.plate.run.name,
-              well.plate.run.system_name,
-              well.plate.run.comments,
-              'true', # well.collection?
-              well.position_leading_zero,
-              well.tube_barcode,
-              well.movie_acquisition_time.to_s,
-              well.include_base_kinetics.to_s,
-              well.library_concentration.to_s,
-              well.polymerase_kit,
-              well.automation_parameters,
-              well.barcode_set,
-              nil, # barcode name - does not apply
-              well.bio_sample_name,
-              well.insert_size.to_s,
-              'false' # Default for Use Adaptive Loading
-            ])
+          plate_well_names.each do |plate_well_name|
+            well_data = smrt_cell_settings[plate_well_name]
+            well = plate_wells[plate_well_name]
+
+            expect(well_data).to eq(
+              # for all wells
+              'Well Name' => well.pools.first.tube.barcode,
+              'Library Type' => 'Standard',
+              'Movie Acquisition Time (hours)' => well.movie_acquisition_time.to_s,
+              'Insert Size (bp)' => well.insert_size.to_s,
+              'Assign Data To Project' => '1',
+              'Library Concentration (pM)' => well.library_concentration.to_s,
+              'Include Base Kinetics' => well.include_base_kinetics.to_s,
+              'Polymerase Kit' => well.polymerase_kit,
+              'Use Adaptive Loading' => well.adaptive_loading_check.to_s,
+              'Consensus Mode' => 'molecule',
+
+              # specific to untagged wells
+              'Bio Sample Name' => well.bio_sample_name,
+              'Sample is indexed' => 'false',
+              'Indexes' => '', # well.barcode_set
+              'Same Barcodes on Both Ends of Sequence' => '' # well.same_barcodes_on_both_ends_of_sequence.to_s
+            )
           end
         end
 
         it 'must not have sample rows' do
-          expect(parsed_sample_sheet.size).to eq 3
-        end
-      end
-
-      context 'with lots of wells in unpredictable orders' do
-        let(:pool1) { create_list(:pacbio_pool, 1, :untagged) }
-        let(:pool2) { create_list(:pacbio_pool, 1, :untagged) }
-        let(:pool3) { create_list(:pacbio_pool, 1, :untagged) }
-        let(:well1) { create(:pacbio_well, pools: pool1, row: 'A', column: 10) }
-        let(:well2) { create(:pacbio_well, pools: pool2, row: 'A', column: 5) }
-        let(:well3) { create(:pacbio_well, pools: pool3, row: 'B', column: 1) }
-        let(:wells) { [well1, well2, well3] }
-
-        it 'sorts the wells by column' do
-          sorted_well_positions = parsed_sample_sheet[1..].pluck(8)
-          expect(sorted_well_positions).to eq(%w[B01 A05 A10])
+          expect(parsed_sample_sheet['Samples']).to be_empty
         end
       end
     end
