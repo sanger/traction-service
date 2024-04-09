@@ -7,13 +7,13 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
     subject(:csv_string) { csv.payload }
 
     let(:plate)       { build(:pacbio_plate, wells:, plate_number: 1) }
-    let(:run)         { create(:pacbio_generic_run, smrt_link_version:, plates: [plate]) }
     let(:parsed_csv)  { CSV.parse(csv_string) }
     let(:csv)         { described_class.new(object: run, configuration:) }
     let(:configuration) { Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name) }
 
     context 'v12_revio' do
       let(:smrt_link_version) { create(:pacbio_smrt_link_version_default, name: 'v12_revio') }
+      let(:run)               { create(:pacbio_revio_run, smrt_link_version:, plates: [plate]) }
 
       context 'when the libraries are tagged' do
         let(:well1) do
@@ -191,6 +191,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
 
     context 'v12_sequel_iie and v13_sequel_iie' do
       let(:smrt_link_version) { create(:pacbio_smrt_link_version, name: 'v12_sequel_iie', default: true) }
+      let(:run)               { create(:pacbio_sequel_run, smrt_link_version:, plates: [plate]) }
 
       context 'when the libraries are tagged' do
         let(:well1) do
