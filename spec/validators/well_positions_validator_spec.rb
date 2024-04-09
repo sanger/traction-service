@@ -43,7 +43,8 @@ RSpec.describe WellPositionsValidator do
       well_list = WellList.new(positions: valid_positions + [position])
       validator = described_class.new(valid_positions:)
       validator.validate(well_list)
-      expect(well_list.errors[:wells]).to include("must be in positions #{valid_positions.join(',')}")
+      valid_string = valid_positions.join(',')
+      expect(well_list.errors[:wells]).to include("#{position} must be in positions #{valid_string}")
     end
   end
 
