@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :pacbio_plate, class: 'Pacbio::Plate' do
-    run { association :pacbio_run }
+    run { association :pacbio_generic_run }
     transient do
       well_count { 1 }
       well_factory { :pacbio_well }

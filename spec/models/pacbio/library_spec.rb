@@ -243,7 +243,7 @@ RSpec.describe Pacbio::Library, :pacbio do
 
     it 'when there is a single run' do
       plate = build(:pacbio_plate_with_wells, :pooled)
-      create(:pacbio_run, plates: [plate])
+      create(:pacbio_generic_run, plates: [plate])
       library = plate.wells.first.pools.first.libraries.first
       expect(library.sequencing_plates).to eq([plate])
     end
@@ -251,8 +251,8 @@ RSpec.describe Pacbio::Library, :pacbio do
     it 'when there are multiple runs' do
       plate1 = build(:pacbio_plate)
       plate2 = build(:pacbio_plate)
-      create(:pacbio_run, plates: [plate1])
-      create(:pacbio_run, plates: [plate2])
+      create(:pacbio_generic_run, plates: [plate1])
+      create(:pacbio_generic_run, plates: [plate2])
       pool = create(:pacbio_pool)
       create(:pacbio_well, pools: [pool], plate: plate1)
       create(:pacbio_well, pools: [pool], plate: plate2)
@@ -261,7 +261,7 @@ RSpec.describe Pacbio::Library, :pacbio do
 
     it 'goes through wells when the libary is not in a pool' do
       plate = build(:pacbio_plate)
-      create(:pacbio_run, plates: [plate])
+      create(:pacbio_generic_run, plates: [plate])
       library = create(:pacbio_library, pool: nil)
       create(:pacbio_well, libraries: [library], plate:)
       expect(library.sequencing_plates).to eq([plate])
@@ -277,15 +277,15 @@ RSpec.describe Pacbio::Library, :pacbio do
     it 'when there is a single run' do
       plate = build(:pacbio_plate_with_wells)
       library = create(:pacbio_library, pool: nil, wells: [plate.wells.first])
-      create(:pacbio_run, plates: [plate])
+      create(:pacbio_generic_run, plates: [plate])
       expect(library.sequencing_runs).to eq([plate.run])
     end
 
     it 'when there are multiple runs' do
       plate1 = build(:pacbio_plate)
       plate2 = build(:pacbio_plate)
-      create(:pacbio_run, plates: [plate1])
-      create(:pacbio_run, plates: [plate2])
+      create(:pacbio_generic_run, plates: [plate1])
+      create(:pacbio_generic_run, plates: [plate2])
       library = create(:pacbio_library)
       create(:pacbio_well, libraries: [library], plate: plate1)
       create(:pacbio_well, libraries: [library], plate: plate2)

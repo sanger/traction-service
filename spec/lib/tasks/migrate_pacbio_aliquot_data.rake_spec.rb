@@ -78,7 +78,7 @@ RSpec.describe 'RakeTasks' do
       # Create some singled-plexed pools (new libraries) with wells
       plate = build(:pacbio_plate_with_wells)
       pools = create_list(:pacbio_pool, 5, library_count: 1, wells: [plate.wells.first], created_at: 1.day.ago.round)
-      create(:pacbio_run, plates: [plate])
+      create(:pacbio_generic_run, plates: [plate])
 
       # Create some multiplexed pools (these shouldnt be affected)
       create_list(:pacbio_pool, 5, library_count: 2)

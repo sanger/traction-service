@@ -853,7 +853,7 @@ RSpec.describe 'PoolsController', :pacbio do
       let!(:pool) { create(:pacbio_pool) }
       let!(:updated_library) { pool.libraries.first }
       let!(:plate) { build(:pacbio_plate) }
-      let(:run) { create(:pacbio_run, plates: [plate]) }
+      let(:run) { create(:pacbio_generic_run, plates: [plate]) }
 
       let(:body) do
         {
@@ -1070,7 +1070,7 @@ RSpec.describe 'PoolsController', :pacbio do
       let!(:pool) { create(:pacbio_pool) }
       let!(:updated_aliquot) { pool.used_aliquots.first }
       let!(:plate) { build(:pacbio_plate) }
-      let(:run) { create(:pacbio_run, plates: [plate]) }
+      let(:run) { create(:pacbio_generic_run, plates: [plate]) }
 
       let(:body) do
         {
