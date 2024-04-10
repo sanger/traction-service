@@ -74,6 +74,15 @@ module Pacbio
       false
     end
 
+    # Checks if the library is tagged.
+    #
+    # An library is considered tagged if it has a non-nil and non-empty tag.
+    #
+    # @return [Boolean] Returns true if the library is tagged, false otherwise.
+    def tagged?
+      tag.present?
+    end
+
     # @return [Array] of Runs that the pool is used in
     def sequencing_runs
       wells&.collect(&:run)&.uniq
