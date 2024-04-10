@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe RunCsv::PacbioSampleSheetV13Parser, type: :model do
+RSpec.describe Parsers::PacbioSampleSheetV13Parser, type: :model do
   let(:sample_sheet_parser) { described_class.new }
   let(:sample_sheet_string) { File.read('spec/exchanges/run_csv/pacbio_sample_sheet_v13_revio.csv') }
 

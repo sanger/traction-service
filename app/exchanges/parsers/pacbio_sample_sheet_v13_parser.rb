@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-module RunCsv
-  # RunCsv::PacbioSampleSheetV13Parser
+module Parsers
+  # Parsers::PacbioSampleSheetV13Parser
   # Use to parse PacBio sample sheets of version 13
   # Example usage:
-  #    parsed_sample_sheet = RunCsv::PacbioSampleSheetV13Parser.new.parse(sample_sheet_string)
+  #    parsed_sample_sheet = Parsers::PacbioSampleSheetV13Parser.new.parse(sample_sheet_string)
   class PacbioSampleSheetV13Parser
     def split_into_sections(sample_sheet_string)
       # returns an hash of sections and their contents as strings

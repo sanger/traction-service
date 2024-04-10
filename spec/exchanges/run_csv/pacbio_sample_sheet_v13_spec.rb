@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 # import parser to assist with testing
-require_relative '../../../app/exchanges/run_csv/pacbio_sample_sheet_v13_parser'
+require_relative '../../../app/exchanges/parsers/pacbio_sample_sheet_v13_parser'
 
 # See additional sample sheet specs at 'spec/pipelines/pacbio/sample_sheet_spec.rb'
 
@@ -14,7 +14,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
     let(:run)           { create(:pacbio_revio_run, smrt_link_version:) }
     let(:sample_sheet)  { described_class.new(object: run, configuration:) }
     let(:configuration) { Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name) }
-    let(:parsed_sample_sheet) { RunCsv::PacbioSampleSheetV13Parser.new.parse(sample_sheet_string) }
+    let(:parsed_sample_sheet) { Parsers::PacbioSampleSheetV13Parser.new.parse(sample_sheet_string) }
 
     context 'v13_revio' do
       let(:smrt_link_version) { create(:pacbio_smrt_link_version_default, name: 'v13_revio') }
