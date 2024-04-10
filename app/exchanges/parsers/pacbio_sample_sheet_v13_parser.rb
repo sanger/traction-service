@@ -6,6 +6,10 @@ module Parsers
   # Example usage:
   #    parsed_sample_sheet = Parsers::PacbioSampleSheetV13Parser.new.parse(sample_sheet_string)
   class PacbioSampleSheetV13Parser
+    # these keys (columns) are excluded because they break value-per-well mapping and
+    # aren't used in our implementation
+    EXCLUDE_KEYS = ['Pipeline Id', 'Analysis Name', 'Entry Points', 'Task Options'].freeze
+
     def split_into_sections(sample_sheet_string)
       # returns an hash of sections and their contents as strings
       # {
@@ -39,46 +43,43 @@ module Parsers
       run_settings
     end
 
-    def parse_smrt_cell_settings(section_content)
-      # SMRT Cell Settings
-      # the content should be in the form of a hash of hashes, one for each SMRT cell
-      # the hash should contain key-value pairs for each SMRT cell setting, zipped from the row data
-      #
-      # Input:
-      # ,1_A01,1_B01,2_A01
-      # Well Name,Sample1_CCS,Sample2_CCS_BC,Sample3_CCS_basic
-      # Well Comment,Sample 1 comment,Sample 2 comment,Sample 3 comment
-      # Application,HiFi Reads,HiFi Reads,Unspecified
-      # Library Type,Standard,Standard,Standard
-      # Movie Acquisition Time (hours),24,24,24
-      #
-      # Output:
-      # expect(parsed_sample_sheet['SMRT Cell Settings']).to eq(
-      #   {
-      #     '1_A01' => {
-      #       'Well Name' => 'Sample1_CCS',
-      #       'Well Comment' => 'Sample 1 comment',
-      #       'Application' => 'HiFi Reads',
-      #       'Library Type' => 'Standard',
-      #       'Movie Acquisition Time (hours)' => '24',
-      #       'Insert Size (bp)' => '2000',
-      #       'Assign Data To Project' => '1',
-      #       'Library Concentration (pM)' => '7',
-      #       'Include Base Kinetics' => 'FALSE'
-      #     },
-      #     '1_B01' => {
+    def process_values_into_smrt_cell_settings(settings, key, values)
+      plate_wells = settings.keys
 
-      smrt_cell_settings = {}
+      # check that the number of values matches the number of well identifiers
+      if values.length != plate_wells.length
+        raise "Invalid number of values for key '#{key}', " \
+              "expected #{plate_wells.length}, got #{values.length}"
+      end
+
+      values.each_with_index do |value, index|
+        plate_well = plate_wells[index] # get the plate well from [1_A01, 1_B01, ...]
+        settings[plate_well][key] = value # assign the value to the plate well in the hash
+      end
+    end
+
+    # Parses SMRT cell settings from a given section content.
+    #
+    # @param section_content [String] The section content to parse.
+    # @return [Hash] A hash mapping well identifiers to their settings.
+    #
+    # @example
+    #   parse_smrt_cell_settings("A1,A2,A3\nKey1,Value1,Value2,Value3")
+    #   {"A1" => {"Key1" => "Value1"}, "A2" => {"Key1" => "Value2"}, "A3" => {"Key1" => "Value3"}}
+    def parse_smrt_cell_settings(section_content)
       lines = section_content.split("\n")
-      well_indentifiers = lines[0].split(',')[1..]
+      plate_wells = lines[0].split(',')[1..]
+
+      # create an empty hash for each plate well
+      smrt_cell_settings = plate_wells.index_with { |_plate_well| {} }
 
       lines[1..].each do |line|
         key, *values = line.split(',')
-        values.each_with_index do |value, index|
-          well_indentifier = well_indentifiers[index]
-          smrt_cell_settings[well_indentifier] ||= {}
-          smrt_cell_settings[well_indentifier][key] = value
-        end
+
+        # skip excluded keys
+        next if EXCLUDE_KEYS.include?(key)
+
+        process_values_into_smrt_cell_settings(smrt_cell_settings, key, values)
       end
 
       smrt_cell_settings
