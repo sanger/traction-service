@@ -36,7 +36,7 @@ module Parsers
 
       run_settings = {}
       section_content.split("\n").each do |line|
-        key, value = line.split(',')
+        key, value = line.split(',', -1)
         run_settings[key] = value
       end
 
@@ -68,13 +68,13 @@ module Parsers
     #   {"A1" => {"Key1" => "Value1"}, "A2" => {"Key1" => "Value2"}, "A3" => {"Key1" => "Value3"}}
     def parse_smrt_cell_settings(section_content)
       lines = section_content.split("\n")
-      plate_wells = lines[0].split(',')[1..]
+      plate_wells = lines[0].split(',', -1)[1..]
 
       # create an empty hash for each plate well
       smrt_cell_settings = plate_wells.index_with { |_plate_well| {} }
 
       lines[1..].each do |line|
-        key, *values = line.split(',')
+        key, *values = line.split(',', -1)
 
         # skip excluded keys
         next if EXCLUDE_KEYS.include?(key)
