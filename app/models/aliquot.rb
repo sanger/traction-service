@@ -54,7 +54,8 @@ class Aliquot < ApplicationRecord
   end
 
   # Generic method used by pacbio sample sheet generation to
-  # determine whether the data is a collection or not
+  # determine whether the data is a collection or not.
+  # Assuming false is a simplification used previously for sample-sheets
   def collection?
     false
   end

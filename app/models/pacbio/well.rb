@@ -178,6 +178,7 @@ module Pacbio
       base_used_aliquots.first.used_by.insert_size
     end
 
+    # Always true for wells, but always false for libraries/aliquots - a gross simplification
     def collection?
       true
     end

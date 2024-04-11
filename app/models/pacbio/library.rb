@@ -70,6 +70,7 @@ module Pacbio
       pool ? pool.tube : super
     end
 
+    # Always false for libraries, but always true for wells - a gross simplification
     def collection?
       false
     end
