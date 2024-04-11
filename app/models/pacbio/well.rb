@@ -150,6 +150,12 @@ module Pacbio
       base_used_aliquots.collect(&:source).collect(&:sample_name).join(separator)
     end
 
+    # check if any of the aliquots or libraries in the well are tagged
+    # a convenience method for the sample sheet
+    def tagged?
+      base_used_aliquots.collect(&:tagged?).any?
+    end
+
     # a collection of all the tags for a well
     # useful to check whether they are unique
     def tags

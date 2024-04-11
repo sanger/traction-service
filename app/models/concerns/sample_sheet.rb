@@ -81,10 +81,11 @@ module SampleSheet
       sample_sheet_behaviour.barcoded_for_sample_sheet?
     end
 
-    # Same Barcodes on Both Ends of Sequence field
+    # Are the left and right adapters the same?
+    # Returns True if tagged, nil otherwise
+    # See Aliquot#adapter field method below and adapter and adapter2 fields in pacbio.yml
     def same_barcodes_on_both_ends_of_sequence
-      # Always true at the time of writing
-      true
+      tagged? || nil
     end
 
     def automation_parameters
@@ -114,7 +115,7 @@ module SampleSheet
     end
 
     # Sample Adapter field
-    # The same adapter is used for both left and right
+    # The same adapter is used for both left and right, see same_barcodes_on_both_ends_of_sequence
     def adapter
       tag.group_id
     end

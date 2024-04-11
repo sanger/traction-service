@@ -122,8 +122,22 @@ RSpec.describe SampleSheet do
     end
 
     context 'same_barcodes_on_both_ends_of_sequence' do
-      it 'returns true' do
-        expect(well.same_barcodes_on_both_ends_of_sequence).to be true
+      let(:well) { create(:pacbio_well, pools:) }
+
+      context 'when the well contains tags' do
+        let(:pools) { create_list(:pacbio_pool, 1, :tagged) }
+
+        it 'returns true' do
+          expect(well.same_barcodes_on_both_ends_of_sequence).to be true
+        end
+      end
+
+      context 'when the well does not contain tags' do
+        let(:pools) { create_list(:pacbio_pool, 1, :untagged) }
+
+        it 'returns nil' do
+          expect(well.same_barcodes_on_both_ends_of_sequence).to be_nil
+        end
       end
     end
 
