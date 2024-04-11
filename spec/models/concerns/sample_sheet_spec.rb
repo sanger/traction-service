@@ -154,6 +154,15 @@ RSpec.describe SampleSheet do
     end
   end
 
+  context 'plate_well_position' do
+    let(:plate) { build(:pacbio_plate, plate_number: 2) }
+    let(:well) { create(:pacbio_well, plate:, row: 'B', column: '1') }
+
+    it 'prefixes the well position with the plate number' do
+      expect(well.plate_well_position).to eq('2_B01')
+    end
+  end
+
   context 'with pre-extension time' do
     let(:well) { create(:pacbio_well, pre_extension_time: 3) }
 
@@ -173,6 +182,17 @@ RSpec.describe SampleSheet do
 
     it 'automation parameters is blank' do
       expect(well.automation_parameters).to be_nil
+    end
+  end
+
+  context 'with an aliquot' do
+    let(:well) { create(:pacbio_well_with_pools, pool_count: 1) }
+
+    describe '#adapter' do
+      it 'returns the tag group id' do
+        aliquot = well.base_used_aliquots.first
+        expect(aliquot.adapter).to eq aliquot.tag.group_id
+      end
     end
   end
 end

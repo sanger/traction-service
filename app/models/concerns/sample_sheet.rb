@@ -27,6 +27,11 @@ module SampleSheet
       "#{row}#{column.rjust(2, '0')}"
     end
 
+    # Sample Plate Well field
+    def plate_well_position
+      "#{plate.plate_number}_#{position_leading_zero}"
+    end
+
     # Barcode Set field
     def barcode_set
       # Assuming each request libraries tag has the same set name
@@ -106,6 +111,12 @@ module SampleSheet
     # Used in context of Aliquot model
     def barcode_name
       sample_sheet_behaviour.barcode_name(tag)
+    end
+
+    # Sample Adapter field
+    # The same adapter is used for both left and right
+    def adapter
+      tag.group_id
     end
   end
 end
