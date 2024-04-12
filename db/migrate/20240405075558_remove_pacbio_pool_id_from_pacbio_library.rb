@@ -19,6 +19,10 @@ class RemovePacbioPoolIdFromPacbioLibrary < ActiveRecord::Migration[7.1]
   end
 
   def down
-    raise ActiveRecord::IrreversibleMigration
+    # Restore the column
+    add_reference :pacbio_libraries, :pacbio_pool, foreign_key: true, null: true
+
+    # Restore the previous tol report
+    Rake::Task['tol_tubes_report_view:v1:create'].invoke
   end
 end
