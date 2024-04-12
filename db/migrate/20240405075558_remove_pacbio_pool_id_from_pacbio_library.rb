@@ -13,6 +13,9 @@ class RemovePacbioPoolIdFromPacbioLibrary < ActiveRecord::Migration[7.1]
 
     # Remove the column from the table
     remove_reference :pacbio_libraries, :pacbio_pool, null: true, foreign_key: true
+
+    # Update the tol report view to remove the library pacbio_pool relationship
+    Rake::Task['tol_tubes_report_view:v2:create'].invoke
   end
 
   def down
