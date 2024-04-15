@@ -54,7 +54,7 @@ namespace :pacbio_data do
           insert_size: library.insert_size, tag_id: library.tag_id, source_id: library.pacbio_request_id, source_type: 'Pacbio::Request', aliquot_type: :derived
         )
       end
-      Pacbio::Pool.create!(tube: Tube.create, libraries:, used_aliquots:, volume: 1, concentration: 1, insert_size: 100, template_prep_kit_box_barcode: '029979102141700063023',
+      Pacbio::Pool.create!(tube: Tube.create, used_aliquots:, volume: 1, concentration: 1, insert_size: 100, template_prep_kit_box_barcode: '029979102141700063023',
                            primary_aliquot: Aliquot.new(volume: 1, concentration: 1, template_prep_kit_box_barcode: '029979102141700063023', insert_size: 500))
     end
 
@@ -286,7 +286,7 @@ namespace :pacbio_data do
       sample.destroy if sample.requests[0].requestable_type == 'Pacbio::Request'
     end
     [Pacbio::Request, Pacbio::Library, Pacbio::Run, Pacbio::Plate, Pacbio::Well,
-     Pacbio::WellPool, Pacbio::Pool].each(&:delete_all)
+     Pacbio::Pool].each(&:delete_all)
     Plate.by_pipeline('Pacbio').destroy_all
 
     print '-> Pacbio data successfully deleted'

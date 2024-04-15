@@ -52,9 +52,10 @@ RSpec.describe Pacbio::Request, :pacbio do
 
   describe '#sequencing_plates' do
     it 'if the request belongs to a run' do
-      plate = build(:pacbio_plate_with_wells, :pooled)
+      plate = build(:pacbio_plate)
+      plate.wells << build(:pacbio_well, library_count: 1)
       create(:pacbio_run, plates: [plate])
-      request = plate.wells.first.base_used_aliquots.first.source
+      request = plate.wells.last.libraries.first.request
       expect(request.sequencing_plates).to eq([plate])
     end
 
@@ -66,9 +67,8 @@ RSpec.describe Pacbio::Request, :pacbio do
       request = create(:pacbio_request)
       library1 = create(:pacbio_library, request:)
       library2 = create(:pacbio_library, request:)
-      pool = create(:pacbio_pool, libraries: [library1, library2])
-      create(:pacbio_well, pools: [pool], plate: plate1)
-      create(:pacbio_well, pools: [pool], plate: plate2)
+      create(:pacbio_well, libraries: [library1], plate: plate1)
+      create(:pacbio_well, libraries: [library2], plate: plate2)
       expect(request.sequencing_plates).to eq([plate1, plate2])
     end
 
@@ -80,9 +80,10 @@ RSpec.describe Pacbio::Request, :pacbio do
 
   describe '#sequencing_runs' do
     it 'if the request belongs to a run' do
-      plate = build(:pacbio_plate_with_wells, :pooled)
+      plate = build(:pacbio_plate)
+      plate.wells << build(:pacbio_well, library_count: 1)
       create(:pacbio_run, plates: [plate])
-      request = plate.wells.first.base_used_aliquots.first.source
+      request = plate.wells.last.libraries.first.request
       expect(request.sequencing_runs).to eq([plate.run])
     end
 
@@ -94,9 +95,8 @@ RSpec.describe Pacbio::Request, :pacbio do
       request = create(:pacbio_request)
       library1 = create(:pacbio_library, request:)
       library2 = create(:pacbio_library, request:)
-      pool = create(:pacbio_pool, libraries: [library1, library2])
-      create(:pacbio_well, pools: [pool], plate: plate1)
-      create(:pacbio_well, pools: [pool], plate: plate2)
+      create(:pacbio_well, libraries: [library1], plate: plate1)
+      create(:pacbio_well, libraries: [library2], plate: plate2)
       expect(request.sequencing_runs).to eq([plate1.run, plate2.run])
     end
 
