@@ -156,9 +156,8 @@ RSpec.describe 'RequestsController', :pacbio do
   end
 
   describe '#update' do
-    let!(:pool)      { create(:pacbio_pool) }
-    let(:well)       { create(:pacbio_well, pools: [pool]) }
-    let!(:request)   { pool.requests.first }
+    let!(:request)   { create(:pacbio_request) }
+    let(:well)       { create(:pacbio_well, libraries: [create(:pacbio_library, request:)]) }
 
     let(:body) do
       {

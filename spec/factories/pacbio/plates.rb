@@ -20,7 +20,7 @@ FactoryBot.define do
       transient do
         pool_count { 1 }
         # TODO: This needs sorting as we should be able to select the number of pools
-        well_factory { :pacbio_well_with_pools }
+        well_factory { :pacbio_well }
       end
     end
 

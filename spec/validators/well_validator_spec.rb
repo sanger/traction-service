@@ -6,16 +6,7 @@ RSpec.describe WellValidator do
   describe '#validate' do
     let(:well) { build(:pacbio_well, library_count: 0, pool_count: 0) }
 
-    before do
-      Flipper.enable(:dpl_1112) # Enables used_aliquots in wells, required for tag validation through used_aliquots
-    end
-
     context 'invalid' do
-      it 'returns an error when there are no libraries or pools' do
-        well.valid?
-        expect(well.errors[:base]).to include("There must be at least 1 pool or library for well #{well.position}")
-      end
-
       it 'returns an error when there are multiple libraries but no tags' do
         # Going through the library_ids= method to create the aliquots
         well.library_ids = create_list(:pacbio_library, 2, :untagged).collect(&:id)

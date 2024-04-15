@@ -9,10 +9,6 @@ RSpec.describe 'RunsController' do
   let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
   let!(:version13) { create(:pacbio_smrt_link_version, name: 'v13_revio', default: true) }
 
-  before do
-    Flipper.enable(:dpl_1112) # Enables used_aliquots in wells, required to test used_aliquots are created/update correctly
-  end
-
   shared_examples 'publish_messages_on_create' do
     it 'publishes a message' do
       expect(Messages).to receive(:publish).with(instance_of(Pacbio::Run), having_attributes(pipeline: 'pacbio'))
@@ -242,10 +238,6 @@ RSpec.describe 'RunsController' do
         expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
       end
 
-      it 'creates a well pool' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::WellPool, :count).by(1)
-      end
-
       it 'creates a used_aliquot' do
         # Preloaded so its aliquots are built and don't affect the test below
         pool1.reload
@@ -321,14 +313,6 @@ RSpec.describe 'RunsController' do
 
       it 'creates a well' do
         expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
-      end
-
-      it 'creates a well pool' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::WellPool, :count).by(1)
-      end
-
-      it 'creates a well library' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::WellLibrary, :count).by(1)
       end
 
       it 'creates 2 used_aliquots' do
@@ -408,10 +392,6 @@ RSpec.describe 'RunsController' do
 
       it 'creates a well' do
         expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
-      end
-
-      it 'creates a well pool' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::WellPool, :count).by(1)
       end
 
       it 'creates a used_aliquot' do
@@ -679,7 +659,6 @@ RSpec.describe 'RunsController' do
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq("plates.wells.used_aliquots - can't be blank")
-          expect(errors[1]['detail']).to eq 'plates.wells.base - There must be at least 1 pool or library for well A1'
         end
       end
 
@@ -957,10 +936,6 @@ RSpec.describe 'RunsController' do
           expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(2)
         end
 
-        it 'creates a well pool' do
-          expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::WellPool, :count).by(2)
-        end
-
         it 'creates 2 used_aliquots' do
           expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Aliquot, :count).by(2)
         end
@@ -976,8 +951,8 @@ RSpec.describe 'RunsController' do
       end
 
       context 'when there is one well with two pools, without tags' do
-        let(:pool1) { create(:pacbio_pool, libraries: create_list(:pacbio_library_without_tag, 1)) }
-        let(:pool2) { create(:pacbio_pool, libraries: create_list(:pacbio_library_without_tag, 1)) }
+        let(:pool1) { create(:pacbio_pool, :untagged) }
+        let(:pool2) { create(:pacbio_pool, :untagged) }
 
         let(:body) do
           {
@@ -1014,6 +989,7 @@ RSpec.describe 'RunsController' do
 
         it 'has a unprocessable_entity status' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
+
           expect(response).to have_http_status(:unprocessable_entity)
         end
 
@@ -1360,15 +1336,6 @@ RSpec.describe 'RunsController' do
           end.not_to change(Pacbio::Well, :count)
         end
 
-        # Each well previously had 5 pools each
-        # Now each well has 1 pool
-        # Therefore, WellPool count changed from 10 to 2
-        it 'does not create a well pool' do
-          expect do
-            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-          end.to change(Pacbio::WellPool, :count).from(10).to(2)
-        end
-
         it 'creates the correct number of used_aliquots' do
           # Aliquot count should be reduced by 8, see above
           # Preloaded so its aliquots are built and don't affect the test below
@@ -1377,7 +1344,7 @@ RSpec.describe 'RunsController' do
 
           expect do
             patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-          end.to change(Aliquot, :count).from(54).to(46)
+          end.to change(Aliquot, :count).from(65).to(57)
         end
 
         it 'updates a well' do
@@ -1439,15 +1406,6 @@ RSpec.describe 'RunsController' do
           expect do
             patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
           end.not_to change(Pacbio::Well, :count)
-        end
-
-        # Each well previously had 5 pools each
-        # Now there are 3 pools
-        # Therefore, WellPool count changed from 20 to 13
-        it 'does creates a well pool' do
-          expect do
-            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-          end.to change(Pacbio::WellPool, :count).from(20).to(13)
         end
 
         it 'creates the correct number of used_aliquots' do
@@ -1585,8 +1543,8 @@ RSpec.describe 'RunsController' do
   end
 
   describe '#sample_sheet' do
-    let(:well1)   { create(:pacbio_well_with_pools) }
-    let(:well2)   { create(:pacbio_well_with_pools) }
+    let(:well1)   { create(:pacbio_well) }
+    let(:well2)   { create(:pacbio_well) }
     let(:plate)   { build(:pacbio_plate, wells: [well1, well2]) }
     let(:run)     { create(:pacbio_generic_run, smrt_link_version: version13, plates: [plate]) }
 

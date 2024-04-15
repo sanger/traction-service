@@ -7,7 +7,7 @@ RSpec.describe Pacbio::Library, :pacbio do
 
   before do
     # Create a default pacbio smrt link version for pacbio runs.
-    create(:pacbio_smrt_link_version, name: 'v10', default: true)
+    create(:pacbio_smrt_link_version, name: 'v13_revio', default: true)
   end
 
   context 'uuidable' do
@@ -88,8 +88,8 @@ RSpec.describe Pacbio::Library, :pacbio do
     it { is_expected.not_to be_valid }
   end
 
-  context 'when primary_aliquot is nil and its not a pool' do
-    let(:params) { { primary_aliquot: nil, pool: nil } }
+  context 'when primary_aliquot is nil' do
+    let(:params) { { primary_aliquot: nil } }
 
     it { is_expected.not_to be_valid }
   end
@@ -109,11 +109,6 @@ RSpec.describe Pacbio::Library, :pacbio do
     expect(build(:pacbio_library, tag:).tag).to eq(tag)
   end
 
-  it 'can have a pool' do
-    pool = build(:pacbio_pool)
-    expect(build(:pacbio_library, pool:).pool).to eq(pool)
-  end
-
   it 'can have a primary aliquot' do
     expect(create(:pacbio_library).primary_aliquot).to be_present
   end
@@ -124,8 +119,8 @@ RSpec.describe Pacbio::Library, :pacbio do
     expect(library.derived_aliquots).to eq(aliquots)
   end
 
-  it 'can have a used aliquot if there is no pool' do
-    library = create(:pacbio_library, pool: nil)
+  it 'can have a used aliquot' do
+    library = create(:pacbio_library)
     expect(library.used_aliquots.length).to eq(1)
     expect(library.used_aliquots.first.source).to eq(library.request)
   end
@@ -137,9 +132,12 @@ RSpec.describe Pacbio::Library, :pacbio do
     end
 
     it 'does not get destroyed if there are associated wells' do
-      library = create(:pacbio_library)
-      create(:pacbio_well, libraries: [library])
+      well = create(:pacbio_well)
+      aliquot = create(:aliquot, used_by: well)
+      library = create(:pacbio_library, derived_aliquots: [aliquot])
       expect { library.destroy }.not_to change(described_class, :count)
+      # Check that the library has the expected error message
+      expect(library.errors[:base]).to include('Cannot delete a library that is used in a pool or run')
     end
 
     it 'does not get destroyed if there are associated pools' do
@@ -148,7 +146,7 @@ RSpec.describe Pacbio::Library, :pacbio do
       library = create(:pacbio_library, derived_aliquots: [aliquot])
       expect { library.destroy }.not_to change(described_class, :count)
       # Check that the library has the expected error message
-      expect(library.errors[:base]).to include('Cannot delete a library that is associated with a pool')
+      expect(library.errors[:base]).to include('Cannot delete a library that is used in a pool or run')
     end
   end
 
@@ -177,11 +175,6 @@ RSpec.describe Pacbio::Library, :pacbio do
     it 'can have a tube' do
       tube = create(:tube)
       expect(build(:pacbio_library, tube:).tube).to eq(tube)
-    end
-
-    it 'can have a tube through pool' do
-      pool = create(:pacbio_pool)
-      expect(create(:pacbio_library, pool:).tube).to eq(pool.tube)
     end
 
     it 'creates a tube by default if none are provided' do
@@ -242,9 +235,10 @@ RSpec.describe Pacbio::Library, :pacbio do
     end
 
     it 'when there is a single run' do
-      plate = build(:pacbio_plate_with_wells, :pooled)
+      plate = build(:pacbio_plate)
+      library = create(:pacbio_library)
+      plate.wells << create(:pacbio_well, libraries: [library])
       create(:pacbio_generic_run, plates: [plate])
-      library = plate.wells.first.pools.first.libraries.first
       expect(library.sequencing_plates).to eq([plate])
     end
 
@@ -253,18 +247,10 @@ RSpec.describe Pacbio::Library, :pacbio do
       plate2 = build(:pacbio_plate)
       create(:pacbio_generic_run, plates: [plate1])
       create(:pacbio_generic_run, plates: [plate2])
-      pool = create(:pacbio_pool)
-      create(:pacbio_well, pools: [pool], plate: plate1)
-      create(:pacbio_well, pools: [pool], plate: plate2)
-      expect(pool.libraries.first.sequencing_plates).to eq([plate1, plate2])
-    end
-
-    it 'goes through wells when the libary is not in a pool' do
-      plate = build(:pacbio_plate)
-      create(:pacbio_generic_run, plates: [plate])
-      library = create(:pacbio_library, pool: nil)
-      create(:pacbio_well, libraries: [library], plate:)
-      expect(library.sequencing_plates).to eq([plate])
+      library = create(:pacbio_library)
+      plate1.wells << create(:pacbio_well, libraries: [library])
+      plate2.wells << create(:pacbio_well, libraries: [library])
+      expect(library.sequencing_plates).to eq([plate1, plate2])
     end
   end
 
@@ -275,8 +261,9 @@ RSpec.describe Pacbio::Library, :pacbio do
     end
 
     it 'when there is a single run' do
-      plate = build(:pacbio_plate_with_wells)
-      library = create(:pacbio_library, pool: nil, wells: [plate.wells.first])
+      plate = build(:pacbio_plate)
+      library = create(:pacbio_library)
+      plate.wells << create(:pacbio_well, libraries: [library])
       create(:pacbio_generic_run, plates: [plate])
       expect(library.sequencing_runs).to eq([plate.run])
     end
@@ -287,8 +274,8 @@ RSpec.describe Pacbio::Library, :pacbio do
       create(:pacbio_generic_run, plates: [plate1])
       create(:pacbio_generic_run, plates: [plate2])
       library = create(:pacbio_library)
-      create(:pacbio_well, libraries: [library], plate: plate1)
-      create(:pacbio_well, libraries: [library], plate: plate2)
+      plate1.wells << create(:pacbio_well, libraries: [library])
+      plate2.wells << create(:pacbio_well, libraries: [library])
       expect(library.sequencing_runs).to eq([plate1.run, plate2.run])
     end
   end
@@ -296,7 +283,7 @@ RSpec.describe Pacbio::Library, :pacbio do
   context 'wells' do
     it 'can have one or more' do
       library = create(:pacbio_library)
-      library.wells << create_list(:pacbio_well, 5)
+      create_list(:pacbio_well, 5, libraries: [library])
       expect(library.wells.count).to eq(5)
     end
   end

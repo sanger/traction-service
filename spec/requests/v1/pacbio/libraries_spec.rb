@@ -48,7 +48,7 @@ RSpec.describe 'LibrariesController', :pacbio do
       end
 
       context 'when not suited for run creation' do
-        let!(:libraries) { create_list(:pacbio_library, 1, :tagged, insert_size: nil, tube: Tube.new) }
+        let!(:libraries) { create_list(:pacbio_library, 1, :tagged, insert_size: nil) }
 
         it 'includes invalid library run suitability' do
           get v1_pacbio_libraries_path, headers: json_api_headers
@@ -232,7 +232,6 @@ RSpec.describe 'LibrariesController', :pacbio do
 
       context 'filters - barcode' do
         it 'returns the correct library' do
-          # We need to use the library from the pool until the aliquot work is finished.
           pacbio_library = create(:pacbio_library)
           # Create extra libraries to prevent false positive
           create_list(:pacbio_library, 5)
@@ -410,7 +409,7 @@ RSpec.describe 'LibrariesController', :pacbio do
   end
 
   describe '#updating' do
-    let!(:library) { create(:pacbio_library, pool: nil) }
+    let!(:library) { create(:pacbio_library) }
     let!(:tag) { create(:tag) }
 
     before do
@@ -556,7 +555,7 @@ RSpec.describe 'LibrariesController', :pacbio do
     end
 
     context 'when there is an associated run' do
-      let!(:library) { create(:pacbio_library, pool: nil) }
+      let!(:library) { create(:pacbio_library) }
       let!(:plate) { build(:pacbio_plate) }
       let(:run) { create(:pacbio_generic_run, plates: [plate]) }
 
@@ -623,7 +622,7 @@ RSpec.describe 'LibrariesController', :pacbio do
         expect do
           delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
         end.not_to change(Pacbio::Library, :count)
-        expect(json['errors'][0]['title']).to eq('Cannot delete a library that is associated with wells')
+        expect(json['errors'][0]['title']).to eq('Cannot delete a library that is used in a pool or run')
       end
     end
 
