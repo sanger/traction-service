@@ -80,10 +80,26 @@ module RunCsv
       transpose_smrt_cells(smrt_cells)
     end
 
-    # Generate an array of hashes containing the samples and their properties
+    def sample_data(well, sample)
+      [
+        sample.bio_sample_name,
+        well.plate_well_position,
+        sample.adapter, # left adapter
+        sample.adapter  # right adapter
+      ]
+    end
+
+    # Generate a CSV of samples
     def samples_csv
-      # call parent payload method
-      method(:payload).super_method.call
+      headers = ['Bio Sample Name', 'Plate Well', 'Adapter', 'Adapter2']
+      CSV.generate do |csv|
+        csv << headers
+        object.sorted_wells.each do |well|
+          well.aliquots_to_show_per_row&.each do |sample|
+            csv << sample_data(well, sample)
+          end
+        end
+      end
     end
 
     def payload

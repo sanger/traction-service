@@ -141,7 +141,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
           samples_section_index = sample_sheet_lines.find_index { |line| line.include?('[Samples]') }
           headers_line = sample_sheet_lines[samples_section_index + 1]
           headers = headers_line.strip.split(',')
-          expected_headers = configuration.column_order
+          expected_headers = ['Bio Sample Name', 'Plate Well', 'Adapter', 'Adapter2']
           expect(headers).to eq(expected_headers)
         end
 
@@ -219,7 +219,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
           samples_section_index = sample_sheet_lines.find_index { |line| line.include?('[Samples]') }
           headers_line = sample_sheet_lines[samples_section_index + 1]
           headers = headers_line.strip.split(',')
-          expected_headers = configuration.column_order
+          expected_headers = ['Bio Sample Name', 'Plate Well', 'Adapter', 'Adapter2']
           expect(headers).to eq(expected_headers)
         end
 

@@ -75,7 +75,7 @@ default: &default
 
     # For instructions on structure and syntax, see: 'app/exchanges/README.md'
     sample_sheet:
-      v12_revio:
+      v12_revio: &v12_revio
         column_order:
           - Library Type
           - Reagent Plate
@@ -290,34 +290,10 @@ default: &default
                 Bio Sample Name:
                   type: :model
                   value: bio_sample_name
-      v13_revio:
-        # This is only used for the samples section, see RunCsv::PacbioSampleSheetV13 for rest of the settings
-        column_order:
-          - Bio Sample Name
-          - Plate Well
-          - Adapter
-          - Adapter2
-        fields:
-         _sorted_wells:
-          type: :array
-          value: sorted_wells # defined in 'app/models/concerns/sample_sheet.rb'
-          children:
-            samples:
-              type: :array
-              value: aliquots_to_show_per_row
-              children:
-                Bio Sample Name:
-                  type: :model
-                  value: bio_sample_name
-                Plate Well:
-                  type: :parent_model
-                  value: plate_well_position
-                Adapter:
-                  type: :model
-                  value: adapter
-                Adapter2:
-                  type: :model
-                  value: adapter
+
+      # This format is deprecated for v13_revio, see RunCsv::PacbioSampleSheetV13 for the new format
+      v13_revio: *v12_revio
+
       # No changes required from v12_sequel_iie, added for consistency
       v13_sequel_iie: *v12_sequel_iie
 
