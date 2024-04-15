@@ -57,6 +57,11 @@ RSpec.describe Aliquotable do
       library.save
       expect(library.used_volume).to eq(15)
     end
+
+    it 'returns 0 if there are no derived aliquots' do
+      library = create(:pacbio_library)
+      expect(library.used_volume).to eq(0)
+    end
   end
 
   describe '#available_volume' do

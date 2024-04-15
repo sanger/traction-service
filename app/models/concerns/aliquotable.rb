@@ -37,7 +37,7 @@ module Aliquotable
 
     # Method to calculate the used volume
     def used_volume
-      derived_aliquots.sum(:volume)
+      derived_aliquots.sum(&:volume)
     end
 
     # Method to calculate the available volume
