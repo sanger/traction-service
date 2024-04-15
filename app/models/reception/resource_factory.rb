@@ -38,7 +38,7 @@ class Reception
     end
 
     def construct_resources!
-      requests.each(&:save!)
+      requests.each(&:save!) # Note this also saves associated records we generate
       labware_status
     end
 
@@ -79,11 +79,14 @@ class Reception
       end
     end
 
-    def library_type_for(attributes)
+    def library_type_for(request_attributes)
       # Gets a library type from the cache or returns an unknown type
-      library_type_cache.fetch(attributes[:library_type],
-                               UnknownLibraryType.new(library_type: attributes[:library_type],
-                                                      permitted: library_type_cache.keys))
+      library_type = request_attributes[:library_type]
+      library_type_cache.fetch(
+        library_type,
+        UnknownLibraryType.new(library_type:,
+                               permitted: library_type_cache.keys)
+      )
     end
 
     def data_type_for(attributes)
@@ -115,21 +118,14 @@ class Reception
     end
 
     def create_request_for_container(attributes, container)
-      library_type = library_type_for(attributes[:request])
+      library_type_helper = LibraryTypeHelper.new(library_type_for(attributes[:request]),
+                                                  self,
+                                                  attributes)
       sample = sample_for(attributes[:sample])
-      requests << create_request(library_type, sample, container, attributes[:request])
+      request = library_type_helper.create_request(sample, container, reception)
+      library_type_helper.create_library(request)
+      requests << request
       containers << container
-    end
-
-    def create_request(library_type, sample, container, request_attributes)
-      # The library type is used to help build the correct request in the correct pipeline
-      library_type.request_factory(sample:, container:, request_attributes:,
-                                   resource_factory: self, reception:)
-    end
-
-    def library_type_cache
-      # Used to reduce database queries.
-      @library_type_cache ||= LibraryType.all.index_by(&:name)
     end
 
     def data_type_cache
@@ -147,6 +143,38 @@ class Reception
       # Checks the wells position/plate are unique and the tubes and plate barcodes are unique
       cons.fetch('Well', []).map { |well| [well.position, well.plate] }.uniq! ||
         cons.fetch('Tube', []).map(&:barcode).uniq! || cons.fetch('Plate', []).map(&:barcode).uniq!
+    end
+
+    def library_type_cache
+      # Used to reduce database queries.
+      @library_type_cache ||= LibraryType.all.index_by(&:name)
+    end
+  end
+
+  # A helper that deals with the creation of library type specific records.
+  class LibraryTypeHelper
+    def initialize(library_type, resource_factory, container_attributes)
+      @library_type = library_type
+      @resource_factory = resource_factory
+      @container_attributes = container_attributes
+    end
+
+    def create_library(request)
+      # The library type is used to help build the correct library in the correct pipeline
+      return unless @container_attributes[:library]
+
+      @library_type.library_factory(request:, library_attributes: @container_attributes[:library])
+    end
+
+    def create_request(sample, container, reception)
+      # The library type is used to help build the correct request in the correct pipeline
+      @library_type.request_factory(
+        sample:,
+        container:,
+        request_attributes: @container_attributes[:request],
+        resource_factory: @resource_factory,
+        reception:
+      )
     end
   end
 end

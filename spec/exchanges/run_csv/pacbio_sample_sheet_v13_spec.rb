@@ -101,7 +101,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
       context 'when the libraries are tagged' do
         let(:well1) do
           create(
-            :pacbio_well_with_pools,
+            :pacbio_well,
             pre_extension_time: 2,
             generate_hifi: 'In SMRT Link',
             ccs_analysis_output: 'Yes',
@@ -111,7 +111,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
         end
         let(:well2) do
           create(
-            :pacbio_well_with_pools,
+            :pacbio_well,
             pre_extension_time: 2,
             generate_hifi: 'In SMRT Link',
             ccs_analysis_output: 'No',
@@ -121,7 +121,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
         end
         let(:well3) do
           create(
-            :pacbio_well_with_pools,
+            :pacbio_well,
             pre_extension_time: 2,
             generate_hifi: 'In SMRT Link',
             ccs_analysis_output: 'No',

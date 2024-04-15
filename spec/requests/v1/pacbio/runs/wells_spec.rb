@@ -10,7 +10,7 @@ RSpec.describe 'WellsController' do
   end
 
   describe '#get' do
-    let!(:wells) { create_list(:pacbio_well_with_pools, 2, pool_count: 2) }
+    let!(:wells) { create_list(:pacbio_well, 2, pool_count: 2) }
 
     it 'returns a list of wells' do
       get v1_pacbio_runs_wells_path, headers: json_api_headers
@@ -20,7 +20,7 @@ RSpec.describe 'WellsController' do
 
     describe 'has the correct attributes' do
       before do
-        get "#{v1_pacbio_runs_wells_path}?include=pools.libraries,used_aliquots", headers: json_api_headers
+        get "#{v1_pacbio_runs_wells_path}?include=pools,used_aliquots", headers: json_api_headers
       end
 
       let!(:well) { wells.first }
@@ -48,18 +48,6 @@ RSpec.describe 'WellsController' do
             'template_prep_kit_box_barcode' => pool.template_prep_kit_box_barcode,
             'insert_size' => pool.insert_size,
             'created_at' => pool.created_at.to_fs(:us)
-          )
-        end
-
-        wells.collect(&:pools).flatten.collect(&:libraries).flatten.each do |library|
-          library_pools_attributes = find_included_resource(type: 'library_pools', id: library.id)['attributes']
-          expect(library_pools_attributes).to include(
-            'concentration' => library.concentration,
-            'volume' => library.volume,
-            'template_prep_kit_box_barcode' => library.template_prep_kit_box_barcode,
-            'insert_size' => library.insert_size,
-            'state' => library.state,
-            'created_at' => library.created_at.to_fs(:us)
           )
         end
 

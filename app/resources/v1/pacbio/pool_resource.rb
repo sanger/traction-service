@@ -13,9 +13,10 @@ module V1
       # In this case I can see it using container_associations
       # so seems to be linking the wrong tube relationship.
       has_one :tube, relation_name: :tube
-      has_many :libraries, class_name: 'LibraryPool'
       has_many :used_aliquots, class_name: 'Aliquot', relation_name: :used_aliquots
       has_one :primary_aliquot, class_name: 'Aliquot', relation_name: :primary_aliquot
+      has_many :requests
+      has_many :libraries
 
       attributes :volume, :concentration, :template_prep_kit_box_barcode,
                  :insert_size, :created_at, :updated_at,
@@ -25,8 +26,6 @@ module V1
 
       ALIQUOT_ATTRIBUTES = %w[id volume concentration template_prep_kit_box_barcode insert_size
                               tag_id source_id source_type].freeze
-      LIBRARY_ATTRIBUTES = %w[id volume concentration template_prep_kit_box_barcode insert_size
-                              tag_id pacbio_request_id].freeze
 
       paginator :paged
 
@@ -46,12 +45,6 @@ module V1
       # When a pool is updated and it is attached to a run we need
       # to republish the messages for the run
       after_update :publish_messages
-
-      def library_attributes=(library_parameters)
-        @model.library_attributes = library_parameters.map do |library|
-          library.permit(LIBRARY_ATTRIBUTES).to_h.with_indifferent_access
-        end
-      end
 
       def used_aliquots_attributes=(used_aliquot_parameters)
         @model.used_aliquots_attributes = used_aliquot_parameters.map do |aliquot|

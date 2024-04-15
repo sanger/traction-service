@@ -20,23 +20,34 @@ FactoryBot.define do
       library_count { 0 }
       library_factory { :pacbio_library }
       library_max { 2 }
+      libraries { [] }
+      pools { [] }
     end
 
-    pools do
-      build_list(pool_factory, pool_count)
-    end
-
-    libraries do
-      build_list(library_factory, library_count)
-    end
-
-    after(:build) do |well|
-      well.libraries.each do |lib|
-        well.used_aliquots << build(:aliquot, source: lib, aliquot_type: :derived, used_by: well)
+    used_aliquots do
+      aliquots = []
+      pools.each do |pool|
+        aliquots << build(:aliquot, source: pool, tag: nil, aliquot_type: :derived, used_by: instance)
       end
-      well.pools.each do |pool|
-        well.used_aliquots << build(:aliquot, source: pool, aliquot_type: :derived, used_by: well)
+      libraries.each do |library|
+        aliquots << build(:aliquot, source: library, tag: library.tag, aliquot_type: :derived, used_by: instance)
       end
+
+      # Only use count variables if no pools/libraries are provided
+      if libraries.blank?
+        library_count.times.map do
+          library = build(library_factory)
+          aliquots << build(:aliquot, source: library, tag: library.tag, aliquot_type: :derived, used_by: instance)
+        end
+      end
+      if pools.blank?
+        pool_count.times.map do
+          pool = build(pool_factory)
+          aliquots << build(:aliquot, source: pool, tag: nil, aliquot_type: :derived, used_by: instance)
+        end
+      end
+
+      aliquots
     end
 
     # v10
@@ -55,11 +66,5 @@ FactoryBot.define do
     include_base_kinetics { 'True' }
     sequence(:library_concentration) { |n| "10.#{n}".to_f }
     sequence(:polymerase_kit) { |n| "DM111710086220011171#{n}" }
-
-    factory :pacbio_well_with_pools do
-      before(:create) do |well, evaluator|
-        well.pools = create_list(:pacbio_pool, evaluator.pool_count)
-      end
-    end
   end
 end
