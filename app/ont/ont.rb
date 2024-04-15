@@ -6,6 +6,10 @@ module Ont
     'ont_'
   end
 
+  def self.library_attributes
+    raise StandardError, 'Unsupported' # Only Pacbio is supported at the moment
+  end
+
   def self.request_attributes
     %i[
       library_type data_type cost_code external_study_id number_of_flowcells
@@ -18,6 +22,11 @@ module Ont
 
   def self.direct_request_attributes
     request_attributes - associated_request_attributes
+  end
+
+  # Parameters would be request: and library_attributes: if this was supported.
+  def self.library_factory(*)
+    raise StandardError, 'Unsupported' # Only Pacbio is supported at the moment
   end
 
   def self.request_factory(sample:, container:, request_attributes:, resource_factory:, reception:)

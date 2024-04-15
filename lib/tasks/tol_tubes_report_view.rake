@@ -20,7 +20,7 @@ namespace :tol_tubes_report_view do
       ApplicationRecord.connection.execute <<~END_OF_SQL
         CREATE OR REPLACE VIEW tubes_report AS
           SELECT
-            pb_lib.created_at AS library_created_at,
+            samp.created_at AS sample_created_at,
             CASE
               WHEN src_tube.barcode IS NOT NULL
                 THEN src_tube.barcode -- Get the tube barcode if a tube was found...
@@ -37,8 +37,8 @@ namespace :tol_tubes_report_view do
             pb_req.estimate_of_gb_required AS genome_size,
             pb_req.cost_code,
             pb_req.external_study_id AS study_uuid
-          FROM pacbio_libraries pb_lib -- Start with the Pacbio libraries.
-          JOIN pacbio_requests pb_req -- Join each library to its Pacbio request.
+          FROM pacbio_requests pb_req -- Start with the Pacbio requests.
+          LEFT JOIN pacbio_libraries pb_lib -- Join each request to its Pacbio library.
             ON pb_req.id = pb_lib.pacbio_request_id
           LEFT JOIN pacbio_pools pb_pool -- Try to join a Pacbio pool, but some libraries won't have a pool.
             ON pb_pool.id = pb_lib.pacbio_pool_id
