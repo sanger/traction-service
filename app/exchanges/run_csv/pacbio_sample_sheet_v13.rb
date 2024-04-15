@@ -51,26 +51,33 @@ module RunCsv
     end
 
     # Generate a hash of settings for the cell
-    # Each key is a plate-well identifier and the value is a hash of settings for that particular cell
-    def smrt_cell_settings
-      wells = object.plates.flat_map(&:wells)
-      wells = wells.each_with_object({}) do |well, hash|
+    def generate_wells
+      object.plates.flat_map(&:wells).each_with_object({}) do |well, hash|
         plate_well_name = "#{well.plate.plate_number}_#{well.position_leading_zero}"
         hash[plate_well_name] = well
       end
+    end
 
-      # Iterate over each plate_well, accumulating the settings for each
-      smrt_cells = wells.each_with_object({}) do |(plate_well, well), acc|
+    def generate_smrt_cells(wells)
+      wells.each_with_object({}) do |(plate_well, well), acc|
         acc[plate_well] = generate_smrt_cell_settings(well)
       end
+    end
 
-      # transpose the settings to be grouped by key, not by plate_well
+    def transpose_smrt_cells(smrt_cells)
       smrt_cells.each_with_object({}) do |(plate_well, cell_data), result|
         cell_data.each do |(key, value)|
           result[key] ||= {}
           result[key].merge!({ plate_well => value })
         end
       end
+    end
+
+    # Each key is a plate-well identifier and the value is a hash of settings for a particular cell
+    def smrt_cell_settings
+      wells = generate_wells
+      smrt_cells = generate_smrt_cells(wells)
+      transpose_smrt_cells(smrt_cells)
     end
 
     # Generate an array of hashes containing the samples and their properties
