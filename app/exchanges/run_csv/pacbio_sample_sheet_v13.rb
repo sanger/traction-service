@@ -35,7 +35,7 @@ module RunCsv
     # Generate a hash of settings for a single cell
     def generate_smrt_cell_settings(well) # rubocop:disable Metrics/MethodLength
       {
-        'Well Name'	=> well.pools.first.tube.barcode, # TRAC-2-7242
+        'Well Name'	=> well.used_aliquots.first.source.tube.barcode, # TRAC-2-7242
         'Library Type'	=> 'Standard', # (potentially new field otherwise just string)
         'Movie Acquisition Time (hours)'	=> well.movie_acquisition_time, # 24
         'Insert Size (bp)'	=> well.insert_size, # 500

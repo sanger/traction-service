@@ -76,7 +76,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
           well = plate_wells[plate_well_name]
           expected_settings = {
             # for all wells
-            'Well Name' => well.pools.first.tube.barcode,
+            'Well Name' => well.used_aliquots.first.source.tube.barcode,
             'Library Type' => 'Standard',
             'Movie Acquisition Time (hours)' => well.movie_acquisition_time.to_s,
             'Insert Size (bp)' => well.insert_size.to_s,
@@ -244,7 +244,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
 
             expect(well_data).to eq(
               # for all wells
-              'Well Name' => well.pools.first.tube.barcode,
+              'Well Name' => well.used_aliquots.first.source.tube.barcode,
               'Library Type' => 'Standard',
               'Movie Acquisition Time (hours)' => well.movie_acquisition_time.to_s,
               'Insert Size (bp)' => well.insert_size.to_s,
