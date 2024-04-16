@@ -9,16 +9,18 @@ module RunCsv
     # Generate a hash of settings for the run
     def run_settings
       run = object # Pacbio::Run
-      first_plate = run.plates[0]
-      second_plate = run.plates[1]
+
+      plate_data = run.plates.first(2).each_with_index.with_object({}) do |(plate, index), hash|
+        hash["Plate #{index + 1}"] = plate&.sequencing_kit_box_barcode
+      end
+
       {
-        'Instrument Type' => run.system_name, # Revio
-        'Run Name' =>	run.name, # TRACTION-RUN-1042
-        'Run Comments' =>	run.comments, # TRAC-2-7242 245pM TRAC-2-782 247pM
-        'Plate 1' =>	first_plate.sequencing_kit_box_barcode, # 1021188000328660070020240502
-        'Plate 2' =>	second_plate&.sequencing_kit_box_barcode, # 1021188000328660070020240503
-        'CSV Version' =>	1
-      }
+        'Instrument Type' => run.system_name,
+        'Run Name' =>	run.name,
+        'Run Comments' =>	run.comments
+      }.merge(plate_data).merge(
+        {'CSV Version' => 1}
+      )
     end
 
     # Generate a list of plate-well identifiers.
