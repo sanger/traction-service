@@ -52,6 +52,11 @@ module Parsers
 
       values.each_with_index do |value, index|
         plate_well = plate_wells[index] # get the plate well from [1_A01, 1_B01, ...]
+
+        # Check the value types and convert them as appropriate
+        # value looks like boolean (case insensitive)
+        value = evaluates_as_true?(value) if value =~ /\A(true|false)\z/i
+
         settings[plate_well][key] = value # assign the value to the plate well in the hash
       end
     end
@@ -100,6 +105,12 @@ module Parsers
         'SMRT Cell Settings' => parse_smrt_cell_settings(sections['SMRT Cell Settings']),
         'Samples' => parse_sample_settings(sections['Samples'])
       }
+    end
+
+    private
+
+    def evaluates_as_true?(value)
+      value.downcase == 'true'
     end
   end
 end

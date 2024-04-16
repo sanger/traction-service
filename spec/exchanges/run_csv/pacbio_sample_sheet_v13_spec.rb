@@ -82,16 +82,16 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
             'Insert Size (bp)' => well.insert_size.to_s,
             'Assign Data To Project' => '1',
             'Library Concentration (pM)' => well.library_concentration.to_s,
-            'Include Base Kinetics' => well.include_base_kinetics.to_s,
+            'Include Base Kinetics' => well.include_base_kinetics.downcase == 'true', # is a string
             'Polymerase Kit' => well.polymerase_kit,
-            'Use Adaptive Loading' => well.adaptive_loading_check.to_s,
+            'Use Adaptive Loading' => well.adaptive_loading_check,
             'Consensus Mode' => 'molecule',
 
             # specific to tagged wells
             'Bio Sample Name' => '',
-            'Sample is indexed' => 'true',
+            'Sample is indexed' => true,
             'Indexes' => well.barcode_set,
-            'Same Barcodes on Both Ends of Sequence' => 'true' # well.same_barcodes_on_both_ends_of_sequence.to_s
+            'Same Barcodes on Both Ends of Sequence' => true
           }
 
           expect(smrt_cell_settings[plate_well_name]).to eq(expected_settings)
@@ -250,14 +250,14 @@ RSpec.describe RunCsv::PacbioSampleSheetV13, type: :model do
               'Insert Size (bp)' => well.insert_size.to_s,
               'Assign Data To Project' => '1',
               'Library Concentration (pM)' => well.library_concentration.to_s,
-              'Include Base Kinetics' => well.include_base_kinetics.to_s,
+              'Include Base Kinetics' => well.include_base_kinetics.downcase == 'true', # is a string
               'Polymerase Kit' => well.polymerase_kit,
-              'Use Adaptive Loading' => well.adaptive_loading_check.to_s,
+              'Use Adaptive Loading' => well.adaptive_loading_check,
               'Consensus Mode' => 'molecule',
 
               # specific to untagged wells
               'Bio Sample Name' => well.bio_sample_name,
-              'Sample is indexed' => 'false',
+              'Sample is indexed' => false,
               'Indexes' => '', # well.barcode_set
               'Same Barcodes on Both Ends of Sequence' => '' # well.same_barcodes_on_both_ends_of_sequence.to_s
             )

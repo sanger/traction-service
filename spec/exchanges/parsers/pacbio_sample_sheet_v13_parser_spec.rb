@@ -109,7 +109,7 @@ RSpec.describe Parsers::PacbioSampleSheetV13Parser, type: :model do
           'Insert Size (bp)' => '2000',
           'Assign Data To Project' => '1',
           'Library Concentration (pM)' => '7',
-          'Include Base Kinetics' => 'FALSE'
+          'Include Base Kinetics' => false
         )
 
         expect(parsed_sample_sheet['SMRT Cell Settings']['1_B01']).to include(
@@ -121,7 +121,7 @@ RSpec.describe Parsers::PacbioSampleSheetV13Parser, type: :model do
           'Insert Size (bp)' => '2000',
           'Assign Data To Project' => '1',
           'Library Concentration (pM)' => '7',
-          'Include Base Kinetics' => 'FALSE'
+          'Include Base Kinetics' => false
         )
 
         expect(parsed_sample_sheet['SMRT Cell Settings']['2_A01']).to include(
@@ -133,7 +133,7 @@ RSpec.describe Parsers::PacbioSampleSheetV13Parser, type: :model do
           'Insert Size (bp)' => '2000',
           'Assign Data To Project' => '1',
           'Library Concentration (pM)' => '7',
-          'Include Base Kinetics' => 'FALSE'
+          'Include Base Kinetics' => false
         )
       end
 
