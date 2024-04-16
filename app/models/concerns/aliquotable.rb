@@ -34,5 +34,35 @@ module Aliquotable
     has_many :derived_aliquots, -> { where(aliquot_type: :derived) },
              as: :source, class_name: 'Aliquot',
              dependent: :nullify, inverse_of: :source
+
+    # Method to calculate the used volume.
+    # It sums up the volumes of all derived aliquots.
+    # @return [Numeric] The total volume of all derived aliquots.
+    def used_volume
+      derived_aliquots.sum(&:volume)
+    end
+
+    # Method to calculate the available volume.
+    # It subtracts the used volume from the volume of the primary aliquot.
+    # @return [Numeric] The volume available in the primary aliquot after subtracting
+    # the used volume.
+    def available_volume
+      primary_aliquot.volume - used_volume
+    end
+
+    # Method to check if there is enough volume available.
+    # It compares the available volume with the required volume.
+    #
+    # @param required_volume [Numeric] The volume required for the operation.
+    #
+    # @return [Boolean] Returns true if the available volume is greater than
+    # or equal to the required volume.
+    # If not, it adds an error message to `errors` and returns false.
+    def volume_check(required_volume)
+      return true if available_volume >= required_volume
+
+      errors.add(:base, 'Insufficient volume available')
+      false
+    end
   end
 end
