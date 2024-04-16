@@ -33,14 +33,12 @@ module Parsers
     def parse_run_settings(section_content)
       # returns a hash of key-value pairs
       # split on newlines, then split on commas
-
-      run_settings = {}
-      section_content.split("\n").each do |line|
-        key, value = line.split(',', -1)
-        run_settings[key] = value
+      {}.tap do |run_settings|
+        section_content.split("\n").each do |line|
+          key, value = line.split(',', -1)
+          run_settings[key] = value
+        end
       end
-
-      run_settings
     end
 
     def process_values_into_smrt_cell_settings(settings, key, values)
