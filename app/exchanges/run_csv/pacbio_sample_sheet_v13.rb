@@ -19,7 +19,7 @@ module RunCsv
         'Run Name' =>	run.name,
         'Run Comments' =>	run.comments
       }.merge(plate_data).merge(
-        {'CSV Version' => 1}
+        { 'CSV Version' => 1 }
       )
     end
 
