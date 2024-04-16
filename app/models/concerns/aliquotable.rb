@@ -46,8 +46,8 @@ module Aliquotable
     end
 
     # Method to check if there is enough volume available
-    def volume_check
-      return true if primary_aliquot.volume > used_volume
+    def volume_check(required_volume)
+      return true if available_volume >= required_volume
 
       errors.add(:base, 'Insufficient volume available')
       false
