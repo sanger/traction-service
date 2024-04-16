@@ -95,15 +95,10 @@ module Parsers
     # @return [Hash]
     def parse(sample_sheet_string)
       sections = split_into_sections(sample_sheet_string)
-
-      run_settings = parse_run_settings(sections['Run Settings'])
-      smrt_cell_settings = parse_smrt_cell_settings(sections['SMRT Cell Settings'])
-      sample_settings = parse_sample_settings(sections['Samples'])
-
       {
-        'Run Settings' => run_settings,
-        'SMRT Cell Settings' => smrt_cell_settings,
-        'Samples' => sample_settings
+        'Run Settings' => parse_run_settings(sections['Run Settings']),
+        'SMRT Cell Settings' => parse_smrt_cell_settings(sections['SMRT Cell Settings']),
+        'Samples' => parse_sample_settings(sections['Samples'])
       }
     end
   end
