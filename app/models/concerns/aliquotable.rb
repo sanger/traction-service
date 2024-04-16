@@ -46,7 +46,6 @@ module Aliquotable
     # It subtracts the used volume from the volume of the primary aliquot.
     # @return [Numeric] The volume available in the primary aliquot after subtracting
     # the used volume.
-
     def available_volume
       primary_aliquot.volume - used_volume
     end
@@ -59,7 +58,6 @@ module Aliquotable
     # @return [Boolean] Returns true if the available volume is greater than
     # or equal to the required volume.
     # If not, it adds an error message to `errors` and returns false.
-
     def volume_check(required_volume)
       return true if available_volume >= required_volume
 
