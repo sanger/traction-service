@@ -44,10 +44,10 @@ module Pacbio
 
     after_create :create_used_aliquot
 
-    # Before updating the record, the `check_volume` method is called.
-    # This is a callback that checks if the volume has been changed and
+    # Before updating the record, the `used_volume_check` method is called.
+    # This is a callback that checks if the primary_aliquot volume has been changed and
     # if the new volume is greater than the used volume.
-    before_update :check_volume
+    before_update :used_volume_check
 
     before_destroy :check_for_derived_aliquots, prepend: true
 
@@ -90,23 +90,6 @@ module Pacbio
       return true if derived_aliquots.empty?
 
       errors.add(:base, 'Cannot delete a library that is used in a pool or run')
-      throw(:abort)
-    end
-
-    # Checks if the volume has been changed and if the new volume is greater than the used volume.
-    # If the volume has not been changed, the method immediately returns.
-    # If the new volume is greater than the used volume, the method returns true.
-    # If the new volume is less than or equal to the used volume
-    # - an error is added to the volume attribute and
-    # - the update operation is aborted.
-    #
-    # @return [TrueClass, nil]
-    # Returns true if the new volume is greater than the used volume, nil otherwise.
-    def check_volume
-      return unless volume_changed?
-      return true if volume > used_volume
-
-      errors.add(:volume, 'Volume must be greater than the current used volume')
       throw(:abort)
     end
   end
