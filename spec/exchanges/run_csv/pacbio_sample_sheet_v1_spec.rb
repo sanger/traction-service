@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 # import parser to assist with testing
-require_relative '../../../app/exchanges/parsers/pacbio_sample_sheet_v1_parser'
+require_relative '../../support/parsers/pacbio_sample_sheet_v1_parser'
 
 RSpec.describe RunCsv::PacbioSampleSheetV1, type: :model do
   before do
