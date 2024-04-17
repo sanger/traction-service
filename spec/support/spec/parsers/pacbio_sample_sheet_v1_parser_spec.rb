@@ -72,6 +72,21 @@ RSpec.describe Parsers::PacbioSampleSheetV1Parser, type: :model do
     end
   end
 
+  describe '#parse_smrt_cell_settings' do
+    subject(:parsed_smrt_cell_settings) { sample_sheet_parser.parse_smrt_cell_settings(smrt_cell_settings_string) }
+
+    context 'when there is an inconsistent number of values for a key' do
+      let(:smrt_cell_settings_string) do
+        ",1_A01,1_B01,2_A01\n" \
+          "Attribute,Value\n"
+      end
+
+      it 'raises an error' do
+        expect { parsed_smrt_cell_settings }.to raise_error(RuntimeError, "Invalid number of values for key 'Attribute', expected 3, got 1")
+      end
+    end
+  end
+
   describe '#parse_sample_sheet' do
     subject(:parsed_sample_sheet) { sample_sheet_parser.parse(sample_sheet_string) }
 
