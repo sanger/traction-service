@@ -55,7 +55,8 @@ module Pacbio
       configuration = pacbio_run_sample_sheet_config
       # matches CSV Version in sample sheets
       sample_sheet_class =
-        if configuration.version == 1 && Flipper.enabled?(:new_format_sample_sheet)
+        if (configuration.respond_to?(:version) && configuration.version == 1) &&
+           Flipper.enabled?(:new_format_sample_sheet)
           RunCsv::PacbioSampleSheetV1
         else
           RunCsv::PacbioSampleSheet
