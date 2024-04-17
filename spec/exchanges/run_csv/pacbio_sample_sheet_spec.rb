@@ -18,7 +18,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
       context 'when the libraries are tagged' do
         let(:well1) do
           create(
-            :pacbio_well_with_pools,
+            :pacbio_well,
             pre_extension_time: 2,
             generate_hifi: 'In SMRT Link',
             ccs_analysis_output: 'Yes'
@@ -26,7 +26,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
         end
         let(:well2) do
           create(
-            :pacbio_well_with_pools,
+            :pacbio_well,
             pre_extension_time: 2,
             generate_hifi: 'In SMRT Link',
             ccs_analysis_output: 'No'
@@ -195,7 +195,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
       context 'when the libraries are tagged' do
         let(:well1) do
           create(
-            :pacbio_well_with_pools,
+            :pacbio_well,
             pre_extension_time: 2,
             generate_hifi: 'In SMRT Link',
             ccs_analysis_output: 'Yes'
@@ -203,7 +203,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
         end
         let(:well2) do
           create(
-            :pacbio_well_with_pools,
+            :pacbio_well,
             pre_extension_time: 2,
             generate_hifi: 'In SMRT Link',
             ccs_analysis_output: 'No'
@@ -373,14 +373,14 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
 
       context 'when the run has libraries and pools' do
         let(:pool) { create(:pacbio_pool, :tagged, library_count: 1) }
-        let(:library) { create(:pacbio_library, :tagged, pool: nil) }
+        let(:library) { create(:pacbio_library, :tagged) }
         let(:well1)   do
           create(:pacbio_well, pre_extension_time: 2, generate_hifi: 'Do Not Generate',
                                ccs_analysis_output: 'Yes', pools: [pool])
         end
         let(:well2) do
           create(:pacbio_well, generate_hifi: 'On Instrument', ccs_analysis_output: 'No',
-                               libraries: [library], pools: [])
+                               libraries: [library], pool_count: 0)
         end
         let(:wells) { [well1, well2] }
 
@@ -563,7 +563,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
       context 'when the libraries are tagged' do
         let(:well1) do
           create(
-            :pacbio_well_with_pools,
+            :pacbio_well,
             pre_extension_time: 2,
             generate_hifi: 'In SMRT Link',
             ccs_analysis_output: 'Yes'
@@ -571,7 +571,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
         end
         let(:well2) do
           create(
-            :pacbio_well_with_pools,
+            :pacbio_well,
             pre_extension_time: 2,
             generate_hifi: 'In SMRT Link',
             ccs_analysis_output: 'No'

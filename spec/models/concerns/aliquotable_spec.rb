@@ -35,10 +35,6 @@ RSpec.describe Aliquotable do
   end
 
   describe '#used_aliquots' do
-    before do
-      Flipper.enable(:multiplexing_phase_2_aliquot)
-    end
-
     it 'returns the used aliquots' do
       pacbio_pool = create(:pacbio_pool)
       # Because of the save hook in the pool model the created_at attributes are slightly different
@@ -50,6 +46,52 @@ RSpec.describe Aliquotable do
       pacbio_pool = create(:pacbio_pool)
       pacbio_pool.used_aliquots = []
       expect(pacbio_pool.used_aliquots).to eq []
+    end
+  end
+
+  describe '#used_volume' do
+    it 'returns the sum of the volumes of derived aliquots' do
+      library = create(:pacbio_library)
+      create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 3)
+      library.primary_aliquot.volume = 50
+      library.save
+      expect(library.used_volume).to eq(15)
+    end
+
+    it 'returns 0 if there are no derived aliquots' do
+      library = create(:pacbio_library)
+      expect(library.used_volume).to eq(0)
+    end
+  end
+
+  describe '#available_volume' do
+    it 'returns the available volume' do
+      library = create(:pacbio_library)
+      create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 3)
+      library.primary_aliquot.volume = 50
+      library.save
+      expect(library.available_volume).to eq(35)
+    end
+  end
+
+  describe '#volume_check' do
+    it 'returns true if there is enough volume' do
+      library = create(:pacbio_library)
+      create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 3)
+      library.primary_aliquot.volume = 50
+      library.save
+      required_volume = 10
+      expect(library.volume_check(required_volume)).to be(true)
+    end
+
+    it 'returns false if there is not enough volume' do
+      library = create(:pacbio_library)
+      create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 1)
+      library.primary_aliquot.volume = 10
+      library.save
+      required_volume = 20
+      expect(library.volume_check(required_volume)).to be(false)
+      expect(library.errors[:base]).to include('Insufficient volume available')
     end
   end
 end

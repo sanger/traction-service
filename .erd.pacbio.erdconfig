@@ -36,7 +36,7 @@ cluster: true
 indirect: false
 
 # Filter to only include listed models in diagram.
-only: ",Pacbio::Run,Pacbio::Well,TagSet,Request"
+only: ",Pacbio::Run,Pabio::Plate,Pacbio::Well,Pabio::Pool,Pabio::Library,TagSet,Request"
 
 # Recurses into relations specified by --only up to a depth N.
 only_recursion_depth: 3

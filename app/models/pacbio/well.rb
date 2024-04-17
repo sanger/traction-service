@@ -1,13 +1,9 @@
 # frozen_string_literal: true
 
-# ALIQUOT-CLEANUP
-# - Update references for libraries and pools to be through used_aliquots
-# - Update library_ids and pools_ids to only update used_aliquots
-
 module Pacbio
   # Pacbio::Well
   # A well can have many libraries
-  class Well < ApplicationRecord # rubocop:disable Metrics/ClassLength
+  class Well < ApplicationRecord
     GENERIC_KIT_BARCODE = 'Lxxxxx100938900123199'
 
     include Uuidable
@@ -16,14 +12,12 @@ module Pacbio
 
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
                        inverse_of: :wells
-    has_many :well_pools, class_name: 'Pacbio::WellPool', foreign_key: :pacbio_well_id,
-                          dependent: :destroy, inverse_of: :well, autosave: true
-    has_many :pools, class_name: 'Pacbio::Pool', through: :well_pools
-    has_many :well_libraries, class_name: 'Pacbio::WellLibrary', foreign_key: :pacbio_well_id,
-                              dependent: :destroy, inverse_of: :well, autosave: true
-    has_many :libraries, class_name: 'Pacbio::Library', through: :well_libraries
+    has_many :pools, class_name: 'Pacbio::Pool', through: :used_aliquots,
+                     source: :source, source_type: 'Pacbio::Pool'
+    has_many :libraries, class_name: 'Pacbio::Library', through: :used_aliquots,
+                         source: :source, source_type: 'Pacbio::Library'
 
-    validates :used_aliquots, presence: true, if: -> { Flipper.enabled?(:dpl_1112) }
+    validates :used_aliquots, presence: true
 
     # pacbio smrt link options for a well are kept in store field of the well
     # which is mapped to smrt_link_options column (JSON) of pacbio_wells table.
@@ -60,12 +54,6 @@ module Pacbio
     delegate :run, to: :plate, allow_nil: true
 
     def pool_ids=(ids)
-      # Don't update the used_aliquots if the feature flag is disabled
-      unless Flipper.enabled?(:dpl_1112)
-        super
-        return
-      end
-
       # Map the ids to integers as they may be strings
       ids.map!(&:to_i).each do |id|
         # If the used_aliquot already exists, skip it
@@ -79,18 +67,9 @@ module Pacbio
 
       # If the used_aliquot is not in the list of ids, remove it
       destroy_aliquots_by_source_type_and_id(ids, 'Pacbio::Pool')
-
-      # Calls the parent method to build the well_libraries
-      super
     end
 
     def library_ids=(ids)
-      # Don't update the used_aliquots if the feature flag is disabled
-      unless Flipper.enabled?(:dpl_1112)
-        super
-        return
-      end
-
       # Map the ids to integers as they may be strings
       ids.map!(&:to_i).each do |id|
         # If the used_aliquot already exists, skip it
@@ -104,9 +83,6 @@ module Pacbio
 
       # If the used_aliquot is not in the list of ids, remove it
       destroy_aliquots_by_source_type_and_id(ids, 'Pacbio::Library')
-
-      # Calls the parent method to build the well_libraries
-      super
     end
 
     # Destroy aliquots based on their source_id and type
