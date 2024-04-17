@@ -209,11 +209,23 @@ RSpec.describe SampleSheet do
     end
 
     describe '#adapter' do
-      let(:well) { create(:pacbio_well, pool_count: 1) }
+      context 'when the aliquot is tagged' do
+        let(:well) { create(:pacbio_well, pool_count: 1) }
 
-      it 'returns the tag group id' do
-        aliquot = well.base_used_aliquots.first
-        expect(aliquot.adapter).to eq aliquot.tag.group_id
+        it 'returns the tag group id' do
+          aliquot = well.base_used_aliquots.first
+          expect(aliquot.adapter).to eq aliquot.tag.group_id
+        end
+      end
+
+      context 'when the aliquot is not tagged' do
+        let(:pool) { create(:pacbio_pool, :untagged, library_count: 1) }
+        let(:well) { create(:pacbio_well, pools: [pool]) }
+
+        it 'returns nil' do
+          aliquot = well.base_used_aliquots.first
+          expect(aliquot.adapter).to be_nil
+        end
       end
     end
   end

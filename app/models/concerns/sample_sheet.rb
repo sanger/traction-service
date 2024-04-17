@@ -116,8 +116,9 @@ module SampleSheet
 
     # Sample Adapter field
     # The same adapter is used for both left and right, see same_barcodes_on_both_ends_of_sequence
+    # Returns nil if the tag is nil
     def adapter
-      tag.group_id
+      tag&.group_id
     end
   end
 end
