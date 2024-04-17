@@ -228,47 +228,6 @@ RSpec.describe Pacbio::Library, :pacbio do
     end
   end
 
-  describe 'when volume is updated' do
-    context 'when volume is updated to a value greater than used_volume' do
-      it 'allows the update' do
-        library = create(:pacbio_library, volume: 100)
-        create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 2)
-        library.volume = 50
-        allow(library).to receive(:check_volume).and_return(true)
-        expect(library.save).to be_truthy
-      end
-    end
-
-    context 'when volume is updated to a value less than used_volume' do
-      let!(:library) { create(:pacbio_library, volume: 100) }
-
-      before do
-        create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 2)
-        library.volume = 5
-      end
-
-      it 'does not allow the update' do
-        library.save
-        expect(library.save).to be_falsey
-      end
-
-      it 'adds an error message' do
-        library.save
-        expect(library.errors[:volume]).to include('Volume must be greater than the current used volume')
-      end
-    end
-
-    context 'when a field other than volume is updated' do
-      it 'allows the update' do
-        library = create(:pacbio_library, volume: 100)
-        create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 2)
-        library.concentration = 50
-        expect(library.save).to be_truthy
-        expect(library.errors[:volume]).to be_empty
-      end
-    end
-  end
-
   describe '#sequencing_plates' do
     it 'when there is no run' do
       library = create(:pacbio_library)
@@ -326,6 +285,15 @@ RSpec.describe Pacbio::Library, :pacbio do
       library = create(:pacbio_library)
       create_list(:pacbio_well, 5, libraries: [library])
       expect(library.wells.count).to eq(5)
+    end
+  end
+
+  context 'before_update' do
+    it 'calls used_volume_check method' do
+      library = create(:pacbio_library)
+      expect(library).to receive(:used_volume_check)
+      library.primary_aliquot.update(volume: 10)
+      library.save
     end
   end
 end
