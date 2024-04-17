@@ -53,8 +53,9 @@ module Pacbio
     # using pipelines.yml configuration to generate data
     def generate_sample_sheet
       configuration = pacbio_run_sample_sheet_config
+      # matches CSV Version in sample sheets
       sample_sheet_class =
-        if Flipper.enabled?(:new_format_sample_sheet) && (smrt_link_version.name == 'v13_revio')
+        if configuration.version == 1 && Flipper.enabled?(:new_format_sample_sheet)
           RunCsv::PacbioSampleSheetV13
         else
           RunCsv::PacbioSampleSheet
