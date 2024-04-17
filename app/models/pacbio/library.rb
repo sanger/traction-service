@@ -44,11 +44,6 @@ module Pacbio
 
     after_create :create_used_aliquot
 
-    # Before updating the record, the `used_volume_check` method is called.
-    # This is a callback that checks if the primary_aliquot volume has been changed and
-    # if the new volume is greater than the used volume.
-    before_update :used_volume_check
-
     before_destroy :check_for_derived_aliquots, prepend: true
 
     def create_used_aliquot
