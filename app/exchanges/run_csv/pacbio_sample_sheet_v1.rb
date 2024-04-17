@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-# A class spefically for SMRT-Link v13 Sample Sheets, based on the PacbioSampleSheet class
+# A class spefically for SMRT-Link v1 Sample Sheets, based on the PacbioSampleSheet class
 
 module RunCsv
-  # RunCsv::PacbioSampleSheetV13
-  # Used to generate sample sheets specific to the PacBio pipeline for v13
-  class PacbioSampleSheetV13 < PacbioSampleSheet
+  # RunCsv::PacbioSampleSheetV1
+  # Used to generate sample sheets specific to the PacBio pipeline (introduced in SMRT Link v13)
+  class PacbioSampleSheetV1 < PacbioSampleSheet
     # Generate a hash of settings for the run
     def run_settings
       run = object # Pacbio::Run

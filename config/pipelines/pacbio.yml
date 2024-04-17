@@ -293,7 +293,7 @@ default: &default
 
       v13_revio:
         <<: *v12_revio # TODO: remove when feature flag new_format_sample_sheet is removed
-        version: 1 # see RunCsv::PacbioSampleSheetV13
+        version: 1 # see RunCsv::PacbioSampleSheetV1
 
       # No changes required from v12_sequel_iie, added for consistency
       v13_sequel_iie: *v12_sequel_iie
