@@ -5,6 +5,7 @@ require 'rails_helper'
 RSpec.describe Pacbio::Run, :pacbio do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10') }
   let!(:version12_sequel_iie) { create(:pacbio_smrt_link_version, name: 'v12_sequel_iie') }
+  let!(:version12_revio) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
   let!(:version13_revio) { create(:pacbio_smrt_link_version, name: 'v13_revio', default: true) }
 
   context 'uuidable' do
@@ -114,6 +115,40 @@ RSpec.describe Pacbio::Run, :pacbio do
 
       sample_sheet = run.generate_sample_sheet
       expect(sample_sheet.is_a?(String)).to be(true)
+    end
+
+    shared_examples 'generates sample sheet with' do |desired_sample_sheet_class|
+      let(:run) { create(:pacbio_revio_run, smrt_link_version:) }
+
+      it 'calls payload on the correct sample sheet class' do
+        sample_sheet_instance = instance_double(desired_sample_sheet_class, payload: 'sample_sheet')
+        allow(desired_sample_sheet_class).to receive(:new).and_return(sample_sheet_instance)
+
+        run.generate_sample_sheet
+
+        expect(desired_sample_sheet_class).to have_received(:new) # rubocop:disable RSpec/MessageSpies
+        expect(sample_sheet_instance).to have_received(:payload) # rubocop:disable RSpec/MessageSpies
+      end
+    end
+
+    context 'with a v12_revio run' do
+      let(:smrt_link_version) { version12_revio }
+
+      it_behaves_like 'generates sample sheet with', RunCsv::PacbioSampleSheet
+    end
+
+    context 'with a v13_revio run with new_format_sample_sheet feature flag off' do
+      let(:smrt_link_version) { version13_revio }
+
+      it_behaves_like 'generates sample sheet with', RunCsv::PacbioSampleSheet
+    end
+
+    context 'with a v13_revio run with new_format_sample_sheet feature flag on' do
+      before { Flipper.enable(:new_format_sample_sheet) }
+
+      let(:smrt_link_version) { version13_revio }
+
+      it_behaves_like 'generates sample sheet with', RunCsv::PacbioSampleSheetV1
     end
   end
 
