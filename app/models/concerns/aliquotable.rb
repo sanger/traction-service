@@ -50,7 +50,7 @@ module Aliquotable
       primary_aliquot.volume - used_volume
     end
 
-    # Method: available_volume_check
+    # Method: is_available_volume_sufficient
     #
     # This method is used to validate if the available volume is sufficient for a required volume.
     #
@@ -63,14 +63,14 @@ module Aliquotable
     # @param required_volume [Numeric] The volume that is required.
     #
     # @return [Boolean] Returns true if the available volume is sufficient, false otherwise.
-    def available_volume_check(required_volume)
+    def available_volume_sufficient(required_volume)
       return true if available_volume >= required_volume
 
       errors.add(:base, 'Insufficient volume available')
       false
     end
 
-    # Method: used_volume_check
+    # Method: primary_aliquot_volume_sufficient
     #
     # This method is used to validate the volume of the primary aliquot in the library.
     # It is typically used as a callback before updating a library record.
@@ -87,7 +87,7 @@ module Aliquotable
     #  true if the volume of the primary aliquot is greater than or equal to the used volume, and
     # false if the volume of the primary aliquot is less than the used volume.
 
-    def used_volume_check
+    def primary_aliquot_volume_sufficient
       return unless primary_aliquot&.volume_changed?
       return true if primary_aliquot.volume >= used_volume
 

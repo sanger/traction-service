@@ -81,7 +81,7 @@ RSpec.describe Aliquotable do
       library.primary_aliquot.volume = 50
       library.save
       required_volume = 10
-      expect(library.available_volume_check(required_volume)).to be(true)
+      expect(library.available_volume_sufficient(required_volume)).to be(true)
     end
 
     it 'returns false if there is not enough volume' do
@@ -90,7 +90,7 @@ RSpec.describe Aliquotable do
       library.primary_aliquot.volume = 10
       library.save
       required_volume = 20
-      expect(library.available_volume_check(required_volume)).to be(false)
+      expect(library.available_volume_sufficient(required_volume)).to be(false)
       expect(library.errors[:base]).to include('Insufficient volume available')
     end
   end
@@ -101,7 +101,7 @@ RSpec.describe Aliquotable do
         library = build(:pacbio_library, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
         create_list(:aliquot, 4, aliquot_type: :derived, source: library, volume: 2)
         library.primary_aliquot.volume = 15
-        expect(library.used_volume_check).to be true
+        expect(library.primary_aliquot_volume_sufficient).to be true
         expect(library.errors[:volume]).to be_empty
       end
     end
@@ -111,7 +111,7 @@ RSpec.describe Aliquotable do
         library = create(:pacbio_library, volume: 100, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
         create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 2)
         library.primary_aliquot.volume = 5
-        expect { library.used_volume_check }.to throw_symbol(:abort)
+        expect { library.primary_aliquot_volume_sufficient }.to throw_symbol(:abort)
         expect(library.errors[:volume]).to include('Volume must be greater than the current used volume')
       end
     end
@@ -120,7 +120,7 @@ RSpec.describe Aliquotable do
       it 'returns without checking volume' do
         library = create(:pacbio_library, volume: 100, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
         library.primary_aliquot.concentration = 5
-        expect(library.used_volume_check).to be_nil
+        expect(library.primary_aliquot_volume_sufficient).to be_nil
       end
     end
   end
