@@ -292,8 +292,110 @@ default: &default
                   value: bio_sample_name
 
       v13_revio:
-        <<: *v12_revio # TODO: remove when feature flag new_format_sample_sheet is removed
         version: 1 # see RunCsv::PacbioSampleSheetV1
+        # TODO: remove config below when feature flag new_format_sample_sheet is removed
+        column_order:
+          - Library Type
+          - Reagent Plate
+          - Plate 1
+          - Plate 2
+          - Run Name
+          - Instrument Type
+          - Run Comments
+          - Is Collection
+          - Sample Well
+          - Well Name
+          - Movie Acquisition Time (hours)
+          - Include Base Kinetics
+          - Library Concentration (pM)
+          - Polymerase Kit
+          - Automation Parameters
+          - Indexes
+          - Barcode Name
+          - Bio Sample Name
+          - Insert Size (bp)
+          - Use Adaptive Loading
+        fields:
+         _sorted_wells:
+          type: :array
+          value: sorted_wells # defined in 'app/models/concerns/sample_sheet.rb'
+          children:
+            Library Type:
+              type: :string
+              value: Standard
+            Reagent Plate:
+              type: :model
+              value: plate.plate_number
+            Plate 1:
+              type: :model
+              value: sequencing_kit_box_barcode_plate_1
+            Plate 2:
+              type: :model
+              value: sequencing_kit_box_barcode_plate_2
+            Run Name:
+              type: :model
+              value: plate.run.name
+            Instrument Type:
+              type: :model
+              value: plate.run.system_name
+            Run Comments:
+              type: :model
+              value: plate.run.comments
+            Is Collection:
+              type: :model
+              value: collection?
+            Sample Well:
+              type: :model
+              value: position_leading_zero
+            Well Name:
+              type: :model
+              value: tube_barcode
+            Movie Acquisition Time (hours):
+              type: :model
+              value: movie_acquisition_time
+            Include Base Kinetics:
+              type: :model
+              value: include_base_kinetics
+            Library Concentration (pM):
+              type: :model
+              value: library_concentration
+            Polymerase Kit:
+              type: :model
+              value: polymerase_kit
+            Automation Parameters:
+              type: :model
+              value: automation_parameters
+            Indexes:
+              type: :model
+              value: barcode_set
+            Bio Sample Name:
+              type: :model
+              value: bio_sample_name
+            Insert Size (bp):
+              type: :model
+              value: insert_size
+            Use Adaptive Loading:
+              type: :string
+              value: FALSE
+            samples:
+              type: :array
+              value: aliquots_to_show_per_row
+              children:
+                Reagent Plate:
+                  type: :parent_model
+                  value: plate.plate_number
+                Is Collection:
+                  type: :model
+                  value: collection?
+                Sample Well:
+                  type: :parent_model
+                  value: position_leading_zero
+                Barcode Name:
+                  type: :model
+                  value: barcode_name
+                Bio Sample Name:
+                  type: :model
+                  value: bio_sample_name
 
       # No changes required from v12_sequel_iie, added for consistency
       v13_sequel_iie: *v12_sequel_iie
