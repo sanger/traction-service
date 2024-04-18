@@ -287,4 +287,13 @@ RSpec.describe Pacbio::Library, :pacbio do
       expect(library.wells.count).to eq(5)
     end
   end
+
+  context 'before_update' do
+    it 'calls primary_aliquot_volume_sufficient method' do
+      library = create(:pacbio_library)
+      expect(library).to receive(:primary_aliquot_volume_sufficient)
+      library.primary_aliquot.update(volume: 10)
+      library.save
+    end
+  end
 end
