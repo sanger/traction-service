@@ -42,7 +42,7 @@ module RunCsv
         'Insert Size (bp)'	=> well.insert_size, # 500
         'Assign Data To Project'	=> 1, # (maybe we need to assign a run a project in traction)?
         'Library Concentration (pM)'	=> well.library_concentration, # 250
-        'Include Base Kinetics'	=> evaluates_as_true?(well.include_base_kinetics),
+        'Include Base Kinetics'	=> well.include_base_kinetics,
         'Polymerase Kit'	=> well.polymerase_kit, # 032037102739100071224
         'Indexes'	=> well.barcode_set, # 244d96c6-f3b2-4997-5ae3-23ed33ab925f
         'Sample is indexed'	=> well.tagged?, # Set to True to Multiplex
@@ -123,17 +123,7 @@ module RunCsv
       sample_sheet += "\n[Samples]\n"
       sample_sheet += samples_csv
 
-      # Replace Trues and Falses with upper case versions
-      sample_sheet.gsub!('true', 'TRUE')
-      sample_sheet.gsub!('false', 'FALSE')
-
       sample_sheet
-    end
-
-    private
-
-    def evaluates_as_true?(value)
-      value.downcase == 'true'
     end
   end
 end
