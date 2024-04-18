@@ -180,7 +180,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV1, type: :model do
             pre_extension_time: 2,
             generate_hifi: 'In SMRT Link',
             ccs_analysis_output: 'Yes',
-            pools: pool1, # the untagged pool
+            pools: pool1, # untagged pool
             row: 'A',
             column: 1
           )
@@ -191,7 +191,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV1, type: :model do
             pre_extension_time: 2,
             generate_hifi: 'In SMRT Link',
             ccs_analysis_output: 'No',
-            pools: pool3, # the untagged pool
+            pools: pool2, # untagged pool
             row: 'A',
             column: 1
           )
@@ -202,7 +202,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV1, type: :model do
             pre_extension_time: 2,
             generate_hifi: 'In SMRT Link',
             ccs_analysis_output: 'No',
-            pools: pool3, # the untagged pool
+            pools: pool3, # untagged pool
             row: 'B',
             column: 1
           )
