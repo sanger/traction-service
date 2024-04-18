@@ -1,0 +1,34 @@
+[Run Settings]
+Instrument Type,Revio
+Run Name,Example Run
+Run Comments,Example Run comment
+Plate 1,102118800
+Plate 2,102118800
+CSV Version,1
+[SMRT Cell Settings],1_A01,1_B01,2_A01
+Well Name,Sample1_CCS,Sample2_CCS_BC,Sample3_CCS_basic
+Well Comment,Sample 1 comment,Sample 2 comment,Sample 3 comment
+Application,HiFi Reads,HiFi Reads,Unspecified
+Library Type,Standard,Standard,Standard
+Movie Acquisition Time (hours),24,24,24
+Insert Size (bp),2000,2000,2000
+Assign Data To Project,1,1,1
+Library Concentration (pM),7,7,7
+Include Base Kinetics,FALSE,FALSE,FALSE
+Polymerase Kit,Lxxxxx102739100123199,Lxxxxx102739100123199,Lxxxxx102739100123199
+Indexes,43f950a9-8bde-3855-6b25-c13368069745,afa1b6fd-6a44-50d8-838f-cb9d485ce9da,43f950a9-8bde-3855-6b25-c13368069745
+Minimum Barcode Score,80,80,80
+Pipeline Id,cromwell.workflows.dev_mock_analysis
+Analysis Name,Collection 1 AutoAnalysis
+Entry Points,PacBio.DataSet.ReferenceSet;eid_ref_dataset;1a369917-507e-4f70-9f38-69614ff828b6
+Task Options,param_a;boolean;true|param_b;string;hello|param_c;integer;666|param_d;float;3.14
+Sample is indexed,TRUE,TRUE,TRUE
+Use Adaptive Loading,TRUE,TRUE,TRUE
+Consensus Mode,molecule,molecule,molecule
+[Samples]
+Bio Sample Name,Plate Well,Adapter,Adapter2,Pipeline Id,Analysis Name,Entry Points,Task Options
+lambda1,1_A01,bc2001,bc2001
+lambda1,1_B01,lbc1,lbc1,cromwell.workflows.dev_mock_analysis,lambda1analysis,PacBio.DataSet.ReferenceSet;eid_ref_dataset;1a369917-507e-4f70-9f38-69614ff828b6,param_a;boolean;false|param_c;integer;16|param_d;float;0.99
+lambda2,1_B01,lbc2,lbc2,cromwell.workflows.dev_mock_analysis,lambda2analysis,PacBio.DataSet.ReferenceSet;eid_ref_dataset;1a369917-507e-4f70-9f38-69614ff828b6,param_a;boolean;false|param_c;integer;25|param_d;float;0.99
+lambda3,1_B01,lbc3,lbc3,cromwell.workflows.dev_mock_analysis,lambda3analysis,PacBio.DataSet.ReferenceSet;eid_ref_dataset;1a369917-507e-4f70-9f38-69614ff828b6,param_a;boolean;false|param_c;integer;36|param_d;float;0.99
+lambda1,2_A01,bc2001,bc2001

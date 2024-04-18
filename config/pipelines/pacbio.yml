@@ -75,7 +75,7 @@ default: &default
 
     # For instructions on structure and syntax, see: 'app/exchanges/README.md'
     sample_sheet:
-      v12_revio:
+      v12_revio: &v12_revio
         column_order:
           - Library Type
           - Reagent Plate
@@ -290,7 +290,10 @@ default: &default
                 Bio Sample Name:
                   type: :model
                   value: bio_sample_name
+
       v13_revio:
+        sample_sheet_class: PacbioSampleSheetV1
+        # TODO: remove config below when feature flag new_format_sample_sheet is removed
         column_order:
           - Library Type
           - Reagent Plate
@@ -393,6 +396,7 @@ default: &default
                 Bio Sample Name:
                   type: :model
                   value: bio_sample_name
+
       # No changes required from v12_sequel_iie, added for consistency
       v13_sequel_iie: *v12_sequel_iie
 

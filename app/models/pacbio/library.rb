@@ -59,8 +59,18 @@ module Pacbio
       )
     end
 
+    # Always false for libraries, but always true for wells - a gross simplification
     def collection?
       false
+    end
+
+    # Checks if the library is tagged.
+    #
+    # An library is considered tagged if it has a non-nil and non-empty tag.
+    #
+    # @return [Boolean] Returns true if the library is tagged, false otherwise.
+    def tagged?
+      tag.present?
     end
 
     # Note - This does not take into account when a library is used in a pool

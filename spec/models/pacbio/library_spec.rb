@@ -228,6 +228,18 @@ RSpec.describe Pacbio::Library, :pacbio do
     end
   end
 
+  describe '#tagged?' do
+    it 'returns true if the library is tagged' do
+      library = create(:pacbio_library, tag: create(:tag))
+      expect(library.tagged?).to be(true)
+    end
+
+    it 'returns false if the library is not tagged' do
+      library = create(:pacbio_library, tag: nil)
+      expect(library.tagged?).to be(false)
+    end
+  end
+
   describe '#sequencing_plates' do
     it 'when there is no run' do
       library = create(:pacbio_library)
