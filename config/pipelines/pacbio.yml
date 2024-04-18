@@ -292,7 +292,7 @@ default: &default
                   value: bio_sample_name
 
       v13_revio:
-        version: 1 # see RunCsv::PacbioSampleSheetV1
+        sample_sheet_class: PacbioSampleSheetV1
         # TODO: remove config below when feature flag new_format_sample_sheet is removed
         column_order:
           - Library Type
