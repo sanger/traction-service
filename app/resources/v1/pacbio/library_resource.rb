@@ -10,7 +10,7 @@ module V1
 
       attributes :state, :volume, :concentration, :template_prep_kit_box_barcode,
                  :insert_size, :created_at, :deactivated_at, :source_identifier,
-                 :pacbio_request_id, :tag_id, :primary_aliquot_attributes
+                 :pacbio_request_id, :tag_id, :primary_aliquot_attributes, :used_volume
 
       has_one :request, always_include_optional_linkage_data: true
       # If we don't specify the relation_name here, jsonapi-resources
