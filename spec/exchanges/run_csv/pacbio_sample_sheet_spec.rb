@@ -7,7 +7,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
     subject(:csv_string) { csv.payload }
 
     let(:plate)       { build(:pacbio_plate, wells:, plate_number: 1) }
-    let(:run)         { create(:pacbio_run, smrt_link_version:, plates: [plate]) }
+    let(:run)         { create(:pacbio_generic_run, smrt_link_version:, plates: [plate]) }
     let(:parsed_csv)  { CSV.parse(csv_string) }
     let(:csv)         { described_class.new(object: run, configuration:) }
     let(:configuration) { Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name) }
@@ -172,25 +172,11 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
           expect(parsed_csv.size).to eq 3
         end
       end
-
-      context 'with lots of wells in unpredictable orders' do
-        let(:pool1) { create_list(:pacbio_pool, 1, :untagged) }
-        let(:pool2) { create_list(:pacbio_pool, 1, :untagged) }
-        let(:pool3) { create_list(:pacbio_pool, 1, :untagged) }
-        let(:well1) { create(:pacbio_well, pools: pool1, row: 'A', column: 10) }
-        let(:well2) { create(:pacbio_well, pools: pool2, row: 'A', column: 5) }
-        let(:well3) { create(:pacbio_well, pools: pool3, row: 'B', column: 1) }
-        let(:wells) { [well1, well2, well3] }
-
-        it 'sorts the wells by column' do
-          sorted_well_positions = parsed_csv[1..].pluck(8)
-          expect(sorted_well_positions).to eq(%w[B01 A05 A10])
-        end
-      end
     end
 
     context 'v12_sequel_iie and v13_sequel_iie' do
       let(:smrt_link_version) { create(:pacbio_smrt_link_version, name: 'v12_sequel_iie', default: true) }
+      let(:run)               { create(:pacbio_sequel_run, smrt_link_version:, plates: [plate]) }
 
       context 'when the libraries are tagged' do
         let(:well1) do

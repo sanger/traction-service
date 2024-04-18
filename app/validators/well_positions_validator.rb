@@ -25,8 +25,13 @@ class WellPositionsValidator < ActiveModel::Validator
   def validate(record)
     well_positions = filtered(record.wells).collect(&:position)
 
-    return if (well_positions - valid_positions).empty?
+    invalid_positions = (well_positions - valid_positions)
 
-    record.errors.add(:wells, "must be in positions #{valid_positions.join(',')}")
+    return if invalid_positions.empty?
+
+    invalid_wells = invalid_positions.join(',')
+    valid_wells = valid_positions.join(',')
+
+    record.errors.add(:wells, "#{invalid_wells} must be in positions #{valid_wells}")
   end
 end

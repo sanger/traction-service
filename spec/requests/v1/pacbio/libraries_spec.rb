@@ -557,7 +557,7 @@ RSpec.describe 'LibrariesController', :pacbio do
     context 'when there is an associated run' do
       let!(:library) { create(:pacbio_library) }
       let!(:plate) { build(:pacbio_plate) }
-      let(:run) { create(:pacbio_run, plates: [plate]) }
+      let(:run) { create(:pacbio_generic_run, plates: [plate]) }
 
       let(:body) do
         {

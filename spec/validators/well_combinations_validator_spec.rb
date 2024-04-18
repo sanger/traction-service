@@ -45,7 +45,8 @@ RSpec.describe WellCombinationsValidator do
     invalid_combinations.each do |invalid_combination|
       well_list = WellList.new(positions: invalid_combination)
       validator.validate(well_list)
-      expect(well_list.errors[:wells]).to include('must be in a valid order')
+      invalid_order = invalid_combination.join(',')
+      expect(well_list.errors[:wells]).to include("must be in a valid order, currently #{invalid_order}")
     end
   end
 
