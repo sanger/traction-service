@@ -88,8 +88,7 @@ module Aliquotable
     # false if the volume of the primary aliquot is less than the used volume.
 
     def used_volume_check
-      return unless primary_aliquot&.saved_change_to_volume?
-
+      return unless primary_aliquot&.volume_changed?
       return true if primary_aliquot.volume >= used_volume
 
       errors.add(:volume, 'Volume must be greater than the current used volume')

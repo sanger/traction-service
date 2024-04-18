@@ -100,8 +100,7 @@ RSpec.describe Aliquotable do
       it 'does not add any error' do
         library = build(:pacbio_library, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
         create_list(:aliquot, 4, aliquot_type: :derived, source: library, volume: 2)
-        library.primary_aliquot.update(volume: 15)
-        library.save
+        library.primary_aliquot.volume = 15
         expect(library.used_volume_check).to be true
         expect(library.errors[:volume]).to be_empty
       end
@@ -111,8 +110,7 @@ RSpec.describe Aliquotable do
       it 'adds an error' do
         library = create(:pacbio_library, volume: 100, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
         create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 2)
-        library.primary_aliquot.update(volume: 5)
-        library.save
+        library.primary_aliquot.volume = 5
         expect { library.used_volume_check }.to throw_symbol(:abort)
         expect(library.errors[:volume]).to include('Volume must be greater than the current used volume')
       end
@@ -121,8 +119,7 @@ RSpec.describe Aliquotable do
     context 'when primary_aliquot volume has not changed' do
       it 'returns without checking volume' do
         library = create(:pacbio_library, volume: 100, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
-        library.primary_aliquot.update(concentration: 5)
-        library.save
+        library.primary_aliquot.concentration = 5
         expect(library.used_volume_check).to be_nil
       end
     end
