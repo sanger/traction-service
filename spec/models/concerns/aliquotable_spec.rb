@@ -91,7 +91,6 @@ RSpec.describe Aliquotable do
       library.save
       required_volume = 20
       expect(library.available_volume_sufficient(required_volume)).to be(false)
-      expect(library.errors[:base]).to include('Insufficient volume available')
     end
   end
 
