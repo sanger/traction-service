@@ -74,14 +74,14 @@ RSpec.describe Aliquotable do
     end
   end
 
-  describe '#volume_check' do
+  describe '#available_volume_check' do
     it 'returns true if there is enough volume' do
       library = create(:pacbio_library)
       create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 3)
       library.primary_aliquot.volume = 50
       library.save
       required_volume = 10
-      expect(library.volume_check(required_volume)).to be(true)
+      expect(library.available_volume_sufficient(required_volume)).to be(true)
     end
 
     it 'returns false if there is not enough volume' do
@@ -90,8 +90,38 @@ RSpec.describe Aliquotable do
       library.primary_aliquot.volume = 10
       library.save
       required_volume = 20
-      expect(library.volume_check(required_volume)).to be(false)
+      expect(library.available_volume_sufficient(required_volume)).to be(false)
       expect(library.errors[:base]).to include('Insufficient volume available')
+    end
+  end
+
+  describe '#used_volume_check' do
+    context 'when primary aliquot volume has increased' do
+      it 'does not add any error' do
+        library = build(:pacbio_library, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
+        create_list(:aliquot, 4, aliquot_type: :derived, source: library, volume: 2)
+        library.primary_aliquot.volume = 15
+        expect(library.primary_aliquot_volume_sufficient).to be true
+        expect(library.errors[:volume]).to be_empty
+      end
+    end
+
+    context 'when primary aliquot volume is less than used volume' do
+      it 'adds an error' do
+        library = create(:pacbio_library, volume: 100, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
+        create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 2)
+        library.primary_aliquot.volume = 5
+        expect { library.primary_aliquot_volume_sufficient }.to throw_symbol(:abort)
+        expect(library.errors[:volume]).to include('Volume must be greater than the current used volume')
+      end
+    end
+
+    context 'when primary_aliquot volume has not changed' do
+      it 'returns without checking volume' do
+        library = create(:pacbio_library, volume: 100, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
+        library.primary_aliquot.concentration = 5
+        expect(library.primary_aliquot_volume_sufficient).to be_nil
+      end
     end
   end
 end

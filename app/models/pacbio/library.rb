@@ -43,6 +43,7 @@ module Pacbio
     accepts_nested_attributes_for :primary_aliquot
 
     after_create :create_used_aliquot
+
     before_destroy :check_for_derived_aliquots, prepend: true
 
     def create_used_aliquot
