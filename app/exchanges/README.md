@@ -83,3 +83,20 @@ v12_revio: # version name
               type: :model # this time call a method on the Sample
               value: bio_sample_name # call sample.bio_sample_name
 ```
+
+### Version
+
+As of SMRT-Link v13, a new format of sample sheet has been introduced. Due to the complex nature of
+the sample sheet, the `version` key has been introduced to allow different versions of the
+sample sheet to be generated.
+
+If the `version` key is not present, the sample sheet will be generated in the more traditional CSV
+format using the `column_order` and `fields` as above.
+
+If the `version` key is present, the sample sheet will be generated in the appropriate format for
+that version. The `version` key should be a string that matches the `CSV Version` of the sample
+sheet as defined in the SMRT Link User Guide for that version.
+
+The implementation of this can be found in [app/models/pacbio/run.rb](/app/models/pacbio/run.rb).  
+For `CSV Version 1`, as introduced in SMRT-Link v13, the sample sheet is generated in
+[app/exchanges/run_csv/pacbio_sample_sheet_v1.rb](/app/exchanges/run_csv/pacbio_sample_sheet_v1.rb).

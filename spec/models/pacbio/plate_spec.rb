@@ -11,7 +11,7 @@ RSpec.describe Pacbio::Plate, :pacbio do
   context 'uuidable' do
     it 'must have a uuid after create' do
       plate = build(:pacbio_plate)
-      create(:pacbio_run, plates: [plate])
+      create(:pacbio_generic_run, plates: [plate])
       expect(plate.uuid).to be_present
     end
   end

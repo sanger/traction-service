@@ -53,7 +53,13 @@ module Pacbio
     # using pipelines.yml configuration to generate data
     def generate_sample_sheet
       configuration = pacbio_run_sample_sheet_config
-      sample_sheet = RunCsv::PacbioSampleSheet.new(object: self, configuration:)
+      sample_sheet_class = if configuration.respond_to?(:sample_sheet_class) &&
+                              Flipper.enabled?(:new_format_sample_sheet)
+                             "RunCsv::#{configuration.sample_sheet_class}".constantize
+                           else
+                             RunCsv::PacbioSampleSheet
+                           end
+      sample_sheet = sample_sheet_class.new(object: self, configuration:)
       sample_sheet.payload
     end
 
