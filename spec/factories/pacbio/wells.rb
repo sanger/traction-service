@@ -25,9 +25,8 @@ FactoryBot.define do
     end
 
     used_aliquots do
-      aliquots = []
-      pools.each do |pool|
-        aliquots << build(:aliquot, source: pool, tag: nil, aliquot_type: :derived, used_by: instance)
+      aliquots = pools.map do |pool|
+        build(:aliquot, source: pool, tag: nil, aliquot_type: :derived, used_by: instance)
       end
       libraries.each do |library|
         aliquots << build(:aliquot, source: library, tag: library.tag, aliquot_type: :derived, used_by: instance)
