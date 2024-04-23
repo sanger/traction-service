@@ -3,5 +3,5 @@
 # The key should be lowecase and snake case, and prefixes with the issue number to allow easy identification
 
 new_format_sample_sheet: 'Enable the new format for the PacBio sample sheets'
-dpl_1070_check_primary_aliquot_library_volume: "Enable volume checking for changes in the primary aliquots within libraries.",
+dpl_1070_check_primary_aliquot_library_volume: "Enable volume checking for changes in the primary aliquots within libraries."
 
