@@ -290,10 +290,14 @@ RSpec.describe Pacbio::Library, :pacbio do
 
   context 'before_update' do
     it 'calls primary_aliquot_volume_sufficient method' do
+      Flipper.enable(:dpl_1070_check_primary_aliquot_library_volume)
+
       library = create(:pacbio_library)
       expect(library).to receive(:primary_aliquot_volume_sufficient)
       library.primary_aliquot.update(volume: 10)
       library.save
+
+      Flipper.disable(:dpl_1070_check_primary_aliquot_library_volume)
     end
   end
 end
