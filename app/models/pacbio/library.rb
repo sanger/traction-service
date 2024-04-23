@@ -44,6 +44,13 @@ module Pacbio
 
     after_create :create_used_aliquot
 
+    # Before updating the record, the `primary_aliquot_volume_sufficient` method is called.
+    # This is a callback that checks if the primary_aliquot volume has been changed and
+    # if the new volume is greater than the used volume.
+    before_update :primary_aliquot_volume_sufficient, if: lambda {
+                                                            Flipper.enabled?(:dpl_1070_check_primary_aliquot_library_volume) # rubocop:disable Layout/LineLength
+                                                          }
+
     before_destroy :check_for_derived_aliquots, prepend: true
 
     def create_used_aliquot
