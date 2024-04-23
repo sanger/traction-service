@@ -30,13 +30,18 @@ module Pacbio
     accepts_nested_attributes_for :primary_aliquot
 
     def used_aliquots_volume
-      # If the aliquot is from a library we want to check there is enough volume
-      used_aliquots.select { |aliquot| aliquot.source_type == 'Pacbio::Library' }.each do |aliquot|
-        unless aliquot.source.available_volume_sufficient(aliquot.volume)
-          errors.add(:base, "Insufficient volume available for #{aliquot.source.tube.barcode}")
-          return false
-        end
+      # Get all the aliquots that are libraries and have insufficient volume
+      failed_aliquots = used_aliquots.select do |aliquot|
+        aliquot.source_type == 'Pacbio::Library' &&
+          !aliquot.source.available_volume_sufficient(aliquot.volume)
       end
+      # Return if there are no aliquots that failed the volume check
+      return if failed_aliquots.empty?
+
+      # If there are failed aliquots we want to collect the source barcodes add an error to the pool
+      failed_barcodes = failed_aliquots.map { |aliquot| aliquot.source.tube.barcode }.join(',')
+      errors.add(:base, "Insufficient volume available for #{failed_barcodes}")
+      false
     end
 
     def used_aliquots_attributes=(used_aliquot_options)
