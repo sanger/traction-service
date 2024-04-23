@@ -13,7 +13,7 @@ end
 # we could do a bit more work here to make this more flexible
 # to cope with different types of runs
 FactoryBot.define do
-  factory :pacbio_run, class: 'Pacbio::Run' do
+  factory :pacbio_generic_run, class: 'Pacbio::Run' do
     sequence(:dna_control_complex_box_barcode) { |n| "Lxxxxx10171760012319#{n}" }
     comments { 'A Run Comment' }
 

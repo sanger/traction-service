@@ -160,6 +160,18 @@ RSpec.describe Aliquot do
     end
   end
 
+  describe '#tagged?' do
+    it 'returns true if the aliquot has a tag' do
+      aliquot = create(:aliquot, tag: create(:tag))
+      expect(aliquot.tagged?).to be true
+    end
+
+    it 'returns false if the aliquot does not have a tag' do
+      aliquot = create(:aliquot, tag: nil)
+      expect(aliquot.tagged?).to be false
+    end
+  end
+
   describe '#collection?' do
     let(:aliquot) { create(:aliquot) }
 

@@ -44,8 +44,18 @@ class Aliquot < ApplicationRecord
     SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour || :untagged)
   end
 
+  # Checks if the aliquot is tagged.
+  #
+  # An aliquot is considered tagged if it has a non-nil and non-empty tag.
+  #
+  # @return [Boolean] Returns true if the aliquot is tagged, false otherwise.
+  def tagged?
+    tag.present?
+  end
+
   # Generic method used by pacbio sample sheet generation to
-  # determine whether the data is a collection or not
+  # determine whether the data is a collection or not.
+  # Assuming false is a simplification used previously for sample-sheets
   def collection?
     false
   end

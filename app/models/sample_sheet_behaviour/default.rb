@@ -5,6 +5,8 @@
 # Will return
 # barcode_name => example--example
 class SampleSheetBehaviour::Default
+  # Deprecated as of SMRT-Link v13.0
+  # See https://www.pacb.com/wp-content/uploads/SMRT-Link-Release-Notes-v13.0.pdf
   def barcode_name(tag)
     "#{tag.group_id}--#{tag.group_id}"
   end
