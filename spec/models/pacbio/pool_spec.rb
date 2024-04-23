@@ -65,7 +65,7 @@ RSpec.describe Pacbio::Pool, :pacbio do
 
     libraries = create_list(:pacbio_library, 3, volume: 100)
 
-    # Pool with 2 libraries: 2 invalid ones and one valid
+    # Pool with 3 libraries: 2 invalid ones and one valid
     pool = build(:pacbio_pool, used_aliquots: [
       build(:aliquot, source: libraries[0], volume: 101, aliquot_type: :derived),
       build(:aliquot, source: libraries[1], volume: 101, aliquot_type: :derived),
