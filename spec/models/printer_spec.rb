@@ -16,12 +16,20 @@ RSpec.describe Printer do
     expect(build(:printer, labware_type: nil)).not_to be_valid
   end
 
-  it 'is valid without an active status' do
-    expect(build(:printer, active: nil)).to be_valid
+  it 'is valid without a deactivated_at' do
+    expect(build(:printer, deactivated_at: nil)).to be_valid
   end
 
-  it 'has a default active status of true' do
-    expect(create(:printer).active).to be true
+  it 'has a default deactivated_at of nil' do
+    expect(create(:printer).deactivated_at).to be_nil
+  end
+
+  it 'is active if deactivated_at is nil' do
+    expect(create(:printer).active?).to be true
+  end
+
+  it 'is inactive if deactivated_at is set' do
+    expect(create(:printer, deactivated_at: Time.current).active?).to be false
   end
 
   it 'has a valid list of labware_types' do

@@ -6,13 +6,10 @@ class Printer < ApplicationRecord
 
   validates :name, presence: true, uniqueness: { case_sensitive: false }
   validates :labware_type, presence: true
-  validates :active, allow_nil: true, inclusion: { in: [true, false] }
 
-  after_initialize :set_defaults
+  scope :active, -> { where(deactivated_at: nil) }
 
-  private
-
-  def set_defaults
-    self.active ||= true
+  def active?
+    deactivated_at.nil?
   end
 end

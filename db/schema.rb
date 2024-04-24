@@ -304,11 +304,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_18_145212) do
   end
 
   create_table "printers", charset: "utf8", force: :cascade do |t|
-    t.string "name"
-    t.integer "labware_type"
-    t.boolean "active"
+    t.string "name", null: false
+    t.integer "labware_type", null: false
+    t.datetime "deactivated_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_printers_on_name", unique: true
   end
 
   create_table "qc_assay_types", charset: "utf8", force: :cascade do |t|
