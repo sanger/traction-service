@@ -2,8 +2,8 @@
 
 FactoryBot.define do
   factory :printer do
-    name { |n| "Printer#{('A'.ord + n).chr}" }
-    labware_type { 1 }
+    sequence(:name) { |n| "Printer#{('A'.ord + n).chr}" }
+    labware_type { Printer.labware_types.keys.sample }
     active { true }
   end
 end
