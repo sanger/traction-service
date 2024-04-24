@@ -8,8 +8,13 @@ class Printer < ApplicationRecord
   validates :labware_type, presence: true
 
   scope :active, -> { where(deactivated_at: nil) }
+  scope :inactive, -> { where.not(deactivated_at: nil) }
 
   def active?
     deactivated_at.nil?
+  end
+
+  def deactivate!
+    update!(deactivated_at: Time.current)
   end
 end
