@@ -43,4 +43,21 @@ RSpec.describe Printer do
   it 'is invalid if labware_type is not in the list of labware_types' do
     expect { create(:printer, labware_type: 3) }.to raise_error(ArgumentError)
   end
+
+  it 'returns active printers' do
+    active_printer = create(:printer)
+    create(:printer, deactivated_at: Time.current)
+    expect(described_class.active).to eq([active_printer])
+  end
+
+  it 'returns inactive printers' do
+    inactive_printer = create(:printer, deactivated_at: Time.current)
+    create(:printer)
+    expect(described_class.inactive).to eq([inactive_printer])
+  end
+
+  it 'deactivates a printer' do
+    printer = create(:printer)
+    expect { printer.deactivate! }.to change { printer.deactivated_at }.from(nil)
+  end
 end
