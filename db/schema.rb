@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_05_075558) do
+ActiveRecord::Schema[7.1].define(version: 2024_04_18_145212) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
@@ -301,6 +301,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_05_075558) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["barcode"], name: "index_plates_on_barcode", unique: true
+  end
+
+  create_table "printers", charset: "utf8mb3", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "labware_type", null: false
+    t.datetime "deactivated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_printers_on_name", unique: true
   end
 
   create_table "qc_assay_types", charset: "utf8mb3", force: :cascade do |t|

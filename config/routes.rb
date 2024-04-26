@@ -4,16 +4,17 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
   namespace :v1 do
-    jsonapi_resources :samples,  only: %i[index create]
-    jsonapi_resources :tags,     only: %i[index create update destroy]
-    jsonapi_resources :tag_sets, only: %i[index create update destroy]
-    jsonapi_resources :library_types, only: %i[index create update]
     jsonapi_resources :data_types, only: %i[index create update]
-    jsonapi_resources :receptions, only: %i[index create show]
+    jsonapi_resources :library_types, only: %i[index create update]
+    jsonapi_resources :printers, only: %i[index show]
     jsonapi_resources :qc_assay_types, only: %i[index show]
-    jsonapi_resources :qc_results, only: %i[index create show]
-    jsonapi_resources :qc_results_uploads, only: %i[create]
     jsonapi_resources :qc_receptions, only: %i[create]
+    jsonapi_resources :qc_results_uploads, only: %i[create]
+    jsonapi_resources :qc_results, only: %i[index create show]
+    jsonapi_resources :receptions, only: %i[index create show]
+    jsonapi_resources :samples,  only: %i[index create]
+    jsonapi_resources :tag_sets, only: %i[index create update destroy]
+    jsonapi_resources :tags,     only: %i[index create update destroy]
 
     namespace :saphyr do
       jsonapi_resources :runs,          only: %i[index create show update destroy]
