@@ -19,7 +19,8 @@ RSpec.describe Pacbio::Library, :pacbio do
   context 'when volume is nil' do
     let(:params) { { volume: nil } }
 
-    it { is_expected.to be_valid }
+    # Validation should fail on the primary aliquot which requires a volume
+    it { is_expected.not_to be_valid }
   end
 
   context 'when volume is positive' do
@@ -43,7 +44,8 @@ RSpec.describe Pacbio::Library, :pacbio do
   context 'when concentration is nil' do
     let(:params) { { concentration: nil } }
 
-    it { is_expected.to be_valid }
+    # Validation should fail on the primary aliquot which requires a concentration
+    it { is_expected.not_to be_valid }
   end
 
   context 'when concentration is positive' do

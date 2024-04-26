@@ -8,7 +8,7 @@
 module Aliquotable
   extend ActiveSupport::Concern
 
-  included do # rubocop:disable Metrics/BlockLength
+  included do
     # Associations
     # Aliquots a general term to get all aliquots from a given source
     # Aliquots are polymorphic and can belong to any model
@@ -64,10 +64,7 @@ module Aliquotable
     #
     # @return [Boolean] Returns true if the available volume is sufficient, false otherwise.
     def available_volume_sufficient(required_volume)
-      return true if available_volume >= required_volume
-
-      errors.add(:base, 'Insufficient volume available')
-      false
+      available_volume >= required_volume
     end
 
     # Method: primary_aliquot_volume_sufficient
