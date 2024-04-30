@@ -84,7 +84,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV1, type: :model do
             'Library Concentration (pM)' => well.library_concentration.to_s,
             'Include Base Kinetics' => well.include_base_kinetics.downcase == 'true', # is a string
             'Polymerase Kit' => well.polymerase_kit,
-            'Use Adaptive Loading' => well.adaptive_loading_check,
+            'Use Adaptive Loading' => false,
             'Consensus Mode' => 'molecule',
 
             # specific to tagged wells
@@ -252,7 +252,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV1, type: :model do
               'Library Concentration (pM)' => well.library_concentration.to_s,
               'Include Base Kinetics' => well.include_base_kinetics.downcase == 'true', # is a string
               'Polymerase Kit' => well.polymerase_kit,
-              'Use Adaptive Loading' => well.adaptive_loading_check,
+              'Use Adaptive Loading' => false,
               'Consensus Mode' => 'molecule',
 
               # specific to untagged wells
