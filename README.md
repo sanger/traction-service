@@ -77,6 +77,8 @@ To create saphyr dummy runs: `bundle exec rails saphyr_runs:create`
 
 To create ont dummy runs: `bundle exec rails ont_data:create`
 
+To create dummy printers: `bundle exec rails dummy_printers:create`
+
 ## Database drop
 
 To drop the database `bundle exec rails db:drop`

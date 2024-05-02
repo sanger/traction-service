@@ -9,8 +9,8 @@ RSpec.describe 'PlatesController' do
   end
 
   describe '#get' do
-    let!(:run1) { create(:pacbio_run, system_name: 0) }
-    let!(:run2) { create(:pacbio_run, system_name: 0) }
+    let!(:run1) { create(:pacbio_generic_run, system_name: 0) }
+    let!(:run2) { create(:pacbio_generic_run, system_name: 0) }
     let!(:plate1) { create(:pacbio_plate, run: run1) }
     let!(:plate2) { create(:pacbio_plate, run: run2) }
 

@@ -50,19 +50,46 @@ module Aliquotable
       primary_aliquot.volume - used_volume
     end
 
-    # Method to check if there is enough volume available.
-    # It compares the available volume with the required volume.
+    # Method: is_available_volume_sufficient
     #
-    # @param required_volume [Numeric] The volume required for the operation.
+    # This method is used to validate if the available volume is sufficient for a required volume.
     #
-    # @return [Boolean] Returns true if the available volume is greater than
-    # or equal to the required volume.
-    # If not, it adds an error message to `errors` and returns false.
-    def volume_check(required_volume)
-      return true if available_volume >= required_volume
+    # The method performs the following checks:
+    # 1. If the available volume is greater than or equal to the required volume,
+    # the method returns true.
+    # 2. If the available volume is less than the required volume, the method adds an error to the
+    # base attribute of the record and returns false.
+    #
+    # @param required_volume [Numeric] The volume that is required.
+    #
+    # @return [Boolean] Returns true if the available volume is sufficient, false otherwise.
+    def available_volume_sufficient(required_volume)
+      available_volume >= required_volume
+    end
 
-      errors.add(:base, 'Insufficient volume available')
-      false
+    # Method: primary_aliquot_volume_sufficient
+    #
+    # This method is used to validate the volume of the primary aliquot in the library.
+    # It is typically used as a callback before updating a library record.
+    #
+    # The method performs the following checks:
+    # 1. If the primary aliquot has not changed its volume, the method returns immediately
+    # without performing any further checks.
+    # 2. If the volume of the primary aliquot is greater than or equal to the used volume,
+    # the method returns true.
+    # 3. If the volume of the primary aliquot is less than the used volume,
+    # the method adds an error to the library record and aborts the update operation.
+    #
+    # @return [nil, true, false] Returns nil if the primary aliquot has not changed its volume,
+    #  true if the volume of the primary aliquot is greater than or equal to the used volume, and
+    # false if the volume of the primary aliquot is less than the used volume.
+
+    def primary_aliquot_volume_sufficient
+      return unless primary_aliquot&.volume_changed?
+      return true if primary_aliquot.volume >= used_volume
+
+      errors.add(:volume, 'Volume must be greater than the current used volume')
+      throw(:abort)
     end
   end
 end

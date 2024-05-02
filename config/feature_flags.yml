@@ -1,4 +1,8 @@
 # Add feature flags to this file, example:
 # dpl202_enable_angry_cat_feature: When enabled this will add an angry cat to all pages that will try to catch the mouse pointer
 # The key should be lowecase and snake case, and prefixes with the issue number to allow easy identification
-{}
+
+new_format_sample_sheet: 'Enable the new format for the PacBio sample sheets'
+dpl_1072_check_library_volume_in_pools: 'Enable volume check for libraries in pools'
+dpl_1070_check_primary_aliquot_library_volume: "Enable volume checking for changes in the primary aliquots within libraries."
+

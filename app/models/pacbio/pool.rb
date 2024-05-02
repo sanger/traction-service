@@ -22,6 +22,27 @@ module Pacbio
               :insert_size, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
 
     validates :used_aliquots, presence: true
+    validates :primary_aliquot, presence: true
+    validate :used_aliquots_volume, if: lambda {
+                                          Flipper.enabled?(:dpl_1072_check_library_volume_in_pools)
+                                        }
+
+    accepts_nested_attributes_for :primary_aliquot
+
+    def used_aliquots_volume
+      # Get all the aliquots that are libraries and have insufficient volume
+      failed_aliquots = used_aliquots.select do |aliquot|
+        aliquot.source_type == 'Pacbio::Library' &&
+          !aliquot.source.available_volume_sufficient(aliquot.volume)
+      end
+      # Return if there are no aliquots that failed the volume check
+      return if failed_aliquots.empty?
+
+      # If there are failed aliquots we want to collect the source barcodes add an error to the pool
+      failed_barcodes = failed_aliquots.map { |aliquot| aliquot.source.tube.barcode }.join(',')
+      errors.add(:base, "Insufficient volume available for #{failed_barcodes}")
+      false
+    end
 
     def used_aliquots_attributes=(used_aliquot_options)
       self.used_aliquots = used_aliquot_options.map do |attributes|
@@ -32,9 +53,6 @@ module Pacbio
         end
       end
     end
-
-    validates :primary_aliquot, presence: true
-    accepts_nested_attributes_for :primary_aliquot
 
     # @return [Array] of Plates attached to a sequencing run
     def sequencing_plates

@@ -60,6 +60,33 @@ RSpec.describe Pacbio::Pool, :pacbio do
     expect(build(:pacbio_pool, used_aliquots: used_aliquots + [dodgy_aliquot])).not_to be_valid
   end
 
+  it 'is not valid when using an invalid amount of volume from a library' do
+    Flipper.enable(:dpl_1072_check_library_volume_in_pools)
+
+    libraries = create_list(:pacbio_library, 3, volume: 100)
+
+    # Pool with 3 libraries: 2 invalid ones and one valid
+    pool = build(:pacbio_pool, used_aliquots: [
+      build(:aliquot, source: libraries[0], volume: 101, aliquot_type: :derived),
+      build(:aliquot, source: libraries[1], volume: 101, aliquot_type: :derived),
+      build(:aliquot, source: libraries[2], volume: 99, aliquot_type: :derived)
+    ])
+    expect(pool).not_to be_valid
+    expect(pool.errors[:base][0]).to eq("Insufficient volume available for #{libraries[0].tube.barcode},#{libraries[1].tube.barcode}")
+
+    Flipper.disable(:dpl_1072_check_library_volume_in_pools)
+  end
+
+  it 'is valid when using a valid amount of volume from a library' do
+    Flipper.enable(:dpl_1072_check_library_volume_in_pools)
+
+    library = create(:pacbio_library, volume: 100)
+    pool = build(:pacbio_pool, used_aliquots: [build(:aliquot, source: library, volume: 100, aliquot_type: :derived)])
+    expect(pool).to be_valid
+
+    Flipper.disable(:dpl_1072_check_library_volume_in_pools)
+  end
+
   describe '#valid?(:run_creation)' do
     subject { pool.valid?(:run_creation) }
 
@@ -253,7 +280,7 @@ RSpec.describe Pacbio::Pool, :pacbio do
 
     it 'when there is a single run' do
       plate = build(:pacbio_plate_with_wells, :pooled)
-      create(:pacbio_run, plates: [plate])
+      create(:pacbio_generic_run, plates: [plate])
       pool = plate.wells.first.pools.first
       expect(pool.sequencing_plates).to eq([plate])
     end
@@ -261,8 +288,8 @@ RSpec.describe Pacbio::Pool, :pacbio do
     it 'when there are multiple runs' do
       plate1 = build(:pacbio_plate)
       plate2 = build(:pacbio_plate)
-      create(:pacbio_run, plates: [plate1])
-      create(:pacbio_run, plates: [plate2])
+      create(:pacbio_generic_run, plates: [plate1])
+      create(:pacbio_generic_run, plates: [plate2])
       pool = create(:pacbio_pool)
       create(:pacbio_well, pools: [pool], plate: plate1)
       create(:pacbio_well, pools: [pool], plate: plate2)
@@ -278,7 +305,7 @@ RSpec.describe Pacbio::Pool, :pacbio do
 
     it 'when there is a single run' do
       plate = build(:pacbio_plate_with_wells, :pooled)
-      create(:pacbio_run, plates: [plate])
+      create(:pacbio_generic_run, plates: [plate])
       pool = plate.wells.first.pools.first
       expect(pool.sequencing_runs).to eq([plate.run])
     end
@@ -286,8 +313,8 @@ RSpec.describe Pacbio::Pool, :pacbio do
     it 'when there are multiple runs' do
       plate1 = build(:pacbio_plate)
       plate2 = build(:pacbio_plate)
-      create(:pacbio_run, plates: [plate1])
-      create(:pacbio_run, plates: [plate2])
+      create(:pacbio_generic_run, plates: [plate1])
+      create(:pacbio_generic_run, plates: [plate2])
       pool = create(:pacbio_pool)
       create(:pacbio_well, pools: [pool], plate: plate1)
       create(:pacbio_well, pools: [pool], plate: plate2)

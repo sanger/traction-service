@@ -62,6 +62,26 @@ RSpec.describe Pacbio::Well, :pacbio do
     expect(well.summary).to eq("#{well.sample_names} #{well.comment}")
   end
 
+  describe '#tagged?' do
+    let(:well) { create(:pacbio_well, pools:) }
+
+    context 'with tags' do
+      let(:pools) { create_list(:pacbio_pool, 1, :tagged) }
+
+      it 'returns true' do
+        expect(well.tagged?).to be true
+      end
+    end
+
+    context 'without tags' do
+      let(:pools) { create_list(:pacbio_pool, 1, :untagged) }
+
+      it 'returns false' do
+        expect(well.tagged?).to be false
+      end
+    end
+  end
+
   describe '#pools?' do
     let(:pools) { create_list(:pacbio_pool, 2) }
 
@@ -205,14 +225,6 @@ RSpec.describe Pacbio::Well, :pacbio do
       base_used_aliquots = well.used_aliquots.collect(&:source).collect(&:used_aliquots).flatten
       expect(well.base_used_aliquots.length).to eq(4)
       expect(well.base_used_aliquots).to eq(base_used_aliquots)
-    end
-  end
-
-  context 'sample sheet mixin' do
-    let(:well) { create(:pacbio_well) }
-
-    it 'includes the Sample Sheet mixin' do
-      expect(well.same_barcodes_on_both_ends_of_sequence).to be true
     end
   end
 

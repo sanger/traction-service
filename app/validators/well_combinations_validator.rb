@@ -27,6 +27,6 @@ class WellCombinationsValidator < ActiveModel::Validator
 
     return if valid_combinations.include?(well_positions)
 
-    record.errors.add(:wells, 'must be in a valid order')
+    record.errors.add(:wells, "must be in a valid order, currently #{well_positions.join(',')}")
   end
 end

@@ -16,10 +16,7 @@ FactoryBot.define do
         sample_external_id: 'supplier_sample_name_DDD'
       }
     ]
-  qc_results_list_stringified = []
-  qc_results_list.each do |qc_hash|
-    qc_results_list_stringified << qc_hash.stringify_keys
-  end
+  qc_results_list_stringified = qc_results_list.map(&:stringify_keys)
 
   factory :qc_reception do
     source { 'tol-lab-share.tol' }

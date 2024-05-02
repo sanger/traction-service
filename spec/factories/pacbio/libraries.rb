@@ -9,7 +9,7 @@ FactoryBot.define do
     request { association :pacbio_request }
     tag
     tube { nil }
-    primary_aliquot { association :aliquot, source: instance, aliquot_type: :primary }
+    primary_aliquot { association :aliquot, source: instance, aliquot_type: :primary, volume:, concentration: }
     used_aliquots { build_list(:aliquot, 1, source: request, tag:, aliquot_type: :derived, used_by: instance) }
 
     factory :pacbio_incomplete_library do

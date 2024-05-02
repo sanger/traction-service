@@ -19,7 +19,8 @@ RSpec.describe Pacbio::Library, :pacbio do
   context 'when volume is nil' do
     let(:params) { { volume: nil } }
 
-    it { is_expected.to be_valid }
+    # Validation should fail on the primary aliquot which requires a volume
+    it { is_expected.not_to be_valid }
   end
 
   context 'when volume is positive' do
@@ -43,7 +44,8 @@ RSpec.describe Pacbio::Library, :pacbio do
   context 'when concentration is nil' do
     let(:params) { { concentration: nil } }
 
-    it { is_expected.to be_valid }
+    # Validation should fail on the primary aliquot which requires a concentration
+    it { is_expected.not_to be_valid }
   end
 
   context 'when concentration is positive' do
@@ -228,6 +230,18 @@ RSpec.describe Pacbio::Library, :pacbio do
     end
   end
 
+  describe '#tagged?' do
+    it 'returns true if the library is tagged' do
+      library = create(:pacbio_library, tag: create(:tag))
+      expect(library.tagged?).to be(true)
+    end
+
+    it 'returns false if the library is not tagged' do
+      library = create(:pacbio_library, tag: nil)
+      expect(library.tagged?).to be(false)
+    end
+  end
+
   describe '#sequencing_plates' do
     it 'when there is no run' do
       library = create(:pacbio_library)
@@ -238,15 +252,15 @@ RSpec.describe Pacbio::Library, :pacbio do
       plate = build(:pacbio_plate)
       library = create(:pacbio_library)
       plate.wells << create(:pacbio_well, libraries: [library])
-      create(:pacbio_run, plates: [plate])
+      create(:pacbio_generic_run, plates: [plate])
       expect(library.sequencing_plates).to eq([plate])
     end
 
     it 'when there are multiple runs' do
       plate1 = build(:pacbio_plate)
       plate2 = build(:pacbio_plate)
-      create(:pacbio_run, plates: [plate1])
-      create(:pacbio_run, plates: [plate2])
+      create(:pacbio_generic_run, plates: [plate1])
+      create(:pacbio_generic_run, plates: [plate2])
       library = create(:pacbio_library)
       plate1.wells << create(:pacbio_well, libraries: [library])
       plate2.wells << create(:pacbio_well, libraries: [library])
@@ -264,15 +278,15 @@ RSpec.describe Pacbio::Library, :pacbio do
       plate = build(:pacbio_plate)
       library = create(:pacbio_library)
       plate.wells << create(:pacbio_well, libraries: [library])
-      create(:pacbio_run, plates: [plate])
+      create(:pacbio_generic_run, plates: [plate])
       expect(library.sequencing_runs).to eq([plate.run])
     end
 
     it 'when there are multiple runs' do
       plate1 = build(:pacbio_plate)
       plate2 = build(:pacbio_plate)
-      create(:pacbio_run, plates: [plate1])
-      create(:pacbio_run, plates: [plate2])
+      create(:pacbio_generic_run, plates: [plate1])
+      create(:pacbio_generic_run, plates: [plate2])
       library = create(:pacbio_library)
       plate1.wells << create(:pacbio_well, libraries: [library])
       plate2.wells << create(:pacbio_well, libraries: [library])
@@ -285,6 +299,19 @@ RSpec.describe Pacbio::Library, :pacbio do
       library = create(:pacbio_library)
       create_list(:pacbio_well, 5, libraries: [library])
       expect(library.wells.count).to eq(5)
+    end
+  end
+
+  context 'before_update' do
+    it 'calls primary_aliquot_volume_sufficient method' do
+      Flipper.enable(:dpl_1070_check_primary_aliquot_library_volume)
+
+      library = create(:pacbio_library)
+      expect(library).to receive(:primary_aliquot_volume_sufficient)
+      library.primary_aliquot.update(volume: 10)
+      library.save
+
+      Flipper.disable(:dpl_1070_check_primary_aliquot_library_volume)
     end
   end
 end
