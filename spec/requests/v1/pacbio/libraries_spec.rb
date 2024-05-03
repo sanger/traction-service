@@ -35,6 +35,8 @@ RSpec.describe 'LibrariesController', :pacbio do
           expect(library_attributes['created_at']).to eq(library.created_at.to_fs(:us))
           expect(library_attributes['deactivated_at']).to be_nil
           expect(library_attributes['source_identifier']).to eq(library.source_identifier)
+          expect(library_attributes['used_volume']).to eq(library.used_volume)
+          expect(library_attributes['available_volume']).to eq(library.available_volume)
         end
       end
 
