@@ -80,17 +80,15 @@ RSpec.describe Aliquotable do
       create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 3)
       library.primary_aliquot.volume = 50
       library.save
-      required_volume = 10
-      expect(library.available_volume_sufficient(required_volume)).to be(true)
+      expect(library.available_volume_sufficient).to be(true)
     end
 
     it 'returns false if there is not enough volume' do
       library = create(:pacbio_library)
-      create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 1)
+      create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 3)
       library.primary_aliquot.volume = 10
       library.save
-      required_volume = 20
-      expect(library.available_volume_sufficient(required_volume)).to be(false)
+      expect(library.available_volume_sufficient).to be(false)
     end
   end
 
