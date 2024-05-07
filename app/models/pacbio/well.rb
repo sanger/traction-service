@@ -53,37 +53,7 @@ module Pacbio
 
     delegate :run, to: :plate, allow_nil: true
 
-    def pool_ids=(ids)
-      # Map the ids to integers as they may be strings
-      ids.map!(&:to_i).each do |id|
-        # If the used_aliquot already exists, skip it
-        next if used_aliquots.find_by(source_id: id)
-
-        # Create a new used_aliquot if it doesn't exist
-        used_aliquots << used_aliquots.build(source_id: id, source_type: 'Pacbio::Pool',
-                                             volume: 0, concentration: 0, aliquot_type: :derived,
-                                             template_prep_kit_box_barcode: '033000000000000000000')
-      end
-
-      # If the used_aliquot is not in the list of ids, remove it
-      destroy_aliquots_by_source_type_and_id(ids, 'Pacbio::Pool')
-    end
-
-    def library_ids=(ids)
-      # Map the ids to integers as they may be strings
-      ids.map!(&:to_i).each do |id|
-        # If the used_aliquot already exists, skip it
-        next if used_aliquots.find_by(source_id: id)
-
-        # Create a new used_aliquot if it doesn't exist
-        used_aliquots << used_aliquots.build(source_id: id, source_type: 'Pacbio::Library',
-                                             volume: 0, concentration: 0, aliquot_type: :derived,
-                                             template_prep_kit_box_barcode: '033000000000000000000')
-      end
-
-      # If the used_aliquot is not in the list of ids, remove it
-      destroy_aliquots_by_source_type_and_id(ids, 'Pacbio::Library')
-    end
+    accepts_nested_attributes_for :used_aliquots
 
     # Destroy aliquots based on their source_id and type
     # Used to keep libraries, pools and aliqouts in sync
