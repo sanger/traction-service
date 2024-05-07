@@ -45,9 +45,9 @@ module Aliquotable
     # Method to calculate the available volume.
     # It subtracts the used volume from the volume of the primary aliquot.
     # @return [Numeric] The volume available in the primary aliquot after subtracting
-    # the used volume.
+    # the used volume and rounding to 2 decimal places.
     def available_volume
-      primary_aliquot.volume - used_volume
+      (primary_aliquot.volume - used_volume).round(2)
     end
 
     # Method: is_available_volume_sufficient

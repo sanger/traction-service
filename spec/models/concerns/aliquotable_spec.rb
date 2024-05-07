@@ -90,6 +90,14 @@ RSpec.describe Aliquotable do
       library.save
       expect(library.available_volume_sufficient).to be(false)
     end
+
+    it 'returns the available volume rounded to 2 decimal places' do
+      library = create(:pacbio_library)
+      create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 3)
+      library.primary_aliquot.volume = 50.5555
+      library.save
+      expect(library.available_volume).to eq(35.56) # 50.5555 - 5*3 = 35.5555 rounded to 35.56
+    end
   end
 
   describe '#used_volume_check' do
