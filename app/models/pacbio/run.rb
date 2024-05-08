@@ -46,7 +46,11 @@ module Pacbio
 
     # if comments are nil this blows up so add try.
     def comments
-      super || wells.try(:collect, &:summary).try(:join, ':')
+      return super if super.present?
+    
+      wells.collect.with_index do |well|
+        "#{well.used_aliquots.first.source.tube.barcode} #{well.smrt_link_options['library_concentration']}pM"
+      end.join(' ')
     end
 
     # returns sample sheet csv for a Pacbio::Run
