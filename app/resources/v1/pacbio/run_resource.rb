@@ -65,6 +65,7 @@ module V1
 
       def plates_attributes=(plates_parameters)
         @model.plates_attributes = plates_parameters.map do |plate|
+          byebug
           plate.permit(
             :id,
             :sequencing_kit_box_barcode,
@@ -74,7 +75,8 @@ module V1
               # is used to mark wells for destruction
               :_destroy,
               PERMITTED_WELL_PARAMETERS,
-              { used_aliquots_attributes: [] }
+              { used_aliquots_attributes: %i[id source_id source_type volume concentration
+                                             aliquot_type template_prep_kit_box_barcode] }
             ]
           )
         end
