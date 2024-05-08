@@ -102,7 +102,7 @@ RSpec.describe Pacbio::Run, :pacbio do
       plate = build(:pacbio_plate, wells:)
       run = create(:pacbio_generic_run, plates: [plate], comments: nil)
       expect(run.comments).to eq(
-        wells.collect.with_index do |well|
+        wells.collect do |well|
           "#{well.used_aliquots.first.source.tube.barcode} #{well.smrt_link_options['library_concentration']}pM"
         end.join(' ')
       )
