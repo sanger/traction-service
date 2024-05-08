@@ -123,6 +123,17 @@ RSpec.describe Pacbio::Well, :pacbio do
       expect(well).not_to be_valid
       expect(well.errors.messages[:used_aliquots]).to include("can't be blank")
     end
+
+    it 'accepts nested attributes for used_aliquots' do
+      well = described_class.new
+      aliquot_attributes = { volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }
+
+      well.used_aliquots_attributes = [aliquot_attributes]
+
+      expect(well.used_aliquots.first.volume).to eq(10)
+      expect(well.used_aliquots.first.concentration).to eq(20)
+      expect(well.used_aliquots.first.template_prep_kit_box_barcode).to eq('033000000000000000000')
+    end
   end
 
   context 'libraries' do
@@ -156,65 +167,6 @@ RSpec.describe Pacbio::Well, :pacbio do
     it 'can return a list of tags' do
       tag_ids = well.base_used_aliquots.collect(&:tag_id)
       expect(well.tags).to eq(tag_ids)
-    end
-  end
-
-  context 'pool_ids=' do
-    it 'creates used_aliquots from pool_ids' do
-      pools_ids = create_list(:pacbio_pool, 2).collect(&:id)
-      well = build(:pacbio_well, pool_count: 0)
-
-      expect(well.pools.length).to eq(0)
-      expect(well.used_aliquots.length).to eq(0)
-      well.pool_ids = pools_ids
-      well.save
-      well.reload
-
-      expect(well.pools.length).to eq(2)
-      expect(well.used_aliquots.length).to eq(2)
-    end
-
-    it 'destroys used_aliquots from pool_ids' do
-      well = create(:pacbio_well, pool_count: 2)
-
-      expect(well.pools.length).to eq(2)
-      expect(well.used_aliquots.length).to eq(2)
-
-      well.pool_ids = [well.pools.first.id]
-      well.reload
-
-      expect(well.pools.length).to eq(1)
-      expect(well.used_aliquots.length).to eq(1)
-    end
-  end
-
-  context 'library_ids=' do
-    it 'creates used_aliquots from library_ids' do
-      library_ids = create_list(:pacbio_library, 2).collect(&:id)
-      well = build(:pacbio_well, pool_count: 0, library_count: 0)
-
-      expect(well.libraries.length).to eq(0)
-      expect(well.used_aliquots.length).to eq(0)
-      well.library_ids = library_ids
-      well.save
-      well.reload
-
-      expect(well.libraries.length).to eq(2)
-      expect(well.used_aliquots.length).to eq(2)
-    end
-
-    it 'destroys used_aliquots from library_ids' do
-      libraries = create_list(:pacbio_library, 2)
-      well = create(:pacbio_well, pool_count: 0, libraries:)
-
-      expect(well.libraries.length).to eq(2)
-      expect(well.used_aliquots.length).to eq(2)
-
-      well.library_ids = [well.libraries.first.id]
-      well.reload
-
-      expect(well.libraries.length).to eq(1)
-      expect(well.used_aliquots.length).to eq(1)
     end
   end
 
