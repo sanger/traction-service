@@ -103,7 +103,7 @@ RSpec.describe Pacbio::Run, :pacbio do
       run = create(:pacbio_generic_run, plates: [plate], comments: nil)
       expect(run.comments).to eq(
         wells.collect do |well|
-          "#{well.used_aliquots.first.source.tube.barcode} #{well.smrt_link_options['library_concentration']}pM"
+          "#{well.used_aliquots.first.source.tube.barcode} #{well.library_concentration}pM"
         end.join(' ')
       )
     end

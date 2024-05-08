@@ -50,7 +50,7 @@ module Pacbio
 
       wells.collect do |well|
         "#{well.used_aliquots.first.source.tube.barcode} " \
-          "#{well.smrt_link_options['library_concentration']}pM"
+          "#{well.library_concentration}pM"
       end.join(' ')
     end
 
