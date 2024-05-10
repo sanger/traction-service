@@ -51,6 +51,10 @@ module Pacbio
 
     validates :row, :column, presence: true
 
+    validate :used_aliquots_volume, if: lambda {
+                                          Flipper.enabled?(:dpl_1076_check_library_volume_in_runs)
+                                        }
+
     delegate :run, to: :plate, allow_nil: true
 
     accepts_nested_attributes_for :used_aliquots
@@ -81,7 +85,7 @@ module Pacbio
 
     # A collection of all the used_aliquots for given libraries and pools in a well
     def base_used_aliquots
-      used_aliquots.collect(&:source).collect(&:used_aliquots).flatten
+      used_aliquots.collect(&:source).collect(&:used_aliquots).flatten.uniq(&:id)
     end
 
     # collection of all of the requests for a library
@@ -131,6 +135,19 @@ module Pacbio
 
     def adaptive_loading_check
       loading_target_p1_plus_p2.present?
+    end
+
+    def used_aliquots_volume
+      # Get all the aliquots that are libraries and have insufficient volume
+      failed_aliquots = used_aliquots.select do |aliquot|
+        aliquot.source_type == 'Pacbio::Library' &&
+          !aliquot.source.available_volume_sufficient(aliquot.volume)
+      end
+      return if failed_aliquots.empty?
+
+      # If there are failed aliquots we want to collect the source barcodes add an error to the well
+      failed_barcodes = failed_aliquots.map { |aliquot| aliquot.source.tube.barcode }.join(',')
+      errors.add(:base, "Insufficient volume available for #{failed_barcodes}")
     end
   end
 end
