@@ -63,9 +63,8 @@ module V1
 
       private
 
-      def plates_attributes=(plates_parameters)
+      def plates_attributes=(plates_parameters) # rubocop:disable Metrics/MethodLength
         @model.plates_attributes = plates_parameters.map do |plate|
-          byebug
           plate.permit(
             :id,
             :sequencing_kit_box_barcode,
