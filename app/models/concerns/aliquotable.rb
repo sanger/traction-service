@@ -45,26 +45,17 @@ module Aliquotable
     # Method to calculate the available volume.
     # It subtracts the used volume from the volume of the primary aliquot.
     # @return [Numeric] The volume available in the primary aliquot after subtracting
-    # the used volume.
+    # the used volume and rounding to 2 decimal places.
     def available_volume
-      primary_aliquot.volume - used_volume
+      (primary_aliquot.volume - used_volume).round(2)
     end
 
     # Method: is_available_volume_sufficient
     #
     # This method is used to validate if the available volume is sufficient for a required volume.
-    #
-    # The method performs the following checks:
-    # 1. If the available volume is greater than or equal to the required volume,
-    # the method returns true.
-    # 2. If the available volume is less than the required volume, the method adds an error to the
-    # base attribute of the record and returns false.
-    #
-    # @param required_volume [Numeric] The volume that is required.
-    #
     # @return [Boolean] Returns true if the available volume is sufficient, false otherwise.
-    def available_volume_sufficient(required_volume)
-      available_volume >= required_volume
+    def available_volume_sufficient
+      available_volume >= 0
     end
 
     # Method: primary_aliquot_volume_sufficient
