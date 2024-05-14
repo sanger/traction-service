@@ -242,7 +242,9 @@ RSpec.describe Pacbio::Run, :pacbio do
     let!(:pools) { create_list(:pacbio_pool, 2) }
 
     it 'creates a run' do
-      wells_attributes = [build(:pacbio_well, row: 'A', column: '1').attributes.merge(pool_ids: pools.pluck(:id)), build(:pacbio_well, row: 'A', column: '1').attributes.merge(pool_ids: pools.pluck(:id))]
+      wells_attributes = [build(:pacbio_well, row: 'A', column: '1').attributes.merge(used_aliquots_attributes: [{
+                                                                                        source_id: pools[0].id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000'
+                                                                                      }, { source_id: pools[1].id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }])]
       expect { create(:pacbio_generic_run, plates_attributes: [{ wells_attributes:, sequencing_kit_box_barcode: 'DM0001100861800123121', plate_number: 1 }]) }.to change(described_class, :count).by(1)
     end
 

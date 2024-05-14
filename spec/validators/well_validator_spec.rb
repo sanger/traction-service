@@ -9,22 +9,34 @@ RSpec.describe WellValidator do
     context 'invalid' do
       it 'returns an error when there are multiple libraries but no tags' do
         # Going through the library_ids= method to create the aliquots
-        well.library_ids = create_list(:pacbio_library, 2, :untagged).collect(&:id)
+        library1 = create(:pacbio_library, :untagged)
+        library2 = create(:pacbio_library, :untagged)
+
+        well.used_aliquots_attributes = [{ source_id: library1.id, source_type: 'Pacbio::Library', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' },
+                                         { source_id: library2.id, source_type: 'Pacbio::Library', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
         well.valid?
         expect(well.errors[:tags]).to include('are missing from the libraries')
       end
 
       it 'returns an error when there are multiple libraries and some tags are missing' do
-        well.pool_ids = [create(:pacbio_pool, :tagged)].collect(&:id)
-        well.library_ids = [create(:pacbio_library, :untagged), create(:pacbio_library, :tagged)].collect(&:id)
+        libraries = create_list(:pacbio_library, 2, :untagged)
+        pool = create(:pacbio_pool, :tagged)
+        well.used_aliquots_attributes = [{ source_id: libraries[0].id, source_type: 'Pacbio::Library', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' },
+                                         { source_id: libraries[1].id, source_type: 'Pacbio::Library', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' },
+                                         { source_id: pool.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
+
         well.valid?
         expect(well.errors[:tags]).to include('are missing from the libraries')
       end
 
       it 'returns an error when there are multiple libraries and some tags are not unique' do
         tag = create(:tag)
-        well.pool_ids = [create(:pacbio_pool, :tagged)].collect(&:id)
-        well.library_ids = create_list(:pacbio_library, 2, tag:).collect(&:id)
+        libraries = create_list(:pacbio_library, 2, :tagged, tag:)
+        pool = create(:pacbio_pool, :tagged)
+        well.used_aliquots_attributes = [{ source_id: libraries[0].id, source_type: 'Pacbio::Library', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' },
+                                         { source_id: libraries[1].id, source_type: 'Pacbio::Library', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' },
+                                         { source_id: pool.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
+
         well.valid?
         expect(well.errors[:tags]).to include("are not unique within the libraries for well #{well.position}")
       end

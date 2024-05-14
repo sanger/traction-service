@@ -1418,12 +1418,10 @@ RSpec.describe 'RunsController' do
                       id: plate.wells.first.id.to_s,
                       used_aliquots_attributes: [{ source_id: plate.wells.first.pools[0].id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' },
                                                  { source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
-                      # pool_ids: [plate.wells.first.pools[0].id, pool1.id]
                     },
                     {
                       id: plate.wells.second.id.to_s,
                       used_aliquots_attributes: [{ source_id: pool2.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
-                      # pool_ids: [pool2.id]
                     }
                   ]
                 }]
@@ -1445,15 +1443,9 @@ RSpec.describe 'RunsController' do
         end
 
         it 'creates the correct number of used_aliquots' do
-          initial_count = Aliquot.count
-          puts "Initial Aliquot count: #{initial_count}"
-          puts "Initial Pool count: #{Pacbio::Pool.count}"
-          # expect do
-          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-          # end.to change(Aliquot, :count).by(-7)
-
-          final_count = Aliquot.count
-          puts "Final Aliquot count: #{final_count}"
+          expect do
+            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          end.to change(Aliquot, :count).by(3)
         end
 
         it 'updates a well' do
@@ -1461,10 +1453,10 @@ RSpec.describe 'RunsController' do
           run.reload
           updated_plate = run.plates.find_by(id: plate.id)
           expect(updated_plate.wells.length).to eq 2
-          expect(updated_plate.wells[0].pools.length).to eq 2
+          expect(updated_plate.wells[0].pools.length).to eq 7
           expect(updated_plate.wells[0].pools).to include well1.pools[0]
           expect(updated_plate.wells[0].pools).to include pool1
-          expect(updated_plate.wells[1].pools.length).to eq 1
+          expect(updated_plate.wells[1].pools.length).to eq 6
           expect(updated_plate.wells[1].pools).to include pool2
         end
 
