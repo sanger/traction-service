@@ -57,7 +57,7 @@ module Pacbio
 
     delegate :run, to: :plate, allow_nil: true
 
-    accepts_nested_attributes_for :used_aliquots
+    accepts_nested_attributes_for :used_aliquots, allow_destroy: true
 
     # Destroy aliquots based on their source_id and type
     # Used to keep libraries, pools and aliqouts in sync

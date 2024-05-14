@@ -75,7 +75,7 @@ module V1
               :_destroy,
               PERMITTED_WELL_PARAMETERS,
               { used_aliquots_attributes: %i[id source_id source_type volume concentration
-                                             aliquot_type template_prep_kit_box_barcode] }
+                                             aliquot_type template_prep_kit_box_barcode _destroy] }
             ]
           )
         end
