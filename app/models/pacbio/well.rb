@@ -141,7 +141,7 @@ module Pacbio
       # Get all the aliquots that are libraries and have insufficient volume
       failed_aliquots = used_aliquots.select do |aliquot|
         aliquot.source_type == 'Pacbio::Library' &&
-          !aliquot.source.available_volume_sufficient(aliquot.volume)
+          !aliquot.source.available_volume_sufficient
       end
       return if failed_aliquots.empty?
 

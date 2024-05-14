@@ -142,9 +142,9 @@ RSpec.describe Pacbio::Well, :pacbio do
 
       # Pool with 3 libraries: 2 invalid ones and one valid
       well = build(:pacbio_well, used_aliquots: [
-        build(:aliquot, source: libraries[0], volume: 11, aliquot_type: :derived),
-        build(:aliquot, source: libraries[1], volume: 11, aliquot_type: :derived),
-        build(:aliquot, source: libraries[2], volume: 9, aliquot_type: :derived)
+        create(:aliquot, source: libraries[0], volume: 11, aliquot_type: :derived),
+        create(:aliquot, source: libraries[1], volume: 11, aliquot_type: :derived),
+        create(:aliquot, source: libraries[2], volume: 9, aliquot_type: :derived)
       ])
       expect(well).not_to be_valid
       expect(well.errors[:base][0]).to eq("Insufficient volume available for #{libraries[0].tube.barcode},#{libraries[1].tube.barcode}")
