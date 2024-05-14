@@ -12,7 +12,7 @@ module Pacbio
     # Sequel II and Sequel I are now deprecated
     enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2, 'Revio' => 3 }
 
-    after_create :generate_name
+    after_create :generate_name, :generate_comment
 
     has_many :plates, foreign_key: :pacbio_run_id,
                       dependent: :destroy, inverse_of: :run, autosave: true
@@ -45,13 +45,20 @@ module Pacbio
     attr_reader :plates_attributes
 
     # if comments are nil this blows up so add try.
-    def comments
-      return super if super.present?
+
+    def generate_comment
+      new_comment = "#{comments} ".presence || ''
 
       wells.collect do |well|
-        "#{well.used_aliquots.first.source.tube.barcode} " \
-          "#{well.library_concentration}pM"
+        new_comment += "#{well.used_aliquots.first.source.tube.barcode} " \
+          "#{well.library_concentration}pM "
       end.join(' ')
+
+      update(comments: new_comment)
+    end
+
+    def comments()
+      super || ''
     end
 
     # returns sample sheet csv for a Pacbio::Run
