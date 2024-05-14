@@ -51,13 +51,13 @@ module Pacbio
 
       wells.collect do |well|
         new_comment += "#{well.used_aliquots.first.source.tube.barcode} " \
-          "#{well.library_concentration}pM "
+                       "#{well.library_concentration}pM"
       end.join(' ')
 
       update(comments: new_comment)
     end
 
-    def comments()
+    def comments
       super || ''
     end
 
