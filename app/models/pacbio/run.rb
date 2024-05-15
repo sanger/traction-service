@@ -52,14 +52,11 @@ module Pacbio
     # if comments are nil this blows up so add try.
 
     def generate_comment
-      comment = "#{comments} ".presence || ''
-
-      wells.collect do |well|
-        comment += " #{well.used_aliquots.first.source.tube.barcode} " \
-                   "#{well.library_concentration}pM"
-      end
-
-      update(comments: comment[0..65534])
+      comment = wells.collect do |well|
+        " #{well.used_aliquots.first.source.tube.barcode} #{well.library_concentration}pM"
+      end.join(' ')
+  
+      update(comments: comments + comment)
     end
 
     def comments
