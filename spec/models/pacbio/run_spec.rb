@@ -88,13 +88,10 @@ RSpec.describe Pacbio::Run, :pacbio do
     it 'can have run comments' do
       run = create(:pacbio_sequel_run)
 
-      comment = ''
-      run.wells.collect do |well|
-        comment += " #{well.used_aliquots.first.source.tube.barcode} " \
-                   "#{well.library_concentration}pM"
-      end
-
-      expect(run.comments).to eq("A Run Comment #{comment}")
+      comment = run.wells.collect do |well|
+        " #{well.used_aliquots.first.source.tube.barcode} #{well.library_concentration}pM"
+      end.join(' ')
+      expect(run.comments).to eq("A Run Comment#{comment}")
     end
 
     it 'can have long run comments' do
@@ -108,11 +105,10 @@ RSpec.describe Pacbio::Run, :pacbio do
       wells = create_list(:pacbio_well, 2)
       plate = build(:pacbio_plate, wells:)
       run = create(:pacbio_generic_run, plates: [plate], comments: nil)
-      comment = ''
-      wells.collect do |well|
-        comment += " #{well.used_aliquots.first.source.tube.barcode} " \
-                   "#{well.library_concentration}pM"
-      end
+
+      comment = run.wells.collect do |well|
+        " #{well.used_aliquots.first.source.tube.barcode} #{well.library_concentration}pM"
+      end.join(' ')
       expect(run.comments).to eq(comment)
     end
   end

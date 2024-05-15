@@ -55,8 +55,8 @@ module Pacbio
       comment = wells.collect do |well|
         " #{well.used_aliquots.first.source.tube.barcode} #{well.library_concentration}pM"
       end.join(' ')
-  
-      update(comments: comments + comment)
+
+      update(comments: (comments + comment)[0, 65535])
     end
 
     def comments
