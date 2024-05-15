@@ -1392,16 +1392,6 @@ RSpec.describe 'RunsController' do
         let(:well1) { plate.wells.first }
         let(:well2) { plate.wells.second }
         let!(:pool1) { create(:pacbio_pool) }
-        let!(:pool2) { create(:pacbio_pool) }
-        let!(:used_aliquots_attributes_to_remove) do
-          well2.used_aliquots.each_with_index.map do |used_aliquot, index|
-            if index == 0 # or any other condition you want
-              used_aliquot.attributes.merge(_destroy: true)
-            else
-              used_aliquot.attributes
-            end
-          end
-        end
         let(:body) do
           {
             data: {
@@ -1447,7 +1437,7 @@ RSpec.describe 'RunsController' do
         it 'creates the correct number of used_aliquots' do
           expect do
             patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-          end.to change(Aliquot, :count).by(0)
+          end.not_to change(Aliquot, :count)
         end
 
         it 'updates a well' do
