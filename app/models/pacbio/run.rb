@@ -12,6 +12,11 @@ module Pacbio
     # Sequel II and Sequel I are now deprecated
     enum system_name: { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2, 'Revio' => 3 }
 
+    # before_create :generate_comment, unless: -> { wells.nil? }
+
+    # We want to generate comments before the run was created
+    # but tube barcodes aren't generated until the run is created.
+
     after_create :generate_name, :generate_comment
 
     has_many :plates, foreign_key: :pacbio_run_id,
