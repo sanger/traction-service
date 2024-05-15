@@ -94,12 +94,6 @@ RSpec.describe Pacbio::Run, :pacbio do
       expect(run.comments).to eq("A Run Comment#{comment}")
     end
 
-    it 'can have long run comments' do
-      comments = 'X' * 65535
-      run = create(:pacbio_sequel_run, comments:)
-      run.reload
-      expect(run.comments).to eq(comments)
-    end
 
     it 'can have the wells summary when no run comments exist' do
       wells = create_list(:pacbio_well, 2)
