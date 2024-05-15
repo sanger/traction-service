@@ -59,12 +59,18 @@ module Pacbio
 
     accepts_nested_attributes_for :used_aliquots, allow_destroy: true
 
+    before_destroy :mark_used_aliquots_for_destruction
+
     # Destroy aliquots based on their source_id and type
     # Used to keep libraries, pools and aliqouts in sync
     def destroy_aliquots_by_source_type_and_id(ids, source_type)
       used_aliquots.select do |used_aliquot|
         ids.exclude?(used_aliquot.source_id) && used_aliquot.source_type == source_type
       end.each(&:destroy)
+    end
+
+    def mark_used_aliquots_for_destruction
+      used_aliquots.each(&:mark_for_destruction)
     end
 
     def tag_set
