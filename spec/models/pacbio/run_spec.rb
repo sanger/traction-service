@@ -94,7 +94,6 @@ RSpec.describe Pacbio::Run, :pacbio do
       expect(run.comments).to eq("A Run Comment#{comment}")
     end
 
-
     it 'can have the wells summary when no run comments exist' do
       wells = create_list(:pacbio_well, 2)
       plate = build(:pacbio_plate, wells:)

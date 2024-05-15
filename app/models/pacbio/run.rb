@@ -56,7 +56,7 @@ module Pacbio
         " #{well.used_aliquots.first.source.tube.barcode} #{well.library_concentration}pM"
       end.join(' ')
 
-      update(comments: (comments + comment)[0, 65535])
+      update(comments: (comments + comment))
     end
 
     def comments
