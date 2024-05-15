@@ -76,6 +76,7 @@ default: &default
     # For instructions on structure and syntax, see: 'app/exchanges/README.md'
     sample_sheet:
       v12_revio: &v12_revio
+        sample_sheet_class: PacbioSampleSheet
         column_order:
           - Library Type
           - Reagent Plate
@@ -171,6 +172,7 @@ default: &default
                   type: :model
                   value: bio_sample_name
       v12_sequel_iie: &v12_sequel_iie
+        sample_sheet_class: PacbioSampleSheet
         column_order:
           - Instrument Type
           - Run Name
