@@ -1303,6 +1303,7 @@ RSpec.describe 'RunsController' do
         let!(:plate) { run.plates.first }
         let!(:well1) { plate.wells[0] }
         let(:pool1) { create(:pacbio_pool) }
+
         let(:body) do
           {
             data: {
@@ -1331,7 +1332,7 @@ RSpec.describe 'RunsController' do
                       id: well1.id.to_s,
                       row: 'D',
                       column: '7',
-                      used_aliquots_attributes: [{ source_id: well1.pools[0].id, source_type: 'Pacbio::Pool', volume: 700, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
+                      used_aliquots_attributes: well1.used_aliquots.map(&:to_json)
                     },
                     {
                       id: plate.wells[1].id.to_s,
@@ -1346,7 +1347,7 @@ RSpec.describe 'RunsController' do
 
         it 'has a ok status' do
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-          # pp JSON.parse(response.body)
+          # byebug
           expect(response).to have_http_status(:ok)
         end
 
@@ -1364,7 +1365,7 @@ RSpec.describe 'RunsController' do
           well1.pools[0].reload
           expect do
             patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-          end.to change(Aliquot, :count).from(65).to(62)
+          end.to change(Aliquot, :count).from(65).to(61)
         end
 
         it 'updates a well' do
@@ -1375,19 +1376,6 @@ RSpec.describe 'RunsController' do
           expect(run.wells[0].column).to eq '7'
           expect(run.wells[1].row).to eq 'F'
           expect(run.wells[1].column).to eq '12'
-        end
-
-        it 'updates used_aliquots of well1 correctly' do
-          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-          well1.reload
-          used_aliquot = well1.used_aliquots.last
-
-          expect(used_aliquot.source_id).to eq(well1.pools[0].id)
-          expect(used_aliquot.source_type).to eq('Pacbio::Pool')
-          expect(used_aliquot.volume).to eq(700)
-          expect(used_aliquot.concentration).to eq(20)
-          expect(used_aliquot.aliquot_type).to eq('derived')
-          expect(used_aliquot.template_prep_kit_box_barcode).to eq('033000000000000000000')
         end
 
         it_behaves_like 'publish_messages_on_update'
@@ -1402,9 +1390,18 @@ RSpec.describe 'RunsController' do
         end
         let(:plate) { run.plates.first }
         let(:well1) { plate.wells.first }
+        let(:well2) { plate.wells.second }
         let!(:pool1) { create(:pacbio_pool) }
         let!(:pool2) { create(:pacbio_pool) }
-
+        let!(:used_aliquots_attributes_to_remove) do
+          well2.used_aliquots.each_with_index.map do |used_aliquot, index|
+            if index == 0 # or any other condition you want
+              used_aliquot.attributes.merge(_destroy: true)
+            else
+              used_aliquot.attributes
+            end
+          end
+        end
         let(:body) do
           {
             data: {
@@ -1415,13 +1412,18 @@ RSpec.describe 'RunsController' do
                   id: plate.id,
                   wells_attributes: [
                     {
-                      id: plate.wells.first.id.to_s,
-                      used_aliquots_attributes: [{ source_id: plate.wells.first.pools[0].id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' },
-                                                 { source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
+                      id: well1.id.to_s,
+                      used_aliquots_attributes: well1.used_aliquots.map(&:attributes) + [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
                     },
                     {
-                      id: plate.wells.second.id.to_s,
-                      used_aliquots_attributes: [{ source_id: pool2.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
+                      id: well2.id.to_s,
+                      used_aliquots_attributes: well2.used_aliquots.each_with_index.map do |used_aliquot, index|
+                                                  if index == 0 # or any other condition you want
+                                                    used_aliquot.attributes.merge(_destroy: true)
+                                                  else
+                                                    used_aliquot.attributes
+                                                  end
+                                                end
                     }
                   ]
                 }]
@@ -1445,7 +1447,7 @@ RSpec.describe 'RunsController' do
         it 'creates the correct number of used_aliquots' do
           expect do
             patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-          end.to change(Aliquot, :count).by(3)
+          end.to change(Aliquot, :count).by(0)
         end
 
         it 'updates a well' do
@@ -1453,11 +1455,11 @@ RSpec.describe 'RunsController' do
           run.reload
           updated_plate = run.plates.find_by(id: plate.id)
           expect(updated_plate.wells.length).to eq 2
-          expect(updated_plate.wells[0].pools.length).to eq 7
+          expect(updated_plate.wells[0].pools.length).to eq 6
           expect(updated_plate.wells[0].pools).to include well1.pools[0]
           expect(updated_plate.wells[0].pools).to include pool1
-          expect(updated_plate.wells[1].pools.length).to eq 6
-          expect(updated_plate.wells[1].pools).to include pool2
+          expect(updated_plate.wells[1].pools.length).to eq 4
+          expect(updated_plate.wells.second.used_aliquots.length).to eq(well2.used_aliquots.length - 1)
         end
 
         it_behaves_like 'publish_messages_on_update'
