@@ -1450,6 +1450,7 @@ RSpec.describe 'RunsController' do
           expect(updated_plate.wells[0].pools).to include pool1
           expect(updated_plate.wells[1].pools.length).to eq 4
           expect(updated_plate.wells.second.used_aliquots.length).to eq(well2.used_aliquots.length - 1)
+          expect(updated_plate.wells.first.used_aliquots.length).to eq(well1.used_aliquots.length + 1)
         end
 
         it_behaves_like 'publish_messages_on_update'

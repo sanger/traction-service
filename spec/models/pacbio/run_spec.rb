@@ -257,7 +257,7 @@ RSpec.describe Pacbio::Run, :pacbio do
     it 'removes existing wells and readds the with the same position' do
       plates = [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])]
       run = create(:pacbio_revio_run, plates:)
-      run.update(plates_attributes: { id: run.plates.first.id, sequencing_kit_box_barcode: 'DM0001100861800123121', plate_number: 1, wells_attributes: [{ id: run.plates.first.wells.first.id, _destroy: true }, build(:pacbio_well, row: 'A', column: '1').attributes.merge(pool_ids: pools.pluck(:id))] })
+      run.update(plates_attributes: { id: run.plates.first.id, sequencing_kit_box_barcode: 'DM0001100861800123121', plate_number: 1, wells_attributes: [{ id: run.plates.first.wells.first.id, _destroy: true }, build(:pacbio_well, row: 'A', column: '1').attributes.merge({ used_aliquots_attributes: [{ source_id: pools[0].id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }] })] })
       run.reload
       expect(run.plates.first.wells.count).to eq(1)
       expect(run.plates.first.wells.first.position).to eq('A1')
