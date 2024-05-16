@@ -1449,7 +1449,9 @@ RSpec.describe 'RunsController' do
           expect(updated_plate.wells[0].pools).to include well1.pools[0]
           expect(updated_plate.wells[0].pools).to include pool1
           expect(updated_plate.wells[1].pools.length).to eq 4
+          # removes the aliquot from the well
           expect(updated_plate.wells.second.used_aliquots.length).to eq(well2.used_aliquots.length - 1)
+          # adds the aliquot to the well
           expect(updated_plate.wells.first.used_aliquots.length).to eq(well1.used_aliquots.length + 1)
         end
 

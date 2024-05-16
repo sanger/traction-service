@@ -205,6 +205,14 @@ RSpec.describe Pacbio::Well, :pacbio do
       expect(well.base_used_aliquots.length).to eq(4)
       expect(well.base_used_aliquots).to eq(base_used_aliquots)
     end
+
+    it 'removes all used_aliquots marked with _destroy' do
+      well = create(:pacbio_well, pool_count: 2, library_count: 2)
+      well.used_aliquots.first.mark_for_destruction
+      base_used_aliquots = well.used_aliquots.reject(&:marked_for_destruction?).collect(&:source).collect(&:used_aliquots).flatten
+      expect(well.base_used_aliquots.length).to eq(3)
+      expect(well.base_used_aliquots).to eq(base_used_aliquots)
+    end
   end
 
   context 'template prep kit box barcode' do
