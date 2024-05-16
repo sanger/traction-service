@@ -85,7 +85,7 @@ module Pacbio
 
     # A collection of all the used_aliquots for given libraries and pools in a well
     def base_used_aliquots
-      used_aliquots.collect(&:source).collect(&:used_aliquots).flatten
+      used_aliquots.reject(&:marked_for_destruction?).collect(&:source).collect(&:used_aliquots).flatten # rubocop:disable Layout/LineLength
     end
 
     # collection of all of the requests for a library
