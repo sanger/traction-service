@@ -1457,6 +1457,67 @@ RSpec.describe 'RunsController' do
 
         it_behaves_like 'publish_messages_on_update'
       end
+
+      context 'when the pool is updated with aliquot using the same tag as the deleted ones' do
+        let!(:run) do
+          well2 = create(:pacbio_well, row: 'B', column: '1', pools: [create(:pacbio_pool, used_aliquots: [create(:aliquot, tag: create(:tag))])])
+          create(:pacbio_revio_run, plates: [
+            build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1', pool_count: 1), well2])
+          ])
+        end
+        let(:plate) { run.plates.first }
+        let(:well1) { plate.wells.first }
+        let(:well2) { plate.wells.second }
+        let!(:pool1) { create(:pacbio_pool) }
+        let!(:aliquot_to_update) { { source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000', tag_id: well2.used_aliquots[0].tag_id } }
+        let(:body) do
+          {
+            data: {
+              id: run.id,
+              type: 'runs',
+              attributes: {
+                plates_attributes: [{
+                  id: plate.id,
+                  wells_attributes: [
+                    {
+                      id: well1.id.to_s,
+                      used_aliquots_attributes: well1.used_aliquots.map(&:attributes) + [aliquot_to_update]
+                    },
+                    {
+                      id: well2.id.to_s,
+                      _destroy: true,
+                      used_aliquots_attributes: well2.used_aliquots[0].attributes.merge(_destroy: true)
+                    }
+                  ]
+                }]
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a ok status' do
+          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'updates a well with new values' do
+          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          run.reload
+          updated_plate = run.plates.find_by(id: plate.id)
+          expect(updated_plate.wells.length).to eq 1
+          expect(updated_plate.wells[0].pools.length).to eq 2
+          expect(updated_plate.wells.first.used_aliquots.length).to eq(well1.used_aliquots.length + 1)
+          updated_well_aliquot = updated_plate.wells.first.used_aliquots.last
+          expect(updated_well_aliquot.tag_id).to eq well2.used_aliquots[0].tag_id
+          aliquot_to_update.each do |key, value|
+            next if key == :aliquot_type
+
+            expect(updated_well_aliquot.send(key)).to eq value
+          end
+        end
+
+        it_behaves_like 'publish_messages_on_update'
+      end
     end
 
     context 'on failure' do
