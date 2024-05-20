@@ -87,21 +87,22 @@ RSpec.describe Pacbio::Run, :pacbio do
   describe '#comments' do
     it 'can have run comments' do
       run = create(:pacbio_sequel_run)
-      expect(run.comments).to eq('A Run Comment')
-    end
 
-    it 'can have long run comments' do
-      comments = 'X' * 65535
-      run = create(:pacbio_sequel_run, comments:)
-      run.reload
-      expect(run.comments).to eq(comments)
+      comment = run.wells.collect do |well|
+        " #{well.used_aliquots.first.source.tube.barcode} #{well.library_concentration}pM"
+      end.join(' ')
+      expect(run.comments).to eq("A Run Comment#{comment}")
     end
 
     it 'can have the wells summary when no run comments exist' do
       wells = create_list(:pacbio_well, 2)
       plate = build(:pacbio_plate, wells:)
       run = create(:pacbio_generic_run, plates: [plate], comments: nil)
-      expect(run.comments).to eq("#{wells.first.summary}:#{wells[1].summary}")
+
+      comment = run.wells.collect do |well|
+        " #{well.used_aliquots.first.source.tube.barcode} #{well.library_concentration}pM"
+      end.join(' ')
+      expect(run.comments).to eq(comment)
     end
   end
 
@@ -200,13 +201,17 @@ RSpec.describe Pacbio::Run, :pacbio do
     end
 
     it 'if added should not be written over' do
-      run = create(:pacbio_revio_run, name: 'run1')
+      wells = create_list(:pacbio_well, 2)
+      plate = build(:pacbio_plate, wells:)
+      run = create(:pacbio_generic_run, name: 'run1', plates: [plate])
       expect(run.name).to eq('run1')
     end
 
     it 'must be unique' do
-      run = create(:pacbio_revio_run, name: 'run1')
-      expect(build(:pacbio_revio_run, name: run.name)).not_to be_valid
+      wells = create_list(:pacbio_well, 2)
+      plate = build(:pacbio_plate, wells:)
+      run = create(:pacbio_generic_run, name: 'run1', plates: [plate])
+      expect(build(:pacbio_generic_run, name: run.name)).not_to be_valid
     end
 
     it 'is updateable' do
