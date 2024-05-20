@@ -137,15 +137,7 @@ RSpec.describe Pacbio::Run, :pacbio do
       it_behaves_like 'generates sample sheet with', RunCsv::PacbioSampleSheet
     end
 
-    context 'with a v13_revio run with new_format_sample_sheet feature flag off' do
-      let(:smrt_link_version) { version13_revio }
-
-      it_behaves_like 'generates sample sheet with', RunCsv::PacbioSampleSheet
-    end
-
-    context 'with a v13_revio run with new_format_sample_sheet feature flag on' do
-      before { Flipper.enable(:new_format_sample_sheet) }
-
+    context 'with a v13_revio run' do
       let(:smrt_link_version) { version13_revio }
 
       it_behaves_like 'generates sample sheet with', RunCsv::PacbioSampleSheetV1
