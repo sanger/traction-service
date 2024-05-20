@@ -51,47 +51,13 @@ module Pacbio
 
     validates :row, :column, presence: true
 
+    validate :used_aliquots_volume, if: lambda {
+                                          Flipper.enabled?(:dpl_1076_check_library_volume_in_runs)
+                                        }
+
     delegate :run, to: :plate, allow_nil: true
 
-    def pool_ids=(ids)
-      # Map the ids to integers as they may be strings
-      ids.map!(&:to_i).each do |id|
-        # If the used_aliquot already exists, skip it
-        next if used_aliquots.find_by(source_id: id)
-
-        # Create a new used_aliquot if it doesn't exist
-        used_aliquots << used_aliquots.build(source_id: id, source_type: 'Pacbio::Pool',
-                                             volume: 0, concentration: 0, aliquot_type: :derived,
-                                             template_prep_kit_box_barcode: '033000000000000000000')
-      end
-
-      # If the used_aliquot is not in the list of ids, remove it
-      destroy_aliquots_by_source_type_and_id(ids, 'Pacbio::Pool')
-    end
-
-    def library_ids=(ids)
-      # Map the ids to integers as they may be strings
-      ids.map!(&:to_i).each do |id|
-        # If the used_aliquot already exists, skip it
-        next if used_aliquots.find_by(source_id: id)
-
-        # Create a new used_aliquot if it doesn't exist
-        used_aliquots << used_aliquots.build(source_id: id, source_type: 'Pacbio::Library',
-                                             volume: 0, concentration: 0, aliquot_type: :derived,
-                                             template_prep_kit_box_barcode: '033000000000000000000')
-      end
-
-      # If the used_aliquot is not in the list of ids, remove it
-      destroy_aliquots_by_source_type_and_id(ids, 'Pacbio::Library')
-    end
-
-    # Destroy aliquots based on their source_id and type
-    # Used to keep libraries, pools and aliqouts in sync
-    def destroy_aliquots_by_source_type_and_id(ids, source_type)
-      used_aliquots.select do |used_aliquot|
-        ids.exclude?(used_aliquot.source_id) && used_aliquot.source_type == source_type
-      end.each(&:destroy)
-    end
+    accepts_nested_attributes_for :used_aliquots, allow_destroy: true
 
     def tag_set
       base_used_aliquots.collect(&:tag_set).first
@@ -111,7 +77,8 @@ module Pacbio
 
     # A collection of all the used_aliquots for given libraries and pools in a well
     def base_used_aliquots
-      used_aliquots.collect(&:source).collect(&:used_aliquots).flatten
+      used_aliquots.reject(&:marked_for_destruction?)
+                   .collect(&:source).collect(&:used_aliquots).flatten
     end
 
     # collection of all of the requests for a library
@@ -161,6 +128,19 @@ module Pacbio
 
     def adaptive_loading_check
       loading_target_p1_plus_p2.present?
+    end
+
+    def used_aliquots_volume
+      # Get all the aliquots that are libraries and have insufficient volume
+      failed_aliquots = used_aliquots.select do |aliquot|
+        aliquot.source_type == 'Pacbio::Library' &&
+          !aliquot.source.available_volume_sufficient
+      end
+      return if failed_aliquots.empty?
+
+      # If there are failed aliquots we want to collect the source barcodes add an error to the well
+      failed_barcodes = failed_aliquots.map { |aliquot| aliquot.source.tube.barcode }.join(',')
+      errors.add(:base, "Insufficient volume available for #{failed_barcodes}")
     end
   end
 end
