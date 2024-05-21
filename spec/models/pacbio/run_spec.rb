@@ -89,7 +89,8 @@ RSpec.describe Pacbio::Run, :pacbio do
       run = create(:pacbio_sequel_run)
 
       comment = run.wells.collect do |well|
-        " #{well.used_aliquots.first.source.tube.barcode} #{well.library_concentration}pM"
+        concentration = well.library_concentration || well.on_plate_loading_concentration
+        " #{well.used_aliquots.first.source.tube.barcode} #{concentration}pM"
       end.join(' ')
       expect(run.comments).to eq("A Run Comment#{comment}")
     end
@@ -100,7 +101,8 @@ RSpec.describe Pacbio::Run, :pacbio do
       run = create(:pacbio_generic_run, plates: [plate], comments: nil)
 
       comment = run.wells.collect do |well|
-        " #{well.used_aliquots.first.source.tube.barcode} #{well.library_concentration}pM"
+        concentration = well.library_concentration || well.on_plate_loading_concentration
+        " #{well.used_aliquots.first.source.tube.barcode} #{concentration}pM"
       end.join(' ')
       expect(run.comments).to eq(comment)
     end
