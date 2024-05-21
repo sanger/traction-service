@@ -53,7 +53,8 @@ module Pacbio
 
     def generate_comment
       comment = wells.collect do |well|
-        " #{well.used_aliquots.first.source.tube.barcode} #{well.library_concentration}pM"
+        concentration = well.library_concentration || well.on_plate_loading_concentration
+        " #{well.used_aliquots.first.source.tube.barcode} #{concentration}pM"
       end.join(' ')
 
       update(comments: (comments + comment))
