@@ -123,6 +123,44 @@ RSpec.describe Pacbio::Well, :pacbio do
       expect(well).not_to be_valid
       expect(well.errors.messages[:used_aliquots]).to include("can't be blank")
     end
+
+    it 'accepts nested attributes for used_aliquots' do
+      well = described_class.new
+      aliquot_attributes = { volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }
+
+      well.used_aliquots_attributes = [aliquot_attributes]
+
+      expect(well.used_aliquots.first.volume).to eq(10)
+      expect(well.used_aliquots.first.concentration).to eq(20)
+      expect(well.used_aliquots.first.template_prep_kit_box_barcode).to eq('033000000000000000000')
+    end
+
+    it 'is not valid when using an invalid amount of volume from a library' do
+      Flipper.enable(:dpl_1076_check_library_volume_in_runs)
+
+      libraries = create_list(:pacbio_library, 3, volume: 10)
+
+      # Pool with 3 libraries: 2 invalid ones and one valid
+      well = build(:pacbio_well, used_aliquots: [
+        create(:aliquot, source: libraries[0], volume: 11, aliquot_type: :derived),
+        create(:aliquot, source: libraries[1], volume: 11, aliquot_type: :derived),
+        create(:aliquot, source: libraries[2], volume: 9, aliquot_type: :derived)
+      ])
+      expect(well).not_to be_valid
+      expect(well.errors[:base][0]).to eq("Insufficient volume available for #{libraries[0].tube.barcode},#{libraries[1].tube.barcode}")
+
+      Flipper.disable(:dpl_1072_check_library_volume_in_pools)
+    end
+
+    it 'is valid when using a valid amount of volume from a library' do
+      Flipper.enable(:dpl_1076_check_library_volume_in_runs)
+
+      library = create(:pacbio_library, volume: 100)
+      well = build(:pacbio_well, used_aliquots: [build(:aliquot, source: library, volume: 100, aliquot_type: :derived)])
+      expect(well).to be_valid
+
+      Flipper.disable(:dpl_1072_check_library_volume_in_pools)
+    end
   end
 
   context 'libraries' do
@@ -159,71 +197,20 @@ RSpec.describe Pacbio::Well, :pacbio do
     end
   end
 
-  context 'pool_ids=' do
-    it 'creates used_aliquots from pool_ids' do
-      pools_ids = create_list(:pacbio_pool, 2).collect(&:id)
-      well = build(:pacbio_well, pool_count: 0)
-
-      expect(well.pools.length).to eq(0)
-      expect(well.used_aliquots.length).to eq(0)
-      well.pool_ids = pools_ids
-      well.save
-      well.reload
-
-      expect(well.pools.length).to eq(2)
-      expect(well.used_aliquots.length).to eq(2)
-    end
-
-    it 'destroys used_aliquots from pool_ids' do
-      well = create(:pacbio_well, pool_count: 2)
-
-      expect(well.pools.length).to eq(2)
-      expect(well.used_aliquots.length).to eq(2)
-
-      well.pool_ids = [well.pools.first.id]
-      well.reload
-
-      expect(well.pools.length).to eq(1)
-      expect(well.used_aliquots.length).to eq(1)
-    end
-  end
-
-  context 'library_ids=' do
-    it 'creates used_aliquots from library_ids' do
-      library_ids = create_list(:pacbio_library, 2).collect(&:id)
-      well = build(:pacbio_well, pool_count: 0, library_count: 0)
-
-      expect(well.libraries.length).to eq(0)
-      expect(well.used_aliquots.length).to eq(0)
-      well.library_ids = library_ids
-      well.save
-      well.reload
-
-      expect(well.libraries.length).to eq(2)
-      expect(well.used_aliquots.length).to eq(2)
-    end
-
-    it 'destroys used_aliquots from library_ids' do
-      libraries = create_list(:pacbio_library, 2)
-      well = create(:pacbio_well, pool_count: 0, libraries:)
-
-      expect(well.libraries.length).to eq(2)
-      expect(well.used_aliquots.length).to eq(2)
-
-      well.library_ids = [well.libraries.first.id]
-      well.reload
-
-      expect(well.libraries.length).to eq(1)
-      expect(well.used_aliquots.length).to eq(1)
-    end
-  end
-
   context 'base_used_aliquots' do
     it 'returns a combined list of used_aliquots from the wells libraries and pools' do
       well = create(:pacbio_well, pool_count: 2, library_count: 2)
 
       base_used_aliquots = well.used_aliquots.collect(&:source).collect(&:used_aliquots).flatten
       expect(well.base_used_aliquots.length).to eq(4)
+      expect(well.base_used_aliquots).to eq(base_used_aliquots)
+    end
+
+    it 'removes all used_aliquots marked with _destroy' do
+      well = create(:pacbio_well, pool_count: 2, library_count: 2)
+      well.used_aliquots.first.mark_for_destruction
+      base_used_aliquots = well.used_aliquots.reject(&:marked_for_destruction?).collect(&:source).collect(&:used_aliquots).flatten
+      expect(well.base_used_aliquots.length).to eq(3)
       expect(well.base_used_aliquots).to eq(base_used_aliquots)
     end
   end

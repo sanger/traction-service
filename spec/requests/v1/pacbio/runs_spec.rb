@@ -212,7 +212,7 @@ RSpec.describe 'RunsController' do
                     include_fivemc_calls_in_cpg_motifs: 'Yes',
                     ccs_analysis_output_include_kinetics_information: 'Yes',
                     demultiplex_barcodes: 'In SMRT Link',
-                    pool_ids: [pool1.id]
+                    used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
                   }
                 ]
               }]
@@ -288,8 +288,9 @@ RSpec.describe 'RunsController' do
                     pre_extension_time: '2',
                     include_base_kinetics: 'True',
                     polymerase_kit: 'ABC123',
-                    pool_ids: [pool1.id],
-                    library_ids: [library1.id]
+                    used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' },
+                                               { source_id: library1.id, source_type: 'Pacbio::Library', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
+
                   }
                 ]
               }]
@@ -368,7 +369,8 @@ RSpec.describe 'RunsController' do
                     pre_extension_time: '2',
                     include_base_kinetics: 'True',
                     polymerase_kit: 'ABC123',
-                    pool_ids: [pool1.id]
+                    used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
+
                   }
                 ]
               }]
@@ -544,8 +546,9 @@ RSpec.describe 'RunsController' do
                   plate_number: 1,
                   wells_attributes: [{
                     row: 'A',
-                    pool_ids: [pool1.id],
-                    library_ids: [library1.id]
+                    used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' },
+                                               { source_id: library1.id, source_type: 'Pacbio::Library', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
+
                   }]
                 }]
               }
@@ -618,8 +621,7 @@ RSpec.describe 'RunsController' do
                       include_fivemc_calls_in_cpg_motifs: 'Yes',
                       ccs_analysis_output_include_kinetics_information: 'Yes',
                       demultiplex_barcodes: 'In SMRT Link',
-                      pool_ids: [],
-                      library_ids: []
+                      used_aliquots_attributes: []
                     }
                   ]
                 }]
@@ -688,7 +690,7 @@ RSpec.describe 'RunsController' do
                       include_fivemc_calls_in_cpg_motifs: 'Yes',
                       ccs_analysis_output_include_kinetics_information: 'Yes',
                       demultiplex_barcodes: 'In SMRT Link',
-                      pool_ids: [123] }
+                      used_aliquots_attributes: [{ source_id: 123, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }] }
                   ]
                 }]
               }
@@ -732,6 +734,7 @@ RSpec.describe 'RunsController' do
 
       context 'when there is one well with two duplicate (library tags) pools' do
         let!(:pool1) { create(:pacbio_pool, :tagged) }
+        let!(:pool2) { create(:pacbio_pool, :tagged) }
 
         let(:body) do
           {
@@ -758,12 +761,17 @@ RSpec.describe 'RunsController' do
                       include_fivemc_calls_in_cpg_motifs: 'Yes',
                       ccs_analysis_output_include_kinetics_information: 'Yes',
                       demultiplex_barcodes: 'In SMRT Link',
-                      pool_ids: [pool1.id, pool1.id] }
+                      used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' },
+                                                 { source_id: pool2.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }] }
                   ]
                 }]
               }
             }
           }.to_json
+        end
+
+        before do
+          pool2.used_aliquots[0].update(tag_id: pool1.used_aliquots[0].tag_id)
         end
 
         it 'has a unprocessable_entity status' do
@@ -802,6 +810,7 @@ RSpec.describe 'RunsController' do
 
       context 'when there is one well with two duplicate (library tags) libraries' do
         let!(:library1) { create(:pacbio_library, :tagged) }
+        let!(:library2) { create(:pacbio_library, :tagged) }
 
         let(:body) do
           {
@@ -828,12 +837,17 @@ RSpec.describe 'RunsController' do
                       include_fivemc_calls_in_cpg_motifs: 'Yes',
                       ccs_analysis_output_include_kinetics_information: 'Yes',
                       demultiplex_barcodes: 'In SMRT Link',
-                      library_ids: [library1.id, library1.id] }
+                      used_aliquots_attributes: [{ source_id: library1.id, source_type: 'Pacbio::Library', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' },
+                                                 { source_id: library2.id, source_type: 'Pacbio::Library', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }] }
                   ]
                 }]
               }
             }
           }.to_json
+        end
+
+        before do
+          library2.used_aliquots[0].update(tag_id: library1.used_aliquots[0].tag_id)
         end
 
         it 'has a unprocessable_entity status' do
@@ -898,7 +912,7 @@ RSpec.describe 'RunsController' do
                       include_fivemc_calls_in_cpg_motifs: 'Yes',
                       ccs_analysis_output_include_kinetics_information: 'Yes',
                       demultiplex_barcodes: 'In SMRT Link',
-                      pool_ids: [pool1.id] },
+                      used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }] },
                     { row: 'A',
                       column: '2',
                       movie_time: 8,
@@ -911,7 +925,8 @@ RSpec.describe 'RunsController' do
                       include_fivemc_calls_in_cpg_motifs: 'Yes',
                       ccs_analysis_output_include_kinetics_information: 'Yes',
                       demultiplex_barcodes: 'In SMRT Link',
-                      pool_ids: [pool1.id] }
+                      used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }] }
+
                   ]
                 }]
               }
@@ -979,7 +994,8 @@ RSpec.describe 'RunsController' do
                       include_fivemc_calls_in_cpg_motifs: 'Yes',
                       ccs_analysis_output_include_kinetics_information: 'Yes',
                       demultiplex_barcodes: 'In SMRT Link',
-                      pool_ids: [pool1.id, pool2.id] }
+                      used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' },
+                                                 { source_id: pool2.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }] }
                   ]
                 }]
               }
@@ -1057,7 +1073,7 @@ RSpec.describe 'RunsController' do
                   include_fivemc_calls_in_cpg_motifs: 'Yes',
                   ccs_analysis_output_include_kinetics_information: 'Yes',
                   demultiplex_barcodes: 'In SMRT Link',
-                  pool_ids: [pool1.id]
+                  used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
                 }
               ]
             }]
@@ -1112,7 +1128,7 @@ RSpec.describe 'RunsController' do
                   include_fivemc_calls_in_cpg_motifs: 'Yes',
                   ccs_analysis_output_include_kinetics_information: 'Yes',
                   demultiplex_barcodes: 'In SMRT Link',
-                  pool_ids: [pool1.id] }
+                  used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }] }
               ]
             }]
           }
@@ -1244,7 +1260,8 @@ RSpec.describe 'RunsController' do
                       movie_time: 7,
                       on_plate_loading_concentration: 7.35,
                       binding_kit_box_barcode: 'DM1117100862200111711_updated',
-                      pool_ids: [pool1.id]
+                      used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
+
                     }
                   ]
                 }]
@@ -1305,13 +1322,13 @@ RSpec.describe 'RunsController' do
                       include_fivemc_calls_in_cpg_motifs: 'Yes',
                       ccs_analysis_output_include_kinetics_information: 'Yes',
                       demultiplex_barcodes: 'In SMRT Link',
-                      pool_ids: [pool1.id]
+                      used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
                     },
                     {
                       id: well1.id.to_s,
                       row: 'D',
                       column: '7',
-                      pool_ids: [well1.pools[0].id]
+                      used_aliquots_attributes: well1.used_aliquots.map(&:to_json)
                     },
                     {
                       id: plate.wells[1].id.to_s,
@@ -1326,6 +1343,7 @@ RSpec.describe 'RunsController' do
 
         it 'has a ok status' do
           patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          # byebug
           expect(response).to have_http_status(:ok)
         end
 
@@ -1341,10 +1359,9 @@ RSpec.describe 'RunsController' do
           # Preloaded so its aliquots are built and don't affect the test below
           pool1.reload
           well1.pools[0].reload
-
           expect do
             patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-          end.to change(Aliquot, :count).from(65).to(57)
+          end.to change(Aliquot, :count).from(65).to(61)
         end
 
         it 'updates a well' do
@@ -1369,9 +1386,8 @@ RSpec.describe 'RunsController' do
         end
         let(:plate) { run.plates.first }
         let(:well1) { plate.wells.first }
+        let(:well2) { plate.wells.second }
         let!(:pool1) { create(:pacbio_pool) }
-        let!(:pool2) { create(:pacbio_pool) }
-
         let(:body) do
           {
             data: {
@@ -1382,12 +1398,18 @@ RSpec.describe 'RunsController' do
                   id: plate.id,
                   wells_attributes: [
                     {
-                      id: plate.wells.first.id.to_s,
-                      pool_ids: [plate.wells.first.pools[0].id, pool1.id]
+                      id: well1.id.to_s,
+                      used_aliquots_attributes: well1.used_aliquots.map(&:attributes) + [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
                     },
                     {
-                      id: plate.wells.second.id.to_s,
-                      pool_ids: [pool2.id]
+                      id: well2.id.to_s,
+                      used_aliquots_attributes: well2.used_aliquots.each_with_index.map do |used_aliquot, index|
+                                                  if index == 0 # or any other condition you want
+                                                    used_aliquot.attributes.merge(_destroy: true)
+                                                  else
+                                                    used_aliquot.attributes
+                                                  end
+                                                end
                     }
                   ]
                 }]
@@ -1411,7 +1433,7 @@ RSpec.describe 'RunsController' do
         it 'creates the correct number of used_aliquots' do
           expect do
             patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-          end.to change(Aliquot, :count).by(-7)
+          end.not_to change(Aliquot, :count)
         end
 
         it 'updates a well' do
@@ -1419,11 +1441,68 @@ RSpec.describe 'RunsController' do
           run.reload
           updated_plate = run.plates.find_by(id: plate.id)
           expect(updated_plate.wells.length).to eq 2
-          expect(updated_plate.wells[0].pools.length).to eq 2
+          expect(updated_plate.wells[0].pools.length).to eq 6
           expect(updated_plate.wells[0].pools).to include well1.pools[0]
           expect(updated_plate.wells[0].pools).to include pool1
-          expect(updated_plate.wells[1].pools.length).to eq 1
-          expect(updated_plate.wells[1].pools).to include pool2
+          expect(updated_plate.wells[1].pools.length).to eq 4
+          # removes the aliquot from the well
+          expect(updated_plate.wells.second.used_aliquots.length).to eq(well2.used_aliquots.length - 1)
+          # adds the aliquot to the well
+          expect(updated_plate.wells.first.used_aliquots.length).to eq(well1.used_aliquots.length + 1)
+        end
+
+        it_behaves_like 'publish_messages_on_update'
+      end
+
+      context 'when the pool is updated with aliquot using the same tag as the deleted ones' do
+        let!(:run) do
+          well1 = create(:pacbio_well, row: 'A', column: '1', pools: [create(:pacbio_pool, used_aliquots: [create(:aliquot, tag: create(:tag))])])
+          create(:pacbio_revio_run, plates: [
+            build(:pacbio_plate, wells: [well1])
+          ])
+        end
+        let(:plate) { run.plates.first }
+        let(:well1) { plate.wells.first }
+        let(:well2) { plate.wells.second }
+        let!(:pool1) { create(:pacbio_pool) }
+        let!(:aliquot_to_update) { { source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000', tag_id: well1.used_aliquots[0].tag_id } }
+        let(:body) do
+          {
+            data: {
+              id: run.id,
+              type: 'runs',
+              attributes: {
+                plates_attributes: [{
+                  id: plate.id,
+                  wells_attributes: [
+                    {
+                      id: well1.id.to_s,
+                      used_aliquots_attributes: [well1.used_aliquots[0].attributes.merge(_destroy: true), aliquot_to_update]
+                    }
+                  ]
+                }]
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a ok status' do
+          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'updates a well with new values' do
+          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          run.reload
+          updated_plate = run.plates.find_by(id: plate.id)
+          expect(updated_plate.wells.length).to eq 1
+          expect(updated_plate.wells[0].pools.length).to eq 1
+          expect(updated_plate.wells[0].used_aliquots.length).to eq(1)
+          aliquot_to_update.each do |key, value|
+            next if key == :aliquot_type
+
+            expect(updated_plate.wells[0].used_aliquots[0].send(key)).to eq value
+          end
         end
 
         it_behaves_like 'publish_messages_on_update'
