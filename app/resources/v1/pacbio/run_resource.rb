@@ -63,7 +63,7 @@ module V1
 
       private
 
-      def plates_attributes=(plates_parameters)
+      def plates_attributes=(plates_parameters) # rubocop:disable Metrics/MethodLength
         @model.plates_attributes = plates_parameters.map do |plate|
           plate.permit(
             :id,
@@ -74,7 +74,8 @@ module V1
               # is used to mark wells for destruction
               :_destroy,
               PERMITTED_WELL_PARAMETERS,
-              { pool_ids: [], library_ids: [] }
+              { used_aliquots_attributes: %i[id source_id source_type volume concentration
+                                             aliquot_type template_prep_kit_box_barcode _destroy] }
             ]
           )
         end

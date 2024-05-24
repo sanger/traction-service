@@ -22,7 +22,11 @@ RSpec.describe 'RakeTasks' do
       well_aliquots = create_list(:aliquot, 10, used_by: create(:pacbio_well), volume: 10, concentration: 10)
 
       # We shouldnt change the amount of aliquots
-      expect { Rake::Task['volume_tracking:clear_well_aliquot_volume'].invoke }.not_to change(Aliquot, :count)
+      expect { Rake::Task['volume_tracking:clear_well_aliquot_volume'].invoke }.not_to change(Aliquot, :count) and output(
+        <<~HEREDOC
+          -> Clearing volume of all well aliquots
+        HEREDOC
+      ).to_stdout
 
       # Well aliquots should have their volume and concentration set to 0
       well_aliquots.each do |aliquot|
