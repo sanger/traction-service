@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_18_145212) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_29_124554) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
@@ -459,6 +459,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_18_145212) do
     t.datetime "updated_at", precision: nil, null: false
     t.integer "pipeline", null: false
     t.integer "sample_sheet_behaviour", default: 0, null: false
+    t.boolean "active", default: true, null: false
   end
 
   create_table "tag_taggables", charset: "utf8mb3", force: :cascade do |t|
