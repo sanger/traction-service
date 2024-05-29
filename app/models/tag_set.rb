@@ -9,5 +9,12 @@ class TagSet < ApplicationRecord
   enum sample_sheet_behaviour: { default: 0, hidden: 1 }, _suffix: true
 
   validates :name, presence: true
-  validates :pipeline, presence: true
+  
+  def set_active
+    update(active: true)
+  end
+  
+  def set_inactive
+    update(active: false)
+  end
 end
