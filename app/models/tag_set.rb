@@ -10,5 +10,4 @@ class TagSet < ApplicationRecord
 
   validates :name, presence: true
   validates :pipeline, presence: true
-  end
 end
