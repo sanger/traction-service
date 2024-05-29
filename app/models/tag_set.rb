@@ -10,11 +10,7 @@ class TagSet < ApplicationRecord
 
   validates :name, presence: true
   
-  def set_active
-    update(active: true)
-  end
-  
-  def set_inactive
-    update(active: false)
+  def set_active(active)
+    update(active:)
   end
 end
