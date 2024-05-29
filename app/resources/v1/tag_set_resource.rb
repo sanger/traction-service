@@ -8,5 +8,9 @@ module V1
     has_many :tags
 
     filter :pipeline
+
+    def self.records(options = {})
+      super.where(active: true)
+    end
   end
 end
