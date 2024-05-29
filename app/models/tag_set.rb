@@ -10,8 +10,5 @@ class TagSet < ApplicationRecord
 
   validates :name, presence: true
   validates :pipeline, presence: true
-
-  def update_active(active)
-    update(active:)
   end
 end
