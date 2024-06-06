@@ -102,8 +102,8 @@ default: &default
           value: sorted_wells # defined in 'app/models/concerns/sample_sheet.rb'
           children:
             Library Type:
-              type: :string
-              value: Standard
+              type: :model
+              value: library_type
             Reagent Plate:
               type: :model
               value: plate.plate_number

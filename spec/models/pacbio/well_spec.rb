@@ -259,6 +259,7 @@ RSpec.describe Pacbio::Well, :pacbio do
         include_base_kinetics
         library_concentration
         polymerase_kit
+        library_type
       ])
     end
 

@@ -8,6 +8,7 @@ default: &default
   select_generate: &select_generate In SMRT Link,Do Not Generate,On Instrument
   select_times: &select_times 10.0,15.0,20.0,24.0,30.0
   select_true_false: &select_true_false True,False
+  select_library_type: &select_library_type Standard,Kinnex,Adeno-associated Virus
 
   versions:
     v10:
@@ -229,6 +230,19 @@ default: &default
       validations:
         presence: {}
       data_type: string
+      versions:
+        - v12_revio
+        - v13_revio
+    library_type:
+      key: library_type
+      label: "Library Type"
+      default_value: Standard
+      validations:
+        presence: {}
+        inclusion:
+          in: *select_library_type
+      data_type: list
+      select_options: *select_library_type
       versions:
         - v12_revio
         - v13_revio
