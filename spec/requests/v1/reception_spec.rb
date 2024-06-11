@@ -271,9 +271,12 @@ RSpec.describe 'ReceptionsController' do
           )
         end
       end
+    end
+
+    context 'with pool_attributes' do
+      let(:ont_tag_set) { create(:tag_set_with_tags, pipeline: 'ont') }
 
       context 'with a valid pool creation payload' do
-        let(:ont_tag_set) { create(:tag_set_with_tags, pipeline: 'ont') }
         let(:body) do
           {
             data: {
@@ -334,8 +337,7 @@ RSpec.describe 'ReceptionsController' do
                   volume: 1,
                   concentration: 2,
                   insert_size: 3,
-                  kit_barcode: 'barcode',
-                  pipeline: 'ont'
+                  kit_barcode: 'barcode'
                 }
               }
             }
@@ -374,9 +376,88 @@ RSpec.describe 'ReceptionsController' do
             expect(library.concentration).to eq(2)
             expect(library.insert_size).to eq(3)
             expect(library.kit_barcode).to eq('barcode')
-            # Check the library has the correct tag
+            # Check the library has a tag
             expect(library.tag).to eq(ont_tag_set.tags.find_by(id: library.tag_id))
           end
+        end
+      end
+
+      context 'with invalid pool attributes' do
+        let(:body) do
+          {
+            data: {
+              type: 'receptions',
+              attributes: {
+                source: 'traction-ui.sequencescape',
+                tubes_attributes: [
+                  {
+                    type: 'tubes',
+                    barcode: 'NT1',
+                    request: attributes_for(:ont_request).merge(
+                      library_type: library_type.name,
+                      data_type: data_type.name
+                    ),
+                    library: {
+                      volume: 1,
+                      concentration: 2,
+                      insert_size: 3,
+                      kit_barcode: 'barcode',
+                      tag_sequence: ont_tag_set.tags.first.oligo
+                    },
+                    sample: attributes_for(:sample)
+                  }
+                ],
+                pool_attributes: {
+                  kit_barcode: nil,
+                  volume: nil,
+                  concentration: -1,
+                  insert_size: nil
+                }
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a unprocessable_entity status' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.body).to include('pool/concentration - must be greater than or equal to 0')
+        end
+      end
+
+      context 'with missing libraries' do
+        let(:body) do
+          {
+            data: {
+              type: 'receptions',
+              attributes: {
+                source: 'traction-ui.sequencescape',
+                tubes_attributes: [
+                  {
+                    type: 'tubes',
+                    barcode: 'NT1',
+                    request: attributes_for(:ont_request).merge(
+                      library_type: library_type.name,
+                      data_type: data_type.name
+                    ),
+                    sample: attributes_for(:sample)
+                  }
+                ],
+                pool_attributes: {
+                  kit_barcode: nil,
+                  volume: 1,
+                  concentration: 1,
+                  insert_size: nil
+                }
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a unprocessable_entity status' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.body).to include('pool/libraries - can\'t be blank')
         end
       end
     end
@@ -580,6 +661,52 @@ RSpec.describe 'ReceptionsController' do
       it 'has a created status' do
         post v1_receptions_path, params: body, headers: json_api_headers
         expect(response).to have_http_status(:created), response.body
+      end
+    end
+
+    context 'with pool attributes' do
+      let(:pacbio_tag_set) { create(:tag_set_with_tags, pipeline: 'pacbio') }
+      let(:body) do
+        {
+          data: {
+            type: 'receptions',
+            attributes: {
+              source: 'traction-ui.sequencescape',
+              tubes_attributes: [
+                {
+                  type: 'tubes',
+                  barcode: 'NT1',
+                  request: attributes_for(:pacbio_request).merge(
+                    library_type: library_type.name,
+                    data_type: data_type.name
+                  ),
+                  library: {
+                    volume: 1,
+                    concentration: 2,
+                    insert_size: 3,
+                    kit_barcode: 'barcode',
+                    tag_sequence: pacbio_tag_set.tags.first.oligo
+                  },
+                  sample: attributes_for(:sample)
+                }
+              ],
+              pool_attributes: {
+                template_prep_kit_box_barcode: nil,
+                volume: nil,
+                concentration: nil,
+                insert_size: nil
+              }
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a unprocessable_entity status' do
+        # This errors because of a type mismatch when attempting to create the pool as its trying to
+        # puts PacBio libraries into an ONT pool
+        # This is fine as its unsupported, we should not be creating pools for pacbio
+        post v1_receptions_path, params: body, headers: json_api_headers
+        expect(response).to have_http_status(:internal_server_error)
       end
     end
 

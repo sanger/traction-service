@@ -15,7 +15,7 @@ class Reception
 
     validates :duplicate_containers, absence: true
     validates :requests, presence: true
-    validates_nested :requests, :containers, flatten_keys: false, context: :reception
+    validates_nested :requests, :containers, :pool, flatten_keys: false, context: :reception
 
     def plates_attributes=(plates_attributes)
       create_plates(plates_attributes)
@@ -27,6 +27,10 @@ class Reception
 
     def pool_attributes=(pool_attributes)
       create_pool(pool_attributes)
+    end
+
+    def pool
+      @pool ||= nil
     end
 
     def libraries
@@ -89,13 +93,8 @@ class Reception
 
     # Creates a pool from pool_attributes and uses the imported libraries
     def create_pool(pool_attributes)
-      # Creates a pool
-      pipeline = pool_attributes[:pipeline]
-      pipeline.capitalize.constantize::Pool.new(pool_attributes.slice(*::Ont.pool_attributes)
-              .merge(libraries:))
-      update_labware_status(pool_attributes[:barcode], 'success', nil)
-    rescue StandardError
-      update_labware_status(pool_attributes[:barcode], 'failed', 'Failed to create pool')
+      # Currently only supports Ont
+      @pool = Ont::Pool.new(pool_attributes.merge(libraries:))
     end
 
     def library_type_for(request_attributes)
@@ -142,7 +141,8 @@ class Reception
                                                   attributes)
       sample = sample_for(attributes[:sample])
       request = library_type_helper.create_request(sample, container, reception)
-      libraries << library_type_helper.create_library(request)
+      library = library_type_helper.create_library(request)
+      libraries << library if library
       requests << request
       containers << container
     end
