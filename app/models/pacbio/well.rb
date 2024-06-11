@@ -23,24 +23,10 @@ module Pacbio
     # which is mapped to smrt_link_options column (JSON) of pacbio_wells table.
     # They are accessible on the model as well.
     # See https://api.rubyonrails.org/classes/ActiveRecord/Store.html
-
-    store :smrt_link_options,
-          accessors: %i[ccs_analysis_output
-                        generate_hifi
-                        ccs_analysis_output_include_low_quality_reads
-                        include_fivemc_calls_in_cpg_motifs
-                        ccs_analysis_output_include_kinetics_information
-                        demultiplex_barcodes
-                        on_plate_loading_concentration
-                        binding_kit_box_barcode
-                        pre_extension_time
-                        loading_target_p1_plus_p2
-                        movie_time
-                        movie_acquisition_time
-                        include_base_kinetics
-                        library_concentration
-                        polymerase_kit
-                        library_type]
+    # We now get the accessors from configuration
+    store :smrt_link_options
+    # using store_accessor allows you to lazy load the accessors
+    store_accessor :smrt_link_options, Rails.configuration.pacbio_smrt_link_versions.options.keys
 
     # The SmrtLinkOptions validator gives full details on how this works
     # validations are loaded from the database
@@ -142,6 +128,19 @@ module Pacbio
       # If there are failed aliquots we want to collect the source barcodes add an error to the well
       failed_barcodes = failed_aliquots.map { |aliquot| aliquot.source.tube.barcode }.join(',')
       errors.add(:base, "Insufficient volume available for #{failed_barcodes}")
+    end
+
+    # This method is used to update the smrt_link_options for a well
+    # It takes a hash of options and updates the smrt_link_options store field
+    # with the new values
+    # we do a save! at the end to ensure that the changes are persisted
+    # it is better to update the smrt link options in the well as it uses a private method
+    # @param options [Hash] a hash of options to update
+    def update_smrt_link_options(options)
+      options.each do |key, value|
+        write_store_attribute(:smrt_link_options, key, value)
+      end
+      save!
     end
   end
 end

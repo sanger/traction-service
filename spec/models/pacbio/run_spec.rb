@@ -284,4 +284,18 @@ RSpec.describe Pacbio::Run, :pacbio do
       expect(build(:pacbio_generic_run, system_name: 'Revio', plates: [build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')]), build(:pacbio_plate, wells: [build(:pacbio_well, row: 'A', column: '1')])])).not_to be_valid
     end
   end
+
+  describe 'update smrt link options' do
+    it 'updates the smrt link otpions' do
+      run = create(:pacbio_revio_run)
+      run.update_smrt_link_options(library_type: nil)
+      run.reload
+      expect(run.wells.first.library_type).to be_nil
+      expect(run.wells.last.library_type).to be_nil
+      expect(run.update_smrt_link_options(library_type: 'Standard')).to eq 3
+      run.reload
+      expect(run.wells.first.library_type).to eq 'Standard'
+      expect(run.wells.last.library_type).to eq 'Standard'
+    end
+  end
 end
