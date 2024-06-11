@@ -13,6 +13,8 @@ RSpec.describe 'RakeTasks' do
   end
 
   describe 'volume_tracking:clear_well_aliquot_volume' do
+    define_negated_matcher :not_change, :change
+
     it 'sets the volume and concentration of all well aliquots to 0' do
       # Create some other aliquots to check they are not affected
       pool_aliquots = create_list(:aliquot, 5, used_by: create(:pacbio_pool), volume: 10, concentration: 10)
@@ -22,7 +24,7 @@ RSpec.describe 'RakeTasks' do
       well_aliquots = create_list(:aliquot, 10, used_by: create(:pacbio_well), volume: 10, concentration: 10)
 
       # We shouldnt change the amount of aliquots
-      expect { Rake::Task['volume_tracking:clear_well_aliquot_volume'].invoke }.not_to change(Aliquot, :count) and output(
+      expect { Rake::Task['volume_tracking:clear_well_aliquot_volume'].invoke }.to not_change(Aliquot, :count).and output(
         <<~HEREDOC
           -> Clearing volume of all well aliquots
         HEREDOC

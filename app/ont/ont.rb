@@ -7,7 +7,9 @@ module Ont
   end
 
   def self.library_attributes
-    raise StandardError, 'Unsupported' # Only Pacbio is supported at the moment
+    %i[
+      volume concenetration kit_barcode insert_size tag_id
+    ]
   end
 
   def self.request_attributes
@@ -24,9 +26,17 @@ module Ont
     request_attributes - associated_request_attributes
   end
 
-  # Parameters would be request: and library_attributes: if this was supported.
-  def self.library_factory(*)
-    raise StandardError, 'Unsupported' # Only Pacbio is supported at the moment
+  def self.library_factory(request:, library_attributes:)
+    # We need to find the tag_id from the tag_sequence provided
+    # TODO: We should take a tag_set here as well as there are duplicate oligos across tagsets
+    #
+    library_attributes[:tag_id] = Tag.find_by(oligo: library_attributes[:tag_sequence])
+    filtered_attributes = library_attributes.slice(*self.library_attributes)
+
+    Ont::Library.new(
+      request: request.requestable,
+      **filtered_attributes
+    )
   end
 
   def self.request_factory(sample:, container:, request_attributes:, resource_factory:, reception:)

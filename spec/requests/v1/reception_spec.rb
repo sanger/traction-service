@@ -435,44 +435,6 @@ RSpec.describe 'ReceptionsController' do
         expect(json['errors'][0]['detail']).to eq('requests - there are no new samples to import')
       end
     end
-
-    context 'with unwanted library attributes' do
-      let(:object_body) do
-        {
-          data: {
-            type: 'receptions',
-            attributes: {
-              source: 'traction-ui.sequencescape',
-              tubes_attributes: [
-                {
-                  type: 'tubes',
-                  barcode: 'NT1',
-                  library: {},
-                  request: attributes_for(:ont_request).merge(
-                    library_type: library_type.name,
-                    data_type: data_type.name
-                  ),
-                  sample: attributes_for(:sample)
-                }
-              ]
-            }
-          }
-        }
-      end
-      let(:body) do
-        object_body.to_json
-      end
-
-      it 'has a server error status' do
-        post v1_receptions_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:server_error), response.body
-      end
-
-      it 'indicates the unsupported state in the response body' do
-        post v1_receptions_path, params: body, headers: json_api_headers
-        expect(response.body).to include('Unsupported')
-      end
-    end
   end
 
   describe '#post with pacbio data' do

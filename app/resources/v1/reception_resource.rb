@@ -49,13 +49,25 @@ module V1
       end
     end
 
+    def pool_attributes=(pool_parameters)
+      raise ArgumentError unless pool_parameters.is_a?(Object)
+
+      @model.pool_attributes = pool_parameters.permit(
+        *permitted_pool_attributes
+      ).to_h.with_indifferent_access
+    end
+
     def construct_resources!
       # Use context to cache the labware to be used in the response
       context[:labware] = @model.construct_resources!
     end
 
+    def permitted_pool_attributes
+      [*::Ont.pool_attributes]
+    end
+
     def permitted_library_attributes
-      [*::Pacbio.library_attributes].uniq
+      [*::Pacbio.library_attributes, *::Ont.request_attributes].uniq
     end
 
     def permitted_request_attributes

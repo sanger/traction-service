@@ -8,7 +8,7 @@ class Reception
   # This allows up to retrieve all records in a single query upfront, avoiding
   # N+1 query problems. It also ensures we can centralize the registration of
   # new plates and tubes, making it easier to prevent registration of duplicate records.
-  class ResourceFactory
+  class ResourceFactory # rubocop:disable Metrics/ClassLength
     include ActiveModel::Model
     extend NestedValidation
     attr_accessor :reception
@@ -23,6 +23,14 @@ class Reception
 
     def tubes_attributes=(tubes_attributes)
       create_tubes(tubes_attributes)
+    end
+
+    def pool_attributes=(pool_attributes)
+      create_pool(pool_attributes)
+    end
+
+    def libraries
+      @libraries ||= []
     end
 
     def containers
@@ -79,6 +87,15 @@ class Reception
       end
     end
 
+    def create_pool(pool_attributes)
+      # Creates a pool
+      pipeline = pool_attributes[:pipeline]
+      pipeline.capitalize.constantize.new(pool_attributes, libraries)
+      update_labware_state(pool_attributes[:barcode], 'success', nil)
+    rescue StandardError
+      update_labware_state(pool_attributes[:barcode], 'failed', 'Failed to create pool')
+    end
+
     def library_type_for(request_attributes)
       # Gets a library type from the cache or returns an unknown type
       library_type = request_attributes[:library_type]
@@ -123,7 +140,7 @@ class Reception
                                                   attributes)
       sample = sample_for(attributes[:sample])
       request = library_type_helper.create_request(sample, container, reception)
-      library_type_helper.create_library(request)
+      libraries << library_type_helper.create_library(request)
       requests << request
       containers << container
     end
