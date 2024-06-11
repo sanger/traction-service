@@ -6,9 +6,13 @@ module Ont
     'ont_'
   end
 
+  def self.pool_attributes
+    %i[barcode volume concentration kit_barcode insert_size]
+  end
+
   def self.library_attributes
     %i[
-      volume concenetration kit_barcode insert_size tag_id
+      volume concentration kit_barcode insert_size tag_id
     ]
   end
 
@@ -29,8 +33,7 @@ module Ont
   def self.library_factory(request:, library_attributes:)
     # We need to find the tag_id from the tag_sequence provided
     # TODO: We should take a tag_set here as well as there are duplicate oligos across tagsets
-    #
-    library_attributes[:tag_id] = Tag.find_by(oligo: library_attributes[:tag_sequence])
+    library_attributes[:tag_id] = Tag.find_by(oligo: library_attributes[:tag_sequence]).id
     filtered_attributes = library_attributes.slice(*self.library_attributes)
 
     Ont::Library.new(

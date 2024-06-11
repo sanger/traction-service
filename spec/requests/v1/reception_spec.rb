@@ -271,168 +271,278 @@ RSpec.describe 'ReceptionsController' do
           )
         end
       end
+
+      context 'with a valid pool creation payload' do
+        let(:ont_tag_set) { create(:tag_set_with_tags, pipeline: 'ont') }
+        let(:body) do
+          {
+            data: {
+              type: 'receptions',
+              attributes: {
+                source: 'traction-ui.sequencescape',
+                tubes_attributes: [
+                  {
+                    type: 'tubes',
+                    barcode: 'NT1',
+                    request: attributes_for(:ont_request).merge(
+                      library_type: library_type.name,
+                      data_type: data_type.name
+                    ),
+                    library: {
+                      volume: 1,
+                      concentration: 2,
+                      insert_size: 3,
+                      kit_barcode: 'barcode',
+                      tag_sequence: ont_tag_set.tags.first.oligo
+                    },
+                    sample: attributes_for(:sample)
+                  },
+                  {
+                    type: 'tubes',
+                    barcode: 'NT2',
+                    request: attributes_for(:ont_request).merge(
+                      library_type: library_type.name,
+                      data_type: data_type.name
+                    ),
+                    library: {
+                      volume: 1,
+                      concentration: 2,
+                      insert_size: 3,
+                      kit_barcode: 'barcode',
+                      tag_sequence: ont_tag_set.tags.second.oligo
+                    },
+                    sample: attributes_for(:sample)
+                  },
+                  {
+                    type: 'tubes',
+                    barcode: 'NT3',
+                    request: attributes_for(:ont_request).merge(
+                      library_type: library_type.name,
+                      data_type: data_type.name
+                    ),
+                    library: {
+                      volume: 1,
+                      concentration: 2,
+                      insert_size: 3,
+                      kit_barcode: 'barcode',
+                      tag_sequence: ont_tag_set.tags.third.oligo
+                    },
+                    sample: attributes_for(:sample)
+                  }
+                ],
+                pool_attributes: {
+                  volume: 1,
+                  concentration: 2,
+                  insert_size: 3,
+                  kit_barcode: 'barcode',
+                  pipeline: 'ont'
+                }
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a created status' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:created), response.body
+        end
+
+        it 'creates the correct data' do
+          expect { post v1_receptions_path, params: body, headers: json_api_headers }
+            .to change(Ont::Pool, :count)
+            .from(0)
+            .to(1)
+            .and change(Ont::Library, :count)
+            .from(0)
+            .to(3)
+            .and change(Request, :count)
+            .from(0)
+            .to(3)
+            .and change(Ont::Request, :count)
+            .from(0)
+            .to(3)
+
+          new_pool = Ont::Pool.last
+          expect(new_pool.volume).to eq(1)
+          expect(new_pool.concentration).to eq(2)
+          expect(new_pool.insert_size).to eq(3)
+          expect(new_pool.kit_barcode).to eq('barcode')
+          expect(new_pool.libraries.count).to eq(3)
+          new_pool.libraries.each do |library|
+            expect(library.pool.id).to be(new_pool.id)
+            expect(library.volume).to eq(1)
+            expect(library.concentration).to eq(2)
+            expect(library.insert_size).to eq(3)
+            expect(library.kit_barcode).to eq('barcode')
+            # Check the library has the correct tag
+            expect(library.tag).to eq(ont_tag_set.tags.find_by(id: library.tag_id))
+          end
+        end
+      end
     end
 
     context 'with a invalid payload' do
-      let(:body) do
-        {
-          data: {
-            type: 'receptions',
-            attributes: {
-              source: 'Not_A valid SOURCE!!!',
-              tubes_attributes: [
-                {
-                  type: 'tubes',
-                  barcode: 'NT1',
-                  request: attributes_for(:ont_request).merge(
-                    library_type: library_type.name,
-                    data_type: data_type.name
-                  ),
-                  sample: attributes_for(:sample)
-                }
-              ]
+      context 'with an invalid source' do
+        let(:body) do
+          {
+            data: {
+              type: 'receptions',
+              attributes: {
+                source: 'Not_A valid SOURCE!!!',
+                tubes_attributes: [
+                  {
+                    type: 'tubes',
+                    barcode: 'NT1',
+                    request: attributes_for(:ont_request).merge(
+                      library_type: library_type.name,
+                      data_type: data_type.name
+                    ),
+                    sample: attributes_for(:sample)
+                  }
+                ]
+              }
             }
-          }
-        }.to_json
-      end
-
-      it 'has a unprocessable_entity status' do
-        post v1_receptions_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'generates a valid json-api error response' do
-        post v1_receptions_path, params: body, headers: json_api_headers
-        pointer = json.dig('errors', 0, 'source', 'pointer')
-        expect(pointer).to eq('/data/attributes/source')
-      end
-    end
-
-    context 'with a invalid library type' do
-      let(:body) do
-        {
-          data: {
-            type: 'receptions',
-            attributes: {
-              source: 'traction-ui.sequencescape',
-              tubes_attributes: [
-                {
-                  type: 'tubes',
-                  barcode: 'NT1',
-                  request: attributes_for(:ont_request).merge(
-                    library_type: 'Invalid Library Type',
-                    data_type: data_type.name
-                  ),
-                  sample: attributes_for(:sample)
-                }
-              ]
-            }
-          }
-        }.to_json
-      end
-
-      it 'has a unprocessable_entity status' do
-        post v1_receptions_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'generates a valid json-api error response' do
-        post v1_receptions_path, params: body, headers: json_api_headers
-        pointer = json.dig('errors', 0, 'source', 'pointer')
-        expect(pointer).to eq('/data/attributes/requests/0/library_type')
-      end
-    end
-
-    context 'with a invalid sample payload' do
-      let(:body) do
-        {
-          data: {
-            type: 'receptions',
-            attributes: {
-              source: 'traction-ui.sequencescape',
-              tubes_attributes: [
-                {
-                  type: 'tubes',
-                  barcode: 'NT1',
-                  request: attributes_for(:ont_request).merge(
-                    library_type: library_type.name,
-                    data_type: data_type.name
-                  ),
-                  sample: {}
-                }
-              ]
-            }
-          }
-        }.to_json
-      end
-
-      it 'has a unprocessable_entity status' do
-        post v1_receptions_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
-      it 'generates a valid json-api error response' do
-        post v1_receptions_path, params: body, headers: json_api_headers
-        pointers = json.fetch('errors').map do |error|
-          error.dig('source', 'pointer')
+          }.to_json
         end
-        expect(pointers).to include('/data/attributes/requests/0/sample')
-        expect(pointers).to include('/data/attributes/requests/0/sample')
-      end
-    end
 
-    context 'with a badly structured payload' do
-      let(:body) do
-        {
-          data: {
-            type: 'receptions',
-            attributes: {
-              source: 'traction-ui.sequencescape',
-              tubes_attributes: ''
+        it 'has a unprocessable_entity status' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'generates a valid json-api error response' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          pointer = json.dig('errors', 0, 'source', 'pointer')
+          expect(pointer).to eq('/data/attributes/source')
+        end
+      end
+
+      context 'with a invalid library type' do
+        let(:body) do
+          {
+            data: {
+              type: 'receptions',
+              attributes: {
+                source: 'traction-ui.sequencescape',
+                tubes_attributes: [
+                  {
+                    type: 'tubes',
+                    barcode: 'NT1',
+                    request: attributes_for(:ont_request).merge(
+                      library_type: 'Invalid Library Type',
+                      data_type: data_type.name
+                    ),
+                    sample: attributes_for(:sample)
+                  }
+                ]
+              }
             }
-          }
-        }.to_json
+          }.to_json
+        end
+
+        it 'has a unprocessable_entity status' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'generates a valid json-api error response' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          pointer = json.dig('errors', 0, 'source', 'pointer')
+          expect(pointer).to eq('/data/attributes/requests/0/library_type')
+        end
       end
 
-      it 'has a bad_request status' do
-        post v1_receptions_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:bad_request)
-      end
-    end
-
-    context 'with all duplicated samples' do
-      let(:body) do
-        {
-          data: {
-            type: 'receptions',
-            attributes: {
-              source: 'traction-ui.sequencescape',
-              plates_attributes: [
-                {
-                  type: 'plates',
-                  barcode: 'NT1',
-                  wells_attributes: [
-                    {
-                      position: 'A1',
-                      request: attributes_for(:ont_request).merge(
-                        library_type: library_type.name,
-                        data_type: data_type.name
-                      ),
-                      sample: attributes_for(:sample)
-                    }
-                  ]
-                }
-              ]
+      context 'with a invalid sample payload' do
+        let(:body) do
+          {
+            data: {
+              type: 'receptions',
+              attributes: {
+                source: 'traction-ui.sequencescape',
+                tubes_attributes: [
+                  {
+                    type: 'tubes',
+                    barcode: 'NT1',
+                    request: attributes_for(:ont_request).merge(
+                      library_type: library_type.name,
+                      data_type: data_type.name
+                    ),
+                    sample: {}
+                  }
+                ]
+              }
             }
-          }
-        }.to_json
+          }.to_json
+        end
+
+        it 'has a unprocessable_entity status' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'generates a valid json-api error response' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          pointers = json.fetch('errors').map do |error|
+            error.dig('source', 'pointer')
+          end
+          expect(pointers).to include('/data/attributes/requests/0/sample')
+          expect(pointers).to include('/data/attributes/requests/0/sample')
+        end
       end
 
-      it 'has a bad_request status and correct errors' do
-        create(:plate_with_wells_and_requests, barcode: 'NT1', pipeline: 'pacbio')
-        post v1_receptions_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
-        expect(json['errors'][0]['detail']).to eq('requests - there are no new samples to import')
+      context 'with a badly structured payload' do
+        let(:body) do
+          {
+            data: {
+              type: 'receptions',
+              attributes: {
+                source: 'traction-ui.sequencescape',
+                tubes_attributes: ''
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a bad_request status' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:bad_request)
+        end
+      end
+
+      context 'with all duplicated samples' do
+        let(:body) do
+          {
+            data: {
+              type: 'receptions',
+              attributes: {
+                source: 'traction-ui.sequencescape',
+                plates_attributes: [
+                  {
+                    type: 'plates',
+                    barcode: 'NT1',
+                    wells_attributes: [
+                      {
+                        position: 'A1',
+                        request: attributes_for(:ont_request).merge(
+                          library_type: library_type.name,
+                          data_type: data_type.name
+                        ),
+                        sample: attributes_for(:sample)
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a bad_request status and correct errors' do
+          create(:plate_with_wells_and_requests, barcode: 'NT1', pipeline: 'pacbio')
+          post v1_receptions_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(json['errors'][0]['detail']).to eq('requests - there are no new samples to import')
+        end
       end
     end
   end

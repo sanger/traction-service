@@ -3,7 +3,7 @@
 module V1
   # A Reception handles the import of resources into traction
   class ReceptionResource < JSONAPI::Resource
-    attributes :source, :labware, :plates_attributes, :tubes_attributes
+    attributes :source, :labware, :plates_attributes, :tubes_attributes, :pool_attributes
 
     after_create :publish_messages, :construct_resources!
 
@@ -63,11 +63,11 @@ module V1
     end
 
     def permitted_pool_attributes
-      [*::Ont.pool_attributes]
+      [*::Ont.pool_attributes, :pipeline]
     end
 
     def permitted_library_attributes
-      [*::Pacbio.library_attributes, *::Ont.library_attributes].uniq
+      [*::Pacbio.library_attributes, *::Ont.library_attributes, :tag_sequence].uniq
     end
 
     def permitted_request_attributes

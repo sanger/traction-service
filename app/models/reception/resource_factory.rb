@@ -87,13 +87,15 @@ class Reception
       end
     end
 
+    # Creates a pool from pool_attributes and uses the imported libraries
     def create_pool(pool_attributes)
       # Creates a pool
       pipeline = pool_attributes[:pipeline]
-      pipeline.capitalize.constantize.new(pool_attributes, libraries)
-      update_labware_state(pool_attributes[:barcode], 'success', nil)
+      pipeline.capitalize.constantize::Pool.new(pool_attributes.slice(*::Ont.pool_attributes)
+              .merge(libraries:))
+      update_labware_status(pool_attributes[:barcode], 'success', nil)
     rescue StandardError
-      update_labware_state(pool_attributes[:barcode], 'failed', 'Failed to create pool')
+      update_labware_status(pool_attributes[:barcode], 'failed', 'Failed to create pool')
     end
 
     def library_type_for(request_attributes)
