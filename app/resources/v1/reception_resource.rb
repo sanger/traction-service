@@ -63,7 +63,7 @@ module V1
     end
 
     def permitted_pool_attributes
-      [*::Ont.pool_attributes, :pipeline]
+      [*::Ont.pool_attributes, :barcode]
     end
 
     def permitted_library_attributes

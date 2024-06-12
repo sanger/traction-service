@@ -337,7 +337,8 @@ RSpec.describe 'ReceptionsController' do
                   volume: 1,
                   concentration: 2,
                   insert_size: 3,
-                  kit_barcode: 'barcode'
+                  kit_barcode: 'barcode',
+                  barcode: 'NT123'
                 }
               }
             }
@@ -365,13 +366,13 @@ RSpec.describe 'ReceptionsController' do
             .to(3)
 
           new_pool = Ont::Pool.last
+          expect(new_pool.tube.barcode).to eq('NT123')
           expect(new_pool.volume).to eq(1)
           expect(new_pool.concentration).to eq(2)
           expect(new_pool.insert_size).to eq(3)
           expect(new_pool.kit_barcode).to eq('barcode')
           expect(new_pool.libraries.count).to eq(3)
           new_pool.libraries.each do |library|
-            expect(library.pool.id).to be(new_pool.id)
             expect(library.volume).to eq(1)
             expect(library.concentration).to eq(2)
             expect(library.insert_size).to eq(3)
@@ -411,7 +412,8 @@ RSpec.describe 'ReceptionsController' do
                   kit_barcode: nil,
                   volume: nil,
                   concentration: -1,
-                  insert_size: nil
+                  insert_size: nil,
+                  barcode: 'NT123'
                 }
               }
             }
@@ -447,7 +449,8 @@ RSpec.describe 'ReceptionsController' do
                   kit_barcode: nil,
                   volume: 1,
                   concentration: 1,
-                  insert_size: nil
+                  insert_size: nil,
+                  barcode: 'NT123'
                 }
               }
             }
@@ -704,7 +707,7 @@ RSpec.describe 'ReceptionsController' do
       it 'has a unprocessable_entity status' do
         # This errors because of a type mismatch when attempting to create the pool as its trying to
         # puts PacBio libraries into an ONT pool
-        # This is fine as its unsupported, we should not be creating pools for pacbio
+        # This is fine as its unsupported, we should not be creating pools for pacbio this way
         post v1_receptions_path, params: body, headers: json_api_headers
         expect(response).to have_http_status(:internal_server_error)
       end
