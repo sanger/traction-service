@@ -295,7 +295,7 @@ RSpec.describe 'ReceptionsController' do
                       volume: 1,
                       concentration: 2,
                       insert_size: 3,
-                      kit_barcode: 'barcode',
+                      kit_barcode: ont_tag_set.name,
                       tag_sequence: ont_tag_set.tags.first.oligo
                     },
                     sample: attributes_for(:sample)
@@ -311,7 +311,7 @@ RSpec.describe 'ReceptionsController' do
                       volume: 1,
                       concentration: 2,
                       insert_size: 3,
-                      kit_barcode: 'barcode',
+                      kit_barcode: ont_tag_set.name,
                       tag_sequence: ont_tag_set.tags.second.oligo
                     },
                     sample: attributes_for(:sample)
@@ -327,7 +327,7 @@ RSpec.describe 'ReceptionsController' do
                       volume: 1,
                       concentration: 2,
                       insert_size: 3,
-                      kit_barcode: 'barcode',
+                      kit_barcode: ont_tag_set.name,
                       tag_sequence: ont_tag_set.tags.third.oligo
                     },
                     sample: attributes_for(:sample)
@@ -337,7 +337,7 @@ RSpec.describe 'ReceptionsController' do
                   volume: 1,
                   concentration: 2,
                   insert_size: 3,
-                  kit_barcode: 'barcode',
+                  kit_barcode: ont_tag_set.name,
                   barcode: 'NT123'
                 }
               }
@@ -370,13 +370,13 @@ RSpec.describe 'ReceptionsController' do
           expect(new_pool.volume).to eq(1)
           expect(new_pool.concentration).to eq(2)
           expect(new_pool.insert_size).to eq(3)
-          expect(new_pool.kit_barcode).to eq('barcode')
+          expect(new_pool.kit_barcode).to eq(ont_tag_set.name)
           expect(new_pool.libraries.count).to eq(3)
           new_pool.libraries.each do |library|
             expect(library.volume).to eq(1)
             expect(library.concentration).to eq(2)
             expect(library.insert_size).to eq(3)
-            expect(library.kit_barcode).to eq('barcode')
+            expect(library.kit_barcode).to eq(ont_tag_set.name)
             # Check the library has a tag
             expect(library.tag).to eq(ont_tag_set.tags.find_by(id: library.tag_id))
           end
@@ -402,14 +402,14 @@ RSpec.describe 'ReceptionsController' do
                       volume: 1,
                       concentration: 2,
                       insert_size: 3,
-                      kit_barcode: 'barcode',
+                      kit_barcode: ont_tag_set.name,
                       tag_sequence: ont_tag_set.tags.first.oligo
                     },
                     sample: attributes_for(:sample)
                   }
                 ],
                 pool_attributes: {
-                  kit_barcode: nil,
+                  kit_barcode: ont_tag_set.name,
                   volume: nil,
                   concentration: -1,
                   insert_size: nil,
@@ -461,6 +461,67 @@ RSpec.describe 'ReceptionsController' do
           post v1_receptions_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.body).to include('pool/libraries - can\'t be blank')
+        end
+      end
+
+      context 'with libraries with incorrect tags' do
+        let(:ont_tag_set_2) { create(:tag_set_with_tags, pipeline: 'ont') }
+        let(:body) do
+          {
+            data: {
+              type: 'receptions',
+              attributes: {
+                source: 'traction-ui.sequencescape',
+                tubes_attributes: [
+                  {
+                    type: 'tubes',
+                    barcode: 'NT1',
+                    request: attributes_for(:ont_request).merge(
+                      library_type: library_type.name,
+                      data_type: data_type.name
+                    ),
+                    library: {
+                      volume: 1,
+                      concentration: 2,
+                      insert_size: 3,
+                      kit_barcode: ont_tag_set.name,
+                      tag_sequence: ont_tag_set.tags.first.oligo
+                    },
+                    sample: attributes_for(:sample)
+                  },
+                  {
+                    type: 'tubes',
+                    barcode: 'NT2',
+                    request: attributes_for(:ont_request).merge(
+                      library_type: library_type.name,
+                      data_type: data_type.name
+                    ),
+                    library: {
+                      volume: 1,
+                      concentration: 2,
+                      insert_size: 3,
+                      kit_barcode: ont_tag_set.name,
+                      tag_sequence: 'incorrect sequence'
+                    },
+                    sample: attributes_for(:sample)
+                  }
+                ],
+                pool_attributes: {
+                  kit_barcode: ont_tag_set.name,
+                  volume: 1,
+                  concentration: 1,
+                  insert_size: nil,
+                  barcode: 'NT123'
+                }
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a unprocessable_entity status' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.body).to include('pool/tags - must be present on all libraries')
         end
       end
     end

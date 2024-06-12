@@ -31,9 +31,11 @@ module Ont
   end
 
   def self.library_factory(request:, library_attributes:)
-    # We need to find the tag_id from the tag_sequence provided
-    # TODO: We should take a tag_set here as well as there are duplicate oligos across tagsets
-    library_attributes[:tag_id] = Tag.find_by(oligo: library_attributes[:tag_sequence]).id
+    # Get the tag_set from the kit_barcode
+    ont_tag_set = TagSet.find_by(name: library_attributes[:kit_barcode])
+    # Find the tag_id from the tag_set based on the tag_sequence/oligo
+    library_attributes[:tag_id] =
+      ont_tag_set.tags.find_by(oligo: library_attributes[:tag_sequence])&.id
     filtered_attributes = library_attributes.slice(*self.library_attributes)
 
     Ont::Library.new(
