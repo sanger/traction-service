@@ -524,6 +524,67 @@ RSpec.describe 'ReceptionsController' do
           expect(response.body).to include('pool/tags - must be present on all libraries')
         end
       end
+
+      context 'with requests with unknown library types' do
+        let(:ont_tag_set_2) { create(:tag_set_with_tags, pipeline: 'ont') }
+        let(:body) do
+          {
+            data: {
+              type: 'receptions',
+              attributes: {
+                source: 'traction-ui.sequencescape',
+                tubes_attributes: [
+                  {
+                    type: 'tubes',
+                    barcode: 'NT1',
+                    request: attributes_for(:ont_request).merge(
+                      library_type: library_type.name,
+                      data_type: data_type.name
+                    ),
+                    library: {
+                      volume: 1,
+                      concentration: 2,
+                      insert_size: 3,
+                      kit_barcode: ont_tag_set.name,
+                      tag_sequence: ont_tag_set.tags.first.oligo
+                    },
+                    sample: attributes_for(:sample)
+                  },
+                  {
+                    type: 'tubes',
+                    barcode: 'NT2',
+                    request: attributes_for(:ont_request).merge(
+                      library_type: 'unknown',
+                      data_type: data_type.name
+                    ),
+                    library: {
+                      volume: 1,
+                      concentration: 2,
+                      insert_size: 3,
+                      kit_barcode: ont_tag_set.name,
+                      tag_sequence: ont_tag_set.tags.first.oligo
+                    },
+                    sample: attributes_for(:sample)
+                  }
+                ],
+                pool_attributes: {
+                  kit_barcode: ont_tag_set.name,
+                  volume: 1,
+                  concentration: 1,
+                  insert_size: nil,
+                  barcode: 'NT123'
+                }
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a unprocessable_entity status' do
+          post v1_receptions_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.body).to include('requests/1/library_type - is not a recognised library type')
+        end
+      end
     end
 
     context 'with a invalid payload' do
@@ -748,7 +809,7 @@ RSpec.describe 'ReceptionsController' do
                     volume: 1,
                     concentration: 2,
                     insert_size: 3,
-                    kit_barcode: 'barcode',
+                    template_prep_kit_box_barcode: 'test',
                     tag_sequence: pacbio_tag_set.tags.first.oligo
                   },
                   sample: attributes_for(:sample)
@@ -767,10 +828,10 @@ RSpec.describe 'ReceptionsController' do
 
       it 'has a unprocessable_entity status' do
         # This errors because of a type mismatch when attempting to create the pool as its trying to
-        # puts PacBio libraries into an ONT pool
-        # This is fine as its unsupported, we should not be creating pools for pacbio this way
+        # put PacBio libraries into an ONT pool
         post v1_receptions_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:internal_server_error)
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(json['errors'][0]['detail']).to eq('pool/libraries - can\'t be blank')
       end
     end
 
