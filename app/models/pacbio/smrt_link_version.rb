@@ -17,6 +17,17 @@ module Pacbio
     scope :active, -> { where(active: true) }
     scope :ordered_by_default, -> { order(default: :desc) }
 
+    # @return [Hash] default options for this version
+    # each key is the option key and the value is the default value
+    # if the default value is nil then it is not included
+    def default_options
+      {}.tap do |options|
+        smrt_link_options.where.not(default_value: nil).find_each do |option|
+          options[option.key] = option.default_value
+        end
+      end
+    end
+
     # Returns the default SMRT Link version.
     def self.default
       find_by(default: true,

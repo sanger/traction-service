@@ -3,6 +3,7 @@ default: &default
   yes_no: &yes_no ["Yes", "No"]
   generate: &generate [In SMRT Link, Do Not Generate, On Instrument]
   true_false: &true_false ["True", "False"]
+  library_type: &library_type ["Standard", "Kinnex", "Adeno-associated Virus"]
 
   select_yes_no: &select_yes_no Yes,No
   select_generate: &select_generate In SMRT Link,Do Not Generate,On Instrument
@@ -240,7 +241,7 @@ default: &default
       validations:
         presence: {}
         inclusion:
-          in: *select_library_type
+          in: *library_type
       data_type: list
       select_options: *select_library_type
       versions:
