@@ -244,12 +244,13 @@ RSpec.describe Pacbio::Well, :pacbio do
     let(:true_false) { Pacbio::TRUE_FALSE }
 
     it 'includes the relevant options' do
+      # I have left this as test rather than pulling in the configuration as it is a test of the model
       expect(described_class.stored_attributes[:smrt_link_options]).to eq(%i[
         ccs_analysis_output
         generate_hifi
+        ccs_analysis_output_include_kinetics_information
         ccs_analysis_output_include_low_quality_reads
         include_fivemc_calls_in_cpg_motifs
-        ccs_analysis_output_include_kinetics_information
         demultiplex_barcodes
         on_plate_loading_concentration
         binding_kit_box_barcode
@@ -259,6 +260,7 @@ RSpec.describe Pacbio::Well, :pacbio do
         include_base_kinetics
         library_concentration
         polymerase_kit
+        library_type
       ])
     end
 
@@ -536,6 +538,15 @@ RSpec.describe Pacbio::Well, :pacbio do
           expect(well_plate2.sequencing_kit_box_barcode_plate_2).to be(well_plate2.plate.sequencing_kit_box_barcode)
         end
       end
+    end
+  end
+
+  describe 'update smrt_link_options' do
+    it 'updates the smrt link option' do
+      well = create(:pacbio_well, library_type: nil)
+      well.update_smrt_link_options(library_type: 'Standard')
+      well.reload
+      expect(well.library_type).to eq('Standard')
     end
   end
 end

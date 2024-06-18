@@ -7,15 +7,8 @@ module V1
       class WellResource < JSONAPI::Resource
         model_name 'Pacbio::Well'
 
-        attributes :movie_time, :insert_size, :on_plate_loading_concentration,
-                   :row, :column, :pacbio_plate_id, :comment, :generate_hifi,
-                   :position, :pre_extension_time, :ccs_analysis_output,
-                   :binding_kit_box_barcode, :loading_target_p1_plus_p2,
-                   :ccs_analysis_output_include_low_quality_reads,
-                   :include_fivemc_calls_in_cpg_motifs,
-                   :ccs_analysis_output_include_kinetics_information,
-                   :demultiplex_barcodes, :movie_acquisition_time, :include_base_kinetics,
-                   :library_concentration, :polymerase_kit
+        attributes :row, :column, :comment, :pacbio_plate_id, :position,
+                   *Rails.configuration.pacbio_smrt_link_versions.options.keys
 
         has_many :used_aliquots, class_name: 'Aliquot', relation_name: :used_aliquots
         has_many :libraries

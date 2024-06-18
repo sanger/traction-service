@@ -55,4 +55,15 @@ RSpec.describe Pacbio::SmrtLinkVersion, :pacbio do
       expect(ordered_by_default.first).to eq(default_version)
     end
   end
+
+  describe '#default_options' do
+    it 'returns the default options and their values which are present' do
+      version = create(:pacbio_smrt_link_version)
+      options_with_defaults = create_list(:pacbio_smrt_link_option, 3, default_value: 1)
+      options_without_defaults = create_list(:pacbio_smrt_link_option, 2, default_value: nil)
+      version.smrt_link_options << options_with_defaults
+      version.smrt_link_options << options_without_defaults
+      expect(version.default_options).to eq({ options_with_defaults[0].key => '1', options_with_defaults[1].key => '1', options_with_defaults[2].key => '1' })
+    end
+  end
 end

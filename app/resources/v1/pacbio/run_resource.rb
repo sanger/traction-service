@@ -19,16 +19,13 @@ module V1
 
       paginator :paged
 
+      #
+      # # A pain. It means we would need to turn this into a method to beat the cop.
+      # rubocop:disable Layout/LineLength
       PERMITTED_WELL_PARAMETERS = %i[id
-                                     row column ccs_analysis_output generate_hifi
-                                     ccs_analysis_output_include_low_quality_reads
-                                     include_fivemc_calls_in_cpg_motifs comment
-                                     ccs_analysis_output_include_kinetics_information
-                                     demultiplex_barcodes on_plate_loading_concentration
-                                     binding_kit_box_barcode pre_extension_time
-                                     loading_target_p1_plus_p2 movie_time
-                                     movie_acquisition_time include_base_kinetics
-                                     library_concentration polymerase_kit].freeze
+                                     row column
+                                     comment].concat(Rails.configuration.pacbio_smrt_link_versions.options.keys).freeze
+      # rubocop:enable Layout/LineLength
 
       after_save :publish_messages
 

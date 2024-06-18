@@ -29,8 +29,11 @@ namespace :smrt_link_versions do
       # Add SMRT Link option to the specified SMRT Link versions.
       versions.each do |name|
         smrt_link_version = smrt_link_versions[name]
-        unless smrt_link_version.smrt_link_options.include? smrt_link_option
-          smrt_link_version.smrt_link_options << smrt_link_option
+        next if smrt_link_version.smrt_link_options.include? smrt_link_option
+
+        smrt_link_version.smrt_link_options << smrt_link_option
+        Pacbio::Run.where(smrt_link_version:).find_each do |run|
+          run.update_smrt_link_options(smrt_link_option.key => smrt_link_option.default_value)
         end
       end
     end

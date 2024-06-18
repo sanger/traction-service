@@ -37,7 +37,7 @@ module RunCsv
     def generate_smrt_cell_settings(well) # rubocop:disable Metrics/MethodLength
       {
         'Well Name'	=> well.used_aliquots.first.source.tube.barcode, # TRAC-2-7242
-        'Library Type'	=> 'Standard', # (potentially new field otherwise just string)
+        'Library Type'	=> well.library_type, # Standard
         'Movie Acquisition Time (hours)'	=> well.movie_acquisition_time, # 24
         'Insert Size (bp)'	=> well.insert_size, # 500
         'Assign Data To Project'	=> 1, # (maybe we need to assign a run a project in traction)?
