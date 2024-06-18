@@ -1,5 +1,3 @@
 # Add feature flags to this file, example:
 # dpl202_enable_angry_cat_feature: When enabled this will add an angry cat to all pages that will try to catch the mouse pointer
-# The key should be lowecase and snake case, and prefixes with the issue number to allow easy identification
-
-dpl_1070_check_primary_aliquot_library_volume: "Enable volume checking for changes in the primary aliquots within libraries."
+# The key should be lowercase and snake case, and prefixes with the issue number to allow easy identification
