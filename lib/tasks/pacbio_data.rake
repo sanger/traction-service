@@ -142,15 +142,11 @@ namespace :pacbio_data do
             wells: [Pacbio::Well.new(
               row: 'A',
               column: 1,
-              ccs_analysis_output_include_kinetics_information:	'Yes',
-              ccs_analysis_output_include_low_quality_reads:	'Yes',
-              include_fivemc_calls_in_cpg_motifs:	'Yes',
-              demultiplex_barcodes:	'In SMRT Link',
-              generate_hifi: 'In SMRT Link',
               on_plate_loading_concentration: 1,
               binding_kit_box_barcode: "BKB_#{barcode}",
               movie_time: '20.0',
-              used_aliquots_attributes: [{ source_id: pool.id, source_type: 'Pacbio::Pool', volume: 1.0, concentration: 1.0, template_prep_kit_box_barcode: "TPKB_#{barcode}", insert_size: 500 }]
+              used_aliquots_attributes: [{ source_id: pool.id, source_type: 'Pacbio::Pool', volume: 1.0, concentration: 1.0, template_prep_kit_box_barcode: "TPKB_#{barcode}", insert_size: 500 }],
+              **v11.default_options
             )]
           )
         end
@@ -176,10 +172,10 @@ namespace :pacbio_data do
               column: 1,
               pre_extension_time: 2,
               movie_acquisition_time:	'24.0',
-              include_base_kinetics: 'True',
               library_concentration: 1,
               polymerase_kit:	'030116102739100011124',
-              used_aliquots_attributes: [{ source_id: pool.id, source_type: 'Pacbio::Pool', volume: 1.0, concentration: 1.0, template_prep_kit_box_barcode: "TPKB_#{barcode}", insert_size: 500 }]
+              used_aliquots_attributes: [{ source_id: pool.id, source_type: 'Pacbio::Pool', volume: 1.0, concentration: 1.0, template_prep_kit_box_barcode: "TPKB_#{barcode}", insert_size: 500 }],
+              **v12_revio.default_options
             )]
           )
         end
@@ -203,14 +199,11 @@ namespace :pacbio_data do
               column: 1,
               pre_extension_time: 2,
               loading_target_p1_plus_p2: 0.85,
-              ccs_analysis_output_include_kinetics_information:	'No',
-              ccs_analysis_output_include_low_quality_reads:	'No',
-              include_fivemc_calls_in_cpg_motifs:	'No',
-              demultiplex_barcodes:	'In SMRT Link',
               on_plate_loading_concentration: 105,
               binding_kit_box_barcode: '030425102194100010424',
               movie_time: '20.0',
-              used_aliquots_attributes: [{ source_id: pool.id, source_type: 'Pacbio::Pool', volume: 1.0, concentration: 1.0, template_prep_kit_box_barcode: "TPKB_#{barcode}", insert_size: 500 }]
+              used_aliquots_attributes: [{ source_id: pool.id, source_type: 'Pacbio::Pool', volume: 1.0, concentration: 1.0, template_prep_kit_box_barcode: "TPKB_#{barcode}", insert_size: 500 }],
+              **v12_sequel_iie.default_options
             )]
           )
         end
@@ -236,10 +229,10 @@ namespace :pacbio_data do
               column: 1,
               pre_extension_time: 2,
               movie_acquisition_time:	'24.0',
-              include_base_kinetics: 'True',
               library_concentration: 1,
               polymerase_kit:	'030116102739100011124',
-              used_aliquots_attributes: [{ source_id: pool.id, source_type: 'Pacbio::Pool', volume: 1.0, concentration: 1.0, template_prep_kit_box_barcode: "TPKB_#{barcode}", insert_size: 500 }]
+              used_aliquots_attributes: [{ source_id: pool.id, source_type: 'Pacbio::Pool', volume: 1.0, concentration: 1.0, template_prep_kit_box_barcode: "TPKB_#{barcode}", insert_size: 500 }],
+              **v13_revio.default_options
             )]
           )
         end
@@ -258,6 +251,7 @@ namespace :pacbio_data do
           Pacbio::Plate.new(
             sequencing_kit_box_barcode: '130429101826100021624',
             plate_number:,
+            # TODO: use defaults
             wells: [Pacbio::Well.new(
               row: 'A',
               column: 1,

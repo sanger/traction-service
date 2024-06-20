@@ -84,6 +84,19 @@ module Pacbio
       plates.collect(&:wells).flatten
     end
 
+    # updates the smrt link options for all of the wells in the run
+    # returns the number of wells updated
+    # each well is saved after the update
+    # it is inefficient to save each well individually but this is not used by the UI
+    # @param options [Hash] the options to update
+    # @return [Integer] the number of wells updated
+    def update_smrt_link_options(options)
+      wells.each do |well|
+        well.update_smrt_link_options(options)
+      end
+      wells.count
+    end
+
     private
 
     # We now have SMRT Link versioning

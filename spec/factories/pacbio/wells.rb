@@ -65,5 +65,6 @@ FactoryBot.define do
     include_base_kinetics { 'True' }
     sequence(:library_concentration) { |n| "10.#{n}".to_f }
     sequence(:polymerase_kit) { |n| "DM111710086220011171#{n}" }
+    library_type { 'Standard' }
   end
 end

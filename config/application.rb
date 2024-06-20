@@ -61,6 +61,8 @@ module TractionService
 
     config.pacbio_instrument_types = config_for(:pacbio_instrument_types)
 
+    config.pacbio_smrt_link_versions = config_for(:pacbio_smrt_link_versions)
+
     # Pacbio default request cost code
     config.pacbio_request_cost_code = 'S4699'
 
