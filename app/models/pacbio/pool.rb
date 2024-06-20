@@ -23,9 +23,7 @@ module Pacbio
 
     validates :used_aliquots, presence: true
     validates :primary_aliquot, presence: true
-    validate :used_aliquots_volume, if: lambda {
-                                          Flipper.enabled?(:dpl_1072_check_library_volume_in_pools)
-                                        }
+    validate :used_aliquots_volume
 
     accepts_nested_attributes_for :primary_aliquot
 

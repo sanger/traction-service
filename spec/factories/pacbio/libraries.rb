@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :pacbio_library, class: 'Pacbio::Library' do
-    volume { 1.111 }
+    volume { 50.2 }
     concentration { 2.222 }
     template_prep_kit_box_barcode { 'LK1234567' }
     insert_size { 100 }

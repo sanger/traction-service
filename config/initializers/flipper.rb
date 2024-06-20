@@ -2,7 +2,7 @@
 
 require 'yaml'
 
-FLIPPER_FEATURES = YAML.load_file('./config/feature_flags.yml')
+FLIPPER_FEATURES = YAML.load_file('./config/feature_flags.yml') || {}
 
 Flipper::UI.configure do |config|
   config.descriptions_source = ->(_keys) { FLIPPER_FEATURES }

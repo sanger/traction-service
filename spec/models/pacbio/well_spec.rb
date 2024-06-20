@@ -136,8 +136,6 @@ RSpec.describe Pacbio::Well, :pacbio do
     end
 
     it 'is not valid when using an invalid amount of volume from a library' do
-      Flipper.enable(:dpl_1076_check_library_volume_in_runs)
-
       libraries = create_list(:pacbio_library, 3, volume: 10)
 
       # Pool with 3 libraries: 2 invalid ones and one valid
@@ -148,18 +146,12 @@ RSpec.describe Pacbio::Well, :pacbio do
       ])
       expect(well).not_to be_valid
       expect(well.errors[:base][0]).to eq("Insufficient volume available for #{libraries[0].tube.barcode},#{libraries[1].tube.barcode}")
-
-      Flipper.disable(:dpl_1072_check_library_volume_in_pools)
     end
 
     it 'is valid when using a valid amount of volume from a library' do
-      Flipper.enable(:dpl_1076_check_library_volume_in_runs)
-
       library = create(:pacbio_library, volume: 100)
       well = build(:pacbio_well, used_aliquots: [build(:aliquot, source: library, volume: 100, aliquot_type: :derived)])
       expect(well).to be_valid
-
-      Flipper.disable(:dpl_1072_check_library_volume_in_pools)
     end
   end
 
