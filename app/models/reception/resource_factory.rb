@@ -93,10 +93,13 @@ class Reception
 
     # Creates a pool from pool_attributes and uses the imported libraries
     def create_pool(pool_attributes)
+      return if pool_attributes.blank?
+
       # Currently only supports Ont
       @pool = Ont::Pool.new(pool_attributes)
       begin
         @pool.libraries = libraries
+        update_labware_status(pool_attributes['barcode'], 'success', nil)
       rescue StandardError => e
         update_labware_status(pool_attributes['barcode'], 'failed', e.message)
       end
