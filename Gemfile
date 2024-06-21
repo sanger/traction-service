@@ -28,6 +28,7 @@ group :test do
   gem 'database_cleaner'
   # without require: false it will load the gem before the rails environment
   gem 'factory_bot_rails', require: false
+  gem 'rubocop-factory_bot', require: false
 end
 
 group :development, :test do
