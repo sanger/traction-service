@@ -14,7 +14,8 @@ class Reception < ApplicationRecord
   # external collaborators
   validates :source, presence: true, format: /\A[a-z0-9\-.]+\z/
 
-  delegate :construct_resources!, :plates_attributes=, :tubes_attributes=, to: :resource_factory
+  delegate :construct_resources!, :plates_attributes=, :tubes_attributes=,
+           :pool_attributes=, to: :resource_factory
   # We flatten the keys here as they map back directly to the correpsonding
   # attributes in Reception. We're merely using the ResourceFactory to
   # encapsulate the behaviour

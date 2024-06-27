@@ -3,10 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Reception::ResourceFactory do
-  subject(:resource_factory) { build(:reception_resource_factory, tubes_attributes:, plates_attributes:) }
+  subject(:resource_factory) { build(:reception_resource_factory, tubes_attributes:, plates_attributes:, pool_attributes:) }
 
   let(:tubes_attributes) { [] }
   let(:plates_attributes) { [] }
+  let(:pool_attributes) { nil }
   let(:library_type) { create(:library_type, :ont) }
   let(:data_type) { create(:data_type, :ont) }
 
@@ -87,6 +88,31 @@ RSpec.describe Reception::ResourceFactory do
           ),
           sample: attributes_for(:sample)
         }]
+      end
+
+      it { is_expected.not_to be_valid }
+    end
+
+    context 'with an invalid pool' do
+      let(:tubes_attributes) do
+        [{
+          type: 'tubes',
+          barcode: 'NT1',
+          request: attributes_for(:ont_request).merge(
+            library_type: library_type.name,
+            data_type: data_type.name
+          ),
+          sample: attributes_for(:sample)
+        }]
+      end
+
+      let(:pool_attributes) do
+        {
+          barcode: 'test-barcode',
+          volume: 1,
+          concentration: -1,
+          insert_size: 1
+        }
       end
 
       it { is_expected.not_to be_valid }

@@ -19,6 +19,11 @@ RSpec.describe Ont::Pool, :ont do
     expect(pool.tube).to be_a(Tube)
   end
 
+  it 'can set the tube barcode if given' do
+    pool = create(:ont_pool, barcode: '123456')
+    expect(pool.tube.barcode).to eq('123456')
+  end
+
   it 'can have many libraries' do
     pool = build(:ont_pool, libraries:)
     expect(pool.libraries).to eq(libraries)
