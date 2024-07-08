@@ -38,9 +38,7 @@ module Pacbio
 
     validates :row, :column, presence: true
 
-    validate :used_aliquots_volume, if: lambda {
-                                          Flipper.enabled?(:dpl_1076_check_library_volume_in_runs)
-                                        }
+    validate :used_aliquots_volume
 
     delegate :run, to: :plate, allow_nil: true
 

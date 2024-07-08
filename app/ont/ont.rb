@@ -6,8 +6,14 @@ module Ont
     'ont_'
   end
 
+  def self.pool_attributes
+    %i[barcode volume concentration kit_barcode insert_size]
+  end
+
   def self.library_attributes
-    raise StandardError, 'Unsupported' # Only Pacbio is supported at the moment
+    %i[
+      volume concentration kit_barcode insert_size tag_id
+    ]
   end
 
   def self.request_attributes
@@ -24,9 +30,18 @@ module Ont
     request_attributes - associated_request_attributes
   end
 
-  # Parameters would be request: and library_attributes: if this was supported.
-  def self.library_factory(*)
-    raise StandardError, 'Unsupported' # Only Pacbio is supported at the moment
+  def self.library_factory(request:, library_attributes:)
+    # Get the tag_set from the kit_barcode
+    ont_tag_set = TagSet.find_by(name: library_attributes[:kit_barcode])
+    # Find the tag_id from the tag_set based on the tag_sequence/oligo
+    library_attributes[:tag_id] =
+      ont_tag_set&.tags&.find_by(oligo: library_attributes[:tag_sequence])&.id
+    filtered_attributes = library_attributes.slice(*self.library_attributes)
+
+    Ont::Library.new(
+      request: request.requestable,
+      **filtered_attributes
+    )
   end
 
   def self.request_factory(sample:, container:, request_attributes:, resource_factory:, reception:)

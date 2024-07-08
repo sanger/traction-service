@@ -12,5 +12,9 @@ class Reception
     def request_factory(_attributes)
       self
     end
+
+    def library_factory(_attributes)
+      self
+    end
   end
 end

@@ -5,7 +5,9 @@ module Ont
   class Pool < ApplicationRecord
     include Uuidable
 
-    belongs_to :tube, default: -> { Tube.new }
+    belongs_to :tube, default: -> { Tube.new(barcode:) }
+
+    attr_accessor :barcode
 
     # We have one-to-one association between pool and flowcell at the moment.
     # XXX: We set dependent option to nullify for the moment.
