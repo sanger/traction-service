@@ -179,4 +179,41 @@ RSpec.describe Aliquot do
       expect(aliquot).not_to be_collection
     end
   end
+
+  describe '#publish_data' do
+    let(:library) { create(:pacbio_library) }
+    let(:pool) { create(:pacbio_pool) }
+    let(:aliquot) { create(:aliquot, source: library, used_by: pool) }
+
+    it 'returns publish_id' do
+      expect(aliquot.publish_id).to eq(aliquot.id.to_s)
+    end
+
+    it 'returns publish_source_type' do
+      expect(aliquot.publish_source_type).to eq('library')
+    end
+
+    it 'returns publish_source_barcode' do
+      expect(aliquot.publish_source_barcode).to eq(library.tube.barcode)
+    end
+
+    it 'returns publish_sample_name' do
+      expect(aliquot.publish_sample_name).to eq(library.request.sample_name)
+    end
+
+    it 'returns publish_used_by_barcode' do
+      expect(aliquot.publish_used_by_barcode).to eq(pool.tube.barcode)
+    end
+
+    it 'returns publish_used_by_type' do
+      expect(aliquot.publish_used_by_type).to eq('pool')
+    end
+
+    it 'returns data without usedBy data' do
+      pacbio_library = create(:pacbio_library)
+      aliquot = build(:aliquot, source: pacbio_library, used_by: nil)
+      expect(aliquot.publish_used_by_barcode).to eq('')
+      expect(aliquot.publish_used_by_type).to eq('none')
+    end
+  end
 end
