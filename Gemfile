@@ -5,6 +5,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '3.3.0'
 
+gem 'avro'
 gem 'bootsnap', '>= 1.1.0', require: false # Reduces boot times through caching
 gem 'bunny'
 gem 'exception_notification'
@@ -42,6 +43,7 @@ group :development, :test do
   gem 'simplecov', require: false
   gem 'simplecov-lcov', require: false
   gem 'sqlite3'
+  gem 'webmock'
 end
 
 gem 'flipper', '~> 0.25.0'
