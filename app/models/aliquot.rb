@@ -59,4 +59,43 @@ class Aliquot < ApplicationRecord
   def collection?
     false
   end
+
+  # Returns the id to publish
+  def publish_id
+    id.to_s
+  end
+
+  # Returns the type of the source to publish
+  def publish_source_type
+    source.respond_to?(:publish_data_source) ? source.publish_data_source[:sourceType].to_s : ''
+  end
+
+  # Returns the barcode of the source to publish
+  def publish_source_barcode
+    source.respond_to?(:publish_data_source) ? source.publish_data_source[:sourceBarcode].to_s : ''
+  end
+
+  # Returns the sample name of the source to publish
+  def publish_sample_name
+    if source.respond_to?(:publish_data_source)
+      source.publish_data_source[:sampleName].to_s
+    else
+      ''
+    end
+  end
+
+  # Returns the barcode of the used_by to publish
+  def publish_used_by_barcode
+    if used_by.respond_to?(:publish_data_used_by)
+      used_by.publish_data_used_by[:usedByBarcode].to_s
+    else
+      ''
+    end
+  end
+
+  # Returns the type of the used_by to publish
+  def publish_used_by_type
+    used_by_type = used_by&.publish_data_used_by&.fetch(:usedByType, 'none')&.to_s
+    used_by_type.presence || 'none'
+  end
 end
