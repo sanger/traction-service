@@ -541,4 +541,11 @@ RSpec.describe Pacbio::Well, :pacbio do
       expect(well.library_type).to eq('Standard')
     end
   end
+
+  it 'returns used_by publish data' do
+    run = create(:pacbio_revio_run, smrt_link_version: version12_revio)
+    well = build(:pacbio_well, plate: run.plates.first)
+    expect(well.publish_data_used_by).to eq({ usedByType: 'well',
+                                              usedByBarcode: "#{well.plate.sequencing_kit_box_barcode}:#{well.plate.plate_number}:#{well.position}" })
+  end
 end

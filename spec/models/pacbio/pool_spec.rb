@@ -312,4 +312,10 @@ RSpec.describe Pacbio::Pool, :pacbio do
       expect(pool.sequencing_runs).to eq([plate1.run, plate2.run])
     end
   end
+
+  it 'returns used_by publish data' do
+    pool = create(:pacbio_pool)
+    expect(pool.publish_data_used_by).to eq({ usedByType: 'pool',
+                                              usedByBarcode: pool.tube.barcode })
+  end
 end
