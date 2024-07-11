@@ -299,7 +299,52 @@ default: &default
       # No changes required from v12_sequel_iie, added for consistency
       v13_sequel_iie: *v12_sequel_iie
 
-
+    volume_tracking:
+      lims: Traction
+      key: 'volume_tracking'
+      fields:
+        limsId: 
+          type: :string
+          value: 'Traction'
+        messageCreateDateUtc:
+          type: :constant
+          value: Time.current
+        messageUuid: 
+          type: :constant
+          value: SecureRandom.uuid.to_s
+        recordedAt:
+          type: :model
+          value: created_at
+        volume:
+          type: :model
+          value: volume
+        concentration:
+          type: :model
+          value: concentration
+        insertSize:
+          type: :model
+          value: insert_size
+        aliquotType:
+          type: :model
+          value: aliquot_type
+        limsUuid:
+          type: :model
+          value: publish_id
+        sourceType:
+          type: :model
+          value: publish_source_type
+        sourceBarcode:
+          type: :model
+          value: publish_source_barcode
+        sampleName:
+            type: :model
+            value: publish_sample_name
+        usedByBarcode:
+          type: :model
+          value: publish_used_by_barcode      
+        usedByType:
+          type: :model
+          value: publish_used_by_type  
 development: *default
 test: *default
 uat: *default
