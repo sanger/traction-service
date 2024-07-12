@@ -6,14 +6,13 @@ require 'ostruct'
 require 'webmock/rspec'
 
 RSpec.describe Emq::Validator do
-  let(:bunny_config) { Emq::PublishingJob.deep_open_struct(Rails.configuration.bunny) }
   let(:pacbio_library) { create(:pacbio_library) }
   let(:pacbio_pool) { create(:pacbio_pool) }
   let(:aliquot) { build(:aliquot, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now) }
   let(:cache_file_path) { "data/avro_schema_cache/#{schema_subject}_v#{schema_version}.avsc" }
   let(:schema_key) { 'volume_tracking' }
-  let(:schema_subject) { bunny_config.amqp.schemas.subjects[schema_key].subject }
-  let(:schema_version) { bunny_config.amqp.schemas.subjects[schema_key].version }
+  let(:schema_subject) { 'create-aliquot-in-mlwh'}
+  let(:schema_version) { 1 }
   let(:registry_url) { 'http://test-redpanda/subjects/' }
   let(:avro_validator) { described_class.new(schema_subject, schema_version, registry_url) }
   let(:message_data) { Message::Message.new(object: aliquot, configuration: Pipelines.pacbio.volume_tracking).content[schema_key] }

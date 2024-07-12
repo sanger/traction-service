@@ -7,10 +7,33 @@ RSpec.describe Emq::Sender do
   let(:mock_bunny) { instance_double(Bunny::Session, start: nil, create_channel: mock_channel, close: nil) }
   let(:mock_channel) { instance_double(Bunny::Channel, headers: mock_exchange) }
   let(:mock_exchange) { instance_double(Bunny::Exchange, publish: nil) }
-  let(:bunny_config) { Emq::PublishingJob.deep_open_struct(Rails.configuration.bunny) }
-  let(:schema_subject) { bunny_config.amqp.schemas.subjects.volume_tracking.subject }
-  let(:schema_version) { bunny_config.amqp.schemas.subjects.volume_tracking.version }
-  let(:emq_config) { bunny_config.amqp.isg }
+  let(:bunny_config) do
+    {
+      amqp: {
+        isg: {
+          host: 'localhost',
+          tls: false,
+          vhost: 'tol',
+          username: 'admin',
+          password: 'development',
+          exchange: 'traction'
+        },
+        schemas: {
+          registry_url: 'http://test-redpanda/subjects/',
+          subjects: {
+            volume_tracking: {
+              subject: 'create-aliquot-in-mlwh',
+              version: 1
+            }
+          }
+        }
+      }
+    }
+  end
+  let(:bunny_config_obj) { Emq::PublishingJob.deep_open_struct(bunny_config) }
+  let(:schema_subject) { bunny_config_obj.amqp.schemas.subjects.volume_tracking.subject }
+  let(:schema_version) { bunny_config_obj.amqp.schemas.subjects.volume_tracking.version }
+  let(:emq_config) { bunny_config_obj.amqp.isg }
   let(:sender) { described_class.new(emq_config, schema_subject, schema_version) }
 
   describe '#send_message' do
