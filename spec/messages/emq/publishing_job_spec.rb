@@ -45,6 +45,7 @@ RSpec.describe Emq::PublishingJob do
       }
     }
   end
+  let(:bunny_config_obj) { described_class.deep_open_struct(bunny_config) }
 
   let(:subject_obj) { 'create-aliquot-in-mlwh' }
   let(:version_obj) { 1 }
@@ -55,7 +56,7 @@ RSpec.describe Emq::PublishingJob do
   end
 
   before do
-    allow(Emq::Sender).to receive(:new).with(bunny_config.amqp.isg, subject_obj, version_obj).and_return(emq_sender_mock)
+    allow(Emq::Sender).to receive(:new).with(bunny_config_obj.amqp.isg, subject_obj, version_obj).and_return(emq_sender_mock)
     allow(emq_sender_mock).to receive(:send_message).with(anything)
     stub_request(:get, "#{registry_url}#{subject_obj}/versions/#{version_obj}")
       .to_return(status: 200, body: volume_tracking_avro_response, headers: {})
