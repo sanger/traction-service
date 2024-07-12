@@ -34,7 +34,7 @@ RSpec.describe Emq::PublishingJob do
           exchange: 'traction'
         },
         schemas: {
-          registry_url: 'https://redpanda.uat.psd.sanger.ac.uk/subjects/',
+          registry_url: 'http://test-redpanda/subjects/',
           subjects: {
             volume_tracking: {
               subject: 'create-aliquot-in-mlwh',
@@ -91,7 +91,7 @@ RSpec.describe Emq::PublishingJob do
     assert_equal 'admin', deep_struct.amqp.isg.username
     assert_equal 'development', deep_struct.amqp.isg.password
     assert_equal 'traction', deep_struct.amqp.isg.exchange
-    assert_equal 'https://redpanda.uat.psd.sanger.ac.uk/subjects/', deep_struct.amqp.schemas.registry_url
+    assert_equal 'http://test-redpanda/subjects/', deep_struct.amqp.schemas.registry_url
     assert_equal 'create-aliquot-in-mlwh', deep_struct.amqp.schemas.subjects.volume_tracking.subject
     assert_equal 1, deep_struct.amqp.schemas.subjects.volume_tracking.version
   end
