@@ -9,14 +9,48 @@ RSpec.describe Emq::PublishingJob do
   let(:pacbio_pool) { create(:pacbio_pool) }
   let(:aliquot) { build(:aliquot, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now) }
 
-  let(:subject_obj) { publishing_job.bunny_config.amqp.schemas.subjects.volume_tracking.subject }
-  let(:version_obj) { publishing_job.bunny_config.amqp.schemas.subjects.volume_tracking.version }
   let(:publishing_job) { described_class.new }
   let(:emq_sender_mock) { instance_double(Emq::Sender) }
 
   let(:registry_url) { 'http://test-redpanda/subjects/' }
+  let(:bunny_config) do
+    {
+      enabled: false,
+      broker_host: 'localhost',
+      broker_port: 5672,
+      broker_username: 'guest',
+      broker_password: 'guest',
+      vhost: '/',
+      exchange: 'bunny.examples.exchange',
+      queue_name: 'psd.traction.to-warehouse',
+      routing_key: nil,
+      amqp: {
+        isg: {
+          host: 'localhost',
+          tls: false,
+          vhost: 'tol',
+          username: 'admin',
+          password: 'development',
+          exchange: 'traction'
+        },
+        schemas: {
+          registry_url: 'https://redpanda.uat.psd.sanger.ac.uk/subjects/',
+          subjects: {
+            volume_tracking: {
+              subject: 'create-aliquot-in-mlwh',
+              version: 1
+            }
+          }
+        }
+      }
+    }
+  end
+
+  let(:subject_obj) { 'create-aliquot-in-mlwh' }
+  let(:version_obj) { 1 }
 
   let(:volume_tracking_avro_response) do
+    allow(Rails.configuration).to receive(:bunny).and_return(bunny_config)
     Rails.root.join('spec/fixtures/volume_tracking_avro_response.json').read
   end
 
@@ -28,7 +62,7 @@ RSpec.describe Emq::PublishingJob do
   end
 
   it 'initialises schema key and configuration' do
-    expect(publishing_job.bunny_config).to eq(described_class.deep_open_struct(Rails.configuration.bunny))
+    expect(publishing_job.bunny_config).to eq(described_class.deep_open_struct(bunny_config))
   end
 
   it 'publishes a single message' do
@@ -49,7 +83,7 @@ RSpec.describe Emq::PublishingJob do
   end
 
   it 'returns open struct object' do
-    deep_struct = described_class.deep_open_struct(Rails.configuration.bunny)
+    deep_struct = described_class.deep_open_struct(bunny_config)
     assert_equal 'localhost', deep_struct.amqp.isg.host
     assert_equal false, deep_struct.amqp.isg.tls
     assert_equal 'tol', deep_struct.amqp.isg.vhost
