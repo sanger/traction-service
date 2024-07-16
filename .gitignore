@@ -52,4 +52,3 @@ doc/
 
 # Custom editor ignores
 .vscode/settings.json
-data/avro_schema_cache/create-aliquot-in-mlwh_v1.avsc
