@@ -19,7 +19,7 @@ module Emq
 
     # Send a message to the EMQ
     # @param [String] message the message to send
-    def send_message(message)
+    def send_message(message) # rubocop:disable Metrics/MethodLength
       conn = Bunny.new(connection_params)
       conn.start
 
@@ -28,6 +28,10 @@ module Emq
         exchange = channel.headers(config.exchange, passive: true)
         headers = { subject:, version:, encoder_type: 'binary' }
         exchange.publish(message, headers:, persistent: true)
+      rescue Bunny::TCPConnectionFailed, Bunny::NetworkFailure => e
+        # Log the error with message identifier
+        Rails.logger.error("Failed to send message with ID #{message.messageUuid}: #{e.message}")
+        raise
       ensure
         conn.close
       end
