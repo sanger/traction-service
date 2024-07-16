@@ -21,7 +21,7 @@ RSpec.describe Emq::Encoder do
     Rails.root.join('spec/fixtures/volume_tracking_avro_response.json').read
   end
 
-  describe 'validator' do
+  describe 'encoder' do
     context 'when the schema is not cached' do
       before do
         allow(Rails.logger).to receive(:debug).and_call_original
@@ -67,22 +67,31 @@ RSpec.describe Emq::Encoder do
       end
     end
 
-    it 'encodes message' do
-      expect { encoder.encode_message(message_data) }.not_to raise_error
-      expect(encoder.encode_message(message_data)).to be_truthy
-    end
+    context 'encodes message' do
+      before do
+        stub_request(:get, "#{registry_url}#{schema_subject}/versions/#{schema_version}")
+          .to_return(status: 200, body: volume_tracking_avro_response, headers: {})
+      end
 
-    it 'fails encoding' do
-      library = create(:pacbio_library)
-      aliquot = build(:aliquot, used_by: pacbio_library, source: library, created_at: '')
-      message_data = VolumeTracking::MessageBuilder.new(object: aliquot, configuration: Pipelines.pacbio.volume_tracking.avro_schema_version_1).content[schema_key]
+      it 'encodes message' do
+        expect { encoder.encode_message(message_data) }.not_to raise_error
+        expect(encoder.encode_message(message_data)).to be_truthy
+      end
 
-      # Assuming `validate_message` raises an error on failure
-      expect { encoder.encode_message(message_data) }.to raise_error(Avro::IO::AvroTypeError)
+      it 'fails encoding' do
+        library = create(:pacbio_library)
+        aliquot = build(:aliquot, used_by: pacbio_library, source: library, created_at: '')
+        message_data = VolumeTracking::MessageBuilder.new(object: aliquot, configuration: Pipelines.pacbio.volume_tracking.avro_schema_version_1).content[schema_key]
+
+        # Assuming `validate_message` raises an error on failure
+        expect { encoder.encode_message(message_data) }.to raise_error(Avro::IO::AvroTypeError)
+      end
     end
 
     context 'when the schema response cannot be parsed' do
       before do
+        stub_request(:get, "#{registry_url}#{schema_subject}/versions/#{schema_version}")
+          .to_return(status: 200, body: volume_tracking_avro_response, headers: {})
         # Mock the file existence check to force fetching from the registry
         allow(File).to receive(:exist?).and_return(false)
         # Mock the response from the registry to return invalid JSON
