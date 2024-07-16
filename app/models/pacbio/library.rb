@@ -93,23 +93,6 @@ module Pacbio
       wells&.collect(&:plate)
     end
 
-    # Return the data to be published as the source of an aliquot
-    def publish_data_source
-      {
-        sourceType: 'library',
-        sourceBarcode: tube&.barcode,
-        sampleName: request.sample_name
-      }
-    end
-
-    # Return the data to be published as the used_by of an aliquot
-    def publish_data_used_by
-      {
-        usedByType: 'library',
-        usedByBarcode: tube&.barcode || ''
-      }
-    end
-
     private
 
     # Derived aliquots indicate it has been used in a pool or run

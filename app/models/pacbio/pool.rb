@@ -66,14 +66,6 @@ module Pacbio
       used_aliquots.length > 1
     end
 
-    # Return the data to be published as the used_by of an aliquot
-    def publish_data_used_by
-      {
-        usedByType: 'pool',
-        usedByBarcode: tube.barcode
-      }
-    end
-
     private
 
     # Takes a collection of attributes and updates the item if it exists in the collection

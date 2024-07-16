@@ -140,13 +140,5 @@ module Pacbio
       end
       save!
     end
-
-    # Return the data to be published as the used_by of an aliquot
-    def publish_data_used_by
-      {
-        usedByType: 'well',
-        usedByBarcode: "#{plate.sequencing_kit_box_barcode}:#{plate.plate_number}:#{position}"
-      }
-    end
   end
 end
