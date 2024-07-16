@@ -83,7 +83,7 @@ RSpec.describe Emq::Encoder do
         aliquot = build(:aliquot, used_by: pacbio_library, source: library, created_at: '')
         message_data = VolumeTracking::MessageBuilder.new(object: aliquot, configuration: Pipelines.pacbio.volume_tracking.avro_schema_version_1).content[schema_key]
 
-        # Assuming `validate_message` raises an error on failure
+        # Assuming `encode_message` raises an error on failure
         expect { encoder.encode_message(message_data) }.to raise_error(Avro::IO::AvroTypeError)
       end
     end
