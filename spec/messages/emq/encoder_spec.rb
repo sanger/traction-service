@@ -67,20 +67,6 @@ RSpec.describe Emq::Encoder do
       end
     end
 
-    context 'when the schema response cannot be parsed' do
-      before do
-        # Mock the file existence check to force fetching from the registry
-        allow(File).to receive(:exist?).and_return(false)
-        # Mock the response from the registry to return invalid JSON
-        allow(encoder).to receive(:fetch_response).and_return(double('Response', body: 'invalid json')) # rubocop:disable RSpec/VerifiedDoubles
-      end
-
-      it 'logs an error and raises Standard Error' do
-        expect(Rails.logger).to receive(:error).with("Error validating volume tracking message: <unexpected token at 'invalid json'>")
-        expect { encoder.encode_message(message_data) }.to raise_error(StandardError)
-      end
-    end
-
     it 'encodes message' do
       expect { encoder.encode_message(message_data) }.not_to raise_error
       expect(encoder.encode_message(message_data)).to be_truthy
@@ -93,6 +79,20 @@ RSpec.describe Emq::Encoder do
 
       # Assuming `validate_message` raises an error on failure
       expect { encoder.encode_message(message_data) }.to raise_error(Avro::IO::AvroTypeError)
+    end
+
+    context 'when the schema response cannot be parsed' do
+      before do
+        # Mock the file existence check to force fetching from the registry
+        allow(File).to receive(:exist?).and_return(false)
+        # Mock the response from the registry to return invalid JSON
+        allow(encoder).to receive(:fetch_response).and_return(double('Response', body: 'invalid json')) # rubocop:disable RSpec/VerifiedDoubles
+      end
+
+      it 'logs an error and raises Standard Error' do
+        expect(Rails.logger).to receive(:error).with("Error validating volume tracking message: <unexpected token at 'invalid json'>")
+        expect { encoder.encode_message(message_data) }.to raise_error(StandardError)
+      end
     end
   end
 end
