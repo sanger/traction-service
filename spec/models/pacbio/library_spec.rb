@@ -310,15 +310,4 @@ RSpec.describe Pacbio::Library, :pacbio do
       library.save
     end
   end
-
-  it 'returns source publish data' do
-    library = create(:pacbio_library)
-    expect(library.publish_data_source).to eq({ sourceType: 'library', sourceBarcode: library.tube.barcode, sampleName: library.request.sample_name })
-  end
-
-  it 'returns used_by publish data' do
-    library = create(:pacbio_library)
-    expect(library.publish_data_used_by).to eq({ usedByType: 'library',
-                                                 usedByBarcode: library.tube.barcode })
-  end
 end

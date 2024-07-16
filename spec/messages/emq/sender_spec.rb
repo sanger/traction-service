@@ -41,6 +41,7 @@ RSpec.describe Emq::Sender do
 
     before do
       allow(Bunny).to receive(:new).and_return(mock_bunny)
+      allow(Rails.logger).to receive(:error).and_call_original
     end
 
     it 'creates a valid connection to the AMQP broker' do

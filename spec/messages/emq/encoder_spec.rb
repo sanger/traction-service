@@ -5,7 +5,7 @@ require 'ostruct'
 
 require 'webmock/rspec'
 
-RSpec.describe Emq::Validator do
+RSpec.describe Emq::Encoder do
   let(:pacbio_library) { create(:pacbio_library) }
   let(:pacbio_pool) { create(:pacbio_pool) }
   let(:aliquot) { build(:aliquot, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now) }
@@ -14,8 +14,8 @@ RSpec.describe Emq::Validator do
   let(:schema_subject) { 'create-aliquot-in-mlwh' }
   let(:schema_version) { 1 }
   let(:registry_url) { 'http://test-redpanda/subjects/' }
-  let(:avro_validator) { described_class.new(schema_subject, schema_version, registry_url) }
-  let(:message_data) { Message::Message.new(object: aliquot, configuration: Pipelines.pacbio.volume_tracking).content[schema_key] }
+  let(:encoder) { described_class.new(schema_subject, schema_version, registry_url) }
+  let(:message_data) { VolumeTracking::MessageBuilder.new(object: aliquot, configuration: Pipelines.pacbio.volume_tracking.avro_schema_version_1).content[schema_key] }
 
   let(:volume_tracking_avro_response) do
     Rails.root.join('spec/fixtures/volume_tracking_avro_response.json').read
@@ -24,7 +24,7 @@ RSpec.describe Emq::Validator do
   describe 'validator' do
     context 'when the schema is not cached' do
       before do
-        allow(Rails.logger).to receive(:debug).and_call_original # Ensure other debug calls work as expected
+        allow(Rails.logger).to receive(:debug).and_call_original
         stub_request(:get, "#{registry_url}#{schema_subject}/versions/#{schema_version}")
           .to_return(status: 200, body: volume_tracking_avro_response, headers: {})
       end
@@ -34,7 +34,7 @@ RSpec.describe Emq::Validator do
         expect(Rails.logger).to receive(:debug) do |&block|
           expect(block.call).to eq("Fetching and caching schema for #{schema_subject} v#{schema_version}")
         end
-        avro_validator.validate_message(message_data)
+        encoder.encode_message(message_data)
       end
 
       it 'creates a cache file' do
@@ -63,22 +63,36 @@ RSpec.describe Emq::Validator do
         expect(Rails.logger).to receive(:debug) do |&block|
           expect(block.call).to eq("Using cached schema for #{schema_subject} v#{schema_version}")
         end
-        avro_validator.validate_message(message_data)
+        encoder.encode_message(message_data)
       end
     end
 
-    it 'passes validation' do
-      expect { avro_validator.validate_message(message_data) }.not_to raise_error
-      expect(avro_validator.validate_message(message_data)).to be_truthy
+    context 'when the schema response cannot be parsed' do
+      before do
+        # Mock the file existence check to force fetching from the registry
+        allow(File).to receive(:exist?).and_return(false)
+        # Mock the response from the registry to return invalid JSON
+        allow(encoder).to receive(:fetch_response).and_return(double('Response', body: 'invalid json')) # rubocop:disable RSpec/VerifiedDoubles
+      end
+
+      it 'logs an error and raises Standard Error' do
+        expect(Rails.logger).to receive(:error).with("Error validating volume tracking message: <unexpected token at 'invalid json'>")
+        expect { encoder.encode_message(message_data) }.to raise_error(StandardError)
+      end
     end
 
-    it 'fails validation' do
+    it 'encodes message' do
+      expect { encoder.encode_message(message_data) }.not_to raise_error
+      expect(encoder.encode_message(message_data)).to be_truthy
+    end
+
+    it 'fails encoding' do
       library = create(:pacbio_library)
       aliquot = build(:aliquot, used_by: pacbio_library, source: library, created_at: '')
-      message_data = Message::Message.new(object: aliquot, configuration: Pipelines.pacbio.volume_tracking).content[schema_key]
+      message_data = VolumeTracking::MessageBuilder.new(object: aliquot, configuration: Pipelines.pacbio.volume_tracking.avro_schema_version_1).content[schema_key]
 
       # Assuming `validate_message` raises an error on failure
-      expect { avro_validator.validate_message(message_data) }.to raise_error(NoMethodError)
+      expect { encoder.encode_message(message_data) }.to raise_error(Avro::IO::AvroTypeError)
     end
   end
 end

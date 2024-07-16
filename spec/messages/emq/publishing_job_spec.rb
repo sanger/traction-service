@@ -68,19 +68,27 @@ RSpec.describe Emq::PublishingJob do
 
   it 'publishes a single message' do
     expect(emq_sender_mock).to receive(:send_message).once
-    publishing_job.publish(aliquot, Pipelines.pacbio.volume_tracking, 'volume_tracking')
+    publishing_job.publish(aliquot, Pipelines.pacbio, 'volume_tracking')
   end
 
   it 'can publish multiple messages' do
     expect(emq_sender_mock).to receive(:send_message).twice
     aliquot2 = build(:aliquot, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now)
-    publishing_job.publish([aliquot, aliquot2], Pipelines.pacbio.volume_tracking, 'volume_tracking')
+    publishing_job.publish([aliquot, aliquot2], Pipelines.pacbio, 'volume_tracking')
   end
 
   it 'does not publish messages when schema key is missing in config' do
     expect(emq_sender_mock).not_to receive(:send_message)
     aliquot2 = build(:aliquot, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now)
-    publishing_job.publish([aliquot, aliquot2], Pipelines.pacbio.volume_tracking, 'test')
+    publishing_job.publish([aliquot, aliquot2], Pipelines.pacbio, 'test')
+  end
+
+  it 'logs an error when the message building config misses the given avro schema version' do
+    bunny_config[:amqp][:schemas][:subjects][:volume_tracking][:version] = 2
+    expect(emq_sender_mock).not_to receive(:send_message)
+    expect(Rails.logger).to receive(:error).with('Message builder configuration not found for schema key: volume_tracking and version: 2')
+
+    publishing_job.publish(aliquot, Pipelines.pacbio, 'volume_tracking')
   end
 
   it 'returns open struct object' do
