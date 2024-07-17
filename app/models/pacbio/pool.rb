@@ -24,6 +24,8 @@ module Pacbio
     validates :used_aliquots, presence: true
     validates :primary_aliquot, presence: true
     validate :used_aliquots_volume
+    before_update :primary_aliquot_volume_sufficient
+
 
     accepts_nested_attributes_for :primary_aliquot
 
