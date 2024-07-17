@@ -22,7 +22,7 @@ module V1
              :insert_size, :created_at, :updated_at,
              :library_attributes, :used_aliquots_attributes, :primary_aliquot_attributes,
 
-             :used_volume, :available_volume if Flipper.enabled?(:y24_153__enable_volume_check_adding_pacbio_pool_to_run)
+             :used_volume, :available_volume
   
       attribute :source_identifier, readonly: true
 
