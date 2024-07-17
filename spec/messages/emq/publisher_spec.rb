@@ -12,7 +12,7 @@ RSpec.describe Emq::Publisher do
 
     before do
       allow(Emq::PublishingJob).to receive(:new).and_return(publish_job_mock)
-      allow(publish_job_mock).to receive(:publish).with(aliquots, configuration, schema_key:)
+      allow(publish_job_mock).to receive(:publish).with(aliquots, configuration, schema_key)
     end
 
     context 'when bunny is disabled' do
@@ -23,7 +23,7 @@ RSpec.describe Emq::Publisher do
       it 'is present' do
         described_class.publish(aliquots, configuration, schema_key)
         expect(described_class.instance_variable_get(:@publish_job)).to be_nil
-        expect(publish_job_mock).not_to have_received(:publish).with(aliquots, configuration, schema_key:) # rubocop:disable RSpec/MessageSpies
+        expect(publish_job_mock).not_to have_received(:publish).with(aliquots, configuration, schema_key) # rubocop:disable RSpec/MessageSpies
       end
     end
 
@@ -35,7 +35,7 @@ RSpec.describe Emq::Publisher do
       it 'is present' do
         described_class.publish(aliquots, configuration, schema_key)
         expect(described_class.instance_variable_get(:@publish_job)).not_to be_nil
-        expect(publish_job_mock).to have_received(:publish).with(aliquots, configuration, schema_key:) # rubocop:disable RSpec/MessageSpies
+        expect(publish_job_mock).to have_received(:publish).with(aliquots, configuration, schema_key) # rubocop:disable RSpec/MessageSpies
       end
     end
   end

@@ -14,6 +14,6 @@ module Emq::Publisher
   def self.publish(aliquots, configuration, schema_key)
     return if publish_job.nil?
 
-    publish_job.publish(aliquots, configuration, schema_key:)
+    publish_job.publish(aliquots, configuration, schema_key)
   end
 end
