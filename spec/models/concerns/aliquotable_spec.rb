@@ -111,7 +111,7 @@ RSpec.describe Aliquotable do
       end
     end
 
-    context 'when primary aliquot volume is less than used volume' do
+    context 'when primary aliquot volume for libraries is less than used volume' do
       it 'adds an error' do
         library = create(:pacbio_library, volume: 100, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
         create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 2)
@@ -121,7 +121,7 @@ RSpec.describe Aliquotable do
       end
     end
 
-    context 'when primary aliquot volume is less than used volume' do
+    context 'when primary aliquot volume for pools is less than used volume' do
       it 'adds an error' do
         pool = create(:pacbio_pool, volume: 100, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
         create_list(:aliquot, 5, aliquot_type: :derived, source: pool, volume: 2)
@@ -130,6 +130,7 @@ RSpec.describe Aliquotable do
         expect(pool.errors[:volume]).to include('Volume must be greater than the current used volume')
       end
     end
+
     context 'when primary_aliquot volume has not changed' do
       it 'returns without checking volume' do
         library = create(:pacbio_library, volume: 100, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
