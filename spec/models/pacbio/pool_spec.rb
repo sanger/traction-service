@@ -312,4 +312,13 @@ RSpec.describe Pacbio::Pool, :pacbio do
       expect(pool.sequencing_runs).to eq([plate1.run, plate2.run])
     end
   end
+
+  context 'before_update' do
+    it 'calls primary_aliquot_volume_sufficient method' do
+      pool = create(:pacbio_pool)
+      expect(pool).to receive(:primary_aliquot_volume_sufficient)
+      pool.primary_aliquot.update(volume: 100)
+      pool.save
+    end
+  end
 end
