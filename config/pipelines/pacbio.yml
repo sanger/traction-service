@@ -298,8 +298,59 @@ default: &default
 
       # No changes required from v12_sequel_iie, added for consistency
       v13_sequel_iie: *v12_sequel_iie
-
-
+      
+    # For any EMQ message creation, the section and key name must be same as schema subject in bunny.yml
+    volume_tracking:
+    # The number suffix '1' is used to identify the schema version of message (created by the
+    # message builder class defined in the message_class key) 
+    # The schema version number should be present in bunny.yml for the same 'key'
+      avro_schema_version_1 : 
+        lims: Traction
+        key: 'volume_tracking'
+        message_class: VolumeTracking::MessageBuilder
+        fields:
+          limsId:
+            type: :string
+            value: 'Traction'
+          messageCreateDateUtc:
+            type: :constant
+            value: Time.current
+          messageUuid:
+            type: :constant
+            value: SecureRandom.uuid.to_s
+          recordedAt:
+            type: :model
+            value: created_at
+          volume:
+            type: :model
+            value: volume
+          concentration:
+            type: :model
+            value: concentration
+          insertSize:
+            type: :model
+            value: insert_size
+          aliquotType:
+            type: :model
+            value: aliquot_type
+          limsUuid:
+            type: :self
+            value: publish_data&.lims_uuid
+          sourceType:
+            type: :self
+            value: publish_data&.source_type
+          sourceBarcode:
+            type: :self
+            value: publish_data&.source_barcode
+          sampleName:
+              type: :self
+              value: publish_data&.sample_name
+          usedByBarcode:
+            type: :self
+            value: publish_data&.used_by_barcode
+          usedByType:
+            type: :self
+            value: publish_data&.used_by_type
 development: *default
 test: *default
 uat: *default

@@ -8,6 +8,20 @@ default: &default
   exchange: bunny.examples.exchange
   queue_name: psd.traction.to-warehouse
   routing_key: #
+  amqp:
+    isg:
+      host: 'localhost'
+      tls: false
+      vhost: 'tol'
+      username: 'admin'
+      password: 'development'
+      exchange: 'traction'
+    schemas:
+      registry_url: 'https://redpanda.uat.psd.sanger.ac.uk/subjects/'
+      subjects:
+        volume_tracking:
+          subject: 'create-aliquot-in-mlwh'
+          version: 3
 
 development:
   <<: *default
