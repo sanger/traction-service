@@ -20,8 +20,7 @@ module V1
 
       attributes :volume, :concentration, :template_prep_kit_box_barcode,
                  :insert_size, :created_at, :updated_at,
-                 :library_attributes, :used_aliquots_attributes, :primary_aliquot_attributes,
-                 :used_volume, :available_volume
+                 :library_attributes, :used_aliquots_attributes, :primary_aliquot_attributes
 
       attribute :source_identifier, readonly: true
 
