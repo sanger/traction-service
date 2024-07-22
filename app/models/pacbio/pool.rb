@@ -24,7 +24,6 @@ module Pacbio
     validates :used_aliquots, presence: true
     validates :primary_aliquot, presence: true
     validate :used_aliquots_volume
-    before_update :primary_aliquot_volume_sufficient
 
     if Flipper.enabled?(:y24_153__enable_volume_check_pacbio_pool_on_update)
       before_update :primary_aliquot_volume_sufficient
