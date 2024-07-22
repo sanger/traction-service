@@ -55,7 +55,7 @@ RSpec.describe Emq::Sender do
       )
     end
 
-    it('updates the connection with TLS parameters if the configuration specifies it') do
+    it('updates the connection with TLS parameters if the configuration has empty ca_certificate') do
       emq_config_hash = emq_config.to_h.merge(tls: true)
       emq_config_tls = OpenStruct.new(emq_config_hash) # rubocop:disable Style/OpenStructUse
       updated_sender = described_class.new(emq_config_tls, schema_subject, schema_version)
@@ -66,7 +66,23 @@ RSpec.describe Emq::Sender do
         password: emq_config.password,
         vhost: emq_config.vhost,
         tls: true,
-        tls_ca_certificates: [emq_config.ca_certificate!]
+        verify_peer: false
+      )
+    end
+
+    it('updates the connection with TLS parameters if the configuration has a ca_certificate') do
+      emq_config_hash = emq_config.to_h.merge(tls: true,
+                                              ca_certificate: 'ca_certificate')
+      emq_config_tls = OpenStruct.new(emq_config_hash) # rubocop:disable Style/OpenStructUse
+      updated_sender = described_class.new(emq_config_tls, schema_subject, schema_version)
+      updated_sender.send_message(encoded_message)
+      expect(Bunny).to have_received(:new).with( # rubocop:disable RSpec/MessageSpies
+        host: emq_config.host,
+        username: emq_config.username,
+        password: emq_config.password,
+        vhost: emq_config.vhost,
+        tls: true,
+        tls_ca_certificates: ['ca_certificate']
       )
     end
 

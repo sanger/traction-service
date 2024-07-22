@@ -59,13 +59,13 @@ module Emq
     def add_tls_params(connection_params)
       connection_params[:tls] = true
 
-      begin
-        connection_params[:tls_ca_certificates] = [config.ca_certificate!]
-      rescue Configatron::UndefinedKeyError
-        # Should not be the case in production!
+      # Assuming `config` is accessible and responds to `ca_certificate`
+      if config.respond_to?(:ca_certificate) && !config.ca_certificate.nil?
+        connection_params[:tls_ca_certificates] = [config.ca_certificate]
+      else
+        # Disable peer verification if the CA certificate is not set
         connection_params[:verify_peer] = false
       end
-
       connection_params
     end
   end
