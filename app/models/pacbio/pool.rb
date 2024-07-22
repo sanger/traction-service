@@ -25,9 +25,7 @@ module Pacbio
     validates :primary_aliquot, presence: true
     validate :used_aliquots_volume
 
-    if Flipper.enabled?(:y24_153__enable_volume_check_pacbio_pool_on_update)
-      before_update :primary_aliquot_volume_sufficient
-    end
+    before_update :primary_aliquot_volume_sufficient, if:  Flipper.enabled?(:y24_153__enable_volume_check_pacbio_pool_on_update)
 
     accepts_nested_attributes_for :primary_aliquot
 
