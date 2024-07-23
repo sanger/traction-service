@@ -21,7 +21,7 @@ RSpec.describe VolumeTracking::MessageBuilder, type: :model do
                                                      sample_name: pacbio_library.sample_name,
                                                      used_by_type: 'nil',
                                                      used_by_barcode: '',
-                                                     lims_uuid: aliquot.id.to_s || ''
+                                                     aliquot_id: aliquot.id.to_s || ''
                                                    })
       end
     end
@@ -37,7 +37,7 @@ RSpec.describe VolumeTracking::MessageBuilder, type: :model do
                                                      sample_name: pacbio_library.sample_name,
                                                      used_by_type: 'pool',
                                                      used_by_barcode: pacbio_pool.tube.barcode,
-                                                     lims_uuid: aliquot.id.to_s || ''
+                                                     aliquot_id: aliquot.id.to_s || ''
                                                    })
       end
     end
@@ -53,7 +53,7 @@ RSpec.describe VolumeTracking::MessageBuilder, type: :model do
                                                      sample_name: pacbio_library.sample_name,
                                                      used_by_type: 'well',
                                                      used_by_barcode: "#{pacbio_well.plate.sequencing_kit_box_barcode}:#{pacbio_well.plate.plate_number}:#{pacbio_well.position}",
-                                                     lims_uuid: aliquot.id.to_s || ''
+                                                     aliquot_id: aliquot.id.to_s || ''
                                                    })
       end
     end
