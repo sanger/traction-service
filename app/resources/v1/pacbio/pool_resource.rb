@@ -19,8 +19,8 @@ module V1
       has_many :libraries
 
       attributes :volume, :concentration, :template_prep_kit_box_barcode,
-             :insert_size, :created_at, :updated_at,
-             :library_attributes, :used_aliquots_attributes, :primary_aliquot_attributes
+                 :insert_size, :created_at, :updated_at,
+                 :library_attributes, :used_aliquots_attributes, :primary_aliquot_attributes
 
       if Flipper.enabled?(:y24_153__enable_volume_check_when_adding_pacbio_pool_to_run)
         attribute :used_volume

@@ -161,7 +161,7 @@ RSpec.describe Pacbio::Well, :pacbio do
 
     it 'is not valid when using an invalid amount of volume from a pool' do
       pools = create_list(:pacbio_pool, 3, volume: 1)
-      
+
       # Pool with 3 pools: 2 invalid ones and one valid
       well = build(:pacbio_well, used_aliquots: [
         create(:aliquot, source: pools[0], volume: 11, aliquot_type: :derived),
