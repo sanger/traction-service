@@ -333,9 +333,9 @@ default: &default
           aliquotType:
             type: :model
             value: aliquot_type
-          aliquotId:
+          aliquotUuid:
             type: :self
-            value: publish_data&.aliquot_id
+            value: publish_data&.aliquot_uuid
           sourceType:
             type: :self
             value: publish_data&.source_type
