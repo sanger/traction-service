@@ -44,5 +44,32 @@ RSpec.describe 'RakeTasks' do
         expect(aliquot.concentration).to eq 10
       end
     end
+
+    it 'assigns a random UUID to all aliquots that currently lack one.' do
+      aliquots_with_empty_uuid = create_list(:aliquot, 5, used_by: create(:pacbio_pool), uuid: nil)
+      aliquots_with_uuid = create_list(:aliquot, 5, used_by: create(:pacbio_pool))
+
+      # Get uuids to check they are not affected
+      uuids = aliquots_with_uuid.map(&:uuid)
+
+      # We shouldnt change the amount of aliquots
+      expect { Rake::Task['volume_tracking:update_aliquots_with_uuid'].invoke }.to not_change(Aliquot, :count).and output(
+        <<~HEREDOC
+          -> Updating aliquots with UUID
+        HEREDOC
+      ).to_stdout
+
+      # Aliquots without uuids should have a uuid set
+      aliquots_with_empty_uuid.each do |aliquot|
+        aliquot.reload
+        expect(aliquot.uuid).not_to be_nil
+      end
+
+      # Other aliquots should not be affected
+      aliquots_with_uuid.each do |aliquot|
+        aliquot.reload
+        expect(uuids).to include aliquot.uuid
+      end
+    end
   end
 end
