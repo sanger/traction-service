@@ -333,9 +333,9 @@ default: &default
           aliquotType:
             type: :model
             value: aliquot_type
-          limsUuid:
+          aliquotId:
             type: :self
-            value: publish_data&.lims_uuid
+            value: publish_data&.aliquot_id
           sourceType:
             type: :self
             value: publish_data&.source_type

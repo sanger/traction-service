@@ -11,7 +11,7 @@ module VolumeTracking
     #    "messageUuid"=>"0a62ee15-bbf6-46f0-ba95-01d42622d076",
     #    "recordedAt"=>Mon, 15 Jul 2024 15:16:54.867713000 UTC +00:00,
     #    "volume"=>1.5, "concentration"=>10.0, "insertSize"=>100, "aliquotType"=>"primary",
-    #    "limsUuid"=>"", "sourceType"=>"library", "sourceBarcode"=>"TRAC-2-35805",
+    #    "aliquotId"=>"", "sourceType"=>"library", "sourceBarcode"=>"TRAC-2-35805",
     #    "sampleName"=>"Sample1", "usedByBarcode"=>"TRAC-2-35806", "usedByType"=>"pool"}}
 
     def publish_data # rubocop:disable Metrics/MethodLength
@@ -20,7 +20,7 @@ module VolumeTracking
 
       aliquot = object
       data = { source_type: '', source_barcode: '', sample_name: '',
-               used_by_type: 'nil', used_by_barcode: '', lims_uuid: aliquot.id.to_s || '' }
+               used_by_type: 'nil', used_by_barcode: '', aliquot_id: aliquot.id.to_s || '' }
 
       case aliquot.source_type
       when 'Pacbio::Library'
