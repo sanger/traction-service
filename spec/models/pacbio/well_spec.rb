@@ -13,6 +13,7 @@ RSpec.describe Pacbio::Well, :pacbio do
 
   before do
     Flipper.enable(:y24_153__enable_volume_check_pacbio_pool_on_update)
+    Flipper.enable(:y24_153__enable_volume_check_when_adding_pacbio_pool_to_run)
   end
 
   context 'uuidable' do
@@ -158,18 +159,15 @@ RSpec.describe Pacbio::Well, :pacbio do
       expect(well).to be_valid
     end
 
-
     it 'is not valid when using an invalid amount of volume from a pool' do
-      pools = create_list(:pacbio_pool, 3, volume: 10)
-
+      pools = create_list(:pacbio_pool, 3, volume: 1)
+      
       # Pool with 3 pools: 2 invalid ones and one valid
       well = build(:pacbio_well, used_aliquots: [
         create(:aliquot, source: pools[0], volume: 11, aliquot_type: :derived),
         create(:aliquot, source: pools[1], volume: 11, aliquot_type: :derived),
         create(:aliquot, source: pools[2], volume: 9, aliquot_type: :derived)
       ])
-
-      well.save
 
       expect(well).not_to be_valid
       expect(well.errors[:base][0]).to eq("Insufficient volume available for #{pools[0].tube.barcode},#{pools[1].tube.barcode}")
