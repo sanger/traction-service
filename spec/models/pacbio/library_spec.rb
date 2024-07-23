@@ -310,4 +310,17 @@ RSpec.describe Pacbio::Library, :pacbio do
       library.save
     end
   end
+
+  context 'after_update' do
+    it 'updates used_aliquots' do
+      library = create(:pacbio_library)
+      tag = create(:tag)
+      library.update(primary_aliquot_attributes: { tag_id: tag.id, volume: 1000, concentration: 1000, insert_size: 1000, template_prep_kit_box_barcode: 'LK456' })
+      expect(library.used_aliquots.first.tag).to eq(tag)
+      expect(library.used_aliquots.first.volume).to eq(1000)
+      expect(library.used_aliquots.first.concentration).to eq(1000)
+      expect(library.used_aliquots.first.insert_size).to eq(1000)
+      expect(library.used_aliquots.first.template_prep_kit_box_barcode).to eq('LK456')
+    end
+  end
 end

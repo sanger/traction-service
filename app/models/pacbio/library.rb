@@ -49,6 +49,8 @@ module Pacbio
     # if the new volume is greater than the used volume.
     before_update :primary_aliquot_volume_sufficient
 
+    after_update :update_used_aliquots
+
     before_destroy :check_for_derived_aliquots, prepend: true
 
     def create_used_aliquot
@@ -63,6 +65,19 @@ module Pacbio
         insert_size:,
         tag:
       )
+    end
+
+    # Updates the used aliquots data when the primary aliquot is updated
+    def update_used_aliquots
+      used_aliquots.each do |aliquot|
+        aliquot.update(
+          volume: primary_aliquot.volume,
+          concentration: primary_aliquot.concentration,
+          template_prep_kit_box_barcode: primary_aliquot.template_prep_kit_box_barcode,
+          insert_size: primary_aliquot.insert_size,
+          tag: primary_aliquot.tag
+        )
+      end
     end
 
     # Always false for libraries, but always true for wells - a gross simplification

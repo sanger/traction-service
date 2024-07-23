@@ -457,11 +457,6 @@ RSpec.describe 'LibrariesController', :pacbio do
         library.reload
         expect(library.primary_aliquot.template_prep_kit_box_barcode).to eq('100')
       end
-
-      it 'does not update the used_aliquots' do
-        library.reload
-        expect(library.used_aliquots.first.template_prep_kit_box_barcode).not_to eq('100')
-      end
     end
 
     context 'on failure - when there is invalid library data' do
