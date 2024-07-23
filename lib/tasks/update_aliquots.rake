@@ -12,7 +12,7 @@ namespace :update_aliquots do
     ActiveRecord::Base.transaction do
       # If an aliquot does not have a UUID set it
       Aliquot.where(uuid: nil).find_each do |aliquot|
-        aliquot.update!(uuid: SecureRandom.uuid.to_s)
+        aliquot.update!(uuid: SecureRandom.uuid)
       end
     end
   end
