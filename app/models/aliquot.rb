@@ -6,6 +6,7 @@
 # An aliquot can be used to track volumes and concentrations of samples
 class Aliquot < ApplicationRecord
   include SampleSheet::Aliquot
+  include Uuidable
 
   enum state: { created: 0, used: 1 }
   enum aliquot_type: { primary: 0, derived: 1 }

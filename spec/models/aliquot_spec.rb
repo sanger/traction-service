@@ -3,6 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe Aliquot do
+  context 'uuidable aliquot' do
+    let(:uuidable_model) { :aliquot }
+
+    it_behaves_like 'uuidable'
+  end
+
   it 'is invalid without volume' do
     expect(build(:aliquot, volume: nil)).not_to be_valid
   end
