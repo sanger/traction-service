@@ -22,8 +22,7 @@ module VolumeTracking
       data = { source_type: '', source_barcode: '', sample_name: '',
                used_by_type: 'nil', used_by_barcode: '',
                aliquot_uuid: SecureRandom.uuid,
-               message_uuid: SecureRandom.uuid
-      }
+               message_uuid: SecureRandom.uuid }
 
       case aliquot.source_type
       when 'Pacbio::Library'
