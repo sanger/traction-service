@@ -8,7 +8,7 @@ require 'webmock/rspec'
 RSpec.describe Emq::Encoder do
   let(:pacbio_library) { create(:pacbio_library) }
   let(:pacbio_pool) { create(:pacbio_pool) }
-  let(:aliquot) { build(:aliquot, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now) }
+  let(:aliquot) { build(:aliquot, uuid: SecureRandom.uuid, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now) }
   let(:cache_file_path) { "data/avro_schema_cache/#{schema_subject}_v#{schema_version}.avsc" }
   let(:schema_key) { 'volume_tracking' }
   let(:schema_subject) { 'create-aliquot-in-mlwh' }

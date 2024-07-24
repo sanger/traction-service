@@ -7,7 +7,7 @@ require 'webmock/rspec'
 RSpec.describe Emq::PublishingJob do
   let(:pacbio_library) { create(:pacbio_library) }
   let(:pacbio_pool) { create(:pacbio_pool) }
-  let(:aliquot) { build(:aliquot, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now) }
+  let(:aliquot) { build(:aliquot, uuid: SecureRandom.uuid, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now) }
 
   let(:publishing_job) { described_class.new }
   let(:emq_sender_mock) { instance_double(Emq::Sender) }
