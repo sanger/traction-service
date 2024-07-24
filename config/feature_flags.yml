@@ -3,4 +3,3 @@
 # The key should be lowercase and snake case, and prefixes with the issue number to allow easy identification
 
 y24_153__enable_volume_check_pacbio_pool_on_update: When enabled, used volume will be validated against available volume when updating a pool
-y24_153__enable_volume_check_when_adding_pacbio_pool_to_run: When enabled, "used_volume" and "available_volune" will be exposed to the pool resource to allow for validation

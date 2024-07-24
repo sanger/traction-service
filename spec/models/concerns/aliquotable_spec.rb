@@ -8,7 +8,6 @@ require 'rails_helper'
 RSpec.describe Aliquotable do
   before do
     Flipper.enable(:y24_153__enable_volume_check_pacbio_pool_on_update)
-    Flipper.enable(:y24_153__enable_volume_check_when_adding_pacbio_pool_to_run)
   end
 
   describe '#primary_aliquot' do
