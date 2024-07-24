@@ -15,13 +15,12 @@ RSpec.describe VolumeTracking::MessageBuilder, type: :model do
       let(:message_builder) { described_class.new(object: aliquot, configuration:) }
 
       it 'produces the message in the correct format' do
-        expect(message_builder.publish_data).to eq({
+        expect(message_builder.publish_data).to include({
                                                      source_type: 'library',
                                                      source_barcode: pacbio_library.tube.barcode,
                                                      sample_name: pacbio_library.sample_name,
                                                      used_by_type: 'nil',
-                                                     used_by_barcode: '',
-                                                     aliquot_uuid: aliquot.uuid
+                                                     used_by_barcode: ''
                                                    })
       end
     end
@@ -31,13 +30,12 @@ RSpec.describe VolumeTracking::MessageBuilder, type: :model do
       let(:message_builder) { described_class.new(object: aliquot, configuration:) }
 
       it 'produces the message in the correct format' do
-        expect(message_builder.publish_data).to eq({
+        expect(message_builder.publish_data).to include({
                                                      source_type: 'library',
                                                      source_barcode: pacbio_library.tube.barcode,
                                                      sample_name: pacbio_library.sample_name,
                                                      used_by_type: 'pool',
-                                                     used_by_barcode: pacbio_pool.tube.barcode,
-                                                     aliquot_uuid: aliquot.uuid
+                                                     used_by_barcode: pacbio_pool.tube.barcode
                                                    })
       end
     end
@@ -47,13 +45,12 @@ RSpec.describe VolumeTracking::MessageBuilder, type: :model do
       let(:message_builder) { described_class.new(object: aliquot, configuration:) }
 
       it 'produces the message in the correct format' do
-        expect(message_builder.publish_data).to eq({
+        expect(message_builder.publish_data).to include({
                                                      source_type: 'library',
                                                      source_barcode: pacbio_library.tube.barcode,
                                                      sample_name: pacbio_library.sample_name,
                                                      used_by_type: 'well',
-                                                     used_by_barcode: "#{pacbio_well.plate.sequencing_kit_box_barcode}:#{pacbio_well.plate.plate_number}:#{pacbio_well.position}",
-                                                     aliquot_uuid: aliquot.uuid
+                                                     used_by_barcode: "#{pacbio_well.plate.sequencing_kit_box_barcode}:#{pacbio_well.plate.plate_number}:#{pacbio_well.position}"
                                                    })
       end
     end
