@@ -15,6 +15,7 @@ RSpec.describe 'RakeTasks' do
     it 'updates used aliquots with primary aliquot tag' do
       tag = create(:tag)
       wells = create_list(:pacbio_well, 5, library_count: 1, pool_count: 0)
+      create(:pacbio_well, library_count: 1, pool_count: 0)
 
       expect(Messages).to receive(:publish).exactly(wells.count).times
 
