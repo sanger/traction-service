@@ -316,8 +316,8 @@ default: &default
             type: :constant
             value: Time.current
           messageUuid:
-            type: :constant
-            value: SecureRandom.uuid.to_s
+            type: :self
+            value: publish_data&.message_uuid
           recordedAt:
             type: :model
             value: created_at
