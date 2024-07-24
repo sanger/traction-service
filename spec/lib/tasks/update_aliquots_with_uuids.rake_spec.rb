@@ -12,7 +12,7 @@ RSpec.describe 'RakeTasks' do
     Pacbio::SmrtLinkVersion.find_by(name: 'v13_sequel_iie') || create(:pacbio_smrt_link_version, name: 'v13_sequel_iie', default: true)
   end
 
-  describe 'update_aliquots:update_uuid' do
+  describe 'aliquots:add_missing_uuids' do
     define_negated_matcher :not_change, :change
 
     it 'assigns a random UUID to all aliquots that currently lack one.' do
@@ -23,7 +23,7 @@ RSpec.describe 'RakeTasks' do
       uuids = aliquots_with_uuid.map(&:uuid)
 
       # We shouldnt change the amount of aliquots
-      expect { Rake::Task['update_aliquots:update_uuid'].invoke }.to not_change(Aliquot, :count).and output(
+      expect { Rake::Task['aliquots:add_missing_uuids'].invoke }.to not_change(Aliquot, :count).and output(
         <<~HEREDOC
           -> Updating aliquots with UUID
         HEREDOC
