@@ -7,7 +7,7 @@ FactoryBot.define do
       library_factory { :pacbio_library }
     end
 
-    primary_aliquot { association :aliquot, source: instance, aliquot_type: :primary }
+    primary_aliquot { association :aliquot, source: instance, aliquot_type: :primary, volume: 10 }
     template_prep_kit_box_barcode { 'ABC1' }
     concentration { 10 }
     volume { 10 }
@@ -16,7 +16,7 @@ FactoryBot.define do
     used_aliquots do
       library_count.times.map do
         library = build(library_factory)
-        build(:aliquot, source: library, tag: library.tag, aliquot_type: :derived, used_by: instance)
+        build(:aliquot, source: library, tag: library.tag, aliquot_type: :derived, used_by: instance, volume: 10)
       end
     end
 

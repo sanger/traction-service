@@ -164,7 +164,7 @@ RSpec.describe Pacbio::Well, :pacbio do
         skip 'Volume check on pool update and run creation is not enabled'
       end
 
-      pools = create_list(:pacbio_pool, 3, volume: 1)
+      pools = create_list(:pacbio_pool, 3, volume: 10)
 
       # Pool with 3 pools: 2 invalid ones and one valid
       well = build(:pacbio_well, used_aliquots: [
