@@ -78,7 +78,7 @@ module V1
       end
 
       def volume_tracking_attributes
-        return unless Flipper.enabled?(:y24_153__enable_volume_check_pacbio_pool_on_update)
+        return unless Flipper.enabled?(:y24_153__expose_volume_tracking_attributes_on_pool_resource)
 
         attributes :used_volume, :available_volume
       end

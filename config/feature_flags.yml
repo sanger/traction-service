@@ -3,3 +3,4 @@
 # The key should be lowercase and snake case, and prefixes with the issue number to allow easy identification
 
 y24_153__enable_volume_check_pacbio_pool_on_update: When enabled, used volume will be validated against available volume when updating a pool
+y24_153__expose_volume_tracking_attributes_on_pool_resource: When enabled, two attributes for volume tracking will be exposed on the pool resource for validating volume
