@@ -67,7 +67,7 @@ RSpec.describe Sample do
   end
 
   context 'after create' do
-    context 'retention instructions' do
+    describe 'retention instructions' do
       let(:sample1) { create(:sample, retention_instruction: 'destroy_after_2_years') }
       let(:sample2) { create(:sample, retention_instruction: 'return_to_customer_after_2_years') }
       let(:sample3) { create(:sample, retention_instruction: 'long_term_storage') }
