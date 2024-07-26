@@ -8,5 +8,6 @@ FactoryBot.define do
     public_name { 'PublicName' }
     priority_level { 'Medium' }
     country_of_origin { 'United Kingdom' }
+    retention_instruction { 'return_to_customer_after_2_years' }
   end
 end
