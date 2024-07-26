@@ -114,20 +114,7 @@ module Pacbio
     def adaptive_loading_check
       loading_target_p1_plus_p2.present?
     end
-
-    def used_aliquots_volume
-      # Get all the aliquots that are libraries or pools and have insufficient volume
-      failed_aliquots = used_aliquots.select do |aliquot|
-        (aliquot.source_type == 'Pacbio::Library' || aliquot.source_type == 'Pacbio::Pool') &&
-          !aliquot.source.available_volume_sufficient
-      end
-      return if failed_aliquots.empty?
-
-      # If there are failed aliquots we want to collect the source barcodes add an error to the well
-      failed_barcodes = failed_aliquots.map { |aliquot| aliquot.source.tube.barcode }.join(',')
-      errors.add(:base, "Insufficient volume available for #{failed_barcodes}")
-    end
-
+    
     # This method is used to update the smrt_link_options for a well
     # It takes a hash of options and updates the smrt_link_options store field
     # with the new values
