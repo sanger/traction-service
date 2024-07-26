@@ -114,7 +114,7 @@ module Pacbio
     def adaptive_loading_check
       loading_target_p1_plus_p2.present?
     end
-    
+
     # This method is used to update the smrt_link_options for a well
     # It takes a hash of options and updates the smrt_link_options store field
     # with the new values

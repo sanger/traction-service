@@ -83,6 +83,11 @@ module Aliquotable
       throw(:abort)
     end
 
+    # Method: used_aliquots_volume
+    #
+    # This method is used to validate the volume of used aliquots in a well.
+    # It is typically used as a validation method before updating a pool record.
+    # Returns false if the volume of any used aliquot is insufficient.
     def used_aliquots_volume
       # Get all the aliquots that are libraries or pools and have insufficient volume
       failed_aliquots = used_aliquots.select do |aliquot|
