@@ -67,12 +67,10 @@ RSpec.describe Sample do
   end
 
   context 'after create' do
-
     let(:sample) { create(:sample, retention_instruction: 'destroy_after_2_years') }
 
     it 'has the correct retention instruction' do
       expect(sample.reload.retention_instruction.to_sym).to eq(:destroy_after_2_years)
     end
-
   end
 end
