@@ -67,10 +67,20 @@ RSpec.describe Sample do
   end
 
   context 'after create' do
-    let(:sample) { create(:sample, retention_instruction: 'destroy_after_2_years') }
+    let(:sample1) { create(:sample, retention_instruction: 'destroy_after_2_years') }
+    let(:sample2) { create(:sample, retention_instruction: 'return_to_customer_after_2_years') }
+    let(:sample3) { create(:sample, retention_instruction: 'long_term_storage') }
 
     it 'has the correct retention instruction' do
-      expect(sample.reload.retention_instruction.to_sym).to eq(:destroy_after_2_years)
+      expect(sample1.reload.retention_instruction.to_sym).to eq(:destroy_after_2_years)
+      expect(sample2.reload.retention_instruction.to_sym).to eq(:return_to_customer_after_2_years)
+      expect(sample3.reload.retention_instruction.to_sym).to eq(:long_term_storage)
+    end
+
+    it 'has the correct retention instruction value in the database' do
+      expect(sample1.reload.retention_instruction_before_type_cast).to eq(0)
+      expect(sample2.reload.retention_instruction_before_type_cast).to eq(1)
+      expect(sample3.reload.retention_instruction_before_type_cast).to eq(2)
     end
   end
 end
