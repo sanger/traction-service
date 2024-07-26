@@ -7,7 +7,7 @@ FactoryBot.define do
       library_factory { :pacbio_library }
     end
 
-    primary_aliquot { association :aliquot, source: instance, aliquot_type: :primary, volume: 10 }
+    primary_aliquot { association :aliquot, source: instance, aliquot_type: :primary, volume: }
     template_prep_kit_box_barcode { 'ABC1' }
     concentration { 10 }
     volume { 10 }

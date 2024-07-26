@@ -134,7 +134,8 @@ RSpec.describe Pacbio::Pool, :pacbio do
   context 'when volume is nil' do
     let(:params) { { volume: nil } }
 
-    it { is_expected.to be_valid }
+    # Validation should fail on the primary aliquot which requires a volume
+    it { is_expected.not_to be_valid }
   end
 
   context 'when volume is positive' do
