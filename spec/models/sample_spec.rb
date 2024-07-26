@@ -43,6 +43,12 @@ RSpec.describe Sample do
         expect(build(:sample, species: nil)).not_to be_valid
       end
     end
+
+    describe 'retention_instruction' do
+      it 'has a retention_instruction' do
+        expect(create(:sample, retention_instruction: 'return_to_customer_after_2_years').retention_instruction).to eq('return_to_customer_after_2_years')
+      end
+    end
   end
 
   context 'on update' do
@@ -58,5 +64,15 @@ RSpec.describe Sample do
       create_list(:request, 2, sample:)
       expect(sample.requests.length).to eq 2
     end
+  end
+
+  context 'after create' do
+
+    let(:sample) { create(:sample, retention_instruction: 'destroy_after_2_years') }
+
+    it 'has the correct retention instruction' do
+      expect(sample.reload.retention_instruction.to_sym).to eq(:destroy_after_2_years)
+    end
+
   end
 end
