@@ -159,10 +159,6 @@ RSpec.describe Pacbio::Well, :pacbio do
     end
 
     it 'is not valid when using an invalid amount of volume from a pool' do
-      unless Flipper.enabled?(:y24_153__enable_volume_check_pacbio_pool_on_update)
-        skip 'Volume check on pool update and run creation is not enabled'
-      end
-
       pools = create_list(:pacbio_pool, 3, volume: 10)
 
       # Pool with 3 pools: 2 invalid ones and one valid

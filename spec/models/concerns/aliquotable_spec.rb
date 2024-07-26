@@ -127,8 +127,6 @@ RSpec.describe Aliquotable do
 
     context 'when primary aliquot volume for pools is less than used volume' do
       it 'adds an error' do
-        skip unless Flipper.enabled?(:y24_153__enable_volume_check_pacbio_pool_on_update)
-
         pool = create(:pacbio_pool, volume: 100, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
         create_list(:aliquot, 5, aliquot_type: :derived, source: pool, volume: 2)
         pool.primary_aliquot.volume = 5

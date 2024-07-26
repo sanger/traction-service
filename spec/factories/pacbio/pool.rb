@@ -16,7 +16,7 @@ FactoryBot.define do
     used_aliquots do
       library_count.times.map do
         library = build(library_factory)
-        build(:aliquot, source: library, tag: library.tag, aliquot_type: :derived, used_by: instance, volume: 10)
+        build(:aliquot, source: library, tag: library.tag, aliquot_type: :derived, used_by: instance)
       end
     end
 

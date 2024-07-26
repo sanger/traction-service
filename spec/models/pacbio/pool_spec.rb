@@ -316,7 +316,6 @@ RSpec.describe Pacbio::Pool, :pacbio do
 
   context 'before_update' do
     it 'calls primary_aliquot_volume_sufficient method' do
-      skip unless Flipper.enabled?(:y24_153__enable_volume_check_pacbio_pool_on_update)
       pool = create(:pacbio_pool)
       expect(pool).to receive(:primary_aliquot_volume_sufficient)
       pool.primary_aliquot.update(volume: 100)
