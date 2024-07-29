@@ -12,9 +12,16 @@ class Sample < ApplicationRecord
     long_term_storage: 2
   }
 
+  VALID_RETENTION_INSTRUCTIONS = %w[
+    destroy_after_2_years
+    return_to_customer_after_2_years
+    long_term_storage
+  ].freeze
+
   validates :species, presence: true
   validates :external_id, presence: true, uuid: true
   validates :name, uniqueness: { case_sensitive: false }, presence: true
+  validates :retention_instruction, inclusion: { in: VALID_RETENTION_INSTRUCTIONS }, if: :present?
 
   def active?
     deactivated_at.nil?
