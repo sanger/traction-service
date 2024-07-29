@@ -21,7 +21,7 @@ module V1
       attributes :volume, :concentration, :template_prep_kit_box_barcode,
                  :insert_size, :created_at, :updated_at,
                  :library_attributes, :used_aliquots_attributes, :primary_aliquot_attributes,
-                 :volume_tracking_attributes
+                 :used_volume, :available_volume
 
       attribute :source_identifier, readonly: true
 
@@ -75,12 +75,6 @@ module V1
 
       def publish_messages
         Messages.publish(@model.sequencing_runs, Pipelines.pacbio.message)
-      end
-
-      def volume_tracking_attributes
-        return unless Flipper.enabled?(:y24_153__expose_volume_tracking_attributes_on_pool_resource)
-
-        attributes :used_volume, :available_volume
       end
     end
   end
