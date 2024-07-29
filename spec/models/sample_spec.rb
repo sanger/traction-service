@@ -66,6 +66,16 @@ RSpec.describe Sample do
     end
   end
 
+  context 'retention instructions validations' do
+    it 'can have nil values' do
+      expect(build(:sample, retention_instruction: nil)).to be_valid
+    end
+
+    it 'cannot have any value other than what is specified' do
+      expect { build(:sample, retention_instruction: 'invalid_instruction') }.to raise_error(ArgumentError)
+    end
+  end
+
   context 'after create' do
     describe 'retention instructions' do
       let(:sample1) { create(:sample, retention_instruction: 'destroy_after_2_years') }
