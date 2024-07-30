@@ -38,24 +38,51 @@ class DataStructureBuilder
   # * [constant]  - Takes the constant and applies the method chain
   #                 to it e.g DateTime.now
   # * [array]     - usually an array of fields
-  def instance_value(object, field, parent) # rubocop:disable Metrics/MethodLength
+  # * [self]     - applies to the method to the current (builder) object
+  def instance_value(object, field, parent) # # rubocop:disable Metrics/MethodLength
     case field[:type]
     when :string
       field[:value]
     when :model
-      evaluate_method_chain(object, field[:value].split('.'))
+      evaluate_field(object, field[:value])
     when :parent_model
-      evaluate_method_chain(parent, field[:value].split('.'))
+      evaluate_field(parent, field[:value])
     when :constant
       evaluate_method_chain(field[:value].split('.').first.constantize,
                             field[:value].split('.')[1..])
     when :array
       build_children(object, field)
+    when :self
+      evaluate_field(self, field[:value])
+    end
+  end
+
+  def evaluate_field(object, field_value)
+    if field_value.include?('&.')
+      evaluate_safe_navigation(object, field_value.split('&.'))
+    else
+      evaluate_method_chain(object, field_value.split('.'))
     end
   end
 
   # we need to do this via try as certain fields may be nil
   def evaluate_method_chain(object, chain)
     chain.inject(object) { |o, meth| o.try(:send, meth) }
+  end
+
+  def evaluate_safe_navigation(object, chain)
+    chain.inject(object) do |obj, meth|
+      break nil unless obj
+
+      if meth.include?('.')
+        evaluate_method_chain(obj, meth.split('.'))
+      elsif obj.is_a?(Hash)
+        # Handle both hash and object cases
+        key = meth.to_sym
+        obj.key?(key) ? obj[key] : obj[meth.to_s]
+      else
+        obj.try(:send, meth)
+      end
+    end
   end
 end
