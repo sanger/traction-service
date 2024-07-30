@@ -15,8 +15,6 @@ class Sample < ApplicationRecord
   validates :species, presence: true
   validates :external_id, presence: true, uuid: true
   validates :name, uniqueness: { case_sensitive: false }, presence: true
-  validates :retention_instruction, inclusion: { in: Sample.retention_instructions.keys },
-                                    allow_nil: true, on: :create
 
   def active?
     deactivated_at.nil?
