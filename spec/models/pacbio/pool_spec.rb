@@ -8,6 +8,7 @@ RSpec.describe Pacbio::Pool, :pacbio do
   before do
     # Create a default pacbio smrt link version for pacbio runs.
     create(:pacbio_smrt_link_version, name: 'v10', default: true)
+    Flipper.enable(:y24_153__enable_volume_check_pacbio_pool_on_update)
   end
 
   let(:used_aliquots) { create_list(:aliquot, 5, source: build(:pacbio_library), aliquot_type: :derived) }
@@ -133,7 +134,8 @@ RSpec.describe Pacbio::Pool, :pacbio do
   context 'when volume is nil' do
     let(:params) { { volume: nil } }
 
-    it { is_expected.to be_valid }
+    # Validation should fail on the primary aliquot which requires a volume
+    it { is_expected.not_to be_valid }
   end
 
   context 'when volume is positive' do
@@ -310,6 +312,15 @@ RSpec.describe Pacbio::Pool, :pacbio do
       create(:pacbio_well, pools: [pool], plate: plate1)
       create(:pacbio_well, pools: [pool], plate: plate2)
       expect(pool.sequencing_runs).to eq([plate1.run, plate2.run])
+    end
+  end
+
+  context 'before_update' do
+    it 'calls primary_aliquot_volume_sufficient method' do
+      pool = create(:pacbio_pool)
+      expect(pool).to receive(:primary_aliquot_volume_sufficient)
+      pool.primary_aliquot.update(volume: 100)
+      pool.save
     end
   end
 end

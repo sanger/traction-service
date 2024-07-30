@@ -6,6 +6,10 @@ require 'rails_helper'
 # Revio Multiplexing work is complete
 
 RSpec.describe Aliquotable do
+  before do
+    Flipper.enable(:y24_153__enable_volume_check_pacbio_pool_on_update)
+  end
+
   describe '#primary_aliquot' do
     it 'returns the primary aliquot' do
       pacbio_pool = create(:pacbio_pool)
@@ -111,13 +115,23 @@ RSpec.describe Aliquotable do
       end
     end
 
-    context 'when primary aliquot volume is less than used volume' do
+    context 'when primary aliquot volume for libraries is less than used volume' do
       it 'adds an error' do
         library = create(:pacbio_library, volume: 100, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
         create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 2)
         library.primary_aliquot.volume = 5
         expect { library.primary_aliquot_volume_sufficient }.to throw_symbol(:abort)
         expect(library.errors[:volume]).to include('Volume must be greater than the current used volume')
+      end
+    end
+
+    context 'when primary aliquot volume for pools is less than used volume' do
+      it 'adds an error' do
+        pool = create(:pacbio_pool, volume: 100, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
+        create_list(:aliquot, 5, aliquot_type: :derived, source: pool, volume: 2)
+        pool.primary_aliquot.volume = 5
+        expect { pool.primary_aliquot_volume_sufficient }.to throw_symbol(:abort)
+        expect(pool.errors[:volume]).to include('Volume must be greater than the current used volume')
       end
     end
 

@@ -24,23 +24,10 @@ module Pacbio
     validates :used_aliquots, presence: true
     validates :primary_aliquot, presence: true
     validate :used_aliquots_volume
+    before_update :primary_aliquot_volume_sufficient,
+                  if: -> { Flipper.enabled?(:y24_153__enable_volume_check_pacbio_pool_on_update) }
 
     accepts_nested_attributes_for :primary_aliquot
-
-    def used_aliquots_volume
-      # Get all the aliquots that are libraries and have insufficient volume
-      failed_aliquots = used_aliquots.select do |aliquot|
-        aliquot.source_type == 'Pacbio::Library' &&
-          !aliquot.source.available_volume_sufficient
-      end
-      # Return if there are no aliquots that failed the volume check
-      return if failed_aliquots.empty?
-
-      # If there are failed aliquots we want to collect the source barcodes add an error to the pool
-      failed_barcodes = failed_aliquots.map { |aliquot| aliquot.source.tube.barcode }.join(',')
-      errors.add(:base, "Insufficient volume available for #{failed_barcodes}")
-      false
-    end
 
     def used_aliquots_attributes=(used_aliquot_options)
       self.used_aliquots = used_aliquot_options.map do |attributes|
