@@ -11,8 +11,8 @@ namespace :printers do
       { name: 'aa309bc3', labware_type: 'tube' },
       { name: 'aa309bc2', labware_type: 'plate96' },
       { name: 'aa303bc', labware_type: 'plate96' },
-      { name: 'aa212bc2', labware_type: 'plate384'},
-      { name: 'psd-2', labware_type: 'plate384'}
+      { name: 'aa212bc2', labware_type: 'plate384' },
+      { name: 'psd-2', labware_type: 'plate384' }
     ].each do |options|
       Printer.create_with(options).find_or_create_by!(name: options[:name])
     end
