@@ -9,7 +9,7 @@ Rails.application.load_tasks if Rake::Task.tasks.empty?
 RSpec.describe 'RakeTasks' do
   describe 'printers' do
     it 'creates the printers' do
-      expect { Rake::Task['printers:create'].invoke }.to change(Printer, :count).by(8).and output(
+      expect { Rake::Task['printers:create'].invoke }.to change(Printer, :count).by(10).and output(
         <<~HEREDOC
           -> Printers succesfully updated
         HEREDOC
