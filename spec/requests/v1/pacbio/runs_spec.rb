@@ -2,6 +2,18 @@
 
 require 'rails_helper'
 
+RSpec::Matchers.define :array_of_aliquots_with_length do |expected_length|
+  match do |actual|
+    actual.is_a?(Array) &&
+      actual.all? { |item| item.is_a?(Aliquot) } &&
+      actual.length == expected_length
+  end
+
+  failure_message do |actual|
+    "expected an array of Aliquot objects with length #{expected_length}, but got #{actual.inspect}"
+  end
+end
+
 RSpec.describe 'RunsController' do
   # Create default and non-default smrt link versions for runs
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10') }
@@ -9,17 +21,29 @@ RSpec.describe 'RunsController' do
   let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
   let!(:version13) { create(:pacbio_smrt_link_version, name: 'v13_revio', default: true) }
 
-  shared_examples 'publish_messages_on_create' do
+  shared_examples 'publish_messages_on_create' do |aliquot_size|
     it 'publishes a message' do
       expect(Messages).to receive(:publish).with(instance_of(Pacbio::Run), having_attributes(pipeline: 'pacbio'))
       post v1_pacbio_runs_path, params: body, headers: json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
+
+    it 'publishes volume tracking message for each used aliquot' do
+      expect(Emq::Publisher).to receive(:publish).with(array_of_aliquots_with_length(aliquot_size), instance_of(Pipelines::Configuration::Item), 'volume_tracking')
+      post v1_pacbio_runs_path, params: body, headers: json_api_headers
+      expect(response).to have_http_status(:success), response.body
+    end
   end
 
-  shared_examples 'publish_messages_on_update' do
+  shared_examples 'publish_messages_on_update' do |aliquot_size|
     it 'publishes a message' do
       expect(Messages).to receive(:publish).with(run, having_attributes(pipeline: 'pacbio'))
+      patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+      expect(response).to have_http_status(:success), response.body
+    end
+
+    it 'publishes volume tracking message for each used aliquot' do
+      expect(Emq::Publisher).to receive(:publish).with(array_of_aliquots_with_length(aliquot_size), instance_of(Pipelines::Configuration::Item), 'volume_tracking')
       patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
@@ -260,7 +284,7 @@ RSpec.describe 'RunsController' do
         expect(run.pacbio_smrt_link_version_id).to eq(version11.id)
       end
 
-      it_behaves_like 'publish_messages_on_create'
+      it_behaves_like 'publish_messages_on_create', 0
     end
 
     context 'smrtlink v12_revio on success' do
@@ -297,6 +321,10 @@ RSpec.describe 'RunsController' do
             }
           }
         }.to_json
+      end
+
+      before do
+        @expected_aliquots = library1.aliquots
       end
 
       it 'has a created status' do
@@ -342,7 +370,7 @@ RSpec.describe 'RunsController' do
         expect(run.plates.first.wells.first.pools.first).to eq(pool1)
       end
 
-      it_behaves_like 'publish_messages_on_create'
+      it_behaves_like 'publish_messages_on_create', 1
     end
 
     context 'smrtlink v13_revio on success' do
@@ -418,7 +446,7 @@ RSpec.describe 'RunsController' do
         expect(run.pacbio_smrt_link_version_id).to eq(version13.id)
       end
 
-      it_behaves_like 'publish_messages_on_create'
+      it_behaves_like 'publish_messages_on_create', 0
     end
 
     context 'on failure' do
@@ -1095,7 +1123,7 @@ RSpec.describe 'RunsController' do
         expect(run.pacbio_smrt_link_version_id).to eq(version.id)
       end
 
-      it_behaves_like 'publish_messages_on_create'
+      it_behaves_like 'publish_messages_on_create', 0
     end
   end
 
@@ -1150,7 +1178,7 @@ RSpec.describe 'RunsController' do
         expect(run.pacbio_smrt_link_version_id).to eq(version.id)
       end
 
-      it_behaves_like 'publish_messages_on_create'
+      it_behaves_like 'publish_messages_on_create', 0
     end
   end
 
@@ -1196,7 +1224,7 @@ RSpec.describe 'RunsController' do
           expect(run.plates.first.wells.map(&:pools)).to eq existing_pools
         end
 
-        it_behaves_like 'publish_messages_on_update'
+        it_behaves_like 'publish_messages_on_update', 0
       end
 
       context 'when run info is successful' do
@@ -1235,7 +1263,7 @@ RSpec.describe 'RunsController' do
           expect(run.state).to eq 'pending'
         end
 
-        it_behaves_like 'publish_messages_on_update'
+        it_behaves_like 'publish_messages_on_update', 0
       end
 
       context 'when well info is successful' do
@@ -1291,7 +1319,7 @@ RSpec.describe 'RunsController' do
           expect(well.binding_kit_box_barcode).to eq 'DM1117100862200111711_updated'
         end
 
-        it_behaves_like 'publish_messages_on_update'
+        it_behaves_like 'publish_messages_on_update', 0
       end
 
       context 'when well is added, removed and updated' do
@@ -1374,7 +1402,7 @@ RSpec.describe 'RunsController' do
           expect(run.wells[1].column).to eq '12'
         end
 
-        it_behaves_like 'publish_messages_on_update'
+        it_behaves_like 'publish_messages_on_update', 0
       end
 
       context 'when pool is added, removed and updated' do
@@ -1451,7 +1479,7 @@ RSpec.describe 'RunsController' do
           expect(updated_plate.wells.first.used_aliquots.length).to eq(well1.used_aliquots.length + 1)
         end
 
-        it_behaves_like 'publish_messages_on_update'
+        it_behaves_like 'publish_messages_on_update', 0
       end
 
       context 'when the pool is updated with aliquot using the same tag as the deleted ones' do
@@ -1505,7 +1533,7 @@ RSpec.describe 'RunsController' do
           end
         end
 
-        it_behaves_like 'publish_messages_on_update'
+        it_behaves_like 'publish_messages_on_update', 0
       end
     end
 
