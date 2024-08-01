@@ -33,7 +33,7 @@ module VolumeTracking
 
       case aliquot.used_by_type
       when 'Pacbio::Well'
-        data[:used_by_type] = 'well'
+        data[:used_by_type] = 'run'
         data[:used_by_barcode] =
           "#{aliquot.used_by.plate.sequencing_kit_box_barcode}:#{aliquot.used_by.plate.plate_number}:#{aliquot.used_by.position}" # rubocop:disable Layout/LineLength
       when 'Pacbio::Pool'
