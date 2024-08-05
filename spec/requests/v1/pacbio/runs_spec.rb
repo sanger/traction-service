@@ -2,18 +2,6 @@
 
 require 'rails_helper'
 
-RSpec::Matchers.define :array_of_aliquots_with_length do |expected_length|
-  match do |actual|
-    actual.is_a?(Array) &&
-      actual.all? { |item| item.is_a?(Aliquot) } &&
-      actual.length == expected_length
-  end
-
-  failure_message do |actual|
-    "expected an array of Aliquot objects with length #{expected_length}, but got #{actual.inspect}"
-  end
-end
-
 RSpec.describe 'RunsController' do
   # Create default and non-default smrt link versions for runs
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10') }
@@ -21,7 +9,7 @@ RSpec.describe 'RunsController' do
   let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
   let!(:version13) { create(:pacbio_smrt_link_version, name: 'v13_revio', default: true) }
 
-  shared_examples 'publish_messages_on_create' do |aliquot_size|
+  shared_examples 'publish_messages_on_create' do
     it 'publishes a message' do
       expect(Messages).to receive(:publish).with(instance_of(Pacbio::Run), having_attributes(pipeline: 'pacbio'))
       post v1_pacbio_runs_path, params: body, headers: json_api_headers
@@ -29,13 +17,18 @@ RSpec.describe 'RunsController' do
     end
 
     it 'publishes volume tracking message for each used aliquot' do
-      expect(Emq::Publisher).to receive(:publish).with(array_of_aliquots_with_length(aliquot_size), instance_of(Pipelines::Configuration::Item), 'volume_tracking')
+      allow(Emq::Publisher).to receive(:publish)
+
       post v1_pacbio_runs_path, params: body, headers: json_api_headers
+
       expect(response).to have_http_status(:success), response.body
+      run = Pacbio::Run.first
+      # Verify that the publish method was called with the expected arguments
+      expect(Emq::Publisher).to have_received(:publish).with(array_including(run.all_library_aliquots), instance_of(Pipelines::Configuration::Item), 'volume_tracking') # rubocop:disable RSpec/MessageSpies
     end
   end
 
-  shared_examples 'publish_messages_on_update' do |aliquot_size|
+  shared_examples 'publish_messages_on_update' do
     it 'publishes a message' do
       expect(Messages).to receive(:publish).with(run, having_attributes(pipeline: 'pacbio'))
       patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
@@ -43,9 +36,13 @@ RSpec.describe 'RunsController' do
     end
 
     it 'publishes volume tracking message for each used aliquot' do
-      expect(Emq::Publisher).to receive(:publish).with(array_of_aliquots_with_length(aliquot_size), instance_of(Pipelines::Configuration::Item), 'volume_tracking')
+      allow(Emq::Publisher).to receive(:publish)
+
       patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-      expect(response).to have_http_status(:success), response.body
+      expect(response).to have_http_status(:success), response.parsed_body
+
+      run = Pacbio::Run.first
+      expect(Emq::Publisher).to have_received(:publish).with(array_including(run.all_library_aliquots), instance_of(Pipelines::Configuration::Item), 'volume_tracking') # rubocop:disable RSpec/MessageSpies
     end
   end
 
