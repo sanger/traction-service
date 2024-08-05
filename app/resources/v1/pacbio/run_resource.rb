@@ -56,12 +56,7 @@ module V1
 
       def publish_messages
         Messages.publish(@model, Pipelines.pacbio.message)
-        all_library_aliquots = @model.plates.flat_map do |plate|
-          plate.wells.flat_map do |well|
-            well.used_aliquots.select { |aliquot| aliquot.source_type == 'Pacbio::Library' }
-          end
-        end
-        Emq::Publisher.publish(all_library_aliquots, Pipelines.pacbio, 'volume_tracking')
+        Emq::Publisher.publish(@model.all_library_aliquots, Pipelines.pacbio, 'volume_tracking')
       end
 
       private
