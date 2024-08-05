@@ -44,7 +44,8 @@ module Emq
       # and create a message builder class from the configuration
       message_builder_config_obj = message_builder_config(message_config, schema_key, version)
       if message_builder_config_obj.nil?
-        Rails.logger.error("Message builder configuration not found for schema key: #{schema_key} and version: #{version}") # rubocop:disable Layout/LineLength
+        Rails.logger.error('Message builder configuration not found for ' \
+                           "schema key: #{schema_key} and version: #{version}")
         return
       end
       message_builder_class = message_builder_config_obj.message_class.to_s.constantize
