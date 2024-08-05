@@ -91,7 +91,7 @@ module V1
 
       def publish_messages
         Messages.publish(@model.sequencing_runs, Pipelines.pacbio.message)
-        Emq::Publisher.publish(@model.used_aliquots, Pipelines.pacbio, 'volume_tracking')
+        Emq::Publisher.publish(@model.primary_aliquot, Pipelines.pacbio, 'volume_tracking')
       end
     end
   end
