@@ -36,6 +36,10 @@ RSpec.describe Emq::Publisher do
         allow(Rails.configuration).to receive(:bunny).and_return({ 'enabled' => true })
       end
 
+      after do
+        described_class.instance_variable_set(:@publish_job, nil)
+      end
+
       it 'is present' do
         described_class.publish(aliquots, configuration, schema_key)
         expect(described_class.instance_variable_get(:@publish_job)).not_to be_nil

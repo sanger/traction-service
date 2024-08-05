@@ -15,6 +15,12 @@ RSpec.describe 'RunsController' do
       post v1_pacbio_runs_path, params: body, headers: json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
+
+    it 'publishes volume tracking message for each used aliquot' do
+      expect(Emq::Publisher).to receive(:publish)
+      post v1_pacbio_runs_path, params: body, headers: json_api_headers
+      expect(response).to have_http_status(:success), response.body
+    end
   end
 
   shared_examples 'publish_messages_on_update' do
@@ -22,6 +28,12 @@ RSpec.describe 'RunsController' do
       expect(Messages).to receive(:publish).with(run, having_attributes(pipeline: 'pacbio'))
       patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
       expect(response).to have_http_status(:success), response.body
+    end
+
+    it 'publishes volume tracking message for each used aliquot' do
+      expect(Emq::Publisher).to receive(:publish)
+      patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+      expect(response).to have_http_status(:success), response.parsed_body
     end
   end
 
