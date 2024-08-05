@@ -15,6 +15,10 @@ RSpec.describe Emq::Publisher do
       allow(publish_job_mock).to receive(:publish).with(aliquots, configuration, schema_key)
     end
 
+    after do
+      described_class.instance_variable_set(:@publish_job, nil)
+    end
+
     context 'when bunny is disabled' do
       before do
         allow(Rails.configuration).to receive(:bunny).and_return({ 'enabled' => false })
