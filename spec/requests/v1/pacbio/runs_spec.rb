@@ -320,10 +320,6 @@ RSpec.describe 'RunsController' do
         }.to_json
       end
 
-      before do
-        @expected_aliquots = library1.aliquots
-      end
-
       it 'has a created status' do
         post v1_pacbio_runs_path, params: body, headers: json_api_headers
         expect(response).to have_http_status(:created)
