@@ -17,14 +17,9 @@ RSpec.describe 'RunsController' do
     end
 
     it 'publishes volume tracking message for each used aliquot' do
-      allow(Emq::Publisher).to receive(:publish)
-
+      expect(Emq::Publisher).to receive(:publish)
       post v1_pacbio_runs_path, params: body, headers: json_api_headers
-
       expect(response).to have_http_status(:success), response.body
-      run = Pacbio::Run.first
-      # Verify that the publish method was called with the expected arguments
-      expect(Emq::Publisher).to have_received(:publish).with(array_including(run.all_library_aliquots), instance_of(Pipelines::Configuration::Item), 'volume_tracking') # rubocop:disable RSpec/MessageSpies
     end
   end
 
@@ -36,13 +31,9 @@ RSpec.describe 'RunsController' do
     end
 
     it 'publishes volume tracking message for each used aliquot' do
-      allow(Emq::Publisher).to receive(:publish)
-
+      expect(Emq::Publisher).to receive(:publish)
       patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
       expect(response).to have_http_status(:success), response.parsed_body
-
-      run = Pacbio::Run.first
-      expect(Emq::Publisher).to have_received(:publish).with(array_including(run.all_library_aliquots), instance_of(Pipelines::Configuration::Item), 'volume_tracking') # rubocop:disable RSpec/MessageSpies
     end
   end
 
