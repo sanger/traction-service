@@ -281,7 +281,7 @@ RSpec.describe 'RunsController' do
         expect(run.pacbio_smrt_link_version_id).to eq(version11.id)
       end
 
-      it_behaves_like 'publish_messages_on_create', 0
+      it_behaves_like 'publish_messages_on_create'
     end
 
     context 'smrtlink v12_revio on success' do
@@ -367,7 +367,7 @@ RSpec.describe 'RunsController' do
         expect(run.plates.first.wells.first.pools.first).to eq(pool1)
       end
 
-      it_behaves_like 'publish_messages_on_create', 1
+      it_behaves_like 'publish_messages_on_create'
     end
 
     context 'smrtlink v13_revio on success' do
@@ -443,7 +443,7 @@ RSpec.describe 'RunsController' do
         expect(run.pacbio_smrt_link_version_id).to eq(version13.id)
       end
 
-      it_behaves_like 'publish_messages_on_create', 0
+      it_behaves_like 'publish_messages_on_create'
     end
 
     context 'on failure' do
@@ -1120,7 +1120,7 @@ RSpec.describe 'RunsController' do
         expect(run.pacbio_smrt_link_version_id).to eq(version.id)
       end
 
-      it_behaves_like 'publish_messages_on_create', 0
+      it_behaves_like 'publish_messages_on_create'
     end
   end
 
@@ -1175,7 +1175,7 @@ RSpec.describe 'RunsController' do
         expect(run.pacbio_smrt_link_version_id).to eq(version.id)
       end
 
-      it_behaves_like 'publish_messages_on_create', 0
+      it_behaves_like 'publish_messages_on_create'
     end
   end
 
@@ -1221,7 +1221,7 @@ RSpec.describe 'RunsController' do
           expect(run.plates.first.wells.map(&:pools)).to eq existing_pools
         end
 
-        it_behaves_like 'publish_messages_on_update', 0
+        it_behaves_like 'publish_messages_on_update'
       end
 
       context 'when run info is successful' do
@@ -1260,7 +1260,7 @@ RSpec.describe 'RunsController' do
           expect(run.state).to eq 'pending'
         end
 
-        it_behaves_like 'publish_messages_on_update', 0
+        it_behaves_like 'publish_messages_on_update'
       end
 
       context 'when well info is successful' do
@@ -1316,7 +1316,7 @@ RSpec.describe 'RunsController' do
           expect(well.binding_kit_box_barcode).to eq 'DM1117100862200111711_updated'
         end
 
-        it_behaves_like 'publish_messages_on_update', 0
+        it_behaves_like 'publish_messages_on_update'
       end
 
       context 'when well is added, removed and updated' do
@@ -1399,7 +1399,7 @@ RSpec.describe 'RunsController' do
           expect(run.wells[1].column).to eq '12'
         end
 
-        it_behaves_like 'publish_messages_on_update', 0
+        it_behaves_like 'publish_messages_on_update'
       end
 
       context 'when pool is added, removed and updated' do
@@ -1476,7 +1476,7 @@ RSpec.describe 'RunsController' do
           expect(updated_plate.wells.first.used_aliquots.length).to eq(well1.used_aliquots.length + 1)
         end
 
-        it_behaves_like 'publish_messages_on_update', 0
+        it_behaves_like 'publish_messages_on_update'
       end
 
       context 'when the pool is updated with aliquot using the same tag as the deleted ones' do
@@ -1530,7 +1530,7 @@ RSpec.describe 'RunsController' do
           end
         end
 
-        it_behaves_like 'publish_messages_on_update', 0
+        it_behaves_like 'publish_messages_on_update'
       end
     end
 
