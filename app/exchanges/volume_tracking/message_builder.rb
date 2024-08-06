@@ -20,7 +20,7 @@ module VolumeTracking
 
       aliquot = object
       data = { source_type: '', source_barcode: '', sample_name: '',
-               used_by_type: 'nil', used_by_barcode: '',
+               used_by_type: 'none', used_by_barcode: '',
                aliquot_uuid: aliquot.uuid,
                message_uuid: SecureRandom.uuid }
 
@@ -29,8 +29,6 @@ module VolumeTracking
         data[:source_type] = 'library'
         data[:source_barcode] = aliquot.source.tube.barcode
         data[:sample_name] = aliquot.source.sample_name
-        data[:used_by_barcode] = 'none'
-        data[:used_by_type] = 'none'
       end
 
       case aliquot.used_by_type
