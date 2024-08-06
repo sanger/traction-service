@@ -38,7 +38,7 @@ module V1
       # to republish the messages for the run
       after_update :publish_messages
 
-      after_create :push_volume_tracking_message
+      after_create :publish_volume_tracking_message
 
       filter :sample_name, apply: lambda { |records, value, _options|
         # We have to join requests and samples here in order to find by sample name
@@ -93,10 +93,10 @@ module V1
 
       def publish_messages
         Messages.publish(@model.sequencing_runs, Pipelines.pacbio.message)
-        push_volume_tracking_message
+        publish_volume_tracking_message
       end
 
-      def push_volume_tracking_message
+      def publish_volume_tracking_message
         Emq::Publisher.publish(@model.primary_aliquot, Pipelines.pacbio, 'volume_tracking')
       end
     end
