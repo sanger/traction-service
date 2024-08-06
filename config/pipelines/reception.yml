@@ -80,9 +80,6 @@ default: &default
           date_of_sample_collection:
             type: :model
             value: date_of_sample_collection
-          retention_instruction:
-            type: :model
-            value: retention_instruction
           
 
 
