@@ -74,8 +74,7 @@ RSpec.describe 'ReceptionsController' do
                               'name' => /.*/,
                               'public_name' => 'PublicName',
                               'priority_level' => 'Medium',
-                              'country_of_origin' => 'United Kingdom',
-                              'retention_instruction' => 'return_to_customer_after_2_years'
+                              'country_of_origin' => 'United Kingdom'
                             }
                           })
 
