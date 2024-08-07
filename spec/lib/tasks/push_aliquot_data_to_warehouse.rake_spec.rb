@@ -33,25 +33,27 @@ RSpec.describe 'RakeTasks' do
 
     it 'publishes all aliquots that are not from Pacbio::Request to the warehouse' do
       aliquots_used_in_run = run.plates.flat_map(&:wells).flat_map(&:aliquots)
+      expect(Emq::Publisher).to receive(:publish).with(array_including(*library_aliquots, *pool_aliquots, *aliquots_used_in_run), instance_of(Pipelines::Configuration::Item), 'volume_tracking')
+
       expect { Rake::Task['pool_and_library_aliquots:push_data_to_warehouse'].invoke }.to output(
         <<~HEREDOC
           -> Pushing all pool and library aliquots data to the warehouse for volume tracking
           -> Successfully pushed all pool and library aliquots data to the warehouse
         HEREDOC
       ).to_stdout
-
-      expect(Emq::Publisher).to have_received(:publish).with(array_including(*library_aliquots, *pool_aliquots, *aliquots_used_in_run), instance_of(Pipelines::Configuration::Item), 'volume_tracking') # rubocop:disable RSpec/MessageSpies
     end
 
     it 'logs and prints an error message when publishing fails' do
       error_message = 'Test error'
       allow(Emq::Publisher).to receive(:publish).and_raise(StandardError.new(error_message))
+      expect(Rails.logger).to receive(:error).with("Failed to publish message: #{error_message}")
 
       expect { Rake::Task['pool_and_library_aliquots:push_data_to_warehouse'].invoke }.to output(
-        a_string_including("-> Failed to push aliquots data to the warehouse: #{error_message}")
+        <<~HEREDOC
+          -> Pushing all pool and library aliquots data to the warehouse for volume tracking
+          -> Failed to push aliquots data to the warehouse: #{error_message}
+        HEREDOC
       ).to_stdout
-
-      expect(Rails.logger).to have_received(:error).with("Failed to publish message: #{error_message}") # rubocop:disable RSpec/MessageSpies
     end
   end
 end
