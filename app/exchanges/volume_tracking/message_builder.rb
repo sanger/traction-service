@@ -13,40 +13,57 @@ module VolumeTracking
     #    "volume"=>1.5, "concentration"=>10.0, "insertSize"=>100, "aliquotType"=>"primary",
     #    "aliquotUuid"=>"", "sourceType"=>"library", "sourceBarcode"=>"TRAC-2-35805",
     #    "sampleName"=>"Sample1", "usedByBarcode"=>"TRAC-2-35806", "usedByType"=>"pool"}}
+    def publish_data
+      @publish_data ||= generate_publish_data
+    end
 
-    def publish_data # rubocop:disable Metrics/MethodLength
-      # Memoize the data
-      return @publish_data if defined?(@publish_data)
+    private
 
-      aliquot = object
-      data = { source_type: '', source_barcode: '', sample_name: '',
-               used_by_type: 'none', used_by_barcode: '',
-               aliquot_uuid: aliquot.uuid,
-               message_uuid: SecureRandom.uuid }
+    def generate_publish_data
+      data = base_data
+      populate_by_source_type(data)
+      populate_used_by_type(data)
+      data
+    end
 
-      case aliquot.source_type
+    def base_data
+      {
+        source_type: '',
+        source_barcode: '',
+        sample_name: '',
+        used_by_type: 'none',
+        used_by_barcode: '',
+        aliquot_uuid: object.uuid,
+        message_uuid: SecureRandom.uuid
+      }
+    end
+
+    def populate_by_source_type(data)
+      case object.source_type
       when 'Pacbio::Library'
         data[:source_type] = 'library'
-        data[:source_barcode] = aliquot.source.tube.barcode
-        data[:sample_name] = aliquot.source.sample_name
-
+        data[:source_barcode] = object.source.tube.barcode
+        data[:sample_name] = object.source.sample_name
       when 'Pacbio::Pool'
         data[:source_type] = 'pool'
-        data[:source_barcode] = aliquot.source.tube.barcode
+        data[:source_barcode] = object.source.tube.barcode
       end
-      @publish_data = data
+    end
 
-      case aliquot.used_by_type
+    def populate_used_by_type(data)
+      case object.used_by_type
       when 'Pacbio::Well'
         data[:used_by_type] = 'run'
-        data[:used_by_barcode] =
-          "#{aliquot.used_by.plate.sequencing_kit_box_barcode}:" \
-          "#{aliquot.used_by.plate.plate_number}:#{aliquot.used_by.position}"
+        data[:used_by_barcode] = used_by_well_barcode
       when 'Pacbio::Pool'
         data[:used_by_type] = 'pool'
-        data[:used_by_barcode] = aliquot.used_by.tube.barcode
+        data[:used_by_barcode] = object.used_by.tube.barcode
       end
-      @publish_data = data
+    end
+
+    def used_by_well_barcode
+      "#{object.used_by.plate.sequencing_kit_box_barcode}:" \
+        "#{object.used_by.plate.plate_number}:#{object.used_by.position}"
     end
   end
 end
