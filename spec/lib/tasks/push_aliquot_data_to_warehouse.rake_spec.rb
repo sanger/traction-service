@@ -30,7 +30,7 @@ RSpec.describe 'RakeTasks' do
     end
 
     it 'publishes all aliquots that are not from Pacbio::Request to the warehouse' do
-      aliquots_used_in_run = run.plates.flat_map(&:wells).flat_map(&:libraries).flat_map(&:aliquots)
+      aliquots_used_in_run = run.plates.flat_map(&:wells).flat_map(&:aliquots)
       expect { Rake::Task['pool_and_library_aliquots:push_data_to_warehouse'].invoke }.to output(
         <<~HEREDOC
           -> Pushing all pool and library aliquots data to the warehouse for volume tracking
