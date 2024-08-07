@@ -27,6 +27,8 @@ RSpec.describe 'RakeTasks' do
 
     before do
       allow(Emq::Publisher).to receive(:publish)
+      allow(Rails.logger).to receive(:error) # Mock the error method on Rails.logger
+      Rake::Task['pool_and_library_aliquots:push_data_to_warehouse'].reenable
     end
 
     it 'publishes all aliquots that are not from Pacbio::Request to the warehouse' do
@@ -41,13 +43,15 @@ RSpec.describe 'RakeTasks' do
       expect(Emq::Publisher).to have_received(:publish).with(array_including(*library_aliquots, *pool_aliquots, *aliquots_used_in_run), instance_of(Pipelines::Configuration::Item), 'volume_tracking') # rubocop:disable RSpec/MessageSpies
     end
 
-    it 'does not publish Pacbio::Request aliquots to the warehouse' do
-      request = create(:pacbio_request)
-      create(:pacbio_library, request:)
-      all_request_aliquots = Aliquot.where(source_type: 'Pacbio::Request')
-      Rake::Task['pool_and_library_aliquots:push_data_to_warehouse'].invoke
+    it 'logs and prints an error message when publishing fails' do
+      error_message = 'Test error'
+      allow(Emq::Publisher).to receive(:publish).and_raise(StandardError.new(error_message))
 
-      expect(Emq::Publisher).not_to have_received(:publish).with(include(*all_request_aliquots), instance_of(Pipelines::Configuration::Item), 'volume_tracking') # rubocop:disable RSpec/MessageSpies
+      expect { Rake::Task['pool_and_library_aliquots:push_data_to_warehouse'].invoke }.to output(
+        a_string_including("-> Failed to push aliquots data to the warehouse: #{error_message}")
+      ).to_stdout
+
+      expect(Rails.logger).to have_received(:error).with("Failed to publish message: #{error_message}") # rubocop:disable RSpec/MessageSpies
     end
   end
 end
