@@ -34,6 +34,7 @@ RSpec.describe 'RakeTasks' do
       expect { Rake::Task['pool_and_library_aliquots:push_data_to_warehouse'].invoke }.to output(
         <<~HEREDOC
           -> Pushing all pool and library aliquots data to the warehouse for volume tracking
+          -> Successfully pushed all pool and library aliquots data to the warehouse
         HEREDOC
       ).to_stdout
 
@@ -41,6 +42,8 @@ RSpec.describe 'RakeTasks' do
     end
 
     it 'does not publish Pacbio::Request aliquots to the warehouse' do
+      request = create(:pacbio_request)
+      create(:pacbio_library, request:)
       all_request_aliquots = Aliquot.where(source_type: 'Pacbio::Request')
       Rake::Task['pool_and_library_aliquots:push_data_to_warehouse'].invoke
 
