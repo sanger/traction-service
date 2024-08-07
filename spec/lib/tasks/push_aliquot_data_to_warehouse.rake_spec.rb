@@ -41,9 +41,10 @@ RSpec.describe 'RakeTasks' do
     end
 
     it 'does not publish Pacbio::Request aliquots to the warehouse' do
+      all_request_aliquots = Aliquot.where(source_type: 'Pacbio::Request')
       Rake::Task['pool_and_library_aliquots:push_data_to_warehouse'].invoke
 
-      expect(Emq::Publisher).not_to have_received(:publish).with(array_including(*request_aliquots), instance_of(Pipelines::Configuration::Item), 'volume_tracking') # rubocop:disable RSpec/MessageSpies
+      expect(Emq::Publisher).not_to have_received(:publish).with(include(*all_request_aliquots), instance_of(Pipelines::Configuration::Item), 'volume_tracking') # rubocop:disable RSpec/MessageSpies
     end
   end
 end
