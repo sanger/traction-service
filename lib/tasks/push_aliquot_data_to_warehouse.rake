@@ -7,7 +7,7 @@ namespace :pool_and_library_aliquots do
   task push_data_to_warehouse: :environment do
     puts '-> Pushing all pool and library aliquots data to the warehouse for volume tracking'
 
-    ActiveRecord::Base.transaction do
+    begin
       # Following are the contexts where aliquots are created, out of which only the aliquots from libraries and pools (1,2,3) are used for volume tracking
       # 1. When a library or pool is created, primary aliquot is created
       # 2. When a library is used in pool or run, derived aliquot is created
@@ -18,6 +18,8 @@ namespace :pool_and_library_aliquots do
       # Filter all aliquots that are not from a Pacbio::Request
       aliquots = Aliquot.where.not(source_type: 'Pacbio::Request')
       Emq::Publisher.publish(aliquots, Pipelines.pacbio, 'volume_tracking')
+
+      puts '-> Successfully pushed all pool and library aliquots data to the warehouse'
     end
   end
 end
