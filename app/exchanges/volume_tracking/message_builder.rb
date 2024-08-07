@@ -20,7 +20,7 @@ module VolumeTracking
 
       aliquot = object
       data = { source_type: '', source_barcode: '', sample_name: '',
-               used_by_type: 'nil', used_by_barcode: '',
+               used_by_type: 'none', used_by_barcode: '',
                aliquot_uuid: aliquot.uuid,
                message_uuid: SecureRandom.uuid }
 

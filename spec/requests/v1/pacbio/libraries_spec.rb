@@ -316,6 +316,12 @@ RSpec.describe 'LibrariesController', :pacbio do
           expect(response).to have_http_status(:created), response.body
         end
 
+        it 'publishes volume tracking message for the aliquot' do
+          expect(Emq::Publisher).to receive(:publish)
+          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:success), response.body
+        end
+
         it 'creates a library and aliquots' do
           expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }
             .to change(Pacbio::Library, :count).by(1)
@@ -586,6 +592,7 @@ RSpec.describe 'LibrariesController', :pacbio do
 
       it 'publishes a message' do
         expect(Messages).to receive(:publish).with(library.sequencing_runs, having_attributes(pipeline: 'pacbio'))
+        expect(Emq::Publisher).to receive(:publish)
         patch v1_pacbio_library_path(library), params: body, headers: json_api_headers
         expect(response).to have_http_status(:success), response.body
       end
