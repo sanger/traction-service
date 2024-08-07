@@ -26,6 +26,38 @@ RSpec.describe VolumeTracking::MessageBuilder, type: :model do
       end
     end
 
+    context 'with a aliquot with pool as source and no used_by' do
+      let(:aliquot) { create(:aliquot, source: pacbio_pool) }
+      let(:message_builder) { described_class.new(object: aliquot, configuration:) }
+
+      it 'produces the message in the correct format' do
+        expect(message_builder.publish_data).to include({
+                                                          source_type: 'pool',
+                                                          source_barcode: pacbio_pool.tube.barcode,
+                                                          sample_name: '',
+                                                          used_by_type: 'none',
+                                                          used_by_barcode: '',
+                                                          aliquot_uuid: aliquot.uuid
+                                                        })
+      end
+    end
+
+    context 'with a aliquot with pool as source and well as used_by' do
+      let(:aliquot) { create(:aliquot, source: pacbio_pool, used_by: pacbio_well) }
+      let(:message_builder) { described_class.new(object: aliquot, configuration:) }
+
+      it 'produces the message in the correct format' do
+        expect(message_builder.publish_data).to include({
+                                                          source_type: 'pool',
+                                                          source_barcode: pacbio_pool.tube.barcode,
+                                                          sample_name: '',
+                                                          used_by_type: 'run',
+                                                          used_by_barcode: "#{pacbio_well.plate.sequencing_kit_box_barcode}:#{pacbio_well.plate.plate_number}:#{pacbio_well.position}",
+                                                          aliquot_uuid: aliquot.uuid
+                                                        })
+      end
+    end
+
     context 'with a aliquot with library as source and pool as used_by' do
       let(:aliquot) { create(:aliquot, source: pacbio_library, used_by: pacbio_pool) }
       let(:message_builder) { described_class.new(object: aliquot, configuration:) }
