@@ -20,6 +20,9 @@ namespace :pool_and_library_aliquots do
       Emq::Publisher.publish(aliquots, Pipelines.pacbio, 'volume_tracking')
 
       puts '-> Successfully pushed all pool and library aliquots data to the warehouse'
+    rescue StandardError => e
+      Rails.logger.error("Failed to publish message: #{e.message}")
+      puts "-> Failed to push aliquots data to the warehouse: #{e.message}"
     end
   end
 end
