@@ -29,7 +29,12 @@ module VolumeTracking
         data[:source_type] = 'library'
         data[:source_barcode] = aliquot.source.tube.barcode
         data[:sample_name] = aliquot.source.sample_name
+
+      when 'Pacbio::Pool'
+        data[:source_type] = 'pool'
+        data[:source_barcode] = aliquot.source.tube.barcode
       end
+      @publish_data = data
 
       case aliquot.used_by_type
       when 'Pacbio::Well'

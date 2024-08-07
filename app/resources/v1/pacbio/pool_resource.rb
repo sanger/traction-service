@@ -43,9 +43,12 @@ module V1
         records.joins(:tube).where(tube: { barcode: value })
       }
 
+      # publish messages when a pool is created
+      after_create :publish_messages_on_creation
+
       # When a pool is updated and it is attached to a run we need
       # to republish the messages for the run
-      after_update :publish_messages
+      after_update :publish_messages_on_update
 
       def used_aliquots_attributes=(used_aliquot_parameters)
         @model.used_aliquots_attributes = used_aliquot_parameters.map do |aliquot|
@@ -73,7 +76,11 @@ module V1
         @model.updated_at.to_fs(:us)
       end
 
-      def publish_messages
+      def publish_messages_on_creation
+        Emq::Publisher.publish(@model.primary_aliquot, Pipelines.pacbio, 'volume_tracking')
+      end
+
+      def publish_messages_on_update
         Messages.publish(@model.sequencing_runs, Pipelines.pacbio.message)
       end
     end

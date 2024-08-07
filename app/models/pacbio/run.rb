@@ -97,13 +97,11 @@ module Pacbio
       wells.count
     end
 
-    # Returns all aliquots with source_type 'Pacbio::Library' from the wells of the plates.
-    # @return [Array<Aliquot>] an array of aliquots with source_type 'Pacbio::Library'
-    def all_library_aliquots
+    # Returns all the used aliquots
+    # @return [Array<Aliquot>] an array of the used aliquots in a run
+    def used_aliquots
       plates.flat_map do |plate|
-        plate.wells.flat_map do |well|
-          well.used_aliquots.select { |aliquot| aliquot.source_type == 'Pacbio::Library' }
-        end
+        plate.wells.flat_map(&:used_aliquots)
       end
     end
 

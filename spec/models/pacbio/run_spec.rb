@@ -300,14 +300,12 @@ RSpec.describe Pacbio::Run, :pacbio do
   end
 
   describe 'all_library_aliquots' do
-    it 'only returns aliquots with source_type Pacbio::Library' do
+    it 'returns all the aliquots used for a run' do
       library = create(:pacbio_library)
       pools = create_list(:pacbio_pool, 2)
       wells = [build(:pacbio_well, row: 'A', column: '1', libraries: [library]), build(:pacbio_well, row: 'B', column: '1', pools:)]
       run = create(:pacbio_revio_run, plates: [build(:pacbio_plate, wells:)])
-      run.all_library_aliquots.each do |aliquot|
-        expect(aliquot.source_type).to eq('Pacbio::Library')
-      end
+      expect(run.used_aliquots.size).to eq 8
     end
   end
 end
