@@ -14,27 +14,47 @@ RSpec.describe 'RakeTasks' do
 
   describe 'pool_and_library_aliquots:push_data_to_warehouse' do
     define_negated_matcher :not_change, :change
-
-    let(:pool_aliquots) { create_list(:aliquot, 5, source: create(:pacbio_pool)) }
-    let(:library_aliquots) { create_list(:aliquot, 5, source: create(:pacbio_library)) }
-    let(:request_aliquots) { create_list(:aliquot, 5, source: create(:pacbio_request)) }
-    let(:library) { create(:pacbio_library) }
-    let(:pool) { create(:pacbio_pool) }
-
-    let(:wells) { [build(:pacbio_well, row: 'A', column: '1', libraries: [library]), build(:pacbio_well, row: 'B', column: '1', pools: [pool])] }
-
-    let(:run) { create(:pacbio_revio_run, plates: [build(:pacbio_plate, wells:)]) }
-
     before do
       allow(Emq::Publisher).to receive(:publish)
       allow(Rails.logger).to receive(:error) # Mock the error method on Rails.logger
       Rake::Task['pool_and_library_aliquots:push_data_to_warehouse'].reenable
     end
 
-    it 'publishes all aliquots that are not from Pacbio::Request to the warehouse' do
-      aliquots_used_in_run = run.plates.flat_map(&:wells).flat_map(&:aliquots)
-      expect(Emq::Publisher).to receive(:publish).with(array_including(*library_aliquots, *pool_aliquots, *aliquots_used_in_run), instance_of(Pipelines::Configuration::Item), 'volume_tracking')
+    it 'pushes all pool and library primary aliquots to the warehouse' do
+      pool = create(:pacbio_pool)
+      library = create(:pacbio_library)
+      expect(Emq::Publisher).to receive(:publish).with(array_including(pool.primary_aliquot, library.primary_aliquot), instance_of(Pipelines::Configuration::Item), 'volume_tracking')
+      expect { Rake::Task['pool_and_library_aliquots:push_data_to_warehouse'].invoke }.to output(
+        <<~HEREDOC
+          -> Pushing all pool and library aliquots data to the warehouse for volume tracking
+          -> Successfully pushed all pool and library aliquots data to the warehouse
+        HEREDOC
+      ).to_stdout
+    end
 
+    it 'pushes all pool and library used aliquots used in a run to the warehouse' do
+      pool = create(:pacbio_pool)
+      library = create(:pacbio_library)
+      wells = [build(:pacbio_well, row: 'A', column: '1', libraries: [library]), build(:pacbio_well, row: 'B', column: '1', pools: [pool])]
+      create(:pacbio_revio_run, plates: [build(:pacbio_plate, wells:)])
+      used_aliquots = wells.flat_map(&:used_aliquots)
+      pool_aliquots = pool.used_aliquots.select { |aliquot| aliquot.source_type == 'Pacbio::Library' }
+      expect(Emq::Publisher).to receive(:publish).with(array_including(*used_aliquots, *pool_aliquots), instance_of(Pipelines::Configuration::Item), 'volume_tracking')
+      expect { Rake::Task['pool_and_library_aliquots:push_data_to_warehouse'].invoke }.to output(
+        <<~HEREDOC
+          -> Pushing all pool and library aliquots data to the warehouse for volume tracking
+          -> Successfully pushed all pool and library aliquots data to the warehouse
+        HEREDOC
+      ).to_stdout
+    end
+
+    it 'does not push aliquots of Pacbio:Pool that are not used in Pacbio::Well to the warehouse' do
+      library = create(:pacbio_library, volume: 100)
+      pool = build(:pacbio_pool, used_aliquots: [build(:aliquot, source: library, volume: 100, aliquot_type: :derived)])
+      wells = [build(:pacbio_well, row: 'A', column: '1', pools: [create(:pacbio_pool)])]
+      create(:pacbio_revio_run, plates: [build(:pacbio_plate, wells:)])
+      pool_aliquots = pool.used_aliquots.select { |aliquot| aliquot.source_type == 'Pacbio::Library' }
+      expect(Emq::Publisher).not_to receive(:publish).with(array_including(*pool_aliquots), instance_of(Pipelines::Configuration::Item), 'volume_tracking')
       expect { Rake::Task['pool_and_library_aliquots:push_data_to_warehouse'].invoke }.to output(
         <<~HEREDOC
           -> Pushing all pool and library aliquots data to the warehouse for volume tracking

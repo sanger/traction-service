@@ -68,11 +68,13 @@ RSpec.describe Emq::PublishingJob do
 
   it 'publishes a single message' do
     expect(emq_sender_mock).to receive(:send_message).once
+    expect(Rails.logger).to receive(:info).with('Published volume tracking message to EMQ')
     publishing_job.publish(aliquot, Pipelines.pacbio, 'volume_tracking')
   end
 
   it 'can publish multiple messages' do
     expect(emq_sender_mock).to receive(:send_message).twice
+    expect(Rails.logger).to receive(:info).with('Published volume tracking message to EMQ')
     aliquot2 = build(:aliquot, uuid: SecureRandom.uuid, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now)
     publishing_job.publish([aliquot, aliquot2], Pipelines.pacbio, 'volume_tracking')
   end
@@ -87,7 +89,6 @@ RSpec.describe Emq::PublishingJob do
     bunny_config[:amqp][:schemas][:subjects][:volume_tracking][:version] = 2
     expect(emq_sender_mock).not_to receive(:send_message)
     expect(Rails.logger).to receive(:error).with('Message builder configuration not found for schema key: volume_tracking and version: 2')
-
     publishing_job.publish(aliquot, Pipelines.pacbio, 'volume_tracking')
   end
 
