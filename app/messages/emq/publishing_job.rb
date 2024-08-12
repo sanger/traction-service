@@ -30,7 +30,7 @@ module Emq
     # Any messages published using publishing_job require a corresponding entry in the
     # pipeline configuration, identified by the schema key.
     #
-    def publish(objects, message_config, schema_key) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def publish(objects, message_config, schema_key) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
       # Check if the schema_key exists in the subjects hash and return early if it does not
       schema = bunny_config.amqp.schemas.subjects[schema_key]
       return if schema.nil?
@@ -54,20 +54,27 @@ module Emq
       encoder = Emq::Encoder.new(subject, version, bunny_config.amqp.schemas.registry_url)
       sender = Emq::Sender.new(bunny_config.amqp.isg, subject, version)
 
-      # Publish each object to the EMQ
-      Array(objects).each do |object|
-        # Construct the message to publish from the object using the given configuration
-        message_object = message_builder_class.new(object:,
-                                                   configuration: message_builder_config_obj)
-                                              .content
+      begin
+        # Publish each object to the EMQ
+        Array(objects).each do |object|
+          # Construct the message to publish from the object using the given configuration
+          message_object = message_builder_class.new(object:,
+                                                     configuration: message_builder_config_obj)
+                                                .content
 
-        # check if the schema_key is present in the payload
-        next if message_object[schema_key].nil?
+          # check if the schema_key is present in the payload
+          next if message_object[schema_key].nil?
 
-        # Validate the message against the schema and send it to the EMQ
-        publish_message = message_object[schema_key]
-        message = encoder.encode_message(publish_message)
-        sender.send_message(message)
+          # Validate the message against the schema and send it to the EMQ
+          publish_message = message_object[schema_key]
+          message = encoder.encode_message(publish_message)
+          sender.send_message(message)
+        end
+        # Log success message after successful publishing
+        Rails.logger.info('Published volume tracking message to EMQ')
+      rescue StandardError => e
+        # Raise an exception if any error occurs
+        raise "Failed to publish message to EMQ: #{e.message}"
       end
     end
 
