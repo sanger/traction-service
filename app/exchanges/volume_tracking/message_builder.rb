@@ -20,7 +20,7 @@ module VolumeTracking
 
       aliquot = object
       data = { source_type: '', source_barcode: '', sample_name: '',
-               used_by_type: 'nil', used_by_barcode: '',
+               used_by_type: 'none', used_by_barcode: '',
                aliquot_uuid: aliquot.uuid,
                message_uuid: SecureRandom.uuid }
 
@@ -33,9 +33,10 @@ module VolumeTracking
 
       case aliquot.used_by_type
       when 'Pacbio::Well'
-        data[:used_by_type] = 'well'
+        data[:used_by_type] = 'run'
         data[:used_by_barcode] =
-          "#{aliquot.used_by.plate.sequencing_kit_box_barcode}:#{aliquot.used_by.plate.plate_number}:#{aliquot.used_by.position}" # rubocop:disable Layout/LineLength
+          "#{aliquot.used_by.plate.sequencing_kit_box_barcode}:" \
+          "#{aliquot.used_by.plate.plate_number}:#{aliquot.used_by.position}"
       when 'Pacbio::Pool'
         data[:used_by_type] = 'pool'
         data[:used_by_barcode] = aliquot.used_by.tube.barcode

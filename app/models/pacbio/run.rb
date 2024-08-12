@@ -97,6 +97,16 @@ module Pacbio
       wells.count
     end
 
+    # Returns all aliquots with source_type 'Pacbio::Library' from the wells of the plates.
+    # @return [Array<Aliquot>] an array of aliquots with source_type 'Pacbio::Library'
+    def all_library_aliquots
+      plates.flat_map do |plate|
+        plate.wells.flat_map do |well|
+          well.used_aliquots.select { |aliquot| aliquot.source_type == 'Pacbio::Library' }
+        end
+      end
+    end
+
     private
 
     # We now have SMRT Link versioning

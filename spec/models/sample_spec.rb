@@ -43,6 +43,12 @@ RSpec.describe Sample do
         expect(build(:sample, species: nil)).not_to be_valid
       end
     end
+
+    describe 'retention_instruction' do
+      it 'has a retention_instruction' do
+        expect(create(:sample, retention_instruction: 'return_to_customer_after_2_years').retention_instruction).to eq('return_to_customer_after_2_years')
+      end
+    end
   end
 
   context 'on update' do
@@ -57,6 +63,30 @@ RSpec.describe Sample do
       sample = create(:sample)
       create_list(:request, 2, sample:)
       expect(sample.requests.length).to eq 2
+    end
+  end
+
+  context 'retention instructions validations' do
+    it 'can have nil values' do
+      expect(build(:sample, retention_instruction: nil)).to be_valid
+    end
+
+    it 'cannot have any value other than what is specified' do
+      expect { build(:sample, retention_instruction: 'invalid_instruction') }.to raise_error(ArgumentError)
+    end
+  end
+
+  context 'after create' do
+    describe 'retention instructions' do
+      let(:sample1) { create(:sample, retention_instruction: 'destroy_after_2_years') }
+      let(:sample2) { create(:sample, retention_instruction: 'return_to_customer_after_2_years') }
+      let(:sample3) { create(:sample, retention_instruction: 'long_term_storage') }
+
+      it 'has the correct retention instruction value in the database' do
+        expect(sample1.reload.retention_instruction_before_type_cast).to eq(0)
+        expect(sample2.reload.retention_instruction_before_type_cast).to eq(1)
+        expect(sample3.reload.retention_instruction_before_type_cast).to eq(2)
+      end
     end
   end
 end

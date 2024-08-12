@@ -37,6 +37,28 @@ RSpec.describe Reception do
     it { is_expected.not_to be_valid }
   end
 
+  context 'with an invalid sample' do
+    let(:attributes) do
+      { plates_attributes: [
+        {
+          type: 'plates',
+          barcode: generate(:barcode),
+          wells_attributes: [
+            {
+              position: 'A1',
+              request: { library_type: 'lib', data_type: 'dt', cost_code: generate(:cost_code), external_study_id: generate(:external_study_id) },
+              sample: { name: generate(:sample_name), species: 'Human', external_id: generate(:uuid), retention_instruction: 'invalid_instruction' }
+            }
+          ]
+        }
+      ], tubes_attributes: [] }
+    end
+
+    it 'raises an ArgumentError' do
+      expect { reception.valid? }.to raise_error(ArgumentError)
+    end
+  end
+
   context 'with a valid source' do
     let(:attributes) { { source: 'traction-ui.sequencescape' } }
 

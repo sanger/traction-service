@@ -42,7 +42,6 @@ group :development, :test do
   gem 'shoulda-matchers'
   gem 'simplecov', require: false
   gem 'simplecov-lcov', require: false
-  gem 'sqlite3'
   gem 'webmock'
 end
 
