@@ -30,7 +30,7 @@ module Emq
     # Any messages published using publishing_job require a corresponding entry in the
     # pipeline configuration, identified by the schema key.
     #
-    def publish(objects, message_config, schema_key) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def publish(objects, message_config, schema_key) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
       # Check if the schema_key exists in the subjects hash and return early if it does not
       schema = bunny_config.amqp.schemas.subjects[schema_key]
       return if schema.nil?
