@@ -12,8 +12,8 @@ module V1
   # Provides a JSON:API representation of {Aliquot}.
   #
   # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-  # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package for the service implementation
-  # of the JSON:API standard.
+  # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
+  # for the service implementation of the JSON:API standard.
   class AliquotResource < JSONAPI::Resource
     model_name 'Aliquot'
 
