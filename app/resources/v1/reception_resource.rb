@@ -1,8 +1,29 @@
 # frozen_string_literal: true
 
 module V1
-  # A Reception handles the import of resources into traction
+  # @todo This documentation does not yet include a detailed description of what this resource represents.
+  # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
+  # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+  #
+  # @note Access this resource via the `/api/v1/reception` endpoint.
+  #
+  # Provides a JSON:API representation of {Reception} and handles the import of resources into
+  # traction
+  #
+  # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
+  # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package for the service
+  # implementation of the JSON:API standard.
   class ReceptionResource < JSONAPI::Resource
+    # @!attribute [rw] source
+    #   @return [String] the source of the reception
+    # @!attribute [rw] labware
+    #   @return [Array<Hash>] the labware associated with the reception
+    # @!attribute [rw] plates_attributes
+    #   @return [Array<Hash>] the attributes of the plates
+    # @!attribute [rw] tubes_attributes
+    #   @return [Array<Hash>] the attributes of the tubes
+    # @!attribute [rw] pool_attributes
+    #   @return [Hash] the attributes of the pool
     attributes :source, :labware, :plates_attributes, :tubes_attributes, :pool_attributes
 
     after_create :publish_messages, :construct_resources!
