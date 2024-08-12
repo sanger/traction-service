@@ -1,1 +1,2 @@
-app/**/*.rb --exclude 'Application**'
+--markup=markdown
+--exclude app/controllers
