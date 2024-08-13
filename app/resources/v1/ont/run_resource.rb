@@ -2,10 +2,30 @@
 
 module V1
   module Ont
-    # RunResource
+    # @todo This documentation does not yet include a detailed description of what this resource represents.
+    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
+    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    #
+    # @note Access this resource via the `/api/v1/ont/run/` endpoint.
+    #
+    # Provides a JSON:API representation of {Ont::Run}.
+    #
+    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
+    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
+    # for the service implementation of the JSON:API standard.
     class RunResource < JSONAPI::Resource
       model_name 'Ont::Run'
 
+      # @!attribute [rw] experiment_name
+      #   @return [String] the name of the experiment
+      # @!attribute [rw] state
+      #   @return [String] the state of the run
+      # @!attribute [rw] created_at
+      #   @return [String] the creation timestamp of the run
+      # @!attribute [rw] ont_instrument_id
+      #   @return [Integer] the ID of the associated instrument
+      # @!attribute [rw] flowcell_attributes
+      #   @return [Array<Hash>] the attributes of the flowcells in the run
       attributes :experiment_name, :state, :created_at, :ont_instrument_id, :flowcell_attributes
 
       # Run has an instrument. The foreign key is on this side.
