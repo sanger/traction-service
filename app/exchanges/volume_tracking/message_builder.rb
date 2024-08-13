@@ -22,7 +22,7 @@ module VolumeTracking
     def generate_publish_data
       data = base_data
       populate_by_source_type(data)
-      populate_used_by_type(data)
+      populate_by_used_type(data)
       data
     end
 
@@ -47,10 +47,11 @@ module VolumeTracking
       when 'Pacbio::Pool'
         data[:source_type] = 'pool'
         data[:source_barcode] = object.source.tube.barcode
+        data[:sample_name] = pacbio_library_sample_names
       end
     end
 
-    def populate_used_by_type(data)
+    def populate_by_used_type(data)
       case object.used_by_type
       when 'Pacbio::Well'
         data[:used_by_type] = 'run'
@@ -64,6 +65,16 @@ module VolumeTracking
     def used_by_well_barcode
       "#{object.used_by.plate.sequencing_kit_box_barcode}:" \
         "#{object.used_by.plate.plate_number}:#{object.used_by.position}"
+    end
+
+    def pacbio_library_sample_names
+      object.source.used_aliquots
+            .select { |aliquot| aliquot.source.is_a?(Pacbio::Library) }
+            .map(&:source)
+            .map(&:sample)
+            .map(&:name)
+            .uniq
+            .join(': ')
     end
   end
 end

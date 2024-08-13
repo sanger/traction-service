@@ -82,6 +82,7 @@ module V1
 
       def publish_messages_on_update
         Messages.publish(@model.sequencing_runs, Pipelines.pacbio.message)
+        Emq::Publisher.publish(@model.primary_aliquot, Pipelines.pacbio, 'volume_tracking')
       end
     end
   end
