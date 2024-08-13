@@ -651,4 +651,53 @@ RSpec.describe 'PoolsController', :pacbio do
       expect(response).to have_http_status(:success), response.body
     end
   end
+
+  describe 'when creating a new pool' do
+    context 'on success' do
+      let!(:request) { create(:pacbio_request) }
+      let(:body) do
+        {
+          data: {
+            type: 'pools',
+            attributes: {
+              template_prep_kit_box_barcode: 'LK12345',
+              volume: 1,
+              concentration: 1,
+              insert_size: 100,
+              used_aliquots_attributes: [
+                {
+                  source_id: request.id.to_s,
+                  source_type: 'Pacbio::Request',
+                  template_prep_kit_box_barcode: 'LK12345',
+                  tag_id: 0,
+                  volume: 1,
+                  concentration: 1,
+                  insert_size: 100
+                }
+              ],
+              primary_aliquot_attributes: {
+                volume: '1',
+                concentration: '1',
+                template_prep_kit_box_barcode: 'LK12345',
+                insert_size: '100'
+              }
+            }
+          }
+        }.to_json
+      end
+
+      it 'creates a pool' do
+        post "#{v1_pacbio_pools_path}?include=tube", params: body, headers: json_api_headers
+        expect(response).to have_http_status(:success)
+        change(Pacbio::Pool, :count).by(1).and(
+          change(Aliquot, :count).by(3)
+        )
+      end
+
+      it 'publish message with pipeline: pacbio and volume_tracking' do
+        expect(Emq::Publisher).to receive(:publish).with(anything, having_attributes(pipeline: 'pacbio'), 'volume_tracking')
+        post "#{v1_pacbio_pools_path}?include=tube", params: body, headers: json_api_headers
+      end
+    end
+  end
 end
