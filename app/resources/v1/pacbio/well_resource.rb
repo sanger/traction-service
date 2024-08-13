@@ -2,10 +2,22 @@
 
 module V1
   module Pacbio
-    # WellResource - returns the wells for a Pacbio plate
+    # @todo This documentation does not yet include a detailed description of what this resource represents.
+    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
+    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    #
+    # @note Access this resource via the `/api/v1/pacbio/well/` endpoint.
+    #
+    # Provides a JSON:API representation of {Well}. Returns the wells for a Pacbio plate.
+    #
+    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
+    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
+    # for the service implementation of the JSON:API standard.
     class WellResource < JSONAPI::Resource
       model_name '::Well'
 
+      # @!attribute [rw] position
+      #   @return [String] the position of the well
       attributes :position
 
       # TODO: to fit in with what is currently here we are returning materials which could either
