@@ -21,16 +21,6 @@ module V1
       # for now this is best in here as it is specific to pacbio
       POLYMORPHIC_TYPES = %w[pacbio/requests pacbio/pools pacbio/libraries].freeze
 
-      # @!attribute [rw] source
-      #   @return [Object] the source of the aliquot, can be a request, pool, or library
-      # @!attribute [rw] used_by
-      #   @return [Object] the entity that used the aliquot, can be a request, pool, or library
-      # @!attribute [rw] request
-      #   @return [Request] the request associated with the aliquot
-      # @!attribute [rw] pool
-      #   @return [Pool] the pool associated with the aliquot
-      # @!attribute [rw] library
-      #   @return [Library] the library associated with the aliquot
       has_one :source, polymorphic: true, polymorphic_types: POLYMORPHIC_TYPES
       has_one :used_by, polymorphic: true, polymorphic_types: POLYMORPHIC_TYPES
 
