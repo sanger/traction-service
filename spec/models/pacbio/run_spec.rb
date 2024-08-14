@@ -299,14 +299,31 @@ RSpec.describe Pacbio::Run, :pacbio do
     end
   end
 
-  describe 'all_library_aliquots' do
-    it 'only returns aliquots with source_type Pacbio::Library' do
-      library = create(:pacbio_library)
-      pools = create_list(:pacbio_pool, 2)
-      wells = [build(:pacbio_well, row: 'A', column: '1', libraries: [library]), build(:pacbio_well, row: 'B', column: '1', pools:)]
+  describe 'aliquots_to_publish_on_run' do
+    it 'returns all the aliquots used for a run of source type eq to library or pool' do
+      request_pool = create(:pacbio_pool, primary_aliquot: create(:aliquot, source: build(:pacbio_request), aliquot_type: :primary))
+      pool = create(:pacbio_pool)
+      wells = [build(:pacbio_well, row: 'A', column: '1', libraries: [create(:pacbio_library)]),
+               build(:pacbio_well, row: 'B', column: '1', pools: [request_pool, pool])]
       run = create(:pacbio_revio_run, plates: [build(:pacbio_plate, wells:)])
-      run.all_library_aliquots.each do |aliquot|
-        expect(aliquot.source_type).to eq('Pacbio::Library')
+      run.aliquots_to_publish_on_run do |aliquot|
+        expect(aliquot.source_type).to eq('Pacbio::Library').or eq('Pacbio::Pool')
+      end
+    end
+
+    it 'includes only used_aliquots coming from pool with type source eq to pool' do
+      request_pool = create(:pacbio_pool, primary_aliquot: create(:aliquot, source: build(:pacbio_request), aliquot_type: :primary))
+      library_pool = create(:pacbio_pool, primary_aliquot: create(:aliquot, source: build(:pacbio_pool), aliquot_type: :primary), used_aliquots: [create(:aliquot, source: build(:pacbio_library), aliquot_type: :derived)])
+      wells = [build(:pacbio_well, row: 'A', column: '1', libraries: [create(:pacbio_library)]),
+               build(:pacbio_well, row: 'B', column: '1', pools: [request_pool, library_pool])]
+      run = create(:pacbio_revio_run, plates: [build(:pacbio_plate, wells:)])
+
+      library_pool.used_aliquots do |aliquot|
+        expect(run.aliquots_to_publish_on_run).to include(aliquot)
+      end
+
+      request_pool.used_aliquots do |aliquot|
+        expect(run.aliquots_to_publish_on_run).not_to include(aliquot)
       end
     end
   end
