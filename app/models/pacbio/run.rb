@@ -99,10 +99,19 @@ module Pacbio
 
     # Returns all the used aliquots
     # @return [Array<Aliquot>] an array of the used aliquots in a run
-    def used_aliquots
+    def aliquots_to_publish_on_run
+      to_publish = []
       plates.flat_map do |plate|
-        plate.wells.flat_map(&:used_aliquots)
+        source_aliquots = plate.wells.flat_map(&:used_aliquots).select do |aliquot|
+          aliquot.source_type == 'Pacbio::Pool'
+        end
+        lib_used_aliquots = source_aliquots.flat_map(&:source).flat_map(&:used_aliquots)
+                                           .select do |aliquot|
+          aliquot.source_type == 'Pacbio::Library'
+        end
+        to_publish.concat(source_aliquots, lib_used_aliquots)
       end
+      to_publish
     end
 
     private
