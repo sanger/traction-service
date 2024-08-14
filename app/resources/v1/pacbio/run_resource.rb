@@ -55,9 +55,7 @@ module V1
       end
 
       def publish_messages
-        # Messages.publish(@model, Pipelines.pacbio.message)
-
-        byebug
+        Messages.publish(@model, Pipelines.pacbio.message)
         Emq::Publisher.publish(@model.aliquots_to_publish_on_run, Pipelines.pacbio,
                                'volume_tracking')
       end
