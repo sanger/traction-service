@@ -97,21 +97,41 @@ module Pacbio
       wells.count
     end
 
-    # Returns all the used aliquots
-    # @return [Array<Aliquot>] an array of the used aliquots in a run
+    # Collects and returns a list of aliquots to be published during a run.
+    # This method aggregates aliquots from all plates, specifically targeting aliquots
+    # sourced from 'Pacbio::Pool' and their associated aliquots with a source of 'Pacbio::Library'.
+    # @return [Array] An array of aliquots that are either sourced from 'Pacbio::Pool'
+    # and have a source of 'Pacbio::Library' within those pools.
     def aliquots_to_publish_on_run
       to_publish = []
       plates.flat_map do |plate|
-        source_aliquots = plate.wells.flat_map(&:used_aliquots).select do |aliquot|
-          aliquot.source_type == 'Pacbio::Pool'
-        end
-        lib_used_aliquots = source_aliquots.flat_map(&:source).flat_map(&:used_aliquots)
-                                           .select do |aliquot|
-          aliquot.source_type == 'Pacbio::Library'
-        end
-        to_publish.concat(source_aliquots, lib_used_aliquots)
+        aliquots_pool_source = used_aliquots_with_pool_source(plate)
+        to_publish.concat(used_aliquots_with_lib_source(aliquots_pool_source),
+                          aliquots_pool_source)
       end
       to_publish
+    end
+
+    # This method filters and retrieves all ths used aliquots from the wells
+    # of a given plate that have a source of type 'Pacbio::Pool'.
+    # @param plate [Object]
+    # @return [Array] An array of aliquots where the source_type is 'Pacbio::Pool'.
+    def used_aliquots_with_pool_source(plate)
+      plate.wells.flat_map(&:used_aliquots).select do |aliquot|
+        aliquot.source_type == 'Pacbio::Pool'
+      end
+    end
+
+    # This method filters and retrieves all aliquots from a given collection of pools
+    # where the aliquot's source is of type 'Pacbio::Library'.
+    #
+    # @param pools [Array] An array of pools
+    # @return [Array] An array of aliquots that have a source of type 'Pacbio::Library'.
+    def used_aliquots_with_lib_source(pools)
+      pools.flat_map(&:source).flat_map(&:used_aliquots)
+           .select do |aliquot|
+        aliquot.source_type == 'Pacbio::Library'
+      end
     end
 
     private
