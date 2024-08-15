@@ -5,6 +5,7 @@ on:
     branches:
       - 'develop'  # Trigger the workflow on push to the 'develop' branch
       - 'master'
+      - '1368-y24-212-*'
   workflow_dispatch:
 
 permissions:
@@ -19,15 +20,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Read Ruby version
+        id: read_ruby_version
+        run: echo "RUBY_VERSION=$(cat .ruby-version)" >> $GITHUB_ENV
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3.4
-
-      - name: Install dependencies
-        run: |
-          gem install bundler
-          bundle install
+          bundler-cache: true
 
       - name: Generate Yard documentation
         run: |
