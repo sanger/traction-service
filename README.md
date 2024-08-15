@@ -170,3 +170,13 @@ On merging a pull request into develop, a release will be created with the tag/n
 Update `.release-version` with major/minor/patch. On merging a pull request into master, a release will be created with the release version as the tag/name
 
 See Confluence for further information
+
+## Documentation
+
+We've used Yard as the documentation tool to document the service. This can be accessed via https://sanger.github.io/traction-service/.
+
+To query all the `@todo` items in Yard, the following command can be used:
+
+```shell
+bundle exec yard list --query '@todo'
+```

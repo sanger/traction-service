@@ -8,7 +8,7 @@ module V1
       # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
       # @todo This documentation does not yet include any example usage of the API via cURL or similar.
       #
-      # @note Access this resource via the `/api/v1/pacbio/runs/tag` endpoint.
+      # @note Access this resource via the `/v1/pacbio/runs/tag` endpoint.
       #
       # Provides a JSON:API representation of {Tag}.
       #
