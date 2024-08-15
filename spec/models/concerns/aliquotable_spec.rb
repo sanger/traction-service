@@ -6,10 +6,6 @@ require 'rails_helper'
 # Revio Multiplexing work is complete
 
 RSpec.describe Aliquotable do
-  before do
-    Flipper.enable(:y24_153__enable_volume_check_pacbio_pool_on_update)
-  end
-
   describe '#primary_aliquot' do
     it 'returns the primary aliquot' do
       pacbio_pool = create(:pacbio_pool)

@@ -11,10 +11,6 @@ RSpec.describe Pacbio::Well, :pacbio do
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11', default: true) }
   let!(:version12_revio) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
 
-  before do
-    Flipper.enable(:y24_153__enable_volume_check_pacbio_pool_on_update)
-  end
-
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_well }
 
