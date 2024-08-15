@@ -5,7 +5,6 @@ on:
     branches:
       - 'develop'  # Trigger the workflow on push to the 'develop' branch
       - 'master'
-      - '1368-y24-212-*'
   workflow_dispatch:
 
 permissions:
