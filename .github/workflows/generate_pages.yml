@@ -3,6 +3,7 @@ name: Deploy Yard to GitHub Pages
 on:
   push:
     branches:
+      - 'master'
       - '1368-y24-212*'
 
 permissions:
