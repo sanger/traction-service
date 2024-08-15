@@ -5,6 +5,7 @@ on:
     branches:
       - 'develop'  # Trigger the workflow on push to the 'develop' branch
       - 'master'
+  workflow_dispatch:
 
 permissions:
   pages: write      # Allow writing to the GitHub Pages
@@ -21,7 +22,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3.4  # Set Ruby version to 3.0.6
+          ruby-version: 3.3.4
 
       - name: Install dependencies
         run: |
@@ -33,7 +34,7 @@ jobs:
           bundle exec yard doc
 
       - name: Upload artifact to GitHub Pages
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           path: doc  # Path to the folder containing the Yard documentation (default is 'doc')
 
@@ -43,4 +44,4 @@ jobs:
 
     steps:
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
