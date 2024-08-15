@@ -35,7 +35,9 @@ jobs:
     permissions:
       pages: write      # Allow writing to the GitHub Pages
       id-token: write   # Allow OIDC token to be issued
-
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
