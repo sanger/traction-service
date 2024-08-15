@@ -5,7 +5,7 @@ module V1
   # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
   # @todo This documentation does not yet include any example usage of the API via cURL or similar.
   #
-  # @note Access this resource via the `/v1/qc_assay_type` endpoint.
+  # @note Access this resource via the `/v1/qc_assay_types` endpoint.
   #
   # Provides a JSON:API representation of {QcAssayType} and exposes valid qc assay type options
   # for use by the UI.

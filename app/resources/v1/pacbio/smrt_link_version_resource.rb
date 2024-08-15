@@ -6,7 +6,7 @@ module V1
     # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
     # @todo This documentation does not yet include any example usage of the API via cURL or similar.
     #
-    # @note Access this resource via the `/v1/pacbio/smrt_link_version/` endpoint.
+    # @note Access this resource via the `/v1/pacbio/smrt_link_versions/` endpoint.
     #
     # Provides a JSON:API representation of {Pacbio::Pacbio::SmrtLinkVersion}. Returns the SMRT Link
     #  Versions.
