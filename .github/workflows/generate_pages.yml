@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - 'master'
-      - 'minor-fixes-to-doc'
   workflow_dispatch:
 
 jobs:
