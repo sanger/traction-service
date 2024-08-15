@@ -17,11 +17,11 @@ module V1
       model_name 'Ont::Flowcell'
 
       # @!attribute [rw] flowcell_id
-      #   @return [String] the ID of the flowcell
+      #   @return [Integer] the ID of the flowcell
       # @!attribute [rw] position
       #   @return [String] the position of the flowcell
       # @!attribute [rw] ont_pool_id
-      #   @return [String] the ID of the ONT pool
+      #   @return [Integer] the ID of the ONT pool
       attributes :flowcell_id, :position, :ont_pool_id
 
       has_one :pool, foreign_key: 'ont_pool_id', class_name: 'Pool'

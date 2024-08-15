@@ -13,8 +13,6 @@ module V1
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
     # for the service implementation of the JSON:API standard.
     class TagSetResource < V1::TagSetResource
-      # @!attribute [rw] pipeline
-      #   @return [Symbol] the pipeline associated with the tag set
       filter :pipeline, default: :ont
 
       # Ensure that any tag sets created via this endpoint are scoped to the
