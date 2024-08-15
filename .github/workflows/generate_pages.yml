@@ -9,7 +9,6 @@ permissions:
   pages: write      # Allow writing to the GitHub Pages
   id-token: write   # Allow OIDC token to be issued
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
