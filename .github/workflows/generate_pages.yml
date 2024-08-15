@@ -21,7 +21,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0.6  # Set Ruby version to 3.0.6
+          ruby-version: 3.3.4  # Set Ruby version to 3.0.6
 
       - name: Install dependencies
         run: |
