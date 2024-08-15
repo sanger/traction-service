@@ -2,10 +2,34 @@
 
 module V1
   module Ont
-    # LibraryResource
+    # @todo This documentation does not yet include a detailed description of what this resource represents.
+    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
+    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    #
+    # @note Access this resource via the `/api/v1/ont/library/` endpoint.
+    #
+    # Provides a JSON:API representation of {Ont::Library}.
+    #
+    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
+    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
+    # for the service implementation of the JSON:API standard.
     class LibraryResource < JSONAPI::Resource
       model_name 'Ont::Library'
 
+      # @!attribute [rw] volume
+      #   @return [Float] the volume of the library
+      # @!attribute [rw] kit_barcode
+      #   @return [String] the barcode of the kit used
+      # @!attribute [rw] concentration
+      #   @return [Float] the concentration of the library
+      # @!attribute [rw] insert_size
+      #   @return [Integer] the insert size of the library
+      # @!attribute [rw] created_at
+      #   @return [String] the creation timestamp of the library
+      # @!attribute [rw] deactivated_at
+      #   @return [String, nil] the deactivation timestamp of the library, if any
+      # @!attribute [rw] state
+      #   @return [String] the state of the library
       attributes :volume, :kit_barcode, :concentration, :insert_size,
                  :created_at, :deactivated_at, :state
 
