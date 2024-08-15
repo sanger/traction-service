@@ -3,8 +3,8 @@ name: Deploy Yard to GitHub Pages
 on:
   push:
     branches:
-      - 'develop'  # Trigger the workflow on push to the 'develop' branch
       - 'master'
+      - 'minor-fixes-to-doc'
   workflow_dispatch:
 
 permissions:
