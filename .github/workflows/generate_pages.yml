@@ -3,8 +3,8 @@ name: Deploy Yard to GitHub Pages
 on:
   push:
     branches:
+      - 'develop'  # Trigger the workflow on push to the 'develop' branch
       - 'master'
-      - '1368-y24-212*'
 
 permissions:
   pages: write      # Allow writing to the GitHub Pages
