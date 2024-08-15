@@ -19,9 +19,9 @@ module V1
     # @!attribute [rw] pipeline
     #   @return [String] the pipeline associated with the data type
     # @!attribute [rw] created_at
-    #   @return [DateTime] the timestamp when the data type was created
+    #   @return [String] the timestamp when the data type was created
     # @!attribute [rw] updated_at
-    #   @return [DateTime] the timestamp when the data type was last updated
+    #   @return [String] the timestamp when the data type was last updated
     attributes :name, :pipeline, :created_at, :updated_at
 
     filter :pipeline

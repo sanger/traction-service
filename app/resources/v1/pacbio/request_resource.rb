@@ -33,7 +33,7 @@ module V1
       # @!attribute [rw] sample_species
       #   @return [String] the species of the sample
       # @!attribute [rw] created_at
-      #   @return [DateTime] the creation time of the request
+      #   @return [String] the creation time of the request
       # @!attribute [rw] source_identifier
       #   @return [String] the source identifier of the request
       attributes(*::Pacbio.request_attributes, :sample_name, :barcode, :sample_species,

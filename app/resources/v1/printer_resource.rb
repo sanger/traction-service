@@ -23,9 +23,9 @@ module V1
     # @!attribute [rw] active?
     #   @return [Boolean] the active status of the printer
     # @!attribute [rw] created_at
-    #   @return [DateTime] the timestamp when the printer was created
+    #   @return [String] the timestamp when the printer was created
     # @!attribute [rw] updated_at
-    #   @return [DateTime] the timestamp when the printer was last updated
+    #   @return [String] the timestamp when the printer was last updated
     # @!attribute [rw] deactivated_at
     #   @return [DateTime, nil] the timestamp when printer was deactivated, or nil if it is active
     attributes :name, :labware_type, :active?, :created_at, :updated_at, :deactivated_at

@@ -29,7 +29,7 @@ module V1
       # @!attribute [rw] insert_size
       #   @return [Integer] the insert size of the library
       # @!attribute [rw] created_at
-      #   @return [DateTime] the creation time of the library
+      #   @return [String] the creation time of the library
       # @!attribute [rw] deactivated_at
       #   @return [DateTime, nil] the deactivation time of the library, or nil if not
       #    deactivated

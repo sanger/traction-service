@@ -56,7 +56,7 @@ module V1
       # @!attribute [rw] barcode
       #   @return [String] the barcode of the container
       # @!attribute [rw] created_at
-      #   @return [DateTime] the creation time of the container
+      #   @return [String] the creation time of the container
       # @!attribute [rw] material_type
       #   @return [String] the type of material in the container
       attributes :barcode, :created_at, :material_type

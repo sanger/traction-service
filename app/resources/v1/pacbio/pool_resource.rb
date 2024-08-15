@@ -37,9 +37,9 @@ module V1
       # @!attribute [rw] insert_size
       #   @return [Integer] the insert size of the pool
       # @!attribute [rw] created_at
-      #   @return [DateTime] the creation time of the pool
+      #   @return [String] the creation time of the pool
       # @!attribute [rw] updated_at
-      #   @return [DateTime] the last update time of the pool
+      #   @return [String] the last update time of the pool
       # @!attribute [rw] library_attributes
       #   @return [Hash] the attributes of the library
       # @!attribute [rw] used_aliquots_attributes

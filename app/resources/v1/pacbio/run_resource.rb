@@ -23,7 +23,7 @@ module V1
       # @!attribute [rw] system_name
       #   @return [String] the name of the system
       # @!attribute [rw] created_at
-      #   @return [DateTime] the creation time of the run
+      #   @return [String] the creation time of the run
       # @!attribute [rw] state
       #   @return [String] the state of the run
       # @!attribute [rw] comments

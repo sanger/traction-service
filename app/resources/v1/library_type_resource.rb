@@ -19,9 +19,9 @@ module V1
     # @!attribute [rw] pipeline
     #   @return [String] the pipeline associated with the library type
     # @!attribute [rw] created_at
-    #   @return [DateTime] the timestamp when the library type was created
+    #   @return [String] the timestamp when the library type was created
     # @!attribute [rw] updated_at
-    #   @return [DateTime] the timestamp when the library type was last updated
+    #   @return [String] the timestamp when the library type was last updated
     # @!attribute [rw] external_identifier
     #   @return [String] the external identifier of the library type
     # @!attribute [rw] active
