@@ -180,3 +180,7 @@ To query all the `@todo` items in Yard, the following command can be used:
 ```shell
 bundle exec yard list --query '@todo'
 ```
+
+### Sub-documentation
+
+
