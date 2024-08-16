@@ -1,63 +1,19 @@
 # Volume Tracking
 
-This is a test documentation for volume tracking.
+Excepteur nulla officia aliquip velit eiusmod incididunt esse ea Lorem. Duis irure anim ea tempor nostrud fugiat ad. Quis et ullamco anim velit est ea ad dolore magna adipisicing proident. Deserunt est aliqua nulla veniam consequat magna do cupidatat. Laborum in incididunt consequat eiusmod commodo eiusmod ea duis aliquip mollit in. Dolor occaecat velit ea ipsum eiusmod Lorem amet laborum deserunt commodo non occaecat in commodo. Proident culpa sit consectetur ut aliqua cupidatat consectetur voluptate anim. Pariatur excepteur consequat duis culpa elit est qui sint ipsum mollit ipsum elit. Adipisicing magna velit nulla cillum adipisicing fugiat. Tempor id veniam eu non ipsum ut elit pariatur quis tempor. Non ex culpa est esse labore. Ipsum adipisicing exercitation laborum do excepteur id tempor ipsum ullamco do commodo nostrud amet. Elit velit sit nisi dolor eu laboris qui nisi et aliqua pariatur.
 
-## Headers
+Do ad irure sunt eu Lorem nulla sint dolor. Cillum deserunt ex reprehenderit aliquip nisi. Voluptate consequat nostrud labore voluptate exercitation proident proident excepteur est deserunt anim dolor culpa. Eiusmod enim nulla magna adipisicing amet aliqua dolore duis laborum duis eu eu cupidatat.
 
-# H1 Header
-## H2 Header
-### H3 Header
-#### H4 Header
-##### H5 Header
-###### H6 Header
+Pariatur ex ipsum duis elit eiusmod culpa excepteur cillum ut. Nulla voluptate irure enim nulla est enim ex. Non ullamco proident laboris ipsum eu Lorem mollit.
 
-## Emphasis
+## Procedural Overview
 
-*This text is italicized using asterisks.*
+The overall procedure for volume tracking is displayed below.
 
-_This text is italicized using underscores._
+[![process map](img/process-map.png)](img/process-map.png)
 
-**This text is bolded using asterisks.**
+## Architectural Overiew
 
-__This text is bolded using underscores.__
+The overall architecture for volume tracking is displayed below.
 
-**_This text is bold and italic._**
-
-## Lists
-
-### Unordered List
-
-- Item 1
-- Item 2
-  - Subitem 2.1
-  - Subitem 2.2
-- Item 3
-
-### Ordered List
-
-1. First item
-2. Second item
-3. Third item
-   1. Subitem 3.1
-   2. Subitem 3.2
-
-## Links
-
-[OpenAI's Website](https://www.openai.com)
-
-## Images
-
-![Markdown Logo](https://markdown-here.com/img/icon256.png)
-
-## Blockquotes
-
-> This is a blockquote. You can use this to highlight quotes or important information.
-
-## Code
-
-Inline `code` example.
-
-```python
-# Code block example in Python
-def greet(name):
-    return f"Hello, {name}!"
+[![architecture](img/emq-integration.png)](img/emq-integration.png)
