@@ -38,17 +38,7 @@ jobs:
 
       - name: Generate docs
         run: |
-          for dir in documentation/*; do
-            if [ -d "$dir" ]; then
-              echo "Building documentation in $dir"
-              mkdocs build -f $dir/mkdocs.yml
-              
-              # Define the target directory where you want to copy the site content
-              target_directory="doc/$dir"
-              mkdir -p $target_directory
-              cp -r $dir/site/* $target_directory/
-            fi
-          done
+          ./generate-docs.sh
 
       - name: Upload artifact to GitHub Pages
         uses: actions/upload-pages-artifact@v3
