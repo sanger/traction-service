@@ -28,16 +28,27 @@ jobs:
         run: |
           bundle exec yard doc
       
-      - name: Generate sub routes
+      - name: Setup Python
+        uses: actions/setup-python@v5
+
+      - name: Install Python Dependencies
         run: |
-          mkdir doc/volume-tracking
-      
-      - name: Converts Markdown to HTML
-        uses: jaywcjlove/markdown-to-html-cli@main
-        with:
-          source: documentation/volume-tracking.md
-          output: doc/volume-tracking/index.html
-          favicon: data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌐</text></svg>
+          pip install mkdocs
+          pip install mkdocs-material
+
+      - name: Generate docs
+        run: |
+          for dir in documentation/*; do
+            if [ -d "$dir" ]; then
+              echo "Building documentation in $dir"
+              mkdocs build
+              
+              # Define the target directory where you want to copy the site content
+              target_directory="doc/$dir"
+              mkdir -p $target_directory
+              cp -r $dir/site/* $target_directory/
+            fi
+          done
 
       - name: Upload artifact to GitHub Pages
         uses: actions/upload-pages-artifact@v3

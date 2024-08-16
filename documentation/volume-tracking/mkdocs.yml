@@ -1,0 +1,4 @@
+site_name: Volume Tracking Documentation
+nav:
+  - Home: index.md
+theme: material
