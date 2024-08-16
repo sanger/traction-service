@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - 'master'
-      - '1394-y24-237*'
   workflow_dispatch:
 
 permissions:
