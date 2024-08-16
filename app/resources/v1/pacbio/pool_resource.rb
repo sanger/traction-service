@@ -2,7 +2,17 @@
 
 module V1
   module Pacbio
-    # PoolResource
+    # @todo This documentation does not yet include a detailed description of what this resource represents.
+    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
+    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    #
+    # @note Access this resource via the `/v1/pacbio/pools/` endpoint.
+    #
+    # Provides a JSON:API representation of {Pacbio::Pool}.
+    #
+    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
+    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
+    # for the service implementation of the JSON:API standard.
     class PoolResource < JSONAPI::Resource
       include Shared::RunSuitability
 
@@ -18,11 +28,35 @@ module V1
       has_many :requests
       has_many :libraries
 
+      # @!attribute [rw] volume
+      #   @return [Float] the volume of the pool
+      # @!attribute [rw] concentration
+      #   @return [Float] the concentration of the pool
+      # @!attribute [rw] template_prep_kit_box_barcode
+      #   @return [String] the barcode of the template prep kit box
+      # @!attribute [rw] insert_size
+      #   @return [Integer] the insert size of the pool
+      # @!attribute [rw] created_at
+      #   @return [String] the creation time of the pool
+      # @!attribute [rw] updated_at
+      #   @return [String] the last update time of the pool
+      # @!attribute [rw] library_attributes
+      #   @return [Hash] the attributes of the library
+      # @!attribute [rw] used_aliquots_attributes
+      #   @return [Array<Hash>] the attributes of the used aliquots
+      # @!attribute [rw] primary_aliquot_attributes
+      #   @return [Hash] the attributes of the primary aliquot
+      # @!attribute [rw] used_volume
+      #   @return [Float] the used volume of the pool
+      # @!attribute [rw] available_volume
+      #   @return [Float] the available volume of the pool
       attributes :volume, :concentration, :template_prep_kit_box_barcode,
                  :insert_size, :created_at, :updated_at,
                  :library_attributes, :used_aliquots_attributes, :primary_aliquot_attributes,
                  :used_volume, :available_volume
 
+      # @!attribute [r] source_identifier
+      #   @return [String] the source identifier of the pool
       attribute :source_identifier, readonly: true
 
       ALIQUOT_ATTRIBUTES = %w[id volume concentration template_prep_kit_box_barcode insert_size

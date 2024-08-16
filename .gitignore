@@ -48,3 +48,6 @@ doc/
 
 # Custom editor ignores
 .vscode/settings.json
+
+# RubyMine indexes
+.idea

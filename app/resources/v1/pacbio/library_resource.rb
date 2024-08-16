@@ -2,12 +2,49 @@
 
 module V1
   module Pacbio
-    # LibraryResource
+    # @todo This documentation does not yet include a detailed description of what this resource represents.
+    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
+    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    #
+    # @note Access this resource via the `/v1/pacbio/libraries/` endpoint.
+    #
+    # Provides a JSON:API representation of {Pacbio::Library}.
+    #
+    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
+    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
+    # for the service implementation of the JSON:API standard.
     class LibraryResource < JSONAPI::Resource
       include Shared::RunSuitability
 
       model_name 'Pacbio::Library'
 
+      # @!attribute [rw] state
+      #   @return [String] the state of the library
+      # @!attribute [rw] volume
+      #   @return [Float] the volume of the library
+      # @!attribute [rw] concentration
+      #   @return [Float] the concentration of the library
+      # @!attribute [rw] template_prep_kit_box_barcode
+      #   @return [String] the barcode of the template prep kit box
+      # @!attribute [rw] insert_size
+      #   @return [Integer] the insert size of the library
+      # @!attribute [rw] created_at
+      #   @return [String] the creation time of the library
+      # @!attribute [rw] deactivated_at
+      #   @return [DateTime, nil] the deactivation time of the library, or nil if not
+      #    deactivated
+      # @!attribute [rw] source_identifier
+      #   @return [String] the source identifier of the library
+      # @!attribute [rw] pacbio_request_id
+      #   @return [Integer] the ID of the associated PacBio request
+      # @!attribute [rw] tag_id
+      #   @return [Integer] the ID of the associated tag
+      # @!attribute [rw] primary_aliquot_attributes
+      #   @return [Hash] the attributes of the primary aliquot
+      # @!attribute [rw] used_volume
+      #   @return [Float] the used volume of the library
+      # @!attribute [rw] available_volume
+      #   @return [Float] the available volume of the library
       attributes :state, :volume, :concentration, :template_prep_kit_box_barcode,
                  :insert_size, :created_at, :deactivated_at, :source_identifier,
                  :pacbio_request_id, :tag_id, :primary_aliquot_attributes,

@@ -36,3 +36,7 @@ RSpec/MultipleMemoizedHelpers:
 # Offense count: 97
 RSpec/NestedGroups:
   Max: 4
+
+Layout/LineLength:
+  AllowedPatterns:
+    - '@todo'
