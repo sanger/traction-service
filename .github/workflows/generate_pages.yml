@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'master'
+      - '1394-y24-237*'
   workflow_dispatch:
 
 permissions:
@@ -26,6 +27,12 @@ jobs:
       - name: Generate Yard documentation
         run: |
           bundle exec yard doc
+      
+      - name: Convert Markdown to HTML
+        uses: natescherer/markdown-to-html-with-github-style-action@v1.1.0
+        with:
+          path: documentation/volume-tracking.md
+          outputpath: doc
 
       - name: Upload artifact to GitHub Pages
         uses: actions/upload-pages-artifact@v3
