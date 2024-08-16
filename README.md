@@ -181,6 +181,16 @@ To query all the `@todo` items in Yard, the following command can be used:
 bundle exec yard list --query '@todo'
 ```
 
-### Sub-documentation
+### Adding Sub-documentation
 
+It is possible to add comprehensive documentation about the areas in each application. For example, in this repository, we have added a documentation on how volume tracking works. The process to add these sub-documentation is as follows.
 
+**Prerequesites**
+
+Please install `mkdocs` using `pip install mkdocs`.
+
+1. Navigate to `documentation` directory.
+2. Create a new `mkdocs` documentation with `mkdocs new <sub documentation name>`. Please be aware that this `sub documentation name` will be the route you'll have use to navigate to the documentation. For example, if it's volume-tracking, you'll have to navigate to `sanger.github.io/traction-service/volume-tracking` to access documentation.
+3. Use markdown to write up the documentation in the newly generated directory's `doc` subdirectory.
+
+A CI action will automatically push the documentation upon master releases. If you want to deploy the documentation manually, you can the [manual dispatch](https://github.com/sanger/traction-service/actions/workflows/generate_pages.yml) action.
