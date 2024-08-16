@@ -41,7 +41,7 @@ jobs:
           for dir in documentation/*; do
             if [ -d "$dir" ]; then
               echo "Building documentation in $dir"
-              mkdocs build
+              mkdocs build -f $dir/mkdocs.yml
               
               # Define the target directory where you want to copy the site content
               target_directory="doc/$dir"
