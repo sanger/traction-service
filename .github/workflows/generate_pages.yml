@@ -28,11 +28,15 @@ jobs:
         run: |
           bundle exec yard doc
       
+      - name: Generate sub routes
+        run: |
+          mkdir docs/volume-tracking
+      
       - name: Converts Markdown to HTML
         uses: jaywcjlove/markdown-to-html-cli@main
         with:
           source: documentation/volume-tracking.md
-          output: doc/volume-tracking/index.html
+          output: docs/volume-tracking/index.html
           favicon: data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌐</text></svg>
 
       - name: Upload artifact to GitHub Pages
