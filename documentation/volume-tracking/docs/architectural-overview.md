@@ -9,7 +9,7 @@ Volume Tracking process is fundamentally an asynchronous process that does not b
 ## Components Involved
 
 - [`traction-service`](https://github.com/sanger/traction-service/): A Ruby-on-Rails application that exposes a REST API for long read LIMS[^1]. This is the primary backend for [Traction](https://traction.psd.sanger.ac.uk/#/dashboard).
-- [`tol-lab-share`](https://github.com/sanger/tol-lab-share): This is the consumer application for the queueing system (although might not be the _only_ consumer)[^3].4
+- [`tol-lab-share`](https://github.com/sanger/tol-lab-share): This is the consumer application for the queueing system (although might not be the _only_ consumer)[^3].
 - MultiLIMS Warehouse[^2]: A relational database that contains warehoused data. The table `aliquot` records volume tracking messages.
 - [RedPanda Schema Registry](https://redpanda.psd.sanger.ac.uk/console): A schema registry to store the schemas used in the messaging process.
 
