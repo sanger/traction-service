@@ -1,19 +1,14 @@
 # Volume Tracking
 
-Excepteur nulla officia aliquip velit eiusmod incididunt esse ea Lorem. Duis irure anim ea tempor nostrud fugiat ad. Quis et ullamco anim velit est ea ad dolore magna adipisicing proident. Deserunt est aliqua nulla veniam consequat magna do cupidatat. Laborum in incididunt consequat eiusmod commodo eiusmod ea duis aliquip mollit in. Dolor occaecat velit ea ipsum eiusmod Lorem amet laborum deserunt commodo non occaecat in commodo. Proident culpa sit consectetur ut aliqua cupidatat consectetur voluptate anim. Pariatur excepteur consequat duis culpa elit est qui sint ipsum mollit ipsum elit. Adipisicing magna velit nulla cillum adipisicing fugiat. Tempor id veniam eu non ipsum ut elit pariatur quis tempor. Non ex culpa est esse labore. Ipsum adipisicing exercitation laborum do excepteur id tempor ipsum ullamco do commodo nostrud amet. Elit velit sit nisi dolor eu laboris qui nisi et aliqua pariatur.
+Volume tracking plays a crucial role in the accuracy and reproducibility of DNA long read sequencing, particularly when dealing with primary and derived aliquots. In DNA sequencing, particularly with long reads, the integrity and consistency of the sample volumes are essential for ensuring that the sequencing results are reliable and representative of the original biological material.
 
-Do ad irure sunt eu Lorem nulla sint dolor. Cillum deserunt ex reprehenderit aliquip nisi. Voluptate consequat nostrud labore voluptate exercitation proident proident excepteur est deserunt anim dolor culpa. Eiusmod enim nulla magna adipisicing amet aliqua dolore duis laborum duis eu eu cupidatat.
+Long read sequencing technologies, such as those provided by platforms like PacBio[^1] and Oxford Nanopore[^2], enable the reading of extensive sequences of DNA in a single run, offering significant advantages for complex genome assemblies, structural variation analysis, and epigenetic studies. However, these technologies are highly sensitive to variations in sample preparation, making precise volume management essential from the initial extraction of DNA (primary aliquots) through the subsequent handling and processing (derived aliquots).
 
-Pariatur ex ipsum duis elit eiusmod culpa excepteur cillum ut. Nulla voluptate irure enim nulla est enim ex. Non ullamco proident laboris ipsum eu Lorem mollit.
+Primary aliquots refer to the initial samples obtained directly from the DNA extraction process. These aliquots serve as the foundation for all subsequent sequencing and analysis steps. Derived aliquots, on the other hand, are portions of the primary aliquot that have been further processed, diluted, or otherwise altered to suit specific experimental needs. As each processing step introduces potential variations in volume, precise tracking of these changes is vital to maintain the integrity of the sequencing data.
 
-## Procedural Overview
+Effective volume tracking involves monitoring the volume changes at each stage of the workflow, from the initial extraction, through various preparation steps, to the final sequencing run. This ensures that the DNA concentration remains within optimal ranges for sequencing and that the derived aliquots accurately reflect the original sample. Additionally, meticulous volume tracking can help in troubleshooting sequencing issues, ensuring consistency across multiple runs, and facilitating the reproducibility of results.
 
-The overall procedure for volume tracking is displayed below.
+In this context, understanding and implementing rigorous volume tracking protocols in DNA long read sequencing is essential for researchers aiming to produce high-quality, reliable data that can withstand the scrutiny of rigorous scientific analysis.
 
-[![process map](img/process-map.png)](img/process-map.png)
-
-## Architectural Overiew
-
-The overall architecture for volume tracking is displayed below.
-
-[![architecture](img/emq-integration.png)](img/emq-integration.png)
+[^1]: [PacBio Sequencing 101 Guide](https://www.pacb.com/blog/long-read-sequencing/)
+[^2]: [How Oxford NanoPore Works](https://www.nature.com/articles/s41587-021-01108-x)

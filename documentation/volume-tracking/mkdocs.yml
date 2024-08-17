@@ -1,4 +1,29 @@
 site_name: Volume Tracking Documentation
 nav:
-  - Home: index.md
+  - Introduction: index.md
+  - Process Flow: process-flow.md
+  - Architectural Overview: architectural-overview.md
+  - Setting Up for Development: setting-up.md
+  # - Architectural Overview: architectural-overview.md
 theme: material
+icon:
+    annotation: material/arrow-right-circle
+markdown_extensions:
+  - footnotes
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+plugins:
+   - glightbox
