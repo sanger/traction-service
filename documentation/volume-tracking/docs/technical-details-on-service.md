@@ -1,0 +1,1 @@
+# Technical Details of Traction Service that allows message publishing

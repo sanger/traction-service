@@ -195,7 +195,44 @@ Make sure you've set up the infrastructure locally before proceeding with this s
     bundle exec rails pacbio_data:create
     ```
 
-5. Run the service.
+5. Set up a `bunny.yml` file in `config` directory.
+
+    ```yaml
+    default: &default
+    enabled: true
+    broker_host: localhost
+    broker_port: 5672
+    broker_username: guest
+    broker_password: guest
+    vhost: /
+    exchange: bunny.examples.exchange
+    queue_name: psd.traction.to-warehouse
+    routing_key: #
+    amqp:
+        isg:
+        host: localhost
+        tls: false
+        ca_certificate: "/etc/ssl/certs/ca-certificates.crt"
+        vhost: "tol"
+        username: "admin"
+        password: development
+        exchange: "traction"
+        schemas:
+        registry_url: 'http://localhost:8081/subjects/'
+        subjects:
+            volume_tracking:
+            subject: 'create-aliquot-in-mlwh'
+            version: 1
+
+    development:
+        <<: *default
+        enabled: true
+
+    test:
+        enabled: false
+    ```
+
+6. Run the service.
 
     ```bash
     bundle exec rails s
