@@ -5,7 +5,12 @@ nav:
   - Architectural Overview: architectural-overview.md
   - Setting Up for Development: setting-up.md
   # - Architectural Overview: architectural-overview.md
-theme: material
+# theme: material
+theme:
+    name: material
+    favicon: img/favicon.ico
+    features:
+        - content.code.copy
 icon:
     annotation: material/arrow-right-circle
 markdown_extensions:
@@ -23,6 +28,14 @@ markdown_extensions:
   - pymdownx.mark
   - pymdownx.tilde
   - def_list
+  - tables
+  - pymdownx.highlight:
+        anchor_linenums: true
+        line_spans: __span
+        pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
   - pymdownx.tasklist:
       custom_checkbox: true
   - toc:

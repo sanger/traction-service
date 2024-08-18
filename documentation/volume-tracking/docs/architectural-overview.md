@@ -14,7 +14,7 @@ Volume Tracking process is fundamentally an asynchronous process that does not b
 - [RedPanda Schema Registry](https://redpanda.psd.sanger.ac.uk/console): A schema registry to store the schemas used in the messaging process.
 
 <figure markdown="span">
-  ![Simplified Architecture](./img/simplified-architecture.png)
+  ![Simplified Architecture](./img/simplified-architecture.png){ width="600" }
   <figcaption>Simplified Architecture</figcaption>
 </figure>
 
@@ -31,7 +31,7 @@ The warehouse can either by accessed by traditional SQL connections, or using th
 The messages that needs to be sent to the warehouse database need to be sent to the associated queue `psd.mlwh.multi-lims-warehouse-consumer`  in a specific format, via an exchange that binds to that queue. For volume tracking purposes, a new binding has been created to the queue with the exchange `psd.tol-lab-share`. The routing keys for this queue are as follows:
 
 <figure markdown="span">
-  ![Queue Bindings](./img/queue-bindings.png)
+  ![Queue Bindings](./img/queue-bindings.png){ width="600" }
   <figcaption>Queue Bindings</figcaption>
 </figure>
 
