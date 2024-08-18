@@ -9,10 +9,11 @@ nav:
 theme:
     name: material
     favicon: img/favicon.ico
+    logo: img/traction-logo.svg
     features:
-        - content.code.copy
-icon:
-    annotation: material/arrow-right-circle
+            - content.code.copy
+    icon:
+        annotation: material/arrow-right-circle
 markdown_extensions:
   - footnotes
   - pymdownx.tabbed:
