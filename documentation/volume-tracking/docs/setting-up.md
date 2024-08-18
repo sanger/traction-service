@@ -29,8 +29,9 @@ The third component used, as described in other sections, is MultiLIMS Warehouse
 1. **Ruby** (version specified in [`.ruby-version`](https://github.com/sanger/traction-service/blob/develop/.ruby-version)): Ruby is required to run Traction.
 2. **Python** (version specified in [`Pipfile`](https://github.com/sanger/tol-lab-share/blob/develop/Pipfile)) and [Pipenv](https://pipenv.pypa.io/en/latest/): Python is required to run `tol-lab-share`.
 3. **Docker Engine** (installation guide can be found [here](https://docs.docker.com/engine/install/)): Docker is required to set up the underlying infrastructure locally.
-4. **`rbenv`**: Setup guide [here](https://github.com/rbenv/rbenv).
+4. **rbenv**: Setup guide [here](https://github.com/rbenv/rbenv).
 5. **MySQL**: Setup guide [here](https://github.com/sanger/developer-laptop-setup/blob/main/laptop_setup.md#mysql).
+6. **`jq` CLI**: Setup guide [here](https://formulae.brew.sh/formula/jq).
 
 ## Setting Up
 

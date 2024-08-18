@@ -4,15 +4,17 @@ nav:
   - Process Flow: process-flow.md
   - Architectural Overview: architectural-overview.md
   - Setting Up for Development: setting-up.md
+  - Invoking Volume Tracking Messages: invoking-volume-tracking.md
   # - Architectural Overview: architectural-overview.md
 # theme: material
 theme:
     name: material
     favicon: img/favicon.ico
-    logo: img/traction-logo.svg
+    # logo: img/traction-logo.svg
     features:
             - content.code.copy
     icon:
+        logo: material/test-tube
         annotation: material/arrow-right-circle
 markdown_extensions:
   - footnotes
