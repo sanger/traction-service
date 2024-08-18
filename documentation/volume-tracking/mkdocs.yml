@@ -50,6 +50,9 @@ extra:
     generator: false
 repo_url: https://github.com/sanger/traction-service
 repo_name: sanger/traction-service
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
 markdown_extensions:
   - footnotes
   - pymdownx.tabbed:
@@ -82,6 +85,8 @@ markdown_extensions:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
+  - pymdownx.arithmatex:
+      generic: true
 plugins:
    - glightbox
    - offline
