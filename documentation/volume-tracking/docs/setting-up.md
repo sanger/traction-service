@@ -210,19 +210,19 @@ Make sure you've set up the infrastructure locally before proceeding with this s
     routing_key: #
     amqp:
         isg:
-        host: localhost
-        tls: false
-        ca_certificate: "/etc/ssl/certs/ca-certificates.crt"
-        vhost: "tol"
-        username: "admin"
-        password: development
-        exchange: "traction"
-        schemas:
-        registry_url: 'http://localhost:8081/subjects/'
-        subjects:
-            volume_tracking:
-            subject: 'create-aliquot-in-mlwh'
-            version: 1
+            host: localhost
+            tls: false
+            ca_certificate: "/etc/ssl/certs/ca-certificates.crt"
+            vhost: "tol"
+            username: "admin"
+            password: development
+            exchange: "traction"
+            schemas:
+            registry_url: 'http://localhost:8081/subjects/'
+            subjects:
+                volume_tracking:
+                subject: 'create-aliquot-in-mlwh'
+                version: 1
 
     development:
         <<: *default
