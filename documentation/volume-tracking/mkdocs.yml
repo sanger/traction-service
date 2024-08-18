@@ -9,13 +9,41 @@ nav:
 # theme: material
 theme:
     name: material
+    font: false
     favicon: img/favicon.ico
+    palette:
+        # Palette toggle for automatic mode
+        - media: "(prefers-color-scheme)"
+          toggle:
+            icon: material/brightness-auto
+            name: Switch to light mode
+
+        # Palette toggle for light mode
+        - media: "(prefers-color-scheme: light)"
+          scheme: default 
+          toggle:
+            icon: material/brightness-7
+            name: Switch to dark mode
+
+        # Palette toggle for dark mode
+        - media: "(prefers-color-scheme: dark)"
+          scheme: slate
+          toggle:
+            icon: material/brightness-4
+            name: Switch to system preference
     # logo: img/traction-logo.svg
     features:
             - content.code.copy
+            - navigation.footer
+            - header.autohide
     icon:
         logo: material/test-tube
         annotation: material/arrow-right-circle
+        repo: material/github
+extra:
+    generator: false
+repo_url: https://github.com/sanger/traction-service
+repo_name: sanger/traction-service
 markdown_extensions:
   - footnotes
   - pymdownx.tabbed:
@@ -43,5 +71,12 @@ markdown_extensions:
       custom_checkbox: true
   - toc:
       permalink: true
+  - pymdownx.betterem
 plugins:
    - glightbox
+   - offline
+   - git-committers:
+      repository: squidfunk/mkdocs-material
+      branch: main
+   - git-revision-date-localized:
+      enable_creation_date: true
