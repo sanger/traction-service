@@ -49,7 +49,7 @@ The sections below give instructions to set up and run the components related to
 
     The first command sets up the infrastructure and the second pushes the schemas in the `schemas` directory to the local RedPanda instance hosted at `http://localhost:8081`.
 
-3. Set up the queues with the following command.
+3. Set up the queueing infrastructure with the following command.
 
     ```bash
     python setup_dev_rabbit.py
