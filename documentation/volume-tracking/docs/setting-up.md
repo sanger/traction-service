@@ -209,7 +209,7 @@ Make sure you've set up the infrastructure locally before proceeding with this s
     queue_name: psd.traction.to-warehouse
     routing_key: #
     amqp:
-        isg:
+        isg: # (1)
             host: localhost
             tls: false
             ca_certificate: "/etc/ssl/certs/ca-certificates.crt"
@@ -218,7 +218,7 @@ Make sure you've set up the infrastructure locally before proceeding with this s
             password: development
             exchange: "traction"
             schemas:
-            registry_url: 'http://localhost:8081/subjects/'
+            registry_url: 'http://localhost:8081/subjects/' # (2)
             subjects:
                 volume_tracking:
                 subject: 'create-aliquot-in-mlwh'
@@ -231,6 +231,9 @@ Make sure you've set up the infrastructure locally before proceeding with this s
     test:
         enabled: false
     ```
+
+    1. Used for the volume tracking messaging.
+    2. The schema registry is hosted using a `docker-compose.yml` script. This is done by running `./docker/dependencies/up.sh` script described in the setup guide (discussed above).
 
 6. Run the service.
 
