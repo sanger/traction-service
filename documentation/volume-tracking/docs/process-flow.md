@@ -21,3 +21,7 @@ Upon creating a sequencing run, pools or libraries are transferred into the sequ
 !!! note
 
     Every time a primary and/or a derived aliquot is created and/or updated, `traction-service` triggers a message to the message broker which eventually delivers the message (through `tol-lab-share`) to MultiLIMS Warehouse. This is how tracking of volume is achieved through the system.
+
+The LucidChard Process Diagram is embedded below.
+
+<div style="width: 960px; height: 720px; margin: 10px; position: relative;"><iframe allowfullscreen frameborder="0" style="width:960px; height:720px" src="https://lucid.app/documents/embedded/3c12fbb3-5265-49b5-9f6a-97c9a69a59eb" id="J~04Hgj-wY2C"></iframe></div>
