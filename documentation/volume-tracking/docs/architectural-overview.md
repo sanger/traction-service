@@ -26,7 +26,7 @@ Volume Tracking process is fundamentally an asynchronous process that does not b
 
 ### MultiLIMS Warehouse
 
-The warehouse can either by accessed by traditional SQL connections, or using the setup put forth by `unified_warehouse`. For volume tracking, we use `unified_warehouse` which itself is a Ruby on Rails project. `unified_warehouse` associates itself with a queue hosted at `ware-uat.sanger.ac.uk`, and another Ruby client `Warren` that shovels messages coming into the associated queue of `unified_warehouse`. 
+The warehouse can either by accessed by traditional SQL connections, or using the setup put forth by [`unified_warehouse`](https://github.com/sanger/unified_warehouse). For volume tracking, we use `unified_warehouse` which itself is a Ruby on Rails project. `unified_warehouse` associates itself with a queue hosted at `ware-uat.sanger.ac.uk`, and another Ruby client `Warren` that shovels messages coming into the associated queue of `unified_warehouse`. 
 
 The messages that needs to be sent to the warehouse database need to be sent to the associated queue `psd.mlwh.multi-lims-warehouse-consumer`  in a specific format, via an exchange that binds to that queue. For volume tracking purposes, a new binding has been created to the queue with the exchange `psd.tol-lab-share`. The routing keys for this queue are as follows:
 
