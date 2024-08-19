@@ -38,9 +38,6 @@ When creating a pool from a library, a primary aliquot is created with `source_t
   <figcaption>Pool creation with samples</figcaption>
 </figure>
 
-Note that each pooled sample displays the available volume next to the "Volume" column in the form.
-![process](img/pm-4.png)
-
-The LucidChard Process Diagram is embedded below.
+Note that each pooled sample displays the available volume next to the "Volume" column in the form. The LucidChard Process Diagram for the end-to-end process is embedded below.
 
 <div style="width: 960px; height: 720px; margin: 10px; position: relative;"><iframe allowfullscreen frameborder="0" style="width:960px; height:720px" src="https://lucid.app/documents/embedded/3c12fbb3-5265-49b5-9f6a-97c9a69a59eb" id="J~04Hgj-wY2C"></iframe></div>
