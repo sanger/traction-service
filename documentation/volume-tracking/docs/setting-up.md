@@ -200,7 +200,7 @@ Make sure you've set up the infrastructure locally before proceeding with this s
     ```yaml
     default: &default
     enabled: true
-    broker_host: localhost
+    broker_host: localhost # (3)
     broker_port: 5672
     broker_username: guest
     broker_password: guest
@@ -232,8 +232,9 @@ Make sure you've set up the infrastructure locally before proceeding with this s
         enabled: false
     ```
 
-    1. Used for the volume tracking messaging.
+    1. This establishes the connection details used for the volume tracking messaging.
     2. The schema registry is hosted using a `docker-compose.yml` script. This is done by running `./docker/dependencies/up.sh` script described in the setup guide (discussed above).
+    3. The AMQP connection established with `broker_host` is **not** for volume tracking. This is a queue Traction uses for other purposes.
 
 6. Run the service.
 
