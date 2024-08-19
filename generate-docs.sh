@@ -1,10 +1,24 @@
+#!/bin/bash
+
+# Loop through each item in the 'documentation' directory
 for dir in documentation/*; do
-if [ -d "$dir" ]; then
-    echo "Building documentation in $dir"
-    mkdocs build -f $dir/mkdocs.yml
-    target_doc=$(basename "$dir")
-    target_directory="doc/$target_doc"
-    mkdir -p $target_directory
-    cp -r $dir/site/* $target_directory/
-fi
+    # Check if the item is a directory
+    if [ -d "$dir" ]; then
+        echo "Building documentation in $dir"
+        
+        # Build the documentation using mkdocs with the configuration file in the current directory
+        mkdocs build -f $dir/mkdocs.yml
+        
+        # Get the base name of the directory (e.g., 'volume-tracking' from 'documentation/volume-tracking')
+        target_doc=$(basename "$dir")
+        
+        # Define the target directory where the built documentation will be copied
+        target_directory="doc/$target_doc"
+        
+        # Create the target directory if it doesn't exist
+        mkdir -p $target_directory
+        
+        # Copy the built site to the target directory
+        cp -r $dir/site/* $target_directory/
+    fi
 done
