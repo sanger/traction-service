@@ -5,7 +5,7 @@ nav:
   - Architectural Overview: architectural-overview.md
   - Setting Up for Development: setting-up.md
   - Invoking Volume Tracking Messages: invoking-volume-tracking.md
-  - Technical Details in traction service: technical-details-on-service.md
+  - Technical Details in Traction Service: technical-details-on-service.md
   # - Architectural Overview: architectural-overview.md
 # theme: material
 theme:
@@ -87,6 +87,9 @@ markdown_extensions:
       pygments_lang_class: true
   - pymdownx.arithmatex:
       generic: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 plugins:
    - glightbox
    - offline
