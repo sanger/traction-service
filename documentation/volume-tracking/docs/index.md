@@ -24,7 +24,7 @@ The volume checking process involves primary aliquots that record the original v
 
 ## Libraries
 
-Assume that a library is created with a volume $V_{0}$ and concentration $C_{0}$. The system then records this event by persisting a record in `aliquot` table with `aliquot_type` equal to `primary` and `source_type` equal to `library` along with the volume ($V_{0}$) and concentration ($C_{0}$).
+Assume that a library is created with a volume and concentration. The system then records this event by persisting a record in `aliquot` table with `aliquot_type` equal to `primary` and `source_type` equal to `library` along with the volume and concentration.
 
 The process diagram for the above use-case is depicted below.
 ![process](img/pm-2.png)
