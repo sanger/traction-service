@@ -27,6 +27,10 @@ Emq::Publisher.publish(aliquot,Pipelines.pacbio,'volume_tracking')
 
 This should produce the results as the console outputs and screenshots attached below.
 
+???+ tip
+    You can paste (using ++cmd+v++ ) the code fragment displayed above in the Rails console and press ++enter++ to publish volume tracking messages.
+
+
 === "Rails Console Output"
 
     ```bash
