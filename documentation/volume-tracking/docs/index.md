@@ -84,6 +84,6 @@ The process diagram for the above use-case is depicted below.
 
 ---
 
-The LucidChard Process Diagram for the end-to-end process is embedded below.
+The LucidChart Process Diagram for the end-to-end process is embedded below.
 
 <div style="width: 960px; height: 720px; margin: 10px; position: relative;"><iframe allowfullscreen frameborder="0" style="width:960px; height:720px" src="https://lucid.app/documents/embedded/3c12fbb3-5265-49b5-9f6a-97c9a69a59eb" id="J~04Hgj-wY2C"></iframe></div>
