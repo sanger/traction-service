@@ -6,6 +6,7 @@ nav:
   - Setting Up for Development: setting-up.md
   - Invoking Volume Tracking Messages: invoking-volume-tracking.md
   - Technical Details in Traction Service: technical-details-on-service.md
+  - Schema and the Schema Registry: schema-registry.md
   # - Architectural Overview: architectural-overview.md
 # theme: material
 theme:
@@ -75,7 +76,11 @@ markdown_extensions:
         pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tasklist:
       custom_checkbox: true
   - toc:
