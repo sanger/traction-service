@@ -53,7 +53,7 @@ graph LR
 
 ## Schema
 
-The hosted schema can be accessed through a [REST API](https://docs.redpanda.com/api/pandaproxy-schema-registry/#overview) given by RedPanda. It can also be accessed by the RedPanda Console. The subject of the schema hosted for volume tracking is `create-aliquot-in-mlwh`.
+The hosted schema can be accessed through a [REST API](https://docs.redpanda.com/api/pandaproxy-schema-registry/#overview) given by RedPanda. It can also be accessed by the RedPanda Console. The subject of the schema hosted for volume tracking is `create-aliquot-in-mlwh`. Given below is the `version=1` of the schema.
 
 ```json linenums="1"
 {
