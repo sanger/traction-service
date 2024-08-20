@@ -12,7 +12,7 @@ First, we need to enter into the Rails console. This can be done by the followin
 bundle exec rails c
 ```
 
-This will give an interactive Rails console where you can invoke Rails sytnax.
+This will give an interactive Rails console where you can invoke Rails syntax.
 
 Next, we will trigger the volume tracking process. This involves a series of Ruby expressions.
 
