@@ -15,7 +15,7 @@ The third component used, as described in other sections, is MultiLIMS Warehouse
 
     At the time of this writing, there are only two running instances of MultiLIMS Warehouse. These instances are in following environments.
 
-    1. UAT/Training: The broker is accessible through the [management portal UI](http://ware-uat.psd.sanger.ac.uk:15672/#/).
+    1. UAT/Training: The broker is accessible through the management portal UI. The URI is of the format `https://<warehouse host name>:<management UI port>`.
     2. Production: The broker is accessible through the [management portal UI](http://ware-prod.psd.sanger.ac.uk:15672/#/).
 
     Each environment is therefore equipped with its own message broker, a management portal (to the broker), and a MySQL database to hold the data. As per our current configurations, the applications deployed to respective environments are pointing to the warehouses in the following manner:
