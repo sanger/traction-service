@@ -70,7 +70,7 @@ One of the most important criteria of message processing is handling errors (e.g
 
     Eventual failures are [dead-lettered](https://www.rabbitmq.com/docs/dlx). There is a setup for dead letter exchanges (dlx) and the queues that are bound to those exchanges (dlq) that are persistent. Messages that were dead lettered can be retrieved from these queues and investigated.
 
-As explained in [a previous](#components-involved) section, `tol-lab-share` publishes messages to the warehouse queue. This is done by using the associated queue and the related configurations discussed in previous sections. The overall sequence and detailed error mitigation procedures involving `tol-lab-share` is embedded below (to open it in LucidChart you might need specific access).
+As explained in [a previous](#components-involved) section, `tol-lab-share` publishes messages to the warehouse queue. This is done by using the associated queue and the related configurations discussed in previous sections. The overall sequence and detailed error mitigation procedures involving `tol-lab-share` is embedded below (to open it in Lucid chart you might need specific access).
 
 <div style="width: 750px; height: 720px; margin: 10px; position: relative;"><iframe allowfullscreen frameborder="0" style="width:750px; height:720px" src="https://lucid.app/documents/embedded/6c8d5b09-4e57-4aba-a7ff-8d2cad161b3d" id="D-m4E_KjbZS8"></iframe></div>
 
