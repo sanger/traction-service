@@ -1,6 +1,6 @@
 # Supporting Volume Tracking through Schema Registry
 
-Since the process of volume tracking involves a messaging architecture, there are producers and consumers serialising/deserialising messages published and received. To do so, the publishers and consumers need to agree on a certain set of schemas that provide the ability to facilitate this message serialisation and deserialisation. For example, if a consumer expects an attribute $a_{i}$ from the publisher, and the publisher fails to publish it along with the message, the volume tracking process would err as the message would likely be dead-lettered because the consumer is not able to process the message. Therefore, we have used RedPanda Schema Registry to host the schemas which gives the ability for producers and consumers to use the compatible schemas to publish and consume.
+Since the process of volume tracking involves a messaging architecture, there are producers and consumers serializing/deserializing messages published and received. To do so, the publishers and consumers need to agree on a certain set of schemas that provide the ability to facilitate this message serialization and deserialization. For example, if a consumer expects an attribute $a_{i}$ from the publisher, and the publisher fails to publish it along with the message, the volume tracking process would err as the message would likely be dead-lettered because the consumer is not able to process the message. Therefore, we have used RedPanda Schema Registry to host the schemas which gives the ability for producers and consumers to use the compatible schemas to publish and consume.
 
 ???+ tip
 
@@ -10,7 +10,7 @@ Since the process of volume tracking involves a messaging architecture, there ar
 
 ## Avro
 
-To facilitate seralisation and deserialisation processes using schemas, we used [Avro as our specification](https://avro.apache.org/docs/1.11.1/). It was initially developed by Apache to manage efficient and compact storage of big data. However, our use-case for Avro relies on its ability to lay out a schema for our messages, serialise them (following validation) and validate them upon deserialisation. The internals of Avro on how these validations occur are not discussed here. However, a simple guide is given on the process and the tools we used for serialisation and deserialisation.
+To facilitate serialization and deserialization processes using schemas, we used [Avro as our specification](https://avro.apache.org/docs/1.11.1/). It was initially developed by Apache to manage efficient and compact storage of big data. However, our use-case for Avro relies on its ability to lay out a schema for our messages, serialize them (following validation) and validate them upon deserialization. The internals of Avro on how these validations occur are not discussed here. However, a simple guide is given on the process and the tools we used for serialization and deserialization.
 
 It is noteworthy to mention that the publishers and consumers that the volume tracking process involves were written using different technologies. Therefore, here are some points that require highlighting as both the producers and consumers use schemas as a common concept.
 
@@ -18,15 +18,15 @@ It is noteworthy to mention that the publishers and consumers that the volume tr
 
 ### Producers
 
-Producers for volume tracking were written in Ruby (Ruby on Rails as the web framework). The library (i.e., Ruby Gem) we have used to serialise the messages using the schemas is [`avro`](https://rubygems.org/gems/avro/versions/1.8.1?locale=en). We use `avro` library's `Avro::IO::BinaryEncoder` to encode the data into binary format using the schema and send the binary data along the AMQP channel established with the message broker.
+Producers for volume tracking were written in Ruby (Ruby on Rails as the web framework). The library (i.e., Ruby Gem) we have used to serialize the messages using the schemas is [`avro`](https://rubygems.org/gems/avro/versions/1.8.1?locale=en). We use `avro` library's `Avro::IO::BinaryEncoder` to encode the data into binary format using the schema and send the binary data along the AMQP channel established with the message broker.
 
 ### Consumers
 
-Consumers for volume tracking were written in Python. The library we have used to deserialise messages using the schemas is [`fastavro`](https://github.com/fastavro/fastavro). We use `fastavro` library's `schemaless_reader` to decode the data into a Python type and map it in a way that we could access the data inside messages.
+Consumers for volume tracking were written in Python. The library we have used to deserialize messages using the schemas is [`fastavro`](https://github.com/fastavro/fastavro). We use `fastavro` library's `schemaless_reader` to decode the data into a Python type and map it in a way that we could access the data inside messages.
 
-## The general process of message serialisation and deserialisation
+## The general process of message serialization and deserialization
 
-The following figure aims to give a bird's-eye perspective on message serialisation and deserialisation. 
+The following figure aims to give a bird's-eye perspective on message serialization and deserialization. 
 
 ### Publisher
 
