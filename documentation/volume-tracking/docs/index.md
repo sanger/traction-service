@@ -74,7 +74,10 @@ When creating a run, a primary aliquot is created with `source_type` as `Pacbio:
 
 We are displaying the available volume of each library, if the user enters a value higher than the available volume there would an error prompt displayed in the page and the user would not be allowed to create/update the run.
 
-![Pooled Samples Volume Check](img/vc-run.png)
+<figure markdown="span">
+  ![Pooled Samples Volume Check](img/vc-run.png){width="600"}
+  <figcaption>Pool samples volume</figcaption>
+</figure>
 
 The process diagram for the above use-case is depicted below.
 ![process](img/pm-3.png)
