@@ -12,7 +12,7 @@ Since the process of volume tracking involves a messaging architecture, there ar
 
 To facilitate seralisation and deserialisation processes using schemas, we used [Avro as our specification](https://avro.apache.org/docs/1.11.1/). It was initially developed by Apache to manage efficient and compact storage of big data. However, our use-case for Avro relies on its ability to lay out a schema for our messages, serialise them (following validation) and validate them upon deserialisation. The internals of Avro on how these validations occur are not discussed here. However, a simple guide is given on the process and the tools we used for serialisation and deserialisation.
 
-It is noteworthy to mention that the publishers and consumers that the volume tracking process involves were written using different technologies. It does not matter in terms of communication between components as interface they use to communicate is asynchronous, but there is are some points that require highlighting as both the producers and consumers use schemas as a common concept.
+It is noteworthy to mention that the publishers and consumers that the volume tracking process involves were written using different technologies. Therefore, it here are some points that require highlighting as both the producers and consumers use schemas as a common concept.
 
 
 
