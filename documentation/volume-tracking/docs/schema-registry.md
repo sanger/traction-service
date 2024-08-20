@@ -1,6 +1,6 @@
 # Supporting Volume Tracking through Schema Registry
 
-Since the process of volume tracking involves a messaging architecture, there are producers and consumers serialising/deserialising messages published and received. To do so, the publishers and consumers need to agree on a certain set of schemas that provide the ability to facilitate this message serialisation and deserialisation. For example, if a consumer expects an attribute $a_{i}$ from the publisher, and the publisher fails to publish it along with the message, the volume tracking process would err as the message would likely be dead-lettered because the consumer is not able to process the message. Therefore, we have used RedPanda Schema Registry to host the schemas which gives the ability for producers and consumers to use the same schemas to publish and consume.
+Since the process of volume tracking involves a messaging architecture, there are producers and consumers serialising/deserialising messages published and received. To do so, the publishers and consumers need to agree on a certain set of schemas that provide the ability to facilitate this message serialisation and deserialisation. For example, if a consumer expects an attribute $a_{i}$ from the publisher, and the publisher fails to publish it along with the message, the volume tracking process would err as the message would likely be dead-lettered because the consumer is not able to process the message. Therefore, we have used RedPanda Schema Registry to host the schemas which gives the ability for producers and consumers to use the compatible schemas to publish and consume.
 
 ???+ tip
 
@@ -53,7 +53,7 @@ graph LR
 
 ## Schema
 
-The hosted schema can be accessed through a REST API given by RedPanda. It can also be accessed by the RedPanda Console. The subject of the schema hosted for volume tracking is `create-aliquot-in-mlwh`.
+The hosted schema can be accessed through a [REST API](https://docs.redpanda.com/api/pandaproxy-schema-registry/#overview) given by RedPanda. It can also be accessed by the RedPanda Console. The subject of the schema hosted for volume tracking is `create-aliquot-in-mlwh`.
 
 ```json linenums="1"
 {
