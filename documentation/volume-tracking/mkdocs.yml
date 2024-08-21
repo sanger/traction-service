@@ -5,8 +5,9 @@ nav:
   - Architectural Overview: architectural-overview.md
   - Setting Up for Development: setting-up.md
   - Invoking Volume Tracking Messages: invoking-volume-tracking.md
-  - Technical Details in Traction Service: technical-details-on-service.md
+  - Technical Details in Traction Service on Message Publishing: technical-details-on-service.md
   - Schema and the Schema Registry: schema-registry.md
+  - Querying the MultiLIMS Warehouse' aliquots table: querying-mlwh.md
   # - Architectural Overview: architectural-overview.md
 # theme: material
 theme:
