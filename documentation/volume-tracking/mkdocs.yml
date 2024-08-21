@@ -47,6 +47,8 @@ theme:
             - header.autohide
             - content.code.select
             - content.code.annotate
+            - navigation.top
+            - search.highlight
     icon:
         logo: material/test-tube
         annotation: material/arrow-right-circle
