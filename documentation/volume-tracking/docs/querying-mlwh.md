@@ -75,7 +75,18 @@ Given below are some common SQL queries we think that would be useful for queryi
     WHERE source_barcode = "foo"    -- Change "foo" to the actual barcode
     AND source_type = "library"
     AND aliquot_type = "derived"
-    AND used_by_type = "pool"
+    AND used_by_type = "pool"       -- Change this to run if you want to find the used volume used for a run
     AND used_by_barcode = "bar";    -- Change "bar" to the actual barcode
     ```
 
+- How much volume of a pool (identified by barcode `foo`) is used in a run (identified by barcode `bar`)?
+
+    ```sql
+    SELECT SUM(volume) AS used_volume
+    FROM aliquot
+    WHERE source_barcode = "foo"    -- Change "foo" to the actual barcode
+    AND source_type = "pool"
+    AND aliquot_type = "derived"
+    AND used_by_type = "run"
+    AND used_by_barcode = "bar";    -- Change "bar" to the actual barcode
+    ```
