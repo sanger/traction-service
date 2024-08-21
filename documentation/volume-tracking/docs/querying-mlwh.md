@@ -4,22 +4,22 @@ Volume tracking information in MultiLIMS Warehouse are stored in the `aliquot` t
 
 <center>
 
-|    **Attribue**   |     **Type**    |                      **Description**                     |       **Values**      |
-|:-----------------:|:---------------:|:--------------------------------------------------------:|:---------------------:|
-|     `id_lims`     |  `varchar(255)` | The LIMS system that the aliquot was created in          |       `Traction`      |
-|   `aliquot_uuid`  |  `varchar(255)` | The UUID of the aliquot in the LIMS system               |                       |
-|   `aliquot_type`  |  `varchar(255)` | The type of the aliquot                                  |  `primary`, `derived` |
-|   `source_type`   |  `varchar(255)` | The type of the source of the aliquot                    |   `library`, `pool`   |
-|  `source_barcode` |  `varchar(255)` | The barcode of the source of the aliquot                 |                       |
-|   `sample_name`   |  `varchar(255)` | The name of the sample that the aliquot was created from |                       |
-|   `used_by_type`  |  `varchar(255)` | The type of the entity that the aliquot is used by       | `none`, `run`, `pool` |
-| `used_by_barcode` |  `varchar(255)` | The barcode of the entity that the aliquot is used by    |                       |
-|      `volume`     | `decimal(10,2)` | The volume of the aliquot ($\mu L$)                           |                       |
-|  `concentration`  | `decimal(10,2)` | The concentration of the aliquot ($ng/\mu L$)                 |                       |
-|   `insert_size`   |      `int`      | The size of the insert in base pairs                     |                       |
-|   `last_updated`  |  `datetime(6)`  | The date and time that the aliquot was last updated      |                       |
-|   `recorded_at`   |  `datetime(6)`  | The date and time that the aliquot was recorded          |                       |
-|    `created_at`   |  `datetime(6)`  | The date and time that the aliquot was created           |                       |
+| **Attribue**      | **Type**        | **Description**                                          | **Values**            |
+|-------------------|-----------------|----------------------------------------------------------|-----------------------|
+| `id_lims`         | `varchar(255)`  | The LIMS system that the aliquot was created in          | `Traction`            |
+| `aliquot_uuid`    | `varchar(255)`  | The UUID of the aliquot in the LIMS system               |                       |
+| `aliquot_type`    | `varchar(255)`  | The type of the aliquot                                  | `primary`, `derived`  |
+| `source_type`     | `varchar(255)`  | The type of the source of the aliquot                    | `library`, `pool`     |
+| `source_barcode`  | `varchar(255)`  | The barcode of the source of the aliquot                 |                       |
+| `sample_name`     | `varchar(255)`  | The name of the sample that the aliquot was created from |                       |
+| `used_by_type`    | `varchar(255)`  | The type of the entity that the aliquot is used by       | `none`, `run`, `pool` |
+| `used_by_barcode` | `varchar(255)`  | The barcode of the entity that the aliquot is used by    |                       |
+| `volume`          | `decimal(10,2)` | The volume of the aliquot ($\mu L$)                      |                       |
+| `concentration`   | `decimal(10,2)` | The concentration of the aliquot ($ng/\mu L$)            |                       |
+| `insert_size`     | `int`           | The size of the insert in base pairs                     |                       |
+| `last_updated`    | `datetime(6)`   | The date and time that the aliquot was last updated      |                       |
+| `recorded_at`     | `datetime(6)`   | The date and time that the aliquot was recorded          |                       |
+| `created_at`      | `datetime(6)`   | The date and time that the aliquot was created           |                       |
 
 </center>
 
