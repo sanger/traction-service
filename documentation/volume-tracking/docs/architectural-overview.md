@@ -47,6 +47,8 @@ To query aliquots, please use SQL syntax described as follows:
 SELECT <columns> from mlwhwarehouse WHERE <criteria>;
 ```
 
+Please follow the [Querying](/traction-service/volume-tracking/querying-mlwh.html) section for some custom queries for querying the MultiLIMS Warehouse.
+
 ### Tol Lab Share
 
 `tol-lab-share` does not have an API exposed to access the application. It is a queue consumer that establishes a set of [AMQP connections](https://www.rabbitmq.com/tutorials/amqp-concepts) with the given queues and consumes messages from them. For each kind of message (for example, volume tracking, bioscan, _etc._), a processor exists to process the incoming messages from the queue. In terms of volume tracking, the processor is located at [`tol_lab_share/processors/create_aliquot_processor.py`](https://github.com/sanger/tol-lab-share/blob/develop/tol_lab_share/processors/create_aliquot_processor.py). The processor does the following:
