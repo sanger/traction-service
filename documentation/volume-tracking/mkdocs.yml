@@ -3,10 +3,12 @@ nav:
   - Process Flow: index.md
   # - Process Flow: process-flow.md
   - Architectural Overview: architectural-overview.md
-  - Setting Up for Development: setting-up.md
-  - Invoking Volume Tracking Messages: invoking-volume-tracking.md
-  - Technical Details in Traction Service on Message Publishing: technical-details-on-service.md
-  - Schema and the Schema Registry: schema-registry.md
+  - Setting Up for Development:
+    - Setting Up Guide: setting-up.md
+    - Invoking Volume Tracking Messages: invoking-volume-tracking.md
+  - Technical Details:
+    - Technical Details in Traction Service on Message Publishing: technical-details-on-service.md
+    - Schema and the Schema Registry: schema-registry.md
   - Querying the MultiLIMS Warehouse' aliquots table: querying-mlwh.md
   # - Architectural Overview: architectural-overview.md
 # theme: material
