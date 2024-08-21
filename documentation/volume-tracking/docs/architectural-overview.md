@@ -74,3 +74,13 @@ As explained in [a previous](#components-involved) section, `tol-lab-share` publ
 
 <div style="width: 750px; height: 720px; margin: 10px; position: relative;"><iframe allowfullscreen frameborder="0" style="width:750px; height:720px" src="https://lucid.app/documents/embedded/6c8d5b09-4e57-4aba-a7ff-8d2cad161b3d" id="D-m4E_KjbZS8"></iframe></div>
 
+### Traction Service
+
+The entities laid out for volume tracking in `traction-service` are given below:
+
+<figure markdown="span">
+  ![ERD](./img/erd.png)
+  <figcaption>Entities used for Volume Tracking in Traction</figcaption>
+</figure>
+
+Note that this **does not** display all the entities used in `traction-service`. It displays only the important entities used for volume tracking and the relationships between them.
