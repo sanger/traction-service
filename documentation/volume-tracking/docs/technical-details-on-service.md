@@ -2,7 +2,7 @@
 
 The two classes central to sending volume tracking messages to the message broker are [`app/messages/emq/publisher.rb`](https://github.com/sanger/traction-service/blob/21fd7c20ec7c9a329914a53968aa23c4a6dac4af/app/messages/emq/publisher.rb) and [`app/messages/emq/publishing_job.rb`](https://github.com/sanger/traction-service/blob/a2e3e693ccacb1b4b5be31be56c5346f97c929d9/app/messages/emq/publishing_job.rb). The former defines functions to instantiate an `Emq::PublishingJob` object, and the latter defines business logic on how message publishing should occur. The former is a trivial implementation on instantiating a Ruby object based on a configuration (`enabled` in `bunny.yml`); therefore it is not discussed here. However, the latter has some points that are worthy of some explaination. `Emq::PublishingJob` class' `publish` method is documented in `traction-service` [documentation](https://sanger.github.io/traction-service/Emq/PublishingJob.html#:~:text=Instance%20Method%20Details-,%23publish(objects%2C%20message_config%2C%20schema_key)%20%E2%87%92%20Object,-Publish%20a%20message).
 
-???+ tip
+???+ tip linenums="1"
 
     Each noteworthy code fragment/line is explained in tooltips that could be viewed by clicking on the right arrow symbol (:material-arrow-right-circle:) right hand side of the code line.
 
