@@ -55,6 +55,8 @@ repo_name: sanger/traction-service
 extra_javascript:
   - javascripts/mathjax.js
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+  - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
+  - javascripts/tablesort.js
 markdown_extensions:
   - footnotes
   - pymdownx.tabbed:
