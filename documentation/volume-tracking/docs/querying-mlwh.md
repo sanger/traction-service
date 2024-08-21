@@ -79,7 +79,7 @@ Given below are some common SQL queries we think that would be useful for queryi
     AND used_by_barcode = "bar";    -- Change "bar" to the actual barcode
     ```
 
-- How much volume of a pool (identified by barcode `foo`) is used in a run (identified by barcode `bar`)?
+- How much volume of a **pool** (identified by barcode `foo`) is used in a **run** (identified by barcode `bar`)?
 
     ```sql
     SELECT SUM(volume) AS used_volume
