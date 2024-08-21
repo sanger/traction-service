@@ -93,5 +93,4 @@ Given below are some common SQL queries we think that would be useful for queryi
 
     !!! note
 
-        Note that we use _generated_ barcodes using `sequencing_kit_box_barcode`
-        the plate number of the plate used for the run and the position of the well. `sequencing_kit_box_barcode` is defined in `Pacbio::Run` relation mentioned in the [ERD](architectural-overview.md#traction-service).
+        Note that we use _generated_ barcodes using `sequencing_kit_box_barcode`, the plate number of the plate used for the run and the position of the well. `sequencing_kit_box_barcode` is defined in `Pacbio::Run` relation mentioned in the [ERD](architectural-overview.md#traction-service) e.g format `4438383464646466464646466464:1:A1`.
