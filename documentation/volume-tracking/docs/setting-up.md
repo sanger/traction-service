@@ -226,7 +226,7 @@ Make sure you've set up the infrastructure locally before proceeding with this s
 
     development:
         <<: *default
-        enabled: true
+        enabled: true   # (4)
 
     test:
         enabled: false
@@ -235,6 +235,7 @@ Make sure you've set up the infrastructure locally before proceeding with this s
     1. This establishes the connection details used for the volume tracking messaging.
     2. The schema registry is hosted using a `docker-compose.yml` script. This is done by running `./docker/dependencies/up.sh` script described in the setup guide (discussed above).
     3. The AMQP connection established with `broker_host` is **not** for volume tracking. This is a queue Traction uses for other purposes.
+    4. This needs to be `true` as it enables publishing messages to the broker.
 
 6. Run the service.
 
