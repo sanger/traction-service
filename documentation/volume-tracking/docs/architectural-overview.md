@@ -47,7 +47,7 @@ To query aliquots, please use SQL syntax described as follows:
 SELECT <columns> from mlwhwarehouse WHERE <criteria>;
 ```
 
-Please follow the [Querying](/traction-service/volume-tracking/querying-mlwh.html) section for some custom queries for querying the MultiLIMS Warehouse.
+Please follow the [Querying](querying-mlwh.md) section for some custom queries for querying the MultiLIMS Warehouse.
 
 ### Tol Lab Share
 

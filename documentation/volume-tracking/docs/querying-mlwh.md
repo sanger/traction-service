@@ -90,3 +90,8 @@ Given below are some common SQL queries we think that would be useful for queryi
     AND used_by_type = "run"
     AND used_by_barcode = "bar";    -- Change "bar" to the actual barcode
     ```
+
+    !!! note
+
+        Note that we use _generated_ barcodes using `sequencing_kit_box_barcode`
+        the plate number of the plate used for the run and the position of the well. `sequencing_kit_box_barcode` is defined in `Pacbio::Run` relation mentioned in the [ERD](architectural-overview.md#traction-service).
