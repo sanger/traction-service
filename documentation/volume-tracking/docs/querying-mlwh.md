@@ -66,3 +66,16 @@ Given below are some common SQL queries we think that would be useful for queryi
         ) 
     AS remaining_volume;
     ```
+
+- How much of volume for a **library** (identified by barcode `foo`) is used in a **pool** (identified by barcode `bar`)?
+
+    ```sql
+    SELECT SUM(volume) AS used_volume
+    FROM aliquot
+    WHERE source_barcode = "foo"    -- Change "foo" to the actual barcode
+    AND source_type = "library"
+    AND aliquot_type = "derived"
+    AND used_by_type = "pool"
+    AND used_by_barcode = "bar";    -- Change "bar" to the actual barcode
+    ```
+
