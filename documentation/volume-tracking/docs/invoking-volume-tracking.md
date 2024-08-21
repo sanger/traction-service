@@ -25,10 +25,10 @@ aliquot = Aliquot.new(uuid:SecureRandom.uuid, volume:10,concentration:2.5,templa
 Emq::Publisher.publish(aliquot,Pipelines.pacbio,'volume_tracking')
 ```
 
-This should produce the results as the console outputs and screenshots attached below.
-
 ???+ tip
     You can paste (using ++cmd+v++ ) the code fragment displayed above in the Rails console and press ++enter++ to publish volume tracking messages.
+
+This should produce the results as the console outputs and screenshots attached below. Note that given below is a tabbed group of outputs, and you can switch between tabs to see the output of each component (e.g., Rails Console Output, Tol Lab Share Output, Volume Tracking Queue and MLWH Warehouse Queue).
 
 
 === "Rails Console Output"
