@@ -1,10 +1,14 @@
 # Invoking Volume Tracking messages through Traction Service
 
-There are multiple ways the volume tracking message can be triggered. In this instance, we will use `traction-service` without using the UI of Traction. How the users trigger this would be using Traction UI, and it is documented elsewhere. We will use Rails' [REPL console](https://guides.rubyonrails.org/command_line.html#bin-rails-console) to trigger a message into the warehouse.
+There are multiple ways the volume tracking message can be triggered. 
+In this instance, we will use `traction-service` without using the UI of Traction. 
+How the users trigger this would be using Traction UI, and it is documented elsewhere. 
+We will use Rails' [REPL console](https://guides.rubyonrails.org/command_line.html#bin-rails-console) to trigger a message into the warehouse.
 
 !!! warning "Read this before running through this section"
 
-    This section assumes that you have already went through the setting up process that was explained in a section before. You will not need a running `traction-service` instance but you will need a running `tol-lab-share` instance.
+    This section assumes that you have already went through the setting up process that was explained in a section before. 
+    You will not need a running `traction-service` instance but you will need a running `tol-lab-share` instance.
 
 First, we need to enter into the Rails console. This can be done by the following command in `traction-service` directory.
 
@@ -28,7 +32,8 @@ Emq::Publisher.publish(aliquot,Pipelines.pacbio,'volume_tracking')
 ???+ tip
     You can paste (using ++cmd+v++ ) the code fragment displayed above in the Rails console and press ++enter++ to publish volume tracking messages.
 
-This should produce the results as the console outputs and screenshots attached below. Note that given below is a tabbed group of outputs, and you can switch between tabs to see the output of each component (e.g., Rails Console Output, Tol Lab Share Output, Volume Tracking Queue and MLWH Warehouse Queue).
+This should produce the results as the console outputs and screenshots attached below. 
+Note that given below is a tabbed group of outputs, and you can switch between tabs to see the output of each component (e.g., Rails Console Output, Tol Lab Share Output, Volume Tracking Queue and MLWH Warehouse Queue).
 
 
 === "Rails Console Output"
@@ -93,4 +98,5 @@ This should produce the results as the console outputs and screenshots attached 
 
 !!! success "Why does the warehouse queue have one message remaining?"
 
-    We have not configured a `unified_warehouse` instance to consume the message coming into the warehouse queue (i.e. `psd.mlwh.multi-lims-warehouse-consumer`). If we had, this message would have been consumed and persisted in the database.
+    We have not configured a `unified_warehouse` instance to consume the message coming into the warehouse queue (i.e. `psd.mlwh.multi-lims-warehouse-consumer`). 
+    If we had, this message would have been consumed and persisted in the database.

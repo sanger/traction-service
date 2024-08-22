@@ -20,18 +20,22 @@ $$
 V_{required} < V_{original} - V_{used}
 $$
 
-The volume checking process involves primary aliquots that record the original volume of a library/pool or a run, and the summation of all the derived aliquots that are required. If the required volume is higher than the available volume, the volume check fails.
+The volume checking process involves primary aliquots that record the original volume of a library/pool or a run, and the summation of all the derived aliquots that are required. 
+If the required volume is higher than the available volume, the volume check fails.
 
 ## Libraries
 
-Assume that a library is created with a volume and concentration. The system then records this event by persisting a record in `aliquot` table with `aliquot_type` equal to `primary` and `source_type` equal to `library` along with the volume and concentration.
+Assume that a library is created with a volume and concentration. 
+The system then records this event by persisting a record in `aliquot` table with `aliquot_type` equal to `primary` and `source_type` equal to `library` along with the volume and concentration.
 
 The process diagram for the above use-case is depicted below.
 ![process](img/pm-2.png)
 
 ## Pools
 
-When creating a pool, a primary aliquot is created with `source_type` equal to `PacBio::Pool`. A Pool can be created using multiple libraries as well multiple requests. Derived aliquots are created for each library or request used in a pool. But we are only sending aliquots created by the library (we are not sending aliquots created by the request) to the warehouse. 
+When creating a pool, a primary aliquot is created with `source_type` equal to `PacBio::Pool`. 
+A Pool can be created using multiple libraries as well multiple requests. Derived aliquots are created for each library or request used in a pool. 
+But we are only sending aliquots created by the library (we are not sending aliquots created by the request) to the warehouse. 
 
 <figure markdown="span">
   ![process](img/pool-from-library.png)

@@ -1,6 +1,9 @@
 # Technical Details of Traction Service that allows message publishing
 
-The two classes central to sending volume tracking messages to the message broker are [`app/messages/emq/publisher.rb`](https://github.com/sanger/traction-service/blob/21fd7c20ec7c9a329914a53968aa23c4a6dac4af/app/messages/emq/publisher.rb) and [`app/messages/emq/publishing_job.rb`](https://github.com/sanger/traction-service/blob/a2e3e693ccacb1b4b5be31be56c5346f97c929d9/app/messages/emq/publishing_job.rb). The former defines functions to instantiate an `Emq::PublishingJob` object, and the latter defines business logic on how message publishing should occur. The former is a trivial implementation on instantiating a Ruby object based on a configuration (`enabled` in `bunny.yml`); therefore it is not discussed here. However, the latter has some points that are worthy of some explaination. `Emq::PublishingJob` class' `publish` method is documented in `traction-service` [documentation](https://sanger.github.io/traction-service/Emq/PublishingJob.html#:~:text=Instance%20Method%20Details-,%23publish(objects%2C%20message_config%2C%20schema_key)%20%E2%87%92%20Object,-Publish%20a%20message).
+The two classes central to sending volume tracking messages to the message broker are [`app/messages/emq/publisher.rb`](https://github.com/sanger/traction-service/blob/21fd7c20ec7c9a329914a53968aa23c4a6dac4af/app/messages/emq/publisher.rb) and [`app/messages/emq/publishing_job.rb`](https://github.com/sanger/traction-service/blob/a2e3e693ccacb1b4b5be31be56c5346f97c929d9/app/messages/emq/publishing_job.rb). 
+The former defines functions to instantiate an `Emq::PublishingJob` object, and the latter defines business logic on how message publishing should occur. 
+The former is a trivial implementation on instantiating a Ruby object based on a configuration (`enabled` in `bunny.yml`); therefore it is not discussed here. 
+However, the latter has some points that are worthy of some explaination. `Emq::PublishingJob` class' `publish` method is documented in `traction-service` [documentation](https://sanger.github.io/traction-service/Emq/PublishingJob.html#:~:text=Instance%20Method%20Details-,%23publish(objects%2C%20message_config%2C%20schema_key)%20%E2%87%92%20Object,-Publish%20a%20message).
 
 ???+ tip
 
@@ -65,8 +68,10 @@ def publish(objects, message_config, schema_key)
 7. Subject refers to the schema name in RedPanda Schema Registry.
 8. Message publishing event is logged for monitoring purposes.
 
-The message is published to the configured RabbitMQ broker. The broker's configuration are declared under the YAML key `bunny_config.amqp` in `config/bunny.yml`.
+The message is published to the configured RabbitMQ broker. 
+The broker's configuration are declared under the YAML key `bunny_config.amqp` in `config/bunny.yml`.
 
 !!! warning 
 
-    Note that if `traction-service` is not able to find the schema from the schema registry, or not able to find either the `subject` or `version` declared in `bunny.yml`, no message will be pushed to the queue. Therefore, correct configuration is essential for a successful end-to-end volume tracking process.
+    Note that if `traction-service` is not able to find the schema from the schema registry, or not able to find either the `subject` or `version` declared in `bunny.yml`, no message will be pushed to the queue. 
+    Therefore, correct configuration is essential for a successful end-to-end volume tracking process.

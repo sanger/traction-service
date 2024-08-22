@@ -1,6 +1,8 @@
 # Setting up for Development
 
-This section discusses setting up the volume tracking stack for local development. Setting up the end-to-end process involves several tools and technologies and therefore setting up involves spinning up [Docker](https://www.docker.com/) containers along with the application(s). Using containers helps the process to run the entire infrastructure stack in the development machine and makes setting up quite easy with ready-made scripts and manifests.
+This section discusses setting up the volume tracking stack for local development. 
+Setting up the end-to-end process involves several tools and technologies and therefore setting up involves spinning up [Docker](https://www.docker.com/) containers along with the application(s). 
+Using containers helps the process to run the entire infrastructure stack in the development machine and makes setting up quite easy with ready-made scripts and manifests.
 
 ## Overview
 
@@ -9,7 +11,9 @@ Setting up the volume tracking stack involves running the following applications
 1. `tol-lab-share`
 2. `traction-service`
 
-The third component used, as described in other sections, is MultiLIMS Warehouse. It could be set up locally, but since we could easily use the UAT instance of the warehouse, this document does not aim to discuss setting up a local warehouse instance. If required, it is possible to set up the warehouse by running a local instance of `unified_warehouse` which is documented in its [repository README](https://github.com/sanger/unified_warehouse).
+The third component used, as described in other sections, is MultiLIMS Warehouse. 
+It could be set up locally, but since we could easily use the UAT instance of the warehouse, this document does not aim to discuss setting up a local warehouse instance. 
+If required, it is possible to set up the warehouse by running a local instance of `unified_warehouse` which is documented in its [repository README](https://github.com/sanger/unified_warehouse).
 
 ???+ info
 
@@ -18,7 +22,8 @@ The third component used, as described in other sections, is MultiLIMS Warehouse
     1. UAT/Training: The broker is accessible through the management portal UI. The URI is of the format `https://<warehouse host name>:<management UI port>`.
     2. Production: The broker is accessible through the [management portal UI](http://ware-prod.psd.sanger.ac.uk:15672/#/).
 
-    Each environment is therefore equipped with its own message broker, a management portal (to the broker), and a MySQL database to hold the data. As per our current configurations, the applications deployed to respective environments are pointing to the warehouses in the following manner:
+    Each environment is therefore equipped with its own message broker, a management portal (to the broker), and a MySQL database to hold the data. 
+    As per our current configurations, the applications deployed to respective environments are pointing to the warehouses in the following manner:
 
     - UAT Application Environment → UAT MLWH Environment
     - Training Application Environment → UAT MLWH Environment
@@ -170,7 +175,8 @@ Make sure you've set up the infrastructure locally before proceeding with this s
     ]
     ```
 
-    Because we have set [`tol_lab_share/config/rabbit_servers.py`](https://github.com/sanger/tol-lab-share/blob/cb87f83a6e667df0cd6fe26b8f066e987e7da81e/tol_lab_share/config/rabbit_servers.py) in a certain way so that `TOL_RABBIT_SERVER` and `ISG_RABBIT_SERVER` points to the local RabbitMQ instance, locally set up `tol-lab-share` will only consume from the local RabbitMQ broker. Upon deployment (UAT, Training and Production), we dynamically generate a [`rabbit_servers.py`](https://github.com/sanger/deployment/blob/82eb7ac5e7305809e9c9d5eb1a69c35bdeff282c/roles/deploy_tol_stack/templates/tol-lab-share/rabbit_servers.py.j2) file with the corresponding connection details to ISG and TOL RabbitMQ servers, and plug that into the Docker container that `tol-lab-share` runs.
+    Because we have set [`tol_lab_share/config/rabbit_servers.py`](https://github.com/sanger/tol-lab-share/blob/cb87f83a6e667df0cd6fe26b8f066e987e7da81e/tol_lab_share/config/rabbit_servers.py) in a certain way so that `TOL_RABBIT_SERVER` and `ISG_RABBIT_SERVER` points to the local RabbitMQ instance, locally set up `tol-lab-share` will only consume from the local RabbitMQ broker. 
+    Upon deployment (UAT, Training and Production), we dynamically generate a [`rabbit_servers.py`](https://github.com/sanger/deployment/blob/82eb7ac5e7305809e9c9d5eb1a69c35bdeff282c/roles/deploy_tol_stack/templates/tol-lab-share/rabbit_servers.py.j2) file with the corresponding connection details to ISG and TOL RabbitMQ servers, and plug that into the Docker container that `tol-lab-share` runs.
 
 ???+ tip
 

@@ -1,10 +1,13 @@
 # Architectural Overview
 
-Volume Tracking process is fundamentally an asynchronous process that does not block client threads. Upon the triggers (`run` creation, `library` creation/updates, _etc._), the underlying process runs and reaches an eventual completion persisting the records in MultiLIMS Warehouse.
+Volume Tracking process is fundamentally an asynchronous process that does not block client threads. 
+Upon the triggers (`run` creation, `library` creation/updates, _etc._), the underlying process runs and reaches an eventual completion persisting the records in MultiLIMS Warehouse.
 
 !!! note
 
-    The asynchrony of the process has been achieved by using an intermediary [RabbitMQ](https://www.rabbitmq.com/docs) queuing system. The queuing system has publishers and  consumers that produce volume tracking messages to the queue, and consume and send to persist the messages respectively. The queuing system is also referred to as the "broker" as it is the broker within the system that manages certain aspects like message delivery.
+    The asynchrony of the process has been achieved by using an intermediary [RabbitMQ](https://www.rabbitmq.com/docs) queuing system. 
+    The queuing system has publishers and  consumers that produce volume tracking messages to the queue, and consume and send to persist the messages respectively. 
+    The queuing system is also referred to as the "broker" as it is the broker within the system that manages certain aspects like message delivery.
 
 ## Components Involved
 
@@ -26,9 +29,12 @@ Volume Tracking process is fundamentally an asynchronous process that does not b
 
 ### MultiLIMS Warehouse
 
-The warehouse can either by accessed by traditional SQL connections, or using the setup put forth by [`unified_warehouse`](https://github.com/sanger/unified_warehouse). For volume tracking, we use `unified_warehouse` which itself is a Ruby on Rails project. `unified_warehouse` associates itself with a queue hosted at `ware-uat.sanger.ac.uk`, and another Ruby client `Warren` that shovels messages coming into the associated queue of `unified_warehouse`. 
+The warehouse can either by accessed by traditional SQL connections, or using the setup put forth by [`unified_warehouse`](https://github.com/sanger/unified_warehouse). 
+For volume tracking, we use `unified_warehouse` which itself is a Ruby on Rails project. 
+`unified_warehouse` associates itself with a queue hosted at `ware-uat.sanger.ac.uk`, and another Ruby client `Warren` that shovels messages coming into the associated queue of `unified_warehouse`. 
 
-The messages that needs to be sent to the warehouse database need to be sent to the associated queue `psd.mlwh.multi-lims-warehouse-consumer`  in a specific format, via an exchange that binds to that queue. For volume tracking purposes, a new binding has been created to the queue with the exchange `psd.tol-lab-share`. The routing keys for this queue are as follows:
+The messages that needs to be sent to the warehouse database need to be sent to the associated queue `psd.mlwh.multi-lims-warehouse-consumer`  in a specific format, via an exchange that binds to that queue. 
+For volume tracking purposes, a new binding has been created to the queue with the exchange `psd.tol-lab-share`. The routing keys for this queue are as follows:
 
 <figure markdown="span">
   ![Queue Bindings](./img/queue-bindings.png){ width="600" }
@@ -51,7 +57,11 @@ Please follow the [Querying](querying-mlwh.md) section for some custom queries f
 
 ### Tol Lab Share
 
-`tol-lab-share` does not have an API exposed to access the application. It is a queue consumer that establishes a set of [AMQP connections](https://www.rabbitmq.com/tutorials/amqp-concepts) with the given queues and consumes messages from them. For each kind of message (for example, volume tracking, bioscan, _etc._), a processor exists to process the incoming messages from the queue. In terms of volume tracking, the processor is located at [`tol_lab_share/processors/create_aliquot_processor.py`](https://github.com/sanger/tol-lab-share/blob/develop/tol_lab_share/processors/create_aliquot_processor.py). The processor does the following:
+`tol-lab-share` does not have an API exposed to access the application. 
+It is a queue consumer that establishes a set of [AMQP connections](https://www.rabbitmq.com/tutorials/amqp-concepts) with the given queues and consumes messages from them. 
+For each kind of message (for example, volume tracking, bioscan, _etc._), a processor exists to process the incoming messages from the queue. 
+In terms of volume tracking, the processor is located at [`tol_lab_share/processors/create_aliquot_processor.py`](https://github.com/sanger/tol-lab-share/blob/develop/tol_lab_share/processors/create_aliquot_processor.py). 
+The processor does the following:
 
 1. Receives incoming messages from the queue.
 2. Validates the incoming message using the schema registry.
@@ -62,7 +72,8 @@ Please follow the [Querying](querying-mlwh.md) section for some custom queries f
 
 ??? info
 
-    All the connection logic, validation and most of connection-specific error handling are encapsulated in the library [`lab-share-lib`](https://github.com/sanger/lab-share-lib). This library is imported to `tol-lab-share`, and activities such as establishing AMQP connections and schema validations are handled by this library.
+    All the connection logic, validation and most of connection-specific error handling are encapsulated in the library [`lab-share-lib`](https://github.com/sanger/lab-share-lib). 
+    This library is imported to `tol-lab-share`, and activities such as establishing AMQP connections and schema validations are handled by this library.
 
 One of the most important criteria of message processing is handling errors (e.g. erroneous/invalid messages). They are gracefully handled by `tol-lab-share`.
 
@@ -72,7 +83,9 @@ One of the most important criteria of message processing is handling errors (e.g
 
     Eventual failures are [dead-lettered](https://www.rabbitmq.com/docs/dlx). There is a setup for dead letter exchanges (dlx) and the queues that are bound to those exchanges (dlq) that are persistent. Messages that were dead lettered can be retrieved from these queues and investigated.
 
-As explained in [a previous](#components-involved) section, `tol-lab-share` publishes messages to the warehouse queue. This is done by using the associated queue and the related configurations discussed in previous sections. The overall sequence and detailed error mitigation procedures involving `tol-lab-share` is embedded below (to open it in Lucid chart you might need specific access).
+As explained in [a previous](#components-involved) section, `tol-lab-share` publishes messages to the warehouse queue. 
+This is done by using the associated queue and the related configurations discussed in previous sections. 
+The overall sequence and detailed error mitigation procedures involving `tol-lab-share` is embedded below (to open it in Lucid chart you might need specific access).
 
 <div style="width: 750px; height: 720px; margin: 10px; position: relative;"><iframe allowfullscreen frameborder="0" style="width:750px; height:720px" src="https://lucid.app/documents/embedded/6c8d5b09-4e57-4aba-a7ff-8d2cad161b3d" id="D-m4E_KjbZS8"></iframe></div>
 
