@@ -185,7 +185,7 @@ bundle exec yard list --query '@todo'
 
 It is possible to add comprehensive documentation about the areas in each application. For example, in this repository, we have added a documentation on how volume tracking works. The process to add these sub-documentation is as follows.
 
-**Prerequesites**
+**Prerequisites**
 
 Install a recent version of Python. Python is used for the `mkdocs` tool we use to generate documentation. Please install `mkdocs` using `pip install mkdocs` following installing Python.
 
