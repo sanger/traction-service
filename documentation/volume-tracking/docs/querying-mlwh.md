@@ -32,9 +32,11 @@ Given below are some common SQL queries we think that would be useful for queryi
     ```sql
     SELECT volume AS initial_volume
     FROM aliquot
-    WHERE source_barcode = "foo"    -- Change "foo" to the actual barcode
+    WHERE source_barcode = "TRAC-2-8773"  -- Change "foo" to the actual barcode
     AND aliquot_type = "primary"
-    AND source_type = "library";
+    AND source_type = "library"
+    ORDER BY id DESC
+    LIMIT 1;
     ```
 
 - What is the initial volume of a **pool** identified by the barcode `foo`?
@@ -44,7 +46,9 @@ Given below are some common SQL queries we think that would be useful for queryi
     FROM aliquot
     WHERE source_barcode = "foo"    -- Change "foo" to the actual barcode
     AND aliquot_type = "primary"
-    AND source_type = "pool";
+    AND source_type = "pool"
+    ORDER BY id DESC
+    LIMIT 1;
     ```
 
 - How much of volume left in a **library** identified by the barcode `foo`?
@@ -56,6 +60,7 @@ Given below are some common SQL queries we think that would be useful for queryi
         WHERE source_barcode = 'foo'    -- Change "foo" to the actual barcode
         AND aliquot_type = 'primary'
         AND source_type = 'library'
+        ORDER BY id DESC
         LIMIT 1) 
         - 
         (SELECT COALESCE(SUM(volume), 0)
