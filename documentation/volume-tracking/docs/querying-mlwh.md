@@ -2,6 +2,10 @@
 
 Volume tracking information in MultiLIMS Warehouse are stored in the `aliquot` table. The schema of this table is given below.
 
+!!! note
+
+    MultiLIMS Warehouse is a MySQL database. Therefore, `aliquot` is a relational schema, that adheres to relational database architecture. It contains a primary key `id` (auto incremented) and the attributes are typed with MySQL [standard data types](https://dev.mysql.com/doc/refman/8.4/en/data-types.html).
+
 <center>
 
 | **Attribue**      | **Type**        | **Description**                                          | **Values**            |
