@@ -21,6 +21,7 @@ namespace :tags do
       Rake::Task['tags:create:nextera_ud'].invoke
       Rake::Task['tags:create:pacbio_96_barcode_plate_v3'].invoke
       Rake::Task['tags:create:mas_smrtbell_barcoded_adapters_(v2)'].invoke
+      Rake::Task['tags:create:PiMmS_TruSeq_adapters_v1'].invoke
     end
 
     desc 'Create all ont tags'
@@ -529,6 +530,43 @@ namespace :tags do
         set.tags.find_or_create_by!(tag_attributes)
       end
       puts '-> MAS_SMRTbell_barcoded_adapters_(v2) tags successfully created'
+    end
+
+    desc 'Create PiMmS_TruSeq_adapters_v1 tags'
+    task PiMmS_TruSeq_adapters_v1: :environment do
+      puts '-> Creating PiMmS_TruSeq_adapters_v1 tag set and tags'
+      set = TagSet.pacbio_pipeline
+                  .find_or_create_by!(name: 'PiMmS_TruSeq_adapters_v1', uuid: '985d7948-4608-3729-d897-48127ff86df6')
+      puts '-> Tag Set successfully created'
+      [
+        { oligo: 'AGCGCTAG', group_id: 'D501' },
+        { oligo: 'GATATCGA', group_id: 'D502' },
+        { oligo: 'CGCAGACG', group_id: 'D503' },
+        { oligo: 'TATGAGTA', group_id: 'D504' },
+        { oligo: 'AGGTGCGT', group_id: 'D505' },
+        { oligo: 'GAACATAC', group_id: 'D506' },
+        { oligo: 'ACATAGCG', group_id: 'D507' },
+        { oligo: 'GTGCGATA', group_id: 'D508' },
+        { oligo: 'CCAACAGA', group_id: 'D509' },
+        { oligo: 'TTGGTGAG', group_id: 'D510' },
+        { oligo: 'CGCGGTTC', group_id: 'D511' },
+        { oligo: 'TATAACCT', group_id: 'D512' },
+        { oligo: 'CCGCGGTT', group_id: 'D701' },
+        { oligo: 'TTATAACC', group_id: 'D702' },
+        { oligo: 'GGACTTGG', group_id: 'D703' },
+        { oligo: 'AAGTCCAA', group_id: 'D704' },
+        { oligo: 'ATCCACTG', group_id: 'D705' },
+        { oligo: 'GCTTGTCA', group_id: 'D706' },
+        { oligo: 'CAAGCTAG', group_id: 'D707' },
+        { oligo: 'TGGATCGA', group_id: 'D708' },
+        { oligo: 'AGTTCAGG', group_id: 'D709' },
+        { oligo: 'GACCTGAA', group_id: 'D710' },
+        { oligo: 'TCTCTACT', group_id: 'D711' },
+        { oligo: 'CTCTCGTC', group_id: 'D712' }
+      ].each do |tag_attributes|
+        set.tags.find_or_create_by!(tag_attributes)
+      end
+      puts '-> PiMmS_TruSeq_adapters_v1 tags successfully created'
     end
 
     desc 'Create SQK-NBD114.96 tags'

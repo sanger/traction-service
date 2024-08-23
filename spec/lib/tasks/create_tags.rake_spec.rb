@@ -35,9 +35,12 @@ RSpec.describe 'RakeTasks' do
           -> Creating MAS_SMRTbell_barcoded_adapters_(v2) tag set and tags
           -> Tag Set successfully created
           -> MAS_SMRTbell_barcoded_adapters_(v2) tags successfully created
+          -> Creating PiMmS_TruSeq_adapters_v1 tag set and tags
+          -> Tag Set successfully created
+          -> PiMmS_TruSeq_adapters_v1 tags successfully created
         HEREDOC
       ).to_stdout
-      expect(TagSet.count).to eq(8)
+      expect(TagSet.count).to eq(9)
     end
 
     it 'creates all of the ont tag sets' do
@@ -83,6 +86,9 @@ RSpec.describe 'RakeTasks' do
           -> Creating MAS_SMRTbell_barcoded_adapters_(v2) tag set and tags
           -> Tag Set successfully created
           -> MAS_SMRTbell_barcoded_adapters_(v2) tags successfully created
+          -> Creating PiMmS_TruSeq_adapters_v1 tag set and tags
+          -> Tag Set successfully created
+          -> PiMmS_TruSeq_adapters_v1 tags successfully created
           -> Creating SQK-NBD114.96 tag set and tags
           -> Tag Set successfully created
           -> SQK-NBD114.96 tags successfully created
@@ -91,7 +97,7 @@ RSpec.describe 'RakeTasks' do
           -> SQK-RBK114.96 tags successfully created
         HEREDOC
       ).to_stdout
-      expect(TagSet.count).to eq(10)
+      expect(TagSet.count).to eq(11)
     end
   end
 end
