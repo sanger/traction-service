@@ -301,19 +301,22 @@ RSpec.describe Pacbio::Run, :pacbio do
 
   describe 'aliquots_to_publish_on_run' do
     it 'returns all the aliquots used for a run of source type eq to library or pool' do
-      request_pool = create(:pacbio_pool, primary_aliquot: create(:aliquot, source: build(:pacbio_request), aliquot_type: :primary))
-      pool = create(:pacbio_pool)
-      wells = [build(:pacbio_well, row: 'A', column: '1', libraries: [create(:pacbio_library)]),
-               build(:pacbio_well, row: 'B', column: '1', pools: [request_pool, pool])]
+      request = build(:pacbio_request)
+      pool_library = create(:pacbio_library)
+      pool1 = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: request, aliquot_type: :derived)])
+      pool2 = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: pool_library, aliquot_type: :derived)])
+      run_library = create(:pacbio_library)
+      wells = [build(:pacbio_well, row: 'A', column: '1', libraries: [run_library]),
+               build(:pacbio_well, row: 'B', column: '1', pools: [pool1, pool2])]
       run = create(:pacbio_revio_run, plates: [build(:pacbio_plate, wells:)])
       run.aliquots_to_publish_on_run do |aliquot|
         expect(aliquot.source_type).to eq('Pacbio::Library').or eq('Pacbio::Pool')
       end
     end
 
-    it 'includes only used_aliquots coming from pool with type source eq to pool' do
-      request_pool = create(:pacbio_pool, primary_aliquot: create(:aliquot, source: build(:pacbio_request), aliquot_type: :primary))
-      library_pool = create(:pacbio_pool, primary_aliquot: create(:aliquot, source: build(:pacbio_pool), aliquot_type: :primary), used_aliquots: [create(:aliquot, source: build(:pacbio_library), aliquot_type: :derived)])
+    it 'includes used_aliquots coming from pool with type source eq to pool' do
+      request_pool = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: build(:pacbio_request), aliquot_type: :derived)])
+      library_pool = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: build(:pacbio_library), aliquot_type: :derived)])
       wells = [build(:pacbio_well, row: 'A', column: '1', libraries: [create(:pacbio_library)]),
                build(:pacbio_well, row: 'B', column: '1', pools: [request_pool, library_pool])]
       run = create(:pacbio_revio_run, plates: [build(:pacbio_plate, wells:)])
@@ -325,6 +328,18 @@ RSpec.describe Pacbio::Run, :pacbio do
       request_pool.used_aliquots do |aliquot|
         expect(run.aliquots_to_publish_on_run).not_to include(aliquot)
       end
+    end
+
+    it 'includes used_aliquots coming from library in a pool in the run and from the library directly added to run' do
+      pool_library = create(:pacbio_library)
+      pool = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: pool_library, aliquot_type: :derived)])
+      run_library = create(:pacbio_library)
+      wells = [build(:pacbio_well, row: 'A', column: '1', libraries: [run_library]),
+               build(:pacbio_well, row: 'B', column: '1', pools: [pool])]
+      run = create(:pacbio_revio_run, plates: [build(:pacbio_plate, wells:)])
+      library_aliquot_used_in_run = wells.flat_map(&:used_aliquots).find { |aliquot| aliquot.source_type == 'Pacbio::Library' && aliquot.source_id == run_library.id }
+      library_aliquot_from_pool = pool.used_aliquots.find { |aliquot| aliquot.source_type == 'Pacbio::Library' && aliquot.source_id == pool_library.id }
+      expect(run.aliquots_to_publish_on_run).to include(library_aliquot_used_in_run, library_aliquot_from_pool)
     end
   end
 end
