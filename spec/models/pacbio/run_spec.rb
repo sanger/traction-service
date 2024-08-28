@@ -303,8 +303,8 @@ RSpec.describe Pacbio::Run, :pacbio do
     it 'returns all the aliquots used for a run of source type eq to library or pool' do
       request = build(:pacbio_request)
       pool_library = create(:pacbio_library)
-      pool1 = create(:pacbio_pool, primary_aliquot: create(:aliquot, source: request, aliquot_type: :primary))
-      pool2 = create(:pacbio_pool, primary_aliquot: create(:aliquot, source: pool_library, aliquot_type: :primary))
+      pool1 = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: request, aliquot_type: :derived)])
+      pool2 = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: pool_library, aliquot_type: :derived)])
       run_library = create(:pacbio_library)
       wells = [build(:pacbio_well, row: 'A', column: '1', libraries: [run_library]),
                build(:pacbio_well, row: 'B', column: '1', pools: [pool1, pool2])]
@@ -315,8 +315,8 @@ RSpec.describe Pacbio::Run, :pacbio do
     end
 
     it 'includes used_aliquots coming from pool with type source eq to pool' do
-      request_pool = create(:pacbio_pool, primary_aliquot: create(:aliquot, source: build(:pacbio_request), aliquot_type: :primary))
-      library_pool = create(:pacbio_pool, primary_aliquot: create(:aliquot, source: build(:pacbio_pool), aliquot_type: :primary), used_aliquots: [create(:aliquot, source: build(:pacbio_library), aliquot_type: :derived)])
+      request_pool = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: build(:pacbio_request), aliquot_type: :derived)])
+      library_pool = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: build(:pacbio_library), aliquot_type: :derived)])
       wells = [build(:pacbio_well, row: 'A', column: '1', libraries: [create(:pacbio_library)]),
                build(:pacbio_well, row: 'B', column: '1', pools: [request_pool, library_pool])]
       run = create(:pacbio_revio_run, plates: [build(:pacbio_plate, wells:)])
@@ -332,7 +332,7 @@ RSpec.describe Pacbio::Run, :pacbio do
 
     it 'includes used_aliquots coming from library in a pool in the run and from the library directly added to run' do
       pool_library = create(:pacbio_library)
-      pool = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: pool_library, aliquot_type: :primary)])
+      pool = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: pool_library, aliquot_type: :derived)])
       run_library = create(:pacbio_library)
       wells = [build(:pacbio_well, row: 'A', column: '1', libraries: [run_library]),
                build(:pacbio_well, row: 'B', column: '1', pools: [pool])]
