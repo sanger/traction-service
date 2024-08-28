@@ -332,13 +332,13 @@ RSpec.describe Pacbio::Run, :pacbio do
 
     it 'includes used_aliquots coming from library in a pool in the run and from the library directly added to run' do
       pool_library = create(:pacbio_library)
-      pool = create(:pacbio_pool, primary_aliquot: create(:aliquot, source: pool_library, aliquot_type: :primary))
+      pool = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: pool_library, aliquot_type: :primary)])
       run_library = create(:pacbio_library)
       wells = [build(:pacbio_well, row: 'A', column: '1', libraries: [run_library]),
                build(:pacbio_well, row: 'B', column: '1', pools: [pool])]
       run = create(:pacbio_revio_run, plates: [build(:pacbio_plate, wells:)])
       library_aliquot_used_in_run = wells.flat_map(&:used_aliquots).find { |aliquot| aliquot.source_type == 'Pacbio::Library' && aliquot.source_id == run_library.id }
-      library_aliquot_from_pool = pool.used_aliquots.find { |aliquot| aliquot.source_type == 'Pacbio::Library' }
+      library_aliquot_from_pool = pool.used_aliquots.find { |aliquot| aliquot.source_type == 'Pacbio::Library' && aliquot.source_id == pool_library.id }
       expect(run.aliquots_to_publish_on_run).to include(library_aliquot_used_in_run, library_aliquot_from_pool)
     end
   end
