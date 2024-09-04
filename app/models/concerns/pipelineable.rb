@@ -5,7 +5,7 @@ module Pipelineable
   extend ActiveSupport::Concern
 
   included do
-    enum pipeline: Pipelines::NAMES, _suffix: true
+    enum :pipeline, Pipelines::NAMES, suffix: true
 
     delegate :library_factory, to: :pipeline_handler
     delegate :request_factory, to: :pipeline_handler
