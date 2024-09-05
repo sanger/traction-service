@@ -8,7 +8,6 @@ RSpec.describe Pacbio::Pool, :pacbio do
   before do
     # Create a default pacbio smrt link version for pacbio runs.
     create(:pacbio_smrt_link_version, name: 'v10', default: true)
-    Flipper.enable(:y24_153__enable_volume_check_pacbio_pool_on_update)
   end
 
   let(:used_aliquots) { create_list(:aliquot, 5, source: build(:pacbio_library), aliquot_type: :derived) }

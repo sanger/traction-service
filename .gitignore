@@ -51,3 +51,7 @@ doc/
 
 # RubyMine indexes
 .idea
+
+# Ignore doc generated sites
+documentation/**/site
+documentation/**/.cache
