@@ -6,7 +6,7 @@ module Ont
     include Uuidable
 
     # ONT Run states
-    enum state: { pending: 0, completed: 1, user_terminated: 2, instrument_crashed: 3, restart: 4 }
+    enum :state, { pending: 0, completed: 1, user_terminated: 2, instrument_crashed: 3, restart: 4 }
 
     NAME_PREFIX = 'ONTRUN-' # Used for generating a unique experiment name for the run.
 
