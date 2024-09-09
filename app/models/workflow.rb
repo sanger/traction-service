@@ -1,0 +1,10 @@
+# frozen_string_literal: true
+
+# Workflow
+class Workflow < ApplicationRecord
+  include Pipelineable
+  has_many :workflow_steps, dependent: :destroy
+  accepts_nested_attributes_for :workflow_steps, allow_destroy: true
+
+  validates :name, presence: true, uniqueness: true
+end
