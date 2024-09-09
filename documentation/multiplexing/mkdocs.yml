@@ -1,6 +1,7 @@
 site_name: Multiplexing Documentation
 nav:
-  - Multiplexing process overview: index.md
+  - Multiplexing Process Overview: index.md
+  - Architectural Overview: architectural-overview.md
 theme:
   name: material
   font: false
