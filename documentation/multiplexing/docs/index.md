@@ -30,4 +30,6 @@ The basic process of multiplexing in Traction is as follows:
 
 ## Alternative multiplexing strategies
 
-Traction also supports multiplexing at the sequencing run level where multiple pools or libraries are combined together in a single flowcell/well in a run. This is generally less common as it is more complex, requiring consistent tagging across multiple pools/libraries in order to work. However, it is supported in Traction and can be used if required.
+Pooling is typically done before run setup, during the pooling process, instead of during run setup, by using multiple libraries in each well, because it allows for more flexibility in the lab and a better user experience. Doing it upfront in the pooling process means we can be sure there are no tag clashes, that the data is correct and it reduces the risk of errors during run setup.
+
+However Traction also supports multiplexing at the sequencing run level where multiple pools or libraries are combined together in a single flowcell/well in a run. This is generally less common as it is more complex, requiring consistent tagging across multiple pools/libraries in order to work. However, it is supported in Traction and can be used if required.

@@ -36,3 +36,7 @@ In order to understand the architecture of the multiplexing system, it is import
 **Pacbio::Plate**: Represents a plate that is used in a sequencing run. A plate can have many wells. This entity contains information about the plate, such as the plate number and the plate sequencing kit box barcode.
 
 **Pacbio::Run**: Represents a sequencing run that is setup in Traction. A run can have any number of plates, typically one or two. This entity contains information about the run, such as the run name, the sequencing kit used, the state and the system used.
+
+## Architectural decisions
+
+PacBio pooling used to be the same as ONT pooling in Traction. Pools could only support requests in the UI, and then in traction-service libraries would be created from those requests automatically upon pool creation. This was changed to make pools more flexible and allow libraries to be added directly to pools as it was closer aligned to what the lab were doing in reality. The current approach of using aliquots also gives us a flexible and extensible way to manage pools. In the future we could add other entities to be used in pools such as other pools.
