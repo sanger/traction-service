@@ -3,7 +3,7 @@
 module Pacbio
   # Pacbio::SmrtLinkOption
   class SmrtLinkOption < ApplicationRecord
-    enum data_type: { string: 0, number: 1, list: 2 }
+    enum :data_type, { string: 0, number: 1, list: 2 }
 
     has_many :smrt_link_option_versions, class_name: 'Pacbio::SmrtLinkOptionVersion',
                                          foreign_key: :pacbio_smrt_link_option_id,

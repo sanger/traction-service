@@ -43,7 +43,7 @@ module Ont
   class Instrument < ApplicationRecord
     include Uuidable
 
-    enum instrument_type: { MinION: 0, GridION: 1, PromethION: 2 }
+    enum :instrument_type, { MinION: 0, GridION: 1, PromethION: 2 }
     validates :name, presence: true, uniqueness: true
 
     # Returns position names for instrument instance
