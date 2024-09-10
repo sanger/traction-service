@@ -4,5 +4,5 @@
 class WorkflowStep < ApplicationRecord
   belongs_to :workflow
 
-  validates :code, presence: true, uniqueness: true
+  validates :code, presence: true, uniqueness: { case_sensitive: false }
 end
