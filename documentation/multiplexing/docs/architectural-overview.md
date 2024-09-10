@@ -4,7 +4,7 @@ As mentioned in the [Multiplexing process overview](index.md), the multiplexing 
 
 ## Entity Relationship Diagram
 
-In order to understand the architecture of the multiplexing system, it is important to understand the entities involved in the system. The following diagram shows the entities involved in the multiplexing system and their relationships.
+In order to understand the architecture of the multiplexing system, it is important to understand the entities involved in the system. The following diagram shows the relevant entities and their relationships.
 
 !!! note
 
@@ -15,7 +15,7 @@ In order to understand the architecture of the multiplexing system, it is import
     <figcaption>Entities used for Multiplexing/Pooling in PacBio Traction</figcaption>
 </figure>
 
-### Understanding the Entities
+### Understanding the entities
 
 **TagSet**: Represents a set of tags that are used to tag samples in a pool. This entity contains information about the tag set, such as the name and the pipeline it is used in.
 
@@ -27,7 +27,7 @@ In order to understand the architecture of the multiplexing system, it is import
 
 **Pacbio::Library**: Represents a library that is created from a request (sample). A library can only have one request where as a request can belong to many libraries. This entity contains information about the library, such as the volume, concentration, insert size, and the library kit used to create the library.
 
-**Pacbio::Pool**: Represents a pool that is created from one or more libraries or requests (samples). A pool can have many libraries and a library can belong to many pools. This entity contains information about the pool, such as the total volume, concentration, insert size, and the pool's tag set. It relates to pools and requests (samples) via the `aliquot` entity using polymorphism.
+**Pacbio::Pool**: Represents a pool that is created from one or more libraries or requests (samples). A pool can have many libraries and a library can belong to many pools. This entity contains information about the pool, such as the total volume, concentration, insert size. It relates to pools and requests (samples) via the `aliquot` entity using polymorphism.
 
 **Aliquot**: Represents a polymorphic entity that describes a piece of something that has been used somewhere. The `source` is a polymorphic representation of where is has come from, typically a request or library. The `used_by` is a polymorphic representation of where it has been used, typically a pool or well. An Aliquot can have two types, `primary` and `derived`. A `primary` aliquot is one that represents an entities initial state, such as initial volume, whereas a `derived` aliquot is one that is created from a primary aliquot and will have a volume of how much has been 'used' in that instance.
 
@@ -37,6 +37,24 @@ In order to understand the architecture of the multiplexing system, it is import
 
 **Pacbio::Run**: Represents a sequencing run that is setup in Traction. A run can have any number of plates, typically one or two. This entity contains information about the run, such as the run name, the sequencing kit used, the state and the system used.
 
+### Using the entities
+
+Using the entities above, an illustrated simple example of a multiplexed pool is shown below with some example data:
+
+<figure markdown="span">
+    ![Multiplexed Pool Example](img/multiplexed-pool-example.png)
+    <figcaption>Example of a Multiplexed Pool</figcaption>
+</figure>
+
+Some important points to note about the example:
+
+- The `used_by` and `source` relationships are shown coming from the `Aliquot` entity are polymorphic relationships stored as fields in `Aliquot`. The `source` is the entity that the aliquot has come from, and the `used_by` is the entity that the aliquot has been used in.
+- Aliquots can have a source of either a `Pacbio::Library` or a `Pacbio::Request`. 
+- A pool has two types of aliquot, a single `primary` and mutliple `derived`. Primary aliquots are created from the pool and match the pool's total volume and concentration and act as the initial state of the pool. Derived aliquots are created from their source (library or request) and are used_by the pool to represent how much of the source has been used by the pool.
+- Pacbio::Library's have their own tube as they are created before this pooling process and assigned their own barcode.
+- Pacbio::Library's link back to their sample through their own Pacbio::Request but it is not shown here for simplicity.
+- Pacbio::Request parent data is not shown here but it would be used to link back to the actual sample data through an imported plate or tube.
+
 ## Architectural decisions
 
-PacBio pooling used to be the same as ONT pooling in Traction. Pools could only support requests in the UI, and then in traction-service libraries would be created from those requests automatically upon pool creation. This was changed to make pools more flexible and allow libraries to be added directly to pools as it was closer aligned to what the lab were doing in reality. The current approach of using aliquots also gives us a flexible and extensible way to manage pools. In the future we could add other entities to be used in pools such as other pools.
+PacBio pooling used to be the same as ONT pooling in Traction. Pools could only support requests in the UI, and then in traction-service libraries would be created in the background automatically from those requests upon pool creation. Pools would also be directly related to libraries instead of relating through aliquots. This was changed to make pools more flexible and allow pre-made libraries to be added to pools in the UI as it was closer aligned to what the lab were doing in reality. The current approach of using aliquots also gives us a flexible and extensible way to manage pools. In the future we could add other entities to be used in pools such as other pools.

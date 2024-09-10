@@ -16,11 +16,11 @@ The basic process of multiplexing in Traction is as follows:
     - Typically imported on plates or tubes with barcodes from Sequencescape.
 2. Libraries are created from the requests.
     - Library metadata includes volume, concentration, insert size and library kit.
-    - Tags may be assigned to the libraries at this stage.
+    - A tag may be assigned to the libraries at this stage.
 3. Pools are created from the libraries.
-    - Users specify which libraries they would like to add to the pool.
+    - Users specify which libraries they would like to use in a pool.
     - Requests can also be added to the pool directly from the plates/tubes they were imported on.
-    - A single tag set is used and issued to all libraries in the pool if there is more than 1 entity in the pool. Each library in the pool is tagged with a unique tag from the tag set.
+    - A single tag set is used and its tags issued to all libraries in the pool. If there is more than 1 library in the pool. Each library in the pool must be tagged with a unique tag from the tag set.
     - Pool metadata includes total volume, concentration, insert size.
 4. Pools are used in sequencing runs.
     - Pools are added to wells on plates for sequencing.
@@ -30,6 +30,6 @@ The basic process of multiplexing in Traction is as follows:
 
 ## Alternative multiplexing strategies
 
-Pooling is typically done before run setup, during the pooling process, instead of during run setup, by using multiple libraries in each well, because it allows for more flexibility in the lab and a better user experience. Doing it upfront in the pooling process means we can be sure there are no tag clashes, that the data is correct and it reduces the risk of errors during run setup.
+Multiplexing is typically done before run setup, during the pooling process, instead of during run setup by using multiple libraries in each well, because it allows for more flexibility in the lab and a better user experience. Doing it upfront in the pooling process means we can be sure there are no tag clashes, that the data is correct and it reduces the risk of errors during run setup.
 
-However Traction also supports multiplexing at the sequencing run level where multiple pools or libraries are combined together in a single flowcell/well in a run. This is generally less common as it is more complex, requiring consistent tagging across multiple pools/libraries in order to work. However, it is supported in Traction and can be used if required.
+However, Traction also supports pooling at the sequencing run level where multiple pools or libraries are combined together in a single flowcell/well in a run. This is generally less common as it is more complex, requiring consistent tagging across multiple pools/libraries in order to work. But it is supported in Traction and can be used if required.
