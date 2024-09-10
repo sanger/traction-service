@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module V1
   # Provides a JSON:API representation of {WorkflowStep}.
   #
@@ -13,15 +15,5 @@ module V1
 
     # Define the relationship with workflow
     has_one :workflow
-
-    # Define a custom attribute "value" that returns the same value as "code"
-    attribute :value do
-      @model.code
-    end
-
-    # Define a custom attribute "description" that returns "code - stage"
-    attribute :description do
-      "#{@model.code} - #{@model.stage}"
-    end
   end
 end
