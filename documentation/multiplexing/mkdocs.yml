@@ -2,6 +2,7 @@ site_name: Multiplexing Documentation
 nav:
   - Multiplexing Process Overview: index.md
   - Architectural Overview: architectural-overview.md
+  - User Guide: user-guide.md
 theme:
   name: material
   font: false
