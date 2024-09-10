@@ -7,8 +7,8 @@ class Aliquot < ApplicationRecord
   include SampleSheet::Aliquot
   include Uuidable
 
-  enum state: { created: 0, used: 1 }
-  enum aliquot_type: { primary: 0, derived: 1 }
+  enum :state, { created: 0, used: 1 }
+  enum :aliquot_type, { primary: 0, derived: 1 }
 
   belongs_to :tag, optional: true
   has_one :tag_set, through: :tag
