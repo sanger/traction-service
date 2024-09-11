@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-DEFAULT_DATA = [
+DEFAULT_WORKFLOWS = [
   {
     workflow: 'Pacbio ULI LP',
     pipeline: 'pacbio',
@@ -114,7 +114,7 @@ DEFAULT_DATA = [
 # The JSON data should be properly escaped when passed as an argument.
 # The task will create or update workflows and their associated steps based on the provided data.
 # Note:
-#   - Command line arguments are optional. If not provided, the task will use default values given in DEFAULT_DATA.
+#   - Command line arguments are optional. If not provided, the task will use default values given in DEFAULT_WORKFLOWS.
 #   - The task will skip duplicate workflows in the given data.
 #   - The task will skip workflows with non-existent pipeline values.
 #   - The task will skip workflow steps with same 'code' that already exist in another workflow.
@@ -126,7 +126,7 @@ namespace :workflows do
   task :create_or_update, [:json_data] => :environment do |_, args|
     # Parse the JSON data argument or use default data if none is provided
     json_data = args[:json_data]
-    workflows_data = json_data ? JSON.parse(json_data).map(&:deep_symbolize_keys) : DEFAULT_DATA
+    workflows_data = json_data ? JSON.parse(json_data).map(&:deep_symbolize_keys) : DEFAULT_WORKFLOWS
 
     # Set to keep track of processed workflows to ensure uniqueness within the given data
     processed_workflows = Set.new
