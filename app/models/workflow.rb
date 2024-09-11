@@ -2,7 +2,7 @@
 
 # Workflow
 class Workflow < ApplicationRecord
-  include WorkflowPipelineable
+  include Pipelineable
   has_many :workflow_steps, dependent: :destroy
   accepts_nested_attributes_for :workflow_steps, allow_destroy: true
 

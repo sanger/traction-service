@@ -18,15 +18,18 @@ RSpec.describe Workflow do
       expect(described_class.pipelines).to eq(
         'pacbio' => 0,
         'ont' => 1,
-        'extraction' => 2,
-        'sample_qc' => 3,
-        'hic' => 4,
-        'bio_nano' => 5
+        'saphyr' => 2,
+        'qc_result' => 3,
+        'reception' => 4,
+        'extraction' => 5,
+        'sample_qc' => 6,
+        'hic' => 7,
+        'bio_nano' => 8
       )
     end
 
     it 'returns the correct pipeline keys' do
-      expect(described_class.workflow_pipelines).to match_array(%w[pacbio ont extraction sample_qc hic bio_nano])
+      expect(described_class.pipelines.keys).to match_array(%w[pacbio ont saphyr qc_result reception extraction sample_qc hic bio_nano])
     end
   end
 
