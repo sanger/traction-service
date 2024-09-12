@@ -19,7 +19,7 @@ Below is an example of the pools index page in the PacBio pipeline:
 Like other index pages in Traction it has the standard features: a search bar with filters, a table of pools with pagination, a print labels button and a link to edit each pool and show more details.
 Some notable columns in the pools table include:
 
-- **Ready**: Whether a pool is ready for sequencing. This is determined by whether the pool has any missing data. If a pool is not ready, the missing data will be displayed after pressing show details.
+- **Ready**: Whether a pool is ready for sequencing. This is determined by whether the pool has any missing data. If a pool is not ready, the missing data will be displayed after pressing show details. Only `ready` pools can be used in sequencing runs.
 - **Pool Barcode**: The barcode of the pool.
 - **Source**: A list of sources that make up the pool. These are either library barcodes or request sources like plates and tube barcodes.
 - **Actions**: A button to take users to edit that particular pool and a show details button to view more information about the pool.
@@ -33,11 +33,11 @@ To create a new pool go to the `pool/new` tab in your given pipeline, available 
     <figcaption>Pool new page</figcaption>
 </figure>
 
-The page has 4 numbered, chronologicas sections which will be explored in more detail below.
+The page has 4 numbered, chronological sections which will be explored in more detail below.
 
 ### 1a. Scan labware
 
-This search box in the top left of the page is the first step in creating a pool. Here you scan in the barcodes of any libraries, plates or tubes you wish to include in the pool. If the labware barcode cannot be found a `No labware found` error will appear in the Traction error stack. If successful, the labware will be added to the list below the search box in section 1b.
+This search box in the top left of the page is the first step in creating a pool. Here you scan in the barcodes of any libraries, plates or tubes you wish to include in the pool. If the labware barcode cannot be found a `No labware found` error will appear in the Traction message stack. If successful, the labware will be added to the list below the search box in section 1b.
 
 <figure markdown="span">
     ![Scan labware](img/pacbio-pool-new-scan-labware.png)
@@ -84,7 +84,7 @@ This section displays the samples that have been selected for the pool and the d
     <figcaption>Pooled samples</figcaption>
 </figure>
 
-If create pool is clicked with missing data, a `The pool is invalid` Traction error will appear in the error stack. The missing data fields will be highlighted in red with an appropriate error message as seen below.
+If create pool is clicked with missing data, a `The pool is invalid` Traction error will appear in the message stack. The missing data fields will be highlighted in red with an appropriate error message as seen below.
 
 <figure markdown="span">
     ![Invalid pool](img/pacbio-pool-new-invalid-pool.png)
@@ -107,4 +107,4 @@ To edit a pool, click the `Edit` button on the pools index page. This will take 
     <figcaption>Edit pool page</figcaption>
 </figure>
 
-Editing a pool is similar to creating a pool. All the sections are the same as the create pool page, but the data is autopopulated with the pool data, described in detail in the `Creating a pool` section. The user can change the data as required and save the pool by pressing the `Update Pool` button. Editing a pool will cause the data to be updated in the MLWH. This is so all the runs using the pool reflect the correct data.
+Editing a pool is similar to creating a pool. All the sections are the same as the create pool page, described in detail in the `Creating a pool` section, but the data is autopopulated with the pool data. The user can change the data as required and save the pool by pressing the `Update Pool` button. Editing a pool will cause the data to be updated in the MLWH. This is so all the runs using the pool reflect the correct data.
