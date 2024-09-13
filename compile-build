@@ -25,6 +25,7 @@ tar \
   --exclude='./tmp' \
   --exclude='./vendor/bundle' \
   --exclude='release.tar.gz' \
+  --exclude='./documentation' \
   -zcvf /tmp/release.tar.gz ./
 mv /tmp/release.tar.gz ./release.tar.gz
 echo 'Release complete!'
