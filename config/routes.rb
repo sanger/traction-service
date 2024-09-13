@@ -16,6 +16,10 @@ Rails.application.routes.draw do
     jsonapi_resources :tag_sets, only: %i[index create update destroy]
     jsonapi_resources :tags,     only: %i[index create update destroy]
 
+    jsonapi_resources :workflows, only: [:index] do
+      jsonapi_resources :workflow_steps, only: [:index]
+    end
+
     namespace :saphyr do
       jsonapi_resources :runs,          only: %i[index create show update destroy]
       jsonapi_resources :chips,         only: %i[index create show update destroy]
