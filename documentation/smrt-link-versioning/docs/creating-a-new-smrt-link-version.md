@@ -38,9 +38,9 @@
           v12_revio: &v12_revio
         ```
   For old style sample sheets you need to complete the following:
-      - ***sample_sheet_class*** - The class that defines how the sample sheet is created
-      - ***column_order*** - The order that the columns will appear in
-      - ***fields*** - a nested structure to define which fields will appear in the sample sheet e.g. run > wells > samples
+      - **sample_sheet_class** - The class that defines how the sample sheet is created
+      - **column_order** - The order that the columns will appear in
+      - **fields** - a nested structure to define which fields will appear in the sample sheet e.g. run > wells > samples
   For new style sample sheets you will only need a sample sheet class which will define which fields will be used and how they are created.
 
     ???+ info
@@ -100,8 +100,10 @@
         The ideal would be to have shared configuration for the ui and the service so data does not need to be repeated.
 
 6. Testing
+  
   There is no need to test the underlying code that handles SMRT Link versioning. This is already fully covered.
-  ## Unit tests
+
+  - **Unit tests**
     - If you need to create a new SampleSheet model then this will need to be tested in isolation e.g. [`spec/support/parsers/pacbio_sample_sheet_v1_parser.rb`](https://github.com/sanger/traction-service/blob/develop/spec/support/parsers/pacbio_sample_sheet_v1_parser.rb)
     - If you create a new sample sheet or new version then you will need to test it within Pacbio Run [`spec/models/pacbio/run_spec.rb`](https://github.com/sanger/traction-service/blob/develop/spec/models/pacbio/run_spec.rb)
     - Pay particular attention to the rake task tests. [`spec/lib/tasks/create_smrt_link_versions.rake_spec.rb`](https://github.com/sanger/traction-service/blob/develop/spec/lib/tasks/create_smrt_link_versions.rake_spec.rb)
@@ -109,9 +111,9 @@
     ???+ info
         If you are modifying an existing SMRT Link Version you may well need to change the records manually e.g. if changing an existing validation or name change. The rake task will only create new versions or options.
 
-  ## Testing locally
+  - **Testing locally**
     - Run the rake task and then start up the ui and service, create a run and download a sample sheet.
 
-  ## Testing on UAT
-    - Run the rake task and then create a run and download a sample sheet. You can test this by uploading to the UAT SMRT Link. []()
+  - **Testing on UAT**
+    - Run the rake task and then create a run and download a sample sheet. You can test this by uploading to the UAT SMRT Link instance.
 
