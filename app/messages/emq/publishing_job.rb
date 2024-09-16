@@ -38,6 +38,7 @@ module Emq
       # Get the subject and version from the schema and return early if either is nil
       subject = bunny_config.amqp.schemas.subjects[schema_key].subject
       version = bunny_config.amqp.schemas.subjects[schema_key].version
+      Rails.logger.info("Encoding message with schema subject: #{subject}, version: #{version}")
       return if subject.nil? || version.nil?
 
       # Get the message builder configuration for the schema key and version
@@ -73,7 +74,9 @@ module Emq
         # Log success message after successful publishing
         Rails.logger.info('Published volume tracking message to EMQ')
       rescue StandardError => e
-        # Raise an exception if any error occurs
+        # DO NOT Raise an exception if any error occurs; logs the error instead
+        # This is to prevent the job from failing and to allow the job to continue
+        # These logs can be monitored through Kibana
         Rails.logger.error("Failed to publish message to EMQ: #{e.message}")
       end
     end
