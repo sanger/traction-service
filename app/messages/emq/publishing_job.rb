@@ -38,7 +38,6 @@ module Emq
       # Get the subject and version from the schema and return early if either is nil
       subject = bunny_config.amqp.schemas.subjects[schema_key].subject
       version = bunny_config.amqp.schemas.subjects[schema_key].version
-      Rails.logger.info("Encoding message with schema subject: #{subject}, version: #{version}")
       return if subject.nil? || version.nil?
 
       # Get the message builder configuration for the schema key and version
