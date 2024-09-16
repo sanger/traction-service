@@ -74,7 +74,7 @@ module Emq
         Rails.logger.info('Published volume tracking message to EMQ')
       rescue StandardError => e
         # Raise an exception if any error occurs
-        raise "Failed to publish message to EMQ: #{e.message}"
+        Rails.logger.error("Failed to publish message to EMQ: #{e.message}")
       end
     end
 
