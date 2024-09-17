@@ -68,5 +68,8 @@ module TractionService
 
     # Fix for Psych::DisallowedClass. Added the four top classes as this may guard against hidden errors.
     config.active_record.yaml_column_permitted_classes = [Symbol, Hash, Array, ActiveSupport::HashWithIndifferentAccess, BigDecimal]
+
+    # Ensure the rails console shows all attributes by default for ease of debugging
+    config.active_record.attributes_for_inspect = :all
   end
 end
