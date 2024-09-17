@@ -73,8 +73,10 @@ module Emq
         # Log success message after successful publishing
         Rails.logger.info('Published volume tracking message to EMQ')
       rescue StandardError => e
-        # Raise an exception if any error occurs
-        raise "Failed to publish message to EMQ: #{e.message}"
+        # DO NOT Raise an exception if any error occurs; logs the error instead
+        # This is to prevent the job from failing and to allow the job to continue
+        # These logs can be monitored through Kibana
+        Rails.logger.error("Failed to publish message to EMQ: #{e.message}")
       end
     end
 
