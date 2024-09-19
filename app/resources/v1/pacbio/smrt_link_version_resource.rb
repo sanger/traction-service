@@ -8,7 +8,7 @@ module V1
     #
     # @note Access this resource via the `/v1/pacbio/smrt_link_versions/` endpoint.
     #
-    # Provides a JSON:API representation of {Pacbio::Pacbio::SmrtLinkVersion}. Returns the SMRT Link
+    # Provides a JSON:API representation of {Pacbio::SmrtLinkVersion}. Returns the SMRT Link
     #  Versions.
     #
     # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)

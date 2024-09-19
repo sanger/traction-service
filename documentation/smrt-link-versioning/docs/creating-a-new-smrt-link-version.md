@@ -111,9 +111,7 @@
     ???+ info
         If you are modifying an existing SMRT Link Version you may well need to change the records manually e.g. if changing an existing validation or name change. The rake task will only create new versions or options.
 
-  - **Testing locally**
-    - Run the rake task and then start up the ui and service, create a run and download a sample sheet.
+  - **Testing locally** - Run the rake task and then start up the ui and service, create a run and download a sample sheet.
 
-  - **Testing on UAT**
-    - Run the rake task and then create a run and download a sample sheet. You can test this by uploading to the UAT SMRT Link instance.
+  - **Testing on UAT** - Run the rake task and then create a run and download a sample sheet. You can test this by uploading to the UAT SMRT Link instance.
 

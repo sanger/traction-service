@@ -1,6 +1,7 @@
 site_name: SMRT Link Versioning
 nav:
   - Home: index.md
+  - Architecture: architecture.md
   - Usage: usage.md
   - Creating a new SMRT Link Version: creating-a-new-smrt-link-version.md
 theme:

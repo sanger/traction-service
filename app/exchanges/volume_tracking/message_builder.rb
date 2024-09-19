@@ -1,18 +1,26 @@
 # frozen_string_literal: true
 
 module VolumeTracking
-  # Message::Message
   # Creates a message in the correct structure for the warehouse
+  # @example
+  #   {
+  #     "limsId"=>"Traction",
+  #     "messageCreateDateUtc"=>Mon, 15 Jul 2024 15:16:54.877858000 UTC +00:00,
+  #     "messageUuid"=>"0a62ee15-bbf6-46f0-ba95-01d42622d076",
+  #     "recordedAt"=>Mon, 15 Jul 2024 15:16:54.867713000 UTC +00:00,
+  #     "volume"=>1.5,
+  #     "concentration"=>10.0,
+  #     "insertSize"=>100,
+  #     "aliquotType"=>"primary",
+  #     "aliquotUuid"=>"",
+  #     "sourceType"=>"library",
+  #     "sourceBarcode"=>"TRAC-2-35805",
+  #     "sampleName"=>"Sample1",
+  #     "usedByBarcode"=>"TRAC-2-35806",
+  #     "usedByType"=>"pool"
+  #   }
+  #
   class MessageBuilder < Message::Message
-    # Produces the message in the correct format
-    # Example:
-    #   {"limsId"=>"Traction",
-    #    "messageCreateDateUtc"=>Mon, 15 Jul 2024 15:16:54.877858000 UTC +00:00,
-    #    "messageUuid"=>"0a62ee15-bbf6-46f0-ba95-01d42622d076",
-    #    "recordedAt"=>Mon, 15 Jul 2024 15:16:54.867713000 UTC +00:00,
-    #    "volume"=>1.5, "concentration"=>10.0, "insertSize"=>100, "aliquotType"=>"primary",
-    #    "aliquotUuid"=>"", "sourceType"=>"library", "sourceBarcode"=>"TRAC-2-35805",
-    #    "sampleName"=>"Sample1", "usedByBarcode"=>"TRAC-2-35806", "usedByType"=>"pool"}}
     def publish_data
       @publish_data ||= generate_publish_data
     end

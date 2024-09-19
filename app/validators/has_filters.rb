@@ -14,7 +14,7 @@ module HasFilters
 
   private
 
-  # @param [ActiveRecord::Base] record
+  # @param records [ActiveRecord::Base]
   # @return [Array]
   # filter out records which are marked for destruction
   def filtered(records)
