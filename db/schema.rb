@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_26_130146) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_09_163449) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
@@ -500,6 +500,24 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_26_130146) do
     t.index ["plate_id"], name: "index_wells_on_plate_id"
   end
 
+  create_table "workflow_steps", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "workflow_id", null: false
+    t.string "code"
+    t.string "stage"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_workflow_steps_on_code", unique: true
+    t.index ["workflow_id"], name: "index_workflow_steps_on_workflow_id"
+  end
+
+  create_table "workflows", charset: "utf8mb3", force: :cascade do |t|
+    t.string "name"
+    t.integer "pipeline"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_workflows_on_name", unique: true
+  end
+
   add_foreign_key "ont_flowcells", "ont_pools"
   add_foreign_key "ont_flowcells", "ont_runs"
   add_foreign_key "ont_requests", "data_types"
@@ -517,4 +535,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_26_130146) do
   add_foreign_key "qc_results", "qc_assay_types"
   add_foreign_key "qc_results", "qc_receptions"
   add_foreign_key "requests", "receptions"
+  add_foreign_key "workflow_steps", "workflows"
 end

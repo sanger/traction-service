@@ -104,4 +104,10 @@ RSpec.describe Emq::PublishingJob do
     assert_equal 'create-aliquot-in-mlwh', deep_struct.amqp.schemas.subjects.volume_tracking.subject
     assert_equal 1, deep_struct.amqp.schemas.subjects.volume_tracking.version
   end
+
+  it 'logs error message when the EMQ is down' do
+    allow(emq_sender_mock).to receive(:send_message).and_raise(StandardError)
+    expect(Rails.logger).to receive(:error).with('Failed to publish message to EMQ: StandardError')
+    publishing_job.publish(aliquot, Pipelines.pacbio, 'volume_tracking')
+  end
 end
