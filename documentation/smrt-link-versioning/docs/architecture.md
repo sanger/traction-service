@@ -10,7 +10,7 @@
 
 ### Configuration
 
-  1. Pacbio Instrument Types - [`config/pacbio_instrument_types.yml`](https://github.com/sanger/traction-service/blob/develop/config/pacbio_instrument_types.yml)
+  1. **Pacbio Instrument Types** - [`config/pacbio_instrument_types.yml`](https://github.com/sanger/traction-service/blob/develop/config/pacbio_instrument_types.yml)
 
     ```yaml
     revio:
@@ -87,9 +87,9 @@
       - A revio plate must have a sequencing kit box barcode
       - Revio wells can appear in a number of specific orders
 
-  2. Pacbio - [`config/pipelines/pacbio.yml`](https://github.com/sanger/traction-service/blob/develop/config/pipelines/pacbio.yml) - contains details on the sample sheet. When a sample sheet is created this file is used to drive the attributes that will appear, where that data comes from and any class that is used to drive behaviour
+  2. **Pacbio** - [`config/pipelines/pacbio.yml`](https://github.com/sanger/traction-service/blob/develop/config/pipelines/pacbio.yml) - contains details on the sample sheet. When a sample sheet is created this file is used to drive the attributes that will appear, where that data comes from and any class that is used to drive behaviour
 
-  3. Pacbio SMRT Link Versions - [`config/pacbio_smrt_link_versions.yml`](https://github.com/sanger/traction-service/blob/develop/config/pacbio_smrt_link_versions.yml) - This file is loaded into the database using a rake task. This data is then used in run creation and validation.
+  3. **Pacbio SMRT Link Versions** - [`config/pacbio_smrt_link_versions.yml`](https://github.com/sanger/traction-service/blob/develop/config/pacbio_smrt_link_versions.yml) - This file is loaded into the database using a rake task [`lib/tasks/create_smrt_link_versions.rake`](https://github.com/sanger/traction-service/blob/develop/lib/tasks/create_smrt_link_versions.rake). This data is then used in run creation and validation.
 
 ### Run Creation
 

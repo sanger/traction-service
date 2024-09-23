@@ -1,6 +1,6 @@
 # Creating a new SMRT Link Version
 
-1. Create a new SMRT Link Version in the configuration file [`config/pacbio_smrt_link_versions.yml`](https://github.com/sanger/traction-serice/blob/develop/config/pacbio_smrt_link_versions.yml):
+1. Create a new SMRT Link Version in the configuration file [`config/pacbio_smrt_link_versions.yml`](https://github.com/sanger/traction-service/blob/develop/config/pacbio_smrt_link_versions.yml):
         ```yaml
         versions:
           v10:
