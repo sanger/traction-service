@@ -7,7 +7,7 @@ module V1
   #
   # @note Access this resource via the `/v1/printer_types` endpoint.
   #
-  # Provides a JSON:API representation of {PrinterType} and exposes valid library type options
+  # Provides a JSON:API representation of {Printer} and exposes valid library type options
   # for use by the UI.
   #
   # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)

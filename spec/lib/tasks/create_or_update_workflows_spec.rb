@@ -18,10 +18,60 @@ RSpec.describe 'RakeTasks' do
         WorkflowStep.delete_all
       end
 
+      # rubocop:disable RSpec/ExampleLength
       it 'creates workflows and workflow steps' do
         expect do
           Rake.application.invoke_task('workflows:create_or_update')
-        end.to change(Workflow, :count).by(8)
+        end.to change(Workflow, :count).by(8).and output(
+          <<~HEREDOC
+            Workflow 'Pacbio ULI LP' has been created or updated.
+            Workflow step with code 'PULPRL' has been created or updated.
+            Workflow step with code 'PULPPA' has been created or updated.
+            Workflow step with code 'PULPAA' has been created or updated.
+            Workflow step with code 'PULPAB' has been created or updated.
+            Workflow step with code 'PULPPS' has been created or updated.
+            Workflow step with code 'PULSBT' has been created or updated.
+            Workflow 'Pacbio ULI SP' has been created or updated.
+            Workflow step with code 'PUSSHS' has been created or updated.
+            Workflow step with code 'PUSSPR' has been created or updated.
+            Workflow step with code 'PUSSHR' has been created or updated.
+            Workflow step with code 'PUSEXC' has been created or updated.
+            Workflow 'Pacbio Standard' has been created or updated.
+            Workflow step with code 'PSSUP' has been created or updated.
+            Workflow step with code 'PSSHR' has been created or updated.
+            Workflow step with code 'PSSPR' has been created or updated.
+            Workflow step with code 'PSPNU' has been created or updated.
+            Workflow step with code 'PSPSS' has been created or updated.
+            Workflow step with code 'PSPNO' has been created or updated.
+            Workflow 'Extraction' has been created or updated.
+            Workflow step with code 'EEXT' has been created or updated.
+            Workflow step with code 'ESP1' has been created or updated.
+            Workflow step with code 'ESHR' has been created or updated.
+            Workflow step with code 'ESP2' has been created or updated.
+            Workflow step with code 'ESN1' has been created or updated.
+            Workflow step with code 'ESN2' has been created or updated.
+            Workflow 'Sample QC' has been created or updated.
+            Workflow step with code 'SQCSHR' has been created or updated.
+            Workflow step with code 'SQCSHS' has been created or updated.
+            Workflow step with code 'SQCSPR' has been created or updated.
+            Workflow step with code 'SQCPRL' has been created or updated.
+            Workflow step with code 'SQCEXC' has been created or updated.
+            Workflow 'ONT' has been created or updated.
+            Workflow step with code 'OSTK' has been created or updated.
+            Workflow step with code 'OSHR' has been created or updated.
+            Workflow step with code 'OPRL' has been created or updated.
+            Workflow step with code 'OEND' has been created or updated.
+            Workflow step with code 'OFIN' has been created or updated.
+            Workflow step with code 'OPLX' has been created or updated.
+            Workflow 'HiC' has been created or updated.
+            Workflow step with code 'HXCL' has been created or updated.
+            Workflow step with code 'HXPL' has been created or updated.
+            Workflow step with code 'HXTI' has been created or updated.
+            Workflow 'BioNano' has been created or updated.
+            Workflow step with code 'BEXT' has been created or updated.
+            Workflow step with code 'BDLE' has been created or updated.
+          HEREDOC
+        ).to_stdout
         expect(WorkflowStep.count).to eq(38)
         workflow = Workflow.find_by(name: 'Pacbio ULI LP')
         expect(workflow).not_to be_nil
@@ -32,6 +82,7 @@ RSpec.describe 'RakeTasks' do
         expect(workflow_step.stage).to eq('PreLibrary')
       end
     end
+    # rubocop:enable RSpec/ExampleLength
 
     context 'with JSON data given as commandline' do
       let(:data) do
@@ -41,7 +92,12 @@ RSpec.describe 'RakeTasks' do
       it 'creates workflows and workflow steps from JSON data' do
         expect do
           Rake.application.invoke_task("workflows:create_or_update[#{data}]")
-        end.to change(WorkflowStep, :count).by(1)
+        end.to change(WorkflowStep, :count).by(1).and output(
+          <<~HEREDOC
+            Workflow 'Workflow1' has been created or updated.
+            Workflow step with code 'CODE1' has been created or updated.
+          HEREDOC
+        ).to_stdout
 
         workflow = Workflow.find_by(name: 'Workflow1')
         expect(workflow).not_to be_nil

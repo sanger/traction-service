@@ -8,7 +8,7 @@ module V1
     #
     # @note Access this resource via the `/v1/ont/tags/` endpoint.
     #
-    # Provides a JSON:API representation of {Ont::Tag}. This is a resource to return all of the ONT
+    # Provides a JSON:API representation of {Tag}. This is a resource to return all of the ONT
     #  tags.
     #
     # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
