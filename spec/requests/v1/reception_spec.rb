@@ -69,7 +69,7 @@ RSpec.describe 'ReceptionsController' do
                             'lims' => 'Traction', 'sample' => {
                               'common_name' => 'human',
                               'last_updated' => /.*/,
-                              'id_sample_lims' => /.*/,
+                              'id_sample_lims' => /\d/,
                               'uuid_sample_lims' => /.*/,
                               'name' => /.*/,
                               'public_name' => 'PublicName',
