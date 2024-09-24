@@ -1,23 +1,25 @@
 # frozen_string_literal: true
 
-# validate SmrtLinkOptions by version
-# This allows more flexible modification of fields by version
-# each version will have a set of validations
-# on validate it will loop through each of those validations
-# build a validator and validate the record for each specified attribute
-# the validations are standard ActiveRecord ones with specified options
+##
+# validate SmrtLinkOptions by version:
+#
+# - This allows more flexible modification of fields by version
+# - each version will have a set of validations
+# - on validate it will loop through each of those validations
+# - build a validator and validate the record for each specified attribute
+# - the validations are standard ActiveRecord ones with specified options
 # @example
 #   smrt_link_option = { key: attribute_1, validations: { required: {},
 #                        numericality: { greater_than_equal_to: 0,
 #                        less_than_or_equal_to: 1}} }
-# This will then run each validator against the specified key
+# - This will then run each validator against the specified key
 # @example
 #   ActiveModel::Validations::NumericalityValidator.new(attributes: attribute_1,
 #   greater_than_equal_to: 0, less_than_or_equal_to: 1).validate(record)
-# Any errors will be added to the record
-# The validator must be a recognised validator as per
+# - Any errors will be added to the record
+# - The validator must be a recognised validator as per
 # https://github.com/rails/rails/tree/main/activemodel/lib/active_model/validations
-# Or you need to create your own validator as per
+# - Or you need to create your own validator as per
 # https://api.rubyonrails.org/classes/ActiveModel/Validator.html
 class SmrtLinkOptionsValidator < ActiveModel::Validator
   def validate(record)

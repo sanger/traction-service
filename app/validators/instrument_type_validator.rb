@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
-# Validator for InstrumentType
-# Validates the InstrumentType and its associated Plates and Wells
-# Validates the presence of required attributes
-# Validates the number of Plates and Wells
-# Validates the positions of Wells
-# Validates the combinations of Wells
+##
+# Validator for Pacbio InstrumentType:
+#
+# - Validates the InstrumentType and its associated Plates and Wells
+# - Validates the presence of required attributes
+# - Validates the number of Plates and Wells
+# - Validates the positions of Wells
+# - Validates the combinations of Wells
 class InstrumentTypeValidator < ActiveModel::Validator
   attr_reader :instrument_types, :instrument_type
 

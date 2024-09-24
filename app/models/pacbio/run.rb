@@ -12,8 +12,6 @@ module Pacbio
     # Sequel II and Sequel I are now deprecated
     enum :system_name, { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2, 'Revio' => 3 }
 
-    # before_create :generate_comment, unless: -> { wells.nil? }
-
     # We want to generate comments before the run was created
     # but tube barcodes aren't generated until the run is created.
 
@@ -33,6 +31,7 @@ module Pacbio
 
     validates :system_name, presence: true
 
+    # Uses the configuration provided in `config/pacbio_instrument_types.yml`
     validates_with InstrumentTypeValidator,
                    instrument_types: Rails.configuration.pacbio_instrument_types,
                    if: lambda {
@@ -49,8 +48,11 @@ module Pacbio
     # If plate/well data is required via the run, use ?include=plates.wells
     attr_reader :plates_attributes
 
-    # if comments are nil this blows up so add try.
-
+    # combines the library concentration or on plate loading concentration
+    # with the tube barcode to generate a comment
+    # for each well in the run
+    # @example
+    #   TRAC-2-10850 304pM  TRAC-2-10851 273pM  TRAC-2-10852 301pM  TRAC-2-10853 315pM
     def generate_comment
       comment = wells.collect do |well|
         concentration = well.library_concentration || well.on_plate_loading_concentration

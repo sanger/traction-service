@@ -24,7 +24,6 @@ class QcResultsUploadFactory
 
   delegate :csv_data, :used_by, to: :qc_results_upload
 
-  # @param [csv] csv rows
   # creates data from the initial csv
   def rows
     return unless qc_results_upload
@@ -39,7 +38,7 @@ class QcResultsUploadFactory
     true
   end
 
-  # @param [Object] CSV row e.g. { col_header_1: row_1_col_1 }
+  # @param row_object [Object] csv row e.g. { col_header_1: row_1_col_1 }
   def create_data(row_object)
     # 1. Create QC Decisions
     qc_decisions = create_qc_decisions(row_object)
@@ -66,8 +65,8 @@ class QcResultsUploadFactory
     { lr_qc_decision:, tol_qc_decision: }
   end
 
-  # @returns [List] of created QcResults
-  # @param [Object] CSV row e.g. { col_header_1: row_1_col_1 }
+  # @return [List] of created QcResults
+  # @param row_object [Object] csv row e.g. { col_header_1: row_1_col_1 }
   def create_qc_results(row_object)
     # Get relevant QcAssayTypes, for used_by
     qc_assay_types = QcAssayType.where(used_by:)
@@ -128,7 +127,7 @@ class QcResultsUploadFactory
     QcDecisionResult.create!(qc_result:, qc_decision:)
   end
 
-  # @returns [List] of all QcResultMessages - a different one is needed for each decision point
+  # @return [List] of all QcResultMessages - a different one is needed for each decision point
   def messages
     @messages ||= []
   end
