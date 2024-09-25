@@ -34,7 +34,7 @@ module MultiSourcedPool
     formatted_tubes = source_tubes.pluck(:barcode).join(',')
     formatted_libraries = libraries.collect(&:tube).pluck(:barcode).join(',')
     # Combines the two outputs checking neither are empty
-    [formatted_wells, formatted_tubes, formatted_libraries].filter(&:present?).join(',')
+    [formatted_wells, formatted_tubes, formatted_libraries].compact_blank.join(',')
   end
 
   private
