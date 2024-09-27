@@ -15,10 +15,6 @@ RSpec.describe Pacbio::Run, :pacbio do
   end
 
   context 'validation' do
-    it 'does not need a sequencing kit box barcode' do
-      expect(build(:pacbio_sequel_run, sequencing_kit_box_barcode: nil)).to be_valid
-    end
-
     context 'v10 and v11' do
       it 'can have a DNA control complex kit box barcode' do
         expect(build(:pacbio_sequel_run, smrt_link_version: version10, dna_control_complex_box_barcode: 'DCCB1234')).to be_valid
