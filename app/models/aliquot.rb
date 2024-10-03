@@ -53,7 +53,7 @@ class Aliquot < ApplicationRecord
     # This feels like a bit of a hack but I wasn't exactly sure where the best place to
     # it. I tried to follow the sample sheet behaviour but got lost.
     # it looks like the only place this is used is in the sample sheet generation
-    tag.present? && tag_set&.sample_sheet_behaviour != :hidden
+    tag.present? && tag_set&.sample_sheet_behaviour != 'hidden'
   end
 
   # Generic method used by pacbio sample sheet generation to
