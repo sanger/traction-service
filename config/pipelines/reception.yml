@@ -43,7 +43,7 @@ default: &default
           last_updated: *timestamp
           id_sample_lims:
             type: :model
-            value: id
+            value: name
           uuid_sample_lims:
             type: :model
             value: external_id

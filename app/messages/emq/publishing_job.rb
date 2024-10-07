@@ -18,10 +18,11 @@ module Emq
       @bunny_config = PublishingJob.deep_open_struct(Rails.configuration.bunny)
     end
 
+    ##
     # Publish a message to the EMQ
     # @param [Object] objects the object or objects to publish
-    # @param [Object] the pipeline configuration to construct
-    #                 the message to publish from the given object(s)
+    # @param [Object] message_config the pipeline configuration to construct the message
+    # to publish from the given object(s)
     # @param [String] schema_key the key of the schema to validate the message against
     # Note:-
     # The schema_key must exist within the subjects hash of the bunny configuration and

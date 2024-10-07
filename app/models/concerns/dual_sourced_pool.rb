@@ -33,7 +33,7 @@ module DualSourcedPool
     end.join(',')
     formatted_tubes = source_tubes.pluck(:barcode).join(',')
     # Combines the two outputs checking neither are empty
-    [formatted_wells, formatted_tubes].filter(&:present?).join(',')
+    [formatted_wells, formatted_tubes].compact_blank.join(',')
   end
 
   private

@@ -25,6 +25,7 @@ module Pacbio
     # See https://api.rubyonrails.org/classes/ActiveRecord/Store.html
     # We now get the accessors from configuration
     store :smrt_link_options
+
     # using store_accessor allows you to lazy load the accessors
     store_accessor :smrt_link_options, Rails.configuration.pacbio_smrt_link_versions.options.keys
 

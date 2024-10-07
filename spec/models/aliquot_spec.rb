@@ -176,6 +176,11 @@ RSpec.describe Aliquot do
       aliquot = create(:aliquot, tag: nil)
       expect(aliquot.tagged?).to be false
     end
+
+    it 'returns false if the aliquot has a hidden tag set' do
+      aliquot = create(:aliquot, tag: create(:hidden_tag))
+      expect(aliquot.tagged?).to be false
+    end
   end
 
   describe '#collection?' do

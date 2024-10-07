@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_09_09_163449) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_27_074531) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
@@ -216,17 +216,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_09_163449) do
     t.index ["tube_id"], name: "index_pacbio_pools_on_tube_id"
   end
 
-  create_table "pacbio_request_libraries", charset: "utf8mb3", force: :cascade do |t|
-    t.bigint "pacbio_request_id"
-    t.bigint "pacbio_library_id"
-    t.bigint "tag_id"
-    t.index ["pacbio_library_id"], name: "index_pacbio_request_libraries_on_pacbio_library_id"
-    t.index ["pacbio_request_id", "pacbio_library_id"], name: "index_rl_request_library", unique: true
-    t.index ["pacbio_request_id"], name: "index_pacbio_request_libraries_on_pacbio_request_id"
-    t.index ["tag_id", "pacbio_library_id"], name: "index_rl_tag_library", unique: true
-    t.index ["tag_id"], name: "index_pacbio_request_libraries_on_tag_id"
-  end
-
   create_table "pacbio_requests", charset: "utf8mb3", force: :cascade do |t|
     t.string "library_type"
     t.string "estimate_of_gb_required"
@@ -240,7 +229,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_09_163449) do
 
   create_table "pacbio_runs", charset: "utf8mb3", force: :cascade do |t|
     t.string "name"
-    t.string "sequencing_kit_box_barcode"
     t.string "dna_control_complex_box_barcode"
     t.text "comments"
     t.string "uuid"
