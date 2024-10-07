@@ -33,7 +33,7 @@ RSpec.describe Emq::Sender do
   let(:bunny_config_obj) { Emq::PublishingJob.deep_open_struct(bunny_config) }
   let(:schema_subject) { bunny_config_obj.amqp.schemas.subjects.volume_tracking.subject }
   let(:schema_version) { bunny_config_obj.amqp.schemas.subjects.volume_tracking.version }
-  let(:emq_config) { bunny_config_obj.amqp.isg }
+  let(:emq_config) { bunny_config_obj.amqp.broker }
   let(:sender) { described_class.new(emq_config, schema_subject, schema_version) }
 
   describe '#send_message' do
