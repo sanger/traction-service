@@ -10,7 +10,7 @@ RSpec.describe Emq::Sender do
   let(:bunny_config) do
     {
       amqp: {
-        isg: {
+        broker: {
           host: 'localhost',
           tls: false,
           vhost: 'tol',

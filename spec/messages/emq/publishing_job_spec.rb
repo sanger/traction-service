@@ -25,7 +25,7 @@ RSpec.describe Emq::PublishingJob do
       queue_name: 'psd.traction.to-warehouse',
       routing_key: nil,
       amqp: {
-        isg: {
+        broker: {
           host: 'localhost',
           tls: false,
           vhost: 'tol',
