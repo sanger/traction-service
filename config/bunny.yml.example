@@ -9,7 +9,7 @@ default: &default
   queue_name: psd.traction.to-warehouse
   routing_key: #
   amqp:
-    isg:
+    broker:
       host: 'localhost'
       tls: false
       vhost: 'tol'
