@@ -11,10 +11,19 @@ namespace :saphyr_runs do
       { sample: { name: "SaphyrSample#{i}", external_id: SecureRandom.uuid, species: "Species#{i}" }, request: { external_study_id: } }
     end
 
-    factory = Saphyr::RequestFactory.new(attributes)
-    factory.save
-
-    # binding.pry
+    Sample.transaction do
+      attributes.each do |attr|
+        sample = Sample.create!(attr[:sample])
+        req = Saphyr.request_factory(
+          sample: sample,
+          container: nil,
+          request_attributes: attr[:request],
+          resource_factory: nil,
+          reception: nil
+        )
+        req.save!
+      end
+    end
 
     Saphyr::Request.find_each do |request|
       library = Saphyr::Library.create!(request:, saphyr_enzyme_id: 1)
