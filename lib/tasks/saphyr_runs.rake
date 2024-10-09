@@ -15,7 +15,7 @@ namespace :saphyr_runs do
       attributes.each do |attr|
         sample = Sample.create!(attr[:sample])
         req = Saphyr.request_factory(
-          sample: sample,
+          sample:,
           container: nil,
           request_attributes: attr[:request],
           resource_factory: nil,
