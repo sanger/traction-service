@@ -121,7 +121,8 @@ module V1
       end
 
       def created_at
-        @model.created_at.to_fs(:us)
+        # to_fs(:db) -> yyyy-mm-dd hh:mm:ss
+        @model.created_at.to_fs(:db)
       end
 
       def deactivated_at

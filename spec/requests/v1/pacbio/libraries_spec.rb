@@ -32,7 +32,7 @@ RSpec.describe 'LibrariesController', :pacbio do
           expect(library_attributes['template_prep_kit_box_barcode']).to eq(library.template_prep_kit_box_barcode)
           expect(library_attributes['insert_size']).to eq(library.insert_size)
           expect(library_attributes['state']).to eq(library.state)
-          expect(library_attributes['created_at']).to eq(library.created_at.to_fs(:us))
+          expect(library_attributes['created_at']).to eq(library.created_at.to_fs(:db))
           expect(library_attributes['deactivated_at']).to be_nil
           expect(library_attributes['source_identifier']).to eq(library.source_identifier)
           expect(library_attributes['used_volume']).to eq(library.used_volume)
@@ -164,7 +164,7 @@ RSpec.describe 'LibrariesController', :pacbio do
               'template_prep_kit_box_barcode' => library.template_prep_kit_box_barcode,
               'insert_size' => library.insert_size,
               'state' => library.state,
-              'created_at' => library.created_at.to_fs(:us)
+              'created_at' => library.created_at.to_fs(:db)
             )
           end
         end
@@ -187,7 +187,7 @@ RSpec.describe 'LibrariesController', :pacbio do
             'template_prep_kit_box_barcode' => pacbio_library.template_prep_kit_box_barcode,
             'insert_size' => pacbio_library.insert_size,
             'state' => pacbio_library.state,
-            'created_at' => pacbio_library.created_at.to_fs(:us)
+            'created_at' => pacbio_library.created_at.to_fs(:db)
           )
         end
 
@@ -208,7 +208,7 @@ RSpec.describe 'LibrariesController', :pacbio do
             'template_prep_kit_box_barcode' => pacbio_library.template_prep_kit_box_barcode,
             'insert_size' => pacbio_library.insert_size,
             'state' => pacbio_library.state,
-            'created_at' => pacbio_library.created_at.to_fs(:us)
+            'created_at' => pacbio_library.created_at.to_fs(:db)
           )
         end
 
@@ -227,7 +227,7 @@ RSpec.describe 'LibrariesController', :pacbio do
             'template_prep_kit_box_barcode' => pacbio_library.template_prep_kit_box_barcode,
             'insert_size' => pacbio_library.insert_size,
             'state' => pacbio_library.state,
-            'created_at' => pacbio_library.created_at.to_fs(:us)
+            'created_at' => pacbio_library.created_at.to_fs(:db)
           )
         end
       end
@@ -248,7 +248,7 @@ RSpec.describe 'LibrariesController', :pacbio do
             'template_prep_kit_box_barcode' => pacbio_library.template_prep_kit_box_barcode,
             'insert_size' => pacbio_library.insert_size,
             'state' => pacbio_library.state,
-            'created_at' => pacbio_library.created_at.to_fs(:us)
+            'created_at' => pacbio_library.created_at.to_fs(:db)
           )
         end
 
@@ -273,7 +273,7 @@ RSpec.describe 'LibrariesController', :pacbio do
               'template_prep_kit_box_barcode' => library.template_prep_kit_box_barcode,
               'insert_size' => library.insert_size,
               'state' => library.state,
-              'created_at' => library.created_at.to_fs(:us)
+              'created_at' => library.created_at.to_fs(:db)
             )
           end
         end
