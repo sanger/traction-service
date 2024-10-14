@@ -77,6 +77,8 @@ module V1
 
       after_create :publish_volume_tracking_message
 
+      after_create :publish_request_aliquots
+
       filter :sample_name, apply: lambda { |records, value, _options|
         # We have to join requests and samples here in order to find by sample name
         records.joins(:sample).where(sample: { name: value })
@@ -135,6 +137,11 @@ module V1
 
       def publish_volume_tracking_message
         Emq::Publisher.publish(@model.primary_aliquot, Pipelines.pacbio, 'volume_tracking')
+      end
+
+      def publish_request_aliquots
+        filtered_aliquots = @model.request.aliquots.select { |aliquot| aliquot.used_by_id == @model.id }
+        Emq::Publisher.publish(filtered_aliquots, Pipelines.pacbio, 'volume_tracking')
       end
     end
   end
