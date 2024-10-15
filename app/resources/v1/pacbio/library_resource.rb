@@ -140,10 +140,9 @@ module V1
       end
 
       def publish_request_aliquots
-        filtered_aliquots = @model.request.aliquots.select do |aliquot|
+        Emq::Publisher.publish(@model.request.aliquots.select do |aliquot|
           aliquot.used_by_id == @model.id
-        end
-        Emq::Publisher.publish(filtered_aliquots, Pipelines.pacbio, 'volume_tracking')
+        end, Pipelines.pacbio, 'volume_tracking')
       end
     end
   end
