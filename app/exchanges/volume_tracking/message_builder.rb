@@ -58,11 +58,11 @@ module VolumeTracking
         data[:sample_name] = pacbio_library_sample_names
       when 'Pacbio::Request'
         data[:source_type] = 'request'
-        if object.source.tube.nil?
-          data[:source_barcode] = object.source.plate.barcode
-        else
-          data[:source_barcode] = object.source.tube.barcode
-        end
+        data[:source_barcode] = if object.source.tube.nil?
+                                  object.source.plate.barcode
+                                else
+                                  object.source.tube.barcode
+                                end
         data[:source_barcode] = object.source.container.barcode
         data[:sample_name] = object.source.sample_name
       end
@@ -76,6 +76,8 @@ module VolumeTracking
       when 'Pacbio::Pool'
         data[:used_by_type] = 'pool'
         data[:used_by_barcode] = object.used_by.tube.barcode
+      when 'Pacbio::Request'
+        data[:used_by_type] = 'request'
       end
     end
 
