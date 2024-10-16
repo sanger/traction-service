@@ -46,6 +46,8 @@ module VolumeTracking
       }
     end
 
+    # rubocop:disable Metrics/AbcSize
+    # rubocop:disable Metrics/MethodLength
     def populate_by_source_type(data)
       case object.source_type
       when 'Pacbio::Library'
@@ -67,6 +69,8 @@ module VolumeTracking
         data[:sample_name] = object.source.sample_name
       end
     end
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/MethodLength
 
     def populate_by_used_type(data)
       case object.used_by_type
