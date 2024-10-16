@@ -592,7 +592,7 @@ RSpec.describe 'LibrariesController', :pacbio do
 
       it 'publishes a message' do
         expect(Messages).to receive(:publish).with(library.sequencing_runs, having_attributes(pipeline: 'pacbio'))
-        expect(Emq::Publisher).to receive(:publish)
+        expect(Emq::Publisher).to receive(:publish).twice
         patch v1_pacbio_library_path(library), params: body, headers: json_api_headers
         expect(response).to have_http_status(:success), response.body
       end
