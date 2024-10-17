@@ -6,7 +6,6 @@ RSpec.describe VolumeTracking::MessageBuilder, type: :model do
   describe '#content' do
     let(:configuration) { Pipelines.pacbio.volume_tracking.avro_schema_version_1 }
     let(:pacbio_library) { create(:pacbio_library) }
-    let(:pacbio_request) { create(:pacbio_request) }
     let(:pacbio_pool) { create(:pacbio_pool) }
     let(:pacbio_run)  { create(:pacbio_revio_run, smrt_link_version: create(:pacbio_smrt_link_version, name: 'v12_revio')) }
     let(:pacbio_well) { build(:pacbio_well, plate: pacbio_run.plates.first) }
@@ -96,9 +95,9 @@ RSpec.describe VolumeTracking::MessageBuilder, type: :model do
       let(:configuration) { Pipelines.pacbio.volume_tracking.avro_schema_version_2 }
       let(:aliquot) { create(:aliquot, source: pacbio_request, used_by: pacbio_library) }
       let(:message_builder) { described_class.new(object: aliquot, configuration:) }
+      let(:pacbio_request) { create(:pacbio_request, tube: create(:tube, barcode: '123456789')) }
 
       it 'produces the message in the correct format' do
-        pacbio_request.tube = create(:tube, barcode: '123456789')
         expect(message_builder.publish_data).to include({
                                                           source_type: 'request',
                                                           source_barcode: pacbio_request.tube.barcode,
