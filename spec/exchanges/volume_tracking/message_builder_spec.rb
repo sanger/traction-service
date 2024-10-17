@@ -91,6 +91,24 @@ RSpec.describe VolumeTracking::MessageBuilder, type: :model do
       end
     end
 
+    context 'with an aliquot with request as source and library as used_by' do
+      let(:configuration) { Pipelines.pacbio.volume_tracking.avro_schema_version_2 }
+      let(:aliquot) { create(:aliquot, source: pacbio_request, used_by: pacbio_library) }
+      let(:message_builder) { described_class.new(object: aliquot, configuration:) }
+      let(:pacbio_request) { create(:pacbio_request, tube: create(:tube, barcode: '123456789')) }
+
+      it 'produces the message in the correct format' do
+        expect(message_builder.publish_data).to include({
+                                                          source_type: 'request',
+                                                          source_barcode: pacbio_request.tube.barcode,
+                                                          sample_name: pacbio_request.sample_name,
+                                                          used_by_type: 'library',
+                                                          used_by_barcode: pacbio_library.tube.barcode,
+                                                          aliquot_uuid: aliquot.uuid
+                                                        })
+      end
+    end
+
     context 'with a aliquot with library as source and pool as used_by' do
       let(:aliquot) { create(:aliquot, source: pacbio_library, used_by: pacbio_pool) }
       let(:message_builder) { described_class.new(object: aliquot, configuration:) }
