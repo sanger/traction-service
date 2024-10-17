@@ -134,7 +134,7 @@ module V1
       end
 
       def publish_volume_tracking_messages
-        Emq::Publisher.publish([@model.primary_aliquot, *@model.used_aliquots]),
+        Emq::Publisher.publish([@model.primary_aliquot, *@model.used_aliquots],
                                Pipelines.pacbio, 'volume_tracking')
       end
     end

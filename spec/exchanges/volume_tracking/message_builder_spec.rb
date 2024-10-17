@@ -103,7 +103,7 @@ RSpec.describe VolumeTracking::MessageBuilder, type: :model do
                                                           source_barcode: pacbio_request.tube.barcode,
                                                           sample_name: pacbio_request.sample_name,
                                                           used_by_type: 'library',
-                                                          used_by_barcode: '',
+                                                          used_by_barcode: pacbio_library.tube.barcode,
                                                           aliquot_uuid: aliquot.uuid
                                                         })
       end
