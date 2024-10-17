@@ -79,8 +79,8 @@ module VolumeTracking
       when 'Pacbio::Pool'
         data[:used_by_type] = 'pool'
         data[:used_by_barcode] = object.used_by.tube.barcode
-      when 'Pacbio::Request'
-        data[:used_by_type] = 'request'
+      when 'Pacbio::Library'
+        data[:used_by_type] = 'library'
       end
     end
 
