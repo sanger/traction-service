@@ -134,13 +134,8 @@ module V1
       end
 
       def publish_volume_tracking_messages
-        Emq::Publisher.publish(@model.primary_aliquot, Pipelines.pacbio, 'volume_tracking')
-        request_aliquots = @model.request.aliquots.select do |aliquot|
-          aliquot.used_by_id == @model.id
-        end
-        return unless request_aliquots.any?
-
-        Emq::Publisher.publish(request_aliquots, Pipelines.pacbio, 'volume_tracking')
+        Emq::Publisher.publish(Array(@model.primary_aliquot) + Array(@model.used_aliquots),
+                               Pipelines.pacbio, 'volume_tracking')
       end
     end
   end

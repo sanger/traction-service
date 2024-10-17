@@ -304,53 +304,6 @@ default: &default
     # The number suffix '1' is used to identify the schema version of message (created by the
     # message builder class defined in the message_class key) 
     # The schema version number should be present in bunny.yml for the same 'key'
-      avro_schema_version_1 :
-        lims: Traction
-        key: 'volume_tracking'
-        message_class: VolumeTracking::MessageBuilder
-        fields:
-          limsId:
-            type: :string
-            value: 'Traction'
-          messageCreateDateUtc:
-            type: :constant
-            value: Time.current
-          messageUuid:
-            type: :self
-            value: publish_data&.message_uuid
-          recordedAt:
-            type: :model
-            value: created_at
-          volume:
-            type: :model
-            value: volume
-          concentration:
-            type: :model
-            value: concentration
-          insertSize:
-            type: :model
-            value: insert_size
-          aliquotType:
-            type: :model
-            value: aliquot_type
-          aliquotUuid:
-            type: :self
-            value: publish_data&.aliquot_uuid
-          sourceType:
-            type: :self
-            value: publish_data&.source_type
-          sourceBarcode:
-            type: :self
-            value: publish_data&.source_barcode
-          sampleName:
-              type: :self
-              value: publish_data&.sample_name
-          usedByBarcode:
-            type: :self
-            value: publish_data&.used_by_barcode
-          usedByType:
-            type: :self
-            value: publish_data&.used_by_type
       avro_schema_version_2 :
         lims: Traction
         key: 'volume_tracking'

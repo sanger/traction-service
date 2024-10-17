@@ -65,7 +65,6 @@ module VolumeTracking
                                 else
                                   object.source.tube.barcode
                                 end
-        data[:source_barcode] = object.source.container.barcode
         data[:sample_name] = object.source.sample_name
       end
     end
