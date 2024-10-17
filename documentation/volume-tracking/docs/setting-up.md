@@ -215,7 +215,7 @@ Make sure you've set up the infrastructure locally before proceeding with this s
     queue_name: psd.traction.to-warehouse
     routing_key: #
     amqp:
-        isg: # (1)
+        broker: # (1)
             host: localhost
             tls: false
             ca_certificate: "/etc/ssl/certs/ca-certificates.crt"
