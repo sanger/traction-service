@@ -28,6 +28,7 @@ namespace :tags do
     task ont_all: :environment do
       Rake::Task['tags:create:SQK-NBD114.96'].invoke
       Rake::Task['tags:create:SQK-RBK114.96'].invoke
+      Rake::Task['tags:create:SQK-PCB114.24'].invoke
     end
 
     desc 'Create pacbio sequel tags'
@@ -785,6 +786,42 @@ namespace :tags do
         set.tags.find_or_create_by!(tag_attributes)
       end
       puts '-> SQK-RBK114.96 tags successfully created'
+    end
+
+    task 'SQK-PCB114.24': :environment do
+      puts '-> Creating SQK-PCB114.24 tag set and tags'
+      set = TagSet.ont_pipeline
+                  .find_or_create_by!(name: 'SQK-PCB114.24')
+      puts '-> Tag Set successfully created'
+      [
+        { group_id: 'BP01', oligo: 'AAGAAAGTTGTCGGTGTCTTTGTG' },
+        { group_id: 'BP02', oligo: 'TCGATTCCGTTTGTAGTCGTCTGT' },
+        { group_id: 'BP03', oligo: 'GAGTCTTGTGTCCCAGTTACCAGG' },
+        { group_id: 'BP04', oligo: 'TTCGGATTCTATCGTGTTTCCCTA' },
+        { group_id: 'BP05', oligo: 'CTTGTCCAGGGTTTGTGTAACCTT' },
+        { group_id: 'BP06', oligo: 'TTCTCGCAAAGGCAGAAAGTAGTC' },
+        { group_id: 'BP07', oligo: 'GTGTTACCGTGGGAATGAATCCTT' },
+        { group_id: 'BP08', oligo: 'TTCAGGGAACAAACCAAGTTACGT' },
+        { group_id: 'BP09', oligo: 'AACTAGGCACAGCGAGTCTTGGTT' },
+        { group_id: 'BP10', oligo: 'AAGCGTTGAAACCTTTGTCCTCTC' },
+        { group_id: 'BP11', oligo: 'GTTTCATCTATCGGAGGGAATGGA' },
+        { group_id: 'BP12', oligo: 'CAGGTAGAAAGAAGCAGAATCGGA' },
+        { group_id: 'BP13', oligo: 'AGAACGACTTCCATACTCGTGTGA' },
+        { group_id: 'BP14', oligo: 'AACGAGTCTCTTGGGACCCATAGA' },
+        { group_id: 'BP15', oligo: 'AGGTCTACCTCGCTAACACCACTG' },
+        { group_id: 'BP16', oligo: 'CGTCAACTGACAGTGGTTCGTACT' },
+        { group_id: 'BP17', oligo: 'ACCCTCCAGGAAAGTACCTCTGAT' },
+        { group_id: 'BP18', oligo: 'CCAAACCCAACAACCTAGATAGGC' },
+        { group_id: 'BP19', oligo: 'GTTCCTCGTGCAGTGTCAAGAGAT' },
+        { group_id: 'BP20', oligo: 'TTGCGTCCTGTTACGAGAACTCAT' },
+        { group_id: 'BP21', oligo: 'GAGCCTCTCATTGTCCGTTCTCTA' },
+        { group_id: 'BP22', oligo: 'ACCACTGCCATGTATCAAAGTACG' },
+        { group_id: 'BP23', oligo: 'CTTACTACCCAGTGAACCTCCTCG' },
+        { group_id: 'BP24', oligo: 'GCATAGTTCTGCATGATGGGTTAG' }
+      ].each do |tag_attributes|
+        set.tags.find_or_create_by!(tag_attributes)
+      end
+      puts '-> SQK-PCB114.24 tags successfully created'
     end
   end
 
