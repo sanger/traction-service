@@ -46,6 +46,7 @@ module VolumeTracking
       }
     end
 
+    # rubocop:disable Metrics/MethodLength
     def populate_by_source_type(data)
       case object.source_type
       when 'Pacbio::Library'
@@ -56,8 +57,13 @@ module VolumeTracking
         data[:source_type] = 'pool'
         data[:source_barcode] = object.source.tube.barcode
         data[:sample_name] = pacbio_library_sample_names
+      when 'Pacbio::Request'
+        data[:source_type] = 'request'
+        data[:source_barcode] = object.source.container.barcode
+        data[:sample_name] = object.source.sample_name
       end
     end
+    # rubocop:enable Metrics/MethodLength
 
     def populate_by_used_type(data)
       case object.used_by_type
@@ -66,6 +72,9 @@ module VolumeTracking
         data[:used_by_barcode] = used_by_well_barcode
       when 'Pacbio::Pool'
         data[:used_by_type] = 'pool'
+        data[:used_by_barcode] = object.used_by.tube.barcode
+      when 'Pacbio::Library'
+        data[:used_by_type] = 'library'
         data[:used_by_barcode] = object.used_by.tube.barcode
       end
     end
