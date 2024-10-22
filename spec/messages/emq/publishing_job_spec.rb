@@ -25,7 +25,7 @@ RSpec.describe Emq::PublishingJob do
       queue_name: 'psd.traction.to-warehouse',
       routing_key: nil,
       amqp: {
-        isg: {
+        broker: {
           host: 'localhost',
           tls: false,
           vhost: 'tol',
@@ -56,7 +56,7 @@ RSpec.describe Emq::PublishingJob do
   end
 
   before do
-    allow(Emq::Sender).to receive(:new).with(bunny_config_obj.amqp.isg, subject_obj, version_obj).and_return(emq_sender_mock)
+    allow(Emq::Sender).to receive(:new).with(bunny_config_obj.amqp.broker, subject_obj, version_obj).and_return(emq_sender_mock)
     allow(emq_sender_mock).to receive(:send_message).with(anything)
     stub_request(:get, "#{registry_url}#{subject_obj}/versions/#{version_obj}")
       .to_return(status: 200, body: volume_tracking_avro_response, headers: {})
@@ -94,12 +94,12 @@ RSpec.describe Emq::PublishingJob do
 
   it 'returns open struct object' do
     deep_struct = described_class.deep_open_struct(bunny_config)
-    assert_equal 'localhost', deep_struct.amqp.isg.host
-    assert_equal false, deep_struct.amqp.isg.tls
-    assert_equal 'tol', deep_struct.amqp.isg.vhost
-    assert_equal 'admin', deep_struct.amqp.isg.username
-    assert_equal 'development', deep_struct.amqp.isg.password
-    assert_equal 'traction', deep_struct.amqp.isg.exchange
+    assert_equal 'localhost', deep_struct.amqp.broker.host
+    assert_equal false, deep_struct.amqp.broker.tls
+    assert_equal 'tol', deep_struct.amqp.broker.vhost
+    assert_equal 'admin', deep_struct.amqp.broker.username
+    assert_equal 'development', deep_struct.amqp.broker.password
+    assert_equal 'traction', deep_struct.amqp.broker.exchange
     assert_equal 'http://test-redpanda/subjects/', deep_struct.amqp.schemas.registry_url
     assert_equal 'create-aliquot-in-mlwh', deep_struct.amqp.schemas.subjects.volume_tracking.subject
     assert_equal 2, deep_struct.amqp.schemas.subjects.volume_tracking.version

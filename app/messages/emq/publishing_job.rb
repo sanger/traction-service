@@ -53,7 +53,7 @@ module Emq
 
       # Create a validator and sender for the subject and version
       encoder = Emq::Encoder.new(subject, version, bunny_config.amqp.schemas.registry_url)
-      sender = Emq::Sender.new(bunny_config.amqp.isg, subject, version)
+      sender = Emq::Sender.new(bunny_config.amqp.broker, subject, version)
 
       begin
         # Publish each object to the EMQ
