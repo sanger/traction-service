@@ -21,15 +21,13 @@ namespace :pool_and_library_aliquots do
       filtered_aliquots = Aliquot.where(used_by_type: 'Pacbio::Well')
                                  .or(Aliquot.where(source_type: 'Pacbio::Pool', aliquot_type: 'primary'))
                                  .or(Aliquot.where(source_type: 'Pacbio::Library', aliquot_type: 'primary'))
+                                 .or(Aliquot.where(source_type: 'Pacbio::Request', used_by_type: 'Pacbio::Library', aliquot_type: 'derived'))
                                  .to_a
-      # byebug
       aliquots.concat(filtered_aliquots)
 
       # Find aliquots from a Pacbio::Pool used by a Pacbio::Well and add their source's used aliquots if from a Pacbio::Library
       filtered_aliquots.select { |aliquot| aliquot.source_type == 'Pacbio::Pool' && aliquot.used_by_type == 'Pacbio::Well' }.each do |aliquot|
-        # byebug
         library_aliquots_in_pool = aliquot.source.used_aliquots.select { |used_aliquot| used_aliquot.source_type == 'Pacbio::Library' }
-        # byebug
         aliquots.concat(library_aliquots_in_pool)
       end
       Emq::Publisher.publish(aliquots, Pipelines.pacbio, 'volume_tracking')

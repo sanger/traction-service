@@ -32,6 +32,18 @@ RSpec.describe 'RakeTasks' do
       ).to_stdout
     end
 
+    it 'pushes Aliquot.where(source_type: \'Pacbio::Request\', used_by_type: \'Pacbio::Library\', aliquot_type: \'derived\'' do
+      request = create(:pacbio_request)
+      create(:pacbio_library, request:)
+      expect(Emq::Publisher).to receive(:publish).with(array_including(request.derived_aliquots.first), instance_of(Pipelines::Configuration::Item), 'volume_tracking')
+      expect { Rake::Task['pool_and_library_aliquots:push_data_to_warehouse'].invoke }.to output(
+        <<~HEREDOC
+          -> Pushing all pool and library aliquots data to the warehouse for volume tracking
+          -> Successfully pushed all pool and library aliquots data to the warehouse
+        HEREDOC
+      ).to_stdout
+    end
+
     it 'pushes all pool and library used aliquots used in a run to the warehouse' do
       pool = create(:pacbio_pool)
       library = create(:pacbio_library)
