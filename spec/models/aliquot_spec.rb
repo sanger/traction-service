@@ -190,4 +190,25 @@ RSpec.describe Aliquot do
       expect(aliquot).not_to be_collection
     end
   end
+
+  describe '#publishable' do
+    before do
+      Pacbio::SmrtLinkVersion.find_by(name: 'v13_sequel_iie') || create(:pacbio_smrt_link_version, name: 'v13_sequel_iie', default: true)
+    end
+
+    it 'returns all of the publishable aliquots' do
+      # 3 aliquots are publishable
+      create(:pacbio_pool)
+
+      # 2 aliquots are publishable
+      library = create(:pacbio_library)
+
+      # 5 aliquots are publishable
+      build(:pacbio_pool, used_aliquots: [build(:aliquot, source: library, volume: 100, aliquot_type: :derived)])
+      wells = [build(:pacbio_well, row: 'A', column: '1', pools: [create(:pacbio_pool)])]
+      create(:pacbio_revio_run, plates: [build(:pacbio_plate, wells:)])
+
+      expect(described_class.publishable.count).to eq(10)
+    end
+  end
 end

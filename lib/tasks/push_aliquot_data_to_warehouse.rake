@@ -16,20 +16,7 @@ namespace :pool_and_library_aliquots do
       # 4. When a request is imported into the reception, a primary aliquot is created
       # 5. When a request is used in a pool or library, derived aliquot is created
 
-      aliquots = []
-      # Filter all aliquots that are not from a Pacbio::Request or not from a Pacbio::Library which has used by a Pacbio::Pool
-      filtered_aliquots = Aliquot.where(used_by_type: 'Pacbio::Well')
-                                 .or(Aliquot.where(source_type: 'Pacbio::Pool', aliquot_type: 'primary'))
-                                 .or(Aliquot.where(source_type: 'Pacbio::Library', aliquot_type: 'primary'))
-                                 .or(Aliquot.where(source_type: 'Pacbio::Request', used_by_type: 'Pacbio::Library', aliquot_type: 'derived'))
-                                 .to_a
-      aliquots.concat(filtered_aliquots)
-
-      # Find aliquots from a Pacbio::Pool used by a Pacbio::Well and add their source's used aliquots if from a Pacbio::Library
-      filtered_aliquots.select { |aliquot| aliquot.source_type == 'Pacbio::Pool' && aliquot.used_by_type == 'Pacbio::Well' }.each do |aliquot|
-        library_aliquots_in_pool = aliquot.source.used_aliquots.select { |used_aliquot| used_aliquot.source_type == 'Pacbio::Library' }
-        aliquots.concat(library_aliquots_in_pool)
-      end
+      aliquots = Aliquot.publishable
       Emq::Publisher.publish(aliquots, Pipelines.pacbio, 'volume_tracking')
 
       puts '-> Successfully pushed all pool and library aliquots data to the warehouse'

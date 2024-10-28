@@ -40,6 +40,16 @@ class Aliquot < ApplicationRecord
 
   delegate :is_a?, to: :used_by, prefix: true
 
+  scope :filtered, lambda {
+    where(used_by_type: 'Pacbio::Well')
+      .or(where(source_type: 'Pacbio::Pool',
+                aliquot_type: 'primary'))
+      .or(where(source_type: 'Pacbio::Library',
+                aliquot_type: 'primary'))
+      .or(where(source_type: 'Pacbio::Request',
+                used_by_type: 'Pacbio::Library', aliquot_type: 'derived'))
+  }
+
   def sample_sheet_behaviour
     SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour || :untagged)
   end
@@ -61,5 +71,29 @@ class Aliquot < ApplicationRecord
   # Assuming false is a simplification used previously for sample-sheets
   def collection?
     false
+  end
+
+  # Returns a list of all the aliquots that are publishable.
+  def self.publishable
+    [].tap do |aliquots|
+      filtered_aliquots = filtered.to_a
+      aliquots.concat(filtered_aliquots)
+      aliquots.concat(used_by_well_library_aliquots(filtered_aliquots))
+    end
+  end
+
+  # Find aliquots from a Pacbio::Pool used by a Pacbio::Well and add their source's
+  # used aliquots if from a Pacbio::Library
+  def self.used_by_well_library_aliquots(aliquots)
+    well_aliquots = aliquots.select do |aliquot|
+      aliquot.source_type == 'Pacbio::Pool' && aliquot.used_by_type == 'Pacbio::Well'
+    end
+    [].tap do |library_aliquots|
+      well_aliquots.each do |aliquot|
+        library_aliquots.concat(aliquot.source.used_aliquots.select do |used_aliquot|
+          used_aliquot.source_type == 'Pacbio::Library'
+        end)
+      end
+    end
   end
 end
