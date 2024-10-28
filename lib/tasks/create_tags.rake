@@ -35,7 +35,7 @@ namespace :tags do
     task pacbio_sequel: :environment do
       puts '-> Creating Sequel_16_barcodes_v3 tag set and tags'
       set = TagSet.pacbio_pipeline
-                  .find_or_create_by!(name: 'Sequel_16_barcodes_v3', uuid: '244d96c6-f3b2-4997-5ae3-23ed33ab925f')
+                  .find_or_create_by!(name: 'Sequel_16_barcodes_v3', uuid: '244d96c6-f3b2-4997-5ae3-23ed33ab925f', active: false)
       puts '-> Tag Set successfully created'
       [
         { oligo: 'CACATATCAGAGTGCGT', group_id: 'bc1001_BAK8A_OA' },
@@ -125,7 +125,7 @@ namespace :tags do
     task pacbio_truseq: :environment do
       puts '-> Creating TruSeq_CD_i7_i5_D0x_8mer tag set and tags'
       set = TagSet.pacbio_pipeline
-                  .find_or_create_by!(name: 'TruSeq_CD_i7_i5_D0x_8mer', uuid: 'aa4a2d17-0a82-aef0-ab21-29ecbe96ceaf')
+                  .find_or_create_by!(name: 'TruSeq_CD_i7_i5_D0x_8mer', uuid: 'aa4a2d17-0a82-aef0-ab21-29ecbe96ceaf', active: false)
       puts '-> Tag Set successfully created'
       [
         { group_id: 'D501', oligo: 'TATAGCCT' },
@@ -158,7 +158,7 @@ namespace :tags do
     task pacbio_sequel_96: :environment do
       puts '-> Creating Sequel_96_Barcoded_OHA_v1 tag set and tags'
       set = TagSet.pacbio_pipeline
-                  .find_or_create_by!(name: 'Sequel_96_Barcoded_OHA_v1', uuid: '478ca5bc-df68-c86d-d8ee-ad11f590c0bd')
+                  .find_or_create_by!(name: 'Sequel_96_Barcoded_OHA_v1', uuid: '478ca5bc-df68-c86d-d8ee-ad11f590c0bd', active: false)
       puts '-> Tag Set successfully created'
       [
         { group_id: 'bc1001T', oligo: 'CACATATCAGAGTGCGT' },
@@ -297,7 +297,7 @@ namespace :tags do
       puts '-> Creating Nextera UD tag set and tags'
       set = TagSet.pacbio_pipeline
                   .create_with(sample_sheet_behaviour: :hidden)
-                  .find_or_create_by!(name: 'Nextera_UD_Index_PlateA', uuid: 'dd87fafe-1432-157f-fd16-b1a8bae9e6a4')
+                  .find_or_create_by!(name: 'Nextera_UD_Index_PlateA', uuid: 'dd87fafe-1432-157f-fd16-b1a8bae9e6a4', active: false)
 
       set.update!(sample_sheet_behaviour: :hidden) unless set.hidden_sample_sheet_behaviour?
 
