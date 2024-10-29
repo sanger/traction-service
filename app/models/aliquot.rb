@@ -40,7 +40,7 @@ class Aliquot < ApplicationRecord
 
   delegate :is_a?, to: :used_by, prefix: true
 
-  scope :filtered, lambda {
+  scope :filter_by_publishable, lambda {
     where(used_by_type: 'Pacbio::Well')
       .or(where(source_type: 'Pacbio::Pool',
                 aliquot_type: 'primary'))
@@ -76,7 +76,7 @@ class Aliquot < ApplicationRecord
   # Returns a list of all the aliquots that are publishable.
   def self.publishable
     [].tap do |aliquots|
-      filtered_aliquots = filtered.to_a
+      filtered_aliquots = filter_by_publishable.to_a
       aliquots.concat(filtered_aliquots)
       aliquots.concat(used_by_well_library_aliquots(filtered_aliquots))
     end
