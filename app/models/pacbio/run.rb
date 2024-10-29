@@ -107,19 +107,19 @@ module Pacbio
     # @return [Array] An array of aliquots that are either sourced from Pacbio::Pool,Pacbio::Library
     # and aliquots that have a source of 'Pacbio::Library' within those pools.
     def aliquots_to_publish_on_run
-      to_publish = []
-      plates.flat_map do |plate|
-        # Collect all used aliquots from the plate
-        used_aliquots = plate.wells.flat_map(&:used_aliquots)
-        # Collect all used aliquots from the plate that have a source of 'Pacbio::Pool'
-        used_aliquots_pool_source = used_aliquots
-                                    .select { |aliquot| aliquot.source_type == 'Pacbio::Pool' }
-        # Aggregate all used aliquots from the plate and used aliquots from the pool with
-        # a source of 'Pacbio::Library'
-        to_publish.concat(used_aliquots,
-                          used_aliquots_lib_source_in_pool(used_aliquots_pool_source))
+      [].tap do |to_publish|
+        plates.flat_map do |plate|
+          # Collect all used aliquots from the plate
+          used_aliquots = plate.wells.flat_map(&:used_aliquots)
+          # Collect all used aliquots from the plate that have a source of 'Pacbio::Pool'
+          used_aliquots_pool_source = used_aliquots
+                                      .select { |aliquot| aliquot.source_type == 'Pacbio::Pool' }
+          # Aggregate all used aliquots from the plate and used aliquots from the pool with
+          # a source of 'Pacbio::Library'
+          to_publish.concat(used_aliquots,
+                            used_aliquots_lib_source_in_pool(used_aliquots_pool_source))
+        end
       end
-      to_publish
     end
 
     # This method filters and retrieves all aliquots from a given collection of pools
