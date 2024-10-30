@@ -545,7 +545,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
 
     context 'v13_1_sequel_iie' do
       let(:smrt_link_version) { create(:pacbio_smrt_link_version, name: 'v13_1_sequel_iie', default: true) }
-      let(:run)               { create(:pacbio_sequel_run, smrt_link_version:, plates: [plate])
+      let(:run)               { create(:pacbio_sequel_run, smrt_link_version:, plates: [plate]) }
 
       context 'when the libraries are tagged' do
         let(:well1) do
