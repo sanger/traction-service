@@ -38,13 +38,34 @@ module RunCsv
     def payload
       CSV.generate do |csv|
         csv << csv_headers
-
-        data_rows = recursive_array_extractor([data_structure])
-        data_rows.each do |row|
-          row_values = row.values_at(*csv_headers)
-          csv << row_values unless row_values.all?(nil)
-        end
+        generate_csv_rows(csv)
       end
+    end
+
+    def generate_csv_rows(csv)
+      data_rows = recursive_array_extractor([data_structure])
+      # Initialize a flag to track if this is the first row
+      first_row = true
+
+      data_rows.each do |row|
+        row_values = process_row(row, first_row)
+        first_row = false if first_row && !row_values.all?(nil)
+        csv << row_values unless row_values.all?(nil)
+      end
+    end
+
+    def process_row(row, first_row)
+      row_values = row.values_at(*csv_headers)
+      handle_csv_version(row_values, first_row)
+      row_values
+    end
+
+    def handle_csv_version(row_values, first_row)
+      # CSV VERSION should be set only on first row
+      return if first_row
+
+      index = csv_headers.index('CSV Version')
+      row_values[index] = nil if index
     end
   end
 end
