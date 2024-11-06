@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_09_27_074531) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_06_153044) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
@@ -190,9 +190,16 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_27_074531) do
     t.bigint "pacbio_request_id", null: false
     t.bigint "tag_id"
     t.bigint "tube_id"
+    t.bigint "pacbio_library_batch_id"
+    t.index ["pacbio_library_batch_id"], name: "index_pacbio_libraries_on_pacbio_library_batch_id"
     t.index ["pacbio_request_id"], name: "index_pacbio_libraries_on_pacbio_request_id"
     t.index ["tag_id"], name: "index_pacbio_libraries_on_tag_id"
     t.index ["tube_id"], name: "index_pacbio_libraries_on_tube_id"
+  end
+
+  create_table "pacbio_library_batches", charset: "utf8mb3", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "pacbio_plates", charset: "utf8mb3", force: :cascade do |t|
@@ -512,6 +519,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_27_074531) do
   add_foreign_key "ont_requests", "library_types"
   add_foreign_key "ont_runs", "ont_instruments"
   add_foreign_key "ont_runs", "ont_min_know_versions"
+  add_foreign_key "pacbio_libraries", "pacbio_library_batches"
   add_foreign_key "pacbio_libraries", "pacbio_requests"
   add_foreign_key "pacbio_libraries", "tubes"
   add_foreign_key "pacbio_pools", "tubes"
