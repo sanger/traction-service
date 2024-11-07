@@ -175,6 +175,13 @@ See Confluence for further information
 
 We've used Yard as the documentation tool to document the service. This can be accessed via https://sanger.github.io/traction-service/.
 
+To view the Yard docs locally, use the following command:
+
+```shell
+bundle exec yard
+```
+Open up the doc/index.html file in a browser.
+
 To query all the `@todo` items in Yard, the following command can be used:
 
 ```shell

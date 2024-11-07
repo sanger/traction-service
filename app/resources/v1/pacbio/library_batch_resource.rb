@@ -3,6 +3,7 @@
 module V1
   module Pacbio
     # This resource is used to create batches of libraries in one go.
+    # This resource can only be accessed via a `POST` request to the library_batches endpoint.
     #
     # @example
     #  {
@@ -29,7 +30,12 @@ module V1
     #       }
     #   }
     #
-    # @note Access this resource via the `/v1/pacbio/library_batches/` endpoint.
+    # @note
+    #   Access this resource via the `/v1/pacbio/library_batches/` endpoint.
+    #   To return the libraries created, add `libraries` to the include.
+    #   To return the created libraries tubes add `libraries.tube` to the include.
+    #   For example `/v1/pacbio/library_batches?include=libraries.tube`
+    #
     #
     # Provides a JSON:API representation of {Pacbio::LibraryBatch}.
     #
