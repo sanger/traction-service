@@ -67,10 +67,11 @@ RSpec.describe 'LibraryBatchesController', :pacbio do
           expect(json.dig('data', 'id').to_i).to eq(Pacbio::LibraryBatch.first.id)
         end
 
-        it 'includes the libraries' do
-          post "#{v1_pacbio_library_batches_path}?include=libraries", params: body, headers: json_api_headers
-          expect(json['included'].length).to eq(2) # We create 2 libraries
-          expect(json['included'].pluck('type')).to all(eq('libraries'))
+        it 'includes the libraries and their tubes' do
+          post "#{v1_pacbio_library_batches_path}?include=libraries.tube", params: body, headers: json_api_headers
+          expect(json['included'].length).to eq(4)
+          expect(json['included'].filter { |record| record['type'] == 'tubes' }.length).to eq(2)
+          expect(json['included'].filter { |record| record['type'] == 'libraries' }.length).to eq(2)
         end
       end
 
