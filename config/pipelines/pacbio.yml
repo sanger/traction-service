@@ -203,7 +203,7 @@ default: &default
          _sorted_wells:
           type: :array
           value: sorted_wells # defined in 'app/models/concerns/sample_sheet.rb'
-          children:
+          children: &sorted_wells_template_children
             Instrument Type:
               type: :model
               value: plate.run.system_name
@@ -298,7 +298,48 @@ default: &default
 
       # No changes required from v12_sequel_iie, added for consistency
       v13_sequel_iie: *v12_sequel_iie
-      
+
+      v13_1_sequel_iie: &v13_1_sequel_iie
+        <<: *v12_sequel_iie
+        column_order:
+          - CSV Version
+          - Instrument Type
+          - Run Name
+          - Is Collection
+          - Sample Well
+          - Sample Name
+          - Movie Time per SMRT Cell (hours)
+          - Insert Size (bp)
+          - SMRTbell Adapter Design
+          - Binding Kit Box Barcode
+          - Sequencing Kit Box Barcode
+          - On-Plate Loading Concentration (pM)
+          - DNA Control Complex Box Barcode
+          - Run Comments
+          - Sample is Barcoded
+          - Barcode Name
+          - Barcode Set
+          - Same Barcodes on Both Ends of Sequence
+          - Bio Sample Name
+          - Automation Parameters
+          - CCS Analysis Output - Include Kinetics Information
+          - Loading Target (P1 + P2)
+          - Use Adaptive Loading
+          - CCS Analysis Output - Include Low Quality Reads
+          - Include 5mC Calls in CpG Motifs
+          - Demultiplex Barcodes
+        fields:
+          _sorted_wells:
+            type: :array
+            value: sorted_wells # defined in 'app/models/concerns/sample_sheet.rb'
+            children:
+              <<: *sorted_wells_template_children
+              CSV Version:
+                type: :string
+                value: "1"
+
+      v13_1_revio: *v13_1_sequel_iie
+
     # For any EMQ message creation, the section and key name must be same as schema subject in bunny.yml
     volume_tracking:
     # The number suffix '1' is used to identify the schema version of message (created by the
