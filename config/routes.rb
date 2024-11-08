@@ -63,6 +63,7 @@ Rails.application.routes.draw do
       jsonapi_resources :pools,               except: %i[destroy]
       jsonapi_resources :smrt_link_versions,  only: %i[index show]
       jsonapi_resources :smrt_link_options,   only: %i[index show]
+      jsonapi_resources :library_batches,     only: %i[create]
     end
 
     namespace :ont do

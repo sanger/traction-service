@@ -29,6 +29,8 @@ module Pacbio
     delegate :sample_name, :cost_code, :external_study_id, :library_type, to: :request
     belongs_to :tag, optional: true
     belongs_to :tube, default: -> { Tube.new }
+    belongs_to :library_batch, optional: true, class_name: 'Pacbio::LibraryBatch',
+                               foreign_key: :pacbio_library_batch_id, inverse_of: :libraries
 
     has_one :sample, through: :request
     has_one :tag_set, through: :tag
