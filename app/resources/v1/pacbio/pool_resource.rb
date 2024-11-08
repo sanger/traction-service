@@ -3,6 +3,8 @@
 module V1
   module Pacbio
     #
+    # @todo Add POST and PATCH examples
+    #
     # @note Access this resource via the `/v1/pacbio/pools/` endpoint.
     #
     # Provides a JSON:API representation of {Pacbio::Pool}.
@@ -20,11 +22,11 @@ module V1
     #
     # ## Primary relationships:
     #
-    # * tube
-    # * used_aliquots
-    # * primary_aliquot
-    # * requests
-    # * libraries
+    # * tube {V1::Pacbio::TubeResource}
+    # * used_aliquots {V1::Pacbio::AliquotResource}
+    # * primary_aliquot {V1::Pacbio::AliquotResource}
+    # * requests {V1::Pacbio::RequestResource}
+    # * libraries {V1::Pacbio::LibraryResource}
     #
     # ## Relationship trees:
     #
