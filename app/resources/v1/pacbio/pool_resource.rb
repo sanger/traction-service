@@ -2,9 +2,8 @@
 
 module V1
   module Pacbio
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    #
+    # @todo Add POST and PATCH examples
     #
     # @note Access this resource via the `/v1/pacbio/pools/` endpoint.
     #
@@ -13,6 +12,44 @@ module V1
     # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
     # for the service implementation of the JSON:API standard.
+    # This resource represents a Pacbio Pool and can return all pools, a single pool or multiple
+    # pools along with their relationships.
+    #
+    # ## Filters:
+    #
+    # * sample_name
+    # * barcode
+    #
+    # ## Primary relationships:
+    #
+    # * tube {V1::Pacbio::TubeResource}
+    # * used_aliquots {V1::Pacbio::AliquotResource}
+    # * primary_aliquot {V1::Pacbio::AliquotResource}
+    # * requests {V1::Pacbio::RequestResource}
+    # * libraries {V1::Pacbio::LibraryResource}
+    #
+    # ## Relationship trees:
+    #
+    # * used_aliquots.tag.tag_set
+    # * requests.tube,tube
+    # * libraries.tube
+    # * libraries.request
+    # * requests.plate.wells.requests
+    #
+    # @example
+    #   curl -X GET http://localhost:3000/v1/pacbio/pools/1
+    #   curl -X GET http://localhost:3000/v1/pacbio/pools/
+    #   curl -X GET http://localhost:3000/v1/pacbio/pools/1?include=tube,used_aliquots,primary_aliquot,requests,libraries
+    #
+    #   https://locahost:3000/v1/pacbio/pools?filter[sample_name]=sample_name
+    #
+    #   https://locahost:3000/v1/pacbio/pools?filter[barcode]=TRAC-2-12068
+    #
+    #   https://locahost:3000/v1/pacbio/pools?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067
+    #
+    #   https://localhost:3000/v1/pacbio/pools?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=used_aliquots.tag.tag_set,requests.tube,tube,libraries.tube,libraries.request,requests.plate.wells.requests
+    #
+    #
     class PoolResource < JSONAPI::Resource
       include Shared::RunSuitability
 
