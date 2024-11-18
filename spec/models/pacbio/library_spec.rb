@@ -111,6 +111,11 @@ RSpec.describe Pacbio::Library, :pacbio do
     expect(build(:pacbio_library, tag:).tag).to eq(tag)
   end
 
+  it 'can have a library batch' do
+    library_batch = build(:pacbio_library_batch)
+    expect(build(:pacbio_library, library_batch:).library_batch).to eq(library_batch)
+  end
+
   it 'can have a primary aliquot' do
     expect(create(:pacbio_library).primary_aliquot).to be_present
   end

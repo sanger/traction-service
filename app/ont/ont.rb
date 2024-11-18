@@ -34,8 +34,12 @@ module Ont
     # Get the tag_set from the kit_barcode
     ont_tag_set = TagSet.find_by(name: library_attributes[:kit_barcode])
     # Find the tag_id from the tag_set based on the tag_sequence/oligo
-    library_attributes[:tag_id] =
-      ont_tag_set&.tags&.find_by(oligo: library_attributes[:tag_sequence])&.id
+    if ont_tag_set.nil?
+      library_attributes[:tag_id] = nil
+    else
+      library_attributes[:tag_id] =
+        ont_tag_set.tags.find_by(oligo: library_attributes[:tag_sequence])&.id
+    end
     filtered_attributes = library_attributes.slice(*self.library_attributes)
 
     Ont::Library.new(
