@@ -80,7 +80,7 @@ module VolumeTracking
     end
 
     def used_by_well_barcode
-      "#{object.used_by.run.name}:#{object.used_by.position}"
+      "#{object.used_by.run.name}:#{object.used_by.plate.plate_number}:#{object.used_by.position}"
     end
 
     def pacbio_library_sample_names
