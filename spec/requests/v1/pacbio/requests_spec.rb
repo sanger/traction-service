@@ -122,7 +122,7 @@ RSpec.describe 'RequestsController', :pacbio do
           end
         end
 
-        it 'when the source_identifier cotains multiple tubes, plates and invalid values' do
+        it 'when the source_identifier contains multiple tubes, plates and invalid values' do
           pacbio_tube1 = create(:tube_with_pacbio_request)
           pacbio_tube2 = create(:tube_with_pacbio_request)
           pacbio_plate1 = create(:plate_with_wells_and_requests, pipeline: 'pacbio')
