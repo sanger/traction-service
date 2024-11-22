@@ -77,8 +77,8 @@ RSpec.describe 'RequestsController', :pacbio do
       context 'filters - source_identifier' do
         it 'when the source_identifier belongs to a plate' do
           pacbio_plate = create(:plate_with_wells_and_requests, pipeline: 'pacbio')
-          pacbio_plate_requests = pacbio_plate.wells.flat_map(&:pacbio_requests)
-          get "#{v1_pacbio_requests_path}?filter[source_identifier]=#{pacbio_plate.barcode}",
+          pacbio_plate_requests = pacbio_plate.wells.first.pacbio_requests
+          get "#{v1_pacbio_requests_path}?filter[source_identifier]=#{pacbio_plate.barcode}:#{pacbio_plate.wells.first.position}",
               headers: json_api_headers
 
           expect(response).to have_http_status(:success)
@@ -107,6 +107,50 @@ RSpec.describe 'RequestsController', :pacbio do
           expect(response).to have_http_status(:success)
           expect(json['data'].length).to eq(pacbio_tube.pacbio_requests.length)
           pacbio_tube.pacbio_requests.each do |request|
+            request_attributes = find_resource(type: 'requests', id: request.id)['attributes']
+            expect(request_attributes).to include(
+              'cost_code' => request.cost_code,
+              'number_of_smrt_cells' => request.number_of_smrt_cells,
+              'external_study_id' => request.external_study_id,
+              'library_type' => request.library_type,
+              'estimate_of_gb_required' => request.estimate_of_gb_required,
+              'sample_name' => request.sample.name,
+              'sample_species' => request.sample.species,
+              'source_identifier' => request.source_identifier,
+              'created_at' => request.created_at.to_fs(:us)
+            )
+          end
+        end
+
+        it 'when the source_identifier belongs to multiple tubes and plates' do
+          pacbio_tube1 = create(:tube_with_pacbio_request)
+          pacbio_tube2 = create(:tube_with_pacbio_request)
+          pacbio_plate1 = create(:plate_with_wells_and_requests, pipeline: 'pacbio')
+          pacbio_plate2 = create(:plate_with_wells_and_requests, pipeline: 'pacbio')
+          pacbio_plate1_renquests = pacbio_plate1.wells.first.pacbio_requests
+          pacbio_plate2_requests = pacbio_plate2.wells.first.pacbio_requests
+
+          source_identifiers = [
+            pacbio_tube1.barcode,
+            pacbio_tube2.barcode,
+            "#{pacbio_plate1.barcode}:#{pacbio_plate1.wells.first.position}",
+            "#{pacbio_plate2.barcode}:#{pacbio_plate2.wells.first.position}",
+            'INVALID_IDENTIFIER'
+          ]
+
+          get "#{v1_pacbio_requests_path}?filter[source_identifier]=#{source_identifiers.join(',')}",
+              headers: json_api_headers
+
+          expect(response).to have_http_status(:success)
+
+          total_requests = pacbio_tube1.pacbio_requests.length +
+                           pacbio_tube2.pacbio_requests.length +
+                           pacbio_plate1_renquests.length +
+                           pacbio_plate2_requests.length
+
+          expect(json['data'].length).to eq(total_requests)
+
+          (pacbio_tube1.pacbio_requests + pacbio_tube2.pacbio_requests + pacbio_plate1_renquests + pacbio_plate2_requests).each do |request|
             request_attributes = find_resource(type: 'requests', id: request.id)['attributes']
             expect(request_attributes).to include(
               'cost_code' => request.cost_code,
