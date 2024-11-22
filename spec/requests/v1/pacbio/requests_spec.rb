@@ -122,7 +122,7 @@ RSpec.describe 'RequestsController', :pacbio do
           end
         end
 
-        it 'when the source_identifier belongs to multiple tubes and plates' do
+        it 'when the source_identifier cotains multiple tubes, plates and invalid values' do
           pacbio_tube1 = create(:tube_with_pacbio_request)
           pacbio_tube2 = create(:tube_with_pacbio_request)
           pacbio_plate1 = create(:plate_with_wells_and_requests, pipeline: 'pacbio')
@@ -164,6 +164,16 @@ RSpec.describe 'RequestsController', :pacbio do
               'created_at' => request.created_at.to_fs(:us)
             )
           end
+        end
+
+        it 'when the source_identifer contains malformed strings' do
+          pacbio_plate1 = create(:plate_with_wells_and_requests, pipeline: 'pacbio')
+          source_identifiers = ["#{pacbio_plate1.barcode}:",
+                                ":#{pacbio_plate1.wells.first.position}"]
+          get "#{v1_pacbio_requests_path}?filter[source_identifier]=#{source_identifiers.join(',')}",
+              headers: json_api_headers
+          expect(response).to have_http_status(:success)
+          expect(json['data'].length).to eq(0)
         end
       end
     end

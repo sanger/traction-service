@@ -69,8 +69,13 @@ module V1
           if val.include?(':')
             # If the value contains a colon, it's a plate and well identifier
             plate, well = val.split(':')
-            filtered_recs = records.joins(:plate).where(plate: { barcode: plate })
-            filtered_recs = filtered_recs.joins(:well).where(well: { position: well }) if well
+            if plate.present? && well.present?
+              filtered_recs = records.joins(:plate).where(plate: { barcode: plate })
+              filtered_recs = filtered_recs.joins(:well).where(well: { position: well })
+            else
+              Rails.logger.warn("Invalid plate or well identifier: #{val}")
+              next
+            end
           else
             # Otherwise, it's a tube identifier
             filtered_recs = records.joins(:tube).where(tube: { barcode: val })
