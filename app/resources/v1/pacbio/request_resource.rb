@@ -2,17 +2,45 @@
 
 module V1
   module Pacbio
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
-    #
-    # @note Access this resource via the `/v1/pacbio/requests/` endpoint.
-    #
     # Provides a JSON:API representation of {Pacbio::Request}.
     #
     # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
     # for the service implementation of the JSON:API standard.
+    # This resource represents a Pacbio Request and can return all requests, a single request or
+    # multiple requests along with their relationships.
+    #
+    # ## Filters:
+    #
+    # * sample_name
+    # * source_identifier
+    # * species
+    #
+    # ## Primary relationships:
+    #
+    # * well {V1::Pacbio::WellResource}
+    # * plate {V1::Pacbio::PlateResource}
+    # * tube {V1::Pacbio::TubeResource}
+    #
+    # ## Relationship trees:
+    #
+    # * well.plate
+    # * plate.wells
+    # * tube.requests
+    #
+    # @example
+    #   curl -X GET http://localhost:3000/v1/pacbio/requests/1
+    #   curl -X GET http://localhost:3000/v1/pacbio/requests/
+    #   curl -X GET http://localhost:3000/v1/pacbio/requests/1?include=well,plate,tube
+    #
+    #   https://localhost:3000/v1/pacbio/requests?filter[sample_name]=sample_name
+    #   https://localhost:3000/v1/pacbio/requests?filter[species]=species
+    #
+    #   https://localhost:3000/v1/pacbio/requests?filter[source_identifier]=TRAC-2-12068
+    #
+    #   https://localhost:3000/v1/pacbio/requests?filter[source_identifier]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067:A1
+    #
+    #   https://localhost:3000/v1/pacbio/requests?filter[source_identifier]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=well.plate,plate.wells,tube.requests
     class RequestResource < JSONAPI::Resource
       model_name 'Pacbio::Request', add_model_hint: false
 
