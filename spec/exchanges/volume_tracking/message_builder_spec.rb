@@ -70,7 +70,7 @@ RSpec.describe VolumeTracking::MessageBuilder, type: :model do
                                                           source_barcode: pacbio_pool.tube.barcode,
                                                           sample_name: expected_sample_names,
                                                           used_by_type: 'run',
-                                                          used_by_barcode: "#{pacbio_well.plate.sequencing_kit_box_barcode}:#{pacbio_well.plate.plate_number}:#{pacbio_well.position}",
+                                                          used_by_barcode: "#{pacbio_well.run.name}:#{pacbio_well.plate.plate_number}:#{pacbio_well.position}",
                                                           aliquot_uuid: aliquot.uuid
                                                         })
       end
@@ -135,7 +135,7 @@ RSpec.describe VolumeTracking::MessageBuilder, type: :model do
                                                           source_barcode: pacbio_library.tube.barcode,
                                                           sample_name: pacbio_library.sample_name,
                                                           used_by_type: 'run',
-                                                          used_by_barcode: "#{pacbio_well.plate.sequencing_kit_box_barcode}:#{pacbio_well.plate.plate_number}:#{pacbio_well.position}",
+                                                          used_by_barcode: "#{pacbio_well.run.name}:#{pacbio_well.plate.plate_number}:#{pacbio_well.position}",
                                                           aliquot_uuid: aliquot.uuid
                                                         })
       end
