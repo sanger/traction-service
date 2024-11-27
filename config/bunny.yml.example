@@ -21,7 +21,7 @@ default: &default
       subjects:
         volume_tracking:
           subject: 'create-aliquot-in-mlwh'
-          version: 3
+          version: 2
 
 development:
   <<: *default

@@ -503,7 +503,6 @@ RSpec.describe 'PoolsController', :pacbio do
                 }
               ],
               primary_aliquot_attributes: {
-                id: pool.primary_aliquot.id.to_s,
                 volume: '200',
                 concentration: '22',
                 template_prep_kit_box_barcode: '100',
@@ -531,7 +530,10 @@ RSpec.describe 'PoolsController', :pacbio do
 
       it 'updates the primary aliquot' do
         pool.reload
-        expect(pool.primary_aliquot.template_prep_kit_box_barcode).to eq('100')
+
+        primary_aliquot.reload
+        expect(pool.primary_aliquot).to eq(primary_aliquot)
+        expect(primary_aliquot.template_prep_kit_box_barcode).to eq('100')
       end
 
       it 'updates used_aliquots accordingly' do
