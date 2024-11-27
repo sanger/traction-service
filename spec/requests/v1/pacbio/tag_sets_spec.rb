@@ -7,9 +7,9 @@ RSpec.describe 'Pacbio::TagSetsController' do
     ActiveSupport::JSON.decode(response.body)
   end
 
-  describe '#get' do
-    let!(:tag_set) { create(:tag_set, pipeline: :pacbio) }
+  let!(:tag_set) { create(:tag_set, pipeline: :pacbio) }
 
+  describe '#get' do
     before do
       create(:tag_set, pipeline: :ont)
       get v1_pacbio_tag_sets_path, headers: json_api_headers
@@ -26,6 +26,15 @@ RSpec.describe 'Pacbio::TagSetsController' do
     it 'returns the correct attributes' do
       expect(json['data'][0]['attributes']['name']).to eq(tag_set.name)
     end
+  end
+
+  it 'filters by name' do
+    get v1_pacbio_tag_sets_path(filter: { name: tag_set.name }), headers: json_api_headers
+    expect(response).to have_http_status(:success)
+    json = ActiveSupport::JSON.decode(response.body)
+    expect(json['data'].length).to eq(1)
+
+    expect(json['data'][0]['attributes']['name']).to eq(tag_set.name)
   end
 
   describe '#create' do

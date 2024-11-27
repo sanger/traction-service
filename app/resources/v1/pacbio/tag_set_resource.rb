@@ -21,6 +21,8 @@ module V1
       def self.create_model
         _model_class.pacbio_pipeline.new
       end
+
+      filter :name
     end
   end
 end
