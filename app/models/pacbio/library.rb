@@ -42,7 +42,9 @@ module Pacbio
     has_one :source_plate, through: :source_well, source: :plate, class_name: '::Plate'
 
     validates :primary_aliquot, presence: true
-    accepts_nested_attributes_for :primary_aliquot
+
+    # Update only so that we don't recreate the primary aliquot if the ID is missing.
+    accepts_nested_attributes_for :primary_aliquot, update_only: true
 
     after_create :create_used_aliquot
 
