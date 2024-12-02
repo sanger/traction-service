@@ -2,17 +2,45 @@
 
 module V1
   module Pacbio
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
-    #
-    # @note Access this resource via the `/v1/pacbio/requests/` endpoint.
-    #
     # Provides a JSON:API representation of {Pacbio::Request}.
     #
     # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
     # for the service implementation of the JSON:API standard.
+    # This resource represents a Pacbio Request and can return all requests, a single request or
+    # multiple requests along with their relationships.
+    #
+    # ## Filters:
+    #
+    # * sample_name
+    # * source_identifier
+    # * species
+    #
+    # ## Primary relationships:
+    #
+    # * well {V1::Pacbio::WellResource}
+    # * plate {V1::Pacbio::PlateResource}
+    # * tube {V1::Pacbio::TubeResource}
+    #
+    # ## Relationship trees:
+    #
+    # * well.plate
+    # * plate.wells
+    # * tube.requests
+    #
+    # @example
+    #   curl -X GET http://localhost:3000/v1/pacbio/requests/1
+    #   curl -X GET http://localhost:3000/v1/pacbio/requests/
+    #   curl -X GET http://localhost:3000/v1/pacbio/requests/1?include=well,plate,tube
+    #
+    #   https://localhost:3000/v1/pacbio/requests?filter[sample_name]=sample_name
+    #   https://localhost:3000/v1/pacbio/requests?filter[species]=species
+    #
+    #   https://localhost:3000/v1/pacbio/requests?filter[source_identifier]=TRAC-2-12068
+    #
+    #   https://localhost:3000/v1/pacbio/requests?filter[source_identifier]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067:A1
+    #
+    #   https://localhost:3000/v1/pacbio/requests?filter[source_identifier]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=well.plate,plate.wells,tube.requests
     class RequestResource < JSONAPI::Resource
       model_name 'Pacbio::Request', add_model_hint: false
 
@@ -61,17 +89,40 @@ module V1
       }
 
       filter :source_identifier, apply: lambda { |records, value, _options|
-        # First we check tubes to see if there are any given the source identifier
-        recs = records.joins(:tube).where(tube: { barcode: value })
-        return recs unless recs.empty?
+        # Initialize an empty result set
+        rec_ids = []
 
-        # If no tubes match the source identifier we check plates
-        # If source identifier specifies a well we need to match samples to well
-        # TODO: The below value[0] means we only take the first value passed in the filter
-        #       If we want to support multiple values in one filter we would need to update this
-        plate, well = value[0].split(':')
-        recs = records.joins(:plate).where(plate: { barcode: plate })
-        well ? recs.joins(:well).where(well: { position: well }) : recs
+        # Iterate over each value in the filter
+        value.each do |val|
+          if val.include?(':')
+            # If the value contains a colon, it's a plate and well identifier
+            plate, well = val.split(':')
+            if plate.present?
+              filtered_recs = records.joins(:plate).where(plate: { barcode: plate })
+              if well.present?
+                filtered_recs = filtered_recs.joins(:well).where(well: { position: well })
+              end
+            else
+              Rails.logger.warn("Malformed source identifier: '#{val}'. Plate part is missing.")
+              next
+            end
+          else
+            #  If the value does not contain a colon, it's a tube or plate identifier
+            filtered_recs = records.joins(:plate).where(plate: { barcode: val })
+            # If no records are found by plate, try to find by tube
+            if filtered_recs.empty?
+              filtered_recs = records.joins(:tube).where(tube: { barcode: val })
+            end
+          end
+          # Collect the IDs of the filtered records
+          rec_ids.concat(filtered_recs.pluck(:id))
+        rescue StandardError => e
+          # Log the error and continue with the next value
+          Rails.logger.warn("Invalid source identifier: #{val}, error: #{e.message}")
+        end
+        # Perform a final query to fetch the records by their IDs
+        combined_recs = records.where(id: rec_ids)
+        combined_recs
       }
 
       def self.default_sort
