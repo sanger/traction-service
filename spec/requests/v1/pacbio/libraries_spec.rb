@@ -419,6 +419,7 @@ RSpec.describe 'LibrariesController', :pacbio do
   describe '#updating' do
     let!(:library) { create(:pacbio_library) }
     let!(:tag) { create(:tag) }
+    let!(:primary_aliquot) { library.primary_aliquot }
 
     before do
       patch v1_pacbio_library_path(library), params: body, headers: json_api_headers
@@ -461,6 +462,9 @@ RSpec.describe 'LibrariesController', :pacbio do
 
       it 'updates the library primary aliquot' do
         library.reload
+
+        primary_aliquot.reload
+        expect(library.primary_aliquot).to eq(primary_aliquot)
         expect(library.primary_aliquot.template_prep_kit_box_barcode).to eq('100')
       end
     end

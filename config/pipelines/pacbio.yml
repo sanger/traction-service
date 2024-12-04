@@ -293,7 +293,7 @@ default: &default
                   type: :model
                   value: bio_sample_name
 
-      v13_revio:
+      v13_revio: &v13_revio
         sample_sheet_class: PacbioSampleSheetV1
 
       # No changes required from v12_sequel_iie, added for consistency
@@ -338,7 +338,7 @@ default: &default
                 type: :string
                 value: "1"
 
-      v13_1_revio: *v13_1_sequel_iie
+      v13_1_revio: *v13_revio
 
     # For any EMQ message creation, the section and key name must be same as schema subject in bunny.yml
     volume_tracking:

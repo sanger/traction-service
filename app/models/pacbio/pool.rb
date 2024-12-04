@@ -26,7 +26,8 @@ module Pacbio
     validate :used_aliquots_volume
     before_update :primary_aliquot_volume_sufficient
 
-    accepts_nested_attributes_for :primary_aliquot
+    # Update only so that we don't recreate the primary aliquot if the ID is missing.
+    accepts_nested_attributes_for :primary_aliquot, update_only: true
 
     def used_aliquots_attributes=(used_aliquot_options)
       self.used_aliquots = used_aliquot_options.map do |attributes|
