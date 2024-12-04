@@ -44,10 +44,6 @@ module TractionService
 
     config.mailer = config_for(:mailer)
 
-    # Make it Rails 7 ready
-    config.autoload_paths += %W{#{Rails.root}/app}
-    config.eager_load_paths += %W{#{Rails.root}/app}
-
      # Rails 5
     config.middleware.insert_before 0, Rack::Cors do
       allow do
