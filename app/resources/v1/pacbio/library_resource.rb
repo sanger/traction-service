@@ -2,17 +2,43 @@
 
 module V1
   module Pacbio
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
-    #
-    # @note Access this resource via the `/v1/pacbio/libraries/` endpoint.
-    #
     # Provides a JSON:API representation of {Pacbio::Library}.
     #
     # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
     # for the service implementation of the JSON:API standard.
+    # This resource represents a Pacbio Library and can return all libraries, a single library or
+    # multiple libraries along with their relationships.
+    #
+    # ## Filters:
+    #
+    # * sample_name
+    # * barcode
+    # * source_identifier
+    #
+    # ## Primary relationships:
+    #
+    # * request {V1::Pacbio::RequestResource}
+    # * tube {V1::Pacbio::TubeResource}
+    # * pool {V1::Pacbio::PoolResource}
+    #
+    # ## Relationship trees:
+    #
+    # * request.sample
+    # * tube.requests
+    # * pool.libraries
+    #
+    # @example
+    #   curl -X GET http://localhost:3000/v1/pacbio/libraries/1
+    #   curl -X GET http://localhost:3000/v1/pacbio/libraries/
+    #   curl -X GET http://localhost:3000/v1/pacbio/libraries/1?include=request,tube,pool
+    #
+    #   https://localhost:3000/v1/pacbio/libraries?filter[sample_name]=sample_name
+    #   https://localhost:3000/v1/pacbio/libraries?filter[barcode]=TRAC-2-12068
+    #
+    #   https://localhost:3000/v1/pacbio/libraries?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067
+    #
+    #   https://localhost:3000/v1/pacbio/libraries?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=request.sample,tube.requests,pool.libraries
     class LibraryResource < JSONAPI::Resource
       include Shared::RunSuitability
       include SourceIdentifierFilterable
