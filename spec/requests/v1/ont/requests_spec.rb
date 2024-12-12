@@ -156,7 +156,7 @@ RSpec.describe 'Ont::RequestsController', :ont do
 
           expect(response).to have_http_status(:success)
           expect(json['data'].length).to eq(2)
-          (ont_tube.ont_requests+ont_plate_requests).each do |request|
+          (ont_tube.ont_requests + ont_plate_requests).each do |request|
             request_attributes = find_resource(type: 'requests', id: request.id)['attributes']
             expect(request_attributes).to include(
               'cost_code' => request.cost_code,
