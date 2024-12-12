@@ -41,7 +41,7 @@ module V1
     #   https://localhost:3000/v1/pacbio/libraries?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=request.sample,tube.requests,pool.libraries
     class LibraryResource < JSONAPI::Resource
       include Shared::RunSuitability
-      include SourceIdentifierFilterable
+      include Shared::SourceIdentifierFilterable
 
       model_name 'Pacbio::Library'
 

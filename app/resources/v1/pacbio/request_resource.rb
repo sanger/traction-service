@@ -42,7 +42,7 @@ module V1
     #
     #   https://localhost:3000/v1/pacbio/requests?filter[source_identifier]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=well.plate,plate.wells,tube.requests
     class RequestResource < JSONAPI::Resource
-      include SourceIdentifierFilterable
+      include Shared::SourceIdentifierFilterable
 
       model_name 'Pacbio::Request', add_model_hint: false
 
