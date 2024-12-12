@@ -230,6 +230,37 @@ RSpec.describe 'LibrariesController', :pacbio do
             'created_at' => pacbio_library.created_at.to_fs(:us)
           )
         end
+
+        it 'when the source_identifier contains multiple values' do
+          pacbio_tube = create(:tube_with_pacbio_request)
+          pacbio_library1 = create(:pacbio_library, request: pacbio_tube.pacbio_requests[0])
+
+          pacbio_plate = create(:plate_with_wells_and_requests, pipeline: 'pacbio')
+          pacbio_requests = pacbio_plate.wells.flat_map(&:pacbio_requests)
+          pacbio_library2 = create(:pacbio_library, request: pacbio_requests[0])
+
+          source_identifiers = [
+            pacbio_tube.barcode,
+            "#{pacbio_plate.barcode}:#{pacbio_plate.wells.first.position}"
+          ]
+
+          get "#{v1_pacbio_libraries_path}?filter[source_identifier]=#{source_identifiers.join(',')}",
+              headers: json_api_headers
+
+          expect(response).to have_http_status(:success)
+          expect(json['data'].length).to eq(2)
+          [pacbio_library1, pacbio_library2].each do |library|
+            library_attributes = find_resource(type: 'libraries', id: library.id)['attributes']
+            expect(library_attributes).to include(
+              'concentration' => library.concentration,
+              'volume' => library.volume,
+              'template_prep_kit_box_barcode' => library.template_prep_kit_box_barcode,
+              'insert_size' => library.insert_size,
+              'state' => library.state,
+              'created_at' => library.created_at.to_fs(:us)
+            )
+          end
+        end
       end
 
       context 'filters - barcode' do
