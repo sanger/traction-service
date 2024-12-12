@@ -38,36 +38,51 @@ module SourceIdentifierFilterable
   extend ActiveSupport::Concern
 
   class_methods do # rubocop:disable Metrics/BlockLength
-    def apply_source_identifier_filter(records, value, # rubocop:disable Metrics/MethodLength,Metrics/PerceivedComplexity
-                                       plate_join: :plate, tube_join: :tube, well_join: :well)
-      rec_ids = []
+    # Filters the given records based on the provided source identifiers.
+    def apply_source_identifier_filter(records, value, plate_join: :plate, tube_join: :tube,
+                                       well_join: :well)
+      record_ids = []
       value.each do |val|
-        # Check if the source identifier contains a colon
-        if val.include?(':')
-          # Split the source identifier into plate and well
-          plate, well = val.split(':')
-          # Filter records based on plate and well
-          if plate.present?
-            filtered_recs = records.joins(plate_join).where(plate_join => { barcode: plate })
-            if well.present?
-              filtered_recs = filtered_recs.joins(well_join).where(well_join => { position: well })
-            end
-          else
-            Rails.logger.warn("Malformed source identifier: '#{val}'. Plate part is missing.")
-            next
-          end
-        else
-          filtered_recs = records.joins(plate_join).where(plate_join => { barcode: val })
-          if filtered_recs.empty?
-            filtered_recs = records.joins(tube_join).where(tube_join => { barcode: val })
-          end
-        end
-        # Add the filtered record ids to the list
-        rec_ids.concat(filtered_recs.pluck(:id))
+        filtered_recs = filter_by_identifier(records, val, plate_join, tube_join, well_join)
+        record_ids.concat(filtered_recs.pluck(:id)) if filtered_recs
       rescue StandardError => e
         Rails.logger.warn("Invalid source identifier: #{val}, error: #{e.message}")
       end
-      records.where(id: rec_ids)
+      records.where(id: record_ids)
+    end
+
+    private
+
+    def filter_by_identifier(records, val, plate_join, tube_join, well_join)
+      if val.include?(':')
+        filter_by_plate_and_well(records, val, plate_join, well_join)
+      else
+        filter_by_plate_or_tube(records, val, plate_join, tube_join)
+      end
+    end
+
+    # Filters records by plate and well position.
+    def filter_by_plate_and_well(records, val, plate_join, well_join)
+      plate, well = val.split(':')
+      if plate.present?
+        filtered_recs = records.joins(plate_join).where(plate_join => { barcode: plate })
+        if well.present?
+          filtered_recs = filtered_recs.joins(well_join).where(well_join => { position: well })
+        end
+        filtered_recs
+      else
+        Rails.logger.warn("Malformed source identifier: '#{val}'. Plate part is missing.")
+        nil
+      end
+    end
+
+    # Filters records by plate or tube barcode.
+    def filter_by_plate_or_tube(records, val, plate_join, tube_join)
+      filtered_recs = records.joins(plate_join).where(plate_join => { barcode: val })
+      if filtered_recs.empty?
+        filtered_recs = records.joins(tube_join).where(tube_join => { barcode: val })
+      end
+      filtered_recs
     end
   end
 end
