@@ -41,55 +41,43 @@ module V1::Shared
     class_methods do
       def apply_source_identifier_filter(records, value, plate_join: :plate, tube_join: :tube,
                                          well_join: :well)
-        record_ids = []
-        value.each do |val|
-          filtered_records = V1::Shared::SourceIdentifierFilterable.filter_by_identifier(records,
-                                                                                         val,
-                                                                                         plate_join,
-                                                                                         tube_join,
-                                                                                         well_join)
-          record_ids.concat(filtered_records.pluck(:id)) if filtered_records
+        joins = { plate: plate_join, tube: tube_join, well: well_join }
+        record_ids = value.flat_map do |val|
+          filter_values(records, val, joins)
         rescue StandardError => e
           Rails.logger.warn("Invalid source identifier: #{val}, error: #{e.message}")
+          []
         end
         records.where(id: record_ids)
       end
-    end
 
-    module_function
+      private
 
-    # Filters the given records based on the provided value format
-    def filter_by_identifier(records, value, plate_join, tube_join, well_join)
-      if value.include?(':')
-        filter_by_plate_and_well(records, value, plate_join, well_join)
-      else
-        filter_by_plate_or_tube(records, value, plate_join, tube_join)
-      end
-    end
+      # Filters the records based on the given value and joins.
+      #
+      # @param records [ActiveRecord::Relation] The ActiveRecord relation to filter.
+      # @param value [String] The source identifier to filter by.
+      # @param joins [Hash] The hash of join associations.
+      # @return [Array<Integer>] The array of record IDs.
+      def filter_values(records, value, joins)
+        labware, well = value.split(':')
+        # The conditions hash is used to filter the records based on the source identifier.
+        conditions = { plate: { barcode: labware }, tube: { barcode: labware },
+                       well: { position: well } }
+        # The condition_process hash is used to determine how to process the conditions.
+        # If the condition is a plate or tube, the records are concatenated.
+        # If the condition is a well, the records are replaced.
+        condition_process = { plate: :concat, tube: :concat, well: :replace }
+        record_array = conditions.each_with_object([]) do |(key, condition), array|
+          next if condition.values.first.blank?
 
-    # Filters records by plate and well position
-    def filter_by_plate_and_well(records, value, plate_join, well_join)
-      plate, well = value.split(':')
-      if plate.present?
-        filtered_records = records.joins(plate_join).where(plate_join => { barcode: plate })
-        if well.present?
-          filtered_records = filtered_records.joins(well_join)
-                                             .where(well_join => { position: well })
+          join = joins[key]
+          result = records.joins(join).where(join => condition)
+          condition_process[key] == :concat ? array.concat(result) : array.replace(result)
         end
-        filtered_records
-      else
-        Rails.logger.warn("Malformed source identifier: '#{value}'. Plate part is missing.")
-        nil
-      end
-    end
 
-    # Filters records by plate or tube barcode
-    def filter_by_plate_or_tube(records, value, plate_join, tube_join)
-      filtered_records = records.joins(plate_join).where(plate_join => { barcode: value })
-      if filtered_records.empty?
-        filtered_records = records.joins(tube_join).where(tube_join => { barcode: value })
+        record_array.pluck(:id)
       end
-      filtered_records
     end
   end
 end
