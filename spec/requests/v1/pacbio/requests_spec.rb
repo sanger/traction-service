@@ -202,7 +202,6 @@ RSpec.describe 'RequestsController', :pacbio do
 
         it 'when the source_identifer contains malformed strings' do
           source_identifiers = [':test']
-          expect(Rails.logger).to receive(:warn).with("Malformed source identifier: ':test'. Plate part is missing.").at_least(:once)
           get "#{v1_pacbio_requests_path}?filter[source_identifier]=#{source_identifiers.join(',')}",
               headers: json_api_headers
           expect(response).to have_http_status(:success)

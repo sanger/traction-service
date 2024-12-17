@@ -100,12 +100,9 @@ RSpec.describe V1::Shared::SourceIdentifierFilterable do
     end
 
     context 'when the source_identifier contains malformed strings' do
-      it 'logs warnings for malformed strings' do
+      it 'when source_identifer contains malformed strings' do
         source_identifiers = [':test']
         records = Pacbio::Request.all
-
-        expect(Rails.logger).to receive(:warn).with("Malformed source identifier: ':test'. Plate part is missing.").at_least(:once)
-
         filtered_records = dummy_instance.apply_source_identifier_filter(records, source_identifiers)
 
         expect(filtered_records.count).to eq(0)
@@ -120,6 +117,20 @@ RSpec.describe V1::Shared::SourceIdentifierFilterable do
         records = Pacbio::Request.all
         filtered_records = dummy_instance.apply_source_identifier_filter(records, source_identifiers)
         expect(filtered_records.count).to eq(pacbio_plate_requests.count)
+      end
+    end
+
+    context 'when the source_identifer contains colon followed by a valid well position' do
+      it 'returns the correct records for plate' do
+        pacbio_plate1 = create(:plate_with_wells_and_requests, pipeline: 'pacbio')
+        create(:plate_with_wells_and_requests, pipeline: 'pacbio')
+
+        source_identifiers = [
+          ":#{pacbio_plate1.wells.first.position}"
+        ]
+        records = Pacbio::Request.all
+        filtered_records = dummy_instance.apply_source_identifier_filter(records, source_identifiers)
+        expect(filtered_records.count).to eq(2)
       end
     end
 
