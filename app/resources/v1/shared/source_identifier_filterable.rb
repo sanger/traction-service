@@ -60,9 +60,9 @@ module V1::Shared
       # @param joins [Hash] The hash of join associations.
       # @return [Array<Integer>] The array of record IDs.
       def filter_values(records, value, joins)
-        labware, well = value.split(':')
+        barcode, well = value.split(':')
         # The conditions hash is used to filter the records based on the source identifier.
-        conditions = { plate: { barcode: labware }, tube: { barcode: labware },
+        conditions = { plate: { barcode: }, tube: { barcode: },
                        well: { position: well } }
         # The condition_process hash is used to determine how to process the conditions.
         # If the condition is a plate or tube, the records are concatenated.
