@@ -5,16 +5,13 @@ module RunCsv
   # Used to generate sample sheets specific to the ONT pipeline
   # For usage documentation see 'app/exchanges/README.md'
   class OntSampleSheet
-    include ActiveModel::Model
-
-    # run           => Ont::Run
-    # configuration => Pipelines::Configuration::Item
-    attr_accessor :run, :configuration
+    include DataStructureBuilder
 
     # return a CSV String
     # using run and configuration attributes
     # to generate headers and data
     def generate
+      run = object
       CSV.generate do |csv|
         csv << csv_headers
 
@@ -64,32 +61,6 @@ module RunCsv
 
       obj = populate[:with] == :row_type ? options[options[:row_type]] : options[populate[:with]]
       instance_value(obj, options[:column_options])
-    end
-
-    # TODO: refactor duplication with messages/message.rb
-    # Find the instance value for each field
-    # If the field is a:
-    # * [string]    - return the value
-    # * [model]     - take the value split it by the full stop
-    #                 and recursively send the method to the object
-    #                 e.g. it is object.foo.bar will first evaluate
-    #                 foo and then apply bar
-    # * [constant]  - Takes the constant and applies the method chain
-    #                 to it e.g DateTime.now
-    def instance_value(obj, field)
-      case field[:type]
-      when :string
-        field[:value]
-      when :model
-        evaluate_method_chain(obj, field[:value].split('.'))
-      when :constant
-        const_obj, *methods = field[:value].split('.')
-        evaluate_method_chain(const_obj.constantize, methods)
-      end
-    end
-
-    def evaluate_method_chain(object, chain)
-      chain.inject(object, :send)
     end
   end
 end

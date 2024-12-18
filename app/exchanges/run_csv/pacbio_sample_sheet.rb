@@ -6,7 +6,11 @@
 module RunCsv
   # RunCsv::PacbioSampleSheet
   # Used to generate sample sheets specific to the PacBio pipeline (introduced in SMRT Link v13)
-  class PacbioSampleSheet < PacbioSampleSheetLegacy
+  class PacbioSampleSheet
+    include ActiveModel::Model
+
+    attr_accessor :object, :configuration
+
     # Generate a hash of settings for the run
     def run_settings
       run = object # Pacbio::Run

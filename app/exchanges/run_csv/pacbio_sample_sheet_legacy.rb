@@ -3,7 +3,9 @@
 module RunCsv
   # RunCsv::PacbioSampleSheet
   # Used to generate sample sheets specific to the PacBio pipeline for v12 and above
-  class PacbioSampleSheetLegacy < DataStructureBuilder
+  class PacbioSampleSheetLegacy
+    include DataStructureBuilder
+
     # return a list of column names ie headers
     # eg ['System Name', 'Run Name']
     def csv_headers
