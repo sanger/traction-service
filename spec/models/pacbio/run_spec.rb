@@ -133,13 +133,13 @@ RSpec.describe Pacbio::Run, :pacbio do
     context 'with a v12_revio run' do
       let(:smrt_link_version) { version12_revio }
 
-      it_behaves_like 'generates sample sheet with', RunCsv::PacbioSampleSheet
+      it_behaves_like 'generates sample sheet with', RunCsv::PacbioSampleSheetLegacy
     end
 
     context 'with a v13_revio run' do
       let(:smrt_link_version) { version13_revio }
 
-      it_behaves_like 'generates sample sheet with', RunCsv::PacbioSampleSheetV1
+      it_behaves_like 'generates sample sheet with', RunCsv::PacbioSampleSheet
     end
   end
 

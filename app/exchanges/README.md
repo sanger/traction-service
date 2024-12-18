@@ -21,7 +21,7 @@ Once generated, the sample sheets are uploaded to SMRT Link, a test instance can
 ## Configuration
 
 _As implemented in [data_structure_builder.rb](/app/exchanges/data_structure_builder.rb) and
-[pacbio_sample_sheet.rb](/app/exchanges/run_csv/pacbio_sample_sheet.rb)_
+[pacbio_sample_sheet_legacy.rb](/app/exchanges/run_csv/pacbio_sample_sheet_legacy.rb)_
 
 The `DataStructureBuilder::data_structure` method parses the configuration for the pipeline and
 returns a hash containing the requested data.
@@ -99,4 +99,4 @@ sheet as defined in the SMRT Link User Guide for that version.
 
 The implementation of this can be found in [app/models/pacbio/run.rb](/app/models/pacbio/run.rb).  
 For `CSV Version 1`, as introduced in SMRT-Link v13, the sample sheet is generated in
-[app/exchanges/run_csv/pacbio_sample_sheet_v1.rb](/app/exchanges/run_csv/pacbio_sample_sheet_v1.rb).
+[app/exchanges/run_csv/pacbio_sample_sheet.rb](/app/exchanges/run_csv/pacbio_sample_sheet.rb).

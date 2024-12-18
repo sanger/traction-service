@@ -104,7 +104,7 @@
   There is no need to test the underlying code that handles SMRT Link versioning. This is already fully covered.
 
   - **Unit tests**
-    - If you need to create a new SampleSheet model then this will need to be tested in isolation e.g. [`spec/support/parsers/pacbio_sample_sheet_v1_parser.rb`](https://github.com/sanger/traction-service/blob/develop/spec/support/parsers/pacbio_sample_sheet_v1_parser.rb)
+    - If you need to create a new SampleSheet model then this will need to be tested in isolation e.g. [`spec/support/parsers/pacbio_sample_sheet_parser.rb`](https://github.com/sanger/traction-service/blob/develop/spec/support/parsers/pacbio_sample_sheet_parser.rb)
     - If you create a new sample sheet or new version then you will need to test it within Pacbio Run [`spec/models/pacbio/run_spec.rb`](https://github.com/sanger/traction-service/blob/develop/spec/models/pacbio/run_spec.rb)
     - Pay particular attention to the rake task tests. [`spec/lib/tasks/create_smrt_link_versions.rake_spec.rb`](https://github.com/sanger/traction-service/blob/develop/spec/lib/tasks/create_smrt_link_versions.rake_spec.rb)
 

@@ -2,9 +2,12 @@
 
 require 'rails_helper'
 
-RSpec.describe Parsers::PacbioSampleSheetV1Parser, type: :model do
+# Oh. So we have a parser to test the sample sheets
+# And then we have tests to test the parser to test the sample sheets
+RSpec.describe Parsers::PacbioSampleSheetParser, type: :model do
   let(:sample_sheet_parser) { described_class.new }
-  let(:sample_sheet_string) { File.read('spec/fixtures/sample_sheet_v1_revio_pacbio.csv') }
+  # and we also have a fixture
+  let(:sample_sheet_string) { File.read('spec/fixtures/sample_sheet_revio_pacbio.csv') }
 
   describe '#split_into_sections' do
     subject(:split_sections) { sample_sheet_parser.split_into_sections(sample_sheet_string) }
