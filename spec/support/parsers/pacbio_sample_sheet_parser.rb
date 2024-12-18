@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 module Parsers
-  # Parsers::PacbioSampleSheetV1Parser
-  # Use to parse PacBio sample sheets of version 1 (introduced in SMRT Link v13)
+  # Parsers::PacbioSampleSheetParser
+  # Use to parse PacBio sample sheets of Revio (introduced in SMRT Link v13)
   # Example usage:
-  #    parsed_sample_sheet = Parsers::PacbioSampleSheetV1Parser.new.parse(sample_sheet_string)
-  class PacbioSampleSheetV1Parser
+  #    parsed_sample_sheet = Parsers::PacbioSampleSheetParser.new.parse(sample_sheet_string)
+  class PacbioSampleSheetParser
     # these keys (columns) are excluded because they break value-per-well mapping and
     # aren't used in our implementation
     EXCLUDE_KEYS = ['Pipeline Id', 'Analysis Name', 'Entry Points', 'Task Options'].freeze

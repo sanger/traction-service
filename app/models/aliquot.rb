@@ -51,7 +51,7 @@ class Aliquot < ApplicationRecord
   }
 
   def sample_sheet_behaviour
-    SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour || :untagged)
+    SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour)
   end
 
   # Checks if the aliquot is tagged.
@@ -63,7 +63,9 @@ class Aliquot < ApplicationRecord
     # This feels like a bit of a hack but I wasn't exactly sure where the best place to
     # it. I tried to follow the sample sheet behaviour but got lost.
     # it looks like the only place this is used is in the sample sheet generation
-    tag.present? && tag_set&.sample_sheet_behaviour != 'hidden'
+    return false if tag.nil?
+
+    tag_set.sample_sheet_behaviour != 'hidden'
   end
 
   # Generic method used by pacbio sample sheet generation to

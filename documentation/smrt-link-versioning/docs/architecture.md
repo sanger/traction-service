@@ -111,6 +111,6 @@
 
   - For a Revio version the class used to determine the structure of the sample sheet is determined.
 
-  - In the run there is a method `generate_sample_sheet` which will retrieve the sample sheet class, for example  [`app/exchanges/run_csv/pacbio_sample_sheet_v1.rb`](https://github.com/sanger/traction-service/blob/develop/app/exchanges/run_csv/pacbio_sample_sheet_v1.rb`)
+  - In the run there is a method `generate_sample_sheet` which will retrieve the sample sheet class, for example  [`app/exchanges/run_csv/pacbio_sample_sheet.rb`](https://github.com/sanger/traction-service/blob/develop/app/exchanges/run_csv/pacbio_sample_sheet.rb`)
 
   - For certain situations there are additional behaviours determined by the sample sheet behaviour. [`app/models/sample_sheet_behaviour.rb`](https://github.com/sanger/traction-service/blob/develop/app/models/sample_sheet_behaviour.rb`), for example tagging.
