@@ -39,11 +39,11 @@ module V1::Shared
     extend ActiveSupport::Concern
 
     class_methods do
-      def apply_source_identifier_filter(records, value, plate_join: :plate, tube_join: :tube,
-                                         well_join: :well)
-        joins = { plate: plate_join, tube: tube_join, well: well_join }
+      def apply_source_identifier_filter(records, value,
+                                         joins: { plate: :plate, tube: :tube, well: :well })
         record_ids = value.flat_map do |val|
-          filter_values(records, val, joins)
+          filter_values(records, val,
+                        joins)
         rescue StandardError => e
           Rails.logger.warn("Invalid source identifier: #{val}, error: #{e.message}")
           []

@@ -16,8 +16,9 @@ RSpec.describe V1::Shared::SourceIdentifierFilterable do
     Class.new do
       include V1::Shared::SourceIdentifierFilterable
 
-      def apply_source_identifier_filter(records, value, plate_join: :plate, tube_join: :tube, well_join: :well)
-        self.class.apply_source_identifier_filter(records, value, plate_join: plate_join, tube_join: tube_join, well_join: well_join)
+      def apply_source_identifier_filter(records, value, joins: { plate: :plate, tube: :tube,
+                                                                  well: :well })
+        self.class.apply_source_identifier_filter(records, value, joins:)
       end
     end
   end
@@ -146,9 +147,9 @@ RSpec.describe V1::Shared::SourceIdentifierFilterable do
           "#{pacbio_plate.barcode}:#{pacbio_plate.wells.first.position}"
         ]
         records = Pacbio::Library.all
-        filtered_records = dummy_instance.apply_source_identifier_filter(records, source_identifiers, plate_join: :source_plate,
-                                                                                                      tube_join: :source_tube,
-                                                                                                      well_join: :source_well)
+        filtered_records = dummy_instance.apply_source_identifier_filter(records, source_identifiers, joins: { plate: :source_plate,
+                                                                                                               tube: :source_tube,
+                                                                                                               well: :source_well })
 
         expect(filtered_records.count).to eq(records.count)
         expect(filtered_records.map(&:id)).to match_array(records.map(&:id))

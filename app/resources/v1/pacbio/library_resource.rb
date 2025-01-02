@@ -117,9 +117,9 @@ module V1
         records.joins(:tube).where(tubes: { barcode: value })
       }
       filter :source_identifier, apply: lambda { |records, value, _options|
-        apply_source_identifier_filter(records, value, plate_join: :source_plate,
-                                                       tube_join: :source_tube,
-                                                       well_join: :source_well)
+        apply_source_identifier_filter(records, value, joins: { plate: :source_plate,
+                                                                tube: :source_tube,
+                                                                well: :source_well })
       }
 
       def self.records_for_populate(*_args)
