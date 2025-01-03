@@ -1,41 +1,42 @@
 # frozen_string_literal: true
 
 module V1::Shared
-# SourceIdentifierFilterable
-#
-# This module provides functionality for filtering records based on source identifiers.
-# A source identifier can be a plate barcode, tube barcode, or a combination of plate barcode
-# and well position.
-# Models that include this module will have methods to filter records using these identifiers.
-#
-# ## Methods:
-#
-# * apply_source_identifier_filter(records, value, joins: { plate: :plate, tube: :tube, well: :well })
-#   - Filters the given records based on the provided source identifiers.
-#   - Parameters:
-#     - records: The ActiveRecord relation to filter.
-#     - value: An array of source identifiers to filter by.
-#     - joins: A hash of join associations with default values.
-#       - plate: The association name for joining with the plate table (default: :plate).
-#       - tube: The association name for joining with the tube table (default: :tube).
-#       - well: The association name for joining with the well table (default: :well).
-#
-# ## Example Usage:
-#
-#   class MyModel < ApplicationRecord
-#     include SourceIdentifierFilterable
-#   end
-#
-#   records = MyModel.all
-#   source_identifiers = ['PLATE123', 'TUBE456', 'PLATE789:A1']
-#   filtered_records = MyModel.apply_source_identifier_filter(records, source_identifiers)
-#
-#   # Custom join associations
-#   filtered_records = MyModel.apply_source_identifier_filter(records, source_identifiers,
-#                                                             joins: { plate: :source_plate,
-#                                                                      tube: :source_tube,
-#                                                                      well: :source_well })
-#
+  # SourceIdentifierFilterable
+  #
+  # This module provides functionality for filtering records based on source identifiers.
+  # A source identifier can be a plate barcode, tube barcode, or a combination of plate barcode
+  # and well position.
+  # Models that include this module will have methods to filter records using these identifiers.
+  #
+  # ## Methods:
+  #
+  # * apply_source_identifier_filter(records, value, joins: { plate: :plate, tube: :tube,
+  #                                                           well: :well })
+  #   - Filters the given records based on the provided source identifiers.
+  #   - Parameters:
+  #     - records: The ActiveRecord relation to filter.
+  #     - value: An array of source identifiers to filter by.
+  #     - joins: A hash of join associations with default values.
+  #       - plate: The association name for joining with the plate table (default: :plate).
+  #       - tube: The association name for joining with the tube table (default: :tube).
+  #       - well: The association name for joining with the well table (default: :well).
+  #
+  # ## Example Usage:
+  #
+  #   class MyModel < ApplicationRecord
+  #     include SourceIdentifierFilterable
+  #   end
+  #
+  #   records = MyModel.all
+  #   source_identifiers = ['PLATE123', 'TUBE456', 'PLATE789:A1']
+  #   filtered_records = MyModel.apply_source_identifier_filter(records, source_identifiers)
+  #
+  #   # Custom join associations
+  #   filtered_records = MyModel.apply_source_identifier_filter(records, source_identifiers,
+  #                                                             joins: { plate: :source_plate,
+  #                                                                      tube: :source_tube,
+  #                                                                      well: :source_well })
+  #
   module SourceIdentifierFilterable
     extend ActiveSupport::Concern
 
@@ -43,8 +44,7 @@ module V1::Shared
       def apply_source_identifier_filter(records, value,
                                          joins: { plate: :plate, tube: :tube, well: :well })
         record_ids = value.flat_map do |val|
-          filter_values(records, val,
-                        joins)
+          filter_values(records, val, joins)
         rescue StandardError => e
           Rails.logger.warn("Invalid source identifier: #{val}, error: #{e.message}")
           []
