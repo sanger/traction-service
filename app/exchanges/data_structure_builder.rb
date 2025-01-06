@@ -47,12 +47,12 @@ module DataStructureBuilder
     end
   end
 
+  private
+
   # we need to do this via try as certain fields may be nil
   def evaluate_method_chain(object, chain)
     chain.inject(object) { |o, meth| o.try(:send, meth) }
   end
-
-  private
 
   # If the message contains a number of children for example
   # with Pacbio each well will have a number of samples
