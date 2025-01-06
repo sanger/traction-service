@@ -96,6 +96,7 @@ GEM
       bigdecimal
       rexml
     crass (1.0.6)
+    csv (3.3.2)
     database_cleaner (2.1.0)
       database_cleaner-active_record (>= 2, < 3)
     database_cleaner-active_record (2.2.0)
@@ -341,6 +342,7 @@ DEPENDENCIES
   bootsnap (>= 1.1.0)
   bunny
   byebug
+  csv
   database_cleaner
   exception_notification
   factory_bot_rails

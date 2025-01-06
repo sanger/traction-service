@@ -8,9 +8,8 @@ ruby '3.4.1'
 gem 'avro'
 gem 'bootsnap', '>= 1.1.0', require: false # Reduces boot times through caching
 gem 'bunny'
+gem 'csv'
 gem 'exception_notification'
-# 0.10.5 Results in MySQL syntax error on several tests when run against a MySQL
-# There is a 'monkey patch' for this in config/intializers/jsonapi_resources:15-63
 gem 'jsonapi-resources'
 gem 'mysql2'
 gem 'puma', '~> 6.0' # Use Puma as the app server
