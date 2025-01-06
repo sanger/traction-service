@@ -13,7 +13,7 @@ RSpec.describe RunCsv::OntSampleSheet, type: :model do
     let(:run) { create(:ont_run, flowcell_count: 2) }
     let(:parsed_csv) { CSV.parse(csv_string) }
     let(:configuration) { Pipelines.ont.sample_sheet.by_version(run.min_know_version.name) }
-    let(:csv) { described_class.new(run:, configuration:) }
+    let(:csv) { described_class.new(object: run, configuration:) }
 
     it 'must return a csv string' do
       expect(csv_string.class).to eq String
