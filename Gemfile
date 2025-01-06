@@ -15,6 +15,7 @@ gem 'mysql2'
 gem 'puma', '~> 6.0' # Use Puma as the app server
 gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX possible
 gem 'rails', '~> 7.2.0'
+gem 'syslog' # No longer part of the default gems in Ruby 3.4
 
 group :development do
   gem 'listen'
