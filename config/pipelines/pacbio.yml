@@ -340,6 +340,8 @@ default: &default
 
       v13_1_revio: *v13_revio
 
+      v25_1_revio: *v13_revio
+
     # For any EMQ message creation, the section and key name must be same as schema subject in bunny.yml
     volume_tracking:
     # The number suffix '1' is used to identify the schema version of message (created by the
