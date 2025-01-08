@@ -98,7 +98,8 @@ Rails.application.routes.draw do
   flipper_ui = Flipper::UI.app do |builder|
     # Required to prevent a 'Forbidden' response. I'm assuming as the Rails app
     # itself is API only
-    builder.use Rack::Session::Cookie, secret: Rails.application.credentials[:secret_key_base]
+    # uninitialized constant Rack::Session::Cookie
+    # builder.use Rack::Session::Cookie, secret: Rails.application.credentials[:secret_key_base]
   end
   mount flipper_ui, at: '/flipper'
 end
