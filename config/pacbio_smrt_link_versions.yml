@@ -285,6 +285,7 @@ default: &default
         presence: {}
         inclusion:
           in: *true_false
+        use_adaptive_loading: {}
       data_type: list
       select_options: *select_true_false
       versions:

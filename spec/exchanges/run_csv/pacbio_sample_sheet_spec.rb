@@ -10,7 +10,6 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
   before do
     # Create a default smrt link version
     create(:pacbio_smrt_link_version, name: 'v13_revio', default: true)
-    create(:pacbio_smrt_link_version, name: 'v25_1_revio')
   end
 
   describe '#payload' do
