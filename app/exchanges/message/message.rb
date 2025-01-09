@@ -3,7 +3,8 @@
 module Message
   # Message::Message
   # Creates a message in the correct structure for the warehouse
-  class Message < DataStructureBuilder
+  class Message
+    include DataStructureBuilder
     # Produces the message in the correct format
     # Example:
     #   {"lims"=>"Traction", "bmap_flowcell"=>{"sample_uuid"=>"5",

@@ -3,7 +3,9 @@
 require 'rails_helper'
 require 'ostruct'
 
-class MockDataStructureBuilder < DataStructureBuilder
+class MockDataStructureBuilder
+  include DataStructureBuilder
+
   def some_attribute
     'mocked value'
   end
@@ -29,7 +31,7 @@ RSpec.describe DataStructureBuilder do
         }
       )
     end
-    let(:builder) { described_class.new(object:, configuration:) }
+    let(:builder) { MockDataStructureBuilder.new(object:, configuration:) }
 
     before do
       allow(object).to receive_message_chain(:person, :age).and_return(30) # rubocop:disable RSpec/MessageChain
@@ -52,7 +54,7 @@ RSpec.describe DataStructureBuilder do
   describe '#instance_value' do
     let(:object) { double('Object') } # rubocop:disable RSpec/VerifiedDoubles
     let(:parent) { double('Parent') } # rubocop:disable RSpec/VerifiedDoubles
-    let(:builder) { described_class.new }
+    let(:builder) { MockDataStructureBuilder.new }
 
     context 'when field type is :string' do
       it 'returns the value' do

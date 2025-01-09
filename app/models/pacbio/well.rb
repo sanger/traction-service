@@ -50,7 +50,7 @@ module Pacbio
     end
 
     def sample_sheet_behaviour
-      SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour || :untagged)
+      SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour)
     end
 
     def position

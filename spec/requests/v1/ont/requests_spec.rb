@@ -142,6 +142,34 @@ RSpec.describe 'Ont::RequestsController', :ont do
             )
           end
         end
+
+        it 'when the source_identifier contains multiple values' do
+          ont_tube = create(:tube_with_ont_request)
+          ont_plate = create(:plate_with_wells_and_requests)
+          ont_plate_requests = ont_plate.wells.first.ont_requests
+          source_identifiers = [
+            ont_tube.barcode,
+            "#{ont_plate.barcode}:#{ont_plate.wells.first.position}"
+          ]
+          get "#{v1_ont_requests_path}?filter[source_identifier]=#{source_identifiers.join(',')}",
+              headers: json_api_headers
+
+          expect(response).to have_http_status(:success)
+          expect(json['data'].length).to eq(2)
+          (ont_tube.ont_requests + ont_plate_requests).each do |request|
+            request_attributes = find_resource(type: 'requests', id: request.id)['attributes']
+            expect(request_attributes).to include(
+              'cost_code' => request.cost_code,
+              'number_of_flowcells' => request.number_of_flowcells,
+              'external_study_id' => request.external_study_id,
+              'library_type' => request.library_type.name,
+              'data_type' => request.data_type.name,
+              'created_at' => request.created_at.to_fs(:us),
+              'sample_name' => request.sample_name,
+              'source_identifier' => request.source_identifier
+            )
+          end
+        end
       end
     end
   end

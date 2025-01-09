@@ -2,19 +2,46 @@
 
 module V1
   module Pacbio
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
-    #
-    # @note Access this resource via the `/v1/pacbio/libraries/` endpoint.
-    #
     # Provides a JSON:API representation of {Pacbio::Library}.
     #
     # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
     # for the service implementation of the JSON:API standard.
+    # This resource represents a Pacbio Library and can return all libraries, a single library or
+    # multiple libraries along with their relationships.
+    #
+    # ## Filters:
+    #
+    # * sample_name
+    # * barcode
+    # * source_identifier
+    #
+    # ## Primary relationships:
+    #
+    # * request {V1::Pacbio::RequestResource}
+    # * tube {V1::Pacbio::TubeResource}
+    # * pool {V1::Pacbio::PoolResource}
+    #
+    # ## Relationship trees:
+    #
+    # * request.sample
+    # * tube.requests
+    # * pool.libraries
+    #
+    # @example
+    #   curl -X GET http://localhost:3000/v1/pacbio/libraries/1
+    #   curl -X GET http://localhost:3000/v1/pacbio/libraries/
+    #   curl -X GET http://localhost:3000/v1/pacbio/libraries/1?include=request,tube,pool
+    #
+    #   https://localhost:3000/v1/pacbio/libraries?filter[sample_name]=sample_name
+    #   https://localhost:3000/v1/pacbio/libraries?filter[barcode]=TRAC-2-12068
+    #
+    #   https://localhost:3000/v1/pacbio/libraries?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067
+    #
+    #   https://localhost:3000/v1/pacbio/libraries?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=request.sample,tube.requests,pool.libraries
     class LibraryResource < JSONAPI::Resource
       include Shared::RunSuitability
+      include Shared::SourceIdentifierFilterable
 
       model_name 'Pacbio::Library'
 
@@ -90,17 +117,9 @@ module V1
         records.joins(:tube).where(tubes: { barcode: value })
       }
       filter :source_identifier, apply: lambda { |records, value, _options|
-        # First we check tubes to see if there are any given the source identifier
-        recs = records.joins(:source_tube).where(source_tube: { barcode: value })
-        return recs unless recs.empty?
-
-        # If no tubes match the source identifier we check plates
-        # If source identifier specifies a well we need to match samples to well
-        # TODO: The below value[0] means we only take the first value passed in the filter
-        #       If we want to support multiple values in one filter we would need to update this
-        plate, well = value[0].split(':')
-        recs = records.joins(:source_plate).where(source_plate: { barcode: plate })
-        well ? recs.joins(:source_well).where(source_well: { position: well }) : recs
+        apply_source_identifier_filter(records, value, joins: { plate: :source_plate,
+                                                                tube: :source_tube,
+                                                                well: :source_well })
       }
 
       def self.records_for_populate(*_args)

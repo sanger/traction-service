@@ -42,6 +42,8 @@ module V1
     #
     #   https://localhost:3000/v1/pacbio/requests?filter[source_identifier]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=well.plate,plate.wells,tube.requests
     class RequestResource < JSONAPI::Resource
+      include Shared::SourceIdentifierFilterable
+
       model_name 'Pacbio::Request', add_model_hint: false
 
       # @!attribute [rw] library_type
@@ -89,40 +91,7 @@ module V1
       }
 
       filter :source_identifier, apply: lambda { |records, value, _options|
-        # Initialize an empty result set
-        rec_ids = []
-
-        # Iterate over each value in the filter
-        value.each do |val|
-          if val.include?(':')
-            # If the value contains a colon, it's a plate and well identifier
-            plate, well = val.split(':')
-            if plate.present?
-              filtered_recs = records.joins(:plate).where(plate: { barcode: plate })
-              if well.present?
-                filtered_recs = filtered_recs.joins(:well).where(well: { position: well })
-              end
-            else
-              Rails.logger.warn("Malformed source identifier: '#{val}'. Plate part is missing.")
-              next
-            end
-          else
-            #  If the value does not contain a colon, it's a tube or plate identifier
-            filtered_recs = records.joins(:plate).where(plate: { barcode: val })
-            # If no records are found by plate, try to find by tube
-            if filtered_recs.empty?
-              filtered_recs = records.joins(:tube).where(tube: { barcode: val })
-            end
-          end
-          # Collect the IDs of the filtered records
-          rec_ids.concat(filtered_recs.pluck(:id))
-        rescue StandardError => e
-          # Log the error and continue with the next value
-          Rails.logger.warn("Invalid source identifier: #{val}, error: #{e.message}")
-        end
-        # Perform a final query to fetch the records by their IDs
-        combined_recs = records.where(id: rec_ids)
-        combined_recs
+        apply_source_identifier_filter(records, value)
       }
 
       def self.default_sort
