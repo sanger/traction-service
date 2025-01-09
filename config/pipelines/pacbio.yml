@@ -340,7 +340,8 @@ default: &default
 
       v13_1_revio: *v13_revio
 
-      v25_1_revio: *v13_revio
+      v25_1_revio:
+        sample_sheet_class: PacbioSampleSheetV25
 
     # For any EMQ message creation, the section and key name must be same as schema subject in bunny.yml
     volume_tracking:

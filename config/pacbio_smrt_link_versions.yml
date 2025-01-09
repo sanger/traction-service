@@ -277,6 +277,34 @@ default: &default
         - v13_revio
         - v13_1_revio
         - v25_1_revio
+    use_adaptive_loading:
+      key: use_adaptive_loading
+      label: "Use Adaptive Loading"
+      default_value: "False"
+      validations:
+        presence: {}
+        inclusion:
+          in: *true_false
+      data_type: list
+      select_options: *select_true_false
+      versions:
+        - v13_revio
+        - v13_1_revio
+        - v25_1_revio
+    full_resolution_base_qual:
+      key: full_resolution_base_qual
+      label: "Full Resolution Base Qual"
+      default_value: "False"
+      validations:
+        presence: {}
+        inclusion:
+          in: *true_false
+      data_type: list
+      select_options: *select_true_false
+      versions:
+        - v13_revio
+        - v13_1_revio
+        - v25_1_revio
 
 development: *default
 test: *default
