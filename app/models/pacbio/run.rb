@@ -134,6 +134,16 @@ module Pacbio
       end
     end
 
+    # @return [Boolean] true if all wells have adaptive loading enabled
+    def adaptive_loading
+      wells.all? { |w| w.use_adaptive_loading == 'True' }
+    end
+
+    # @return [Array<String>] the barcodes of the sequencing kits
+    def sequencing_kit_box_barcodes
+      plates.map { |p| "Plate #{p.plate_number}: #{p.sequencing_kit_box_barcode}" }
+    end
+
     private
 
     # We now have SMRT Link versioning

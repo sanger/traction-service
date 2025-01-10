@@ -125,7 +125,9 @@ RSpec.describe 'RunsController' do
             'state' => run.state,
             'comments' => run.comments,
             'pacbio_smrt_link_version_id' => run.pacbio_smrt_link_version_id,
-            'created_at' => run.created_at.to_fs(:us)
+            'created_at' => run.created_at.to_fs(:us),
+            'adaptive_loading' => run.adaptive_loading,
+            'sequencing_kit_box_barcodes' => run.sequencing_kit_box_barcodes
           )
         end
       end
@@ -157,7 +159,9 @@ RSpec.describe 'RunsController' do
             'state' => run1.state,
             'comments' => run1.comments,
             'pacbio_smrt_link_version_id' => run1.pacbio_smrt_link_version_id,
-            'created_at' => run1.created_at.to_fs(:us)
+            'created_at' => run1.created_at.to_fs(:us),
+            'adaptive_loading' => run1.adaptive_loading,
+            'sequencing_kit_box_barcodes' => run1.sequencing_kit_box_barcodes
           )
         end
       end
@@ -187,7 +191,9 @@ RSpec.describe 'RunsController' do
             'state' => run1.state,
             'comments' => run1.comments,
             'pacbio_smrt_link_version_id' => run1.pacbio_smrt_link_version_id,
-            'created_at' => run1.created_at.to_fs(:us)
+            'created_at' => run1.created_at.to_fs(:us),
+            'adaptive_loading' => run1.adaptive_loading,
+            'sequencing_kit_box_barcodes' => run1.sequencing_kit_box_barcodes
           )
         end
       end
@@ -494,6 +500,39 @@ RSpec.describe 'RunsController' do
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq 'invalid is not a valid value for system_name.'
+        end
+      end
+
+      context 'when there are read-only attributes' do
+        let(:body) do
+          {
+            data: {
+              type: 'runs',
+              attributes: {
+                adaptive_loading: 'True',
+                sequencing_kit_box_barcodes: ['Plate 1: DM0001100861800123121']
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a bad_request status' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:bad_request)
+        end
+
+        it 'does not create a run' do
+          expect do
+            post v1_pacbio_runs_path, params: body,
+                                      headers: json_api_headers
+          end.not_to change(Pacbio::Run, :count)
+        end
+
+        it 'has the correct error messages' do
+          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq 'adaptive_loading is not allowed.'
         end
       end
 

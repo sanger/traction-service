@@ -261,7 +261,6 @@ default: &default
         - v12_revio
         - v13_revio
         - v13_1_revio
-        - v25_1_revio
     library_type:
       key: library_type
       label: "Library Type"

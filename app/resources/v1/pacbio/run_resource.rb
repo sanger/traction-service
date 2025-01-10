@@ -32,9 +32,14 @@ module V1
       #   @return [Integer] the ID of the PacBio SMRT Link version
       # @!attribute [rw] plates_attributes
       #   @return [Array<Hash>] the attributes of the plates
+      # @!attribute [r] adaptive_loading
+      #  @return [Boolean] whether adaptive loading is used
+      # @!attribute [r] sequencing_kit_box_barcodes
+      #  @return [Array<String>] the barcodes of the sequencing kits
       attributes :name, :dna_control_complex_box_barcode,
                  :system_name, :created_at, :state, :comments,
-                 :pacbio_smrt_link_version_id, :plates_attributes
+                 :pacbio_smrt_link_version_id, :plates_attributes,
+                 :adaptive_loading, :sequencing_kit_box_barcodes
 
       has_many :plates, foreign_key_on: :related, foreign_key: 'pacbio_run_id',
                         class_name: 'Runs::Plate'
@@ -84,6 +89,14 @@ module V1
         Messages.publish(@model, Pipelines.pacbio.message)
         Emq::Publisher.publish(@model.aliquots_to_publish_on_run, Pipelines.pacbio,
                                'volume_tracking')
+      end
+
+      def self.creatable_fields(context)
+        super - %i[adaptive_loading sequencing_kit_box_barcodes]
+      end
+
+      def self.updatable_fields(context)
+        super - %i[adaptive_loading sequencing_kit_box_barcodes]
       end
 
       private

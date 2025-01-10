@@ -233,6 +233,40 @@ RSpec.describe Pacbio::Run, :pacbio do
     end
   end
 
+  context 'adaptive_loading' do
+    it 'is false if the wells do not have use_adaptive_loading' do
+      # Sequel run wells do not have use_adaptive_loading
+      run = create(:pacbio_sequel_run)
+      expect(run.adaptive_loading).to be false
+    end
+
+    it 'is false if the wells have use_adaptive_loading set to false' do
+      # Revio run wells have use_adaptive_loading set to false
+      run = create(:pacbio_revio_run)
+      expect(run.adaptive_loading).to be false
+    end
+
+    it 'is true if the wells have use_adaptive_loading set to true' do
+      # Revio run wells have use_adaptive_loading set to true
+      run = create(:pacbio_revio_run)
+      run.wells.each do |w|
+        w.use_adaptive_loading = 'True'
+        w.save
+      end
+      expect(run.adaptive_loading).to be true
+    end
+  end
+
+  context 'sequencing_kit_box_barcodes' do
+    it 'returns the barcodes of the sequencing kits' do
+      run = create(:pacbio_revio_run)
+      expect(run.sequencing_kit_box_barcodes).to eq([
+        "Plate 1: #{run.plates.first.sequencing_kit_box_barcode}",
+        "Plate 2: #{run.plates.second.sequencing_kit_box_barcode}"
+      ])
+    end
+  end
+
   describe '#create with nested attributes' do
     let!(:pools) { create_list(:pacbio_pool, 2) }
 
