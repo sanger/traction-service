@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# A class spefically for SMRT-Link v25 Sample Sheets, based on the PacbioSampleSheet class
+# A class specifically for SMRT-Link v25 Sample Sheets, based on the PacbioSampleSheet class
 # See https://www.pacb.com/wp-content/uploads/SMRT-Link-User-Guide-v25.1.pdf (page 28) for details.
 
 module RunCsv
