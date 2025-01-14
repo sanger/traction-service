@@ -22,7 +22,7 @@
 # - Or you need to create your own validator as per
 # https://api.rubyonrails.org/classes/ActiveModel/Validator.html
 class SmrtLinkOptionsValidator < ActiveModel::Validator
-  def validate(record) # rubocop:disable Metrics/MethodLength
+  def validate(record)
     # If the version is not present no point validating
     return if record&.run&.smrt_link_version.blank?
 
@@ -34,19 +34,7 @@ class SmrtLinkOptionsValidator < ActiveModel::Validator
       # options is a hash e.g. { greater_than_equal_to: 1 }
       # see the validator docs in ActiveModel for the standard ones
       smrt_link_option.validations.each do |key, options|
-        # We need to get the constant for the validator
-        # @example
-        #  key = required
-        #  validator => ActiveModel::Validations::RequiredValidator
-
-        # Check if there is a custom validator first
-        validator_class_name = "#{key.camelize}Validator"
-        validator = if Object.const_defined?(validator_class_name)
-                      validator_class_name.constantize
-                    else
-                      # If no custom validator then use an active model one
-                      "ActiveModel::Validations::#{key.camelize}Validator".constantize
-                    end
+        validator = validator_by_prefix(key)
 
         # We then need to create a new instance of the validator
         # and pass the options along with the attribute name which is the key
@@ -60,5 +48,21 @@ class SmrtLinkOptionsValidator < ActiveModel::Validator
         instance.validate(record)
       end
     end
-  end # rubocop:enable Metrics/MethodLength
+  end
+
+  private
+
+  # Get the validator class by prefix
+  # @param prefix [String] the prefix of the validator
+  # @return [Class] the class of the validator
+  def validator_by_prefix(prefix)
+    validator_class_name = "#{prefix.camelize}Validator"
+    # Check if there is a custom validator first
+    if Object.const_defined?(validator_class_name)
+      validator_class_name.constantize
+    else
+      # If no custom validator then use an active model one
+      "ActiveModel::Validations::#{validator_class_name}".constantize
+    end
+  end
 end
