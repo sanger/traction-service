@@ -150,6 +150,7 @@ RSpec.describe 'RunsController' do
       end
 
       it 'returns an error response' do
+        puts response.status
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
