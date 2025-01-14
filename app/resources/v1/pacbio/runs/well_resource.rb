@@ -59,6 +59,10 @@ module V1
         #   @return [String] the polymerase kit
         # @!attribute [rw] library_type
         #   @return [String] the library type
+        # @!attribute [rw] use_adaptive_loading
+        #   @return [Boolean] whether to use adaptive loading
+        # @!attribute [rw] full_resolution_base_qual
+        #   @return [Boolean] whether to apply full resolution base qual
         attributes :row, :column, :comment, :pacbio_plate_id, :position,
                    *Rails.configuration.pacbio_smrt_link_versions.options.keys
 

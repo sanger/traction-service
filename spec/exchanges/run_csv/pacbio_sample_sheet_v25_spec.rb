@@ -6,10 +6,10 @@ require 'rails_helper'
 # huh? what is this? If we need a parser to parse the sample sheet probably needs a refactor
 require_relative '../../support/parsers/pacbio_sample_sheet_parser'
 
-RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
+RSpec.describe RunCsv::PacbioSampleSheetV25, type: :model do
   before do
     # Create a default smrt link version
-    create(:pacbio_smrt_link_version, name: 'v13_revio', default: true)
+    create(:pacbio_smrt_link_version, name: 'v25_1_revio', default: true)
   end
 
   describe '#payload' do
@@ -20,7 +20,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
     let(:configuration) { Pipelines.pacbio.sample_sheet.by_version(run.smrt_link_version.name) }
     let(:parsed_sample_sheet) { Parsers::PacbioSampleSheetParser.new.parse(sample_sheet_string) }
 
-    context 'v13_revio' do
+    context 'v25_1_revio' do
       it 'must return a string' do
         expect(sample_sheet_string.class).to eq String
       end
@@ -84,8 +84,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
             'Assign Data To Project' => '1',
             'Library Concentration (pM)' => well.library_concentration.to_s,
             'Include Base Kinetics' => well.include_base_kinetics.downcase == 'true', # is a string
-            'Polymerase Kit' => well.polymerase_kit,
-            'Use Adaptive Loading' => well.use_adaptive_loading == 'true',
+            'Use Adaptive Loading' => well.use_adaptive_loading.downcase == 'true',
             'Consensus Mode' => 'molecule',
             'Full Resolution Base Qual' => well.full_resolution_base_qual == 'true',
 
@@ -253,8 +252,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
               'Assign Data To Project' => '1',
               'Library Concentration (pM)' => well.library_concentration.to_s,
               'Include Base Kinetics' => well.include_base_kinetics.downcase == 'true', # is a string
-              'Polymerase Kit' => well.polymerase_kit,
-              'Use Adaptive Loading' => well.use_adaptive_loading == 'true',
+              'Use Adaptive Loading' => well.use_adaptive_loading.downcase == 'true',
               'Consensus Mode' => 'molecule',
               'Full Resolution Base Qual' => well.full_resolution_base_qual == 'true',
 

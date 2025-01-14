@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# A class spefically for SMRT-Link v13 Sample Sheets, based on the PacbioSampleSheet class
+# A class specifically for SMRT-Link v13 Sample Sheets, based on the PacbioSampleSheet class
 # See https://www.pacb.com/wp-content/uploads/SMRT-Link-User-Guide-v13.1.pdf (page 31) for details.
 
 module RunCsv
@@ -49,9 +49,10 @@ module RunCsv
         'Indexes'	=> well.barcode_set, # 244d96c6-f3b2-4997-5ae3-23ed33ab925f
         'Sample is indexed'	=> well.tagged?, # Set to True to Multiplex
         'Bio Sample Name' => well.tagged? ? nil : well.bio_sample_name,
-        'Use Adaptive Loading'	=> false, # this will likely be a well default in future
+        'Use Adaptive Loading'	=> well.use_adaptive_loading,
         'Consensus Mode'	=> 'molecule', # (default to molecule do we need a custom field)
-        'Same Barcodes on Both Ends of Sequence'	=> well.same_barcodes_on_both_ends_of_sequence
+        'Same Barcodes on Both Ends of Sequence'	=> well.same_barcodes_on_both_ends_of_sequence,
+        'Full Resolution Base Qual' => well.full_resolution_base_qual
       }
     end
 
