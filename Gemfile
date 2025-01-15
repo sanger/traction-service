@@ -9,7 +9,8 @@ gem 'avro'
 gem 'bootsnap', '>= 1.1.0', require: false # Reduces boot times through caching
 gem 'bunny'
 gem 'csv'
-gem 'exception_notification'
+gem 'exception_notification', git: 'https://github.com/smartinez87/exception_notification.git',
+                              branch: 'master' # https://github.com/smartinez87/exception_notification/issues/545
 gem 'jsonapi-resources'
 gem 'mysql2'
 gem 'puma', '~> 6.0' # Use Puma as the app server

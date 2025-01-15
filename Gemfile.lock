@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/smartinez87/exception_notification.git
+  revision: 60e158888bbff96f7a9ae00ae97305cdd33726e9
+  branch: master
+  specs:
+    exception_notification (4.5.0)
+      actionmailer (>= 5.2, < 9)
+      activesupport (>= 5.2, < 9)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -108,9 +117,6 @@ GEM
     docile (1.4.0)
     drb (2.2.1)
     erubi (1.13.1)
-    exception_notification (4.1.1)
-      actionmailer (>= 3.0.4)
-      activesupport (>= 3.0.4)
     factory_bot (6.5.0)
       activesupport (>= 5.0.0)
     factory_bot_rails (6.4.4)
@@ -347,7 +353,7 @@ DEPENDENCIES
   byebug
   csv
   database_cleaner
-  exception_notification
+  exception_notification!
   factory_bot_rails
   flipper
   flipper-active_record
