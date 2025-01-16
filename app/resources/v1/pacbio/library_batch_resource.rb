@@ -50,6 +50,7 @@ module V1
       # @!attribute [w] libraries_attributes
       #  @return [Array] the attributes of the libraries
       attributes :created_at, :libraries_attributes
+      after_create :publish_volume_tracking_messages
 
       has_many :libraries, always_include_optional_linkage_data: true
 
@@ -68,6 +69,13 @@ module V1
 
       def fetchable_fields
         super - [:libraries_attributes]
+      end
+
+      def publish_volume_tracking_messages
+        @model.libraries.each do |library|
+          Emq::Publisher.publish([library.primary_aliquot, *library.used_aliquots],
+                                 Pipelines.pacbio, 'volume_tracking')
+        end
       end
     end
   end

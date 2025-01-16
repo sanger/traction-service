@@ -62,6 +62,11 @@ RSpec.describe 'LibraryBatchesController', :pacbio do
             .and change(Aliquot, :count).by(4) # We create a primary aliquot and a used_by aliquot for each library
         end
 
+        it 'publish volume tracking messages for all libraries' do
+          expect(Emq::Publisher).to receive(:publish).twice
+          post v1_pacbio_library_batches_path, params: body, headers: json_api_headers
+        end
+
         it 'returns the id' do
           post v1_pacbio_library_batches_path, params: body, headers: json_api_headers
           expect(json.dig('data', 'id').to_i).to eq(Pacbio::LibraryBatch.first.id)
