@@ -7,7 +7,7 @@ require 'webmock/rspec'
 RSpec.describe Emq::PublishingJob do
   let(:pacbio_library) { create(:pacbio_library) }
   let(:pacbio_pool) { create(:pacbio_pool) }
-  let(:aliquot) { build(:aliquot, uuid: SecureRandom.uuid, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now, updated_at: Time.zone.now) }
+  let(:aliquot) { build(:aliquot, uuid: SecureRandom.uuid, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now) }
 
   let(:publishing_job) { described_class.new }
   let(:emq_sender_mock) { instance_double(Emq::Sender) }
@@ -75,13 +75,13 @@ RSpec.describe Emq::PublishingJob do
   it 'can publish multiple messages' do
     expect(emq_sender_mock).to receive(:send_message).twice
     expect(Rails.logger).to receive(:info).with('Published volume tracking message to EMQ')
-    aliquot2 = build(:aliquot, uuid: SecureRandom.uuid, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now, updated_at: Time.zone.now)
+    aliquot2 = build(:aliquot, uuid: SecureRandom.uuid, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now)
     publishing_job.publish([aliquot, aliquot2], Pipelines.pacbio, 'volume_tracking')
   end
 
   it 'does not publish messages when schema key is missing in config' do
     expect(emq_sender_mock).not_to receive(:send_message)
-    aliquot2 = build(:aliquot, uuid: SecureRandom.uuid, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now, updated_at: Time.zone.now)
+    aliquot2 = build(:aliquot, uuid: SecureRandom.uuid, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now)
     publishing_job.publish([aliquot, aliquot2], Pipelines.pacbio, 'test')
   end
 
