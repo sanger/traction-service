@@ -364,7 +364,7 @@ default: &default
             value: publish_data&.message_uuid
           recordedAt:
             type: :model
-            value: updated_at
+            value: created_at
           volume:
             type: :model
             value: volume
