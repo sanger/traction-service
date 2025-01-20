@@ -2,17 +2,39 @@
 
 module V1
   module Pacbio
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
-    #
-    # @note Access this resource via the `/v1/pacbio/runs/` endpoint.
-    #
     # Provides a JSON:API representation of {Pacbio::Run}.
     #
     # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
     # for the service implementation of the JSON:API standard.
+    # This resource represents a Pacbio Run and can return all runs, a single run or multiple
+    # runs along with their relationships.
+    # It can also create and update runs and their nested relationships
+    # via the plates_attributes parameter. These actions also publish run messages to the warehouse.
+    #
+    # ## Filters:
+    #
+    # * name
+    # * state
+    #
+    # ## Primary relationships:
+    #
+    # * plates {V1::Pacbio::PlateResource}
+    # * smrt_link_version {V1::Pacbio::SmrtLinkVersionResource}
+    #
+    # ## Relationship trees:
+    #
+    # * plates.wells.used_aliquots
+    # * smrt_link_version.smrt_link_option_versions
+    #
+    # @example
+    #   curl -X GET http://localhost:3000/v1/pacbio/runs/1
+    #   curl -X GET http://localhost:3000/v1/pacbio/runs/
+    #   curl -X GET http://localhost:3000/v1/pacbio/runs/1?include=plates.wells.used_aliquots,smrt_link_version
+    #
+    #   http://localhost:3000/v1/pacbio/runs?filter[name]=TRACTION-RUN-1
+    #   http://localhost:3000/v1/pacbio/runs?filter[state]=pending
+    #
     class RunResource < JSONAPI::Resource
       model_name 'Pacbio::Run'
 
@@ -32,9 +54,14 @@ module V1
       #   @return [Integer] the ID of the PacBio SMRT Link version
       # @!attribute [rw] plates_attributes
       #   @return [Array<Hash>] the attributes of the plates
+      # @!attribute [r] adaptive_loading
+      #   @return [Boolean] whether adaptive loading is used
+      # @!attribute [r] sequencing_kit_box_barcodes
+      #   @return [Array<String>] the barcodes of the sequencing kits
       attributes :name, :dna_control_complex_box_barcode,
                  :system_name, :created_at, :state, :comments,
-                 :pacbio_smrt_link_version_id, :plates_attributes
+                 :pacbio_smrt_link_version_id, :plates_attributes,
+                 :adaptive_loading, :sequencing_kit_box_barcodes
 
       has_many :plates, foreign_key_on: :related, foreign_key: 'pacbio_run_id',
                         class_name: 'Runs::Plate'
@@ -45,13 +72,10 @@ module V1
 
       paginator :paged
 
-      #
-      # # A pain. It means we would need to turn this into a method to beat the cop.
-      # rubocop:disable Layout/LineLength
-      PERMITTED_WELL_PARAMETERS = %i[id
-                                     row column
-                                     comment].concat(Rails.configuration.pacbio_smrt_link_versions.options.keys).freeze
-      # rubocop:enable Layout/LineLength
+      # Well parameters that are permitted for the plates_attributes
+      PERMITTED_WELL_PARAMETERS = %i[
+        id row column comment
+      ].concat(Rails.configuration.pacbio_smrt_link_versions.options.keys).freeze
 
       after_save :publish_messages
 
@@ -84,6 +108,14 @@ module V1
         Messages.publish(@model, Pipelines.pacbio.message)
         Emq::Publisher.publish(@model.aliquots_to_publish_on_run, Pipelines.pacbio,
                                'volume_tracking')
+      end
+
+      def self.creatable_fields(context)
+        super - %i[adaptive_loading sequencing_kit_box_barcodes]
+      end
+
+      def self.updatable_fields(context)
+        super - %i[adaptive_loading sequencing_kit_box_barcodes]
       end
 
       private

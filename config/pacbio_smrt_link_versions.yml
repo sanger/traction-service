@@ -44,6 +44,10 @@ default: &default
       name: v13_1_revio
       active: true
       default: false
+    v25_1_revio:
+      name: v25_1_revio
+      active: true
+      default: false
   options:
     ccs_analysis_output:
       key: ccs_analysis_output
@@ -218,6 +222,7 @@ default: &default
         - v12_revio
         - v13_revio
         - v13_1_revio
+        - v25_1_revio
     include_base_kinetics:
       key: include_base_kinetics
       label: "Include Base Kinetics"
@@ -232,6 +237,7 @@ default: &default
         - v12_revio
         - v13_revio
         - v13_1_revio
+        - v25_1_revio
     library_concentration:
       key: library_concentration
       label: "Library Concentration (pM)"
@@ -243,6 +249,7 @@ default: &default
         - v12_revio
         - v13_revio
         - v13_1_revio
+        - v25_1_revio
     polymerase_kit:
       key: polymerase_kit
       label: "Polymerase Kit"
@@ -268,6 +275,36 @@ default: &default
         - v12_revio
         - v13_revio
         - v13_1_revio
+        - v25_1_revio
+    use_adaptive_loading:
+      key: use_adaptive_loading
+      label: "Use Adaptive Loading"
+      default_value: "False"
+      validations:
+        presence: {}
+        inclusion:
+          in: *true_false
+        use_adaptive_loading: {}
+      data_type: list
+      select_options: *select_true_false
+      versions:
+        - v13_revio
+        - v13_1_revio
+        - v25_1_revio
+    full_resolution_base_qual:
+      key: full_resolution_base_qual
+      label: "Full Resolution Base Qual"
+      default_value: "False"
+      validations:
+        presence: {}
+        inclusion:
+          in: *true_false
+      data_type: list
+      select_options: *select_true_false
+      versions:
+        - v13_revio
+        - v13_1_revio
+        - v25_1_revio
 
 development: *default
 test: *default

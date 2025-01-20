@@ -2,17 +2,36 @@
 
 module V1
   module Pacbio
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    # Provides a JSON:API representation of {Pacbio::Well}.
     #
-    # @note Access this resource via the `/v1/pacbio/wells/` endpoint.
-    #
-    # Provides a JSON:API representation of {Well}. Returns the wells for a Pacbio plate.
+    # This resource is primarily accessed through {V1::Pacbio::RunResource}
+    # and {V1::Pacbio::PlateResource}.
+    # Wells are primarily created via a Run and Plate.
     #
     # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
     # for the service implementation of the JSON:API standard.
+    #
+    # This resource represents a Pacbio Well and can return all wells or a single well
+    #
+    # This resource has no filters.
+    #
+    # ## Primary relationships:
+    #
+    # * materials {V1::Pacbio::MaterialResource}
+    # * requests {V1::Pacbio::RequestResource}
+    # * plate {V1::Pacbio::PlateResource}
+    #
+    # @note Access this resource via the `/v1/pacbio/wells/` endpoint.
+    #
+    # @example
+    #   curl -X GET http://localhost:3000/v1/pacbio/wells/1
+    #   curl -X GET http://localhost:3000/v1/pacbio/wells
+    #   curl -X GET http://localhost:3000/v1/pacbio/runs/1/wells
+    #   curl -X GET http://localhost:3000/v1/pacbio/runs/1/wells/1
+    #
+    #   https://localhost:3000/v1/pacbio/v1/wells/1?include=plate,materials
+    #
     class WellResource < JSONAPI::Resource
       model_name '::Well'
 

@@ -273,6 +273,8 @@ RSpec.describe Pacbio::Well, :pacbio do
         library_concentration
         polymerase_kit
         library_type
+        use_adaptive_loading
+        full_resolution_base_qual
       ])
     end
 
