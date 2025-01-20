@@ -194,4 +194,55 @@ RSpec.describe Aliquot do
       expect(described_class.publishable.count).to eq(10)
     end
   end
+
+  context 'sample sheet behaviour' do
+    before do
+      # Create a default pacbio smrt link version for pacbio runs.
+      create(:pacbio_smrt_link_version, name: 'v12_sequel_iie', default: true)
+    end
+
+    describe '#barcode_name' do
+      let(:library_count) { 1 }
+      let(:empty_well) { create(:pacbio_well, pools: [pool]) }
+
+      context 'when the well has one aliquot' do
+        let(:pool) { create(:pacbio_pool, :tagged, library_count:) }
+
+        it 'returns a string of aliquot tags' do
+          tag_group_id = empty_well.base_used_aliquots.first.tag.group_id
+          expected = "#{tag_group_id}--#{tag_group_id}"
+          expect(empty_well.base_used_aliquots.last.barcode_name).to eq expected
+        end
+      end
+
+      context 'when the aliquots are tagged with a :hidden tag set (egh. IsoSeq)' do
+        let(:pool) { create(:pacbio_pool, :hidden_tagged, library_count:) }
+
+        it 'returns nothing' do
+          expect(empty_well.base_used_aliquots.last.barcode_name).to be_nil
+        end
+      end
+    end
+
+    describe '#adapter' do
+      context 'when the aliquot is tagged' do
+        let(:well) { create(:pacbio_well, pool_count: 1) }
+
+        it 'returns the tag group id' do
+          aliquot = well.base_used_aliquots.first
+          expect(aliquot.adapter).to eq aliquot.tag.group_id
+        end
+      end
+
+      context 'when the aliquot is not tagged' do
+        let(:pool) { create(:pacbio_pool, :untagged, library_count: 1) }
+        let(:well) { create(:pacbio_well, pools: [pool]) }
+
+        it 'returns nil' do
+          aliquot = well.base_used_aliquots.first
+          expect(aliquot.adapter).to be_nil
+        end
+      end
+    end
+  end
 end

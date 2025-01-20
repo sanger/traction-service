@@ -4,7 +4,7 @@
 # An aliquot can be a primary aliquot or a derived aliquot.
 # An aliquot can be used to track volumes and concentrations of samples.
 class Aliquot < ApplicationRecord
-  include SampleSheet::Aliquot
+  # include SampleSheet::Aliquot
   include Uuidable
 
   enum :state, { created: 0, used: 1 }
@@ -97,5 +97,23 @@ class Aliquot < ApplicationRecord
         end)
       end
     end
+  end
+
+  # Sample bio Name field
+  def bio_sample_name
+    sample_sheet_behaviour.aliquot_sample_name(self)
+  end
+
+  # Barcode Name field
+  # Used in context of Aliquot model
+  def barcode_name
+    sample_sheet_behaviour.barcode_name(tag)
+  end
+
+  # Sample Adapter field
+  # The same adapter is used for both left and right, see same_barcodes_on_both_ends_of_sequence
+  # Returns nil if the tag is nil
+  def adapter
+    tag&.group_id
   end
 end

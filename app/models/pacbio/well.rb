@@ -7,7 +7,6 @@ module Pacbio
     GENERIC_KIT_BARCODE = 'Lxxxxx100938900123199'
 
     include Uuidable
-    include SampleSheet::Well
     include Aliquotable
 
     belongs_to :plate, class_name: 'Pacbio::Plate', foreign_key: :pacbio_plate_id,
@@ -127,6 +126,84 @@ module Pacbio
         write_store_attribute(:smrt_link_options, key, value)
       end
       save!
+    end
+
+    # Sample Well field
+    def position_leading_zero
+      "#{row}#{column.rjust(2, '0')}"
+    end
+
+    # Sample Plate Well field
+    def plate_well_position
+      "#{plate.plate_number}_#{position_leading_zero}"
+    end
+
+    # Barcode Set field
+    def barcode_set
+      # Assuming each request libraries tag has the same set name
+      sample_sheet_behaviour.barcode_set(tag_set)
+    end
+
+    # Determines rendering of a row-per sample
+    def show_row_per_sample?
+      sample_sheet_behaviour.show_row_per_sample?(base_used_aliquots)
+    end
+
+    # Returns libraries only if they should be shown per row
+    def aliquots_to_show_per_row
+      return unless show_row_per_sample?
+
+      base_used_aliquots
+    end
+
+    # Sample Name field
+    def tube_barcode
+      # Gets the first barcode which will either be the pool barcode or the library barcode
+      base_used_aliquots.first.used_by.tube.barcode
+    end
+
+    # find the plate given the plate_number
+    # returns `nil` if no plate found
+    def get_plate(plate_number)
+      plate.run.plates.filter { |plate| plate.plate_number == plate_number }.first
+    end
+
+    # return the sequencing_kit_box_barcode of plate 1
+    # used for 2-plate sample sheets
+    def sequencing_kit_box_barcode_plate_1
+      get_plate(1)&.sequencing_kit_box_barcode
+    end
+
+    # return the sequencing_kit_box_barcode of plate 2
+    # used for 2-plate sample sheets
+    def sequencing_kit_box_barcode_plate_2
+      get_plate(2)&.sequencing_kit_box_barcode
+    end
+
+    # Used to indicate to the sample sheet whether it should treat a sample as barcoded
+    # Note: This doesn't actually indicate that a sample *is* barcoded, as :hidden
+    # tag sets (such as IsoSeq) lie.
+    def sample_is_barcoded
+      sample_sheet_behaviour.barcoded_for_sample_sheet?
+    end
+
+    # Are the left and right adapters the same?
+    # Returns True if tagged, nil otherwise
+    # See Aliquot#adapter field method below and adapter and adapter2 fields in pacbio.yml
+    def same_barcodes_on_both_ends_of_sequence
+      tagged? || nil
+    end
+
+    def automation_parameters
+      return if pre_extension_time == 0
+      return unless pre_extension_time
+
+      "ExtensionTime=double:#{pre_extension_time}|ExtendFirst=boolean:True"
+    end
+
+    # Sample bio Name field
+    def bio_sample_name
+      sample_is_barcoded ? nil : sample_names
     end
   end
 end

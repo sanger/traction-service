@@ -267,6 +267,15 @@ RSpec.describe Pacbio::Run, :pacbio do
     end
   end
 
+  describe '#sorted_wells' do
+    it 'returns the wells sorted by plate and then by column' do
+      plate1 = build(:pacbio_plate, plate_number: 1, wells: [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1')])
+      plate2 = build(:pacbio_plate, plate_number: 2, wells: [build(:pacbio_well, row: 'A', column: '1'), build(:pacbio_well, row: 'B', column: '1')])
+      run = create(:pacbio_revio_run, plates: [plate1, plate2])
+      expect(run.sorted_wells).to eq([plate1.wells.first, plate1.wells.second, plate2.wells.first, plate2.wells.second])
+    end
+  end
+
   describe '#create with nested attributes' do
     let!(:pools) { create_list(:pacbio_pool, 2) }
 

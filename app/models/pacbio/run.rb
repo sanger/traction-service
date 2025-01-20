@@ -7,7 +7,7 @@ module Pacbio
 
     include Uuidable
     include Stateful
-    include SampleSheet::Run
+    # include SampleSheet::Run
 
     # Sequel II and Sequel I are now deprecated
     enum :system_name, { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2, 'Revio' => 3 }
@@ -142,6 +142,19 @@ module Pacbio
     # @return [Array<String>] the barcodes of the sequencing kits
     def sequencing_kit_box_barcodes
       plates.map { |p| "Plate #{p.plate_number}: #{p.sequencing_kit_box_barcode}" }
+    end
+
+    # Returns a list of wells associated with all plates which are sorted by plate first and
+    # then by wells in column order
+    # Example: ([<Plate plate_number:1>
+    #             [<Well position:'A1'>, <Well position:'A2'>,<Well position:'B1'>]<Plate>
+    #           <Plate plate_number:2>
+    #             [<Well position:'A3'>, <Well position:'A4'>,<Well position:'B3'>]<Plate>]) =>
+    #       [<Well position:'A1'>, <Well position:'B1'>, <Well position:'A2'>,<Well position:'A3'>
+    #        <Well position:'A3'>,<Well position:'B3'>,<Well position:'A4'>],
+    def sorted_wells
+      sorted_plates = plates.sort_by(&:plate_number)
+      sorted_plates.flat_map { |plate| plate.wells.sort_by { |well| [well.column.to_i, well.row] } }
     end
 
     private
