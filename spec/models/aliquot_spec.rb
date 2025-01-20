@@ -244,5 +244,23 @@ RSpec.describe Aliquot do
         end
       end
     end
+
+    describe '#bio_sample_name' do
+      context 'when the sample sheet behaviour is default' do
+        it 'returns the source sample name for a aliquot from a library' do
+          library = create(:pacbio_library)
+          aliquot = create(:aliquot, source: library)
+          expect(aliquot.bio_sample_name).to eq(library.sample_name)
+        end
+      end
+
+      context 'when the sample sheet behaviour is hidden' do
+        it 'returns an empty string' do
+          library = create(:pacbio_library)
+          aliquot = create(:aliquot, tag: create(:hidden_tag), source: library)
+          expect(aliquot.bio_sample_name).to eq('')
+        end
+      end
+    end
   end
 end

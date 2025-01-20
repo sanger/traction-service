@@ -101,13 +101,18 @@ class Aliquot < ApplicationRecord
 
   # Sample bio Name field
   def bio_sample_name
-    sample_sheet_behaviour.aliquot_sample_name(self)
+    return '' if tag_set&.sample_sheet_behaviour == 'hidden'
+
+    source.sample_name || ''
   end
 
   # Barcode Name field
-  # Used in context of Aliquot model
+  # Deprecated as of SMRT-Link v13.0
+  # See https://www.pacb.com/wp-content/uploads/SMRT-Link-Release-Notes-v13.0.pdf
   def barcode_name
-    sample_sheet_behaviour.barcode_name(tag)
+    return if tag_set&.sample_sheet_behaviour == 'hidden'
+
+    "#{tag.group_id}--#{tag.group_id}"
   end
 
   # Sample Adapter field

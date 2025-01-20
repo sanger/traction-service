@@ -140,13 +140,16 @@ module Pacbio
 
     # Barcode Set field
     def barcode_set
-      # Assuming each request libraries tag has the same set name
-      sample_sheet_behaviour.barcode_set(tag_set)
+      return if tag_set&.sample_sheet_behaviour == 'hidden'
+
+      tag_set&.uuid
     end
 
     # Determines rendering of a row-per sample
     def show_row_per_sample?
-      sample_sheet_behaviour.show_row_per_sample?(base_used_aliquots)
+      return false if tag_set&.sample_sheet_behaviour == 'hidden'
+
+      base_used_aliquots.any?(&:tag_id?)
     end
 
     # Returns libraries only if they should be shown per row
@@ -180,11 +183,11 @@ module Pacbio
       get_plate(2)&.sequencing_kit_box_barcode
     end
 
-    # Used to indicate to the sample sheet whether it should treat a sample as barcoded
-    # Note: This doesn't actually indicate that a sample *is* barcoded, as :hidden
-    # tag sets (such as IsoSeq) lie.
+    # # Used to indicate to the sample sheet whether it should treat a sample as barcoded
+    # # Note: This doesn't actually indicate that a sample *is* barcoded, as :hidden
+    # # tag sets (such as IsoSeq) lie.
     def sample_is_barcoded
-      sample_sheet_behaviour.barcoded_for_sample_sheet?
+      tag_set&.sample_sheet_behaviour == 'default'
     end
 
     # Are the left and right adapters the same?
