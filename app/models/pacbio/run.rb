@@ -7,7 +7,6 @@ module Pacbio
 
     include Uuidable
     include Stateful
-    # include SampleSheet::Run
 
     # Sequel II and Sequel I are now deprecated
     enum :system_name, { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2, 'Revio' => 3 }
