@@ -92,7 +92,7 @@ module Aliquotable
   def used_aliquots_volume
     # Get all the aliquots that are libraries or pools and have insufficient volume
     failed_aliquots = used_aliquots.select do |aliquot|
-      (aliquot.source_type == 'Pacbio::Library' || aliquot.source_type == 'Pacbio::Pool') &&
+      ['Pacbio::Library', 'Pacbio::Pool'].include?(aliquot.source_type) &&
         !aliquot.source.available_volume_sufficient
     end
     return if failed_aliquots.empty?
