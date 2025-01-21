@@ -44,12 +44,9 @@ module Pacbio
 
     accepts_nested_attributes_for :used_aliquots, allow_destroy: true
 
+    # @return [TagSet | NullTagSet] the tag set for the first aliquot or null tag set
     def tag_set
-      base_used_aliquots.collect(&:tag_set).first
-    end
-
-    def sample_sheet_behaviour
-      SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour)
+      base_used_aliquots.collect(&:tag_set).first || NullTagSet.new
     end
 
     def position
@@ -90,18 +87,22 @@ module Pacbio
       base_used_aliquots.collect(&:tag_id)
     end
 
+    # @return [Boolean] true if the well has any pools
     def pools?
       pools.present?
     end
 
+    # @return [Boolean] true if the well has any libraries
     def libraries?
       libraries.present?
     end
 
+    # @return [String] the template_prep_kit_box_barcode of the first aliquot
     def template_prep_kit_box_barcode
       base_used_aliquots.first.used_by.template_prep_kit_box_barcode
     end
 
+    # @return [String] the insert_size of the first used_by aliqout
     def insert_size
       base_used_aliquots.first.used_by.insert_size
     end
@@ -111,6 +112,7 @@ module Pacbio
       true
     end
 
+    # @return [Boolean] true if loading_target_p1_plus_p2 is present
     def adaptive_loading_check
       loading_target_p1_plus_p2.present?
     end
@@ -128,6 +130,9 @@ module Pacbio
       save!
     end
 
+    # SAMPLE SHEET GENERATION
+    # The following methods are used to generate the sample sheet for the Pacbio::Well
+
     # Sample Well field
     def position_leading_zero
       "#{row}#{column.rjust(2, '0')}"
@@ -140,14 +145,14 @@ module Pacbio
 
     # Barcode Set field
     def barcode_set
-      return if tag_set&.sample_sheet_behaviour == 'hidden'
+      return if tag_set.hidden_sample_sheet_behaviour?
 
-      tag_set&.uuid
+      tag_set.uuid
     end
 
     # Determines rendering of a row-per sample
     def show_row_per_sample?
-      return false if tag_set&.sample_sheet_behaviour == 'hidden'
+      return false if tag_set.hidden_sample_sheet_behaviour?
 
       base_used_aliquots.any?(&:tag_id?)
     end
@@ -187,7 +192,7 @@ module Pacbio
     # # Note: This doesn't actually indicate that a sample *is* barcoded, as :hidden
     # # tag sets (such as IsoSeq) lie.
     def sample_is_barcoded
-      tag_set&.sample_sheet_behaviour == 'default'
+      tag_set.default_sample_sheet_behaviour?
     end
 
     # Are the left and right adapters the same?
@@ -197,6 +202,9 @@ module Pacbio
       tagged? || nil
     end
 
+    # Set the automation parameters
+    # @return [String] Returns nil if pre_extension_time is 0 or nil
+    # @example  ExtensionTime=double:#5|ExtendFirst=boolean:True
     def automation_parameters
       return if pre_extension_time == 0
       return unless pre_extension_time
@@ -205,6 +213,7 @@ module Pacbio
     end
 
     # Sample bio Name field
+    # Returns nil if sample is barcoded otherwise returns the sample names for all of the aliquots
     def bio_sample_name
       sample_is_barcoded ? nil : sample_names
     end
