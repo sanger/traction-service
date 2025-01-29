@@ -39,12 +39,16 @@ One of the main reasons for the volume tracking data is to be able to query whet
 
 Given below are some common SQL queries we think that would be useful for querying the MultiLIMS Warehouse' `aliquot` table.
 
+!!! note
+
+    A non-techinical explanation can be found in this page (WIP).
+
 - What is the initial volume of a **library** identified by the barcode `foo`?
 
     ```sql
     SELECT volume AS initial_volume
     FROM aliquot
-    WHERE source_barcode = "TRAC-2-8773"  -- Change "foo" to the actual barcode
+    WHERE source_barcode = "foo"  -- Change "foo" to the actual barcode
     AND aliquot_type = "primary"
     AND source_type = "library"
     ORDER BY id DESC
@@ -65,6 +69,11 @@ Given below are some common SQL queries we think that would be useful for queryi
 
 - How much of volume left in a **library** identified by the barcode `foo`?
 
+    1. Find out the initial volume of the library.
+    2. Find out the distinct `used_by_barcode` for the given library.
+    3. Within each `used_by_barcode` record, we need to find the latest record
+    4. Then, sum the volume of all the latest `used_by_barcode` records.
+
     ```sql
     SELECT 
         (SELECT volume 
@@ -75,40 +84,97 @@ Given below are some common SQL queries we think that would be useful for queryi
         ORDER BY id DESC
         LIMIT 1) 
         - 
-        (SELECT COALESCE(SUM(volume), 0)
-        FROM aliquot
-        WHERE source_barcode = 'foo'    -- Change "foo" to the actual barcode
-        AND aliquot_type = 'derived'
-        AND source_type = 'library'
+        (
+            SELECT
+            SUM(volume)
+            FROM
+                aliquot a
+            INNER JOIN (
+                SELECT
+                    source_barcode,
+                    used_by_barcode,
+                    MAX(created_at) AS latest
+                FROM
+                    aliquot
+                WHERE
+                    source_barcode = 'foo' AND aliquot_type = 'derived'
+                GROUP BY
+                    source_barcode, used_by_barcode
+            ) b ON a.source_barcode = b.source_barcode
+            AND a.used_by_barcode = b.used_by_barcode
+            AND a.created_at = b.latest
+            WHERE
+                a.source_barcode = 'foo' AND a.aliquot_type = 'derived'
         ) 
     AS remaining_volume;
-    ```
-
-- How much of volume for a **library** (identified by barcode `foo`) is used in a **pool** (identified by barcode `bar`)?
-
-    ```sql
-    SELECT SUM(volume) AS used_volume
-    FROM aliquot
-    WHERE source_barcode = "foo"    -- Change "foo" to the actual barcode
-    AND source_type = "library"
-    AND aliquot_type = "derived"
-    AND used_by_type = "pool"       -- Change this to run if you want to find the used volume used for a run
-    AND used_by_barcode = "bar";    -- Change "bar" to the actual barcode
     ```
 
 - How much volume of a **pool** (identified by barcode `foo`) is used in a **run** (identified by barcode `bar`)?
 
     ```sql
-    SELECT SUM(volume) AS used_volume
+    SELECT volume
     FROM aliquot
     WHERE source_barcode = "foo"    -- Change "foo" to the actual barcode
     AND source_type = "pool"
     AND aliquot_type = "derived"
     AND used_by_type = "run"
-    AND used_by_barcode = "bar";    -- Change "bar" to the actual barcode
+    AND used_by_barcode = "bar"     -- Change "bar" to the actual barcode
+    ORDER BY created_at DESC 
+    LIMIT 1;
     ```
 
     !!! note
 
         Note that we use _generated_ barcodes using `sequencing_kit_box_barcode`, the plate number of the plate used for the run and the position of the well. 
         `sequencing_kit_box_barcode` is defined in `Pacbio::Run` relation mentioned in the [ERD](architectural-overview.md#traction-service) e.g format `4438383464646466464646466464:1:A1`.
+
+- How much volume of a **library** (identified by barcode `foo`) is used in a **run** (identified by barcode `bar`)?
+
+    ```sql
+    SELECT volume
+    FROM aliquot
+    WHERE source_barcode = "foo"    -- Change "foo" to the actual barcode
+    AND source_type = "library"
+    AND aliquot_type = "derived"
+    AND used_by_type = "run"
+    AND used_by_barcode = "bar"     -- Change "bar" to the actual barcode
+    ORDER BY created_at DESC 
+    LIMIT 1;
+    ```
+
+- How much of volume left in a **pool** identified by the barcode `foo`?
+
+    ```sql
+    SELECT 
+        (SELECT volume 
+        FROM aliquot
+        WHERE source_barcode = 'foo'    -- Change "foo" to the actual barcode
+        AND aliquot_type = 'primary'
+        AND source_type = 'pool'
+        ORDER BY id DESC
+        LIMIT 1) 
+        - 
+        (
+            SELECT
+            SUM(volume)
+            FROM
+                aliquot a
+            INNER JOIN (
+                SELECT
+                    source_barcode,
+                    used_by_barcode,
+                    MAX(created_at) AS latest
+                FROM
+                    aliquot
+                WHERE
+                    source_barcode = 'foo' AND aliquot_type = 'derived'
+                GROUP BY
+                    source_barcode, used_by_barcode
+            ) b ON a.source_barcode = b.source_barcode
+            AND a.used_by_barcode = b.used_by_barcode
+            AND a.created_at = b.latest
+            WHERE
+                a.source_barcode = 'foo' AND a.aliquot_type = 'derived'
+        ) 
+    AS remaining_volume;
+    ```
