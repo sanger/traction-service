@@ -9,7 +9,9 @@ nav:
   - Technical Details:
     - Technical Details in Traction Service on Message Publishing: technical-details-on-service.md
     - Schema and the Schema Registry: schema-registry.md
-  - Querying the MultiLIMS Warehouse' aliquots table: querying-mlwh.md
+  - Querying the MultiLIMS Warehouse' aliquots table: 
+    - Queries: querying-mlwh.md
+    - Explanation of the queries: explanation-of-queries.md
   # - Architectural Overview: architectural-overview.md
 # theme: material
 theme:

@@ -33,15 +33,13 @@ Volume tracking information in MultiLIMS Warehouse are stored in the `aliquot` t
 
 One of the main reasons for the volume tracking data is to be able to query whether there is enough library available for resequencing to increase yield to a suitable amount.
 
-### How do I query the warehouse to find out how much library is left?
-
 ## Common Queries
 
 Given below are some common SQL queries we think that would be useful for querying the MultiLIMS Warehouse' `aliquot` table.
 
 !!! note
 
-    A non-techinical explanation can be found in this page (WIP).
+    Please note that the queries listed here are meant for technical use. To view an in-depth explanation of each query, please visit [this page](explanation-of-queries.md).
 
 - What is the initial volume of a **library** identified by the barcode `foo`?
 
