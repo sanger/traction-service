@@ -97,6 +97,19 @@ RSpec.describe Aliquot do
     expect(aliquot.used_by_is_a?(Pacbio::Pool)).to be false
   end
 
+  describe '#tag_set' do
+    it 'returns the tag set for the aliquot' do
+      tag = create(:tag)
+      aliquot = create(:aliquot, tag:)
+      expect(aliquot.tag_set).to eq(tag.tag_set)
+    end
+
+    it 'returns a NullTagSet if the tag set is nil' do
+      aliquot = create(:aliquot, tag: nil)
+      expect(aliquot.tag_set).to be_a(NullTagSet)
+    end
+  end
+
   describe '#valid?(:run_creation)' do
     subject { build(:aliquot, params).valid?(:run_creation) }
 
@@ -149,31 +162,6 @@ RSpec.describe Aliquot do
     end
   end
 
-  describe '#tagged?' do
-    it 'returns true if the aliquot has a tag' do
-      aliquot = create(:aliquot, tag: create(:tag))
-      expect(aliquot.tagged?).to be true
-    end
-
-    it 'returns false if the aliquot does not have a tag' do
-      aliquot = create(:aliquot, tag: nil)
-      expect(aliquot.tagged?).to be false
-    end
-
-    it 'returns false if the aliquot has a hidden tag set' do
-      aliquot = create(:aliquot, tag: create(:hidden_tag))
-      expect(aliquot.tagged?).to be false
-    end
-  end
-
-  describe '#collection?' do
-    let(:aliquot) { create(:aliquot) }
-
-    it 'always be false' do
-      expect(aliquot).not_to be_collection
-    end
-  end
-
   describe '#publishable' do
     before do
       Pacbio::SmrtLinkVersion.find_by(name: 'v13_sequel_iie') || create(:pacbio_smrt_link_version, name: 'v13_sequel_iie', default: true)
@@ -199,6 +187,31 @@ RSpec.describe Aliquot do
     before do
       # Create a default pacbio smrt link version for pacbio runs.
       create(:pacbio_smrt_link_version, name: 'v12_sequel_iie', default: true)
+    end
+
+    describe '#tagged?' do
+      it 'returns true if the aliquot has a tag' do
+        aliquot = create(:aliquot, tag: create(:tag))
+        expect(aliquot.tagged?).to be true
+      end
+
+      it 'returns false if the aliquot does not have a tag' do
+        aliquot = create(:aliquot, tag: nil)
+        expect(aliquot.tagged?).to be false
+      end
+
+      it 'returns false if the aliquot has a hidden tag set' do
+        aliquot = create(:aliquot, tag: create(:hidden_tag))
+        expect(aliquot.tagged?).to be false
+      end
+    end
+
+    describe '#collection?' do
+      let(:aliquot) { create(:aliquot) }
+
+      it 'always be false' do
+        expect(aliquot).not_to be_collection
+      end
     end
 
     describe '#barcode_name' do

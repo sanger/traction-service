@@ -206,8 +206,7 @@ module Pacbio
     # @return [String] Returns nil if pre_extension_time is 0 or nil
     # @example  ExtensionTime=double:#5|ExtendFirst=boolean:True
     def automation_parameters
-      return if pre_extension_time == 0
-      return unless pre_extension_time
+      return if pre_extension_time == 0 || pre_extension_time.nil?
 
       "ExtensionTime=double:#{pre_extension_time}|ExtendFirst=boolean:True"
     end
