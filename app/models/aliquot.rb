@@ -4,7 +4,6 @@
 # An aliquot can be a primary aliquot or a derived aliquot.
 # An aliquot can be used to track volumes and concentrations of samples.
 class Aliquot < ApplicationRecord
-  include SampleSheet::Aliquot
   include Uuidable
 
   enum :state, { created: 0, used: 1 }
@@ -50,31 +49,6 @@ class Aliquot < ApplicationRecord
                 used_by_type: 'Pacbio::Library', aliquot_type: 'derived'))
   }
 
-  def sample_sheet_behaviour
-    SampleSheetBehaviour.get(tag_set&.sample_sheet_behaviour)
-  end
-
-  # Checks if the aliquot is tagged.
-  #
-  # An aliquot is considered tagged if it has a non-nil and non-empty tag.
-  #
-  # @return [Boolean] Returns true if the aliquot is tagged, false otherwise.
-  def tagged?
-    # This feels like a bit of a hack but I wasn't exactly sure where the best place to
-    # it. I tried to follow the sample sheet behaviour but got lost.
-    # it looks like the only place this is used is in the sample sheet generation
-    return false if tag.nil?
-
-    tag_set.sample_sheet_behaviour != 'hidden'
-  end
-
-  # Generic method used by pacbio sample sheet generation to
-  # determine whether the data is a collection or not.
-  # Assuming false is a simplification used previously for sample-sheets
-  def collection?
-    false
-  end
-
   # Returns a list of all the aliquots that are publishable.
   def self.publishable
     [].tap do |aliquots|
@@ -97,5 +71,56 @@ class Aliquot < ApplicationRecord
         end)
       end
     end
+  end
+
+  # Returns the tag set for the aliquot
+  # If the tag_set is nil, it returns a NullTagSet
+  def tag_set
+    super || NullTagSet.new
+  end
+
+  # SAMPLE SHEET GENERATION
+  # The following methods are used to generate the sample sheet for the Aliquot
+
+  # Checks if the aliquot is tagged.
+  # An aliquot is considered tagged if it has a non-nil and non-empty tag.
+  # @return [Boolean] Returns true if the aliquot is tagged, false otherwise.
+  def tagged?
+    # This feels like a bit of a hack but I wasn't exactly sure where the best place to
+    # it. I tried to follow the sample sheet behaviour but got lost.
+    # it looks like the only place this is used is in the sample sheet generation
+    return false if tag.nil?
+
+    tag_set.default_sample_sheet_behaviour?
+  end
+
+  # Generic method used by pacbio sample sheet generation to
+  # determine whether the data is a collection or not.
+  # Assuming false is a simplification used previously for sample-sheets
+  def collection?
+    false
+  end
+
+  # Sample bio Name field
+  def bio_sample_name
+    return '' if tag_set.hidden_sample_sheet_behaviour?
+
+    source.sample_name || ''
+  end
+
+  # Barcode Name field
+  # Deprecated as of SMRT-Link v13.0
+  # See https://www.pacb.com/wp-content/uploads/SMRT-Link-Release-Notes-v13.0.pdf
+  def barcode_name
+    return if tag_set.hidden_sample_sheet_behaviour?
+
+    "#{tag.group_id}--#{tag.group_id}"
+  end
+
+  # Sample Adapter field
+  # The same adapter is used for both left and right, see same_barcodes_on_both_ends_of_sequence
+  # Returns nil if the tag is nil
+  def adapter
+    tag&.group_id
   end
 end

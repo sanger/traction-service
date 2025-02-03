@@ -97,6 +97,19 @@ RSpec.describe Aliquot do
     expect(aliquot.used_by_is_a?(Pacbio::Pool)).to be false
   end
 
+  describe '#tag_set' do
+    it 'returns the tag set for the aliquot' do
+      tag = create(:tag)
+      aliquot = create(:aliquot, tag:)
+      expect(aliquot.tag_set).to eq(tag.tag_set)
+    end
+
+    it 'returns a NullTagSet if the tag set is nil' do
+      aliquot = create(:aliquot, tag: nil)
+      expect(aliquot.tag_set).to be_a(NullTagSet)
+    end
+  end
+
   describe '#valid?(:run_creation)' do
     subject { build(:aliquot, params).valid?(:run_creation) }
 
@@ -149,31 +162,6 @@ RSpec.describe Aliquot do
     end
   end
 
-  describe '#tagged?' do
-    it 'returns true if the aliquot has a tag' do
-      aliquot = create(:aliquot, tag: create(:tag))
-      expect(aliquot.tagged?).to be true
-    end
-
-    it 'returns false if the aliquot does not have a tag' do
-      aliquot = create(:aliquot, tag: nil)
-      expect(aliquot.tagged?).to be false
-    end
-
-    it 'returns false if the aliquot has a hidden tag set' do
-      aliquot = create(:aliquot, tag: create(:hidden_tag))
-      expect(aliquot.tagged?).to be false
-    end
-  end
-
-  describe '#collection?' do
-    let(:aliquot) { create(:aliquot) }
-
-    it 'always be false' do
-      expect(aliquot).not_to be_collection
-    end
-  end
-
   describe '#publishable' do
     before do
       Pacbio::SmrtLinkVersion.find_by(name: 'v13_sequel_iie') || create(:pacbio_smrt_link_version, name: 'v13_sequel_iie', default: true)
@@ -192,6 +180,100 @@ RSpec.describe Aliquot do
       create(:pacbio_revio_run, plates: [build(:pacbio_plate, wells:)])
 
       expect(described_class.publishable.count).to eq(10)
+    end
+  end
+
+  context 'sample sheet behaviour' do
+    before do
+      # Create a default pacbio smrt link version for pacbio runs.
+      create(:pacbio_smrt_link_version, name: 'v12_sequel_iie', default: true)
+    end
+
+    describe '#tagged?' do
+      it 'returns true if the aliquot has a tag' do
+        aliquot = create(:aliquot, tag: create(:tag))
+        expect(aliquot.tagged?).to be true
+      end
+
+      it 'returns false if the aliquot does not have a tag' do
+        aliquot = create(:aliquot, tag: nil)
+        expect(aliquot.tagged?).to be false
+      end
+
+      it 'returns false if the aliquot has a hidden tag set' do
+        aliquot = create(:aliquot, tag: create(:hidden_tag))
+        expect(aliquot.tagged?).to be false
+      end
+    end
+
+    describe '#collection?' do
+      let(:aliquot) { create(:aliquot) }
+
+      it 'always be false' do
+        expect(aliquot).not_to be_collection
+      end
+    end
+
+    describe '#barcode_name' do
+      let(:library_count) { 1 }
+      let(:empty_well) { create(:pacbio_well, pools: [pool]) }
+
+      context 'when the well has one aliquot' do
+        let(:pool) { create(:pacbio_pool, :tagged, library_count:) }
+
+        it 'returns a string of aliquot tags' do
+          tag_group_id = empty_well.base_used_aliquots.first.tag.group_id
+          expected = "#{tag_group_id}--#{tag_group_id}"
+          expect(empty_well.base_used_aliquots.last.barcode_name).to eq expected
+        end
+      end
+
+      context 'when the aliquots are tagged with a :hidden tag set (egh. IsoSeq)' do
+        let(:pool) { create(:pacbio_pool, :hidden_tagged, library_count:) }
+
+        it 'returns nothing' do
+          expect(empty_well.base_used_aliquots.last.barcode_name).to be_nil
+        end
+      end
+    end
+
+    describe '#adapter' do
+      context 'when the aliquot is tagged' do
+        let(:well) { create(:pacbio_well, pool_count: 1) }
+
+        it 'returns the tag group id' do
+          aliquot = well.base_used_aliquots.first
+          expect(aliquot.adapter).to eq aliquot.tag.group_id
+        end
+      end
+
+      context 'when the aliquot is not tagged' do
+        let(:pool) { create(:pacbio_pool, :untagged, library_count: 1) }
+        let(:well) { create(:pacbio_well, pools: [pool]) }
+
+        it 'returns nil' do
+          aliquot = well.base_used_aliquots.first
+          expect(aliquot.adapter).to be_nil
+        end
+      end
+    end
+
+    describe '#bio_sample_name' do
+      context 'when the sample sheet behaviour is default' do
+        it 'returns the source sample name for a aliquot from a library' do
+          library = create(:pacbio_library)
+          aliquot = create(:aliquot, source: library)
+          expect(aliquot.bio_sample_name).to eq(library.sample_name)
+        end
+      end
+
+      context 'when the sample sheet behaviour is hidden' do
+        it 'returns an empty string' do
+          library = create(:pacbio_library)
+          aliquot = create(:aliquot, tag: create(:hidden_tag), source: library)
+          expect(aliquot.bio_sample_name).to eq('')
+        end
+      end
     end
   end
 end
