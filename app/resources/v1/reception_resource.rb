@@ -92,7 +92,7 @@ module V1
     end
 
     def permitted_request_attributes
-      [*::Pacbio.request_attributes, *::Ont.request_attributes, *::Saphyr.request_attributes].uniq
+      [*::Pacbio.request_attributes, *::Ont.request_attributes].uniq
     end
 
     def permitted_sample_attributes
