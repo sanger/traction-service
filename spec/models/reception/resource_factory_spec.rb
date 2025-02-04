@@ -438,6 +438,5 @@ RSpec.describe Reception::ResourceFactory do
         expect(labware).to eq(expected_data)
       end
     end
-
   end
 end
