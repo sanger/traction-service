@@ -21,7 +21,7 @@ Rails.application.routes.draw do
     end
 
     namespace :pacbio do
-      jsonapi_resources :plates,        only: %i[index create]
+      jsonapi_resources :plates, only: %i[index create]
       jsonapi_resources :tag_sets
       jsonapi_resources :aliquots
 
