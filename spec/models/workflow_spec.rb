@@ -18,6 +18,7 @@ RSpec.describe Workflow do
       expect(described_class.pipelines).to eq(
         'pacbio' => 0,
         'ont' => 1,
+        'saphyr' => 2,
         'qc_result' => 3,
         'reception' => 4,
         'extraction' => 5,

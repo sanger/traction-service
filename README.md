@@ -11,7 +11,6 @@ Rails app which exposes a RESTful API for a Long Read LIMS
 - creating sequencing runs
 - printing sample sheets
 - supports the following technologies:
-  - Saphyr
   - Pacbio
   - ONT (In progress)
 
@@ -62,7 +61,6 @@ setup process
 
 - To create all the supported library types: `bundle exec rails library_types:create`
 - To create all the supported data types: `bundle exec rails data_types:create`
-- To create a set of enzymes (needed for saphyr dummy runs): `bundle exec rails enzymes:create`
 - To create all of the pacbio tags (needed for pacbio dummy runs): `bundle exec rails tags:create:pacbio_all`
 - To create pacbio Qc Assay Types: `bundle exec rails qc_assay_types:create`
 - To create pacbio smrt link versions: `bundle exec rails smrt_link_versions:create`
@@ -72,8 +70,6 @@ setup process
 ### Useful support data
 
 To create pacbio dummy runs: `bundle exec rails pacbio_data:create`
-
-To create saphyr dummy runs: `bundle exec rails saphyr_runs:create`
 
 To create ont dummy runs: `bundle exec rails ont_data:create`
 

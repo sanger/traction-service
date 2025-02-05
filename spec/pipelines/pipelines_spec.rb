@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Pipelines, type: :model do
   describe '#configuration' do
-    let(:pipelines) { { pacbio: 0, ont: 1 }.freeze }
+    let(:pipelines) { { pacbio: 0, ont: 1, saphyr: 2 }.freeze }
 
     it 'has all of the pipelines' do
       expect(pipelines.keys).to be_all do |pipeline|
