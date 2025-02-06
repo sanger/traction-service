@@ -9,7 +9,7 @@ module Pipelines
   # a constant. Please do *not* remove entries from this list, as it could
   # result in legacy data being reassigned to the incorrect pipelines
   #
-  # Note: Saphyr is depricated. This is still kept as legacy data in this hash.
+  # Note: Saphyr is deprecated. This is still kept as legacy data in this hash.
   NAMES = { pacbio: 0, ont: 1, saphyr: 2, qc_result: 3, reception: 4, extraction: 5, sample_qc: 6,
             hic: 7, bio_nano: 8 }.freeze
   HANDLERS = {
