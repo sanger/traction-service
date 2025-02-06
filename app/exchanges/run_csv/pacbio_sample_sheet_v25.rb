@@ -9,6 +9,11 @@ module RunCsv
     # Generate a hash of settings for a single cell
     # Overrides the method in the parent class
     # Only difference is removal of 'Polymerase Kit' key
+    #
+    def bio_sample_name(sample)
+      sample.formatted_bio_sample_name
+    end
+
     def generate_smrt_cell_settings(well) # rubocop:disable Metrics/MethodLength
       {
         'Well Name'	=> well.used_aliquots.first.source.tube.barcode, # TRAC-2-7242
