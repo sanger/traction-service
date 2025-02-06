@@ -108,6 +108,10 @@ class Aliquot < ApplicationRecord
     source.sample_name || ''
   end
 
+  def formatted_bio_sample_name
+    bio_sample_name.gsub(':', '-')
+  end
+
   # Barcode Name field
   # Deprecated as of SMRT-Link v13.0
   # See https://www.pacb.com/wp-content/uploads/SMRT-Link-Release-Notes-v13.0.pdf
