@@ -643,6 +643,24 @@ RSpec.describe Pacbio::Well, :pacbio do
       end
     end
 
+    describe '#formatted_bio_sample_name' do
+      context 'when tag set is :default type' do
+        it 'returns nothing if row type is well' do
+          expect(well.formatted_bio_sample_name).to be_nil
+        end
+      end
+
+      context 'when tag set is :hidden type (eg. IsoSeq)' do
+        let(:request) { create(:pacbio_request, sample: create(:sample, name: 'test:A1')) }
+        let(:library) { create(:pacbio_library, :hidden_tagged, request:) }
+
+        it 'returns dash separated sample_names if row type is well' do
+          well = create(:pacbio_well, libraries: [library])
+          expect(well.formatted_bio_sample_name).to eq well.sample_names.gsub(':', '-')
+        end
+      end
+    end
+
     context 'show_row_per_sample?' do
       it 'returns true if all well aliquots are tagged' do
         expect(well.show_row_per_sample?).to be true
