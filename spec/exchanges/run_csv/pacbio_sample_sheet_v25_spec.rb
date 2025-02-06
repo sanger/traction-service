@@ -161,7 +161,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV25, type: :model do
           sample_expectations.each do |sample_data, well|
             expect(sample_data).to eq(
               {
-                'Bio Sample Name' => well.base_used_aliquots.first.formatted_bio_sample_name,
+                'Bio Sample Name' => well.base_used_aliquots.first.bio_sample_name,
                 'Plate Well' => well.plate_well_position,
                 'Adapter' => well.base_used_aliquots.first.tag.group_id,
                 'Adapter2' => well.base_used_aliquots.first.tag.group_id
