@@ -95,6 +95,8 @@ module RunCsv
       ]
     end
 
+    # Returns the bio sample name for the given sample.
+
     def bio_sample_name(sample)
       sample.bio_sample_name
     end

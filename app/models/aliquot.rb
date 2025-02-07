@@ -108,6 +108,9 @@ class Aliquot < ApplicationRecord
     source.sample_name || ''
   end
 
+  # Returns the formatted bio sample name.
+  # Replaces all colons (:) in the bio sample name with hyphens (-).
+
   def formatted_bio_sample_name
     bio_sample_name.gsub(':', '-')
   end
