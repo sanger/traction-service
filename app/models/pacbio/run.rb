@@ -7,7 +7,6 @@ module Pacbio
 
     include Uuidable
     include Stateful
-    include SampleSheet::Run
 
     # Sequel II and Sequel I are now deprecated
     enum :system_name, { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2, 'Revio' => 3 }
@@ -64,15 +63,6 @@ module Pacbio
 
     def comments
       super || ''
-    end
-
-    # returns sample sheet csv for a Pacbio::Run
-    # using pipelines.yml configuration to generate data
-    def generate_sample_sheet
-      configuration = pacbio_run_sample_sheet_config
-      sample_sheet_class = "RunCsv::#{configuration.sample_sheet_class}".constantize
-      sample_sheet = sample_sheet_class.new(object: self, configuration:)
-      sample_sheet.payload
     end
 
     # v12 has changed to use instrument_name
@@ -134,27 +124,42 @@ module Pacbio
       end
     end
 
-    # @return [Boolean] true if all wells have adaptive loading enabled
-    def adaptive_loading
-      wells.all? { |w| w.use_adaptive_loading == 'True' }
-    end
-
     # @return [Array<String>] the barcodes of the sequencing kits
     def sequencing_kit_box_barcodes
       plates.map { |p| "Plate #{p.plate_number}: #{p.sequencing_kit_box_barcode}" }
     end
 
-    private
+    # SAMPLE SHEET GENERATION
+    # The following methods are used to generate the sample sheet for the Pacbio::Run
 
-    # We now have SMRT Link versioning
-    # This allows generation of sample sheets based on the SMRT Link version
-    # Each different version of SMRT Link has different columns
-    # A version can be assigned to a run but changed
-    # e.g. Pipelines.pacbio.sample_sheet.by_version('v10')
-    # Throws a Version::Error if the version cannot be found
-    def pacbio_run_sample_sheet_config
-      Pipelines.pacbio.sample_sheet.by_version(smrt_link_version.name)
+    # returns sample sheet csv for a Pacbio::Run
+    # using pipelines.yml configuration to generate data
+    def generate_sample_sheet
+      configuration = Pipelines.pacbio.sample_sheet.by_version(smrt_link_version.name)
+      sample_sheet_class = "RunCsv::#{configuration.sample_sheet_class}".constantize
+      sample_sheet = sample_sheet_class.new(object: self, configuration:)
+      sample_sheet.payload
     end
+
+    # @return [Boolean] true if all wells have adaptive loading enabled
+    def adaptive_loading
+      wells.all? { |w| w.use_adaptive_loading == 'True' }
+    end
+
+    # Returns a list of wells associated with all plates which are sorted by plate first and
+    # then by wells in column order
+    # Example: ([<Plate plate_number:1>
+    #             [<Well position:'A1'>, <Well position:'A2'>,<Well position:'B1'>]<Plate>
+    #           <Plate plate_number:2>
+    #             [<Well position:'A3'>, <Well position:'A4'>,<Well position:'B3'>]<Plate>]) =>
+    #       [<Well position:'A1'>, <Well position:'B1'>, <Well position:'A2'>,<Well position:'A3'>
+    #        <Well position:'A3'>,<Well position:'B3'>,<Well position:'A4'>],
+    def sorted_wells
+      sorted_plates = plates.sort_by(&:plate_number)
+      sorted_plates.flat_map { |plate| plate.wells.sort_by { |well| [well.column.to_i, well.row] } }
+    end
+
+    private
 
     def generate_name
       return if name.present?

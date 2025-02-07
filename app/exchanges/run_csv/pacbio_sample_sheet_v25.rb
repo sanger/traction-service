@@ -6,6 +6,14 @@
 module RunCsv
   # RunCsv::PacbioSampleSheet
   class PacbioSampleSheetV25 < PacbioSampleSheet
+    # Returns the formatted bio sample name for the given sample.
+    # This method overrides the bio_sample_name method in the parent class.
+    # It returns the sample names with colons replaced by hyphens.
+
+    def bio_sample_name(sample)
+      sample.formatted_bio_sample_name
+    end
+
     # Generate a hash of settings for a single cell
     # Overrides the method in the parent class
     # Only difference is removal of 'Polymerase Kit' key
@@ -20,7 +28,7 @@ module RunCsv
         'Include Base Kinetics'	=> well.include_base_kinetics,
         'Indexes'	=> well.barcode_set, # 244d96c6-f3b2-4997-5ae3-23ed33ab925f
         'Sample is indexed'	=> well.tagged?, # Set to True to Multiplex
-        'Bio Sample Name' => well.tagged? ? nil : well.bio_sample_name,
+        'Bio Sample Name' => well.tagged? ? nil :  well.formatted_bio_sample_name,
         'Use Adaptive Loading'	=> well.use_adaptive_loading,
         'Consensus Mode'	=> 'molecule', # (default to molecule do we need a custom field)
         'Same Barcodes on Both Ends of Sequence'	=> well.same_barcodes_on_both_ends_of_sequence,
