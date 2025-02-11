@@ -216,5 +216,12 @@ module Pacbio
     def bio_sample_name
       sample_is_barcoded ? nil : sample_names
     end
+
+    # Returns the formatted bio sample name.
+    # If the sample is barcoded, it returns nil.
+    # Otherwise, it returns the sample names with colons replaced by hyphens.
+    def formatted_bio_sample_name
+      bio_sample_name&.gsub(':', '-')
+    end
   end
 end

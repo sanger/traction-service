@@ -108,6 +108,13 @@ class Aliquot < ApplicationRecord
     source.sample_name || ''
   end
 
+  # Returns the formatted bio sample name.
+  # Replaces all colons (:) in the bio sample name with hyphens (-).
+
+  def formatted_bio_sample_name
+    bio_sample_name.gsub(':', '-')
+  end
+
   # Barcode Name field
   # Deprecated as of SMRT-Link v13.0
   # See https://www.pacb.com/wp-content/uploads/SMRT-Link-Release-Notes-v13.0.pdf

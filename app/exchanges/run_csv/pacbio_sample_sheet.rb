@@ -88,11 +88,17 @@ module RunCsv
 
     def sample_data(well, sample)
       [
-        sample.bio_sample_name,
+        bio_sample_name(sample),
         well.plate_well_position,
         sample.adapter, # left adapter
         sample.adapter  # right adapter
       ]
+    end
+
+    # Returns the bio sample name for the given sample.
+
+    def bio_sample_name(sample)
+      sample.bio_sample_name
     end
 
     # Generate a CSV of samples

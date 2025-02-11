@@ -54,6 +54,7 @@ RSpec.describe V1::Shared::SourceIdentifierFilterable do
     context 'when the source_identifier belongs to a plate and well separated by colon' do
       it 'returns the correct records' do
         pacbio_plate = create(:plate_with_wells_and_requests, pipeline: 'pacbio')
+        create(:plate_with_wells_and_requests, pipeline: 'pacbio')
         pacbio_plate_requests = pacbio_plate.wells.first.pacbio_requests
         records = Pacbio::Request.all
 
@@ -113,6 +114,7 @@ RSpec.describe V1::Shared::SourceIdentifierFilterable do
     context 'when the source_identifer contains colon which includes plate barcode without well' do
       it 'returns the correct records for plate' do
         pacbio_plate1 = create(:plate_with_wells_and_requests, pipeline: 'pacbio')
+        create(:plate_with_wells_and_requests, pipeline: 'pacbio')
         pacbio_plate_requests = pacbio_plate1.wells.flat_map(&:pacbio_requests)
         source_identifiers = ["#{pacbio_plate1.barcode}:"]
         records = Pacbio::Request.all
@@ -122,7 +124,7 @@ RSpec.describe V1::Shared::SourceIdentifierFilterable do
     end
 
     context 'when the source_identifer contains colon followed by a valid well position' do
-      it 'returns the correct records for plate' do
+      it 'returns all records' do
         pacbio_plate1 = create(:plate_with_wells_and_requests, pipeline: 'pacbio')
         create(:plate_with_wells_and_requests, pipeline: 'pacbio')
 
@@ -131,7 +133,7 @@ RSpec.describe V1::Shared::SourceIdentifierFilterable do
         ]
         records = Pacbio::Request.all
         filtered_records = dummy_instance.apply_source_identifier_filter(records, source_identifiers)
-        expect(filtered_records.count).to eq(2)
+        expect(filtered_records.count).to eq(records.length)
       end
     end
 

@@ -63,20 +63,26 @@ module V1::Shared
       def filter_values(records, value, joins)
         barcode, well = value.split(':')
         # The conditions hash is used to filter the records based on the source identifier.
-        conditions = { plate: { barcode: }, tube: { barcode: },
-                       well: { position: well } }
-        # The condition_process hash is used to determine how to process the conditions.
-        # If the condition is a plate or tube, the records are concatenated.
-        # If the condition is a well, the records are replaced.
-        condition_process = { plate: :concat, tube: :concat, well: :replace }
-        record_array = conditions.each_with_object([]) do |(key, condition), array|
-          next if condition.values.first.blank?
+        # The structure of the conditions hash is as follows:
+        # Each entry in inner conditions (e.g plate, well) will be applied consecutively
+        # and incrementally, thereby the result of each inner condition will be used as
+        # the input for the next condition.
+        # The final result will be the concatenation of all outer conditions
+        # (eg plate_entry,tube_entry).
+        conditions = { plate_entry: { plate: { barcode: barcode }, well: { position: well } },
+                       tube_entry: { tube: { barcode: barcode } } }
+        # Traverse through the conditions hash and apply the filters
+        record_array = conditions.each_with_object([]) do |(_key, condition_val), array|
+          # Start filtering records going through inner conditions using reduce to apply
+          # each condition incrementally
+          result = condition_val.reduce(records) do |res, (inner_key, inner_condition)|
+            next res if inner_condition.values.first.blank?
 
-          join = joins[key]
-          result = records.joins(join).where(join => condition)
-          condition_process[key] == :concat ? array.concat(result) : array.replace(result)
+            join = joins[inner_key]
+            res.joins(join).where(join => inner_condition) # Progressive joins and filtering
+          end
+          array.concat(result) if result.any?
         end
-
         record_array.pluck(:id)
       end
     end
