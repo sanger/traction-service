@@ -216,4 +216,4 @@ A CI action will automatically push the documentation upon master releases. If y
 > pipenv install mkdocs-git-revision-date-localized-plugin
 > ```
 >
-> **Note**: Make sure you run these commands _inside_ an mkdocs root (e.g., inside `multiplexing` documentation directory i.e., `documentation/multiplexing`).
+> **Note**: Make sure you run these commands _inside_ an mkdocs root (e.g., inside `multiplexing` documentation directory i.e., `documentation/multiplexing`). And make sure to ignore any dependency manifests this may add into the source code (e.g. `Pipfile` or a `requirements.txt`) from version control.
