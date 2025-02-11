@@ -205,3 +205,15 @@ pip install mkdocs-git-revision-date-localized-plugin
 3. Use markdown to write up the documentation in the newly generated directory's `doc` subdirectory.
 
 A CI action will automatically push the documentation upon master releases. If you want to deploy the documentation manually, you can the [manual dispatch](https://github.com/sanger/traction-service/actions/workflows/generate_pages.yml) action.
+
+> [!NOTE]  
+> Managing dependencies _could_ have been moved to a dependency manifest (e.g., a `Pipfile` or a `requirements.txt`) but we chose not to add it with the source code as it pollutes the main source code in `traction-service`. There are only three `pip install` commands which are pretty simple to invoke. If you want to contain/isolate the dependencies into a virtual environment, we recommend using [`Pipenv`](https://pipenv.pypa.io/en/latest/) and invoking the `pip install` commands inside the Pipenv shell.
+>
+> ```sh
+> pipenv shell
+> pipenv install mkdocs-material
+> pipenv install mkdocs-glightbox
+> pipenv install mkdocs-git-revision-date-localized-plugin
+> ```
+>
+> **Note**: Make sure you run these commands _inside_ an mkdocs root (e.g., inside `multiplexing` documentation directory i.e., `documentation/multiplexing`).
