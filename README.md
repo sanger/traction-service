@@ -11,7 +11,6 @@ Rails app which exposes a RESTful API for a Long Read LIMS
 - creating sequencing runs
 - printing sample sheets
 - supports the following technologies:
-  - Saphyr
   - Pacbio
   - ONT (In progress)
 
@@ -62,7 +61,6 @@ setup process
 
 - To create all the supported library types: `bundle exec rails library_types:create`
 - To create all the supported data types: `bundle exec rails data_types:create`
-- To create a set of enzymes (needed for saphyr dummy runs): `bundle exec rails enzymes:create`
 - To create all of the pacbio tags (needed for pacbio dummy runs): `bundle exec rails tags:create:pacbio_all`
 - To create pacbio Qc Assay Types: `bundle exec rails qc_assay_types:create`
 - To create pacbio smrt link versions: `bundle exec rails smrt_link_versions:create`
@@ -72,8 +70,6 @@ setup process
 ### Useful support data
 
 To create pacbio dummy runs: `bundle exec rails pacbio_data:create`
-
-To create saphyr dummy runs: `bundle exec rails saphyr_runs:create`
 
 To create ont dummy runs: `bundle exec rails ont_data:create`
 
@@ -209,3 +205,15 @@ pip install mkdocs-git-revision-date-localized-plugin
 3. Use markdown to write up the documentation in the newly generated directory's `doc` subdirectory.
 
 A CI action will automatically push the documentation upon master releases. If you want to deploy the documentation manually, you can the [manual dispatch](https://github.com/sanger/traction-service/actions/workflows/generate_pages.yml) action.
+
+> [!NOTE]  
+> Managing dependencies _could_ have been moved to a dependency manifest (e.g., a `Pipfile` or a `requirements.txt`) but we chose not to add it with the source code as it pollutes the main source code in `traction-service`. There are only three `pip install` commands which are pretty simple to invoke. If you want to contain/isolate the dependencies into a virtual environment, we recommend using [`Pipenv`](https://pipenv.pypa.io/en/latest/) and invoking the `pip install` commands inside the Pipenv shell.
+>
+> ```sh
+> pipenv shell
+> pipenv install mkdocs-material
+> pipenv install mkdocs-glightbox
+> pipenv install mkdocs-git-revision-date-localized-plugin
+> ```
+>
+> **Note**: Make sure you run these commands _inside_ an mkdocs root (e.g., inside `multiplexing` documentation directory i.e., `documentation/multiplexing`). And make sure to ignore any dependency manifests this may add into the source code (e.g. `Pipfile` or a `requirements.txt`) from version control.
