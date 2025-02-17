@@ -20,18 +20,8 @@ Rails.application.routes.draw do
       jsonapi_resources :workflow_steps, only: [:index]
     end
 
-    namespace :saphyr do
-      jsonapi_resources :runs,          only: %i[index create show update destroy]
-      jsonapi_resources :chips,         only: %i[index create show update destroy]
-      jsonapi_resources :flowcells,     only: %i[index create show update destroy]
-      jsonapi_resources :libraries,     only: %i[index create show destroy]
-      jsonapi_resources :enzymes,       only: %i[index]
-      jsonapi_resources :requests,      only: %i[index create update destroy]
-      jsonapi_resources :tubes,         only: %i[index]
-    end
-
     namespace :pacbio do
-      jsonapi_resources :plates,        only: %i[index create]
+      jsonapi_resources :plates, only: %i[index create]
       jsonapi_resources :tag_sets
       jsonapi_resources :aliquots
 
