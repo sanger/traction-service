@@ -2,13 +2,73 @@
 
 module V1
   module Ont
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    # This resource represents a sequencing run for the Oxford Nanopore Technologies (ONT) platform.
+    # It provides a JSON:API representation of {Ont::Run}.
+    #
+    # ## Attributes:
+    #
+    # * experiment_name: The name of the experiment.
+    # * state: The state of the run.
+    # * rebasecalling_process: The rebasecalling process of the run.
+    # * created_at: The creation timestamp of the run.
+    # * ont_instrument_id: The ID of the associated instrument.
+    # * flowcell_attributes: The attributes of the flowcells in the run.
+    #
+    # ## Filters:
+    #
+    # * experiment_name: Filter runs by experiment name.
+    # * state: Filter runs by state.
+    #
+    # ## Primary relationships:
+    #
+    # * instrument {V1::Ont::InstrumentResource}
+    # * flowcells {V1::Ont::FlowcellResource}
+    #
+    # ## Relationship trees:
+    #
+    # * flowcells.pool
+    #
+    # @example
+    #   curl -X GET "http://yourdomain.com/v1/ont/runs" -H "accept: application/vnd.api+json"
+    #
+    #   curl -X GET "http://yourdomain.com/v1/ont/runs/1?include=flowcells.pool" \
+    #        -H "accept: application/vnd.api+json"
+    #
+    #   curl -X POST "http://yourdomain.com/v1/ont/runs" \
+    #    -H "accept: application/vnd.api+json" \
+    #    -H "Content-Type: application/vnd.api+json" \
+    #    -d '{
+    #       "data": {
+    #       "type": "runs",
+    #       "attributes": {
+    #         "experiment_name": "Experiment 1",
+    #         "state": "pending",
+    #         "rebasecalling_process": "process_1",
+    #         "ont_instrument_id": 1,
+    #         "flowcell_attributes": [
+    #           {
+    #             "id": 1,
+    #             "flowcell_id": "flowcell_1",
+    #             "position": "A1",
+    #             "ont_pool_id": 1
+    #           },
+    #          {
+    #             "id": 2,
+    #             "flowcell_id": "flowcell_2",
+    #             "position": "B1",
+    #             "ont_pool_id": 2
+    #          }
+    #         ]
+    #        }
+    #       }
+    #      }'
+    #
+    #   curl -X PATCH "http://yourdomain.com/v1/ont/runs/1" \
+    #    -H "accept: application/vnd.api+json" \
+    #    -H "Content-Type: application/vnd.api+json" \
+    #    -d '{"data": {"type": "runs", "id": "1", "attributes": {"state": "completed"}}}'
     #
     # @note Access this resource via the `/v1/ont/runs/` endpoint.
-    #
-    # Provides a JSON:API representation of {Ont::Run}.
     #
     # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
@@ -20,13 +80,16 @@ module V1
       #   @return [String] the name of the experiment
       # @!attribute [rw] state
       #   @return [String] the state of the run
+      # @!attribute [rw] rebasecalling_process
+      #   @return [String] the rebasecalling process of the run
       # @!attribute [rw] created_at
       #   @return [String] the creation timestamp of the run
       # @!attribute [rw] ont_instrument_id
       #   @return [Integer] the ID of the associated instrument
       # @!attribute [rw] flowcell_attributes
       #   @return [Array<Hash>] the attributes of the flowcells in the run
-      attributes :experiment_name, :state, :created_at, :ont_instrument_id, :flowcell_attributes
+      attributes :experiment_name, :state, :rebasecalling_process, :created_at, :ont_instrument_id,
+                 :flowcell_attributes
 
       # Run has an instrument. The foreign key is on this side.
       has_one :instrument, foreign_key: 'ont_instrument_id'

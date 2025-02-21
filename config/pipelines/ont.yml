@@ -16,6 +16,9 @@ default: &default
         run_uuid:
           type: :model
           value: uuid
+        rebasecalling_process:
+          type: :model
+          value: rebasecalling_process
         flowcells:
           type: :array
           value: flowcells
@@ -63,7 +66,7 @@ default: &default
                 tag_set_name:
                   type: :model
                   value: tag_set.name
-                  
+               
      # For instructions on structure and syntax, see: 'app/exchanges/README.md'
     sample_sheet:
       v22:
