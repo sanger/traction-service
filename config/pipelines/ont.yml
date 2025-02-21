@@ -67,7 +67,6 @@ default: &default
                   type: :model
                   value: tag_set.name
                
-                  
      # For instructions on structure and syntax, see: 'app/exchanges/README.md'
     sample_sheet:
       v22:
