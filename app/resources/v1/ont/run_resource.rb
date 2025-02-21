@@ -5,65 +5,68 @@ module V1
     # This resource represents a sequencing run for the Oxford Nanopore Technologies (ONT) platform.
     # It provides a JSON:API representation of {Ont::Run}.
     #
-    # Relationships:
-    # - instrument: The instrument used for the run.
-    # - flowcells: The flowcells used in the run.
+    # ## Attributes:
     #
-    # Attributes:
-    # - experiment_name: The name of the experiment.
-    # - state: The state of the run.
-    # - rebasecalling_process: The rebasecalling process of the run.
-    # - created_at: The creation timestamp of the run.
-    # - ont_instrument_id: The ID of the associated instrument.
-    # - flowcell_attributes: The attributes of the flowcells in the run.
+    # * experiment_name: The name of the experiment.
+    # * state: The state of the run.
+    # * rebasecalling_process: The rebasecalling process of the run.
+    # * created_at: The creation timestamp of the run.
+    # * ont_instrument_id: The ID of the associated instrument.
+    # * flowcell_attributes: The attributes of the flowcells in the run.
     #
-    # Filters:
-    # - experiment_name: Filter runs by experiment name.
-    # - state: Filter runs by state.
+    # ## Filters:
     #
-    # Primary relationships:
-    # instrument {V1::Ont::InstrumentResource}
-    # flowcells {V1::Ont::FlowcellResource}
+    # * experiment_name: Filter runs by experiment name.
+    # * state: Filter runs by state.
     #
-    # Relationship trees:
-    # - flowcells.pool
+    # ## Primary relationships:
+    #
+    # * instrument {V1::Ont::InstrumentResource}
+    # * flowcells {V1::Ont::FlowcellResource}
+    #
+    # ## Relationship trees:
+    #
+    # * flowcells.pool
     #
     # @example
-    # curl -X GET "http://yourdomain.com/v1/ont/runs" -H "accept: application/vnd.api+json"
-    # curl -X GET "http://yourdomain.com/v1/ont/runs/1?include=flowcells.pool" -H "accept:
-    # application/vnd.api+json"
-    # curl -X POST "http://yourdomain.com/v1/ont/runs" \
-    # -H "accept: application/vnd.api+json" \
-    # -H "Content-Type: application/vnd.api+json" \
-    # -d '{
-    #   "data": {
-    #     "type": "runs",
-    #     "attributes": {
-    #       "experiment_name": "Experiment 1",
-    #       "state": "pending",
-    #       "rebasecalling_process": "process_1",
-    #       "ont_instrument_id": 1,
-    #       "flowcell_attributes": [
-    #         {
-    #           "id": 1,
-    #           "flowcell_id": "flowcell_1",
-    #           "position": "A1",
-    #           "ont_pool_id": 1
-    #         },
-    #         {
-    #           "id": 2,
-    #           "flowcell_id": "flowcell_2",
-    #           "position": "B1",
-    #           "ont_pool_id": 2
-    #         }
-    #       ]
-    #     }
-    #   }
-    # }'
-    # curl -X PATCH "http://yourdomain.com/v1/ont/runs/1" \
-    # -H "accept: application/vnd.api+json" \
-    # -H "Content-Type: application/vnd.api+json" \
-    # -d '{"data": {"type": "runs", "id": "1", "attributes": {"state": "completed"}}}'
+    #   curl -X GET "http://yourdomain.com/v1/ont/runs" -H "accept: application/vnd.api+json"
+    #
+    #   curl -X GET "http://yourdomain.com/v1/ont/runs/1?include=flowcells.pool" \
+    #        -H "accept: application/vnd.api+json"
+    #
+    #   curl -X POST "http://yourdomain.com/v1/ont/runs" \
+    #    -H "accept: application/vnd.api+json" \
+    #    -H "Content-Type: application/vnd.api+json" \
+    #    -d '{
+    #       "data": {
+    #       "type": "runs",
+    #       "attributes": {
+    #         "experiment_name": "Experiment 1",
+    #         "state": "pending",
+    #         "rebasecalling_process": "process_1",
+    #         "ont_instrument_id": 1,
+    #         "flowcell_attributes": [
+    #           {
+    #             "id": 1,
+    #             "flowcell_id": "flowcell_1",
+    #             "position": "A1",
+    #             "ont_pool_id": 1
+    #           },
+    #          {
+    #             "id": 2,
+    #             "flowcell_id": "flowcell_2",
+    #             "position": "B1",
+    #             "ont_pool_id": 2
+    #          }
+    #         ]
+    #        }
+    #       }
+    #      }'
+    #
+    #   curl -X PATCH "http://yourdomain.com/v1/ont/runs/1" \
+    #    -H "accept: application/vnd.api+json" \
+    #    -H "Content-Type: application/vnd.api+json" \
+    #    -d '{"data": {"type": "runs", "id": "1", "attributes": {"state": "completed"}}}'
     #
     # @note Access this resource via the `/v1/ont/runs/` endpoint.
     #
