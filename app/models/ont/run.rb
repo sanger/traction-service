@@ -59,12 +59,9 @@ module Ont
     validate :flowcells, :flowcell_id_uniqueness
 
     # The rebasecalling process is helpful to decide some of the settings required for
-    # modified base calling.
-    # It can be one of the following values: '5mC + 5hmC CpG-context',
-    # '5mC + 5hmC all-context', '6mA all-context'
+    # modified base calling. It is an optional field.
     validates :rebasecalling_process,
-              inclusion: { in: ['5mC + 5hmC CpG-context', '5mC + 5hmC all-context',
-                                '6mA all-context'] },
+              inclusion: { in: Ont.rebasecalling_processes },
               allow_nil: true
 
     # Check if positions are duplicated in the run.

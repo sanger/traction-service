@@ -39,9 +39,11 @@ RSpec.describe Ont::Run, :ont do
       end
 
       it 'rebasecalling process limited to a set of values' do
-        expect(build(:ont_run, rebasecalling_process: '5mC + 5hmC CpG-context')).to be_valid
-        expect(build(:ont_run, rebasecalling_process: '5mC + 5hmC all-context')).to be_valid
-        expect(build(:ont_run, rebasecalling_process: '6mA all-context')).to be_valid
+        # Just to ensure there is something there.
+        expect(Ont.rebasecalling_processes.length).to be > 0
+        Ont.rebasecalling_processes.each do |process|
+          expect(build(:ont_run, rebasecalling_process: process)).to be_valid
+        end
         expect(build(:ont_run, rebasecalling_process: 'guppy')).not_to be_valid
       end
     end
