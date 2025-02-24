@@ -62,9 +62,7 @@ module V1
       end
     end
 
-    def create_qc_results!
-      @model.create_qc_results!
-    end
+    delegate :create_qc_results!, to: :@model
 
     def publish_messages
       Messages.publish(@model.messages, Pipelines.qc_result.qc_reception_message)
