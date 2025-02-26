@@ -31,9 +31,7 @@ module V1
     # which requires the after_create to be ordered this way
     after_create :publish_messages, :create_entities!
 
-    def create_entities!
-      @model.create_entities!
-    end
+    delegate :create_entities!, to: :@model
 
     def publish_messages
       Messages.publish(@model.messages, Pipelines.qc_result.message)
