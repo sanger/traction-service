@@ -32,6 +32,21 @@ RSpec.describe Ont::Run, :ont do
       expect(run.has_attribute?(:uuid)).to be true
       expect(run.uuid).to be_present
     end
+
+    describe 'rebasecalling_process' do
+      it 'is valid without a rebasecalling process' do
+        expect(build(:ont_run, rebasecalling_process: nil)).to be_valid
+      end
+
+      it 'rebasecalling process limited to a set of values' do
+        # Just to ensure there is something there.
+        expect(Ont.rebasecalling_processes.length).to be > 0
+        Ont.rebasecalling_processes.each do |process|
+          expect(build(:ont_run, rebasecalling_process: process)).to be_valid
+        end
+        expect(build(:ont_run, rebasecalling_process: 'guppy')).not_to be_valid
+      end
+    end
   end
 
   context 'run' do

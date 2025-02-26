@@ -60,4 +60,13 @@ module Ont
       )
     )
   end
+
+  # Returns a list of available rebasecalling processes for ONT runs.
+  #
+  # @return [Array<String>] An array of rebasecalling process names.
+  def self.rebasecalling_processes
+    ['5mC + 5hmC CpG-context',
+     '5mC + 5hmC all-context',
+     '6mA all-context']
+  end
 end

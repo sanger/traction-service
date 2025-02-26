@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_02_20_115944) do
+ActiveRecord::Schema[7.2].define(version: 2025_02_21_134136) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
@@ -173,6 +173,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_20_115944) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "ont_min_know_version_id"
+    t.string "rebasecalling_process"
     t.index ["ont_instrument_id"], name: "index_ont_runs_on_ont_instrument_id"
     t.index ["ont_min_know_version_id"], name: "index_ont_runs_on_ont_min_know_version_id"
   end

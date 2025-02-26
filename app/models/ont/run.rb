@@ -58,6 +58,12 @@ module Ont
     # expected when creating run and flowcells together.
     validate :flowcells, :flowcell_id_uniqueness
 
+    # The rebasecalling process is helpful to decide some of the settings required for
+    # modified base calling. It is an optional field.
+    validates :rebasecalling_process,
+              inclusion: { in: Ont.rebasecalling_processes },
+              allow_nil: true
+
     # Check if positions are duplicated in the run.
     def position_uniqueness
       position_names = flowcells.collect(&:position_name)
