@@ -5,6 +5,8 @@ require 'syslog/logger'
 # PsdFormatter
 class PsdFormatter < Syslog::Logger::Formatter
   LINE_FORMAT = "(thread-%s) [%s] %5s -- : %s\n"
+  # Severity label for logging (max 5 chars).
+  SEV_LABEL = %w[DEBUG INFO WARN ERROR FATAL ANY].each(&:freeze).freeze
 
   def initialize(deployment_info)
     # deployment_info is set as DETAILS in deployed_version and called in deployment project
@@ -18,9 +20,6 @@ class PsdFormatter < Syslog::Logger::Formatter
   end
 
   private
-
-  # Severity label for logging (max 5 chars).
-  SEV_LABEL = %w[DEBUG INFO WARN ERROR FATAL ANY].each(&:freeze).freeze
 
   def format_severity(severity)
     if severity.is_a?(Integer)

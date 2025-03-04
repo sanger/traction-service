@@ -1,8 +1,10 @@
 inherit_from: .rubocop_todo.yml
 
-require:
-  - rubocop-rails
+plugins:
   - rubocop-rspec
+  - rubocop-rails
+
+require:
   - rubocop-factory_bot
 
 AllCops:

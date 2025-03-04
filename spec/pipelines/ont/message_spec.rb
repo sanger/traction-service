@@ -45,6 +45,10 @@ RSpec.describe 'Ont', :ont, type: :model do
       expect(key[:run_uuid]).to eq(run.uuid)
     end
 
+    it 'must have a rebasecalling_process' do
+      expect(key[:rebasecalling_process]).to eq(run.rebasecalling_process)
+    end
+
     context 'flowcells' do
       let(:flowcell) { run.flowcells.first }
       let(:message_flowcell) { key[:flowcells].first }
