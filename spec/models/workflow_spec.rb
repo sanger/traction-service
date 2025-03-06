@@ -15,7 +15,7 @@ RSpec.describe Workflow do
 
   describe 'enum' do
     it 'defines the correct pipeline values' do
-      # Saphyr is depricated. Therefore, we use assertions without saphyr.
+      # Saphyr is deprecated. Therefore, we use assertions without saphyr.
       expect(described_class.pipelines.except('saphyr')).to eq(
         'pacbio' => 0,
         'ont' => 1,
@@ -29,7 +29,7 @@ RSpec.describe Workflow do
     end
 
     it 'returns the correct pipeline keys' do
-      # Saphyr is depricated. Therefore, we use assertions without saphyr.
+      # Saphyr is deprecated. Therefore, we use assertions without saphyr.
       expect(described_class.pipelines.except('saphyr').keys).to match_array(%w[pacbio ont qc_result reception extraction sample_qc hic bio_nano])
     end
   end
