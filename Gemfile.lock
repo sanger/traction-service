@@ -140,7 +140,7 @@ GEM
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
-    json (2.10.1)
+    json (2.10.2)
     jsonapi-resources (0.10.7)
       activerecord (>= 4.1)
       concurrent-ruby
