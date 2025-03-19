@@ -37,6 +37,7 @@ RSpec.describe 'LibrariesController', :pacbio do
           expect(library_attributes['source_identifier']).to eq(library.source_identifier)
           expect(library_attributes['used_volume']).to eq(library.used_volume)
           expect(library_attributes['available_volume']).to eq(library.available_volume)
+          expect(library_attributes['barcode']).to eq(library.barcode)
         end
       end
 

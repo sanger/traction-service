@@ -36,6 +36,7 @@ RSpec.describe 'PoolsController', :pacbio do
         'concentration' => pool.concentration,
         'template_prep_kit_box_barcode' => pool.template_prep_kit_box_barcode,
         'insert_size' => pool.insert_size,
+        'barcode' => pool.barcode,
         'created_at' => pool.created_at.to_fs(:us)
       )
     end

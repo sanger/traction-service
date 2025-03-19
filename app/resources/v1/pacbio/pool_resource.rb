@@ -87,10 +87,12 @@ module V1
       #   @return [Float] the used volume of the pool
       # @!attribute [rw] available_volume
       #   @return [Float] the available volume of the pool
+      # @!attribute [r] barcode
+      #   @return [String] the barcode of the pool (via tube)
       attributes :volume, :concentration, :template_prep_kit_box_barcode,
                  :insert_size, :created_at, :updated_at,
                  :library_attributes, :used_aliquots_attributes, :primary_aliquot_attributes,
-                 :used_volume, :available_volume
+                 :used_volume, :available_volume, :barcode
 
       # @!attribute [r] source_identifier
       #   @return [String] the source identifier of the pool

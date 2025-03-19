@@ -72,10 +72,12 @@ module V1
       #   @return [Float] the used volume of the library
       # @!attribute [rw] available_volume
       #   @return [Float] the available volume of the library
+      # @!attribute [r] barcode
+      #  @return [String] the barcode of the library (via tube)
       attributes :state, :volume, :concentration, :template_prep_kit_box_barcode,
                  :insert_size, :created_at, :deactivated_at, :source_identifier,
                  :pacbio_request_id, :tag_id, :primary_aliquot_attributes,
-                 :used_volume, :available_volume
+                 :used_volume, :available_volume, :barcode
 
       has_one :request, always_include_optional_linkage_data: true
       # If we don't specify the relation_name here, jsonapi-resources
