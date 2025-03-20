@@ -68,9 +68,10 @@ module Ont
     [
       'None',
       '5mC and 5hmC (CG-context)',
-     '5mC and 5hmC (all contexts)',
-     '6mA (all contexts)',
-     '5mC, 5hmC and 6mA (all contexts)',
-     '5mC and 5hmC (CG-context) and 6mA (all contexts)']  
+      '5mC and 5hmC (all contexts)',
+      '6mA (all contexts)',
+      '5mC, 5hmC and 6mA (all contexts)',
+      '5mC and 5hmC (CG-context) and 6mA (all contexts)'
+    ]
   end
 end
