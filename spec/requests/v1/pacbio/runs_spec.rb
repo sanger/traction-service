@@ -123,7 +123,7 @@ RSpec.describe 'RunsController' do
             'dna_control_complex_box_barcode' => run.dna_control_complex_box_barcode,
             'system_name' => run.system_name,
             'state' => run.state,
-            'comments' => run.comments,
+            'barcodes_and_concentrations' => run.barcodes_and_concentrations,
             'pacbio_smrt_link_version_id' => run.pacbio_smrt_link_version_id,
             'created_at' => run.created_at.to_fs(:us),
             'adaptive_loading' => run.adaptive_loading,
@@ -157,7 +157,7 @@ RSpec.describe 'RunsController' do
             'dna_control_complex_box_barcode' => run1.dna_control_complex_box_barcode,
             'system_name' => run1.system_name,
             'state' => run1.state,
-            'comments' => run1.comments,
+            'barcodes_and_concentrations' => run1.barcodes_and_concentrations,
             'pacbio_smrt_link_version_id' => run1.pacbio_smrt_link_version_id,
             'created_at' => run1.created_at.to_fs(:us),
             'adaptive_loading' => run1.adaptive_loading,
@@ -189,7 +189,7 @@ RSpec.describe 'RunsController' do
             'dna_control_complex_box_barcode' => run1.dna_control_complex_box_barcode,
             'system_name' => run1.system_name,
             'state' => run1.state,
-            'comments' => run1.comments,
+            'barcodes_and_concentrations' => run1.barcodes_and_concentrations,
             'pacbio_smrt_link_version_id' => run1.pacbio_smrt_link_version_id,
             'created_at' => run1.created_at.to_fs(:us),
             'adaptive_loading' => run1.adaptive_loading,
@@ -211,7 +211,6 @@ RSpec.describe 'RunsController' do
             attributes: {
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
               system_name: 'Sequel II',
-              comments: 'A Run Comment',
               pacbio_smrt_link_version_id: version11.id,
               plates_attributes: [{
                 sequencing_kit_box_barcode: 'DM0001100861800123121',
@@ -272,7 +271,7 @@ RSpec.describe 'RunsController' do
         expect(run.state).to be_present
         expect(run.dna_control_complex_box_barcode).to be_present
         expect(run.system_name).to be_present
-        expect(run.comments).to be_present
+        expect(run.barcodes_and_concentrations).to be_present
         expect(run.smrt_link_version).to be_present
         expect(run.smrt_link_version).to eq(version11)
         expect(run.pacbio_smrt_link_version_id).to eq(version11.id)
@@ -292,7 +291,6 @@ RSpec.describe 'RunsController' do
             attributes: {
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
               system_name: 'Sequel II',
-              comments: 'A Run Comment',
               pacbio_smrt_link_version_id: version12.id,
               plates_attributes: [{
                 sequencing_kit_box_barcode: 'DM0001100861800123121',
@@ -352,7 +350,7 @@ RSpec.describe 'RunsController' do
         expect(run.state).to be_present
         expect(run.dna_control_complex_box_barcode).to be_present
         expect(run.system_name).to be_present
-        expect(run.comments).to be_present
+        expect(run.barcodes_and_concentrations).to be_present
         expect(run.smrt_link_version).to be_present
         expect(run.smrt_link_version).to eq(version12)
         expect(run.pacbio_smrt_link_version_id).to eq(version12.id)
@@ -373,7 +371,6 @@ RSpec.describe 'RunsController' do
             attributes: {
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
               system_name: 'Sequel II',
-              comments: 'A Run Comment',
               pacbio_smrt_link_version_id: version13.id,
               plates_attributes: [{
                 sequencing_kit_box_barcode: 'DM0001100861800123121',
@@ -430,7 +427,7 @@ RSpec.describe 'RunsController' do
         expect(run.state).to be_present
         expect(run.dna_control_complex_box_barcode).to be_present
         expect(run.system_name).to be_present
-        expect(run.comments).to be_present
+        expect(run.barcodes_and_concentrations).to be_present
         expect(run.smrt_link_version).to be_present
         expect(run.smrt_link_version).to eq(version13)
         expect(run.pacbio_smrt_link_version_id).to eq(version13.id)
@@ -544,7 +541,6 @@ RSpec.describe 'RunsController' do
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel IIe',
-                comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
                 plates_attributes: [{ wells_attributes: [] }]
               }
@@ -590,7 +586,6 @@ RSpec.describe 'RunsController' do
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
-                comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
                 plates_attributes: [{
                   sequencing_kit_box_barcode: 'DM0001100861800123121',
@@ -653,7 +648,6 @@ RSpec.describe 'RunsController' do
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
-                comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
                 plates_attributes: [{
                   sequencing_kit_box_barcode: 'DM0001100861800123121',
@@ -723,7 +717,6 @@ RSpec.describe 'RunsController' do
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
-                comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
                 plates_attributes: [{
                   sequencing_kit_box_barcode: 'DM0001100861800123121',
@@ -794,7 +787,6 @@ RSpec.describe 'RunsController' do
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
-                comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
                 plates_attributes: [{
                   sequencing_kit_box_barcode: 'DM0001100861800123121',
@@ -870,7 +862,6 @@ RSpec.describe 'RunsController' do
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
-                comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
                 plates_attributes: [{
                   sequencing_kit_box_barcode: 'DM0001100861800123121',
@@ -945,7 +936,6 @@ RSpec.describe 'RunsController' do
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
-                comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
                 plates_attributes: [{
                   sequencing_kit_box_barcode: 'DM0001100861800123121',
@@ -1027,7 +1017,6 @@ RSpec.describe 'RunsController' do
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel II',
-                comments: 'A Run Comment',
                 pacbio_smrt_link_version_id: version11.id,
                 plates_attributes: [{
                   sequencing_kit_box_barcode: 'DM0001100861800123121',
@@ -1106,7 +1095,6 @@ RSpec.describe 'RunsController' do
           attributes: {
             dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
             system_name: 'Sequel II',
-            comments: 'A Run Comment',
             plates_attributes: [{
               sequencing_kit_box_barcode: 'DM0001100861800123121',
               plate_number: 1,
@@ -1161,7 +1149,6 @@ RSpec.describe 'RunsController' do
           attributes: {
             dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
             system_name: 'Sequel II',
-            comments: 'A Run Comment',
             pacbio_smrt_link_version_id: version10.id,
             plates_attributes: [{
               sequencing_kit_box_barcode: 'DM0001100861800123121',
@@ -1258,8 +1245,7 @@ RSpec.describe 'RunsController' do
               type: 'runs',
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191_updated',
-                system_name: 'Sequel I',
-                comments: 'A Run Comment updated'
+                system_name: 'Sequel I'
               }
             }
           }.to_json
@@ -1282,7 +1268,6 @@ RSpec.describe 'RunsController' do
           run.reload
           expect(run.dna_control_complex_box_barcode).to eq 'Lxxxxx101717600123191_updated'
           expect(run.system_name).to eq 'Sequel I'
-          expect(run.comments).to eq 'A Run Comment updated'
           expect(run.state).to eq 'pending'
         end
 

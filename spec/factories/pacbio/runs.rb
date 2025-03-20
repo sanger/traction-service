@@ -15,7 +15,6 @@ end
 FactoryBot.define do
   factory :pacbio_generic_run, class: 'Pacbio::Run' do
     sequence(:dna_control_complex_box_barcode) { |n| "Lxxxxx10171760012319#{n}" }
-    comments { 'A Run Comment' }
 
     factory :pacbio_revio_run do
       transient do

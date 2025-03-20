@@ -80,27 +80,20 @@ RSpec.describe Pacbio::Run, :pacbio do
     end
   end
 
-  describe '#comments' do
-    it 'can have run comments' do
-      run = create(:pacbio_sequel_run)
+  describe '#barcodes_and_concentration' do
+    let(:well1) { create(:pacbio_well, library_concentration: 100) }
+    let(:well2) { create(:pacbio_well, library_concentration: nil, on_plate_loading_concentration: 200) }
+    let(:plate) { build(:pacbio_plate, wells: [well1, well2]) }
+    let(:run) { create(:pacbio_generic_run, plates: [plate]) }
+    let(:barcodes_and_concentrations) { "#{well1.used_aliquots.first.source.tube.barcode} 100pM #{well2.used_aliquots.first.source.tube.barcode} 200pM" }
 
-      comment = run.wells.collect do |well|
-        concentration = well.library_concentration || well.on_plate_loading_concentration
-        " #{well.used_aliquots.first.source.tube.barcode} #{concentration}pM"
-      end.join(' ')
-      expect(run.comments).to eq("A Run Comment#{comment}")
+    it 'has the barcodes and concentration' do
+      expect(run.barcodes_and_concentrations).to eq(barcodes_and_concentrations)
     end
 
-    it 'can have the wells summary when no run comments exist' do
-      wells = create_list(:pacbio_well, 2)
-      plate = build(:pacbio_plate, wells:)
-      run = create(:pacbio_generic_run, plates: [plate], comments: nil)
-
-      comment = run.wells.collect do |well|
-        concentration = well.library_concentration || well.on_plate_loading_concentration
-        " #{well.used_aliquots.first.source.tube.barcode} #{concentration}pM"
-      end.join(' ')
-      expect(run.comments).to eq(comment)
+    # This is a deprecated method
+    it 'comments will be the same as barcodes_and_concentration' do
+      expect(run.comments).to eq(barcodes_and_concentrations)
     end
   end
 
