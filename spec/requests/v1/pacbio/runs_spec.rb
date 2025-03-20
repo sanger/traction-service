@@ -1269,6 +1269,7 @@ RSpec.describe 'RunsController' do
           expect(run.dna_control_complex_box_barcode).to eq 'Lxxxxx101717600123191_updated'
           expect(run.system_name).to eq 'Sequel I'
           expect(run.state).to eq 'pending'
+          expect(run.barcodes_and_concentrations).to be_present
         end
 
         it_behaves_like 'publish_messages_on_update'
