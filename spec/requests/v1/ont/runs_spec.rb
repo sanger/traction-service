@@ -94,7 +94,7 @@ RSpec.describe 'RunsController' do
             attributes: {
               ont_instrument_id: instrument.id,
               state: 'pending',
-              rebasecalling_process: '5mC + 5hmC CpG-context',
+              rebasecalling_process: '5mC and 5hmC (CG-context)',
               flowcell_attributes: [attr1, attr2]
             }
           }
