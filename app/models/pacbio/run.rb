@@ -11,10 +11,10 @@ module Pacbio
     # Sequel II and Sequel I are now deprecated
     enum :system_name, { 'Sequel II' => 0, 'Sequel I' => 1, 'Sequel IIe' => 2, 'Revio' => 3 }
 
-    # We want to generate comments before the run was created
+    # We want to generate barcodes_and_concentrations before the run was created
     # but tube barcodes aren't generated until the run is created.
 
-    after_create :generate_name, :generate_comment
+    after_create :generate_name, :generate_barcodes_and_concentrations
 
     has_many :plates, foreign_key: :pacbio_run_id,
                       dependent: :destroy, inverse_of: :run, autosave: true
@@ -43,6 +43,9 @@ module Pacbio
 
     accepts_nested_attributes_for :plates, allow_destroy: true
 
+    # This is a deprecated attribute
+    alias_attribute :comments, :barcodes_and_concentrations
+
     # This will return an empty list
     # If plate/well data is required via the run, use ?include=plates.wells
     attr_reader :plates_attributes
@@ -52,17 +55,13 @@ module Pacbio
     # for each well in the run
     # @example
     #   TRAC-2-10850 304pM  TRAC-2-10851 273pM  TRAC-2-10852 301pM  TRAC-2-10853 315pM
-    def generate_comment
-      comment = wells.collect do |well|
+    def generate_barcodes_and_concentrations
+      barcodes_and_concentrations = wells.collect do |well|
         concentration = well.library_concentration || well.on_plate_loading_concentration
-        " #{well.used_aliquots.first.source.tube.barcode} #{concentration}pM"
+        "#{well.used_aliquots.first.source.tube.barcode} #{concentration}pM"
       end.join(' ')
 
-      update(comments: (comments + comment))
-    end
-
-    def comments
-      super || ''
+      update(barcodes_and_concentrations: barcodes_and_concentrations)
     end
 
     # v12 has changed to use instrument_name

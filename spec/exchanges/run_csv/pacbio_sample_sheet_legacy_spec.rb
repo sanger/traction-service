@@ -61,7 +61,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               nil, # plate 2: sequencing_kit_box_barcode
               well.plate.run.name,
               well.plate.run.system_name,
-              well.plate.run.comments,
+              well.plate.run.barcodes_and_concentrations,
               'true', # well.collection?
               well.position_leading_zero,
               well.tube_barcode,
@@ -152,7 +152,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               nil, # plate 2: sequencing_kit_box_barcode
               well.plate.run.name,
               well.plate.run.system_name,
-              well.plate.run.comments,
+              well.plate.run.barcodes_and_concentrations,
               'true', # well.collection?
               well.position_leading_zero,
               well.tube_barcode,
@@ -230,7 +230,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.plate.sequencing_kit_box_barcode,
               well.on_plate_loading_concentration.to_s,
               well.plate.run.dna_control_complex_box_barcode,
-              well.plate.run.comments,
+              well.plate.run.barcodes_and_concentrations,
               well.show_row_per_sample?.to_s,
               nil, # barcode name - does not apply
               well.barcode_set,
@@ -335,7 +335,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.plate.sequencing_kit_box_barcode,
               well.on_plate_loading_concentration.to_s,
               well.plate.run.dna_control_complex_box_barcode,
-              well.plate.run.comments,
+              well.plate.run.barcodes_and_concentrations,
               well.sample_is_barcoded.to_s,
               nil, # barcode name - does not apply
               well.barcode_set,
@@ -403,7 +403,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.plate.sequencing_kit_box_barcode,
               well.on_plate_loading_concentration.to_s,
               well.plate.run.dna_control_complex_box_barcode,
-              well.plate.run.comments,
+              well.plate.run.barcodes_and_concentrations,
               well.sample_is_barcoded.to_s,
               nil, # barcode name - does not apply
               well.barcode_set,
@@ -468,7 +468,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.plate.sequencing_kit_box_barcode,
               well.on_plate_loading_concentration.to_s,
               well.plate.run.dna_control_complex_box_barcode,
-              well.plate.run.comments,
+              well.plate.run.barcodes_and_concentrations,
               well.sample_is_barcoded.to_s,
               nil, # barcode name - does not apply
               well.barcode_set,
@@ -604,7 +604,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.plate.sequencing_kit_box_barcode,
               well.on_plate_loading_concentration.to_s,
               well.plate.run.dna_control_complex_box_barcode,
-              well.plate.run.comments,
+              well.plate.run.barcodes_and_concentrations,
               well.show_row_per_sample?.to_s,
               nil, # barcode name - does not apply
               well.barcode_set,
@@ -713,7 +713,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.plate.sequencing_kit_box_barcode,
               well.on_plate_loading_concentration.to_s,
               well.plate.run.dna_control_complex_box_barcode,
-              well.plate.run.comments,
+              well.plate.run.barcodes_and_concentrations,
               well.sample_is_barcoded.to_s,
               nil, # barcode name - does not apply
               well.barcode_set,
@@ -783,7 +783,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.plate.sequencing_kit_box_barcode,
               well.on_plate_loading_concentration.to_s,
               well.plate.run.dna_control_complex_box_barcode,
-              well.plate.run.comments,
+              well.plate.run.barcodes_and_concentrations,
               well.sample_is_barcoded.to_s,
               nil, # barcode name - does not apply
               well.barcode_set,
@@ -850,7 +850,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.plate.sequencing_kit_box_barcode,
               well.on_plate_loading_concentration.to_s,
               well.plate.run.dna_control_complex_box_barcode,
-              well.plate.run.comments,
+              well.plate.run.barcodes_and_concentrations,
               well.sample_is_barcoded.to_s,
               nil, # barcode name - does not apply
               well.barcode_set,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_02_21_134136) do
+ActiveRecord::Schema[7.2].define(version: 2025_03_19_151746) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
@@ -238,7 +238,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_21_134136) do
   create_table "pacbio_runs", charset: "utf8mb3", force: :cascade do |t|
     t.string "name"
     t.string "dna_control_complex_box_barcode"
-    t.text "comments"
+    t.text "barcodes_and_concentrations"
     t.string "uuid"
     t.integer "system_name", default: 2
     t.datetime "created_at", precision: nil, null: false

@@ -45,7 +45,7 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
           {
             'Instrument Type' => 'Revio',
             'Run Name' => run.name,
-            'Run Comments' => run.comments,
+            'Run Comments' => run.barcodes_and_concentrations,
             'Plate 1' => run.plates[0].sequencing_kit_box_barcode,
             'Plate 2' => run.plates[1].sequencing_kit_box_barcode,
             'CSV Version' => '1'

@@ -48,8 +48,7 @@ module V1
       #   @return [String] the creation time of the run
       # @!attribute [rw] state
       #   @return [String] the state of the run
-      # @!attribute [rw] comments
-      #   @return [String] the comments on the run
+
       # @!attribute [rw] pacbio_smrt_link_version_id
       #   @return [Integer] the ID of the PacBio SMRT Link version
       # @!attribute [rw] plates_attributes
@@ -59,9 +58,17 @@ module V1
       # @!attribute [r] sequencing_kit_box_barcodes
       #   @return [Array<String>] the barcodes of the sequencing kits
       attributes :name, :dna_control_complex_box_barcode,
-                 :system_name, :created_at, :state, :comments,
+                 :system_name, :created_at, :state,
                  :pacbio_smrt_link_version_id, :plates_attributes,
                  :adaptive_loading, :sequencing_kit_box_barcodes
+
+      # @!attribute [r] barcodes_and_concentrations
+      #   @return [String] the barcodes and concentrations of the run
+      attribute :barcodes_and_concentrations, readonly: true
+
+      # @!attribute [r] comments [DEPRECATED]
+      #   @return [String] the comments on the run
+      attribute :comments, readonly: true
 
       has_many :plates, foreign_key_on: :related, foreign_key: 'pacbio_run_id',
                         class_name: 'Runs::Plate'
