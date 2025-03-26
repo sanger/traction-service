@@ -188,6 +188,11 @@ RSpec.describe Pacbio::Library, :pacbio do
       pacbio_library = create(:pacbio_library, tube: nil)
       expect(pacbio_library.tube).to be_present
     end
+
+    it 'has a barcode through tube' do
+      pacbio_library = create(:pacbio_library)
+      expect(pacbio_library.barcode).to eq(pacbio_library.tube.barcode)
+    end
   end
 
   describe '#request' do

@@ -18,6 +18,12 @@ RSpec.describe Pacbio::Pool, :pacbio do
     expect(pool.tube).to be_a(Tube)
   end
 
+  it 'has a barcode through tube' do
+    # Save the pool to ensure the tube is created
+    pool.save
+    expect(pool.barcode).to eq(pool.tube.barcode)
+  end
+
   it 'can have many libraries through used_aliquots' do
     pool = build(:pacbio_pool, library_count: 0)
     expect(pool.libraries).to be_empty

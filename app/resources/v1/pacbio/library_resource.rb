@@ -77,6 +77,10 @@ module V1
                  :pacbio_request_id, :tag_id, :primary_aliquot_attributes,
                  :used_volume, :available_volume
 
+      # @!attribute [r] barcode
+      #  @return [String] the barcode of the library (via tube)
+      attribute :barcode, readonly: true
+
       has_one :request, always_include_optional_linkage_data: true
       # If we don't specify the relation_name here, jsonapi-resources
       # attempts to use_related_resource_records_for_joins
