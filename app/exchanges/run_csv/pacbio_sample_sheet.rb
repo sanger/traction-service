@@ -20,7 +20,7 @@ module RunCsv
       {
         'Instrument Type' => run.system_name,
         'Run Name' =>	run.name,
-        'Run Comments' =>	run.comments
+        'Run Comments' =>	run.barcodes_and_concentrations
       }.merge(plate_data).merge(
         { 'CSV Version' => 1 }
       )

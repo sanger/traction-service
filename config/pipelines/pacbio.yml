@@ -121,7 +121,7 @@ default: &default
               value: plate.run.system_name
             Run Comments:
               type: :model
-              value: plate.run.comments
+              value: plate.run.barcodes_and_concentrations
             Is Collection:
               type: :model
               value: collection?
@@ -242,7 +242,7 @@ default: &default
               value: plate.run.dna_control_complex_box_barcode
             Run Comments:
               type: :model
-              value: plate.run.comments
+              value: plate.run.barcodes_and_concentrations
             Sample is Barcoded:
               type: :model
               value: sample_is_barcoded

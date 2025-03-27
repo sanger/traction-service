@@ -96,6 +96,10 @@ module V1
       #   @return [String] the source identifier of the pool
       attribute :source_identifier, readonly: true
 
+      # @!attribute [r] barcode
+      #   @return [String] the barcode of the pool (via tube)
+      attribute :barcode, readonly: true
+
       ALIQUOT_ATTRIBUTES = %w[id volume concentration template_prep_kit_box_barcode insert_size
                               tag_id source_id source_type].freeze
 

@@ -5,6 +5,7 @@ module Pacbio
   class Pool < ApplicationRecord
     include Aliquotable
     belongs_to :tube, default: -> { Tube.new }
+    delegate :barcode, to: :tube
 
     has_many :wells, through: :derived_aliquots, source: :used_by, source_type: 'Pacbio::Well'
     has_many :requests, through: :used_aliquots, source: :source, source_type: 'Pacbio::Request'
