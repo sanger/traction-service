@@ -14,7 +14,7 @@ module V1
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
     # for the service implementation of the JSON:API standard.
     class AliquotResource < V1::AliquotResource
-      # include Shared::RunSuitability
+      include Shared::RunSuitability
 
       # We could move this to a concern and dynamically build the polymorphic types
       # but no need to do this unless we use this for any other pipelines
