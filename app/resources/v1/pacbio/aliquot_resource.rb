@@ -31,12 +31,14 @@ module V1
       has_one :pool, class_name: 'Pool', relation_name: :pool
       has_one :library, class_name: 'Library', relation_name: :library
 
+      # TO CHECK: does this do anything anymore.
       # Aliquot polymorphism support.
       # This fixes the polymorphic relationships in json-api resources
       #  as json-api resources underscores and pluralizes the type
-      def self.resource_klass_for(type)
-        super(type.underscore.pluralize.gsub('pacbio/', ''))
-      end
+
+      # def self.resource_klass_for(type)
+      #   super(type.underscore.pluralize.gsub('pacbio/', ''))
+      # end
     end
   end
 end
