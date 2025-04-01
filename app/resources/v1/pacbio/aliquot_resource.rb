@@ -14,12 +14,13 @@ module V1
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
     # for the service implementation of the JSON:API standard.
     class AliquotResource < V1::AliquotResource
-      include Shared::RunSuitability
+      # include Shared::RunSuitability
 
       # We could move this to a concern and dynamically build the polymorphic types
       # but no need to do this unless we use this for any other pipelines
       # for now this is best in here as it is specific to pacbio
-      POLYMORPHIC_TYPES = %w[pacbio/requests pacbio/pools pacbio/libraries].freeze
+      # POLYMORPHIC_TYPES = %w[pacbio/requests pacbio/pools pacbio/libraries].freeze
+      POLYMORPHIC_TYPES = %w[requests pools libraries].freeze
 
       has_one :source, polymorphic: true, polymorphic_types: POLYMORPHIC_TYPES
       has_one :used_by, polymorphic: true, polymorphic_types: POLYMORPHIC_TYPES
