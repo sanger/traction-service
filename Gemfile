@@ -11,6 +11,7 @@ gem 'bunny'
 gem 'csv'
 gem 'exception_notification'
 gem 'jsonapi-resources', github: 'sanger/jsonapi-resources', branch: 'traction-experimental'
+
 gem 'mysql2'
 gem 'puma', '~> 6.0' # Use Puma as the app server
 gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX possible

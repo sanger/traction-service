@@ -381,7 +381,7 @@ RSpec.describe 'ReceptionsController' do
             expect(library.tag).to eq(ont_tag_set.tags.find_by(id: library.tag_id))
           end
 
-          labware = JSON.parse(response.parsed_body)['data']['attributes']['labware']
+          labware = response.parsed_body['data']['attributes']['labware']
           expected_labware = {
             'NT1' => { 'imported' => 'success', 'errors' => [] },
             'NT2' => { 'imported' => 'success', 'errors' => [] },

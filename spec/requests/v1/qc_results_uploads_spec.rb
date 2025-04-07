@@ -96,7 +96,7 @@ RSpec.describe '/qc_results_uploads' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "csv_data - can't be blank"
+          expect(response.parsed_body['errors'][0]['detail']).to eq "csv_data - can't be blank"
         end
       end
 
@@ -123,7 +123,7 @@ RSpec.describe '/qc_results_uploads' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "csv_data - can't be blank"
+          expect(response.parsed_body['errors'][0]['detail']).to eq "csv_data - can't be blank"
         end
       end
 
@@ -152,7 +152,7 @@ RSpec.describe '/qc_results_uploads' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "used_by - can't be blank"
+          expect(response.parsed_body['errors'][0]['detail']).to eq "used_by - can't be blank"
         end
       end
 
@@ -179,7 +179,7 @@ RSpec.describe '/qc_results_uploads' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "used_by - can't be blank"
+          expect(response.parsed_body['errors'][0]['detail']).to eq "used_by - can't be blank"
         end
       end
 
@@ -198,7 +198,7 @@ RSpec.describe '/qc_results_uploads' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:bad_request)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'The required parameter, data, is missing.'
+          expect(response.parsed_body['errors'][0]['detail']).to eq 'The required parameter, data, is missing.'
         end
       end
 
@@ -229,7 +229,7 @@ RSpec.describe '/qc_results_uploads' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'csv_data - Missing header row'
+          expect(response.parsed_body['errors'][0]['detail']).to eq 'csv_data - Missing header row'
         end
       end
 
@@ -263,8 +263,8 @@ RSpec.describe '/qc_results_uploads' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-          expect(JSON.parse(response.parsed_body)['errors'][0]['title']).to eq 'Missing required headers: Tissue Tube ID'
-          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'csv_data - Missing required headers: Tissue Tube ID'
+          expect(response.parsed_body['errors'][0]['title']).to eq 'Missing required headers: Tissue Tube ID'
+          expect(response.parsed_body['errors'][0]['detail']).to eq 'csv_data - Missing required headers: Tissue Tube ID'
         end
       end
 
@@ -296,7 +296,7 @@ RSpec.describe '/qc_results_uploads' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
-          expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'csv_data - Missing data rows'
+          expect(response.parsed_body['errors'][0]['detail']).to eq 'csv_data - Missing data rows'
         end
       end
 
