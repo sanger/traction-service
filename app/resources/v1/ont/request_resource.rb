@@ -35,7 +35,9 @@ module V1
       #   @return [String] the creation timestamp of the request
       attributes(*::Ont.request_attributes, :sample_name, :source_identifier, :created_at)
 
+      # inverse relationships
       has_many :libraries
+      has_one :tube
 
       paginator :paged
 
