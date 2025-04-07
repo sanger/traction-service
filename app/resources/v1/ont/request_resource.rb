@@ -35,6 +35,8 @@ module V1
       #   @return [String] the creation timestamp of the request
       attributes(*::Ont.request_attributes, :sample_name, :source_identifier, :created_at)
 
+      has_many :libraries
+
       paginator :paged
 
       filter :sample_name, apply: lambda { |records, value, _options|

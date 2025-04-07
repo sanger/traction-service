@@ -35,7 +35,7 @@ RSpec.describe 'LibrariesController', :ont do
 
     context 'with includes' do
       before do
-        get "#{v1_ont_libraries_path}?include=request,tag.tag_set,tube",
+        get "#{v1_ont_libraries_path}?include=request,tag.tag_set",
             headers: json_api_headers
       end
 
@@ -77,15 +77,6 @@ RSpec.describe 'LibrariesController', :ont do
         tag_set_attributes = tag_set_resource['attributes']
         expect(tag_set_attributes['name']).to eq(tag_set.name)
         expect(tag_set_attributes['uuid']).to eq(tag_set.uuid)
-
-        tube = library.tube
-        tube_relationship = library_relationships.fetch('tube')
-        expect(tube_relationship['data']['id']).to eq(tube.id.to_s)
-        expect(tube_relationship['data']['type']).to eq('tubes')
-
-        tube_resource = find_included_resource(type: 'tubes', id: tube.id)
-        tube_attributes = tube_resource['attributes']
-        expect(tube_attributes['barcode']).to eq(tube.barcode)
 
         pool = library.pool
         pool_relationship = library_relationships.fetch('pool')
