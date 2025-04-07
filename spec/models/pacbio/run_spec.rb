@@ -90,11 +90,6 @@ RSpec.describe Pacbio::Run, :pacbio do
     it 'has the barcodes and concentration' do
       expect(run.barcodes_and_concentrations).to eq(barcodes_and_concentrations)
     end
-
-    # This is a deprecated method
-    it 'comments will be the same as barcodes_and_concentration' do
-      expect(run.comments).to eq(barcodes_and_concentrations)
-    end
   end
 
   describe '#generate_sample_sheet' do

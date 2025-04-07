@@ -43,9 +43,6 @@ module Pacbio
 
     accepts_nested_attributes_for :plates, allow_destroy: true
 
-    # This is a deprecated attribute
-    alias_attribute :comments, :barcodes_and_concentrations
-
     # This will return an empty list
     # If plate/well data is required via the run, use ?include=plates.wells
     attr_reader :plates_attributes
