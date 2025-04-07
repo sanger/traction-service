@@ -18,4 +18,5 @@ class Tag < ApplicationRecord
                                      case_sensitive: false }
 
   has_many :ont_libraries, class_name: 'Ont::Library', dependent: :nullify
+  has_many :pacbio_libraries, class_name: 'Pacbio::Library', dependent: :nullify
 end
