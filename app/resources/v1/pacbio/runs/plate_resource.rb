@@ -25,6 +25,7 @@ module V1
         #   @return [String] the barcode of the sequencing kit box
         attributes :pacbio_run_id, :plate_number, :sequencing_kit_box_barcode
 
+        # inverse relationships for plate
         has_many :wells, class_name: 'Well'
 
         # inverse relationships for run
