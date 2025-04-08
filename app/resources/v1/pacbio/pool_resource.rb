@@ -65,6 +65,9 @@ module V1
       has_many :requests
       has_many :libraries
 
+      # inverse relationship
+      has_many :aliquots
+
       # @!attribute [rw] volume
       #   @return [Float] the volume of the pool
       # @!attribute [rw] concentration

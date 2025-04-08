@@ -26,6 +26,20 @@ module V1
         attributes :pacbio_run_id, :plate_number, :sequencing_kit_box_barcode
 
         has_many :wells, class_name: 'Well'
+
+        # inverse relationships for run
+        has_one :run
+
+        # without this we get could not find resource for 'runs'
+        # as it is up a level in the hierarchy
+        # TODO: Fix in JSONAPI::Resources
+        def self.resource_klass_for(type)
+          case type.downcase.pluralize
+          when 'runs' then Pacbio::RunResource
+          else
+            super
+          end
+        end
       end
     end
   end

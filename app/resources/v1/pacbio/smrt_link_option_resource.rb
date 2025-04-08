@@ -28,6 +28,9 @@ module V1
       # @!attribute [rw] select_options
       #   @return [Array<String>] the select options for the SMRT link option
       attributes :key, :label, :default_value, :data_type, :select_options
+
+      # inverse relationships
+      has_many :smrt_link_option_versions
     end
   end
 end

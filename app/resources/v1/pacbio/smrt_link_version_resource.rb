@@ -36,6 +36,7 @@ module V1
       attributes :name, :default, :active
 
       has_many :smrt_link_option_versions, class_name: 'SmrtLinkOptionVersion'
+      has_many :runs
     end
   end
 end

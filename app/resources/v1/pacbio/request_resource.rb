@@ -77,6 +77,7 @@ module V1
       has_one :tube, relation_name: :tube
 
       has_many :libraries
+      has_many :aliquots
 
       paginator :paged
 
