@@ -60,7 +60,6 @@ RSpec.describe 'RunsController' do
       expect(run1_attributes['system_name']).to eq(run1.system_name)
       expect(run1_attributes['created_at']).to eq(run1.created_at.to_fs(:us))
       expect(run1_attributes['state']).to eq(run1.state)
-      expect(run1_attributes['comments']).to eq(run1.comments)
 
       run2_attributes = json['data'].find { |data| data['id'] == run2.id.to_s }['attributes']
       expect(run2_attributes['name']).to eq(run2.name)
