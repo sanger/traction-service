@@ -13,9 +13,9 @@ gem 'exception_notification'
 gem 'jsonapi-resources', github: 'sanger/jsonapi-resources', branch: 'traction-experimental'
 
 gem 'mysql2'
-gem 'puma', '~> 6.0' # Use Puma as the app server
+gem 'puma' # Use Puma as the app server
 gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX possible
-gem 'rails', '~> 7.2.0'
+gem 'rails', '~> 8.0.2'
 gem 'syslog' # No longer part of the default gems in Ruby 3.4
 
 group :development do
@@ -46,7 +46,7 @@ group :development, :test do
   gem 'webmock'
 end
 
-gem 'flipper', '~> 0.25.0'
-gem 'flipper-active_record', '~> 0.25.0'
-gem 'flipper-api', '~> 0.25.0'
-gem 'flipper-ui', '~> 0.25.3'
+gem 'flipper'
+gem 'flipper-active_record'
+gem 'flipper-api'
+gem 'flipper-ui'

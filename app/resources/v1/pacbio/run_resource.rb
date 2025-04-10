@@ -66,10 +66,6 @@ module V1
       #   @return [String] the barcodes and concentrations of the run
       attribute :barcodes_and_concentrations, readonly: true
 
-      # @!attribute [r] comments [DEPRECATED]
-      #   @return [String] the comments on the run
-      attribute :comments, readonly: true
-
       has_many :plates, foreign_key_on: :related, foreign_key: 'pacbio_run_id',
                         class_name: 'Runs::Plate'
 
