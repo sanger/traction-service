@@ -12,6 +12,7 @@ module V1
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
     # for the service implementation of the JSON:API standard.
     class SourceResource < V1::SourceResource
+      abstract
     end
   end
 end

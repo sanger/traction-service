@@ -26,6 +26,9 @@ module V1
       # ...you exposed a `has_one` relationship  using the `belongs_to` class method...
       # We think `has_one` is more appropriate... etc.
       has_one :tag_set
+
+      has_many :libraries, class_name: 'Library', relation_name: :pacbio_libraries,
+                           foreign_key_on: :related
     end
   end
 end
