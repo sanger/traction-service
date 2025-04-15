@@ -76,6 +76,9 @@ module V1
       has_one :plate, relation_name: :plate
       has_one :tube, relation_name: :tube
 
+      has_many :libraries
+      has_many :aliquots
+
       paginator :paged
 
       filter :species, apply: lambda { |records, value, _options|

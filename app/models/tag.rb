@@ -16,4 +16,7 @@ class Tag < ApplicationRecord
   validates :group_id, uniqueness: { scope: :tag_set_id,
                                      message: :duplicated_in_tag_set,
                                      case_sensitive: false }
+
+  has_many :ont_libraries, class_name: 'Ont::Library', dependent: :nullify
+  has_many :pacbio_libraries, class_name: 'Pacbio::Library', dependent: :nullify
 end

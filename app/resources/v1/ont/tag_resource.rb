@@ -24,6 +24,10 @@ module V1
       attributes :oligo, :group_id
 
       has_one :tag_set
+
+      # has_many :libraries, always_include_optional_linkage_data: true,
+      has_many :libraries, class_name: 'Library', relation_name: :ont_libraries,
+                           foreign_key_on: :related
     end
   end
 end

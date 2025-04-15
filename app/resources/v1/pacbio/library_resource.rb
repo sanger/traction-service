@@ -98,6 +98,10 @@ module V1
 
       paginator :paged
 
+      # inverse relationship for libraries
+      has_one :library_batch
+      has_many :aliquots
+
       def self.default_sort
         [{ field: 'created_at', direction: :desc }]
       end
