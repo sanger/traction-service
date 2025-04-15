@@ -4,22 +4,21 @@ require 'rails_helper'
 
 RSpec.describe 'RunsController' do
   # Create default and non-default smrt link versions for runs
-  let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10') }
-  let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
-  let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
-  let!(:version13) { create(:pacbio_smrt_link_version, name: 'v13_revio', default: true) }
+  let!(:v10) { create(:pacbio_smrt_link_version, name: 'v10') }
+  let!(:v13_sequel_iie) { create(:pacbio_smrt_link_version, name: 'v13_sequel_iie') }
+  let!(:v25_1_revio) { create(:pacbio_smrt_link_version, name: 'v25_1_revio', default: true) }
 
   shared_examples 'publish_messages_on_create' do
     it 'publishes a message' do
       expect(Messages).to receive(:publish).with(instance_of(Pacbio::Run), having_attributes(pipeline: 'pacbio'))
       post v1_pacbio_runs_path, params: body, headers: json_api_headers
-      expect(response).to have_http_status(:success), response.body
+      expect(response).to have_http_status(:success)
     end
 
     it 'publishes volume tracking message for each used aliquot' do
       expect(Emq::Publisher).to receive(:publish)
       post v1_pacbio_runs_path, params: body, headers: json_api_headers
-      expect(response).to have_http_status(:success), response.body
+      expect(response).to have_http_status(:success)
     end
   end
 
@@ -27,13 +26,13 @@ RSpec.describe 'RunsController' do
     it 'publishes a message' do
       expect(Messages).to receive(:publish).with(run, having_attributes(pipeline: 'pacbio'))
       patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-      expect(response).to have_http_status(:success), response.body
+      expect(response).to have_http_status(:success)
     end
 
     it 'publishes volume tracking message for each used aliquot' do
       expect(Emq::Publisher).to receive(:publish)
       patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
-      expect(response).to have_http_status(:success), response.parsed_body
+      expect(response).to have_http_status(:success)
     end
   end
 
@@ -48,7 +47,6 @@ RSpec.describe 'RunsController' do
       expect(json['data'].length).to eq(2)
     end
 
-    # intermitterntly failing??
     it 'returns the correct attributes' do
       get v1_pacbio_runs_path, headers: json_api_headers
 
@@ -200,86 +198,7 @@ RSpec.describe 'RunsController' do
   end
 
   describe '#create' do
-    context 'smrtlink v11 on success' do
-      let(:pool1) { create(:pacbio_pool) }
-
-      let(:body) do
-        {
-          data: {
-            type: 'runs',
-            attributes: {
-              dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-              system_name: 'Sequel II',
-              pacbio_smrt_link_version_id: version11.id,
-              plates_attributes: [{
-                sequencing_kit_box_barcode: 'DM0001100861800123121',
-                plate_number: 1,
-                wells_attributes: [
-                  {
-                    row: 'A',
-                    column: '1',
-                    movie_time: 31,
-                    on_plate_loading_concentration: 8.35,
-                    pre_extension_time: '2',
-                    generate_hifi: 'In SMRT Link',
-                    ccs_analysis_output: 'Yes',
-                    binding_kit_box_barcode: 'DM1117100862200111711',
-                    ccs_analysis_output_include_low_quality_reads: 'Yes',
-                    include_fivemc_calls_in_cpg_motifs: 'Yes',
-                    ccs_analysis_output_include_kinetics_information: 'Yes',
-                    demultiplex_barcodes: 'In SMRT Link',
-                    used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
-                  }
-                ]
-              }]
-            }
-          }
-        }.to_json
-      end
-
-      it 'has a created status' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:created)
-      end
-
-      it 'creates a run' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Run, :count).by(1)
-      end
-
-      it 'creates a plate' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Plate, :count).by(1)
-      end
-
-      it 'creates a well' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
-      end
-
-      it 'creates a used_aliquot' do
-        # Preloaded so its aliquots are built and don't affect the test below
-        pool1.reload
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Aliquot, :count).by(1)
-      end
-
-      it 'creates a run with the correct attributes' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
-        json = ActiveSupport::JSON.decode(response.body)
-        run = Pacbio::Run.first
-
-        expect(run.id).to eq(json['data']['id'].to_i)
-        expect(run.name).to be_present
-        expect(run.state).to be_present
-        expect(run.dna_control_complex_box_barcode).to be_present
-        expect(run.system_name).to be_present
-        expect(run.barcodes_and_concentrations).to be_present
-        expect(run.smrt_link_version).to be_present
-        expect(run.smrt_link_version).to eq(version11)
-        expect(run.pacbio_smrt_link_version_id).to eq(version11.id)
-      end
-
-      it_behaves_like 'publish_messages_on_create'
-    end
-
-    context 'smrtlink v12_revio on success' do
+    context 'smrtlink v13 Sequel IIe revio on success' do
       let(:pool1) { create(:pacbio_pool) }
       let(:library1) { create(:pacbio_library) }
 
@@ -289,8 +208,8 @@ RSpec.describe 'RunsController' do
             type: 'runs',
             attributes: {
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-              system_name: 'Sequel II',
-              pacbio_smrt_link_version_id: version12.id,
+              system_name: 'Sequel IIe',
+              pacbio_smrt_link_version_id: v13_sequel_iie.id,
               plates_attributes: [{
                 sequencing_kit_box_barcode: 'DM0001100861800123121',
                 plate_number: 1,
@@ -351,8 +270,8 @@ RSpec.describe 'RunsController' do
         expect(run.system_name).to be_present
         expect(run.barcodes_and_concentrations).to be_present
         expect(run.smrt_link_version).to be_present
-        expect(run.smrt_link_version).to eq(version12)
-        expect(run.pacbio_smrt_link_version_id).to eq(version12.id)
+        expect(run.smrt_link_version).to eq(v13_sequel_iie)
+        expect(run.pacbio_smrt_link_version_id).to eq(v13_sequel_iie.id)
         expect(run.plates.first.wells.first.libraries.first).to eq(library1)
         expect(run.plates.first.wells.first.pools.first).to eq(pool1)
       end
@@ -360,7 +279,7 @@ RSpec.describe 'RunsController' do
       it_behaves_like 'publish_messages_on_create'
     end
 
-    context 'smrtlink v13_revio on success' do
+    context 'smrtlink v25_revio on success' do
       let(:pool1) { create(:pacbio_pool) }
 
       let(:body) do
@@ -369,8 +288,8 @@ RSpec.describe 'RunsController' do
             type: 'runs',
             attributes: {
               dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-              system_name: 'Sequel II',
-              pacbio_smrt_link_version_id: version13.id,
+              system_name: 'Revio',
+              pacbio_smrt_link_version_id: v25_1_revio.id,
               plates_attributes: [{
                 sequencing_kit_box_barcode: 'DM0001100861800123121',
                 plate_number: 1,
@@ -428,8 +347,8 @@ RSpec.describe 'RunsController' do
         expect(run.system_name).to be_present
         expect(run.barcodes_and_concentrations).to be_present
         expect(run.smrt_link_version).to be_present
-        expect(run.smrt_link_version).to eq(version13)
-        expect(run.pacbio_smrt_link_version_id).to eq(version13.id)
+        expect(run.smrt_link_version).to eq(v25_1_revio)
+        expect(run.pacbio_smrt_link_version_id).to eq(v25_1_revio.id)
       end
 
       it_behaves_like 'publish_messages_on_create'
@@ -540,7 +459,7 @@ RSpec.describe 'RunsController' do
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
                 system_name: 'Sequel IIe',
-                pacbio_smrt_link_version_id: version11.id,
+                pacbio_smrt_link_version_id: v13_sequel_iie.id,
                 plates_attributes: [{ wells_attributes: [] }]
               }
             }
@@ -584,8 +503,8 @@ RSpec.describe 'RunsController' do
               type: 'runs',
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-                system_name: 'Sequel II',
-                pacbio_smrt_link_version_id: version11.id,
+                system_name: 'Sequel IIe',
+                pacbio_smrt_link_version_id: v13_sequel_iie.id,
                 plates_attributes: [{
                   sequencing_kit_box_barcode: 'DM0001100861800123121',
                   plate_number: 1,
@@ -646,8 +565,8 @@ RSpec.describe 'RunsController' do
               type: 'runs',
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-                system_name: 'Sequel II',
-                pacbio_smrt_link_version_id: version11.id,
+                system_name: 'Sequel IIe',
+                pacbio_smrt_link_version_id: v13_sequel_iie.id,
                 plates_attributes: [{
                   sequencing_kit_box_barcode: 'DM0001100861800123121',
                   plate_number: 1,
@@ -715,8 +634,8 @@ RSpec.describe 'RunsController' do
               type: 'runs',
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-                system_name: 'Sequel II',
-                pacbio_smrt_link_version_id: version11.id,
+                system_name: 'Sequel IIe',
+                pacbio_smrt_link_version_id: v13_sequel_iie.id,
                 plates_attributes: [{
                   sequencing_kit_box_barcode: 'DM0001100861800123121',
                   plate_number: 1,
@@ -785,8 +704,8 @@ RSpec.describe 'RunsController' do
               type: 'runs',
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-                system_name: 'Sequel II',
-                pacbio_smrt_link_version_id: version11.id,
+                system_name: 'Sequel IIe',
+                pacbio_smrt_link_version_id: v13_sequel_iie.id,
                 plates_attributes: [{
                   sequencing_kit_box_barcode: 'DM0001100861800123121',
                   plate_number: 1,
@@ -860,8 +779,8 @@ RSpec.describe 'RunsController' do
               type: 'runs',
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-                system_name: 'Sequel II',
-                pacbio_smrt_link_version_id: version11.id,
+                system_name: 'Sequel IIe',
+                pacbio_smrt_link_version_id: v13_sequel_iie.id,
                 plates_attributes: [{
                   sequencing_kit_box_barcode: 'DM0001100861800123121',
                   plate_number: 1,
@@ -934,8 +853,8 @@ RSpec.describe 'RunsController' do
               type: 'runs',
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-                system_name: 'Sequel II',
-                pacbio_smrt_link_version_id: version11.id,
+                system_name: 'Sequel IIe',
+                pacbio_smrt_link_version_id: v13_sequel_iie.id,
                 plates_attributes: [{
                   sequencing_kit_box_barcode: 'DM0001100861800123121',
                   plate_number: 1,
@@ -1015,8 +934,8 @@ RSpec.describe 'RunsController' do
               type: 'runs',
               attributes: {
                 dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-                system_name: 'Sequel II',
-                pacbio_smrt_link_version_id: version11.id,
+                system_name: 'Sequel IIe',
+                pacbio_smrt_link_version_id: v13_sequel_iie.id,
                 plates_attributes: [{
                   sequencing_kit_box_barcode: 'DM0001100861800123121',
                   plate_number: 1,
@@ -1093,7 +1012,7 @@ RSpec.describe 'RunsController' do
           type: 'runs',
           attributes: {
             dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-            system_name: 'Sequel II',
+            system_name: 'Sequel IIe',
             plates_attributes: [{
               sequencing_kit_box_barcode: 'DM0001100861800123121',
               plate_number: 1,
@@ -1127,7 +1046,7 @@ RSpec.describe 'RunsController' do
         run = Pacbio::Run.first
         version = Pacbio::SmrtLinkVersion.find_by(default: true)
         expect(run.id).to eq(json['data']['id'].to_i)
-        expect(version).to eq(version13)
+        expect(version).to eq(v25_1_revio)
         expect(run.smrt_link_version).to be_present
         expect(run.smrt_link_version).to eq(version)
         expect(run.pacbio_smrt_link_version_id).to eq(version.id)
@@ -1147,8 +1066,8 @@ RSpec.describe 'RunsController' do
           type: 'runs',
           attributes: {
             dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
-            system_name: 'Sequel II',
-            pacbio_smrt_link_version_id: version10.id,
+            system_name: 'Sequel IIe',
+            pacbio_smrt_link_version_id: v13_sequel_iie.id,
             plates_attributes: [{
               sequencing_kit_box_barcode: 'DM0001100861800123121',
               plate_number: 1,
@@ -1178,10 +1097,10 @@ RSpec.describe 'RunsController' do
         post v1_pacbio_runs_path, params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         run = Pacbio::Run.first
-        version = Pacbio::SmrtLinkVersion.find_by(name: 'v10')
+        version = Pacbio::SmrtLinkVersion.find_by(name: 'v13_sequel_iie')
 
         expect(run.id).to eq(json['data']['id'].to_i)
-        expect(version).to eq(version10)
+        expect(version).to eq(v13_sequel_iie)
         expect(run.smrt_link_version).to be_present
         expect(run.smrt_link_version).to eq(version)
         expect(run.pacbio_smrt_link_version_id).to eq(version.id)
@@ -1661,7 +1580,7 @@ RSpec.describe 'RunsController' do
     let(:well1)   { create(:pacbio_well) }
     let(:well2)   { create(:pacbio_well) }
     let(:plate)   { build(:pacbio_plate, wells: [well1, well2]) }
-    let(:run)     { create(:pacbio_generic_run, smrt_link_version: version13, plates: [plate]) }
+    let(:run)     { create(:pacbio_generic_run, smrt_link_version: v13_sequel_iie, plates: [plate]) }
 
     after { FileUtils.rm_rf("#{run.name}.csv") }
 
@@ -1681,7 +1600,7 @@ RSpec.describe 'RunsController' do
     end
 
     it 'returns an error message if the smrt_link_version is not supported' do
-      run.update(smrt_link_version: version10)
+      run.update(smrt_link_version: v10)
       get v1_pacbio_run_sample_sheet_path(run).to_s, headers: json_api_headers
       expect(response).to have_http_status(:unprocessable_entity)
       expect(response.body).to include 'SMRTLink sample sheet (v10) is not supported or invalid'

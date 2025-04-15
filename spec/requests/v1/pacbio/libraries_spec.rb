@@ -91,7 +91,6 @@ RSpec.describe 'LibrariesController', :pacbio do
       end
 
       it 'returns the correct relationships and included data', :aggregate_failures do
-        puts library['relationships']
         request = library.request
         request_relationship = library_relationships.dig('request', 'data')
         expect(request_relationship['id']).to eq(request.id.to_s)
