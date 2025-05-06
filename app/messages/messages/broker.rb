@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'bunny'
-require 'ostruct'
 
 module Messages
   # This class should control connection, exchange, queues and publishing to the broker
@@ -9,8 +8,10 @@ module Messages
     attr_accessor :connection
     attr_reader :channel, :queue, :exchange, :bunny_config
 
+    include Utils
+
     def initialize(bunny_config)
-      @bunny_config = OpenStruct.new(bunny_config) # rubocop:todo Style/OpenStructUse
+      @bunny_config = hash_to_struct(bunny_config)
     end
 
     def create_connection

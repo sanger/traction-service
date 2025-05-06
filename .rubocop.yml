@@ -130,14 +130,7 @@ Rails/EnvironmentVariableAccess:
 RSpec/IndexedLet:
   Enabled: false
 
-# We need an OpenStruct here as it needs to respond to methods but we don't know 
-# what they are in advance. Precisely what OpenStruct is for.
-Style/OpenStructUse:
-  Exclude:
-    - 'spec/exchanges/message/message_spec.rb'
-
 # The work needed to try and make this work is brutal. We would need to reimplement
-# or use OpenStruct
 RSpec/VerifiedDoubles:
   Exclude:
     - 'spec/messages/broker_spec.rb'

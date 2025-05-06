@@ -22,7 +22,7 @@ RSpec.describe DataStructureBuilder do
   describe '#data_structure' do
     let(:object) { double('Object') } # rubocop:disable RSpec/VerifiedDoubles
     let(:configuration) do
-      OpenStruct.new( # rubocop:disable Style/OpenStructUse
+      hash_to_struct(
         fields: {
           name: { type: :string, value: 'John Doe' },
           age: { type: :model, value: 'person.age' },

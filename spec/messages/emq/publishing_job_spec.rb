@@ -1,5 +1,16 @@
 # frozen_string_literal: true
 
+def deep_to_h(obj)
+  case obj
+  when Struct
+    obj.to_h.transform_values { |v| deep_to_h(v) }
+  when Hash
+    obj.transform_values { |v| deep_to_h(v) }
+  else
+    obj
+  end
+end
+
 require 'rails_helper'
 
 require 'webmock/rspec'
@@ -45,7 +56,7 @@ RSpec.describe Emq::PublishingJob do
       }
     }
   end
-  let(:bunny_config_obj) { described_class.deep_open_struct(bunny_config) }
+  let(:bunny_config_obj) { hash_to_deep_struct(bunny_config) }
 
   let(:subject_obj) { 'create-aliquot-in-mlwh' }
   let(:version_obj) { 2 }
@@ -56,14 +67,16 @@ RSpec.describe Emq::PublishingJob do
   end
 
   before do
+    # TODO: how can we compare structs?
     allow(Emq::Sender).to receive(:new).with(bunny_config_obj.amqp.broker, subject_obj, version_obj).and_return(emq_sender_mock)
+    # allow(Emq::Sender).to receive(:new).with(anything, subject_obj, version_obj).and_return(emq_sender_mock)
     allow(emq_sender_mock).to receive(:send_message).with(anything)
     stub_request(:get, "#{registry_url}#{subject_obj}/versions/#{version_obj}")
       .to_return(status: 200, body: volume_tracking_avro_response, headers: {})
   end
 
   it 'initialises schema key and configuration' do
-    expect(publishing_job.bunny_config).to eq(described_class.deep_open_struct(bunny_config))
+    expect(deep_to_h(publishing_job.bunny_config)).to eq(deep_to_h(hash_to_deep_struct(bunny_config)))
   end
 
   it 'publishes a single message' do
@@ -76,6 +89,7 @@ RSpec.describe Emq::PublishingJob do
     expect(emq_sender_mock).to receive(:send_message).twice
     expect(Rails.logger).to receive(:info).with('Published volume tracking message to EMQ')
     aliquot2 = build(:aliquot, uuid: SecureRandom.uuid, source: pacbio_library, used_by: pacbio_pool, created_at: Time.zone.now, updated_at: Time.zone.now)
+
     publishing_job.publish([aliquot, aliquot2], Pipelines.pacbio, 'volume_tracking')
   end
 
@@ -90,19 +104,6 @@ RSpec.describe Emq::PublishingJob do
     expect(emq_sender_mock).not_to receive(:send_message)
     expect(Rails.logger).to receive(:error).with('Message builder configuration not found for schema key: volume_tracking and version: 3')
     publishing_job.publish(aliquot, Pipelines.pacbio, 'volume_tracking')
-  end
-
-  it 'returns open struct object' do
-    deep_struct = described_class.deep_open_struct(bunny_config)
-    assert_equal 'localhost', deep_struct.amqp.broker.host
-    assert_equal false, deep_struct.amqp.broker.tls
-    assert_equal 'tol', deep_struct.amqp.broker.vhost
-    assert_equal 'admin', deep_struct.amqp.broker.username
-    assert_equal 'development', deep_struct.amqp.broker.password
-    assert_equal 'traction', deep_struct.amqp.broker.exchange
-    assert_equal 'http://test-redpanda/subjects/', deep_struct.amqp.schemas.registry_url
-    assert_equal 'create-aliquot-in-mlwh', deep_struct.amqp.schemas.subjects.volume_tracking.subject
-    assert_equal 2, deep_struct.amqp.schemas.subjects.volume_tracking.version
   end
 
   it 'logs error message when the EMQ is down' do

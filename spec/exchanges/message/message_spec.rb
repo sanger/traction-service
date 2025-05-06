@@ -50,7 +50,7 @@ RSpec.describe Message::Message, type: :model do
     }.with_indifferent_access
   end
 
-  let(:config) { OpenStruct.new(params) }
+  let(:config) { hash_to_struct(params) }
 
   let(:message) { described_class.new(object: object_a, configuration: config) }
   let(:timestamp) { Time.zone.parse('Mon, 08 Apr 2019 09:15:11 UTC +00:00') }
@@ -96,7 +96,7 @@ RSpec.describe Message::Message, type: :model do
       }.with_indifferent_access
     end
 
-    let(:config) { OpenStruct.new(params) }
+    let(:config) { hash_to_struct(params) }
     let(:message) { described_class.new(object: object_c, configuration: config) }
 
     it 'has the correct content' do
