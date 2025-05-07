@@ -30,6 +30,9 @@ class SuperStruct
   # @return [Struct] The underlying Struct instance.
   attr_reader :instance
 
+  # Semantically equivalent to `respond_to?` for checking if a key exists.
+  alias key? respond_to?
+
   # Initializes a new SuperStruct instance.
   #
   # @param hash [Hash] The hash to wrap in a Struct.
