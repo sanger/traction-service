@@ -50,7 +50,6 @@ module Emq
 
       # Create a validator and sender for the subject and version
       encoder = Emq::Encoder.new(subject, version, bunny_config.amqp.schemas.registry_url)
-      Rails.logger.debug bunny_config.amqp.broker.class
       sender = Emq::Sender.new(bunny_config.amqp.broker, subject, version)
 
       begin

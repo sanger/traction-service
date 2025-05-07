@@ -40,3 +40,20 @@ RSpec/NestedGroups:
 Layout/LineLength:
   AllowedPatterns:
     - '@todo'
+
+RSpec/VerifiedDoubles:
+  Exclude:
+    - 'spec/exchanges/data_structure_builder_spec.rb'
+    - 'spec/messages/broker_spec.rb'
+    - 'spec/messages/emq/publisher_spec.rb'
+
+RSpec/MessageChain:
+  Exclude:
+    - 'spec/exchanges/data_structure_builder_spec.rb'
+    # - 'spec/messages/emq/publisher_spec.rb'
+
+RSpec/MessageSpies:
+  EnforcedStyle: receive
+  Exclude:
+    - 'spec/messages/emq/publisher_spec.rb'
+  

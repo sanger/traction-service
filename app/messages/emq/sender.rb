@@ -12,7 +12,6 @@ module Emq
     # @param [String] subject the subject of the schema that the message is validated against
     # @param [String] version the version of the schema that the message is validated against
     def initialize(config, subject, version)
-      Rails.logger.debug config.class
       @config = config
       @subject = subject
       @version = version

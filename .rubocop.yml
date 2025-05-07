@@ -129,10 +129,5 @@ Rails/EnvironmentVariableAccess:
 RSpec/IndexedLet:
   Enabled: false
 
-# The work needed to try and make this work is brutal. We would need to reimplement
-RSpec/VerifiedDoubles:
-  Exclude:
-    - 'spec/messages/broker_spec.rb'
-
 RSpec/MessageSpies:
   EnforcedStyle: receive
