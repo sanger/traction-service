@@ -31,7 +31,7 @@ module Emq
     #
     def publish(objects, message_config, schema_key) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
       # Check if the schema_key exists in the subjects hash and return early if it does not
-      return unless bunny_config.amqp.schemas.subjects.respond_to?(schema_key)
+      return unless bunny_config.amqp.schemas.subjects.key?(schema_key)
 
       # Get the subject and version from the schema and return early if either is nil
       subject = bunny_config.amqp.schemas.subjects[schema_key].subject
