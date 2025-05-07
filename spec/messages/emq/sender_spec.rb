@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'ostruct'
+
 RSpec.describe Emq::Sender do
   let(:encoded_message) { 'encoded_message' }
   let(:mock_bunny) { instance_double(Bunny::Session, start: nil, create_channel: mock_channel, close: nil) }
@@ -30,7 +30,7 @@ RSpec.describe Emq::Sender do
       }
     }
   end
-  let(:bunny_config_obj) { hash_to_deep_struct(bunny_config) }
+  let(:bunny_config_obj) { SuperStruct.new(bunny_config, deep: true) }
   let(:schema_subject) { bunny_config_obj.amqp.schemas.subjects.volume_tracking.subject }
   let(:schema_version) { bunny_config_obj.amqp.schemas.subjects.volume_tracking.version }
   let(:emq_config) { bunny_config_obj.amqp.broker }
@@ -57,7 +57,7 @@ RSpec.describe Emq::Sender do
 
     it('updates the connection with TLS parameters if the configuration has empty ca_certificate') do
       emq_config_hash = emq_config.to_h.merge(tls: true)
-      emq_config_tls = hash_to_struct(emq_config_hash)
+      emq_config_tls = SuperStruct.new(emq_config_hash)
       updated_sender = described_class.new(emq_config_tls, schema_subject, schema_version)
       updated_sender.send_message(encoded_message)
       expect(Bunny).to have_received(:new).with( # rubocop:disable RSpec/MessageSpies
@@ -73,7 +73,7 @@ RSpec.describe Emq::Sender do
     it('updates the connection with TLS parameters if the configuration has a ca_certificate') do
       emq_config_hash = emq_config.to_h.merge(tls: true,
                                               ca_certificate: 'ca_certificate')
-      emq_config_tls = hash_to_struct(emq_config_hash)
+      emq_config_tls = SuperStruct.new(emq_config_hash)
       updated_sender = described_class.new(emq_config_tls, schema_subject, schema_version)
       updated_sender.send_message(encoded_message)
       expect(Bunny).to have_received(:new).with( # rubocop:disable RSpec/MessageSpies

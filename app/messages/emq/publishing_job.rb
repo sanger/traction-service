@@ -4,8 +4,6 @@ module Emq
   # This class should be responsible for publishing messages to the EMQ which are validated
   # against an Avro schema stored in the RedPanda registry before being sent
   class PublishingJob
-    include Utils
-
     attr_reader :bunny_config
 
     # The prefix for the key which contains the version of the Avro schema to use
@@ -15,7 +13,7 @@ module Emq
     # Initialize the publishing job with the bunny configuration
     def initialize
       # Load the bunny configuration from the Rails configuration and convert it to a Struct
-      @bunny_config = hash_to_deep_struct(Rails.configuration.bunny)
+      @bunny_config = SuperStruct.new(Rails.configuration.bunny, deep: true)
     end
 
     ##
@@ -98,7 +96,7 @@ module Emq
       builder_config = children["#{AVRO_SCHEMA_VERSION_KEY}#{version}"]
       return unless builder_config
 
-      hash_to_struct(builder_config)
+      SuperStruct.new(builder_config)
     end
   end
 end

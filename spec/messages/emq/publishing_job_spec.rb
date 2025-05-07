@@ -1,16 +1,5 @@
 # frozen_string_literal: true
 
-def deep_to_h(obj)
-  case obj
-  when Struct
-    obj.to_h.transform_values { |v| deep_to_h(v) }
-  when Hash
-    obj.transform_values { |v| deep_to_h(v) }
-  else
-    obj
-  end
-end
-
 require 'rails_helper'
 
 require 'webmock/rspec'
@@ -56,7 +45,7 @@ RSpec.describe Emq::PublishingJob do
       }
     }
   end
-  let(:bunny_config_obj) { hash_to_deep_struct(bunny_config) }
+  let(:bunny_config_obj) { SuperStruct.new(bunny_config, deep: true) }
 
   let(:subject_obj) { 'create-aliquot-in-mlwh' }
   let(:version_obj) { 2 }
@@ -67,16 +56,14 @@ RSpec.describe Emq::PublishingJob do
   end
 
   before do
-    # TODO: how can we compare structs?
     allow(Emq::Sender).to receive(:new).with(bunny_config_obj.amqp.broker, subject_obj, version_obj).and_return(emq_sender_mock)
-    # allow(Emq::Sender).to receive(:new).with(anything, subject_obj, version_obj).and_return(emq_sender_mock)
     allow(emq_sender_mock).to receive(:send_message).with(anything)
     stub_request(:get, "#{registry_url}#{subject_obj}/versions/#{version_obj}")
       .to_return(status: 200, body: volume_tracking_avro_response, headers: {})
   end
 
   it 'initialises schema key and configuration' do
-    expect(deep_to_h(publishing_job.bunny_config)).to eq(deep_to_h(hash_to_deep_struct(bunny_config)))
+    expect(publishing_job.bunny_config).to eq(bunny_config_obj)
   end
 
   it 'publishes a single message' do

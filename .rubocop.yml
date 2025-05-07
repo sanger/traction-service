@@ -54,7 +54,6 @@ Metrics/MethodLength:
   Max: 12
   Exclude:
     - 'db/migrate/*'
-    - 'config/initializers/01_proc.rb'
 
 Metrics/ClassLength:
   Max: 100

@@ -8,10 +8,8 @@ module Messages
     attr_accessor :connection
     attr_reader :channel, :queue, :exchange, :bunny_config
 
-    include Utils
-
     def initialize(bunny_config)
-      @bunny_config = hash_to_struct(bunny_config)
+      @bunny_config = SuperStruct.new(bunny_config)
     end
 
     def create_connection

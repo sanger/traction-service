@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'ostruct'
 
 class MockDataStructureBuilder
   include DataStructureBuilder
@@ -22,13 +21,13 @@ RSpec.describe DataStructureBuilder do
   describe '#data_structure' do
     let(:object) { double('Object') } # rubocop:disable RSpec/VerifiedDoubles
     let(:configuration) do
-      hash_to_struct(
-        fields: {
+      SuperStruct.new(
+        { fields: {
           name: { type: :string, value: 'John Doe' },
           age: { type: :model, value: 'person.age' },
           birthdate: { type: :constant, value: 'DateTime.now' },
           hobbies: { type: :array, value: 'hobbies', children: { name: { type: :string, value: 'Soccer' } } }
-        }
+        } }
       )
     end
     let(:builder) { MockDataStructureBuilder.new(object:, configuration:) }
