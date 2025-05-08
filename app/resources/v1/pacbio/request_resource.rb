@@ -66,8 +66,10 @@ module V1
       #   @return [String] the creation time of the request
       # @!attribute [rw] source_identifier
       #   @return [String] the source identifier of the request
+      # @!attribute [rw] sample_retention_instrction
+      #   @return [String] the retention instruction of the request
       attributes(*::Pacbio.request_attributes, :sample_name, :barcode, :sample_species,
-                 :created_at, :source_identifier)
+                 :created_at, :source_identifier, :sample_retention_instruction)
 
       # If we don't specify the relation_name here, jsonapi-resources
       # attempts to use_related_resource_records_for_joins

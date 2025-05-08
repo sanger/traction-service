@@ -33,7 +33,10 @@ module V1
       #   @return [String] the source identifier of the request
       # @!attribute [rw] created_at
       #   @return [String] the creation timestamp of the request
-      attributes(*::Ont.request_attributes, :sample_name, :source_identifier, :created_at)
+      # @!attribute [rw] sample_retention_instruction
+      #   @return [String] the retention instruction for the sample
+      attributes(*::Ont.request_attributes, :sample_name, :source_identifier, :created_at,
+                 :sample_retention_instruction)
 
       paginator :paged
 
