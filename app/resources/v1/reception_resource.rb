@@ -115,7 +115,7 @@ module V1
     end
 
     def publish_message(message, config)
-       Messages.publish(message, config)
+      Messages.publish(message, config)
     end
   end
 end
