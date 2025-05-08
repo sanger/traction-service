@@ -27,16 +27,18 @@ module V1
       #   @return [String] the external study identifier
       # @!attribute [rw] number_of_flowcells
       #   @return [Integer] the number of flowcells requested
-      # @!attribute [rw] sample_name
+      attributes(*::Ont.request_attributes)
+
+      # @!attribute [r] sample_name
       #   @return [String] the name of the sample
-      # @!attribute [rw] source_identifier
-      #   @return [String] the source identifier of the request
-      # @!attribute [rw] created_at
-      #   @return [String] the creation timestamp of the request
-      # @!attribute [rw] sample_retention_instruction
+      # @!attribute [r] sample_retention_instruction
       #   @return [String] the retention instruction for the sample
-      attributes(*::Ont.request_attributes, :sample_name, :source_identifier, :created_at,
-                 :sample_retention_instruction)
+      # @!attribute [r] source_identifier
+      #   @return [String] the source identifier of the request
+      # @!attribute [r] created_at
+      #   @return [String] the creation timestamp of the request
+      attributes :sample_name, :sample_retention_instruction, :source_identifier, :created_at,
+                 readonly: true
 
       paginator :paged
 

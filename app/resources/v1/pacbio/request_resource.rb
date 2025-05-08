@@ -56,20 +56,23 @@ module V1
       #   @return [String] the cost code
       # @!attribute [rw] external_study_id
       #   @return [String] the external study ID
-      # @!attribute [rw] sample_name
+      attributes(*::Pacbio.request_attributes)
+
+      # @!attribute [r] sample_name
       #   @return [String] the name of the sample
-      # @!attribute [rw] barcode
+      # @!attribute [r] barcode
       #   @return [String] the barcode of the sample
-      # @!attribute [rw] sample_species
+      # @!attribute [r] sample_species
       #   @return [String] the species of the sample
-      # @!attribute [rw] created_at
+      # @!attribute [r] created_at
       #   @return [String] the creation time of the request
-      # @!attribute [rw] source_identifier
+      # @!attribute [r] source_identifier
       #   @return [String] the source identifier of the request
-      # @!attribute [rw] sample_retention_instrction
+      # @!attribute [r] sample_retention_instrction
       #   @return [String] the retention instruction of the request
-      attributes(*::Pacbio.request_attributes, :sample_name, :barcode, :sample_species,
-                 :created_at, :source_identifier, :sample_retention_instruction)
+      attributes :sample_name, :barcode, :sample_species,
+                 :created_at, :source_identifier, :sample_retention_instruction,
+                 readonly: true
 
       # If we don't specify the relation_name here, jsonapi-resources
       # attempts to use_related_resource_records_for_joins
