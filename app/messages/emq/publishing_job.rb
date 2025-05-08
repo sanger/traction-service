@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'ostruct'
-
 module Emq
   # This class should be responsible for publishing messages to the EMQ which are validated
   # against an Avro schema stored in the RedPanda registry before being sent
@@ -14,8 +12,8 @@ module Emq
 
     # Initialize the publishing job with the bunny configuration
     def initialize
-      # Load the bunny configuration from the Rails configuration and convert it to an OpenStruct
-      @bunny_config = PublishingJob.deep_open_struct(Rails.configuration.bunny)
+      # Load the bunny configuration from the Rails configuration and convert it to a Struct
+      @bunny_config = SuperStruct.new(Rails.configuration.bunny, deep: true)
     end
 
     ##
@@ -33,8 +31,7 @@ module Emq
     #
     def publish(objects, message_config, schema_key) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
       # Check if the schema_key exists in the subjects hash and return early if it does not
-      schema = bunny_config.amqp.schemas.subjects[schema_key]
-      return if schema.nil?
+      return unless bunny_config.amqp.schemas.subjects.key?(schema_key)
 
       # Get the subject and version from the schema and return early if either is nil
       subject = bunny_config.amqp.schemas.subjects[schema_key].subject
@@ -81,14 +78,6 @@ module Emq
       end
     end
 
-    # recursively converts a nested hash into an OpenStruct,
-    # allowing for dot notation access to hash keys and their values.
-    def self.deep_open_struct(obj)
-      return obj unless obj.is_a?(Hash)
-
-      OpenStruct.new(obj.transform_values { |val| deep_open_struct(val) }) # rubocop:disable Style/OpenStructUse
-    end
-
     private
 
     # Get the message builder configuration for the schema key and version
@@ -96,8 +85,8 @@ module Emq
     #                                configuration from
     # @param [String] schema_key the key of the schema to get the message builder configuration for
     # @param [Integer] version the version of the schema to get the message builder configuration
-    # @return [OpenStruct | nil] the message builder configuration for the schema key and version
-    # the builder configuratin should be in the format:
+    # @return [Struct | nil] the message builder configuration for the schema key and version
+    # the builder configuration should be in the format:
 
     def message_builder_config(message_config, schema_key, version)
       children = message_config.public_send(schema_key)&.instance_variable_get(:@children)
@@ -106,7 +95,7 @@ module Emq
       builder_config = children["#{AVRO_SCHEMA_VERSION_KEY}#{version}"]
       return unless builder_config
 
-      OpenStruct.new(builder_config) # rubocop:disable Style/OpenStructUse
+      SuperStruct.new(builder_config)
     end
   end
 end
