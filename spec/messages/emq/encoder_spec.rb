@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'ostruct'
-
 require 'webmock/rspec'
 
 RSpec.describe Emq::Encoder do
