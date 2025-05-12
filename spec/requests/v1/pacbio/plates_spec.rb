@@ -89,6 +89,7 @@ RSpec.describe 'PlatesController' do
         expect(request_data['attributes']['external_study_id']).to eq(request.external_study_id)
         expect(request_data['attributes']['sample_name']).to eq(request.sample_name)
         expect(request_data['attributes']['sample_species']).to eq(request.sample_species)
+        expect(request_data['attributes']['sample_retention_instruction']).to eq(request.sample_retention_instruction)
       end
     end
 

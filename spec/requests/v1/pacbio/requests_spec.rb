@@ -32,7 +32,8 @@ RSpec.describe 'RequestsController', :pacbio do
           'sample_name' => request.sample.name,
           'sample_species' => request.sample.species,
           'source_identifier' => request.source_identifier,
-          'created_at' => request.created_at.to_fs(:us)
+          'created_at' => request.created_at.to_fs(:us),
+          'sample_retention_instruction' => request.sample.retention_instruction
         )
       end
     end
@@ -68,7 +69,8 @@ RSpec.describe 'RequestsController', :pacbio do
               'sample_name' => request.sample.name,
               'sample_species' => request.sample.species,
               'source_identifier' => request.source_identifier,
-              'created_at' => request.created_at.to_fs(:us)
+              'created_at' => request.created_at.to_fs(:us),
+              'sample_retention_instruction' => request.sample.retention_instruction
             )
           end
         end
@@ -94,7 +96,8 @@ RSpec.describe 'RequestsController', :pacbio do
               'sample_name' => request.sample.name,
               'sample_species' => request.sample.species,
               'source_identifier' => request.source_identifier,
-              'created_at' => request.created_at.to_fs(:us)
+              'created_at' => request.created_at.to_fs(:us),
+              'sample_retention_instruction' => request.sample.retention_instruction
             )
           end
         end
@@ -117,7 +120,8 @@ RSpec.describe 'RequestsController', :pacbio do
               'sample_name' => request.sample.name,
               'sample_species' => request.sample.species,
               'source_identifier' => request.source_identifier,
-              'created_at' => request.created_at.to_fs(:us)
+              'created_at' => request.created_at.to_fs(:us),
+              'sample_retention_instruction' => request.sample.retention_instruction
             )
           end
         end
@@ -141,7 +145,8 @@ RSpec.describe 'RequestsController', :pacbio do
               'sample_name' => request.sample.name,
               'sample_species' => request.sample.species,
               'source_identifier' => request.source_identifier,
-              'created_at' => request.created_at.to_fs(:us)
+              'created_at' => request.created_at.to_fs(:us),
+              'sample_retention_instruction' => request.sample.retention_instruction
             )
           end
         end
@@ -185,7 +190,8 @@ RSpec.describe 'RequestsController', :pacbio do
               'sample_name' => request.sample.name,
               'sample_species' => request.sample.species,
               'source_identifier' => request.source_identifier,
-              'created_at' => request.created_at.to_fs(:us)
+              'created_at' => request.created_at.to_fs(:us),
+              'sample_retention_instruction' => request.sample.retention_instruction
             )
           end
         end
