@@ -18,6 +18,7 @@ module Pacbio
 
     delegate :name, to: :sample, prefix: :sample
     delegate :species, to: :sample, prefix: :sample
+    delegate :retention_instruction, to: :sample, prefix: :sample
 
     validates :external_study_id, uuid: true
 

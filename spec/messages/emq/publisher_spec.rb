@@ -6,7 +6,7 @@ RSpec.describe Emq::Publisher do
   describe '#configuration' do
     let(:aliquot) { instance_double(Aliquot) }
     let(:aliquots) { [aliquot] }
-    let(:configuration) { double('configuration') } # rubocop:disable RSpec/VerifiedDoubles
+    let(:configuration) { double('configuration') }
     let(:schema_key) { 'schema_key' }
     let(:publish_job_mock) { instance_double(Emq::PublishingJob) }
 
@@ -23,7 +23,7 @@ RSpec.describe Emq::Publisher do
       it 'is present' do
         described_class.publish(aliquots, configuration, schema_key)
         expect(described_class.instance_variable_get(:@publish_job)).to be_nil
-        expect(publish_job_mock).not_to have_received(:publish).with(aliquots, configuration, schema_key) # rubocop:disable RSpec/MessageSpies
+        expect(publish_job_mock).not_to have_received(:publish).with(aliquots, configuration, schema_key)
       end
     end
 
@@ -39,7 +39,7 @@ RSpec.describe Emq::Publisher do
       it 'is present' do
         described_class.publish(aliquots, configuration, schema_key)
         expect(described_class.instance_variable_get(:@publish_job)).not_to be_nil
-        expect(publish_job_mock).to have_received(:publish).with(aliquots, configuration, schema_key) # rubocop:disable RSpec/MessageSpies
+        expect(publish_job_mock).to have_received(:publish).with(aliquots, configuration, schema_key)
       end
     end
   end
