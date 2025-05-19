@@ -2,6 +2,6 @@
 
 FactoryBot.define do
   factory :annotation_type do
-    name { 'Example Annotation Type' }
+    sequence(:name) { |n| "Annotation Type #{n}" }
   end
 end
