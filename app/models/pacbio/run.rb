@@ -28,6 +28,9 @@ module Pacbio
                inverse_of: :runs,
                default: -> { SmrtLinkVersion.default }
 
+    # allows creation of annotations
+    has_many :annotations, as: :annotatable, dependent: :destroy
+
     validates :system_name, presence: true
 
     # Uses the configuration provided in `config/pacbio_instrument_types.yml`

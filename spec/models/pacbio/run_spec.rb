@@ -369,4 +369,21 @@ RSpec.describe Pacbio::Run, :pacbio do
       expect(run.aliquots_to_publish_on_run).to include(library_aliquot_used_in_run, library_aliquot_from_pool)
     end
   end
+
+  it 'can have some annotations' do
+    run = create(:pacbio_revio_run)
+    annotation_type = create(:annotation_type, name: 'Test Annotation')
+    annotation1 = run.annotations.create!(
+      annotation_type: annotation_type,
+      comment: 'First annotation',
+      user: 'user1'
+    )
+    annotation2 = run.annotations.create!(
+      annotation_type: annotation_type,
+      comment: 'Second annotation',
+      user: 'user2'
+    )
+    expect(run.annotations.count).to eq(2)
+    expect(run.annotations).to include(annotation1, annotation2)
+  end
 end

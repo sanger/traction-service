@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_03_25_143818) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_19_101501) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
@@ -36,6 +36,18 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_25_143818) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_annotation_types_on_name", unique: true
+  end
+
+  create_table "annotations", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "annotation_type_id", null: false
+    t.string "annotatable_type", null: false
+    t.bigint "annotatable_id", null: false
+    t.string "comment", limit: 500, null: false
+    t.string "user", limit: 10, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["annotatable_type", "annotatable_id"], name: "index_annotations_on_annotatable"
+    t.index ["annotation_type_id"], name: "index_annotations_on_annotation_type_id"
   end
 
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
@@ -470,6 +482,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_25_143818) do
     t.index ["name"], name: "index_workflows_on_name", unique: true
   end
 
+  add_foreign_key "annotations", "annotation_types"
   add_foreign_key "ont_flowcells", "ont_pools"
   add_foreign_key "ont_flowcells", "ont_runs"
   add_foreign_key "ont_requests", "data_types"
