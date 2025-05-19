@@ -37,6 +37,7 @@ RSpec.describe 'LibrariesController', :pacbio do
           expect(library_attributes['source_identifier']).to eq(library.source_identifier)
           expect(library_attributes['used_volume']).to eq(library.used_volume)
           expect(library_attributes['available_volume']).to eq(library.available_volume)
+          expect(library_attributes['barcode']).to eq(library.barcode)
         end
       end
 
@@ -435,6 +436,44 @@ RSpec.describe 'LibrariesController', :pacbio do
         it 'returns unprocessable entity status' do
           post v1_pacbio_libraries_path, params: body, headers: json_api_headers
           expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'cannot create a library' do
+          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.not_to(
+            change(Pacbio::Library, :count) &&
+            change(Aliquot, :count)
+          )
+        end
+      end
+
+      context 'on failure - when you try and set barcode' do
+        let(:body) do
+          {
+            data: {
+              type: 'libraries',
+              barcode: 'test-barcode',
+              attributes: {
+                template_prep_kit_box_barcode: 'LK1234567',
+                volume: 1.11,
+                concentration: 2.22,
+                insert_size: 'Sausages',
+                pacbio_request_id: request.id,
+                tag_id: tag.id,
+                primary_aliquot_attributes: {
+                  volume: 1.11,
+                  template_prep_kit_box_barcode: 'LK1234567',
+                  concentration: 2.22,
+                  insert_size: 100
+                }
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns unprocessable entity status' do
+          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:bad_request)
+          expect(response.body).to include('barcode is not allowed')
         end
 
         it 'cannot create a library' do

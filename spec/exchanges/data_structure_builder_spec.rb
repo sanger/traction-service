@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
-require 'ostruct'
 
 class MockDataStructureBuilder
   include DataStructureBuilder
@@ -20,21 +19,21 @@ end
 
 RSpec.describe DataStructureBuilder do
   describe '#data_structure' do
-    let(:object) { double('Object') } # rubocop:disable RSpec/VerifiedDoubles
+    let(:object) { double('Object') }
     let(:configuration) do
-      OpenStruct.new( # rubocop:disable Style/OpenStructUse
-        fields: {
+      SuperStruct.new(
+        { fields: {
           name: { type: :string, value: 'John Doe' },
           age: { type: :model, value: 'person.age' },
           birthdate: { type: :constant, value: 'DateTime.now' },
           hobbies: { type: :array, value: 'hobbies', children: { name: { type: :string, value: 'Soccer' } } }
-        }
+        } }
       )
     end
     let(:builder) { MockDataStructureBuilder.new(object:, configuration:) }
 
     before do
-      allow(object).to receive_message_chain(:person, :age).and_return(30) # rubocop:disable RSpec/MessageChain
+      allow(object).to receive_message_chain(:person, :age).and_return(30)
       allow(DateTime).to receive(:now).and_return(Date.new(2023, 4, 1))
       allow(object).to receive(:hobbies).and_return([{ name: 'Soccer' }])
     end
@@ -52,8 +51,8 @@ RSpec.describe DataStructureBuilder do
   end
 
   describe '#instance_value' do
-    let(:object) { double('Object') } # rubocop:disable RSpec/VerifiedDoubles
-    let(:parent) { double('Parent') } # rubocop:disable RSpec/VerifiedDoubles
+    let(:object) { double('Object') }
+    let(:parent) { double('Parent') }
     let(:builder) { MockDataStructureBuilder.new }
 
     context 'when field type is :string' do
@@ -66,13 +65,13 @@ RSpec.describe DataStructureBuilder do
     context 'when field type is :model' do
       it 'evaluates the field on the object' do
         field = { type: :model, value: 'method.chain' }
-        allow(object).to receive_message_chain(:method, :chain).and_return('result') # rubocop:disable RSpec/MessageChain
+        allow(object).to receive_message_chain(:method, :chain).and_return('result')
         expect(builder.send(:instance_value, object, field, parent)).to eq('result')
       end
 
       it 'evaluates the field on the object with &. accessor' do
         field = { type: :model, value: 'method&.chain' }
-        allow(object).to receive_message_chain(:method, :chain).and_return('result') # rubocop:disable RSpec/MessageChain
+        allow(object).to receive_message_chain(:method, :chain).and_return('result')
         expect(builder.send(:instance_value, object, field, parent)).to eq('result')
       end
     end
@@ -86,7 +85,7 @@ RSpec.describe DataStructureBuilder do
     end
 
     context 'when field type is :array' do
-      let(:child_builder) { double('ChildBuilder') } # rubocop:disable RSpec/VerifiedDoubles
+      let(:child_builder) { double('ChildBuilder') }
 
       before do
         allow(builder).to receive(:build_children).and_return([{ name: 'Child 1' }, { name: 'Child 2' }])
