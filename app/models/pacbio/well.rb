@@ -16,6 +16,9 @@ module Pacbio
     has_many :libraries, class_name: 'Pacbio::Library', through: :used_aliquots,
                          source: :source, source_type: 'Pacbio::Library'
 
+    # allows creation of annotations
+    has_many :annotations, as: :annotatable, dependent: :destroy
+
     validates :used_aliquots, presence: true
 
     # pacbio smrt link options for a well are kept in store field of the well

@@ -16,6 +16,12 @@ FactoryBot.define do
   factory :pacbio_generic_run, class: 'Pacbio::Run' do
     sequence(:dna_control_complex_box_barcode) { |n| "Lxxxxx10171760012319#{n}" }
 
+    transient do
+      annotation_count { 2 }
+    end
+
+    annotations { build_list(:annotation, annotation_count, annotatable: instance) }
+
     factory :pacbio_revio_run do
       transient do
         well_positions_plate_1 { %w[A1 B1] }

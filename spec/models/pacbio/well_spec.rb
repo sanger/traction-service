@@ -753,5 +753,22 @@ RSpec.describe Pacbio::Well, :pacbio do
         expect(well.automation_parameters).to be_nil
       end
     end
+
+    it 'can have some annotations' do
+      well = create(:pacbio_well)
+      annotation_type = create(:annotation_type, name: 'Test Annotation')
+      annotation1 = well.annotations.create!(
+        annotation_type: annotation_type,
+        comment: 'First annotation',
+        user: 'user1'
+      )
+      annotation2 = well.annotations.create!(
+        annotation_type: annotation_type,
+        comment: 'Second annotation',
+        user: 'user2'
+      )
+      expect(well.annotations.count).to eq(2)
+      expect(well.annotations).to include(annotation1, annotation2)
+    end
   end
 end
