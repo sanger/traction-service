@@ -371,7 +371,7 @@ RSpec.describe Pacbio::Run, :pacbio do
   end
 
   it 'can have some annotations' do
-    run = create(:pacbio_revio_run)
+    run = create(:pacbio_revio_run, annotation_count: 0)
     annotation_type = create(:annotation_type, name: 'Test Annotation')
     annotation1 = run.annotations.create!(
       annotation_type: annotation_type,

@@ -52,6 +52,10 @@ module V1
 
     has_one :annotation_type
 
+    def created_at
+      @model.created_at.to_fs(:us)
+    end
+
     # Prevent updates and deletes through the API
     def replace_fields(_fields)
       raise JSONAPI::Exceptions::RecordLocked, 'Annotations cannot be updated'

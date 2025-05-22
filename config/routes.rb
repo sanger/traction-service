@@ -45,6 +45,7 @@ Rails.application.routes.draw do
         # rubocop:disable Lint/EmptyBlock
         jsonapi_resources(:plates,        only: %i[index create update destroy]) {}
         jsonapi_resources(:wells,         only: %i[index create update destroy]) {}
+        jsonapi_resources(:annotations, only: %i[index show]) {}
         # rubocop:enable Lint/EmptyBlock
       end
 

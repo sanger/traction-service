@@ -71,6 +71,8 @@ module V1
 
       has_one :smrt_link_version, foreign_key: 'pacbio_smrt_link_version_id'
 
+      has_many :annotations, class_name: 'Runs::Annotation', foreign_key_on: :related
+
       filters :name, :state
 
       paginator :paged
@@ -102,6 +104,8 @@ module V1
       def self.resource_klass_for(type)
         if type == 'plates'
           super('runs/plates')
+        elsif type == 'annotations'
+          super('runs/annotations')
         else
           super
         end
