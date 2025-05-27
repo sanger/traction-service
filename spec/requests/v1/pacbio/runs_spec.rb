@@ -240,9 +240,9 @@ RSpec.describe 'RunsController' do
                     demultiplex_barcodes: 'In SMRT Link',
                     used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
                   }
-                ],
-                annotations_attributes: [{ annotation_type_id: annotation_type.id, comment: 'Test comment', user: 'dave' }]
-              }]
+                ]
+              }],
+              annotations_attributes: [{ annotation_type_id: annotation_type.id, comment: 'Test comment', user: 'dave' }]
             }
           }
         }.to_json
@@ -265,7 +265,7 @@ RSpec.describe 'RunsController' do
         expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
       end
 
-      it 'creates an annotation', pending: 'not yet implemented' do
+      it 'creates an annotation' do
         expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Annotation, :count).by(1)
       end
 

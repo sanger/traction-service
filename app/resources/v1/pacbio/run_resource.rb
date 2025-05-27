@@ -60,7 +60,8 @@ module V1
       attributes :name, :dna_control_complex_box_barcode,
                  :system_name, :created_at, :state,
                  :pacbio_smrt_link_version_id, :plates_attributes,
-                 :adaptive_loading, :sequencing_kit_box_barcodes
+                 :adaptive_loading, :sequencing_kit_box_barcodes,
+                 :annotations_attributes
 
       # @!attribute [r] barcodes_and_concentrations
       #   @return [String] the barcodes and concentrations of the run
@@ -127,22 +128,30 @@ module V1
 
       private
 
-      def plates_attributes=(plates_parameters) # rubocop:disable Metrics/MethodLength
-        @model.plates_attributes = plates_parameters.map do |plate|
-          plate.permit(
-            :id,
-            :sequencing_kit_box_barcode,
-            :plate_number,
-            wells_attributes: [
-              # the following is needed to allow the _destroy parameter which
-              # is used to mark wells for destruction
-              :_destroy,
-              PERMITTED_WELL_PARAMETERS,
-              { used_aliquots_attributes: %i[id source_id source_type volume concentration
-                                             aliquot_type template_prep_kit_box_barcode _destroy] }
-            ]
-          )
+      def annotations_attributes=(annotations_parameters)
+        @model.annotations_attributes = annotations_parameters.map do |annotation|
+          annotation.permit(:comment, :user, :annotation_type_id)
         end
+      end
+
+      def plates_attributes=(plates_parameters)
+        @model.plates_attributes = plates_parameters.map { |plate| permit_plate_params(plate) }
+      end
+
+      def permit_plate_params(plate)
+        plate.permit(
+          :id,
+          :sequencing_kit_box_barcode,
+          :plate_number,
+          wells_attributes: [:_destroy, PERMITTED_WELL_PARAMETERS, permitted_used_aliquots]
+        )
+      end
+
+      def permitted_used_aliquots
+        { used_aliquots_attributes: %i[
+          id source_id source_type volume concentration
+          aliquot_type template_prep_kit_box_barcode _destroy
+        ] }
       end
     end
   end

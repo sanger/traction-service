@@ -34,7 +34,6 @@ RSpec.describe 'WellsController' do
         expect(well_attributes['movie_time'].to_s).to eq(well.movie_time.to_s)
         expect(well_attributes['on_plate_loading_concentration']).to eq(well.on_plate_loading_concentration)
         expect(well_attributes['pacbio_plate_id']).to eq(well.pacbio_plate_id)
-        expect(well_attributes['comment']).to eq(well.comment)
         expect(well_attributes['pre_extension_time']).to eq(well.pre_extension_time)
         expect(well_attributes['binding_kit_box_barcode']).to eq(well.binding_kit_box_barcode)
       end

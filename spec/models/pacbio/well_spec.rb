@@ -53,13 +53,9 @@ RSpec.describe Pacbio::Well, :pacbio do
     expect(build(:pacbio_well, plate: nil)).not_to be_valid
   end
 
-  it 'can have a comment' do
-    expect(build(:pacbio_well).comment).to be_present
-  end
-
   it 'can have a summary' do
     well = create(:pacbio_well)
-    expect(well.summary).to eq("#{well.sample_names} #{well.comment}")
+    expect(well.summary).to eq(well.sample_names.to_s)
   end
 
   describe '#tagged?' do

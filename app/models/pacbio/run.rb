@@ -45,10 +45,12 @@ module Pacbio
     scope :active, -> { where(deactivated_at: nil) }
 
     accepts_nested_attributes_for :plates, allow_destroy: true
+    accepts_nested_attributes_for :annotations, allow_destroy: true
 
     # This will return an empty list
     # If plate/well data is required via the run, use ?include=plates.wells
     attr_reader :plates_attributes
+    attr_reader :annotations_attributes
 
     # combines the library concentration or on plate loading concentration
     # with the tube barcode to generate a comment

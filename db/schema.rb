@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_19_101501) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_23_144101) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
@@ -303,7 +303,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_19_101501) do
     t.bigint "pacbio_plate_id"
     t.string "row"
     t.string "column"
-    t.string "comment"
     t.string "uuid"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false

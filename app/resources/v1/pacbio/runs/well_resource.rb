@@ -21,8 +21,6 @@ module V1
         #   @return [String] the row of the well
         # @!attribute [rw] column
         #   @return [String] the column of the well
-        # @!attribute [rw] comment
-        #   @return [String] the comment for the well
         # @!attribute [rw] pacbio_plate_id
         #   @return [Integer] the ID of the Pacbio plate
         # @!attribute [rw] position
@@ -63,7 +61,7 @@ module V1
         #   @return [Boolean] whether to use adaptive loading
         # @!attribute [rw] full_resolution_base_qual
         #   @return [Boolean] whether to apply full resolution base qual
-        attributes :row, :column, :comment, :pacbio_plate_id, :position,
+        attributes :row, :column, :pacbio_plate_id, :position,
                    *Rails.configuration.pacbio_smrt_link_versions.options.keys
 
         has_many :used_aliquots, class_name: 'Aliquot', relation_name: :used_aliquots

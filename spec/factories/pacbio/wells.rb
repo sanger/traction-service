@@ -10,7 +10,6 @@ FactoryBot.define do
     # you can't use attributes_for unless you remove the need for instance
     plate { instance.present? ? build(:pacbio_plate, wells: [instance]) : build(:pacbio_plate) }
 
-    sequence(:comment) { |n| "comment#{n}" }
     sequence(:binding_kit_box_barcode) { |n| "DM111710086220011171#{n}" }
 
     transient do

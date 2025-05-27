@@ -57,7 +57,7 @@ module Pacbio
     end
 
     def summary
-      "#{sample_names} #{comment}".strip
+      sample_names.to_s
     end
 
     # A collection of all the used_aliquots for given libraries and pools in a well
