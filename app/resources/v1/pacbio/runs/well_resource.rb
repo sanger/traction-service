@@ -127,6 +127,8 @@ module V1
         private
 
         def annotations_attributes=(annotations_parameters)
+          return unless annotations_parameters
+
           @model.annotations_attributes = annotations_parameters.map do |annotation|
             annotation.permit(:comment, :user, :annotation_type_id)
           end
