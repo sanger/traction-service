@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     jsonapi_resources :samples,  only: %i[index create]
     jsonapi_resources :tag_sets, only: %i[index create update destroy]
     jsonapi_resources :tags,     only: %i[index create update destroy]
+    jsonapi_resources :annotation_types, only: %i[index show]
 
     jsonapi_resources :workflows, only: [:index] do
       jsonapi_resources :workflow_steps, only: [:index]
@@ -44,6 +45,7 @@ Rails.application.routes.draw do
         # rubocop:disable Lint/EmptyBlock
         jsonapi_resources(:plates,        only: %i[index create update destroy]) {}
         jsonapi_resources(:wells,         only: %i[index create update destroy]) {}
+        jsonapi_resources(:annotations, only: %i[index show]) {}
         # rubocop:enable Lint/EmptyBlock
       end
 
