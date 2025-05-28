@@ -751,7 +751,7 @@ RSpec.describe Pacbio::Well, :pacbio do
     end
 
     it 'can have some annotations' do
-      well = create(:pacbio_well)
+      well = create(:pacbio_well, annotation_count: 0)
       annotation_type = create(:annotation_type, name: 'Test Annotation')
       annotation1 = well.annotations.create!(
         annotation_type: annotation_type,

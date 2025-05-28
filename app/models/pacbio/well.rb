@@ -46,6 +46,9 @@ module Pacbio
     delegate :run, to: :plate, allow_nil: true
 
     accepts_nested_attributes_for :used_aliquots, allow_destroy: true
+    accepts_nested_attributes_for :annotations, allow_destroy: true
+
+    attr_reader :annotations_attributes
 
     # @return [TagSet | NullTagSet] the tag set for the first aliquot or null tag set
     def tag_set

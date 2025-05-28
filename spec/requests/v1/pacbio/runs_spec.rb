@@ -238,7 +238,10 @@ RSpec.describe 'RunsController' do
                     include_fivemc_calls_in_cpg_motifs: 'Yes',
                     ccs_analysis_output_include_kinetics_information: 'Yes',
                     demultiplex_barcodes: 'In SMRT Link',
-                    used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
+                    used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }],
+                    annotations_attributes: [
+                      { annotation_type_id: annotation_type.id, comment: 'Another test comment', user: 'daisy' }
+                    ]
                   }
                 ]
               }],
@@ -266,7 +269,10 @@ RSpec.describe 'RunsController' do
       end
 
       it 'creates an annotation' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Annotation, :count).by(1)
+        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        run = Pacbio::Run.first
+        expect(run.annotations.count).to eq(1)
+        expect(run.wells.first.annotations.count).to eq(1)
       end
 
       it 'creates a used_aliquot' do
@@ -323,7 +329,8 @@ RSpec.describe 'RunsController' do
 
                   }
                 ]
-              }]
+              }],
+              annotations_attributes: nil # Check that annotations are not required.
             }
           }
         }.to_json
@@ -398,8 +405,8 @@ RSpec.describe 'RunsController' do
                     pre_extension_time: '2',
                     include_base_kinetics: 'True',
                     polymerase_kit: 'ABC123',
-                    used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
-
+                    used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }],
+                    annotations_attributes: nil # Check that annotations are not required.
                   }
                 ]
               }]

@@ -21,11 +21,13 @@ module V1
     #
     # * plates {V1::Pacbio::PlateResource}
     # * smrt_link_version {V1::Pacbio::SmrtLinkVersionResource}
+    # * annotations {V1::Pacbio::Runs::AnnotationResource}
     #
     # ## Relationship trees:
     #
     # * plates.wells.used_aliquots
     # * smrt_link_version.smrt_link_option_versions
+    # * annotations
     #
     # @example
     #   curl -X GET http://localhost:3000/v1/pacbio/runs/1
@@ -129,6 +131,9 @@ module V1
       private
 
       def annotations_attributes=(annotations_parameters)
+        # This is necessary to avoid issues when annotations_attributes is nil
+        return unless annotations_parameters
+
         @model.annotations_attributes = annotations_parameters.map do |annotation|
           annotation.permit(:comment, :user, :annotation_type_id)
         end
@@ -143,7 +148,8 @@ module V1
           :id,
           :sequencing_kit_box_barcode,
           :plate_number,
-          wells_attributes: [:_destroy, PERMITTED_WELL_PARAMETERS, permitted_used_aliquots]
+          wells_attributes: [:_destroy, PERMITTED_WELL_PARAMETERS, permitted_used_aliquots,
+                             permitted_annotations]
         )
       end
 
@@ -152,6 +158,10 @@ module V1
           id source_id source_type volume concentration
           aliquot_type template_prep_kit_box_barcode _destroy
         ] }
+      end
+
+      def permitted_annotations
+        { annotations_attributes: %i[comment user annotation_type_id] }
       end
     end
   end

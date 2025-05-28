@@ -21,7 +21,10 @@ FactoryBot.define do
       library_max { 2 }
       libraries { [] }
       pools { [] }
+      annotation_count { 2 }
     end
+
+    annotations { build_list(:annotation, annotation_count, annotatable: instance) }
 
     used_aliquots do
       aliquots = pools.map do |pool|

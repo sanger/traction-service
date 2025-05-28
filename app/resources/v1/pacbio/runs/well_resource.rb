@@ -3,17 +3,56 @@
 module V1
   module Pacbio
     module Runs
-      # @todo This documentation does not yet include a detailed description of what this resource represents.
-      # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-      # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+      # Provides a JSON:API resource for the Pacbio::Well model.
+      #
+      # == Description
+      #
+      # WellResource exposes the attributes and relationships of a Pacbio Well,
+      # which represents a single well on a Pacbio plate. It allows clients to
+      # retrieve, create, and update wells, including their associated libraries,
+      # pools, used aliquots, and annotations.
+      #
+      # ## Primary relationships:
+      #
+      # * +used_aliquots+   - Has many used aliquots (Aliquot)
+      # * +libraries+       - Has many libraries (Pacbio::Library)
+      # * +pools+           - Has many pools (Pacbio::Pool)
+      # * +annotations+     - Has many annotations (Annotation)
+      #
+      # @Example Usage
+      #
+      #   # Get a single well
+      #   curl -X GET http://localhost:3000/v1/pacbio/runs/wells/1
+      #
+      #   # Get all wells for a plate
+      #   curl -X GET "http://localhost:3000/v1/pacbio/runs/wells?filter[pacbio_plate_id]=1"
+      #
+      #   # Get a well with related libraries and annotations
+      #   curl -X GET "http://localhost:3000/v1/pacbio/runs/wells/1?include=libraries,annotations"
+      #
+      #   # Create a well with nested annotations
+      #   curl -X POST http://localhost:3000/v1/pacbio/runs/wells \
+      #     -H "Content-Type: application/vnd.api+json" \
+      #     -d '{
+      #           "data": {
+      #             "type": "wells",
+      #             "attributes": {
+      #               "row": "A",
+      #               "column": "1",
+      #               "pacbio_plate_id": 1,
+      #               "annotations_attributes": [
+      #                 {
+      #                   "comment": "QC passed",
+      #                   "user": "jsmith",
+      #                   "annotation_type_id": 1
+      #                 }
+      #               ]
+      #             }
+      #           }
+      #         }'
       #
       # @note Access this resource via the `/v1/pacbio/runs/wells` endpoint.
       #
-      # Provides a JSON:API representation of {Pacbio::Well}.
-      #
-      # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-      # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-      # for the service implementation of the JSON:API standard.
       class WellResource < JSONAPI::Resource
         model_name 'Pacbio::Well'
 
@@ -62,11 +101,13 @@ module V1
         # @!attribute [rw] full_resolution_base_qual
         #   @return [Boolean] whether to apply full resolution base qual
         attributes :row, :column, :pacbio_plate_id, :position,
+                   :annotations_attributes,
                    *Rails.configuration.pacbio_smrt_link_versions.options.keys
 
         has_many :used_aliquots, class_name: 'Aliquot', relation_name: :used_aliquots
         has_many :libraries
         has_many :pools
+        has_many :annotations, class_name: 'Annotation', foreign_key_on: :related
 
         # JSON API Resources builds up a representation of the relationships on
         # a give resource. Whilst doing to it asks the associated resource for
@@ -77,8 +118,17 @@ module V1
           case type.downcase.pluralize
           when 'libraries' then Pacbio::LibraryResource
           when 'pools' then Pacbio::PoolResource
+          when 'annotations' then Pacbio::Runs::AnnotationResource
           else
             super
+          end
+        end
+
+        private
+
+        def annotations_attributes=(annotations_parameters)
+          @model.annotations_attributes = annotations_parameters.map do |annotation|
+            annotation.permit(:comment, :user, :annotation_type_id)
           end
         end
       end
