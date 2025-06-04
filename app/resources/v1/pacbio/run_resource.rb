@@ -21,11 +21,13 @@ module V1
     #
     # * plates {V1::Pacbio::PlateResource}
     # * smrt_link_version {V1::Pacbio::SmrtLinkVersionResource}
+    # * annotations {V1::Pacbio::Runs::AnnotationResource}
     #
     # ## Relationship trees:
     #
     # * plates.wells.used_aliquots
     # * smrt_link_version.smrt_link_option_versions
+    # * annotations
     #
     # @example
     #   curl -X GET http://localhost:3000/v1/pacbio/runs/1
@@ -60,7 +62,8 @@ module V1
       attributes :name, :dna_control_complex_box_barcode,
                  :system_name, :created_at, :state,
                  :pacbio_smrt_link_version_id, :plates_attributes,
-                 :adaptive_loading, :sequencing_kit_box_barcodes
+                 :adaptive_loading, :sequencing_kit_box_barcodes,
+                 :annotations_attributes
 
       # @!attribute [r] barcodes_and_concentrations
       #   @return [String] the barcodes and concentrations of the run
@@ -70,6 +73,8 @@ module V1
                         class_name: 'Runs::Plate'
 
       has_one :smrt_link_version, foreign_key: 'pacbio_smrt_link_version_id'
+
+      has_many :annotations, class_name: 'Runs::Annotation', foreign_key_on: :related
 
       filters :name, :state
 
@@ -102,6 +107,8 @@ module V1
       def self.resource_klass_for(type)
         if type == 'plates'
           super('runs/plates')
+        elsif type == 'annotations'
+          super('runs/annotations')
         else
           super
         end
@@ -123,22 +130,38 @@ module V1
 
       private
 
-      def plates_attributes=(plates_parameters) # rubocop:disable Metrics/MethodLength
-        @model.plates_attributes = plates_parameters.map do |plate|
-          plate.permit(
-            :id,
-            :sequencing_kit_box_barcode,
-            :plate_number,
-            wells_attributes: [
-              # the following is needed to allow the _destroy parameter which
-              # is used to mark wells for destruction
-              :_destroy,
-              PERMITTED_WELL_PARAMETERS,
-              { used_aliquots_attributes: %i[id source_id source_type volume concentration
-                                             aliquot_type template_prep_kit_box_barcode _destroy] }
-            ]
-          )
+      def annotations_attributes=(annotations_parameters)
+        # This is necessary to avoid issues when annotations_attributes is nil
+        return unless annotations_parameters
+
+        @model.annotations_attributes = annotations_parameters.map do |annotation|
+          annotation.permit(:comment, :user, :annotation_type_id)
         end
+      end
+
+      def plates_attributes=(plates_parameters)
+        @model.plates_attributes = plates_parameters.map { |plate| permit_plate_params(plate) }
+      end
+
+      def permit_plate_params(plate)
+        plate.permit(
+          :id,
+          :sequencing_kit_box_barcode,
+          :plate_number,
+          wells_attributes: [:_destroy, PERMITTED_WELL_PARAMETERS, permitted_used_aliquots,
+                             permitted_annotations]
+        )
+      end
+
+      def permitted_used_aliquots
+        { used_aliquots_attributes: %i[
+          id source_id source_type volume concentration
+          aliquot_type template_prep_kit_box_barcode _destroy
+        ] }
+      end
+
+      def permitted_annotations
+        { annotations_attributes: %i[comment user annotation_type_id] }
       end
     end
   end
