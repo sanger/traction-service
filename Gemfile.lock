@@ -371,6 +371,7 @@ DEPENDENCIES
   pry-rails
   puma
   rack-cors
+  rack-session
   rails (~> 8.0.2)
   rails-erd
   rspec-rails
