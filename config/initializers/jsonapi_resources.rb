@@ -24,4 +24,12 @@ class JSONAPI::ActiveRelationResource
     Arel.sql("#{concat_table_field(table, field, quoted)} AS #{alias_table_field(table, field, quoted)}")
   end
 end
+
+# TODO: This is a temporary fix to allow the use of 422 Unprocessable Entity status code
+# in JSONAPI::Resources. This should be removed once the issue is resolved in the
+# JSONAPI::Resources gem.
+# See:
+# https://github.com/cerebris/jsonapi-resources/issues/1456
+Rack::Utils::SYMBOL_TO_STATUS_CODE[:unprocessable_entity] = 422
+
 # rubocop:enable
