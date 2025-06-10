@@ -25,6 +25,11 @@ class Reception
       create_tubes(tubes_attributes)
     end
 
+    # new method to handle compound tubes attributes
+    def compound_sample_tubes_attributes=(compound_sample_tubes_attributes)
+      create_compound_tubes(compound_sample_tubes_attributes)
+    end
+
     def pool_attributes=(pool_attributes)
       create_pool(pool_attributes)
     end
@@ -89,6 +94,53 @@ class Reception
         # Creates a request for the tube
         create_request_for_container(tube_attr, tube)
       end
+    end
+
+    # creates compound sample with component samples, create a request for compound sample
+    # create a compound sample in warehouse
+    # rubocop:disable Metrics/MethodLength
+    def create_compound_tubes(compound_tube_attributes)
+      compound_tube_attributes.each do |tube_attr|
+        tube = find_or_create_labware(tube_attr[:barcode], Tube)
+
+        if tube.existing_records.present?
+          update_labware_status(tube.barcode, 'failed', 'Tube already has a sample')
+          next
+        end
+
+        # Create the compound sample
+        compound_sample = create_compound_sample
+
+        # Create the request for the tube using the compound sample
+        create_request_for_container(
+          {
+            sample: compound_sample.attributes.with_indifferent_access,
+            request: tube_attr[:request]
+          },
+          tube
+        )
+
+        # create a message to the warehouse
+        compound_message = {
+          id: compound_sample.id,
+          name: compound_sample.name,
+          external_id: compound_sample.external_id,
+          component_samples: tube_attr[:samples].map { |s| { external_id: s[:external_id] } }
+        }
+
+        Messages.publish(compound_message, Pipelines.reception.compound_sample.message)
+      end
+    end
+    # rubocop:enable Metrics/MethodLength
+
+    def create_compound_sample
+      # what attributes to use for the compound sample?
+      Sample.create!(
+        name: "compound_#{SecureRandom.hex(4)}",
+        external_id: SecureRandom.uuid,
+        species: 'compound',
+        supplier_name: 'compound'
+      )
     end
 
     # Creates a pool from pool_attributes and uses the imported libraries

@@ -24,7 +24,8 @@ module V1
     #   @return [Array<Hash>] the attributes of the tubes
     # @!attribute [rw] pool_attributes
     #   @return [Hash] the attributes of the pool
-    attributes :source, :labware, :plates_attributes, :tubes_attributes, :pool_attributes
+    attributes :source, :labware, :plates_attributes, :tubes_attributes, :pool_attributes,
+               :compound_sample_tubes_attributes
 
     after_create :publish_messages, :construct_resources!
 
@@ -69,6 +70,29 @@ module V1
         ).to_h.with_indifferent_access
       end
     end
+
+    # add here the compound_sample_tubes_attributes method, handle incoming compound tube parameters
+    # rubocop:disable Metrics/MethodLength
+    def compound_sample_tubes_attributes=(compound_tube_parameters)
+      raise ArgumentError unless compound_tube_parameters.is_a?(Array)
+
+      # call model method to set compound tubes attributes
+      @model.compound_sample_tubes_attributes = compound_tube_parameters.map do |tube|
+        tube.permit(
+          :barcode,
+          { request: permitted_request_attributes },
+          samples: %i[
+            date_of_sample_collection
+            donor_id
+            external_id
+            name
+            species
+            supplier_name
+          ]
+        ).to_h.with_indifferent_access
+      end
+    end
+    # rubocop:enable Metrics/MethodLength
 
     def pool_attributes=(pool_parameters)
       raise ArgumentError unless pool_parameters.is_a?(Object)

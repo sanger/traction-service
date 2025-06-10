@@ -80,7 +80,29 @@ default: &default
           date_of_sample_collection:
             type: :model
             value: date_of_sample_collection
-          
+    
+    compound_sample:
+      message:
+        lims: *lims
+        key: compound_sample
+        fields:
+          id:
+            type: :model
+            value: id
+          name:
+            type: :model
+            value: name
+          uuid_sample_lims:
+            type: :model
+            value: external_id
+          component_sample_uuids:
+            type: :array
+            value: component_samples
+            children:
+              uuid:
+                type: :model
+                value: external_id
+      
 
 
 development: *default
