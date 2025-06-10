@@ -10,7 +10,7 @@ RSpec.describe 'WellsController' do
   end
 
   describe '#get' do
-    let!(:wells) { create_list(:pacbio_well, 2, pool_count: 2) }
+    let!(:wells) { create_list(:pacbio_well, 2, pool_count: 2, annotation_count: 1) }
 
     it 'returns a list of wells' do
       get v1_pacbio_runs_wells_path, headers: json_api_headers
@@ -20,7 +20,7 @@ RSpec.describe 'WellsController' do
 
     describe 'has the correct attributes' do
       before do
-        get "#{v1_pacbio_runs_wells_path}?include=pools,used_aliquots", headers: json_api_headers
+        get "#{v1_pacbio_runs_wells_path}?include=pools,used_aliquots,annotations", headers: json_api_headers
       end
 
       let!(:well) { wells.first }
@@ -34,7 +34,6 @@ RSpec.describe 'WellsController' do
         expect(well_attributes['movie_time'].to_s).to eq(well.movie_time.to_s)
         expect(well_attributes['on_plate_loading_concentration']).to eq(well.on_plate_loading_concentration)
         expect(well_attributes['pacbio_plate_id']).to eq(well.pacbio_plate_id)
-        expect(well_attributes['comment']).to eq(well.comment)
         expect(well_attributes['pre_extension_time']).to eq(well.pre_extension_time)
         expect(well_attributes['binding_kit_box_barcode']).to eq(well.binding_kit_box_barcode)
       end
@@ -59,6 +58,16 @@ RSpec.describe 'WellsController' do
             'aliquot_type' => aliquot.aliquot_type
           )
         end
+
+        annotation_attributes = find_included_resource(type: 'annotations', id: well.annotations.first.id)['attributes']
+        expect(annotation_attributes).to include(
+          'comment' => well.annotations.first.comment,
+          'user' => well.annotations.first.user,
+          'created_at' => well.annotations.first.created_at.to_fs(:us),
+          'annotation_type_id' => well.annotations.first.annotation_type_id,
+          'annotatable_type' => well.annotations.first.annotatable_type,
+          'annotatable_id' => well.annotations.first.annotatable_id
+        )
       end
 
       it 'has the correct v10 attributes' do

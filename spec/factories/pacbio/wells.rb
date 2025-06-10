@@ -10,7 +10,6 @@ FactoryBot.define do
     # you can't use attributes_for unless you remove the need for instance
     plate { instance.present? ? build(:pacbio_plate, wells: [instance]) : build(:pacbio_plate) }
 
-    sequence(:comment) { |n| "comment#{n}" }
     sequence(:binding_kit_box_barcode) { |n| "DM111710086220011171#{n}" }
 
     transient do
@@ -22,7 +21,10 @@ FactoryBot.define do
       library_max { 2 }
       libraries { [] }
       pools { [] }
+      annotation_count { 2 }
     end
+
+    annotations { build_list(:annotation, annotation_count, annotatable: instance) }
 
     used_aliquots do
       aliquots = pools.map do |pool|
