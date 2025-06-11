@@ -96,10 +96,12 @@ class Reception
       end
     end
 
+    # main logic goes here
     # creates compound sample with component samples, create a request for compound sample
     # create a compound sample in warehouse
     # rubocop:disable Metrics/MethodLength
     def create_compound_tubes(compound_tube_attributes)
+      # create tubes from compound_tube_attributes
       compound_tube_attributes.each do |tube_attr|
         tube = find_or_create_labware(tube_attr[:barcode], Tube)
 
@@ -122,24 +124,26 @@ class Reception
 
         # create a message to the warehouse
         compound_message = {
-          id: compound_sample.id,
-          name: compound_sample.name,
-          external_id: compound_sample.external_id,
-          component_samples: tube_attr[:samples].map { |s| { external_id: s[:external_id] } }
+          "sample":{
+            "id": compound_sample.id,
+            "component_samples": 
+              tube_attr[:samples].map { |s| { uuid: s[:external_id] } }
+          }
         }
-
+        puts "---compound sample json: #{compound_tube_attributes.inspect}"
+        puts "---compound sample message: #{compound_message.inspect}"
+        # Messages.publish(compound_tube_attributes, Pipelines.reception.compound_sample.message)
         Messages.publish(compound_message, Pipelines.reception.compound_sample.message)
       end
     end
     # rubocop:enable Metrics/MethodLength
 
     def create_compound_sample
-      # what attributes to use for the compound sample?
+      # what attributes to use for the compound sample? include component samples here?
       Sample.create!(
         name: "compound_#{SecureRandom.hex(4)}",
         external_id: SecureRandom.uuid,
-        species: 'compound',
-        supplier_name: 'compound'
+        species: 'compound'
       )
     end
 
