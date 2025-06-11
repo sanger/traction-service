@@ -97,7 +97,7 @@ RSpec.describe Emq::Encoder do
       end
 
       it 'logs an error and raises Standard Error' do
-        expect(Rails.logger).to receive(:error).with("Error validating volume tracking message: <unexpected character: 'invalid json'>")
+        expect(Rails.logger).to receive(:error).with("Error validating volume tracking message: <unexpected character: 'invalid' at line 1 column 1>")
         expect { encoder.encode_message(message_data) }.to raise_error(StandardError)
       end
     end
