@@ -78,18 +78,24 @@ module V1
 
       # call model method to set compound tubes attributes
       @model.compound_sample_tubes_attributes = compound_tube_parameters.map do |tube|
+        # tube.permit(
+        #   :barcode,
+        #   { request: permitted_request_attributes },
+        #   samples: %i[
+        #     date_of_sample_collection
+        #     donor_id
+        #     external_id
+        #     name
+        #     species
+        #     supplier_name
+        #   ]
         tube.permit(
           :barcode,
-          { request: permitted_request_attributes },
-          samples: %i[
-            date_of_sample_collection
-            donor_id
-            external_id
-            name
-            species
-            supplier_name
-          ]
+          library: permitted_library_attributes,
+          request: permitted_request_attributes,
+          samples: permitted_sample_attributes
         ).to_h.with_indifferent_access
+        # ).to_h.with_indifferent_access
       end
     end
     # rubocop:enable Metrics/MethodLength

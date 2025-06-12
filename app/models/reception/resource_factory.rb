@@ -27,6 +27,7 @@ class Reception
 
     # new method to handle compound tubes attributes
     def compound_sample_tubes_attributes=(compound_sample_tubes_attributes)
+      # binding.pry
       create_compound_tubes(compound_sample_tubes_attributes)
     end
 
@@ -112,7 +113,7 @@ class Reception
 
         # Create the compound sample
         compound_sample = create_compound_sample
-
+        puts "---compound sample: #{compound_sample}"
         # Create the request for the tube using the compound sample
         create_request_for_container(
           {
@@ -122,18 +123,31 @@ class Reception
           tube
         )
 
-        # create a message to the warehouse
-        compound_message = {
-          "sample":{
-            "id": compound_sample.id,
-            "component_samples": 
-              tube_attr[:samples].map { |s| { uuid: s[:external_id] } }
-          }
+        # create an object to hold compound sample and 2. component_samples array containing object which has uuid field) 
+        # compound_sample_publish (1. need a field of component_sample_uuids: array of string)) 
+
+        compound_sample_to_publish = {
+          "sample": compound_sample.attributes.merge(
+            "component_sample_uuids": tube_attr[:samples].map { |s| { uuid: s[:external_id] } }
+          ),
+          "lims": 'SQSCP_ST'
         }
-        puts "---compound sample json: #{compound_tube_attributes.inspect}"
-        puts "---compound sample message: #{compound_message.inspect}"
+        # create a message to the warehouse
+        # compound_message = {
+        #   "sample":{
+        #     "id": compound_sample.id,
+        #     "component_samples": 
+        #       tube_attr[:samples].map { |s| { uuid: s[:external_id] } }
+        #   }
+        #   "lims": ""
+        # }
+
+        # Convert to JSON object
+        # compound_message_json = compound_message.to_json
+        # puts "---compound sample json: #{compound_tube_attributes.inspect}"
+        puts "---compound sample message: #{compound_sample_to_publish.to_json}"
         # Messages.publish(compound_tube_attributes, Pipelines.reception.compound_sample.message)
-        Messages.publish(compound_message, Pipelines.reception.compound_sample.message)
+        Messages.publish(compound_sample_to_publish, Pipelines.reception.compound_sample.message)
       end
     end
     # rubocop:enable Metrics/MethodLength

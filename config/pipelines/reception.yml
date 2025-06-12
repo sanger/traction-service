@@ -39,7 +39,7 @@ default: &default
       message:
         lims: *lims
         key: sample
-        fields:
+        fields: &sample_fields
           last_updated: *timestamp
           id_sample_lims:
             type: :model
@@ -86,22 +86,14 @@ default: &default
         lims: *lims
         key: compound_sample
         fields:
-          id:
-            type: :model
-            value: id
-          name:
-            type: :model
-            value: name
-          uuid_sample_lims:
-            type: :model
-            value: external_id
+          <<: *sample_fields
           component_sample_uuids:
-            type: :array
+            type: :array 
             value: component_samples
             children:
               uuid:
                 type: :model
-                value: external_id
+                value: uuid
       
 
 
