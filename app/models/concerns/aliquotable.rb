@@ -54,7 +54,7 @@ module Aliquotable
     #
     # This method is used to validate if the available volume is sufficient for a required volume.
     # @return [Boolean] Returns true if the available volume is sufficient, false otherwise.
-    def available_volume_sufficient
+    def available_volume_sufficient?
       available_volume >= 0
     end
 
@@ -93,7 +93,7 @@ module Aliquotable
     # Get all the aliquots that are libraries or pools and have insufficient volume
     failed_aliquots = used_aliquots.select do |aliquot|
       ['Pacbio::Library', 'Pacbio::Pool'].include?(aliquot.source_type) &&
-        !aliquot.source.available_volume_sufficient
+        !aliquot.source.available_volume_sufficient?
     end
     return if failed_aliquots.empty?
 
