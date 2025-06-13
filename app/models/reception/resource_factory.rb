@@ -27,7 +27,6 @@ class Reception
 
     # new method to handle compound tubes attributes
     def compound_sample_tubes_attributes=(compound_sample_tubes_attributes)
-      # binding.pry
       create_compound_tubes(compound_sample_tubes_attributes)
     end
 
@@ -97,9 +96,8 @@ class Reception
       end
     end
 
-    # main logic goes here
-    # creates compound sample with component samples, create a request for compound sample
-    # create a compound sample in warehouse
+    # This method is to create compound sample with component samples, create a request for compound sample
+    # publish message to warehouse to create compound sample and psd_sample_compounds_components
     # rubocop:disable Metrics/MethodLength
     def create_compound_tubes(compound_tube_attributes)
       # create tubes from compound_tube_attributes
@@ -113,7 +111,7 @@ class Reception
 
         # Create the compound sample
         compound_sample = create_compound_sample
-        puts "---compound sample: #{compound_sample}"
+
         # Create the request for the tube using the compound sample
         create_request_for_container(
           {
@@ -123,41 +121,27 @@ class Reception
           tube
         )
 
-        # create an object to hold compound sample and 2. component_samples array containing object which has uuid field) 
-        # compound_sample_publish (1. need a field of component_sample_uuids: array of string)) 
-
         compound_sample_to_publish = {
-          "sample": compound_sample.attributes.merge(
-            "component_sample_uuids": tube_attr[:samples].map { |s| { uuid: s[:external_id] } }
-          ),
-          "lims": 'SQSCP_ST'
-        }
-        # create a message to the warehouse
-        # compound_message = {
-        #   "sample":{
-        #     "id": compound_sample.id,
-        #     "component_samples": 
-        #       tube_attr[:samples].map { |s| { uuid: s[:external_id] } }
-        #   }
-        #   "lims": ""
-        # }
+            "sample": compound_sample.attributes.slice('id', 'external_id', 'name', 'created_at', 'updated_at')
+                                                .transform_keys { |key| key == 'external_id' ? 'uuid' : key }
+                                                .merge(
+                                                  "component_sample_uuids": tube_attr[:samples].map { |s| { uuid: s[:external_id] } }
+                                                )
+          }
 
-        # Convert to JSON object
-        # compound_message_json = compound_message.to_json
-        # puts "---compound sample json: #{compound_tube_attributes.inspect}"
-        puts "---compound sample message: #{compound_sample_to_publish.to_json}"
-        # Messages.publish(compound_tube_attributes, Pipelines.reception.compound_sample.message)
+        # Publish the compound sample to the warehouse
         Messages.publish(compound_sample_to_publish, Pipelines.reception.compound_sample.message)
       end
     end
     # rubocop:enable Metrics/MethodLength
 
     def create_compound_sample
-      # what attributes to use for the compound sample? include component samples here?
+      # what attributes to use for the compound sample? what is the name should be?
       Sample.create!(
         name: "compound_#{SecureRandom.hex(4)}",
         external_id: SecureRandom.uuid,
-        species: 'compound'
+        # here is hard coded, not sure what is should be
+        species: 'human'
       )
     end
 
