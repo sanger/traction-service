@@ -96,9 +96,12 @@ class Reception
       end
     end
 
-    # This method is to create compound sample with component samples, create a request for compound sample
-    # publish message to warehouse to create compound sample and psd_sample_compounds_components
+    # This method is to
+    # 1. create compound sample with component samples
+    # 2. create a request for compound sample
+    # 3. publish message to warehouse to create compound sample and psd_sample_compounds_components
     # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/BlockLength
     def create_compound_tubes(compound_tube_attributes)
       # create tubes from compound_tube_attributes
       compound_tube_attributes.each do |tube_attr|
@@ -122,18 +125,23 @@ class Reception
         )
 
         compound_sample_to_publish = {
-            "sample": compound_sample.attributes.slice('id', 'external_id', 'name', 'created_at', 'updated_at')
-                                                .transform_keys { |key| key == 'external_id' ? 'uuid' : key }
-                                                .merge(
-                                                  "component_sample_uuids": tube_attr[:samples].map { |s| { uuid: s[:external_id] } }
-                                                )
-          }
-
+          sample: compound_sample.attributes
+                                 .slice('id', 'external_id', 'name', 'created_at', 'updated_at')
+                                 .transform_keys do |key|
+                                   key == 'external_id' ? 'uuid' : key
+                                 end
+              .merge(
+                component_sample_uuids: tube_attr[:samples].map do |s|
+                  { uuid: s[:external_id] }
+                end
+              )
+        }
         # Publish the compound sample to the warehouse
         Messages.publish(compound_sample_to_publish, Pipelines.reception.compound_sample.message)
       end
     end
     # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/BlockLength
 
     def create_compound_sample
       # what attributes to use for the compound sample? what is the name should be?

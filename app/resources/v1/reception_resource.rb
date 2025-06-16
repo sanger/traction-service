@@ -72,7 +72,6 @@ module V1
     end
 
     # add here the compound_sample_tubes_attributes method, handle incoming compound tube parameters
-    # rubocop:disable Metrics/MethodLength
     def compound_sample_tubes_attributes=(compound_tube_parameters)
       raise ArgumentError unless compound_tube_parameters.is_a?(Array)
 
@@ -86,7 +85,6 @@ module V1
         ).to_h.with_indifferent_access
       end
     end
-    # rubocop:enable Metrics/MethodLength
 
     def pool_attributes=(pool_parameters)
       raise ArgumentError unless pool_parameters.is_a?(Object)
