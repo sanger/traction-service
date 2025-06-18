@@ -202,5 +202,10 @@ RSpec.describe Ont::Pool, :ont do
       pool = create(:ont_pool, insert_size: nil)
       expect(pool.final_library_amount).to be_nil
     end
+
+    it 'returns nil when the insert size is 0' do
+      pool = create(:ont_pool, insert_size: 0)
+      expect(pool.final_library_amount).to be_nil
+    end
   end
 end
