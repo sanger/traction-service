@@ -68,7 +68,7 @@ module Ont
     def calculate_final_library_amount
       # This method calculates the resultant number of fmol in a pool
       # This saves the labs manually calculating the formula
-      if concentration.present? && volume.present? && insert_size.present?
+      if concentration.present? && volume.present? && insert_size.present? && insert_size != 0
         return (
           (concentration * volume * VOLUME_CONCENTRATION_MULTIPLIER) /
           (insert_size * INSERT_SIZE_MULTIPLIER)
