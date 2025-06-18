@@ -112,8 +112,12 @@ class Reception
           next
         end
 
+        # Retrieve the supplier_name from the first sample in the samples array
+        supplier_name = tube_attr[:samples].first[:supplier_name]
+        species = tube_attr[:samples].first[:species]
+
         # Create the compound sample
-        compound_sample = create_compound_sample
+        compound_sample = create_compound_sample(supplier_name, species)
 
         # Create the request for the tube using the compound sample
         create_request_for_container(
@@ -143,13 +147,12 @@ class Reception
     # rubocop:enable Metrics/MethodLength
     # rubocop:enable Metrics/BlockLength
 
-    def create_compound_sample
+    def create_compound_sample(name, species)
       # what attributes to use for the compound sample? what is the name should be?
       Sample.create!(
-        name: "compound_#{SecureRandom.hex(4)}",
+        name: name,
         external_id: SecureRandom.uuid,
-        # here is hard coded, not sure what is should be
-        species: 'human'
+        species: species
       )
     end
 
