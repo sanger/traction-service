@@ -35,7 +35,6 @@ class QcResultsUploadFactory
     rows.each do |row_object|
       create_data(row_object)
     end
-    true
   end
 
   # @param row_object [Object] csv row e.g. { col_header_1: row_1_col_1 }

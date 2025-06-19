@@ -6,7 +6,7 @@
 # key: str
 # Returns
 # true if the key is present, or false if the key is not present
-def check_key(object, key)
+def check_key?(object, key)
   unless object.key?(key)
     Rails.logger.error "Cannot find #{key} in object"
     return false
@@ -45,7 +45,7 @@ end
 def check_subtree(object, compared_object, key)
   return unless compared_object[key].is_a?(Hash)
 
-  unless check_objects(object[key], compared_object[key])
+  unless check_objects?(object[key], compared_object[key])
     Rails.logger.error "Cannot match subtree at #{key}"
     return false
   end
@@ -61,7 +61,7 @@ end
 # Returns false if they are different, or nil if not
 def _compare_array(object, compared_object, key)
   compared_object[key].each_with_index do |_value, pos|
-    unless check_objects(object[key][pos], compared_object[key][pos])
+    unless check_objects?(object[key][pos], compared_object[key][pos])
       Rails.logger.error "Difference when checking position #{pos} of key #{key}"
       return false
     end
@@ -104,7 +104,7 @@ end
 # key: str
 # Returns
 # true if the value matches between objects, or false if it doesnt match
-def check_value(object, compared_object, key)
+def check_value?(object, compared_object, key)
   unless compared_object[key] == object[key]
     Rails.logger.error "Cannot match subtree at #{key}"
     return false
@@ -128,7 +128,7 @@ end
 # of the pipeline returned true, or if all the steps returned nil
 def run_checks_pipeline(object, compared_object, key)
   pipelines = %w[
-    check_regexp check_subtree check_array check_value
+    check_regexp check_subtree check_array check_value?
   ]
   pipelines.each do |method_name|
     value = send(method_name, object, compared_object, key)
@@ -143,11 +143,11 @@ end
 # compared_object: Hash
 # Returns
 # true if the hashes matches all elements, or false if they dont match
-def check_objects(object, compared_object)
+def check_objects?(object, compared_object)
   return object == compared_object unless compared_object.is_a?(Hash)
 
   compared_object.keys.each do |key|
-    return false unless check_key(object, key)
+    return false unless check_key?(object, key)
     return false unless run_checks_pipeline(object, compared_object, key)
   rescue StandardError => e
     Rails.logger.error("Error while processing #{key} with #{e}")
@@ -164,5 +164,5 @@ end
 # true if after converting the json, the hashes matches all elements across both objects
 # , or false if they dont match
 def match_json(json, compared_object)
-  check_objects(JSON.parse(json), compared_object)
+  check_objects?(JSON.parse(json), compared_object)
 end

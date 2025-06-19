@@ -84,24 +84,9 @@ default: &default
     compound_sample:
       message:
         lims: *lims
-        sample:
-          type: :hash
-          children:
-            id:
-              type: :model
-              value: id
-            uuid:
-              type: :model
-              value: uuid
-            name:
-              type: :model
-              value: name
-            created_at:
-              type: :model
-              value: created_at
-            updated_at:
-              type: :model
-              value: updated_at
+        key: compound_sample
+        fields:
+            <<: *sample_fields
             component_sample_uuids:
               type: :model
               value: component_sample_uuids

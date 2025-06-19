@@ -80,7 +80,7 @@ RSpec.describe Aliquotable do
       create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 3)
       library.primary_aliquot.volume = 50
       library.save
-      expect(library.available_volume_sufficient).to be(true)
+      expect(library.available_volume_sufficient?).to be(true)
     end
 
     it 'returns false if there is not enough volume' do
@@ -88,7 +88,7 @@ RSpec.describe Aliquotable do
       create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 3)
       library.primary_aliquot.volume = 10
       library.save
-      expect(library.available_volume_sufficient).to be(false)
+      expect(library.available_volume_sufficient?).to be(false)
     end
 
     it 'returns the available volume rounded to 2 decimal places' do

@@ -439,4 +439,52 @@ RSpec.describe Reception::ResourceFactory do
       end
     end
   end
+
+  describe '#compound_sample_tubes_attributes=' do
+    let(:compound_sample_tubes_attributes) do
+      [{
+        barcode: 'tube-123',
+        request: {
+          library_type: 'Pacbio_HiFi_mplx',
+          external_study_id: 'study-uuid'
+        },
+        samples: [
+          {
+            name: 'compound_sample_1',
+            external_id: 'uuid-1',
+            species: 'human',
+            supplier_name: 'supplier_name'
+          },
+          {
+            name: 'compound_sample_2',
+            external_id: 'uuid-2',
+            species: 'human',
+            supplier_name: 'supplier_name'
+          }
+        ]
+      }]
+    end
+
+    it 'creates compound samples and requests' do
+      expect { resource_factory.compound_sample_tubes_attributes = compound_sample_tubes_attributes }
+        .to change(Sample, :count).by(1) # Compound sample
+        .and change(Request, :count).by(1) # Associated request
+    end
+
+    it 'publishes the compound sample message' do
+      expect(Messages).to receive(:publish).with(
+        hash_including(
+          sample: hash_including(
+            'component_sample_uuids' => [
+              { uuid: 'uuid-1' },
+              { uuid: 'uuid-2' }
+            ]
+          )
+        ),
+        Pipelines.reception.compound_sample.message
+      )
+
+      resource_factory.compound_sample_tubes_attributes = compound_sample_tubes_attributes
+    end
+  end
 end

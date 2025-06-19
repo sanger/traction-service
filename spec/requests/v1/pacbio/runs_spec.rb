@@ -38,8 +38,8 @@ RSpec.describe 'RunsController' do
   end
 
   describe '#get' do
-    let!(:run1) { create(:pacbio_revio_run, state: 'pending') }
-    let!(:run2) { create(:pacbio_revio_run, state: 'started') }
+    let!(:run1) { create(:pacbio_revio_run, state: 'pending', annotation_count: 2) }
+    let!(:run2) { create(:pacbio_revio_run, state: 'started', annotation_count: 2) }
 
     it 'returns a list of runs' do
       get v1_pacbio_runs_path, headers: json_api_headers
@@ -48,7 +48,6 @@ RSpec.describe 'RunsController' do
       expect(json['data'].length).to eq(2)
     end
 
-    # intermitterntly failing??
     it 'returns the correct attributes' do
       get v1_pacbio_runs_path, headers: json_api_headers
 
@@ -66,7 +65,7 @@ RSpec.describe 'RunsController' do
     end
 
     it 'returns the correct relationships', :aggregate_failures do
-      get "#{v1_pacbio_runs_path}?include=plates,smrt_link_version", headers: json_api_headers
+      get "#{v1_pacbio_runs_path}?include=plates,smrt_link_version,annotations", headers: json_api_headers
 
       expect(response).to have_http_status(:success), response.body
       json = ActiveSupport::JSON.decode(response.body)
@@ -83,6 +82,16 @@ RSpec.describe 'RunsController' do
       expect(json['data'][0]['relationships']['smrt_link_version']).to be_present
       expect(json['data'][0]['relationships']['smrt_link_version']['data']['type']).to eq 'smrt_link_versions'
       expect(json['data'][0]['relationships']['smrt_link_version']['data']['id']).to eq run1.smrt_link_version.id.to_s
+
+      annotation_attributes = find_included_resource(type: 'annotations', id: run1.annotations.first.id)['attributes']
+      expect(annotation_attributes).to include(
+        'comment' => run1.annotations.first.comment,
+        'user' => run1.annotations.first.user,
+        'created_at' => run1.annotations.first.created_at.to_fs(:us),
+        'annotation_type_id' => run1.annotations.first.annotation_type_id,
+        'annotatable_type' => run1.annotations.first.annotatable_type,
+        'annotatable_id' => run1.annotations.first.annotatable_id
+      )
     end
 
     context 'pagination' do
@@ -202,6 +211,7 @@ RSpec.describe 'RunsController' do
   describe '#create' do
     context 'smrtlink v11 on success' do
       let(:pool1) { create(:pacbio_pool) }
+      let(:annotation_type) { create(:annotation_type) }
 
       let(:body) do
         {
@@ -228,10 +238,14 @@ RSpec.describe 'RunsController' do
                     include_fivemc_calls_in_cpg_motifs: 'Yes',
                     ccs_analysis_output_include_kinetics_information: 'Yes',
                     demultiplex_barcodes: 'In SMRT Link',
-                    used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
+                    used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }],
+                    annotations_attributes: [
+                      { annotation_type_id: annotation_type.id, comment: 'Another test comment', user: 'daisy' }
+                    ]
                   }
                 ]
-              }]
+              }],
+              annotations_attributes: [{ annotation_type_id: annotation_type.id, comment: 'Test comment', user: 'dave' }]
             }
           }
         }.to_json
@@ -252,6 +266,13 @@ RSpec.describe 'RunsController' do
 
       it 'creates a well' do
         expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
+      end
+
+      it 'creates an annotation' do
+        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        run = Pacbio::Run.first
+        expect(run.annotations.count).to eq(1)
+        expect(run.wells.first.annotations.count).to eq(1)
       end
 
       it 'creates a used_aliquot' do
@@ -308,7 +329,8 @@ RSpec.describe 'RunsController' do
 
                   }
                 ]
-              }]
+              }],
+              annotations_attributes: nil # Check that annotations are not required.
             }
           }
         }.to_json
@@ -383,8 +405,8 @@ RSpec.describe 'RunsController' do
                     pre_extension_time: '2',
                     include_base_kinetics: 'True',
                     polymerase_kit: 'ABC123',
-                    used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }]
-
+                    used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }],
+                    annotations_attributes: nil # Check that annotations are not required.
                   }
                 ]
               }]

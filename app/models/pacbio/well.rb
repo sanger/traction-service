@@ -16,6 +16,9 @@ module Pacbio
     has_many :libraries, class_name: 'Pacbio::Library', through: :used_aliquots,
                          source: :source, source_type: 'Pacbio::Library'
 
+    # allows creation of annotations
+    has_many :annotations, as: :annotatable, dependent: :destroy
+
     validates :used_aliquots, presence: true
 
     # pacbio smrt link options for a well are kept in store field of the well
@@ -43,6 +46,9 @@ module Pacbio
     delegate :run, to: :plate, allow_nil: true
 
     accepts_nested_attributes_for :used_aliquots, allow_destroy: true
+    accepts_nested_attributes_for :annotations, allow_destroy: true
+
+    attr_reader :annotations_attributes
 
     # @return [TagSet | NullTagSet] the tag set for the first aliquot or null tag set
     def tag_set
@@ -54,7 +60,7 @@ module Pacbio
     end
 
     def summary
-      "#{sample_names} #{comment}".strip
+      sample_names.to_s
     end
 
     # A collection of all the used_aliquots for given libraries and pools in a well

@@ -7,8 +7,8 @@ require './spec/support/json_matcher'
 RSpec.describe 'JsonMatcher' do
   describe '#check_key' do
     it 'can perform checks' do
-      expect(check_key({ 'a' => 1 }, 'a')).to be_truthy
-      expect(check_key({ 'a' => 1 }, 'b')).to be_falsy
+      expect(check_key?({ 'a' => 1 }, 'a')).to be_truthy
+      expect(check_key?({ 'a' => 1 }, 'b')).to be_falsy
     end
   end
 
@@ -47,17 +47,17 @@ RSpec.describe 'JsonMatcher' do
     end
   end
 
-  describe '#check_value' do
+  describe '#check_value?' do
     it 'can perform checks' do
-      expect(check_value({ 'a' => 1 }, { 'a' => 1 }, 'a')).to be_truthy
-      expect(check_value({ 'a' => 1 }, { 'a' => 2 }, 'a')).to be_falsy
+      expect(check_value?({ 'a' => 1 }, { 'a' => 1 }, 'a')).to be_truthy
+      expect(check_value?({ 'a' => 1 }, { 'a' => 2 }, 'a')).to be_falsy
     end
   end
 
-  describe '#check_objects' do
+  describe '#check_objects?' do
     it 'can perform checks' do
-      expect(check_objects({ 'a' => 1 }, { 'a' => 1 })).to be_truthy
-      expect(check_objects({ 'a' => 1 }, { 'a' => 2 })).to be_falsy
+      expect(check_objects?({ 'a' => 1 }, { 'a' => 1 })).to be_truthy
+      expect(check_objects?({ 'a' => 1 }, { 'a' => 2 })).to be_falsy
     end
   end
 

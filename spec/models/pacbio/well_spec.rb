@@ -53,13 +53,9 @@ RSpec.describe Pacbio::Well, :pacbio do
     expect(build(:pacbio_well, plate: nil)).not_to be_valid
   end
 
-  it 'can have a comment' do
-    expect(build(:pacbio_well).comment).to be_present
-  end
-
   it 'can have a summary' do
     well = create(:pacbio_well)
-    expect(well.summary).to eq("#{well.sample_names} #{well.comment}")
+    expect(well.summary).to eq(well.sample_names.to_s)
   end
 
   describe '#tagged?' do
@@ -752,6 +748,23 @@ RSpec.describe Pacbio::Well, :pacbio do
       it 'automation parameters is blank' do
         expect(well.automation_parameters).to be_nil
       end
+    end
+
+    it 'can have some annotations' do
+      well = create(:pacbio_well, annotation_count: 0)
+      annotation_type = create(:annotation_type, name: 'Test Annotation')
+      annotation1 = well.annotations.create!(
+        annotation_type: annotation_type,
+        comment: 'First annotation',
+        user: 'user1'
+      )
+      annotation2 = well.annotations.create!(
+        annotation_type: annotation_type,
+        comment: 'Second annotation',
+        user: 'user2'
+      )
+      expect(well.annotations.count).to eq(2)
+      expect(well.annotations).to include(annotation1, annotation2)
     end
   end
 end

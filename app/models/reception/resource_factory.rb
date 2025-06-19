@@ -128,27 +128,29 @@ class Reception
           tube
         )
 
-        compound_sample_to_publish = {
-          sample: compound_sample.attributes
-                                 .slice('id', 'external_id', 'name', 'created_at', 'updated_at')
-                                 .transform_keys do |key|
-                                   key == 'external_id' ? 'uuid' : key
-                                 end
-              .merge(
-                component_sample_uuids: tube_attr[:samples].map do |s|
-                  { uuid: s[:external_id] }
-                end
-              )
-        }
+        # Create the compound sample
+        compound_sample = create_compound_sample(supplier_name, species)
+
+        # Add component_sample_uuids to the compound_sample object
+        compound_sample_with_uuids =
+          compound_sample.attributes
+                         .slice('id', 'external_id', 'name', 'created_at', 'updated_at')
+                         .transform_keys { |key| key == 'external_id' ? 'uuid' : key }
+                         .merge(
+                           component_sample_uuids: tube_attr[:samples].map do |s|
+                             { uuid: s[:external_id] }
+                           end
+                         )
+
         # Publish the compound sample to the warehouse
-        Messages.publish(compound_sample_to_publish, Pipelines.reception.compound_sample.message)
+        Messages.publish(compound_sample_with_uuids, Pipelines.reception.compound_sample.message)
       end
     end
+
     # rubocop:enable Metrics/MethodLength
     # rubocop:enable Metrics/BlockLength
 
     def create_compound_sample(name, species)
-      # what attributes to use for the compound sample? what is the name should be?
       Sample.create!(
         name: name,
         external_id: SecureRandom.uuid,
