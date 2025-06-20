@@ -469,11 +469,14 @@ RSpec.describe Reception::ResourceFactory do
     end
 
     it 'creates compound samples and requests' do
-      expect do
-        resource_factory.compound_sample_tubes_attributes = compound_sample_tubes_attributes
-        resource_factory.construct_resources!
-      end.to change(Request, :count).by(1)
+      allow(Messages).to receive(:publish).and_return(true)
+      aggregate_failures do
+        expect {
+          resource_factory.compound_sample_tubes_attributes = compound_sample_tubes_attributes
+          resource_factory.construct_resources!
+        }.to change(Request, :count).by(1)
                                     .and change(Sample, :count).by(1)
+      end
     end
 
     it 'publishes the compound sample message' do
