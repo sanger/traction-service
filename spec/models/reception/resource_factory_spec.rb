@@ -441,8 +441,6 @@ RSpec.describe Reception::ResourceFactory do
   end
 
   describe '#compound_sample_tubes_attributes=' do
-    subject(:resource_factory) { build(:reception_resource_factory, tubes_attributes:, plates_attributes:, pool_attributes:) }
-
     let(:library_type) { create(:library_type, :pacbio) }
     let(:request_parameters) do
       attributes_for(:pacbio_request).merge(
