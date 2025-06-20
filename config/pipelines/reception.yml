@@ -86,10 +86,10 @@ default: &default
         lims: *lims
         key: compound_sample
         fields:
-            <<: *sample_fields
-            component_sample_uuids:
-              type: :model
-              value: component_sample_uuids
+          <<: *sample_fields
+          component_sample_uuids:
+            type: :model
+            value: component_sample_uuids
 
       
 
