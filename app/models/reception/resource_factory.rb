@@ -127,19 +127,11 @@ class Reception
           tube
         )
 
-        # Add component_sample_uuids to the compound_sample object
-        compound_sample_with_uuids =
-          compound_sample.attributes
-                         .slice('id', 'external_id', 'name', 'created_at', 'updated_at')
-                         .transform_keys { |key| key == 'external_id' ? 'uuid' : key }
-                         .merge(
-                           component_sample_uuids: tube_attr[:samples].map do |s|
-                             { uuid: s[:external_id] }
-                           end
-                         )
+        tube_attr[:samples].each do |sample|
+          compound_sample.component_sample_uuids << { uuid: sample[:external_id] }
+        end
 
-        # Publish the compound sample to the warehouse
-        Messages.publish(compound_sample_with_uuids, Pipelines.reception.compound_sample.message)
+        Messages.publish([compound_sample], Pipelines.reception.compound_sample.message)
       end
     end
 
