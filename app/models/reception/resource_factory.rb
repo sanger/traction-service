@@ -96,52 +96,10 @@ class Reception
       end
     end
 
-    # This method is to
-    # 1. create compound sample with component samples
-    # 2. create a request for compound sample
-    # 3. publish message to warehouse to create compound sample and psd_sample_compounds_components
-    # rubocop:disable Metrics/MethodLength
     def create_compound_tubes(compound_tube_attributes)
-      # create tubes from compound_tube_attributes
       compound_tube_attributes.each do |tube_attr|
-        tube = find_or_create_labware(tube_attr[:barcode], Tube)
-
-        if tube.existing_records.present?
-          update_labware_status(tube.barcode, 'failed', 'Tube already has a sample')
-          next
-        end
-
-        # Retrieve the supplier_name from the first sample in the samples array
-        supplier_name = tube_attr[:samples].first[:supplier_name]
-        species = tube_attr[:samples].first[:species]
-
-        # Create the compound sample
-        compound_sample = create_compound_sample(supplier_name, species)
-
-        # Create the request for the tube using the compound sample
-        create_request_for_container(
-          {
-            sample: compound_sample.attributes.with_indifferent_access,
-            request: tube_attr[:request]
-          },
-          tube
-        )
-
-        tube_attr[:samples].each do |sample|
-          compound_sample.component_sample_uuids << { uuid: sample[:external_id] }
-        end
-
-        Messages.publish([compound_sample], Pipelines.reception.compound_sample.message)
+        process_compound_tube(tube_attr)
       end
-    end
-
-    # rubocop:enable Metrics/MethodLength
-    def create_compound_sample(name, species)
-      Sample.create!(
-        name: name,
-        external_id: SecureRandom.uuid,
-        species: species
-      )
     end
 
     # Creates a pool from pool_attributes and uses the imported libraries
@@ -181,6 +139,50 @@ class Reception
     end
 
     private
+
+    def process_compound_tube(tube_attr)
+      tube = create_tube(tube_attr)
+      compound_sample = build_compound_sample_to_publish(tube_attr)
+      # Creates a request for the tube
+      create_request_for_container(
+        {
+          sample: compound_sample.attributes.with_indifferent_access,
+          request: tube_attr[:request]
+        },
+        tube
+      )
+      # Publishes the compound sample to the warehouse
+      Messages.publish([compound_sample], Pipelines.reception.compound_sample.message)
+    end
+
+    def create_tube(tube_attr)
+      tube = find_or_create_labware(tube_attr[:barcode], Tube)
+      if tube.existing_records.present?
+        update_labware_status(tube.barcode, 'failed', 'Tube already has a sample')
+        next
+      end
+      tube
+    end
+
+    # Build compound sample with component samples
+    def build_compound_sample_to_publish(tube_attr)
+      first_sample = tube_attr[:samples].first
+      supplier_name = first_sample[:supplier_name]
+      species = first_sample[:species]
+      compound_sample = create_compound_sample(supplier_name, species)
+      tube_attr[:samples].each do |sample|
+        compound_sample.component_sample_uuids << { uuid: sample[:external_id] }
+      end
+      compound_sample
+    end
+
+    def create_compound_sample(name, species)
+      Sample.create!(
+        name: name,
+        external_id: SecureRandom.uuid,
+        species: species
+      )
+    end
 
     def find_or_create_labware(barcode, type)
       # Takes a type (Plate or Tube) and searches for an existing record
