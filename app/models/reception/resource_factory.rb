@@ -25,7 +25,7 @@ class Reception
       create_tubes(tubes_attributes)
     end
 
-    # new method to handle compound tubes attributes
+    # method to handle compound tubes attributes
     def compound_sample_tubes_attributes=(compound_sample_tubes_attributes)
       create_compound_tubes(compound_sample_tubes_attributes)
     end
@@ -159,7 +159,6 @@ class Reception
       tube = find_or_create_labware(tube_attr[:barcode], Tube)
       if tube.existing_records.present?
         update_labware_status(tube.barcode, 'failed', 'Tube already has a sample')
-        next
       end
       tube
     end

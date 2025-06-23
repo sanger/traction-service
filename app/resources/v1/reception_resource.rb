@@ -71,7 +71,7 @@ module V1
       end
     end
 
-    # add here the compound_sample_tubes_attributes method, handle incoming compound tube parameters
+    # method to handle incoming compound tube parameters
     def compound_sample_tubes_attributes=(compound_tube_parameters)
       raise ArgumentError unless compound_tube_parameters.is_a?(Array)
 
