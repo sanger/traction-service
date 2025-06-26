@@ -24,7 +24,8 @@ module V1
     #   @return [Array<Hash>] the attributes of the tubes
     # @!attribute [rw] pool_attributes
     #   @return [Hash] the attributes of the pool
-    attributes :source, :labware, :plates_attributes, :tubes_attributes, :pool_attributes
+    attributes :source, :labware, :plates_attributes, :tubes_attributes, :pool_attributes,
+               :compound_sample_tubes_attributes
 
     after_create :publish_messages, :construct_resources!
 
@@ -66,6 +67,21 @@ module V1
           library: permitted_library_attributes,
           request: permitted_request_attributes,
           sample: permitted_sample_attributes
+        ).to_h.with_indifferent_access
+      end
+    end
+
+    # method to handle incoming compound tube parameters
+    def compound_sample_tubes_attributes=(compound_tube_parameters)
+      raise ArgumentError unless compound_tube_parameters.is_a?(Array)
+
+      # call model method to set compound tubes attributes
+      @model.compound_sample_tubes_attributes = compound_tube_parameters.map do |tube|
+        tube.permit(
+          :barcode,
+          library: permitted_library_attributes,
+          request: permitted_request_attributes,
+          samples: permitted_sample_attributes
         ).to_h.with_indifferent_access
       end
     end
