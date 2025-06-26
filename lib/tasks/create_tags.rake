@@ -300,7 +300,7 @@ namespace :tags do
 
       set = TagSet.pacbio_pipeline
                   .create_with(sample_sheet_behaviour: :hidden)
-                  .find_or_create_by!(name: 'Test', uuid: 'test_uuid')
+                  .find_or_create_by!(name: 'PacBio_Asymmetric_Barcodes', uuid: 'test_uuid')
 
       set.update!(sample_sheet_behaviour: :hidden) unless set.hidden_sample_sheet_behaviour?
 
