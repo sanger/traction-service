@@ -23,6 +23,7 @@ namespace :tags do
       Rake::Task['tags:create:mas_smrtbell_barcoded_adapters_(v2)'].invoke
       Rake::Task['tags:create:PiMmS_TruSeq_adapters_v1'].invoke
       Rake::Task['tags:create:SMRTbell_Barcoded_Adapter_Plates_ABCD'].invoke
+      Rake::Task['tags:create:pacbio_asymmetrical_barcodes'].invoke
     end
 
     desc 'Create all ont tags'
@@ -291,6 +292,44 @@ namespace :tags do
         set.tags.find_or_create_by!(tag_attributes)
       end
       puts '-> IsoSeq_Primers_12_Barcodes_v1 created'
+    end
+
+    desc 'Create asymmetrical barcodes for PacBio multiplexing'
+    task pacbio_asymmetrical_barcodes: :environment do
+      puts '-> Creating pacbio_asymmetrical_barcodes tag set and tags'
+
+      set = TagSet.pacbio_pipeline
+                  .create_with(sample_sheet_behaviour: :hidden)
+                  .find_or_create_by!(name: 'Test', uuid: 'test_uuid')
+
+      set.update!(sample_sheet_behaviour: :hidden) unless set.hidden_sample_sheet_behaviour?
+
+      puts '-> Tag Set successfully created'
+
+      # Read and parse
+      file_path = Rails.root.join('lib/tasks/asymmetric.txt')
+      lines = File.read(file_path).strip.split("\n")
+
+      parsed_tags = {}
+
+      lines.each_slice(2) do |header, sequence|
+        next unless header&.start_with?('>')
+
+        group_id, _, direction = header[1..].rpartition('_')
+        parsed_tags[group_id] ||= { group_id: group_id }
+
+        if direction == 'F'
+          parsed_tags[group_id][:oligo] = sequence
+        elsif direction == 'R'
+          parsed_tags[group_id][:oligo_reverse] = sequence
+        end
+      end
+
+      parsed_tags.values.each do |tag_attributes|
+        set.tags.find_or_create_by!(tag_attributes)
+      end
+
+      puts '-> PacBio asymmetrical barcode tags successfully created'
     end
 
     desc 'Create Nextera UD tags'
