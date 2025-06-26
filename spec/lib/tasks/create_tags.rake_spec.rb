@@ -41,6 +41,9 @@ RSpec.describe 'RakeTasks' do
           -> Creating SMRTbell_Barcoded_Adapter_Plates_ABCD tag set and tags
           -> Tag Set successfully created
           -> SMRTbell_Barcoded_Adapter_Plates_ABCD Tags successfully created
+          -> Creating pacbio_asymmetrical_barcodes tag set and tags
+          -> Tag Set successfully created
+          -> PacBio asymmetrical barcode tags successfully created
         HEREDOC
       ).to_stdout
       expect(TagSet.count).to eq(10)
@@ -98,6 +101,9 @@ RSpec.describe 'RakeTasks' do
           -> Creating SMRTbell_Barcoded_Adapter_Plates_ABCD tag set and tags
           -> Tag Set successfully created
           -> SMRTbell_Barcoded_Adapter_Plates_ABCD Tags successfully created
+          -> Creating pacbio_asymmetrical_barcodes tag set and tags
+          -> Tag Set successfully created
+          -> PacBio asymmetrical barcode tags successfully created
           -> Creating SQK-NBD114.96 tag set and tags
           -> Tag Set successfully created
           -> SQK-NBD114.96 tags successfully created
