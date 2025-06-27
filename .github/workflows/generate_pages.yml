@@ -13,7 +13,6 @@ permissions:
 jobs:
   build-docs:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         uses: sanger/.github/.github/actions/setup/checkout@master
