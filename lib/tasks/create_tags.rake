@@ -307,7 +307,7 @@ namespace :tags do
       puts '-> Tag Set successfully created'
 
       # Read and parse
-      file_path = Rails.root.join('lib/tasks/asymmetric.txt')
+      file_path = Rails.root.join('lib/tasks/data/pacbio_asymmetric_tags.txt')
       lines = File.read(file_path).strip.split("\n")
 
       parsed_tags = []
