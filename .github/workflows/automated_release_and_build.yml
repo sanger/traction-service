@@ -9,7 +9,8 @@ on:
       - develop
 
 jobs:
-  build:
+  automated_release:
+    name: Automated Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
