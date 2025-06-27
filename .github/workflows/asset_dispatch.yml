@@ -11,7 +11,8 @@ on:
         default: x.y.z-uat.1
 
 jobs:
-  build:
+  asset_dispatch:
+    name: Asset Dispatch
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
