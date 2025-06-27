@@ -12,13 +12,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: nelonoel/branch-name@v1.0.1
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true # Runs bundle install and caches gems. See the ruby_test.yml
-                              # example if you need more control over bundler.
+      - name: Checkout Repository
+        uses: sanger/.github/.github/actions/setup/checkout@master
+
+      - name: Setup Ruby
+        uses: sanger/.github/.github/actions/setup/ruby@master
 
       - name: Set release version
         # On the develop branch this might create RELEASE_VERSION=2.4.6-987654321-develop
