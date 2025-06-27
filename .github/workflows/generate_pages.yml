@@ -15,13 +15,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: sanger/.github/.github/actions/setup/checkout@master
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
+      - name: Setup Ruby
+        uses: sanger/.github/.github/actions/setup/ruby@master
 
       - name: Generate Yard documentation
         run: |
