@@ -310,22 +310,27 @@ namespace :tags do
       file_path = Rails.root.join('lib/tasks/asymmetric.txt')
       lines = File.read(file_path).strip.split("\n")
 
-      parsed_tags = {}
+      parsed_tags = []
 
-      lines.each_slice(2) do |header, sequence|
-        next unless header&.start_with?('>')
+      lines.each_slice(4) do |f_header, f_seq, r_header, r_seq|
+        next unless f_header.start_with?('>') && r_header.start_with?('>')
 
-        group_id, _, direction = header[1..].rpartition('_')
-        parsed_tags[group_id] ||= { group_id: group_id }
+        f_group, _, f_dir = f_header[1..].rpartition('_')
+        r_group, _, r_dir = r_header[1..].rpartition('_')
 
-        if direction == 'F'
-          parsed_tags[group_id][:oligo] = sequence
-        elsif direction == 'R'
-          parsed_tags[group_id][:oligo_reverse] = sequence
+        unless f_dir == 'F' && r_dir == 'R' && f_group == r_group
+          puts "-> Unexpected format in group: #{f_header}, #{r_header}"
+          next
         end
+
+        parsed_tags << {
+          group_id: f_group,
+          oligo: f_seq,
+          oligo_reverse: r_seq
+        }
       end
 
-      parsed_tags.values.each do |tag_attributes|
+      parsed_tags.each do |tag_attributes|
         set.tags.find_or_create_by!(tag_attributes)
       end
 
