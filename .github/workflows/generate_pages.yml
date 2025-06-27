@@ -3,7 +3,7 @@ name: Deploy Yard to GitHub Pages
 on:
   push:
     branches:
-      - 'master'
+      - master
   workflow_dispatch:
 
 permissions:
