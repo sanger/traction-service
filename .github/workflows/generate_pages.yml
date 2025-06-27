@@ -40,9 +40,7 @@ jobs:
           ./generate-docs.sh
 
       - name: Upload artifact to GitHub Pages
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: doc  # Path to the folder containing the Yard documentation (default is 'doc')
+        uses: sanger/.github/.github/actions/docs/upload@master
 
   deploy:
     runs-on: ubuntu-latest
