@@ -40,12 +40,10 @@ jobs:
       - name: Compile Build
         run: ./compile-build
 
+      # Create a GitHub release with the release asset as an artifact
       - name: Create release and upload release.tar.gz
-        uses: ncipollo/release-action@v1.8.8
+        uses: sanger/.github/.github/actions/release/create-release@master
         with:
-          name: ${{ env.RELEASE_VERSION }}
-          tag: v${{ env.RELEASE_VERSION }}
-          prerelease: ${{ !(github.ref == 'refs/heads/master') }}
-          commit: ${{ github.sha }}
-          artifacts: release.tar.gz
-          artifactErrorsFailBuild: true
+          release_name: ${{ steps.set_tag.outputs.release_version_tag }}
+          github_ref: ${{ github.ref }}
+          commit_sha: ${{ github.sha }}
