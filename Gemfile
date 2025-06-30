@@ -15,7 +15,7 @@ gem 'puma' # Use Puma as the app server
 gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX possible
 gem 'rack-session' # Use Rack Session for session management. Needed for flipper
 gem 'rails', '~> 8.0.2'
-gem 'sanger-jsonapi-resources', github: 'sanger/jsonapi-resources', branch: 'y25-318-from-master'
+gem 'sanger-jsonapi-resources', '~> 0.2.0'
 gem 'syslog' # No longer part of the default gems in Ruby 3.4
 
 group :development do
