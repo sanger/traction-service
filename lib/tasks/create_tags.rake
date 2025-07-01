@@ -23,7 +23,7 @@ namespace :tags do
       Rake::Task['tags:create:mas_smrtbell_barcoded_adapters_(v2)'].invoke
       Rake::Task['tags:create:PiMmS_TruSeq_adapters_v1'].invoke
       Rake::Task['tags:create:SMRTbell_Barcoded_Adapter_Plates_ABCD'].invoke
-      Rake::Task['tags:create:pacbio_asymmetrical_barcodes'].invoke
+      Rake::Task['tags:create:twist_universal_adapters_with_udi'].invoke
     end
 
     desc 'Create all ont tags'
@@ -294,13 +294,13 @@ namespace :tags do
       puts '-> IsoSeq_Primers_12_Barcodes_v1 created'
     end
 
-    desc 'Create asymmetrical barcodes for PacBio multiplexing'
-    task pacbio_asymmetrical_barcodes: :environment do
-      puts '-> Creating pacbio_asymmetrical_barcodes tag set and tags'
+    desc 'Create Twist Universal Adapters with UDI tags'
+    task twist_universal_adapters_with_udi: :environment do
+      puts '-> Creating Twist Universal Adapters with UDI tag set and tags'
 
       set = TagSet.pacbio_pipeline
                   .create_with(sample_sheet_behaviour: :hidden)
-                  .find_or_create_by!(name: 'PacBio_Asymmetric_Barcodes', uuid: 'test_uuid')
+                  .find_or_create_by!(name: 'Twist Universal Adapters with UDI', uuid: 'test_uuid')
 
       set.update!(sample_sheet_behaviour: :hidden) unless set.hidden_sample_sheet_behaviour?
 
@@ -334,7 +334,7 @@ namespace :tags do
         set.tags.find_or_create_by!(tag_attributes)
       end
 
-      puts '-> PacBio asymmetrical barcode tags successfully created'
+      puts '-> Create Twist Universal Adapters with UDI tags successfully created'
     end
 
     desc 'Create Nextera UD tags'
