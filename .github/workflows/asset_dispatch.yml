@@ -33,6 +33,6 @@ jobs:
       - name: Create release and upload release.tar.gz
         uses: sanger/.github/.github/actions/release/create-release@master
         with:
-          release_name: ${{ steps.set_tag.outputs.release_version_tag }}
+          release_name: ${{ github.event.inputs.release_name }}
           github_ref: ${{ github.ref }}
           commit_sha: ${{ github.sha }}
