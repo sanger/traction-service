@@ -9,6 +9,7 @@ on:
 
 jobs:
   test:
+    name: All Ruby Tests
     runs-on: ubuntu-latest
     services:
       mysql:
