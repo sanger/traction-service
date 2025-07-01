@@ -5,6 +5,8 @@ env:
 
 on:
   push:
+    branches:
+      - y25-108-4-migrate-actions
   pull_request:
 
 jobs:
