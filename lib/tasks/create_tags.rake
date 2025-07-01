@@ -334,7 +334,7 @@ namespace :tags do
         set.tags.find_or_create_by!(tag_attributes)
       end
 
-      puts '-> Create Twist Universal Adapters with UDI tags successfully created'
+      puts '-> Twist Universal Adapters with UDI tags successfully created'
     end
 
     desc 'Create Nextera UD tags'
