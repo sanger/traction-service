@@ -20,7 +20,7 @@ module V1
       #   @return [String] the oligo of the tag
       # @!attribute [rw] group_id
       #   @return [Integer] the group ID of the tag
-      attributes :oligo, :group_id
+      attributes :oligo, :oligo_reverse, :group_id
 
       # originally put 'belongs_to' to match the model, but got following warning from jsonapi:
       # ...you exposed a `has_one` relationship  using the `belongs_to` class method...

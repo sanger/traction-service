@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_23_144101) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_25_100037) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
@@ -442,6 +442,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_23_144101) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.bigint "tag_set_id"
+    t.string "oligo_reverse"
     t.index ["group_id", "tag_set_id"], name: "index_tags_on_group_id_and_tag_set_id", unique: true
     t.index ["oligo", "tag_set_id"], name: "index_tags_on_oligo_and_tag_set_id", unique: true
     t.index ["tag_set_id"], name: "index_tags_on_tag_set_id"
