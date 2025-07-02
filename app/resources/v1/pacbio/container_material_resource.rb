@@ -94,7 +94,7 @@ module V1
                :cost_code, :external_study_id,
                :sample_name, :sample_species, :state, :volume,
                :concentration, :template_prep_kit_box_barcode,
-               :insert_size, :sample_names, to: :material
+               :insert_size, to: :material
 
       # TODO: Moved here as dropped it from library, but this should probably become sample name.
       #      But overall, not really convinced this model should be exposed via the API.

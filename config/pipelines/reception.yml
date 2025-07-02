@@ -39,7 +39,7 @@ default: &default
       message:
         lims: *lims
         key: sample
-        fields:
+        fields: &sample_fields
           last_updated: *timestamp
           id_sample_lims:
             type: :model
@@ -80,7 +80,18 @@ default: &default
           date_of_sample_collection:
             type: :model
             value: date_of_sample_collection
-          
+    
+    compound_sample:
+      message:
+        lims: *lims
+        key: compound_sample
+        fields:
+          <<: *sample_fields
+          component_sample_uuids:
+            type: :model
+            value: component_sample_uuids
+
+      
 
 
 development: *default

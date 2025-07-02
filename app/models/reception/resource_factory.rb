@@ -25,6 +25,11 @@ class Reception
       create_tubes(tubes_attributes)
     end
 
+    # method to handle compound tubes attributes
+    def compound_sample_tubes_attributes=(compound_sample_tubes_attributes)
+      create_compound_tubes(compound_sample_tubes_attributes)
+    end
+
     def pool_attributes=(pool_attributes)
       create_pool(pool_attributes)
     end
@@ -91,6 +96,12 @@ class Reception
       end
     end
 
+    def create_compound_tubes(compound_tube_attributes)
+      compound_tube_attributes.each do |tube_attr|
+        process_compound_tube(tube_attr)
+      end
+    end
+
     # Creates a pool from pool_attributes and uses the imported libraries
     def create_pool(pool_attributes)
       return if pool_attributes.blank?
@@ -128,6 +139,49 @@ class Reception
     end
 
     private
+
+    def process_compound_tube(tube_attr)
+      tube = create_tube(tube_attr)
+      compound_sample = build_compound_sample_to_publish(tube_attr)
+      # Creates a request for the tube
+      create_request_for_container(
+        {
+          sample: compound_sample.attributes.with_indifferent_access,
+          request: tube_attr[:request]
+        },
+        tube
+      )
+      # Publishes the compound sample to the warehouse
+      Messages.publish([compound_sample], Pipelines.reception.compound_sample.message)
+    end
+
+    def create_tube(tube_attr)
+      tube = find_or_create_labware(tube_attr[:barcode], Tube)
+      if tube.existing_records.present?
+        update_labware_status(tube.barcode, 'failed', 'Tube already has a sample')
+      end
+      tube
+    end
+
+    # Build compound sample with component samples
+    def build_compound_sample_to_publish(tube_attr)
+      first_sample = tube_attr[:samples].first
+      supplier_name = first_sample[:supplier_name]
+      species = first_sample[:species]
+      compound_sample = create_compound_sample(supplier_name, species)
+      tube_attr[:samples].each do |sample|
+        compound_sample.component_sample_uuids << { uuid: sample[:external_id] }
+      end
+      compound_sample
+    end
+
+    def create_compound_sample(name, species)
+      Sample.create!(
+        name: name,
+        external_id: SecureRandom.uuid,
+        species: species
+      )
+    end
 
     def find_or_create_labware(barcode, type)
       # Takes a type (Plate or Tube) and searches for an existing record
