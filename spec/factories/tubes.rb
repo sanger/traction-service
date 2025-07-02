@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :tube do
     trait :with_barcode do
-      barcode
+      sequence(:barcode) { |n| "TRAC-#{n}" }
     end
 
     ont_requests { [] }
