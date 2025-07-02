@@ -43,6 +43,19 @@ module V1
     attributes :sanger_sample_id, :supplier_name, :taxon_id, :donor_id, :country_of_origin,
                :accession_number, :date_of_sample_collection
 
+    filter :name
+    attribute :pacbio_requests
+
+    def pacbio_requests
+      @model.requests
+            .includes(:requestable)
+            .filter { |r| r.requestable_type == 'Pacbio::Request' && r.requestable.present? }
+            .map do |r|
+        r.requestable.slice(:id, :external_study_id, :created_at, :updated_at,
+                            :cost_code)
+      end
+    end
+
     def created_at
       @model.created_at.to_fs(:us)
     end

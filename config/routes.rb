@@ -12,7 +12,7 @@ Rails.application.routes.draw do
     jsonapi_resources :qc_results_uploads, only: %i[create]
     jsonapi_resources :qc_results, only: %i[index create show]
     jsonapi_resources :receptions, only: %i[index create show]
-    jsonapi_resources :samples,  only: %i[index create]
+    jsonapi_resources :samples,  only: %i[index create show]
     jsonapi_resources :tag_sets, only: %i[index create update destroy]
     jsonapi_resources :tags,     only: %i[index create update destroy]
     jsonapi_resources :annotation_types, only: %i[index show]
