@@ -218,6 +218,69 @@ RSpec.describe 'RequestsController', :pacbio do
     end
   end
 
+  describe 'V1::Pacbio::Requests filtering', type: :request do
+    let!(:sample1) { create(:sample, name: 'SAMPLE-1') }
+    let!(:sample2) { create(:sample, name: 'SAMPLE-2') }
+
+    let!(:tube1) { create(:tube, barcode: 'TUBE-123') }
+    let!(:tube2) { create(:tube, barcode: 'TUBE-456') }
+
+    let!(:request1) do
+      create(:pacbio_request).tap do |pr|
+        pr.request.sample = sample1
+        pr.tube = tube1
+        pr.request.save!
+        pr.save!
+      end
+    end
+
+    let!(:request2) do
+      create(:pacbio_request).tap do |pr|
+        pr.request.sample = sample2
+        pr.tube = tube2
+        pr.request.save!
+        pr.save!
+      end
+    end
+
+    describe 'filter by sample_name' do
+      it 'returns only matching sample name requests' do
+        get '/v1/pacbio/requests', params: { filter: { sample_name: 'SAMPLE-1' } }
+
+        expect(response).to have_http_status(:ok)
+        json = JSON.parse(response.body)
+        puts json.inspect
+        expect(json['data'].length).to eq(1)
+        expect(json['data'][0]['attributes']['sample_name']).to eq('SAMPLE-1')
+      end
+    end
+
+    describe 'filter by barcode' do
+      it 'returns only matching barcode requests' do
+        get '/v1/pacbio/requests', params: { filter: { barcode: 'TUBE-456' } }
+
+        expect(response).to have_http_status(:ok)
+        json = JSON.parse(response.body)
+
+        expect(json['data'].length).to eq(1)
+        expect(json['data'][0]['attributes']['barcode']).to eq('TUBE-456')
+      end
+    end
+
+    describe 'filter by multiple sample names' do
+      it 'returns both matching sample name requests' do
+        get '/v1/pacbio/requests', params: { filter: { sample_name: ['SAMPLE-1', 'SAMPLE-2'] } }
+
+        expect(response).to have_http_status(:ok)
+        json = JSON.parse(response.body)
+
+        expect(json['data'].length).to eq(2)
+        returned_names = json['data'].map { |d| d['attributes']['sample_name'] }
+        expect(returned_names).to include('SAMPLE-1', 'SAMPLE-2')
+      end
+    end
+  end
+
   describe '#destroy' do
     let!(:request) { create(:pacbio_request) }
 
