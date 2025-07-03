@@ -261,7 +261,7 @@ RSpec.describe 'RequestsController', :pacbio do
 
     describe 'filter by barcode' do
       it 'returns only matching barcode requests' do
-        get '/v1/pacbio/requests', params: { filter: { barcode: 'TUBE-456' } }
+        get '/v1/pacbio/requests', params: { filter: { source_identifier: 'TUBE-456' } }
 
         expect(response).to have_http_status(:ok)
         json = JSON.parse(response.body)
