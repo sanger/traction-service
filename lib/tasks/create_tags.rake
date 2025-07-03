@@ -299,7 +299,7 @@ namespace :tags do
       puts '-> Creating Twist Universal Adapters with UDI tag set and tags'
 
       set = TagSet.pacbio_pipeline
-                  .find_or_create_by!(name: 'Twist Universal Adapters with UDI', uuid: 'test_uuid')
+                  .find_or_create_by!(name: 'Twist Universal Adapters with UDI', uuid: 'cfbe0985-c5f7-c1e1-bb3a-6432fbefac5d')
 
       puts '-> Tag Set successfully created'
 
