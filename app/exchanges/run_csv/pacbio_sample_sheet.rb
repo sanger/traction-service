@@ -91,7 +91,7 @@ module RunCsv
         bio_sample_name(sample),
         well.plate_well_position,
         sample.adapter, # left adapter
-        sample.adapter  # right adapter
+        sample.library&.tag&.oligo_reverse.presence || sample.adapter # right adapter
       ]
     end
 
