@@ -13,12 +13,7 @@ module V1
     # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
     # for the service implementation of the JSON:API standard.
-    class SampleResource < JSONAPI::Resource
-      model_name 'Sample'
-
-      # @!attribute [rw] name
-      attributes :name, :species, :external_id, :retention_instruction
-      has_many :requests, relation_name: :pacbio_requests
+    class SampleResource < V1::SampleResource
     end
   end
 end
