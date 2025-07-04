@@ -277,6 +277,22 @@ RSpec.describe 'RequestsController', :pacbio do
         expect(returned_names).to include('SAMPLE-1', 'SAMPLE-2')
       end
     end
+
+    describe 'V1::Pacbio::Requests includes', type: :request do
+      let(:sample) { create(:sample, name: 'SAMPLE-1', species: 'human') }
+      let(:pacbio_request) { create(:pacbio_request, sample: sample) }
+
+      it 'includes sample in the response when using include=sample' do
+        get v1_pacbio_requests_path, params: { include: 'sample' }, headers: json_api_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(json['data'].first['relationships']).to have_key('sample')
+
+        included_sample = json['included'].find { |inc| inc['type'] == 'samples' }
+        expect(included_sample['attributes']['name']).to eq('SAMPLE-1')
+        expect(included_sample['attributes']['species']).to eq('human')
+      end
+    end
   end
 
   describe '#destroy' do
