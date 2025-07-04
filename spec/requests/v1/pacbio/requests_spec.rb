@@ -250,10 +250,8 @@ RSpec.describe 'RequestsController', :pacbio do
 
     describe 'filter by sample_name' do
       it 'returns only matching sample name requests' do
-        get '/v1/pacbio/requests', params: { filter: { sample_name: 'SAMPLE-1' } }
-
+        get v1_pacbio_requests_path, params: { filter: { sample_name: 'SAMPLE-1' } }, headers: json_api_headers
         expect(response).to have_http_status(:ok)
-        json = JSON.parse(response.body)
         expect(json['data'].length).to eq(1)
         expect(json['data'][0]['attributes']['sample_name']).to eq('SAMPLE-1')
       end
@@ -261,10 +259,9 @@ RSpec.describe 'RequestsController', :pacbio do
 
     describe 'filter by barcode' do
       it 'returns only matching barcode requests' do
-        get '/v1/pacbio/requests', params: { filter: { source_identifier: 'TUBE-456' } }
+        get v1_pacbio_requests_path, params: { filter: { source_identifier: 'TUBE-456' } }, headers: json_api_headers
 
         expect(response).to have_http_status(:ok)
-        json = JSON.parse(response.body)
         expect(json['data'].length).to eq(1)
         expect(json['data'][0]['attributes']['barcode']).to eq('TUBE-456')
       end
@@ -272,10 +269,9 @@ RSpec.describe 'RequestsController', :pacbio do
 
     describe 'filter by multiple sample names' do
       it 'returns both matching sample name requests' do
-        get '/v1/pacbio/requests', params: { filter: { sample_name: %w[SAMPLE-1 SAMPLE-2] } }
+        get v1_pacbio_requests_path, params: { filter: { sample_name: %w[SAMPLE-1 SAMPLE-2] } }, headers: json_api_headers
 
         expect(response).to have_http_status(:ok)
-        json = JSON.parse(response.body)
         expect(json['data'].length).to eq(2)
         returned_names = json['data'].map { |d| d['attributes']['sample_name'] }
         expect(returned_names).to include('SAMPLE-1', 'SAMPLE-2')
