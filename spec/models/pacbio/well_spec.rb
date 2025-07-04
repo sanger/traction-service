@@ -587,27 +587,27 @@ RSpec.describe Pacbio::Well, :pacbio do
       end
     end
 
-    describe '#sample_is_barcoded' do
+    describe '#sample_is_barcoded?' do
       it 'returns true if all well aliquots are tagged and non isoSeq tags' do
-        expect(well.sample_is_barcoded).to be true
+        expect(well.sample_is_barcoded?).to be true
       end
 
       it 'returns false if there is one aliquots and it has no tag' do
         pool = create(:pacbio_pool, :untagged, library_count: 1)
         empty_well = create(:pacbio_well, pools: [pool])
-        expect(empty_well.sample_is_barcoded).to be false
+        expect(empty_well.sample_is_barcoded?).to be false
       end
 
       it 'returns true if there is only one aliquots and it has a non isoSeq tag' do
         pool = create(:pacbio_pool)
         empty_well = create(:pacbio_well, pools: [pool])
-        expect(empty_well.sample_is_barcoded).to be true
+        expect(empty_well.sample_is_barcoded?).to be true
       end
 
       it 'returns false if the aliquots are tagged with a :hidden tag set (egh. IsoSeq)' do
         pool = create(:pacbio_pool, :hidden_tagged, library_count: 1)
         empty_well = create(:pacbio_well, pools: [pool])
-        expect(empty_well.sample_is_barcoded).to be false
+        expect(empty_well.sample_is_barcoded?).to be false
       end
     end
 

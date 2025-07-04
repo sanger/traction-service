@@ -119,7 +119,7 @@ module Pacbio
     end
 
     # @return [Boolean] true if loading_target_p1_plus_p2 is present
-    def adaptive_loading_check
+    def loading_target_p1_plus_p2?
       loading_target_p1_plus_p2.present?
     end
 
@@ -197,7 +197,7 @@ module Pacbio
     # # Used to indicate to the sample sheet whether it should treat a sample as barcoded
     # # Note: This doesn't actually indicate that a sample *is* barcoded, as :hidden
     # # tag sets (such as IsoSeq) lie.
-    def sample_is_barcoded
+    def sample_is_barcoded?
       tag_set.default_sample_sheet_behaviour?
     end
 
@@ -220,7 +220,7 @@ module Pacbio
     # Sample bio Name field
     # Returns nil if sample is barcoded otherwise returns the sample names for all of the aliquots
     def bio_sample_name
-      sample_is_barcoded ? nil : sample_names
+      sample_is_barcoded? ? nil : sample_names
     end
 
     # Returns the formatted bio sample name.

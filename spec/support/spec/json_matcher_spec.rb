@@ -5,7 +5,7 @@ require 'rails_helper'
 require './spec/support/json_matcher'
 
 RSpec.describe 'JsonMatcher' do
-  describe '#check_key' do
+  describe '#check_key?' do
     it 'can perform checks' do
       expect(check_key?({ 'a' => 1 }, 'a')).to be_truthy
       expect(check_key?({ 'a' => 1 }, 'b')).to be_falsy
@@ -61,10 +61,10 @@ RSpec.describe 'JsonMatcher' do
     end
   end
 
-  describe '#match_json' do
+  describe '#match_json?' do
     it 'can perform checks' do
-      expect(match_json('{"a": 1}', { 'a' => 1 })).to be_truthy
-      expect(match_json('{"a": 1}', { 'a' => 2 })).to be_falsy
+      expect(match_json?('{"a": 1}', { 'a' => 1 })).to be_truthy
+      expect(match_json?('{"a": 1}', { 'a' => 2 })).to be_falsy
     end
   end
 end
