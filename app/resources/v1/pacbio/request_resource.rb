@@ -80,6 +80,7 @@ module V1
       has_one :well, relation_name: :well
       has_one :plate, relation_name: :plate
       has_one :tube, relation_name: :tube
+      has_one :sample, relation_name: :sample
 
       paginator :paged
 
