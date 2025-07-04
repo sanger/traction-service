@@ -239,7 +239,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.automation_parameters,
               well.ccs_analysis_output_include_kinetics_information,
               well.loading_target_p1_plus_p2.to_s,
-              well.adaptive_loading_check.to_s,
+              well.loading_target_p1_plus_p2?.to_s,
               well.ccs_analysis_output_include_low_quality_reads,
               well.include_fivemc_calls_in_cpg_motifs,
               well.demultiplex_barcodes
@@ -336,7 +336,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.on_plate_loading_concentration.to_s,
               well.plate.run.dna_control_complex_box_barcode,
               well.plate.run.barcodes_and_concentrations,
-              well.sample_is_barcoded.to_s,
+              well.sample_is_barcoded?.to_s,
               nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence,
@@ -344,7 +344,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.automation_parameters,
               well.ccs_analysis_output_include_kinetics_information,
               well.loading_target_p1_plus_p2.to_s,
-              well.adaptive_loading_check.to_s,
+              well.loading_target_p1_plus_p2?.to_s,
               well.ccs_analysis_output_include_low_quality_reads,
               well.include_fivemc_calls_in_cpg_motifs,
               well.demultiplex_barcodes
@@ -404,7 +404,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.on_plate_loading_concentration.to_s,
               well.plate.run.dna_control_complex_box_barcode,
               well.plate.run.barcodes_and_concentrations,
-              well.sample_is_barcoded.to_s,
+              well.sample_is_barcoded?.to_s,
               nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
@@ -412,7 +412,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.automation_parameters,
               well.ccs_analysis_output_include_kinetics_information,
               well.loading_target_p1_plus_p2.to_s,
-              well.adaptive_loading_check.to_s,
+              well.loading_target_p1_plus_p2?.to_s,
               well.ccs_analysis_output_include_low_quality_reads,
               well.include_fivemc_calls_in_cpg_motifs,
               well.demultiplex_barcodes
@@ -469,7 +469,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.on_plate_loading_concentration.to_s,
               well.plate.run.dna_control_complex_box_barcode,
               well.plate.run.barcodes_and_concentrations,
-              well.sample_is_barcoded.to_s,
+              well.sample_is_barcoded?.to_s,
               nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
@@ -477,7 +477,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.automation_parameters,
               well.ccs_analysis_output_include_kinetics_information,
               well.loading_target_p1_plus_p2.to_s,
-              well.adaptive_loading_check.to_s,
+              well.loading_target_p1_plus_p2?.to_s,
               well.ccs_analysis_output_include_low_quality_reads,
               well.include_fivemc_calls_in_cpg_motifs,
               well.demultiplex_barcodes
@@ -613,7 +613,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.automation_parameters,
               well.ccs_analysis_output_include_kinetics_information,
               well.loading_target_p1_plus_p2.to_s,
-              well.adaptive_loading_check.to_s,
+              well.loading_target_p1_plus_p2?.to_s,
               well.ccs_analysis_output_include_low_quality_reads,
               well.include_fivemc_calls_in_cpg_motifs,
               well.demultiplex_barcodes
@@ -714,7 +714,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.on_plate_loading_concentration.to_s,
               well.plate.run.dna_control_complex_box_barcode,
               well.plate.run.barcodes_and_concentrations,
-              well.sample_is_barcoded.to_s,
+              well.sample_is_barcoded?.to_s,
               nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence,
@@ -722,7 +722,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.automation_parameters,
               well.ccs_analysis_output_include_kinetics_information,
               well.loading_target_p1_plus_p2.to_s,
-              well.adaptive_loading_check.to_s,
+              well.loading_target_p1_plus_p2?.to_s,
               well.ccs_analysis_output_include_low_quality_reads,
               well.include_fivemc_calls_in_cpg_motifs,
               well.demultiplex_barcodes
@@ -784,7 +784,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.on_plate_loading_concentration.to_s,
               well.plate.run.dna_control_complex_box_barcode,
               well.plate.run.barcodes_and_concentrations,
-              well.sample_is_barcoded.to_s,
+              well.sample_is_barcoded?.to_s,
               nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
@@ -792,7 +792,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.automation_parameters,
               well.ccs_analysis_output_include_kinetics_information,
               well.loading_target_p1_plus_p2.to_s,
-              well.adaptive_loading_check.to_s,
+              well.loading_target_p1_plus_p2?.to_s,
               well.ccs_analysis_output_include_low_quality_reads,
               well.include_fivemc_calls_in_cpg_motifs,
               well.demultiplex_barcodes
@@ -851,7 +851,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.on_plate_loading_concentration.to_s,
               well.plate.run.dna_control_complex_box_barcode,
               well.plate.run.barcodes_and_concentrations,
-              well.sample_is_barcoded.to_s,
+              well.sample_is_barcoded?.to_s,
               nil, # barcode name - does not apply
               well.barcode_set,
               well.same_barcodes_on_both_ends_of_sequence.to_s,
@@ -859,7 +859,7 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
               well.automation_parameters,
               well.ccs_analysis_output_include_kinetics_information,
               well.loading_target_p1_plus_p2.to_s,
-              well.adaptive_loading_check.to_s,
+              well.loading_target_p1_plus_p2?.to_s,
               well.ccs_analysis_output_include_low_quality_reads,
               well.include_fivemc_calls_in_cpg_motifs,
               well.demultiplex_barcodes

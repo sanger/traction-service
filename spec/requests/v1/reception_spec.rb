@@ -64,38 +64,38 @@ RSpec.describe 'ReceptionsController' do
         post v1_receptions_path, params: body, headers: json_api_headers
         expect(Broker::Handle.test_received_messages.length).to eq(2)
         expect(Broker::Handle.test_received_messages[0].include?('priority_level')).to be true
-        assert match_json(Broker::Handle.test_received_messages[0],
-                          {
-                            'lims' => 'Traction', 'sample' => {
-                              'common_name' => 'human',
-                              'last_updated' => /.*/,
-                              'id_sample_lims' => /.*/,
-                              'uuid_sample_lims' => /.*/,
-                              'name' => /.*/,
-                              'public_name' => 'PublicName',
-                              'priority_level' => 'Medium',
-                              'country_of_origin' => 'United Kingdom'
-                            }
-                          })
+        assert match_json?(Broker::Handle.test_received_messages[0],
+                           {
+                             'lims' => 'Traction', 'sample' => {
+                               'common_name' => 'human',
+                               'last_updated' => /.*/,
+                               'id_sample_lims' => /.*/,
+                               'uuid_sample_lims' => /.*/,
+                               'name' => /.*/,
+                               'public_name' => 'PublicName',
+                               'priority_level' => 'Medium',
+                               'country_of_origin' => 'United Kingdom'
+                             }
+                           })
 
-        assert match_json(Broker::Handle.test_received_messages[1],
-                          {
-                            'lims' => 'Traction', 'stock_resource' => {
-                              'stock_resource_id' => /\d/,
-                              'labware_coordinate' => nil,
-                              'human_barcode' => 'NT1',
-                              'machine_barcode' => 'NT1',
-                              'labware_type' => 'tube',
-                              'created_at' => /.*/,
-                              'updated_at' => /.*/,
-                              'samples' => [
-                                {
-                                  'sample_uuid' => /.*/,
-                                  'study_uuid' => /.*/
-                                }
-                              ]
-                            }
-                          })
+        assert match_json?(Broker::Handle.test_received_messages[1],
+                           {
+                             'lims' => 'Traction', 'stock_resource' => {
+                               'stock_resource_id' => /\d/,
+                               'labware_coordinate' => nil,
+                               'human_barcode' => 'NT1',
+                               'machine_barcode' => 'NT1',
+                               'labware_type' => 'tube',
+                               'created_at' => /.*/,
+                               'updated_at' => /.*/,
+                               'samples' => [
+                                 {
+                                   'sample_uuid' => /.*/,
+                                   'study_uuid' => /.*/
+                                 }
+                               ]
+                             }
+                           })
       end
 
       context 'when receiving a change on labware' do
