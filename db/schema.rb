@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_27_145127) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_25_100037) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
@@ -80,10 +80,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_27_145127) do
   create_table "flipper_gates", charset: "utf8mb3", force: :cascade do |t|
     t.string "feature_key", null: false
     t.string "key", null: false
-    t.text "value"
+    t.string "value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true, length: { value: 255 }
+    t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
   end
 
   create_table "heron_ont_requests", charset: "utf8mb3", force: :cascade do |t|
