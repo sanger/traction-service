@@ -118,17 +118,17 @@ GEM
       factory_bot (~> 6.5)
       railties (>= 6.1.0)
     ffi (1.16.3)
-    flipper (1.3.4)
+    flipper (1.3.5)
       concurrent-ruby (< 2)
-    flipper-active_record (1.3.4)
+    flipper-active_record (1.3.5)
       activerecord (>= 4.2, < 9)
-      flipper (~> 1.3.4)
+      flipper (~> 1.3.5)
     flipper-api (1.3.4)
       flipper (~> 1.3.4)
       rack (>= 1.4, < 4)
-    flipper-ui (1.3.4)
+    flipper-ui (1.3.5)
       erubi (>= 1.0.0, < 2.0.0)
-      flipper (~> 1.3.4)
+      flipper (~> 1.3.5)
       rack (>= 1.4, < 4)
       rack-protection (>= 1.5.3, < 5.0.0)
       rack-session (>= 1.0.2, < 3.0.0)
@@ -144,10 +144,6 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.12.2)
-    jsonapi-resources (0.10.7)
-      activerecord (>= 4.1)
-      concurrent-ruby
-      railties (>= 4.1)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     listen (3.9.0)
@@ -207,8 +203,10 @@ GEM
     rack-cors (3.0.0)
       logger
       rack (>= 3.0.14)
-    rack-protection (3.0.6)
-      rack
+    rack-protection (4.1.1)
+      base64 (>= 0.1.0)
+      logger (>= 1.6.0)
+      rack (>= 3.0.0, < 4)
     rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -280,7 +278,7 @@ GEM
       rspec-mocks (~> 3.13)
       rspec-support (~> 3.13)
     rspec-support (3.13.4)
-    rubocop (1.76.1)
+    rubocop (1.77.0)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -288,7 +286,7 @@ GEM
       parser (>= 3.3.0.2)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 2.9.3, < 3.0)
-      rubocop-ast (>= 1.45.0, < 2.0)
+      rubocop-ast (>= 1.45.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 4.0)
     rubocop-ast (1.45.1)
@@ -309,9 +307,13 @@ GEM
     ruby-graphviz (1.2.5)
       rexml
     ruby-progressbar (1.13.0)
-    sanitize (6.0.2)
+    sanger-jsonapi-resources (0.2.0)
+      activerecord (>= 5.1)
+      concurrent-ruby
+      railties (>= 5.1)
+    sanitize (7.0.0)
       crass (~> 1.0.2)
-      nokogiri (>= 1.12.0)
+      nokogiri (>= 1.16.8)
     securerandom (0.4.1)
     set (1.1.1)
     shoulda-matchers (6.5.0)
@@ -368,7 +370,6 @@ DEPENDENCIES
   flipper-active_record
   flipper-api
   flipper-ui
-  jsonapi-resources
   listen
   mysql2
   pry-rails
@@ -382,6 +383,7 @@ DEPENDENCIES
   rubocop-factory_bot
   rubocop-rails
   rubocop-rspec
+  sanger-jsonapi-resources (~> 0.2.0)
   shoulda-matchers
   simplecov
   simplecov-lcov

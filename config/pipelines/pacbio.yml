@@ -245,7 +245,7 @@ default: &default
               value: plate.run.barcodes_and_concentrations
             Sample is Barcoded:
               type: :model
-              value: sample_is_barcoded
+              value: sample_is_barcoded?
             Barcode Set:
               type: :model
               value: barcode_set
@@ -266,7 +266,7 @@ default: &default
               value: loading_target_p1_plus_p2
             Use Adaptive Loading:
               type: :model
-              value: adaptive_loading_check
+              value: loading_target_p1_plus_p2?
             CCS Analysis Output - Include Low Quality Reads:
               type: :model
               value: ccs_analysis_output_include_low_quality_reads

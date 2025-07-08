@@ -19,7 +19,7 @@ class ReceptionGenerator
 
   def construct_resources!
     # Ensure we've loaded our factories.
-    FactoryBot.reload if FactoryBot.factories.count == 0
+    FactoryBot.reload if FactoryBot.factories.none?
     reception.construct_resources!
   end
 
