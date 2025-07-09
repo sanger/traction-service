@@ -26,7 +26,7 @@ jobs:
           bundle exec yard doc
       
       - name: Setup Python
-        uses: sanger/.github/.github/actions/setup/python@y25-108-3-migrate-actions
+        uses: sanger/.github/.github/actions/setup/python@master
 
       - name: Install Python Dependencies
         run: |
