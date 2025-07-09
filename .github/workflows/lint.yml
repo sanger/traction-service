@@ -1,0 +1,19 @@
+name: Lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  rubocop:
+    name: Rubocop
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: sanger/.github/.github/actions/setup/checkout@master
+
+      - name: Setup Ruby
+        uses: sanger/.github/.github/actions/setup/ruby@master
+
+      - name: Run rubocop
+        run: bundle exec rubocop -c .rubocop.yml --fail-fast 
