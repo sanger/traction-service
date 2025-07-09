@@ -41,9 +41,12 @@ RSpec.describe 'RakeTasks' do
           -> Creating SMRTbell_Barcoded_Adapter_Plates_ABCD tag set and tags
           -> Tag Set successfully created
           -> SMRTbell_Barcoded_Adapter_Plates_ABCD Tags successfully created
+          -> Creating Twist Universal Adapters with UDI tag set and tags
+          -> Tag Set successfully created
+          -> Twist Universal Adapters with UDI tags successfully created
         HEREDOC
       ).to_stdout
-      expect(TagSet.count).to eq(10)
+      expect(TagSet.count).to eq(11)
     end
 
     it 'creates all of the ont tag sets' do
@@ -98,6 +101,9 @@ RSpec.describe 'RakeTasks' do
           -> Creating SMRTbell_Barcoded_Adapter_Plates_ABCD tag set and tags
           -> Tag Set successfully created
           -> SMRTbell_Barcoded_Adapter_Plates_ABCD Tags successfully created
+          -> Creating Twist Universal Adapters with UDI tag set and tags
+          -> Tag Set successfully created
+          -> Twist Universal Adapters with UDI tags successfully created
           -> Creating SQK-NBD114.96 tag set and tags
           -> Tag Set successfully created
           -> SQK-NBD114.96 tags successfully created
@@ -109,7 +115,7 @@ RSpec.describe 'RakeTasks' do
           -> SQK-PCB114.24 tags successfully created
         HEREDOC
       ).to_stdout
-      expect(TagSet.count).to eq(13)
+      expect(TagSet.count).to eq(14)
     end
   end
 end

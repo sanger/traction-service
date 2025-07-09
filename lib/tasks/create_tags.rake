@@ -23,6 +23,7 @@ namespace :tags do
       Rake::Task['tags:create:mas_smrtbell_barcoded_adapters_(v2)'].invoke
       Rake::Task['tags:create:PiMmS_TruSeq_adapters_v1'].invoke
       Rake::Task['tags:create:SMRTbell_Barcoded_Adapter_Plates_ABCD'].invoke
+      Rake::Task['tags:create:twist_universal_adapters_with_udi'].invoke
     end
 
     desc 'Create all ont tags'
@@ -291,6 +292,49 @@ namespace :tags do
         set.tags.find_or_create_by!(tag_attributes)
       end
       puts '-> IsoSeq_Primers_12_Barcodes_v1 created'
+    end
+
+    desc 'Create Twist Universal Adapters with UDI tags'
+    task twist_universal_adapters_with_udi: :environment do
+      puts '-> Creating Twist Universal Adapters with UDI tag set and tags'
+
+      set = TagSet.pacbio_pipeline
+                  .create_with(sample_sheet_behaviour: :hidden)
+                  .find_or_create_by!(name: 'Twist Universal Adapters with UDI', uuid: 'test_uuid')
+
+      set.update!(sample_sheet_behaviour: :hidden) unless set.hidden_sample_sheet_behaviour?
+
+      puts '-> Tag Set successfully created'
+
+      # Read and parse
+      file_path = Rails.root.join('lib/tasks/data/Twist_Universal_Adapters_with_UDI.txt')
+      lines = File.read(file_path).strip.split("\n")
+
+      parsed_tags = []
+
+      lines.each_slice(4) do |f_header, f_seq, r_header, r_seq|
+        next unless f_header.start_with?('>') && r_header.start_with?('>')
+
+        f_group, _, f_dir = f_header[1..].rpartition('_')
+        r_group, _, r_dir = r_header[1..].rpartition('_')
+
+        unless f_dir == 'F' && r_dir == 'R' && f_group == r_group
+          puts "-> Unexpected format in group: #{f_header}, #{r_header}"
+          next
+        end
+
+        parsed_tags << {
+          group_id: f_group,
+          oligo: f_seq,
+          oligo_reverse: r_seq
+        }
+      end
+
+      parsed_tags.each do |tag_attributes|
+        set.tags.find_or_create_by!(tag_attributes)
+      end
+
+      puts '-> Twist Universal Adapters with UDI tags successfully created'
     end
 
     desc 'Create Nextera UD tags'

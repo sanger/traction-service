@@ -163,6 +163,6 @@ end
 # Returns
 # true if after converting the json, the hashes matches all elements across both objects
 # , or false if they dont match
-def match_json(json, compared_object)
+def match_json?(json, compared_object)
   check_objects?(JSON.parse(json), compared_object)
 end
