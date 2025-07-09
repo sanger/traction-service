@@ -5,8 +5,8 @@ name: Automated release and build of project
 on:
   push:
     branches:
-      - master
-      - develop
+      - y25-108-2-migrate-actions
+  pull_request:
 
 jobs:
   automated_release:
