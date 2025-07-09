@@ -8,6 +8,9 @@ on:
       - y25-108-2-migrate-actions
   pull_request:
 
+env:
+  BRANCH_NAME: ${{ github.ref_name }}
+
 jobs:
   automated_release:
     name: Automated Release
