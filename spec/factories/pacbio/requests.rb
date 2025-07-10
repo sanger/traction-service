@@ -9,7 +9,7 @@ FactoryBot.define do
     external_study_id
 
     transient do
-      sample { build(:sample) }
+      sample { association(:sample) }
     end
 
     after(:build) do |req, evaluator|
@@ -18,7 +18,7 @@ FactoryBot.define do
 
     factory :pacbio_request_with_tube do
       transient do
-        tube { build(:tube) }
+        tube { association(:tube) }
       end
 
       after(:build) do |req, evaluator|
