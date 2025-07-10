@@ -8,8 +8,22 @@ FactoryBot.define do
     cost_code
     external_study_id
 
-    after(:build) do |req|
-      req.request = build(:request, requestable: req, sample: build(:sample))
+    transient do
+      sample { build(:sample) }
+    end
+
+    after(:build) do |req, evaluator|
+      req.request = build(:request, requestable: req, sample: evaluator.sample)
+    end
+
+    factory :pacbio_request_with_tube do
+      transient do
+        tube { build(:tube) }
+      end
+
+      after(:build) do |req, evaluator|
+        req.tube = evaluator.tube
+      end
     end
   end
 end

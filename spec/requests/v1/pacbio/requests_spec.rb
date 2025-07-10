@@ -225,23 +225,8 @@ RSpec.describe 'RequestsController', :pacbio do
     let!(:tube1) { create(:tube, barcode: 'TUBE-123') }
     let!(:tube2) { create(:tube, barcode: 'TUBE-456') }
 
-    let(:request1) do
-      create(:pacbio_request).tap do |pr|
-        pr.request.sample = sample1
-        pr.tube = tube1
-        pr.request.save!
-        pr.save!
-      end
-    end
-
-    let(:request2) do
-      create(:pacbio_request).tap do |pr|
-        pr.request.sample = sample2
-        pr.tube = tube2
-        pr.request.save!
-        pr.save!
-      end
-    end
+    let(:request1) { create(:pacbio_request_with_tube, sample: sample1, tube: tube1) }
+    let(:request2) { create(:pacbio_request_with_tube, sample: sample2, tube: tube2) }
 
     before do
       request1
