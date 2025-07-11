@@ -87,14 +87,23 @@ module RunCsv
     end
 
     def sample_data(well, sample)
-      [
-        bio_sample_name(sample),
-        well.plate_well_position,
-        sample.adapter, # left adapter
-        sample.library&.tag&.oligo_reverse.presence || sample.adapter # right adapter
-      ]
+      reverse_oligo = sample.library&.tag&.oligo_reverse.presence
+      if reverse_oligo
+        [
+          bio_sample_name(sample),
+          well.plate_well_position,
+          "#{sample.adapter}_L",      # left adapter
+          "#{sample.adapter}_R"       # right adapter
+        ]
+      else
+        [
+          bio_sample_name(sample),
+          well.plate_well_position,
+          sample.adapter,             # left adapter
+          sample.adapter              # right adapter
+        ]
+      end
     end
-
     # Returns the bio sample name for the given sample.
 
     def bio_sample_name(sample)
