@@ -87,7 +87,7 @@ module RunCsv
     end
 
     def sample_data(well, sample)
-      adapter_suffix = sample.library&.tag&.oligo_reverse.present? ? %w[_L _R] : ['', '']
+      adapter_suffix = sample.tag&.oligo_reverse.present? ? %w[_L _R] : ['', '']
       [
         bio_sample_name(sample),
         well.plate_well_position,
