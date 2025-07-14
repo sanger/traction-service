@@ -56,4 +56,9 @@ RSpec.describe Tag do
     expect(TagTaggable.count).to eq(0)
     expect(Pacbio::Request.count).to eq(num_taggables)
   end
+
+  it 'can have a reverse_oligo' do
+    tag = create(:tag, oligo_reverse: 'CGATCGAATAT')
+    expect(tag.oligo_reverse).to eq('CGATCGAATAT')
+  end
 end
