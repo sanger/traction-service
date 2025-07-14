@@ -67,4 +67,10 @@ RSpec.describe Tag do
     expect(tag.adapter_1).to eq('1_L')
     expect(tag.adapter_2).to eq('1_R')
   end
+
+  it 'adapter_1 and adapter_2 return empty strings if oligo_reverse is not set' do
+    tag = create(:tag, group_id: '1', oligo_reverse: nil)
+    expect(tag.adapter_1).to eq('1')
+    expect(tag.adapter_2).to eq('1')
+  end
 end
