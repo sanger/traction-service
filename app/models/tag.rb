@@ -16,4 +16,12 @@ class Tag < ApplicationRecord
   validates :group_id, uniqueness: { scope: :tag_set_id,
                                      message: :duplicated_in_tag_set,
                                      case_sensitive: false }
+
+  def adapter_1
+    "#{group_id}#{'_L' if oligo_reverse.present?}"
+  end
+
+  def adapter_2
+    "#{group_id}#{'_R' if oligo_reverse.present?}"
+  end
 end
