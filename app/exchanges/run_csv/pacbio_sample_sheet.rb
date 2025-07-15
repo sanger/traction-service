@@ -90,8 +90,8 @@ module RunCsv
       [
         bio_sample_name(sample),
         well.plate_well_position,
-        sample.adapter, # left adapter
-        sample.adapter  # right adapter
+        sample.tag.adapter_1,
+        sample.tag.adapter_2
       ]
     end
 
