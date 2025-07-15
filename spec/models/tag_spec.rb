@@ -64,7 +64,7 @@ RSpec.describe Tag do
 
   it 'can have an adapter_1 and adapter_2' do
     tag = create(:tag, group_id: '1', oligo_reverse: 'CGATCGAATAT')
-    expect(tag.adapter_1).to eq('1_L')
+    expect(tag.adapter_1).to eq('1_F')
     expect(tag.adapter_2).to eq('1_R')
   end
 

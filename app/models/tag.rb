@@ -18,10 +18,14 @@ class Tag < ApplicationRecord
                                      case_sensitive: false }
 
   def adapter_1
-    "#{group_id}#{'_L' if oligo_reverse.present?}"
+    "#{group_id}#{'_F' if oligo_reverse.present?}"
   end
 
   def adapter_2
     "#{group_id}#{'_R' if oligo_reverse.present?}"
+  end
+
+  def asymmetric?
+    oligo_reverse.present?
   end
 end
