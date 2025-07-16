@@ -21,7 +21,8 @@ module V1
     # * well {V1::Pacbio::WellResource}
     # * plate {V1::Pacbio::PlateResource}
     # * tube {V1::Pacbio::TubeResource}
-    #
+    # * sample {V1::Pacbio::SampleResource}
+
     # ## Relationship trees:
     #
     # * well.plate
