@@ -205,7 +205,9 @@ module Pacbio
     # Returns True if tagged, nil otherwise
     # See Aliquot#adapter field method below and adapter and adapter2 fields in pacbio.yml
     def same_barcodes_on_both_ends_of_sequence
-      tags.empty? || base_used_aliquots.first&.tag&.oligo_reverse.nil?
+      return nil unless tagged?
+
+      base_used_aliquots.first&.tag&.oligo_reverse.nil?
     end
 
     # Set the automation parameters
