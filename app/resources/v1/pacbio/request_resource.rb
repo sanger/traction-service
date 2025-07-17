@@ -21,7 +21,8 @@ module V1
     # * well {V1::Pacbio::WellResource}
     # * plate {V1::Pacbio::PlateResource}
     # * tube {V1::Pacbio::TubeResource}
-    #
+    # * sample {V1::Pacbio::SampleResource}
+
     # ## Relationship trees:
     #
     # * well.plate
@@ -80,6 +81,7 @@ module V1
       has_one :well, relation_name: :well
       has_one :plate, relation_name: :plate
       has_one :tube, relation_name: :tube
+      has_one :sample, relation_name: :sample
 
       paginator :paged
 
