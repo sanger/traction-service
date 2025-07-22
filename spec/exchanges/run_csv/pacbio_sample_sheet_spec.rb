@@ -298,6 +298,13 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
           expect(sample_row[2]).to end_with('_F') # Adapter
           expect(sample_row[3]).to end_with('_R') # Adapter2
         end
+
+        it 'the "Same Barcodes on Both Ends of Sequence" field is false' do
+          smrt_cell_settings = parsed_sample_sheet['SMRT Cell Settings']
+          smrt_cell_settings.each_value do |well_settings|
+            expect(well_settings['Same Barcodes on Both Ends of Sequence']).to be(false)
+          end
+        end
       end
     end
   end
