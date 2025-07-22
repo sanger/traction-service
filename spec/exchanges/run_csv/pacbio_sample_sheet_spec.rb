@@ -271,6 +271,34 @@ RSpec.describe RunCsv::PacbioSampleSheet, type: :model do
           expect(parsed_sample_sheet['Samples']).to be_empty
         end
       end
+
+      context 'when the library tag has an oligo_reverse' do
+        let(:oligo_reverse) { 'ACGTACGT_R' }
+        let(:tag) { create(:tag, oligo_reverse: oligo_reverse) }
+        let(:library) { create(:pacbio_library, tag: tag) }
+        let(:well) do
+          create(
+            :pacbio_well,
+            pre_extension_time: 2,
+            generate_hifi: 'In SMRT Link',
+            ccs_analysis_output: 'Yes',
+            row: 'A',
+            column: 1,
+            libraries: [library]
+          )
+        end
+        let(:plate) { build(:pacbio_plate, wells: [well], plate_number: 1) }
+        let(:run)   { create(:pacbio_revio_run, plates: [plate]) }
+
+        it 'outputs the adapter fields with _F and _R suffixes' do
+          sample_sheet_lines = sample_sheet.payload.lines
+          samples_section_index = sample_sheet_lines.find_index { |line| line.include?('[Samples]') }
+          sample_row = sample_sheet_lines[samples_section_index + 2].strip.split(',')
+
+          expect(sample_row[2]).to end_with('_F') # Adapter
+          expect(sample_row[3]).to end_with('_R') # Adapter2
+        end
+      end
     end
   end
 end
