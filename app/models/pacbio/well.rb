@@ -202,7 +202,7 @@ module Pacbio
     end
 
     # Are the left and right adapters the same?
-    # Returns True if tagged, nil otherwise
+    # Returns true if tagged, false if tagged with an asymmetric tag, nil otherwise
     # See Aliquot#adapter field method below and adapter and adapter2 fields in pacbio.yml
     def same_barcodes_on_both_ends_of_sequence
       return nil unless tagged?
