@@ -218,6 +218,68 @@ RSpec.describe 'RequestsController', :pacbio do
     end
   end
 
+  describe 'V1::Pacbio::Requests filtering', type: :request do
+    let!(:sample1) { create(:sample, name: 'SAMPLE-1') }
+    let!(:sample2) { create(:sample, name: 'SAMPLE-2') }
+
+    let!(:tube1) { create(:tube, barcode: 'TUBE-123') }
+    let!(:tube2) { create(:tube, barcode: 'TUBE-456') }
+
+    let(:request1) { create(:pacbio_request_with_tube, sample: sample1, tube: tube1) }
+    let(:request2) { create(:pacbio_request_with_tube, sample: sample2, tube: tube2) }
+
+    before do
+      request1
+      request2
+    end
+
+    describe 'filter by sample_name' do
+      it 'returns only matching sample name requests' do
+        get v1_pacbio_requests_path, params: { filter: { sample_name: 'SAMPLE-1' } }, headers: json_api_headers
+        expect(response).to have_http_status(:ok)
+        expect(json['data'].length).to eq(1)
+        expect(json['data'][0]['attributes']['sample_name']).to eq('SAMPLE-1')
+      end
+    end
+
+    describe 'filter by barcode' do
+      it 'returns only matching barcode requests' do
+        get v1_pacbio_requests_path, params: { filter: { source_identifier: 'TUBE-456' } }, headers: json_api_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(json['data'].length).to eq(1)
+        expect(json['data'][0]['attributes']['barcode']).to eq('TUBE-456')
+      end
+    end
+
+    describe 'filter by multiple sample names' do
+      it 'returns both matching sample name requests' do
+        get v1_pacbio_requests_path, params: { filter: { sample_name: %w[SAMPLE-1 SAMPLE-2] } }, headers: json_api_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(json['data'].length).to eq(2)
+        returned_names = json['data'].map { |d| d['attributes']['sample_name'] }
+        expect(returned_names).to include('SAMPLE-1', 'SAMPLE-2')
+      end
+    end
+
+    describe 'V1::Pacbio::Requests includes', type: :request do
+      let(:sample) { create(:sample, name: 'SAMPLE-1', species: 'human') }
+      let(:pacbio_request) { create(:pacbio_request, sample: sample) }
+
+      it 'includes sample in the response when using include=sample' do
+        get v1_pacbio_requests_path, params: { include: 'sample' }, headers: json_api_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(json['data'].first['relationships']).to have_key('sample')
+
+        included_sample = json['included'].find { |inc| inc['type'] == 'samples' }
+        expect(included_sample['attributes']['name']).to eq('SAMPLE-1')
+        expect(included_sample['attributes']['species']).to eq('human')
+      end
+    end
+  end
+
   describe '#destroy' do
     let!(:request) { create(:pacbio_request) }
 

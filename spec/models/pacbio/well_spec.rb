@@ -711,6 +711,27 @@ RSpec.describe Pacbio::Well, :pacbio do
           expect(well.same_barcodes_on_both_ends_of_sequence).to be_nil
         end
       end
+
+      context 'when the well contains a tag from an asymmetric tag set' do
+        let(:oligo_reverse) { 'ACGTACGT' }
+        let(:tag) { create(:tag, oligo_reverse: oligo_reverse) }
+        let(:library) { create(:pacbio_library, tag: tag) }
+        let(:well) do
+          create(
+            :pacbio_well,
+            pre_extension_time: 2,
+            generate_hifi: 'In SMRT Link',
+            ccs_analysis_output: 'Yes',
+            row: 'A',
+            column: 1,
+            libraries: [library]
+          )
+        end
+
+        it 'returns false' do
+          expect(well.same_barcodes_on_both_ends_of_sequence).to be false
+        end
+      end
     end
 
     context 'position_leading_zero' do
