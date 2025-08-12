@@ -17,13 +17,6 @@ module V1
     # * sample_name
     # * source_identifier
     #
-
-    # ## Relationship trees:
-    #
-    # * well.plate
-    # * plate.wells
-    # * tube.requests
-    #
     # @example
     #   curl -X GET http://localhost:3000/v1/ont/requests/1
     #   curl -X GET http://localhost:3000/v1/ont/requests/
