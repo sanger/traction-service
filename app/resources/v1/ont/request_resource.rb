@@ -2,17 +2,38 @@
 
 module V1
   module Ont
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    # Provides a JSON:API representation of {Ont::Request}.
     #
     # @note Access this resource via the `/v1/ont/requests/` endpoint.
-    #
-    # Provides a JSON:API representation of {Ont::Request}.
     #
     # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
     # for the service implementation of the JSON:API standard.
+    # This resource represents an ONT Request and can return all requests, a single request or
+    # multiple requests along with their relationships.
+    #
+    # ## Filters:
+    #
+    # * sample_name
+    # * source_identifier
+    #
+
+    # ## Relationship trees:
+    #
+    # * well.plate
+    # * plate.wells
+    # * tube.requests
+    #
+    # @example
+    #   curl -X GET http://localhost:3000/v1/ont/requests/1
+    #   curl -X GET http://localhost:3000/v1/ont/requests/
+    #
+    #   https://localhost:3000/v1/ont/requests?filter[sample_name]=sample_name
+    #
+    #   https://localhost:3000/v1/ont/requests?filter[source_identifier]=mock-plate-2:B12
+    #
+    #   https://localhost:3000/v1/ont/requests?filter[source_identifier]=mock-plate-2:B12,mock-plate-2:C1
+    #
     class RequestResource < JSONAPI::Resource
       include Shared::SourceIdentifierFilterable
       model_name 'Ont::Request', add_model_hint: false
