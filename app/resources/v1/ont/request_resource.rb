@@ -18,14 +18,46 @@ module V1
     # * source_identifier
     #
     # @example
+    #
+    #   # Get a single request
     #   curl -X GET http://localhost:3000/v1/ont/requests/1
+    #
+    #   # Get all requests
     #   curl -X GET http://localhost:3000/v1/ont/requests/
     #
-    #   https://localhost:3000/v1/ont/requests?filter[sample_name]=sample_name
+    #   # Filter requests by sample name or source identifier
+    #   curl -X GET "http://localhost:3000/v1/ont/requests?filter[sample_name]=sample_name"
+    #   curl -X GET "http://localhost:3000/v1/ont/requests?filter[source_identifier]=mock-plate-2:B12"
+    #   curl -X GET "http://localhost:3000/v1/ont/requests?filter[source_identifier]=mock-plate-2:B12,mock-plate-3:A1"
     #
-    #   https://localhost:3000/v1/ont/requests?filter[source_identifier]=mock-plate-2:B12
+    #   # Create a new ONT request
+    #   curl -X POST http://localhost:3000/v1/ont/requests \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -d '{
+    #           "data": {
+    #             "type": "requests",
+    #             "attributes": {
+    #               "library_type": "ONT",
+    #               "data_type": "Basecalling",
+    #               "cost_code": "S12345",
+    #               "external_study_id": "EXT-001",
+    #               "number_of_flowcells": 2,
+    #               "sample_name": "Sample 1"
+    #             }
+    #           }
+    #         }'
     #
-    #   https://localhost:3000/v1/ont/requests?filter[source_identifier]=mock-plate-2:B12,mock-plate-2:C1
+    #   # Update an existing ONT request
+    #   curl -X PATCH http://localhost:3000/v1/ont/requests/1 \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -d '{
+    #           "data": {
+    #             "id": "1",
+    #             "type": "requests",
+    #             "attributes": {
+    #               "cost_code": "S54321"
+    #             }
+    #           }
     #
     class RequestResource < JSONAPI::Resource
       include Shared::SourceIdentifierFilterable
