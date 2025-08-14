@@ -2,17 +2,63 @@
 
 module V1
   module Ont
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    # Provides a JSON:API representation of {Ont::Request}.
     #
     # @note Access this resource via the `/v1/ont/requests/` endpoint.
-    #
-    # Provides a JSON:API representation of {Ont::Request}.
     #
     # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
     # for the service implementation of the JSON:API standard.
+    # This resource represents an ONT Request and can return all requests, a single request or
+    # multiple requests along with their relationships.
+    #
+    # ## Filters:
+    #
+    # * sample_name
+    # * source_identifier
+    #
+    # @example
+    #
+    #   # Get a single request
+    #   curl -X GET http://localhost:3000/v1/ont/requests/1
+    #
+    #   # Get all requests
+    #   curl -X GET http://localhost:3000/v1/ont/requests/
+    #
+    #   # Filter requests by sample name or source identifier
+    #   curl -X GET "http://localhost:3000/v1/ont/requests?filter[sample_name]=sample_name"
+    #   curl -X GET "http://localhost:3000/v1/ont/requests?filter[source_identifier]=mock-plate-2:B12"
+    #   curl -X GET "http://localhost:3000/v1/ont/requests?filter[source_identifier]=mock-plate-2:B12,mock-plate-3:A1"
+    #
+    #   # Create a new ONT request
+    #   curl -X POST http://localhost:3000/v1/ont/requests \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -d '{
+    #           "data": {
+    #             "type": "requests",
+    #             "attributes": {
+    #               "library_type": "ONT",
+    #               "data_type": "Basecalling",
+    #               "cost_code": "S12345",
+    #               "external_study_id": "EXT-001",
+    #               "number_of_flowcells": 2,
+    #               "sample_name": "Sample 1"
+    #             }
+    #           }
+    #         }'
+    #
+    #   # Update an existing ONT request
+    #   curl -X PATCH http://localhost:3000/v1/ont/requests/1 \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -d '{
+    #           "data": {
+    #             "id": "1",
+    #             "type": "requests",
+    #             "attributes": {
+    #               "cost_code": "S54321"
+    #             }
+    #           }
+    #
     class RequestResource < JSONAPI::Resource
       include Shared::SourceIdentifierFilterable
       model_name 'Ont::Request', add_model_hint: false
