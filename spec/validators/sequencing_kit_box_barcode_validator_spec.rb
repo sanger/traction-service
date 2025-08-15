@@ -43,4 +43,16 @@ RSpec.describe SequencingKitBoxBarcodeValidator do
     new_pacbio_run = create(:pacbio_generic_run, system_name: 'Sequel IIe', plates: [build(:pacbio_plate, plate_number: 1, sequencing_kit_box_barcode: '1234', wells: [build(:pacbio_well, row: 'A', column: '1')])])
     expect(new_pacbio_run.plates.first).to be_valid
   end
+
+  it 'no errors when plates in the same run have the same sequencing_kit_box_barcode' do
+    run = create(:pacbio_generic_run, system_name: 'Revio', plates: [
+      build(:pacbio_plate, plate_number: 1, sequencing_kit_box_barcode: '1234', wells: [build(:pacbio_well, row: 'A', column: '1')]),
+      build(:pacbio_plate, plate_number: 2, sequencing_kit_box_barcode: '1234', wells: [build(:pacbio_well, row: 'A', column: '1')])
+    ])
+    run.plates.first.update(sequencing_kit_box_barcode: '1234')
+    run.plates.second.update(sequencing_kit_box_barcode: '1234')
+    run.save
+
+    expect(run.errors).to be_empty
+  end
 end
