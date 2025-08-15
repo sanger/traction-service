@@ -48,6 +48,8 @@ class SequencingKitBoxBarcodeValidator < ActiveModel::Validator
   # @param [Array<Plate>] existing_plates
   # For a given sequencing kit box barcode, check if the positions have already been used
   def validate_sequencing_kit_box_barcode_positions(record, existing_plates)
+    # Exclude plates that belong to the same run as the record being validated
+    # This is to avoid false positives when the same plate is being updated
     relevant_plates = existing_plates.reject do |plate|
       plate.pacbio_run_id == record.pacbio_run_id
     end
