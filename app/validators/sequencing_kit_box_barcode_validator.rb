@@ -48,10 +48,15 @@ class SequencingKitBoxBarcodeValidator < ActiveModel::Validator
   # @param [Array<Plate>] existing_plates
   # For a given sequencing kit box barcode, check if the positions have already been used
   def validate_sequencing_kit_box_barcode_positions(record, existing_plates)
+    relevant_plates = existing_plates.reject do |plate|
+      plate.pacbio_run_id == record.pacbio_run_id
+    end
+
     # filter wells based on exclusions
     record_wells = filtered(record.wells)
+
     # Get the common positions between the existing plates and the record wells
-    common_positions = existing_plates.map(&:wells).flatten.map(&:position) &
+    common_positions = relevant_plates.map(&:wells).flatten.map(&:position) &
                        record_wells.map(&:position)
     return unless common_positions.any?
 
