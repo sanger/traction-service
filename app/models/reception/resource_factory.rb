@@ -11,6 +11,7 @@ class Reception
   class ResourceFactory # rubocop:disable Metrics/ClassLength
     include ActiveModel::Model
     extend NestedValidation
+
     attr_accessor :reception
 
     validates :duplicate_containers, absence: true
