@@ -3,6 +3,7 @@
 # ApplicationController
 class ApplicationController < ActionController::Base
   include JSONAPI::ActsAsResourceController
+
   skip_before_action :verify_authenticity_token
 
   on_server_error :send_exception_notification
