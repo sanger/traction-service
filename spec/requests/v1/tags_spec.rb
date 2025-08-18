@@ -142,7 +142,7 @@ RSpec.describe 'TagsController' do
 
       it 'has an error message' do
         patch v1_tag_path(123), params: body, headers: json_api_headers
-        expect(response.parsed_body['data']).to include('errors' => "Couldn't find Tag with 'id'=123")
+        expect(response.parsed_body['data']).to include('errors' => %(Couldn't find Tag with 'id'="123"))
       end
     end
   end
