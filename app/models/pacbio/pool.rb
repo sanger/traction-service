@@ -4,6 +4,7 @@ module Pacbio
   # Pool
   class Pool < ApplicationRecord
     include Aliquotable
+
     belongs_to :tube, default: -> { Tube.new }
     delegate :barcode, to: :tube
 

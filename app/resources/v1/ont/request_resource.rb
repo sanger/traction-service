@@ -61,6 +61,7 @@ module V1
     #
     class RequestResource < JSONAPI::Resource
       include Shared::SourceIdentifierFilterable
+
       model_name 'Ont::Request', add_model_hint: false
 
       # @!attribute [rw] library_type

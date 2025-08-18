@@ -4,6 +4,7 @@
 # Also known as a barcode set
 class TagSet < ApplicationRecord
   include Pipelineable
+
   has_many :tags, dependent: :restrict_with_error
 
   enum :sample_sheet_behaviour, { default: 0, hidden: 1 }, suffix: true
