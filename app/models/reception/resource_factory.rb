@@ -170,6 +170,9 @@ class Reception
       supplier_name = first_sample[:supplier_name]
       species = first_sample[:species]
       compound_sample = create_compound_sample(supplier_name, species)
+      # If its an existing sample if will not have initialised the component sample uuids
+      # So we check here
+      compound_sample.component_sample_uuids ||= []
       tube_attr[:samples].each do |sample|
         compound_sample.component_sample_uuids << { uuid: sample[:external_id] }
       end
@@ -177,11 +180,14 @@ class Reception
     end
 
     def create_compound_sample(name, species)
-      Sample.create!(
-        name: name,
-        external_id: SecureRandom.uuid,
-        species: species
-      )
+      # Check if the sample already exists
+      # Otherwise create a new one
+      Sample.find_by(name: name) ||
+        Sample.create!(
+          name: name,
+          external_id: SecureRandom.uuid,
+          species: species
+        )
     end
 
     def find_or_create_labware(barcode, type)
