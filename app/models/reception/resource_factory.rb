@@ -170,8 +170,8 @@ class Reception
       supplier_name = first_sample[:supplier_name]
       species = first_sample[:species]
       compound_sample = create_compound_sample(supplier_name, species)
-      # If its an existing sample if will not have initialised the component sample uuids
-      # So we check here
+      # If its an existing sample it will not have initialised
+      # the component_sample_uuids instance variable - so we check here
       compound_sample.component_sample_uuids ||= []
       tube_attr[:samples].each do |sample|
         compound_sample.component_sample_uuids << { uuid: sample[:external_id] }
