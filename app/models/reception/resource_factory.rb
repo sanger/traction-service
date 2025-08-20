@@ -169,6 +169,9 @@ class Reception
       first_sample = tube_attr[:samples].first
       supplier_name = first_sample[:supplier_name]
       species = first_sample[:species]
+      # Supplier name being used here is Kinnex specific behaviour because
+      # all the samples within the pool have the same supplier name so it can
+      # be used as a unique identifier. Supplier name should not be used as a standard.
       compound_sample = create_compound_sample(supplier_name, species)
       # If its an existing sample it will not have initialised
       # the component_sample_uuids instance variable - so we check here
@@ -182,6 +185,7 @@ class Reception
     def create_compound_sample(name, species)
       # Check if the sample already exists
       # Otherwise create a new one
+      #
       Sample.find_by(name: name) ||
         Sample.create!(
           name: name,
