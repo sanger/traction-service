@@ -186,6 +186,10 @@ class Reception
       # Check if the sample already exists
       # Otherwise create a new one
       #
+      # This is a work around for Kinnex samples as there can be two
+      # Tubes/compound samples with the same samples/supplier name which
+      # will cause sample name validation errors
+      # For future compound samples it should be considered whether this is the correct behaviour
       Sample.find_by(name: name) ||
         Sample.create!(
           name: name,
