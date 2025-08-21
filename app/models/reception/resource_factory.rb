@@ -11,6 +11,7 @@ class Reception
   class ResourceFactory # rubocop:disable Metrics/ClassLength
     include ActiveModel::Model
     extend NestedValidation
+
     attr_accessor :reception
 
     validates :duplicate_containers, absence: true
@@ -168,7 +169,13 @@ class Reception
       first_sample = tube_attr[:samples].first
       supplier_name = first_sample[:supplier_name]
       species = first_sample[:species]
+      # Supplier name being used here is Kinnex specific behaviour because
+      # all the samples within the pool have the same supplier name so it can
+      # be used as a unique identifier. Supplier name should not be used as a standard.
       compound_sample = create_compound_sample(supplier_name, species)
+      # If its an existing sample it will not have initialised
+      # the component_sample_uuids instance variable - so we check here
+      compound_sample.component_sample_uuids ||= []
       tube_attr[:samples].each do |sample|
         compound_sample.component_sample_uuids << { uuid: sample[:external_id] }
       end
@@ -176,11 +183,19 @@ class Reception
     end
 
     def create_compound_sample(name, species)
-      Sample.create!(
-        name: name,
-        external_id: SecureRandom.uuid,
-        species: species
-      )
+      # Check if the sample already exists
+      # Otherwise create a new one
+      #
+      # This is a work around for Kinnex samples as there can be two
+      # Tubes/compound samples with the same samples/supplier name which
+      # will cause sample name validation errors
+      # For future compound samples it should be considered whether this is the correct behaviour
+      Sample.find_by(name: name) ||
+        Sample.create!(
+          name: name,
+          external_id: SecureRandom.uuid,
+          species: species
+        )
     end
 
     def find_or_create_labware(barcode, type)

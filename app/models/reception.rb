@@ -5,6 +5,7 @@
 # auditing and event tracking purposes.
 class Reception < ApplicationRecord
   extend NestedValidation
+
   has_many :requests, dependent: :restrict_with_error
 
   # Source is used to track where a reception event came from.

@@ -441,6 +441,8 @@ RSpec.describe Reception::ResourceFactory do
   end
 
   describe '#compound_sample_tubes_attributes=' do
+    define_negated_matcher :not_change, :change
+
     let(:library_type) { create(:library_type, :pacbio) }
     let(:request_parameters) do
       attributes_for(:pacbio_request).merge(
@@ -465,7 +467,25 @@ RSpec.describe Reception::ResourceFactory do
             supplier_name: 'supplier_name'
           }
         ]
-      }]
+      },
+       {
+         barcode: 'tube-1234',
+         request: request_parameters,
+         samples: [
+           {
+             name: 'compound_sample_3',
+             external_id: 'uuid-1',
+             species: 'human',
+             supplier_name: 'supplier_name_2'
+           },
+           {
+             name: 'compound_sample_4',
+             external_id: 'uuid-2',
+             species: 'human',
+             supplier_name: 'supplier_name_2'
+           }
+         ]
+       }]
     end
 
     it 'creates compound samples and requests' do
@@ -473,14 +493,26 @@ RSpec.describe Reception::ResourceFactory do
         expect do
           resource_factory.compound_sample_tubes_attributes = compound_sample_tubes_attributes
           resource_factory.construct_resources!
-        end.to change(Request, :count).by(1)
-                                      .and change(Sample, :count).by(1)
+        end.to change(Request, :count).by(2)
+                                      .and change(Sample, :count).by(2)
       end
     end
 
-    it 'publishes the compound sample message' do
-      expect(Messages).to receive(:publish).once
+    it 'publishes the compound sample messages' do
+      expect(Messages).to receive(:publish).twice
       resource_factory.compound_sample_tubes_attributes = compound_sample_tubes_attributes
+    end
+
+    it 'uses existing samples if sample with supplier name exists' do
+      create(:sample, name: compound_sample_tubes_attributes[0][:samples][0][:supplier_name])
+      create(:sample, name: compound_sample_tubes_attributes[1][:samples][0][:supplier_name])
+
+      expect(Messages).to receive(:publish).twice
+      expect do
+        resource_factory.compound_sample_tubes_attributes = compound_sample_tubes_attributes
+        resource_factory.construct_resources!
+      end.to change(Request, :count).by(2)
+                                    .and not_change(Sample, :count)
     end
   end
 end
