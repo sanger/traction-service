@@ -27,13 +27,14 @@ RSpec.describe 'ReceptionsController' do
     let!(:library_type) { create(:library_type, :ont) }
     let!(:data_type) { create(:data_type, :ont) }
 
-    context 'with a valid payload' do
+    context 'with a valid payload and a publishable source' do
       let(:object_body) do
         {
           data: {
             type: 'receptions',
             attributes: {
-              source: 'traction-ui.sequencescape',
+              # Only tol lab share source publishes
+              source: Reception::TOL_LAB_SHARE_SOURCE,
               tubes_attributes: [
                 {
                   type: 'tubes',
@@ -97,179 +98,242 @@ RSpec.describe 'ReceptionsController' do
                              }
                            })
       end
+    end
 
-      context 'when receiving a change on labware' do
-        let(:changed_body) do
-          {
-            data: {
-              type: 'receptions',
-              attributes: {
-                source: 'traction-ui.sequencescape',
-                tubes_attributes: [
-                  {
-                    type: 'tubes',
-                    barcode: 'NT1',
-                    request: attributes_for(:ont_request).merge(
-                      library_type: library_type.name,
-                      data_type: data_type.name
-                    ),
-                    sample: attributes_for(:sample).merge({
-                                                            species: 'blablabla'
-                                                          })
-                  }
-                ]
-              }
+    context 'with a valid payload and a non publishable source' do
+      let(:object_body) do
+        {
+          data: {
+            type: 'receptions',
+            attributes: {
+              source: 'traction-ui.sequencescape',
+              tubes_attributes: [
+                {
+                  type: 'tubes',
+                  barcode: 'NT1',
+                  request: attributes_for(:ont_request).merge(
+                    library_type: library_type.name,
+                    data_type: data_type.name
+                  ),
+                  sample: attributes_for(:sample)
+                }
+              ]
             }
-          }.to_json
-        end
-
-        it 'rejects the request' do
-          post v1_receptions_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:created), response.body
-
-          post v1_receptions_path, params: changed_body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity), response.body
-        end
+          }
+        }
+      end
+      let(:body) do
+        object_body.to_json
       end
 
-      context 'when receiving an update on labware' do
-        let(:body) do
-          {
-            data: {
-              type: 'receptions',
-              attributes: {
-                source: 'traction-ui.sequencescape',
-                plates_attributes: [
-                  {
-                    type: 'plates',
-                    barcode: 'NT1',
-                    wells_attributes: [
-                      {
-                        position: 'A1',
-                        request: attributes_for(:ont_request).merge(
-                          library_type: library_type.name,
-                          data_type: data_type.name
-                        ),
-                        sample: attributes_for(:sample)
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          }.to_json
-        end
-        let(:updated_body) do
-          {
-            data: {
-              type: 'receptions',
-              attributes: {
-                source: 'traction-ui.sequencescape',
-                plates_attributes: [
-                  {
-                    type: 'plates',
-                    barcode: 'NT1',
-                    wells_attributes: [
-                      {
-                        position: 'A2',
-                        request: attributes_for(:ont_request).merge(
-                          library_type: library_type.name,
-                          data_type: data_type.name
-                        ),
-                        sample: attributes_for(:sample)
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          }.to_json
-        end
-
-        it 'can accept an update on labware' do
-          post v1_receptions_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:created), response.body
-          post v1_receptions_path, params: updated_body, headers: json_api_headers
-          expect(response).to have_http_status(:created), response.body
-        end
+      it 'has a created status' do
+        post v1_receptions_path, params: body, headers: json_api_headers
+        expect(response).to have_http_status(:created), response.body
       end
 
-      context 'when receiving an update on labware with some duplicates' do
-        let(:body) do
-          {
-            data: {
-              type: 'receptions',
-              attributes: {
-                source: 'traction-ui.sequencescape',
-                plates_attributes: [
-                  {
-                    type: 'plates',
-                    barcode: 'NT1',
-                    wells_attributes: [
-                      {
-                        position: 'A1',
-                        request: attributes_for(:ont_request).merge(
-                          library_type: library_type.name,
-                          data_type: data_type.name
-                        ),
-                        sample: attributes_for(:sample)
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          }.to_json
-        end
-        let(:updated_body) do
-          {
-            data: {
-              type: 'receptions',
-              attributes: {
-                source: 'traction-ui.sequencescape',
-                plates_attributes: [
-                  {
-                    type: 'plates',
-                    barcode: 'NT1',
-                    wells_attributes: [
-                      {
-                        position: 'A1',
-                        request: attributes_for(:ont_request).merge(
-                          library_type: library_type.name,
-                          data_type: data_type.name
-                        ),
-                        sample: attributes_for(:sample)
-                      },
-                      {
-                        position: 'A2',
-                        request: attributes_for(:ont_request).merge(
-                          library_type: library_type.name,
-                          data_type: data_type.name
-                        ),
-                        sample: attributes_for(:sample)
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          }.to_json
-        end
+      it 'does not publish a message' do
+        post v1_receptions_path, params: body, headers: json_api_headers
+        expect(Broker::Handle.test_received_messages.length).to eq(0)
+      end
+    end
 
-        it 'can accept an update on labware with duplicates' do
-          post v1_receptions_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:created), response.body
-          post v1_receptions_path, params: updated_body, headers: json_api_headers
-          expect(response).to have_http_status(:created), response.body
-
-          json = ActiveSupport::JSON.decode(response.body)
-          expect(json['data']['attributes']['labware']['NT1']).to eq(
-            {
-              'imported' => 'partial',
-              'errors' => ['A1 already has a sample']
+    context 'when receiving a change on labware' do
+      let(:object_body) do
+        {
+          data: {
+            type: 'receptions',
+            attributes: {
+              source: 'traction-ui.sequencescape',
+              tubes_attributes: [
+                {
+                  type: 'tubes',
+                  barcode: 'NT1',
+                  request: attributes_for(:ont_request).merge(
+                    library_type: library_type.name,
+                    data_type: data_type.name
+                  ),
+                  sample: attributes_for(:sample)
+                }
+              ]
             }
-          )
-        end
+          }
+        }
+      end
+
+      let(:body) do
+        object_body.to_json
+      end
+
+      let(:changed_body) do
+        {
+          data: {
+            type: 'receptions',
+            attributes: {
+              source: 'traction-ui.sequencescape',
+              tubes_attributes: [
+                {
+                  type: 'tubes',
+                  barcode: 'NT1',
+                  request: attributes_for(:ont_request).merge(
+                    library_type: library_type.name,
+                    data_type: data_type.name
+                  ),
+                  sample: attributes_for(:sample).merge({
+                                                          species: 'blablabla'
+                                                        })
+                }
+              ]
+            }
+          }
+        }.to_json
+      end
+
+      it 'rejects the request' do
+        post v1_receptions_path, params: body, headers: json_api_headers
+        expect(response).to have_http_status(:created), response.body
+
+        post v1_receptions_path, params: changed_body, headers: json_api_headers
+        expect(response).to have_http_status(:unprocessable_entity), response.body
+      end
+    end
+
+    context 'when receiving an update on labware' do
+      let(:body) do
+        {
+          data: {
+            type: 'receptions',
+            attributes: {
+              source: 'traction-ui.sequencescape',
+              plates_attributes: [
+                {
+                  type: 'plates',
+                  barcode: 'NT1',
+                  wells_attributes: [
+                    {
+                      position: 'A1',
+                      request: attributes_for(:ont_request).merge(
+                        library_type: library_type.name,
+                        data_type: data_type.name
+                      ),
+                      sample: attributes_for(:sample)
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }.to_json
+      end
+      let(:updated_body) do
+        {
+          data: {
+            type: 'receptions',
+            attributes: {
+              source: 'traction-ui.sequencescape',
+              plates_attributes: [
+                {
+                  type: 'plates',
+                  barcode: 'NT1',
+                  wells_attributes: [
+                    {
+                      position: 'A2',
+                      request: attributes_for(:ont_request).merge(
+                        library_type: library_type.name,
+                        data_type: data_type.name
+                      ),
+                      sample: attributes_for(:sample)
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }.to_json
+      end
+
+      it 'can accept an update on labware' do
+        post v1_receptions_path, params: body, headers: json_api_headers
+        expect(response).to have_http_status(:created), response.body
+        post v1_receptions_path, params: updated_body, headers: json_api_headers
+        expect(response).to have_http_status(:created), response.body
+      end
+    end
+
+    context 'when receiving an update on labware with some duplicates' do
+      let(:body) do
+        {
+          data: {
+            type: 'receptions',
+            attributes: {
+              source: 'traction-ui.sequencescape',
+              plates_attributes: [
+                {
+                  type: 'plates',
+                  barcode: 'NT1',
+                  wells_attributes: [
+                    {
+                      position: 'A1',
+                      request: attributes_for(:ont_request).merge(
+                        library_type: library_type.name,
+                        data_type: data_type.name
+                      ),
+                      sample: attributes_for(:sample)
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }.to_json
+      end
+      let(:updated_body) do
+        {
+          data: {
+            type: 'receptions',
+            attributes: {
+              source: 'traction-ui.sequencescape',
+              plates_attributes: [
+                {
+                  type: 'plates',
+                  barcode: 'NT1',
+                  wells_attributes: [
+                    {
+                      position: 'A1',
+                      request: attributes_for(:ont_request).merge(
+                        library_type: library_type.name,
+                        data_type: data_type.name
+                      ),
+                      sample: attributes_for(:sample)
+                    },
+                    {
+                      position: 'A2',
+                      request: attributes_for(:ont_request).merge(
+                        library_type: library_type.name,
+                        data_type: data_type.name
+                      ),
+                      sample: attributes_for(:sample)
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }.to_json
+      end
+
+      it 'can accept an update on labware with duplicates' do
+        post v1_receptions_path, params: body, headers: json_api_headers
+        expect(response).to have_http_status(:created), response.body
+        post v1_receptions_path, params: updated_body, headers: json_api_headers
+        expect(response).to have_http_status(:created), response.body
+
+        json = ActiveSupport::JSON.decode(response.body)
+        expect(json['data']['attributes']['labware']['NT1']).to eq(
+          {
+            'imported' => 'partial',
+            'errors' => ['A1 already has a sample']
+          }
+        )
       end
     end
 
@@ -766,13 +830,14 @@ RSpec.describe 'ReceptionsController' do
     let!(:library_type) { create(:library_type, :pacbio) }
     let!(:data_type) { create(:data_type, :pacbio) }
 
-    context 'with a valid payload' do
+    context 'with a valid payload and a publishable source' do
       let(:object_body) do
         {
           data: {
             type: 'receptions',
             attributes: {
-              source: 'traction-ui.sequencescape',
+              # Only tol lab share source publishes
+              source: Reception::TOL_LAB_SHARE_SOURCE,
               tubes_attributes: [
                 {
                   type: 'tubes',
@@ -795,6 +860,84 @@ RSpec.describe 'ReceptionsController' do
       it 'has a created status' do
         post v1_receptions_path, params: body, headers: json_api_headers
         expect(response).to have_http_status(:created), response.body
+      end
+
+      it 'publishes a message' do
+        allow(Messages).to receive(:publish).and_call_original
+        expect(Messages).to receive(:publish).twice
+        post v1_receptions_path, params: body, headers: json_api_headers
+        expect(Broker::Handle.test_received_messages.length).to eq(2)
+        expect(Broker::Handle.test_received_messages[0].include?('priority_level')).to be true
+        assert match_json?(Broker::Handle.test_received_messages[0],
+                           {
+                             'lims' => 'Traction', 'sample' => {
+                               'common_name' => 'human',
+                               'last_updated' => /.*/,
+                               'id_sample_lims' => /.*/,
+                               'uuid_sample_lims' => /.*/,
+                               'name' => /.*/,
+                               'public_name' => 'PublicName',
+                               'priority_level' => 'Medium',
+                               'country_of_origin' => 'United Kingdom'
+                             }
+                           })
+
+        assert match_json?(Broker::Handle.test_received_messages[1],
+                           {
+                             'lims' => 'Traction', 'stock_resource' => {
+                               'stock_resource_id' => /\d/,
+                               'labware_coordinate' => nil,
+                               'human_barcode' => 'NT1',
+                               'machine_barcode' => 'NT1',
+                               'labware_type' => 'tube',
+                               'created_at' => /.*/,
+                               'updated_at' => /.*/,
+                               'samples' => [
+                                 {
+                                   'sample_uuid' => /.*/,
+                                   'study_uuid' => /.*/
+                                 }
+                               ]
+                             }
+                           })
+      end
+    end
+
+    context 'with a valid payload and a non publishable source' do
+      let(:object_body) do
+        {
+          data: {
+            type: 'receptions',
+            attributes: {
+              source: 'traction-ui.sequencescape',
+              tubes_attributes: [
+                {
+                  type: 'tubes',
+                  barcode: 'NT1',
+                  request: attributes_for(:pacbio_request).merge(
+                    library_type: library_type.name,
+                    data_type: data_type.name
+                  ),
+                  sample: attributes_for(:sample)
+                }
+              ]
+            }
+          }
+        }
+      end
+
+      let(:body) do
+        object_body.to_json
+      end
+
+      it 'has a created status' do
+        post v1_receptions_path, params: body, headers: json_api_headers
+        expect(response).to have_http_status(:created), response.body
+      end
+
+      it 'does not publish a message' do
+        post v1_receptions_path, params: body, headers: json_api_headers
+        expect(Broker::Handle.test_received_messages.length).to eq(0)
       end
     end
 
