@@ -11,6 +11,6 @@ module Taggable
 
   # returns tags sorted by id
   def sorted_tags
-    tags.order('id ASC')
+    tags.order(:id)
   end
 end
