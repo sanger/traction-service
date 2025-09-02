@@ -118,6 +118,9 @@ module V1
     end
 
     def publish_messages
+      # Only publish messages if source is publishable
+      return unless @model.publish_source?
+
       # Publish message for the sample table
       publish_message(
         @model.requests.map(&:sample),
