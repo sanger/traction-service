@@ -70,4 +70,30 @@ RSpec.describe Reception do
       end
     end
   end
+
+  describe '#publish_source?' do
+    describe 'with a publishable source' do
+      let(:attributes) { { source: Reception::TOL_LAB_SHARE_SOURCE } }
+
+      it 'returns true' do
+        expect(reception.publish_source?).to be(true)
+      end
+    end
+
+    describe 'with a traction-ui source' do
+      let(:attributes) { { source: 'traction-ui.sequencescape' } }
+
+      it 'returns false' do
+        expect(reception.publish_source?).to be(false)
+      end
+    end
+
+    describe 'with an empty source' do
+      let(:attributes) { { source: nil } }
+
+      it 'returns false' do
+        expect(reception.publish_source?).to be(false)
+      end
+    end
+  end
 end

@@ -22,6 +22,16 @@ class Reception < ApplicationRecord
   # encapsulate the behaviour
   validates_nested :resource_factory, flatten_keys: true
 
+  # Source string used in tol-lab-share publish message
+  # We need to ensure this string stays consistent across repos
+  TOL_LAB_SHARE_SOURCE = 'tol-lab-share.tol'
+
+  # Used to determine whether the reception resources need publishing to the warehouse
+  # Currently only tol manifests require publishing (and compound samples via resource_factory)
+  def publish_source?
+    [TOL_LAB_SHARE_SOURCE].include? source
+  end
+
   private
 
   def resource_factory
