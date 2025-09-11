@@ -18,11 +18,11 @@ namespace :printers do
     ].each do |options|
       Printer.create_with(options).find_or_create_by!(name: options[:name])
     end
-    puts '-> Printers succesfully updated'
+    puts '-> Printers successfully updated'
   end
 
   task destroy: :environment do
     Printer.delete_all
-    puts '-> Printers succesfully deleted'
+    puts '-> Printers successfully deleted'
   end
 end
