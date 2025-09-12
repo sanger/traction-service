@@ -9,9 +9,9 @@ Rails.application.load_tasks if Rake::Task.tasks.empty?
 RSpec.describe 'RakeTasks' do
   describe 'printers' do
     it 'creates the printers' do
-      expect { Rake::Task['printers:create'].invoke }.to change(Printer, :count).by(11).and output(
+      expect { Rake::Task['printers:create'].invoke }.to change(Printer, :count).by(12).and output(
         <<~HEREDOC
-          -> Printers succesfully updated
+          -> Printers successfully updated
         HEREDOC
       ).to_stdout
     end
@@ -20,7 +20,7 @@ RSpec.describe 'RakeTasks' do
       create_list(:printer, 6)
       expect { Rake::Task['printers:destroy'].invoke }.to change(Printer, :count).by(-6).and output(
         <<~HEREDOC
-          -> Printers succesfully deleted
+          -> Printers successfully deleted
         HEREDOC
       ).to_stdout
     end
