@@ -30,6 +30,6 @@ end
 # JSONAPI::Resources gem.
 # See:
 # https://github.com/cerebris/jsonapi-resources/issues/1456
-Rack::Utils::SYMBOL_TO_STATUS_CODE[:unprocessable_entity] = 422
+# Rack::Utils::SYMBOL_TO_STATUS_CODE[:unprocessable_entity] = 422
 
 # rubocop:enable
