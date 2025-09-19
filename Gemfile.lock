@@ -1,3 +1,13 @@
+GIT
+  remote: https://github.com/sanger/jsonapi-resources.git
+  revision: a098867b0d7254c6e1d03a06b2fe3223262f1400
+  branch: y25-319-from-master-as-psd-we-need-to-fix-the-json-api-resource-incompatibility-with-rack-which-is-causing-422-errors-to-fail-with-a-status-of-0
+  specs:
+    sanger-jsonapi-resources (0.2.1)
+      activerecord (>= 5.1)
+      concurrent-ruby
+      railties (>= 5.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -306,10 +316,6 @@ GEM
     ruby-graphviz (1.2.5)
       rexml
     ruby-progressbar (1.13.0)
-    sanger-jsonapi-resources (0.2.0)
-      activerecord (>= 5.1)
-      concurrent-ruby
-      railties (>= 5.1)
     sanitize (7.0.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.16.8)
@@ -376,7 +382,7 @@ DEPENDENCIES
   rubocop-factory_bot
   rubocop-rails
   rubocop-rspec
-  sanger-jsonapi-resources (~> 0.2.0)
+  sanger-jsonapi-resources!
   shoulda-matchers
   spring
   spring-watcher-listen
