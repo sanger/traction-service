@@ -16,9 +16,9 @@ gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX poss
 gem 'rack-session' # Use Rack Session for session management. Needed for flipper
 gem 'rails', '~> 8.0.2'
 # gem 'sanger-jsonapi-resources', '~> 0.2.0'
-gem 'sanger-jsonapi-resources',
-  git: 'https://github.com/sanger/jsonapi-resources.git',
-  branch: 'y25-319-from-master-as-psd-we-need-to-fix-the-json-api-resource-incompatibility-with-rack-which-is-causing-422-errors-to-fail-with-a-status-of-0'
+# rubocop:disable Layout/LineLength
+gem 'sanger-jsonapi-resources', git: 'https://github.com/sanger/jsonapi-resources.git', branch: 'y25-319-from-master-as-psd-we-need-to-fix-the-json-api-resource-incompatibility-with-rack-which-is-causing-422-errors-to-fail-with-a-status-of-0'
+# rubocop:enable Layout/LineLength
 gem 'syslog' # No longer part of the default gems in Ruby 3.4
 
 group :development do
