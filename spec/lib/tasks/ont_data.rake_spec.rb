@@ -13,7 +13,7 @@ RSpec.describe 'RakeTasks' do
     let(:expected_tubes) { 2 }
     let(:expected_single_plexed_pools) { 5 }
     let(:expected_multi_plexed_pools) { 10 }
-    let(:expected_tag_sets) { 1 }
+    let(:expected_tag_sets) { 4 }
     let(:expected_wells) { expected_plates * filled_wells_per_plate }
     let(:expected_requests) { expected_tubes + expected_wells }
     let(:expected_runs) { 6 }
@@ -44,6 +44,7 @@ RSpec.describe 'RakeTasks' do
         .and change(Ont::Library, :count)
         .and change(Ont::Instrument, :count)
         .and change(Ont::MinKnowVersion, :count)
+        .and change(TagSet, :count).by(expected_tag_sets)
         .and output(
           "-> Created requests for #{expected_plates} plates and #{expected_tubes} tubes\n" \
           "-> Creating SQK-NBD114.96 tag set and tags\n" \
@@ -55,6 +56,9 @@ RSpec.describe 'RakeTasks' do
           "-> Creating SQK-PCB114.24 tag set and tags\n" \
           "-> Tag Set successfully created\n" \
           "-> SQK-PCB114.24 tags successfully created\n" \
+          "-> Creating SQK-RPB114.24 tag set and tags\n" \
+          "-> Tag Set successfully created\n" \
+          "-> SQK-RPB114.24 tags successfully created\n" \
           "-> Created #{expected_single_plexed_pools} single plexed pools\n" \
           "-> Created #{expected_multi_plexed_pools} multiplexed pools\n" \
           "-> ONT Instruments successfully created\n" \

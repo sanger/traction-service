@@ -31,6 +31,7 @@ namespace :tags do
       Rake::Task['tags:create:SQK-NBD114.96'].invoke
       Rake::Task['tags:create:SQK-RBK114.96'].invoke
       Rake::Task['tags:create:SQK-PCB114.24'].invoke
+      Rake::Task['tags:create:SQK-RPB114.24'].invoke
     end
 
     desc 'Create pacbio sequel tags'
@@ -1427,6 +1428,42 @@ namespace :tags do
         set.tags.find_or_create_by!(tag_attributes)
       end
       puts '-> SQK-PCB114.24 tags successfully created'
+    end
+
+    task 'SQK-RPB114.24': :environment do
+      puts '-> Creating SQK-RPB114.24 tag set and tags'
+      set = TagSet.ont_pipeline
+                  .find_or_create_by!(name: 'SQK-RPB114.24')
+      puts '-> Tag Set successfully created'
+      [
+        { group_id: 'RLB01', oligo: 'AAGAAAGTTGTCGGTGTCTTTGTG' },
+        { group_id: 'RLB02', oligo: 'TCGATTCCGTTTGTAGTCGTCTGT' },
+        { group_id: 'RLB03', oligo: 'GAGTCTTGTGTCCCAGTTACCAGG' },
+        { group_id: 'RLB04', oligo: 'TTCGGATTCTATCGTGTTTCCCTA' },
+        { group_id: 'RLB05', oligo: 'CTTGTCCAGGGTTTGTGTAACCTT' },
+        { group_id: 'RLB06', oligo: 'TTCTCGCAAAGGCAGAAAGTAGTC' },
+        { group_id: 'RLB07', oligo: 'GTGTTACCGTGGGAATGAATCCTT' },
+        { group_id: 'RLB08', oligo: 'TTCAGGGAACAAACCAAGTTACGT' },
+        { group_id: 'RLB09', oligo: 'AACTAGGCACAGCGAGTCTTGGTT' },
+        { group_id: 'RLB10', oligo: 'AAGCGTTGAAACCTTTGTCCTCTC' },
+        { group_id: 'RLB11', oligo: 'GTTTCATCTATCGGAGGGAATGGA' },
+        { group_id: 'RLB12A', oligo: 'GTTGAGTTACAAAGCACCGATCAG' },
+        { group_id: 'RLB13', oligo: 'AGAACGACTTCCATACTCGTGTGA' },
+        { group_id: 'RLB14', oligo: 'AACGAGTCTCTTGGGACCCATAGA' },
+        { group_id: 'RLB15', oligo: 'AGGTCTACCTCGCTAACACCACTG' },
+        { group_id: 'RLB16', oligo: 'CGTCAACTGACAGTGGTTCGTACT' },
+        { group_id: 'RLB17', oligo: 'ACCCTCCAGGAAAGTACCTCTGAT' },
+        { group_id: 'RLB18', oligo: 'CCAAACCCAACAACCTAGATAGGC' },
+        { group_id: 'RLB19', oligo: 'GTTCCTCGTGCAGTGTCAAGAGAT' },
+        { group_id: 'RLB20', oligo: 'TTGCGTCCTGTTACGAGAACTCAT' },
+        { group_id: 'RLB21', oligo: 'GAGCCTCTCATTGTCCGTTCTCTA' },
+        { group_id: 'RLB22', oligo: 'ACCACTGCCATGTATCAAAGTACG' },
+        { group_id: 'RLB23', oligo: 'CTTACTACCCAGTGAACCTCCTCG' },
+        { group_id: 'RLB24', oligo: 'GCATAGTTCTGCATGATGGGTTAG' }
+      ].each do |tag_attributes|
+        set.tags.find_or_create_by!(tag_attributes)
+      end
+      puts '-> SQK-RPB114.24 tags successfully created'
     end
   end
 
