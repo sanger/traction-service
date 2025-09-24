@@ -1447,7 +1447,7 @@ namespace :tags do
         { group_id: 'RLB09', oligo: 'AACTAGGCACAGCGAGTCTTGGTT' },
         { group_id: 'RLB10', oligo: 'AAGCGTTGAAACCTTTGTCCTCTC' },
         { group_id: 'RLB11', oligo: 'GTTTCATCTATCGGAGGGAATGGA' },
-        { group_id: 'RLB12A', oligo: 'GTTGAGTTACAAAGCACCGATCAG' },
+        { group_id: 'RLB12', oligo: 'GTTGAGTTACAAAGCACCGATCAG' },
         { group_id: 'RLB13', oligo: 'AGAACGACTTCCATACTCGTGTGA' },
         { group_id: 'RLB14', oligo: 'AACGAGTCTCTTGGGACCCATAGA' },
         { group_id: 'RLB15', oligo: 'AGGTCTACCTCGCTAACACCACTG' },
