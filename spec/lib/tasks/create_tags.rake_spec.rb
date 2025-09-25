@@ -61,9 +61,12 @@ RSpec.describe 'RakeTasks' do
           -> Creating SQK-PCB114.24 tag set and tags
           -> Tag Set successfully created
           -> SQK-PCB114.24 tags successfully created
+          -> Creating SQK-RPB114.24 tag set and tags
+          -> Tag Set successfully created
+          -> SQK-RPB114.24 tags successfully created
         HEREDOC
       ).to_stdout
-      expect(TagSet.count).to eq(3)
+      expect(TagSet.count).to eq(4)
     end
 
     it 'creates all of the tag sets' do
@@ -113,9 +116,12 @@ RSpec.describe 'RakeTasks' do
           -> Creating SQK-PCB114.24 tag set and tags
           -> Tag Set successfully created
           -> SQK-PCB114.24 tags successfully created
+          -> Creating SQK-RPB114.24 tag set and tags
+          -> Tag Set successfully created
+          -> SQK-RPB114.24 tags successfully created
         HEREDOC
       ).to_stdout
-      expect(TagSet.count).to eq(14)
+      expect(TagSet.count).to eq(15)
     end
   end
 end
