@@ -164,7 +164,8 @@ GEM
     minitest (5.25.5)
     msgpack (1.8.0)
     multi_json (1.15.0)
-    mysql2 (0.5.6)
+    mysql2 (0.5.7)
+      bigdecimal
     net-imap (0.5.9)
       date
       net-protocol
