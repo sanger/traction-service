@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_25_100037) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_01_092759) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
@@ -411,9 +411,61 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_25_100037) do
     t.datetime "date_of_sample_collection", comment: "Date of sample collection"
     t.string "public_name", comment: "Public name"
     t.integer "retention_instruction"
+    t.integer "number_of_donors"
     t.index ["external_id"], name: "index_samples_on_external_id", unique: true
     t.index ["name", "external_id", "species"], name: "index_samples_on_name_and_external_id_and_species"
     t.index ["name"], name: "index_samples_on_name", unique: true
+  end
+
+  create_table "saphyr_chips", charset: "utf8mb3", force: :cascade do |t|
+    t.string "barcode"
+    t.string "serial_number"
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.bigint "saphyr_run_id"
+    t.index ["saphyr_run_id"], name: "index_saphyr_chips_on_saphyr_run_id"
+  end
+
+  create_table "saphyr_enzymes", charset: "utf8mb3", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.index ["name"], name: "index_saphyr_enzymes_on_name", unique: true
+  end
+
+  create_table "saphyr_flowcells", charset: "utf8mb3", force: :cascade do |t|
+    t.integer "position"
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.bigint "saphyr_chip_id"
+    t.bigint "saphyr_library_id"
+    t.index ["saphyr_chip_id"], name: "index_saphyr_flowcells_on_saphyr_chip_id"
+    t.index ["saphyr_library_id"], name: "index_saphyr_flowcells_on_saphyr_library_id"
+  end
+
+  create_table "saphyr_libraries", charset: "utf8mb3", force: :cascade do |t|
+    t.string "state"
+    t.datetime "deactivated_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.bigint "saphyr_enzyme_id"
+    t.bigint "saphyr_request_id"
+    t.index ["saphyr_enzyme_id"], name: "index_saphyr_libraries_on_saphyr_enzyme_id"
+    t.index ["saphyr_request_id"], name: "index_saphyr_libraries_on_saphyr_request_id"
+  end
+
+  create_table "saphyr_requests", charset: "utf8mb3", force: :cascade do |t|
+    t.string "external_study_id"
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+  end
+
+  create_table "saphyr_runs", charset: "utf8mb3", force: :cascade do |t|
+    t.integer "state", default: 0
+    t.string "name"
+    t.datetime "deactivated_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "tag_sets", charset: "utf8mb3", force: :cascade do |t|

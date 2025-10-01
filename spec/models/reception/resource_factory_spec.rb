@@ -458,13 +458,15 @@ RSpec.describe Reception::ResourceFactory do
             name: 'compound_sample_1',
             external_id: 'uuid-1',
             species: 'human',
-            supplier_name: 'supplier_name'
+            supplier_name: 'supplier_name',
+            donor_id: 'donor-1'
           },
           {
             name: 'compound_sample_2',
             external_id: 'uuid-2',
             species: 'human',
-            supplier_name: 'supplier_name'
+            supplier_name: 'supplier_name',
+            donor_id: 'donor-2'
           }
         ]
       },
@@ -476,13 +478,15 @@ RSpec.describe Reception::ResourceFactory do
              name: 'compound_sample_3',
              external_id: 'uuid-1',
              species: 'human',
-             supplier_name: 'supplier_name_2'
+             supplier_name: 'supplier_name_2',
+             donor_id: 'donor-1'
            },
            {
              name: 'compound_sample_4',
              external_id: 'uuid-2',
              species: 'human',
-             supplier_name: 'supplier_name_2'
+             supplier_name: 'supplier_name_2',
+             donor_id: 'donor-1'
            }
          ]
        }]
