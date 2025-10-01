@@ -9,5 +9,6 @@ FactoryBot.define do
     priority_level { 'Medium' }
     country_of_origin { 'United Kingdom' }
     retention_instruction { 'return_to_customer_after_2_years' }
+    number_of_donors { nil }
   end
 end

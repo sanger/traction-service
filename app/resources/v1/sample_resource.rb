@@ -38,9 +38,11 @@ module V1
     #   @return [String] the accession number
     # @!attribute [rw] date_of_sample_collection
     #   @return [String] the date of sample collection
-    attributes :name, :external_id, :species, :created_at, :deactivated_at
-    attributes :sanger_sample_id, :supplier_name, :taxon_id, :donor_id, :country_of_origin,
-               :accession_number, :date_of_sample_collection
+    # @!attribute [rw] number_of_donors
+    #  @return [Integer] the number of donors associated with the sample
+    attributes :name, :external_id, :species, :created_at, :deactivated_at,
+               :sanger_sample_id, :supplier_name, :taxon_id, :donor_id, :country_of_origin,
+               :accession_number, :date_of_sample_collection, :number_of_donors
 
     def created_at
       @model.created_at.to_fs(:us)
