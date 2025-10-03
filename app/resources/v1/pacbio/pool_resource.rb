@@ -111,7 +111,9 @@ module V1
 
       filter :sample_name, apply: lambda { |records, value, _options|
         # We have to join requests and samples here in order to find by sample name
-        records.joins(libraries: :sample).where(sample: { name: value })
+        library_ids = records.joins(libraries: :sample).where(sample: { name: value }).select(:id)
+        request_ids = records.joins(requests: :sample).where(sample: { name: value }).select(:id)
+        records.where(id: library_ids).or(records.where(id: request_ids))
       }
 
       filter :barcode, apply: lambda { |records, value, _options|
