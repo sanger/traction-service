@@ -172,6 +172,66 @@ RSpec.describe 'PoolsController', :pacbio do
         end
       end
     end
+
+    context 'filters - sample_name' do
+      it 'returns the correct pools for a given sample name via pool libraries', :aggregate_failures do
+        library_aliquot = create(:aliquot, source: create(:pacbio_library), used_by: pools.first, aliquot_type: :derived)
+        sample_name = library_aliquot.source.sample.name
+        get "#{v1_pacbio_pools_path}?filter[sample_name]=#{sample_name}", headers: json_api_headers
+
+        expect(response).to have_http_status(:success)
+        expect(json['data'].length).to eq(1)
+        pool_attributes = find_resource(type: 'pools', id: pools.first.id)['attributes']
+        expect(pool_attributes).to include(
+          'source_identifier' => pools.first.source_identifier,
+          'volume' => pools.first.volume,
+          'concentration' => pools.first.concentration,
+          'template_prep_kit_box_barcode' => pools.first.template_prep_kit_box_barcode,
+          'insert_size' => pools.first.insert_size,
+          'updated_at' => pools.first.updated_at.to_fs(:us),
+          'created_at' => pools.first.created_at.to_fs(:us)
+        )
+      end
+
+      it 'returns the correct pools for a given sample name via pool requests', :aggregate_failures do
+        request_aliquot = create(:aliquot, source: create(:pacbio_request), used_by: pools.first, aliquot_type: :derived)
+        sample_name = request_aliquot.source.sample.name
+        get "#{v1_pacbio_pools_path}?filter[sample_name]=#{sample_name}", headers: json_api_headers
+
+        expect(response).to have_http_status(:success)
+        expect(json['data'].length).to eq(1)
+        pool_attributes = find_resource(type: 'pools', id: pools.first.id)['attributes']
+        expect(pool_attributes).to include(
+          'source_identifier' => pools.first.source_identifier,
+          'volume' => pools.first.volume,
+          'concentration' => pools.first.concentration,
+          'template_prep_kit_box_barcode' => pools.first.template_prep_kit_box_barcode,
+          'insert_size' => pools.first.insert_size,
+          'updated_at' => pools.first.updated_at.to_fs(:us),
+          'created_at' => pools.first.created_at.to_fs(:us)
+        )
+      end
+
+      it 'returns multiple pools if multiple pools contain the sample' do
+        library_aliquot = create(:aliquot, source: create(:pacbio_library), used_by: pools.first, aliquot_type: :derived)
+        request_aliquot = create(:aliquot, source: create(:pacbio_request), used_by: pools.last, aliquot_type: :derived)
+        sample = library_aliquot.source.sample
+        request_aliquot.source.sample = sample
+        get "#{v1_pacbio_pools_path}?filter[sample_name]=#{sample.name}", headers: json_api_headers
+
+        expect(response).to have_http_status(:success)
+        expect(json['data'].length).to eq(2)
+        returned_pool_ids = json['data'].map { |pool| pool['id'].to_i }
+        expect(returned_pool_ids).to contain_exactly(pools.first.id, pools.last.id)
+      end
+
+      it 'returns no pools if no pools contain the sample' do
+        get "#{v1_pacbio_pools_path}?filter[sample_name]=RANDOM-SAMPLE", headers: json_api_headers
+
+        expect(response).to have_http_status(:success)
+        expect(json['data'].length).to eq(0)
+      end
+    end
   end
 
   context 'when creating a singleplex library' do
