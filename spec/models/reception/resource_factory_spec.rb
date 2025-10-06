@@ -458,13 +458,15 @@ RSpec.describe Reception::ResourceFactory do
             name: 'compound_sample_1',
             external_id: 'uuid-1',
             species: 'human',
-            supplier_name: 'supplier_name'
+            supplier_name: 'supplier_name',
+            donor_id: 'donor-1'
           },
           {
             name: 'compound_sample_2',
             external_id: 'uuid-2',
             species: 'human',
-            supplier_name: 'supplier_name'
+            supplier_name: 'supplier_name',
+            donor_id: 'donor-2'
           }
         ]
       },
@@ -476,13 +478,15 @@ RSpec.describe Reception::ResourceFactory do
              name: 'compound_sample_3',
              external_id: 'uuid-1',
              species: 'human',
-             supplier_name: 'supplier_name_2'
+             supplier_name: 'supplier_name_2',
+             donor_id: 'donor-1'
            },
            {
              name: 'compound_sample_4',
              external_id: 'uuid-2',
              species: 'human',
-             supplier_name: 'supplier_name_2'
+             supplier_name: 'supplier_name_2',
+             donor_id: 'donor-1'
            }
          ]
        }]
@@ -495,6 +499,15 @@ RSpec.describe Reception::ResourceFactory do
           resource_factory.construct_resources!
         end.to change(Request, :count).by(2)
                                       .and change(Sample, :count).by(2)
+
+        # Compound samples use supplier_name as name
+        # We want to check the correct attributes have been set
+        compound_sample_1 = Sample.find_by(name: 'supplier_name')
+        compound_sample_2 = Sample.find_by(name: 'supplier_name_2')
+        expect(compound_sample_1.species).to eq('human')
+        expect(compound_sample_1.number_of_donors).to eq(2)
+        expect(compound_sample_2.species).to eq('human')
+        expect(compound_sample_2.number_of_donors).to eq(1)
       end
     end
 

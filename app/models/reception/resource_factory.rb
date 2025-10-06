@@ -169,10 +169,12 @@ class Reception
       first_sample = tube_attr[:samples].first
       supplier_name = first_sample[:supplier_name]
       species = first_sample[:species]
+      # Number of donors for the compound sample is the unique count of donor_ids
+      number_of_donors = tube_attr[:samples].pluck(:donor_id).uniq.count
       # Supplier name being used here is Kinnex specific behaviour because
       # all the samples within the pool have the same supplier name so it can
       # be used as a unique identifier. Supplier name should not be used as a standard.
-      compound_sample = create_compound_sample(supplier_name, species)
+      compound_sample = create_compound_sample(supplier_name, species, number_of_donors)
       # If its an existing sample it will not have initialised
       # the component_sample_uuids instance variable - so we check here
       compound_sample.component_sample_uuids ||= []
@@ -182,7 +184,7 @@ class Reception
       compound_sample
     end
 
-    def create_compound_sample(name, species)
+    def create_compound_sample(name, species, number_of_donors)
       # Check if the sample already exists
       # Otherwise create a new one
       #
@@ -194,7 +196,8 @@ class Reception
         Sample.create!(
           name: name,
           external_id: SecureRandom.uuid,
-          species: species
+          species: species,
+          number_of_donors: number_of_donors
         )
     end
 
