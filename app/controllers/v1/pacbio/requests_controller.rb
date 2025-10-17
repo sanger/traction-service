@@ -10,7 +10,7 @@ module V1
         pipeline_request.destroy
         head :no_content
       rescue StandardError => e
-        render json: { data: { errors: e.message } }, status: :unprocessable_entity
+        render json: { data: { errors: e.message } }, status: :unprocessable_content
       end
 
       # Permitted parameters for create and edit actions

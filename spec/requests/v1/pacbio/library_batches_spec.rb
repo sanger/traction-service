@@ -125,7 +125,7 @@ RSpec.describe 'LibraryBatchesController', :pacbio do
 
         it 'returns unprocessable entity status' do
           post v1_pacbio_library_batches_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.body).to include('libraries.insert_size - is not a number')
         end
 

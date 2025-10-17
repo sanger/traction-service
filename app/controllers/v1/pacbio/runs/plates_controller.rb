@@ -11,7 +11,7 @@ module V1
             render_json(:created)
           else
             render json: { data: { errors: @plate.errors.messages } },
-                   status: :unprocessable_entity
+                   status: :unprocessable_content
           end
         end
 
@@ -19,14 +19,14 @@ module V1
           plate.update(params_names)
           render_json(:ok)
         rescue StandardError => e
-          render json: { data: { errors: e.message } }, status: :unprocessable_entity
+          render json: { data: { errors: e.message } }, status: :unprocessable_content
         end
 
         def destroy
           plate.destroy
           head :no_content
         rescue StandardError => e
-          render json: { data: { errors: e.message } }, status: :unprocessable_entity
+          render json: { data: { errors: e.message } }, status: :unprocessable_content
         end
 
         private

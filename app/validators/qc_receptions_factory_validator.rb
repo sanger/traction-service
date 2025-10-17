@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Failed validations return unprocessable_entity
+# Failed validations return unprocessable_content
 # These are being validated before any entity is created
 class QcReceptionsFactoryValidator < ActiveModel::Validator
   def validate(record)

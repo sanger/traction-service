@@ -151,7 +151,7 @@ RSpec.describe 'RunsController' do
       end
 
       it 'returns an error response' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns failure response' do
@@ -162,7 +162,7 @@ RSpec.describe 'RunsController' do
       it 'does not publish the message' do
         expect(Messages).not_to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
         post v1_ont_runs_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity), response.body
+        expect(response).to have_http_status(:unprocessable_content), response.body
       end
     end
   end
@@ -298,7 +298,7 @@ RSpec.describe 'RunsController' do
       end
 
       it 'returns an error response' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'does not create a run' do
@@ -332,7 +332,7 @@ RSpec.describe 'RunsController' do
         it 'does not be published' do
           expect(Messages).not_to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
           patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity), response.body
+          expect(response).to have_http_status(:unprocessable_content), response.body
         end
       end
     end
@@ -363,7 +363,7 @@ RSpec.describe 'RunsController' do
       it 'returns errors' do
         post v1_ont_runs_path, params: body, headers: json_api_headers
 
-        expect(response).to have_http_status(:unprocessable_entity), response.body
+        expect(response).to have_http_status(:unprocessable_content), response.body
 
         titles = json['errors'].pluck('title')
         expect(titles).to include("position x#{attr2[:position]} is duplicated in the same run")
@@ -397,7 +397,7 @@ RSpec.describe 'RunsController' do
       it 'returns errors' do
         patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: json_api_headers
 
-        expect(response).to have_http_status(:unprocessable_entity), response.body
+        expect(response).to have_http_status(:unprocessable_content), response.body
 
         titles = json['errors'].pluck('title')
         expect(titles).to include("flowcell_id #{attr3[:flowcell_id]} at position x#{attr3[:position]} is duplicated in the same run")

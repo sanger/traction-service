@@ -69,7 +69,7 @@ RSpec.describe 'TagsController' do
 
         it 'can returns unprocessable entity status' do
           post v1_tags_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'cannot create a tag' do
@@ -135,9 +135,9 @@ RSpec.describe 'TagsController' do
         }.to_json
       end
 
-      it 'has a ok unprocessable_entity' do
+      it 'has a ok unprocessable_content' do
         patch v1_tag_path(123), params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'has an error message' do
@@ -166,7 +166,7 @@ RSpec.describe 'TagsController' do
     context 'on failure' do
       it 'returns the correct status' do
         delete '/v1/tags/123', headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'has an error message' do

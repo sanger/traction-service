@@ -79,7 +79,7 @@ RSpec.describe 'Pacbio::TagSetsController' do
 
         it 'can returns unprocessable entity status' do
           post v1_pacbio_tag_sets_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'cannot create a tag set' do
@@ -147,7 +147,7 @@ RSpec.describe 'Pacbio::TagSetsController' do
 
         # the failure responses are slightly different to in tags_spec because we are using the
         # default controller
-        it 'has a ok unprocessable_entity' do
+        it 'has a ok unprocessable_content' do
           patch v1_tag_set_path(123), params: body, headers: json_api_headers
           expect(response).to have_http_status(:not_found)
         end

@@ -469,9 +469,9 @@ RSpec.describe 'RunsController' do
           }.to_json
         end
 
-        it 'has a unprocessable_entity status' do
+        it 'has a unprocessable_content status' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'does not create a run' do
@@ -569,9 +569,9 @@ RSpec.describe 'RunsController' do
           }.to_json
         end
 
-        it 'has a unprocessable_entity status' do
+        it 'has a unprocessable_content status' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'does not create a run' do
@@ -623,9 +623,9 @@ RSpec.describe 'RunsController' do
           }.to_json
         end
 
-        it 'has a unprocessable_entity status' do
+        it 'has a unprocessable_content status' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'does not create a run' do
@@ -696,9 +696,9 @@ RSpec.describe 'RunsController' do
           }.to_json
         end
 
-        it 'has a unprocessable_entity status' do
+        it 'has a unprocessable_content status' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'does not create a run' do
@@ -838,9 +838,9 @@ RSpec.describe 'RunsController' do
           pool2.used_aliquots[0].update(tag_id: pool1.used_aliquots[0].tag_id)
         end
 
-        it 'has a unprocessable_entity status' do
+        it 'has a unprocessable_content status' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'does not create a run' do
@@ -913,9 +913,9 @@ RSpec.describe 'RunsController' do
           library2.used_aliquots[0].update(tag_id: library1.used_aliquots[0].tag_id)
         end
 
-        it 'has a unprocessable_entity status' do
+        it 'has a unprocessable_content status' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'does not create a run' do
@@ -1064,10 +1064,10 @@ RSpec.describe 'RunsController' do
           }.to_json
         end
 
-        it 'has a unprocessable_entity status' do
+        it 'has a unprocessable_content status' do
           post v1_pacbio_runs_path, params: body, headers: json_api_headers
 
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'does not create a run' do
@@ -1705,7 +1705,7 @@ RSpec.describe 'RunsController' do
     it 'returns an error message if the smrt_link_version is not supported' do
       run.update(smrt_link_version: version10)
       get v1_pacbio_run_sample_sheet_path(run).to_s, headers: json_api_headers
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include 'SMRTLink sample sheet (v10) is not supported or invalid'
     end
   end

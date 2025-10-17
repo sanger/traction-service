@@ -94,7 +94,7 @@ RSpec.describe '/qc_results_uploads' do
 
         it 'renders a JSON response with errors for the new qc_results_upload' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "csv_data - can't be blank"
         end
@@ -121,7 +121,7 @@ RSpec.describe '/qc_results_uploads' do
 
         it 'renders a JSON response with errors for the new qc_results_upload' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "csv_data - can't be blank"
         end
@@ -150,7 +150,7 @@ RSpec.describe '/qc_results_uploads' do
 
         it 'renders a JSON response with errors for the new qc_results_upload' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "used_by - can't be blank"
         end
@@ -177,7 +177,7 @@ RSpec.describe '/qc_results_uploads' do
 
         it 'renders a JSON response with errors for the new qc_results_upload' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "used_by - can't be blank"
         end
@@ -227,7 +227,7 @@ RSpec.describe '/qc_results_uploads' do
 
         it 'renders a JSON response with errors for the new qc_results_upload' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'csv_data - Missing header row'
         end
@@ -261,7 +261,7 @@ RSpec.describe '/qc_results_uploads' do
         # There should always be a LR Decision, throw a 500 if not
         it 'renders a JSON response with errors for the new qc_results_upload' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['title']).to eq 'Missing required headers: Tissue Tube ID'
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'csv_data - Missing required headers: Tissue Tube ID'
@@ -294,7 +294,7 @@ RSpec.describe '/qc_results_uploads' do
 
         it 'renders a JSON response with errors for the new qc_results_upload' do
           post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'csv_data - Missing data rows'
         end
