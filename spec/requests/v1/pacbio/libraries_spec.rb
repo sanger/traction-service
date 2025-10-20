@@ -399,7 +399,7 @@ RSpec.describe 'LibrariesController', :pacbio do
 
         it 'returns unprocessable entity status' do
           post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'cannot create a library' do
@@ -435,7 +435,7 @@ RSpec.describe 'LibrariesController', :pacbio do
 
         it 'returns unprocessable entity status' do
           post v1_pacbio_libraries_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'cannot create a library' do
@@ -567,7 +567,7 @@ RSpec.describe 'LibrariesController', :pacbio do
       end
 
       it 'returns unprocessable entity status' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'does not update the library' do
@@ -613,7 +613,7 @@ RSpec.describe 'LibrariesController', :pacbio do
       end
 
       it 'returns unprocessable entity status' do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'does not update the library' do

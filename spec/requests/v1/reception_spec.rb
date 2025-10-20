@@ -193,7 +193,7 @@ RSpec.describe 'ReceptionsController' do
         expect(response).to have_http_status(:created), response.body
 
         post v1_receptions_path, params: changed_body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity), response.body
+        expect(response).to have_http_status(:unprocessable_content), response.body
       end
     end
 
@@ -493,9 +493,9 @@ RSpec.describe 'ReceptionsController' do
           }.to_json
         end
 
-        it 'has a unprocessable_entity status' do
+        it 'has a unprocessable_content status' do
           post v1_receptions_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.body).to include('pool/concentration - must be greater than or equal to 0')
         end
       end
@@ -530,9 +530,9 @@ RSpec.describe 'ReceptionsController' do
           }.to_json
         end
 
-        it 'has a unprocessable_entity status' do
+        it 'has a unprocessable_content status' do
           post v1_receptions_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.body).to include('pool/libraries - can\'t be blank')
         end
       end
@@ -591,9 +591,9 @@ RSpec.describe 'ReceptionsController' do
           }.to_json
         end
 
-        it 'has a unprocessable_entity status' do
+        it 'has a unprocessable_content status' do
           post v1_receptions_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.body).to include('pool/tags - must be present on all libraries')
         end
       end
@@ -652,9 +652,9 @@ RSpec.describe 'ReceptionsController' do
           }.to_json
         end
 
-        it 'has a unprocessable_entity status' do
+        it 'has a unprocessable_content status' do
           post v1_receptions_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.body).to include('requests/1/library_type - is not a recognised library type')
         end
       end
@@ -684,9 +684,9 @@ RSpec.describe 'ReceptionsController' do
           }.to_json
         end
 
-        it 'has a unprocessable_entity status' do
+        it 'has a unprocessable_content status' do
           post v1_receptions_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'generates a valid json-api error response' do
@@ -719,9 +719,9 @@ RSpec.describe 'ReceptionsController' do
           }.to_json
         end
 
-        it 'has a unprocessable_entity status' do
+        it 'has a unprocessable_content status' do
           post v1_receptions_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'generates a valid json-api error response' do
@@ -754,9 +754,9 @@ RSpec.describe 'ReceptionsController' do
           }.to_json
         end
 
-        it 'has a unprocessable_entity status' do
+        it 'has a unprocessable_content status' do
           post v1_receptions_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'generates a valid json-api error response' do
@@ -819,7 +819,7 @@ RSpec.describe 'ReceptionsController' do
         it 'has a bad_request status and correct errors' do
           create(:plate_with_wells_and_requests, barcode: 'NT1', pipeline: 'pacbio')
           post v1_receptions_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(json['errors'][0]['detail']).to eq('requests - there are no new samples to import')
         end
       end
@@ -978,11 +978,11 @@ RSpec.describe 'ReceptionsController' do
         }.to_json
       end
 
-      it 'has a unprocessable_entity status' do
+      it 'has a unprocessable_content status' do
         # This errors because of a type mismatch when attempting to create the pool as its trying to
         # put PacBio libraries into an ONT pool
         post v1_receptions_path, params: body, headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(json['errors'][0]['detail']).to eq('pool/libraries - can\'t be blank')
       end
     end
@@ -1077,7 +1077,7 @@ RSpec.describe 'ReceptionsController' do
 
         it 'responds with correct result' do
           post v1_receptions_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity), response.body
+          expect(response).to have_http_status(:unprocessable_content), response.body
           expect(response.body).to include('requests/0/requestable - is invalid')
         end
       end
@@ -1087,7 +1087,7 @@ RSpec.describe 'ReceptionsController' do
 
         it 'responds with correct result' do
           post v1_receptions_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity), response.body
+          expect(response).to have_http_status(:unprocessable_content), response.body
           expect(response.body).to include('requests/0/requestable - is invalid')
         end
       end
@@ -1097,7 +1097,7 @@ RSpec.describe 'ReceptionsController' do
 
         it 'responds with correct result' do
           post v1_receptions_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity), response.body
+          expect(response).to have_http_status(:unprocessable_content), response.body
           expect(response.body).to include('requests/0/requestable - is invalid')
         end
       end
@@ -1107,7 +1107,7 @@ RSpec.describe 'ReceptionsController' do
 
         it 'responds with correct result' do
           post v1_receptions_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity), response.body
+          expect(response).to have_http_status(:unprocessable_content), response.body
           expect(response.body).to include('requests/0/requestable - is invalid')
         end
       end

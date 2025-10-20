@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Failed validations return unprocessable_entity
+# Failed validations return unprocessable_content
 class WellValidator < ActiveModel::Validator
   def validate(record)
     return unless record.base_used_aliquots.many?

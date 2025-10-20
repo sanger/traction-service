@@ -218,7 +218,7 @@ RSpec.describe 'Ont::RequestsController', :ont do
 
     it 'returns unprocessable entity status' do
       patch v1_ont_request_path(request), params: body, headers: json_api_headers
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
     end
 
     it 'does not publish the message' do

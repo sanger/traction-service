@@ -299,7 +299,7 @@ RSpec.describe 'RequestsController', :pacbio do
     context 'on failure' do
       it 'does not delete the request' do
         delete "#{v1_pacbio_requests_path}/fakerequest", headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'has an error message' do
@@ -359,7 +359,7 @@ RSpec.describe 'RequestsController', :pacbio do
 
     it 'returns unprocessable entity status' do
       patch v1_pacbio_request_path(request), params: body, headers: json_api_headers
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
     end
 
     it 'does not publish the message' do
