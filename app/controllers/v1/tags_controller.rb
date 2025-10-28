@@ -9,7 +9,7 @@ module V1
         head :created
       else
         render json: { data: { errors: @tag.errors.messages } },
-               status: :unprocessable_entity
+               status: :unprocessable_content
       end
     end
 
@@ -17,14 +17,14 @@ module V1
       tag.update(params_names)
       render_json(:ok)
     rescue StandardError => e
-      render json: { data: { errors: e.message } }, status: :unprocessable_entity
+      render json: { data: { errors: e.message } }, status: :unprocessable_content
     end
 
     def destroy
       tag.destroy
       head :no_content
     rescue StandardError => e
-      render json: { data: { errors: e.message } }, status: :unprocessable_entity
+      render json: { data: { errors: e.message } }, status: :unprocessable_content
     end
 
     private

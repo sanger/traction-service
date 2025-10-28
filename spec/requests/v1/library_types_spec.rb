@@ -72,7 +72,7 @@ RSpec.describe 'LibraryTypesController' do
 
         it 'can returns unprocessable entity status' do
           post v1_library_types_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'cannot create a library type' do
@@ -137,7 +137,7 @@ RSpec.describe 'LibraryTypesController' do
         end
 
         # the failure responses are slightly different to in tags_spec because we are using the default controller
-        it 'has a ok unprocessable_entity' do
+        it 'has a ok unprocessable_content' do
           patch v1_library_type_path(123), params: body, headers: json_api_headers
           expect(response).to have_http_status(:not_found)
         end

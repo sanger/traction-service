@@ -131,7 +131,7 @@ RSpec.describe '/qc_receptions' do
 
         it 'renders a JSON response with errors for the new qc_receptions' do
           post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "qc_results_list - can't be blank"
         end
@@ -158,7 +158,7 @@ RSpec.describe '/qc_receptions' do
 
         it 'renders a JSON response with errors for the new qc_receptions' do
           post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "qc_results_list - can't be blank"
         end
@@ -186,7 +186,7 @@ RSpec.describe '/qc_receptions' do
         it 'renders a JSON response with errors for the qc_results_list' do
           error_message = error_config['attributes']['qc_results_list']['empty_array']
           post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['title']).to eq error_message
         end
@@ -212,7 +212,7 @@ RSpec.describe '/qc_receptions' do
 
         it 'renders a JSON response with errors for the new qc_receptions' do
           post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "source - can't be blank"
         end
@@ -239,7 +239,7 @@ RSpec.describe '/qc_receptions' do
 
         it 'renders a JSON response with errors for the new qc_results_list' do
           post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "source - can't be blank"
         end

@@ -158,7 +158,7 @@ RSpec.describe 'PoolsController', :ont do
 
         it 'returns unprocessable entity status' do
           post v1_ont_pools_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'cannot create a pool' do
@@ -242,7 +242,7 @@ RSpec.describe 'PoolsController', :ont do
 
         it 'returns unprocessable entity' do
           post v1_ont_pools_path, params: body, headers: json_api_headers
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'cannot create a pool' do
@@ -368,7 +368,7 @@ RSpec.describe 'PoolsController', :ont do
         end
 
         it 'returns unprocessable entity status' do
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'does not update a pool' do

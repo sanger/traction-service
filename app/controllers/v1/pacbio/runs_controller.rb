@@ -17,7 +17,7 @@ module V1
                     disposition: "attachment; filename=#{run.name}.csv"
         rescue Version::Error => e
           # generate_sample_sheet will raise a Version::Error if the version cannot be found
-          render json: { error: e.message }, status: :unprocessable_entity
+          render json: { error: e.message }, status: :unprocessable_content
         end
       end
     end
