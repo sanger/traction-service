@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
 module V1
-  # @todo This documentation does not yet include a detailed description of what this resource represents.
-  # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-  # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+  # Provides a JSON:API representation of {QcResultsUpload} model.
   #
-  # @note Access this resource via the `/v1/qc_results` endpoint.
-  #
+  # QcResultsUploadResource resource handles the uploading of QC results via CSV data.
   # Steps:<br>
   #
   # 1. Validate QcResultsUpload data (via QcResultsUploadFactory validation)
@@ -15,15 +12,19 @@ module V1
   # 4. Build QcResultMessages
   # 5. Publish QcResultMessages
   #
-  # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-  # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package for the service
-  # implementation of the JSON:API standard.
+  # @example
+  #
+  # @todo CURL NEEDS ESCAPING THE CSV PROPERLY
+  #
+  # @note Access this resource via the `/v1/qc_results` endpoint.
+  #
+  #
   class QcResultsUploadResource < JSONAPI::Resource
     model_name 'QcResultsUpload', add_model_hint: false
 
-    # @!attribute [rw] csv_data
+    # @!attribute [w] csv_data
     #   @return [String] the CSV data for the QC results upload
-    # @!attribute [rw] used_by
+    # @!attribute [w] used_by
     #   @return [String] the user who uploaded the QC results
     attributes :csv_data, :used_by
 
