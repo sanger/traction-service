@@ -2,25 +2,37 @@
 
 module V1
   module Ont
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    # rubocop:disable Layout/LineLength
+    # Provides a JSON:API representation of {Ont::Flowcell} model.
     #
+    # Flowcell is a cartridge containing a chip with nanopores used for DNA or
+    # RNA sequencing by Oxford Nanopore Technologies (ONT). A flowcell is
+    # associated with a sequencing run and a pool of samples to be sequenced.
+    #
+    # Primary relationships:
+    # * pool {V1::PoolResource} - The pool loaded onto the flowcell.
+    #
+    # @note This resource is immutable: its endpoint will not accept `POST`, `PATCH`, or `DELETE` requests.
     # @note Access this resource via the `/v1/ont/flowcells/` endpoint.
     #
-    # Provides a JSON:API representation of {Ont::Flowcell}.
+    # @example GET request to list all ONT flowcells
+    #   curl -X GET http://localhost:3100/v1/ont/flowcells
+    #
+    # @example GET request to retrieve a specific ONT flowcell by ID
+    #  curl -X GET "http://localhost:3100/v1/ont/flowcells/1"
     #
     # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
     # for the service implementation of the JSON:API standard.
+    # rubocop:enable Layout/LineLength
     class FlowcellResource < JSONAPI::Resource
       model_name 'Ont::Flowcell'
 
-      # @!attribute [rw] flowcell_id
+      # @!attribute [r] flowcell_id
       #   @return [Integer] the ID of the flowcell
-      # @!attribute [rw] position
+      # @!attribute [r] position
       #   @return [String] the position of the flowcell
-      # @!attribute [rw] ont_pool_id
+      # @!attribute [r] ont_pool_id
       #   @return [Integer] the ID of the ONT pool
       attributes :flowcell_id, :position, :ont_pool_id
 
