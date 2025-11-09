@@ -2,8 +2,14 @@
 
 module V1
   module Ont
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
+    # Provides a JSON:API representation of {Ont::Tag} model.
+    #
+    # A tag is a short unique DNA sequence (oligo) in a tag set (barcode set).
+    # A tag set can have a single group of tags or multiple groups of tags
+    # (indexes). A tag can only belong to one group within a tag set.
+    #
+    # @note Access to this resource is disabled. See
+    # @note Access this resource via the `/v1/ont/tags/` endpoint.
     # @todo This documentation does not yet include any example usage of the API via cURL or similar.
     #
     # @note Access this resource via the `/v1/ont/tags/` endpoint.
