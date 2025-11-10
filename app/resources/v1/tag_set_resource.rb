@@ -33,7 +33,21 @@ module V1
   #        }
   #      }'
   #
+  # curl -X PATCH "http://yourdomain.com/v1/pacbio/tag_sets/1" \
+  #      -H "accept: application/vnd.api+json" \
+  #      -H "Content-Type: application/vnd.api+json" \
+  #      -d '{
+  #        "data": {
+  #          "type": "tag_sets",
+  #          "id": "1",
+  #          "attributes": {
+  #            "name": "Updated Tag Set Name"
+  #          }
+  #        }
+  #      }'
   #
+  # @note Tag sets should not be destroy via the API; use the `active` attribute to
+  # deactivate tag sets instead.
   class TagSetResource < JSONAPI::Resource
     # @!attribute [rw] name
     #   @return [String] the name of the tag set
