@@ -23,6 +23,27 @@ RSpec.describe 'TagSetsController' do
       expect(json['data'][0]['attributes']['name']).to eq(tag_set1.name)
       expect(json['data'][1]['attributes']['name']).to eq(tag_set2.name)
     end
+
+    it 'can include tags' do
+      tag_set_with_tags = create(:tag_set_with_tags)
+      get "#{v1_tag_sets_path}?include=tags", headers: json_api_headers
+
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+
+      expect(json['included'].length).to eq(tag_set_with_tags.tags.length)
+    end
+
+    it 'can filter by pipeline' do
+      create(:ont_tag_set)
+
+      get "#{v1_tag_sets_path}?filter[pipeline]=pacbio", headers: json_api_headers
+
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+
+      expect(json['data'].length).to eq(2) # including the two created at the top
+    end
   end
 
   describe '#create' do
