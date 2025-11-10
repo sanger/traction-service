@@ -48,6 +48,21 @@ module V1
   #
   # @note Tag sets should not be destroy via the API; use the `active` attribute to
   # deactivate tag sets instead.
+  # This is a soft delete; the record will be marked as inactive but not removed from the database.
+  #
+  # curl -X PATCH "http://yourdomain.com/v1/pacbio/tag_sets/1" \
+  #      -H "accept: application/vnd.api+json" \
+  #      -H "Content-Type: application/vnd.api+json" \
+  #      -d '{
+  #        "data": {
+  #          "type": "tag_sets",
+  #          "id": "1",
+  #          "attributes": {
+  #            "active": false
+  #          }
+  #        }
+  #      }'
+  #
   class TagSetResource < JSONAPI::Resource
     # @!attribute [rw] name
     #   @return [String] the name of the tag set
