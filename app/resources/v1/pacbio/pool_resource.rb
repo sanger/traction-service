@@ -3,8 +3,6 @@
 module V1
   module Pacbio
     #
-    # @todo Add POST and PATCH examples
-    #
     # @note Access this resource via the `/v1/pacbio/pools/` endpoint.
     #
     # Provides a JSON:API representation of {Pacbio::Pool}.
@@ -49,6 +47,87 @@ module V1
     #
     #   https://localhost:3000/v1/pacbio/pools?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=used_aliquots.tag.tag_set,requests.tube,tube,libraries.tube,libraries.request,requests.plate.wells.requests
     #
+    # curl -X POST "http://yourdomain.com/v1/pacbio/pools" \
+    #     -H "accept: application/vnd.api+json" \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -d '{
+    #       "data": {
+    #         "type": "pools",
+    #         "attributes": {
+    #           "used_aliquots_attributes": [
+    #             {
+    #               "template_prep_kit_box_barcode": "LK1234567",
+    #               "volume": 1.11,
+    #               "concentration": 2.22,
+    #               "insert_size": 100,
+    #               "source_id": 1,
+    #               "source_type": "Pacbio::Request",
+    #               "tag_id": 999
+    #             },
+    #             {
+    #               "template_prep_kit_box_barcode": "LK1234567",
+    #               "volume": 1.11,
+    #               "concentration": 2.22,
+    #               "insert_size": 100,
+    #               "source_id": request2.id,
+    #               "source_type": "Pacbio::Request",
+    #               "tag_id": 9999
+    #             }
+    #           ],
+    #           "primary_aliquot_attributes": {
+    #             "volume": "200",
+    #             "concentration": "22",
+    #             "template_prep_kit_box_barcode": "100",
+    #             "insert_size": "11"
+    #           }
+    #         }
+    #       }
+    #    }'
+    #
+    # curl -X PATCH "http://yourdomain.com/v1/pacbio/pools/1" \
+    #     -H "accept: application/vnd.api+json" \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -d '{
+    #       data: {
+    #         type: 'pools',
+    #         id: 1,
+    #         attributes: {
+    #           used_aliquots_attributes: [
+    #             {
+    #               id: 10,
+    #               source_id: 333,
+    #               source_type: 'Pacbio::Library',
+    #               template_prep_kit_box_barcode: 'LK12345',
+    #               tag_id: 9999,
+    #               volume: 1,
+    #               concentration: 1,
+    #               insert_size: 100
+    #             },
+    #             {
+    #               source_id: 444,
+    #               source_type: 'Pacbio::Request',
+    #               template_prep_kit_box_barcode: 'LK12345',
+    #               tag_id: 9998,
+    #               volume: 1,
+    #               concentration: 1,
+    #               insert_size: 100
+    #             }
+    #           ],
+    #           primary_aliquot_attributes: {
+    #             volume: '200',
+    #             concentration: '22',
+    #             template_prep_kit_box_barcode: '100',
+    #             insert_size: '11'
+    #           },
+    #           volume: '200',
+    #           concentration: '22',
+    #           template_prep_kit_box_barcode: '100',
+    #           insert_size: '11',
+    #           created_at: '2021-08-04T14:35:47.208Z',
+    #           updated_at: '2021-08-04T14:35:47.208Z'
+    #         }
+    #       }
+    #    }'
     #
     class PoolResource < JSONAPI::Resource
       include Shared::RunSuitability
