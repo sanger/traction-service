@@ -43,8 +43,6 @@ Rails.application.routes.draw do
         # Which is an issue with the namespaced resources not looking up the global ones.
         # See comment in app/resources/v1/pacbio/runs/well_resource.rb
         # rubocop:disable Lint/EmptyBlock
-        jsonapi_resources(:plates,        only: %i[index create update destroy]) {}
-        jsonapi_resources(:wells,         only: %i[index create update destroy]) {}
         jsonapi_resources(:annotations, only: %i[index show]) {}
         # rubocop:enable Lint/EmptyBlock
       end
