@@ -10,13 +10,13 @@ module V1
     # This resource represents a Pacbio Request and can return all requests, a single request or
     # multiple requests along with their relationships.
     #
-    # ## Filters:
+    ## Filters:
     #
     # * sample_name
     # * source_identifier
     # * species
     #
-    # ## Primary relationships:
+    ## Primary relationships:
     #
     # * well {V1::Pacbio::WellResource}
     # * plate {V1::Pacbio::PlateResource}
