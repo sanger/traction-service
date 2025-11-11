@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 module V1
-  # rubocop:disable Layout/LineLength
-  # Provides a JSON:API representation of {QcResultsUpload} model.
+  # Provides a JSON:API representation of {QcResultsUpload}.
   #
   # QcResultsUploadResource resource handles the uploading of QC results via CSV data.
   #
@@ -14,10 +13,9 @@ module V1
   # 4. Build QcResultMessages
   # 5. Publish QcResultMessages
   #
-  # @note This resource is write-only: its endpoint will not accept `GET`, `PATCH`, or `DELETE` requests.
   # @note Access this resource via the `/v1/qc_results_uploads` endpoint.
   #
-  # @example POST request to upload QC results via CSV data
+  # @example
   #    csv_data=$(jq -Rs . qc_results.csv)
   #    curl -X POST http://localhost:3100/v1/qc_results_uploads \
   #      -H "Content-Type: application/vnd.api+json" \
@@ -32,10 +30,6 @@ module V1
   #        }
   #      }'
   #
-  # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-  # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package for the service
-  # implementation of the JSON:API standard.
-  # rubocop:enable Layout/LineLength
   class QcResultsUploadResource < JSONAPI::Resource
     model_name 'QcResultsUpload', add_model_hint: false
 
