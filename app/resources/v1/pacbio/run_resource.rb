@@ -12,12 +12,12 @@ module V1
     # It can also create and update runs and their nested relationships
     # via the plates_attributes parameter. These actions also publish run messages to the warehouse.
     #
-    # ## Filters:
+    ## Filters:
     #
     # * name
     # * state
     #
-    # ## Primary relationships:
+    ## Primary relationships:
     #
     # * plates {V1::Pacbio::PlateResource}
     # * smrt_link_version {V1::Pacbio::SmrtLinkVersionResource}
