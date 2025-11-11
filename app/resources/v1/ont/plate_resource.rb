@@ -2,28 +2,22 @@
 
 module V1
   module Ont
-    # rubocop:disable Layout/LineLength
-    # Provides a JSON:API representation of {Plate} model.
+    # Provides a JSON:API representation of {Plate}.
     #
     # Plates are plastic labware containing {Well}s to hold samples.
     #
-    # Primary relationships:
+    ## Filters:
+    # * barcode - Filter plates by their barcode.
+    #
+    ## Primary relationships:
     # * wells {V1::Ont::WellResource} - The wells contained in the plate.
     #
-    # @note This resource supports only `GET` requests for listing and filtering plates by barcodes.
     # @note Access this resource via the `/v1/ont/plates/` endpoint.
     #
-    # @example GET request to list all ONT plates
-    #  curl -X GET http://localhost:3100/v1/ont/plates
+    # @example
+    #   curl -X GET http://localhost:3100/v1/ont/plates
+    #   curl -X GET "http://localhost:3100/v1/ont/plates?filter[barcode]=GEN-1762592713-1,GEN-1762592713-2"
     #
-    # @example GET request to filter ONT plates by two barcodes
-    #   curl -X GET "http://localhost:3100/v1/ont/plates" --data-urlencode "filter[barcode]=GEN-1762592713-1,GEN-1762592713-2"
-    #   curl -X GET "http://localhost:3100/v1/ont/plates?filter%5Bbarcode%5D=GEN-1762592713-1,GEN-1762592713-2"
-    #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
-    # rubocop:enable Layout/LineLength
     class PlateResource < JSONAPI::Resource
       model_name '::Plate'
       # @!attribute [r] barcode
