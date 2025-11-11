@@ -14,12 +14,12 @@ module V1
     # * ont_instrument_id: The ID of the associated instrument.
     # * flowcell_attributes: The attributes of the flowcells in the run.
     #
-    # ## Filters:
+    ## Filters:
     #
     # * experiment_name: Filter runs by experiment name.
     # * state: Filter runs by state.
     #
-    # ## Primary relationships:
+    ## Primary relationships:
     #
     # * instrument {V1::Ont::InstrumentResource}
     # * flowcells {V1::Ont::FlowcellResource}
