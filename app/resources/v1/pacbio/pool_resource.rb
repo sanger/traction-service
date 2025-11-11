@@ -13,12 +13,12 @@ module V1
     # This resource represents a Pacbio Pool and can return all pools, a single pool or multiple
     # pools along with their relationships.
     #
-    # ## Filters:
+    ## Filters:
     #
     # * sample_name
     # * barcode
     #
-    # ## Primary relationships:
+    ## Primary relationships:
     #
     # * tube {V1::Pacbio::TubeResource}
     # * used_aliquots {V1::Pacbio::AliquotResource}
