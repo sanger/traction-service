@@ -14,7 +14,7 @@ module V1
     #
     # This resource has no filters.
     #
-    # ## Primary relationships:
+    ## Primary relationships:
     #
     # * smrt_link_option_versions {V1::Pacbio::SmrtLinkOptionVersionResource}
     #
