@@ -9,7 +9,7 @@ module V1
     # to enable multiplexing, allowing multiple samples to be sequenced
     # simultaneously on a single flowcell.
     #
-    # Primary relationships:
+    ## Primary relationships:
     # * tags {V1::Ont::TagResource} - The tags contained in the tag set.
     #
     # @note Access this resource via the `/v1/ont/tag_sets/` endpoint.
