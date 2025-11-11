@@ -10,13 +10,13 @@ module V1
     # This resource represents a Pacbio Library and can return all libraries, a single library or
     # multiple libraries along with their relationships.
     #
-    # ## Filters:
+    ## Filters:
     #
     # * sample_name
     # * barcode
     # * source_identifier
     #
-    # ## Primary relationships:
+    ## Primary relationships:
     #
     # * request {V1::Pacbio::RequestResource}
     # * tube {V1::Pacbio::TubeResource}
