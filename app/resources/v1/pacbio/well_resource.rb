@@ -16,7 +16,7 @@ module V1
     #
     # This resource has no filters.
     #
-    # ## Primary relationships:
+    ## Primary relationships:
     #
     # * materials {V1::Pacbio::MaterialResource}
     # * requests {V1::Pacbio::RequestResource}
