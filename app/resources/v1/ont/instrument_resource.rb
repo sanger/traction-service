@@ -2,7 +2,6 @@
 
 module V1
   module Ont
-    # rubocop:disable Layout/LineLength
     # Provides a JSON:API representation of {Ont::Instrument}.
     #
     # ONT Instruments are devices used for DNA or RNA sequencing by Oxford
@@ -10,19 +9,12 @@ module V1
     # technology but differ in scale and throughput. The main difference is
     # the number of flowcells they can run.
     #
-    # @note This resource is immutable: its endpoint will not accept `POST`, `PATCH`, or `DELETE` requests.
     # @note Access this resource via the `/v1/ont/instruments/` endpoint.
     #
-    # @example GET request to list all ONT instruments
+    # @example
     #   curl -X GET http://localhost:3100/v1/ont/instruments
+    #   curl -X GET "http://localhost:3100/v1/ont/instruments/1"
     #
-    # @example GET request to retrieve a specific ONT instrument by ID
-    #  curl -X GET "http://localhost:3100/v1/ont/instruments/1"
-    #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
-    # rubocop:enable Layout/LineLength
     class InstrumentResource < JSONAPI::Resource
       model_name 'Ont::Instrument'
 
