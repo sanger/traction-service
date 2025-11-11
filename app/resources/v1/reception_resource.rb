@@ -1,29 +1,207 @@
 # frozen_string_literal: true
 
 module V1
-  # @todo This documentation does not yet include a detailed description of what this resource represents.
-  # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-  # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+  # Provides a JSON:API representation of {Reception}.
+  #
+  # A reception handles the import of samples and requests from external
+  # sources. It accepts plates_attributes, tubes_attributes, pool_attributes,
+  # or compound_sample_tubes_attributes. It publishes sample and stock_resource
+  # messages.
   #
   # @note Access this resource via the `/v1/receptions` endpoint.
   #
-  # Provides a JSON:API representation of {Reception} and handles the import of resources into
-  # traction
+  # @example
+  #   curl -X GET http://localhost:3100/v1/receptions
+  #   curl -X GET http://localhost:3100/v1/receptions/1
   #
-  # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-  # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package for the service
-  # implementation of the JSON:API standard.
+  #   curl -X POST http://localhost:3100/v1/receptions \
+  #     -H "Content-Type: application/vnd.api+json" \
+  #     -H "Accept: application/vnd.api+json" \
+  #     -d '{
+  #       "data": {
+  #         "type": "receptions",
+  #         "attributes": {
+  #           "source": "tol-lab-share.tol",
+  #           "tubes_attributes": [
+  #             {
+  #               "type": "tubes",
+  #               "barcode": "NT1",
+  #               "request": {
+  #                 "external_study_id": "36961ba5-c291-494d-a3e5-67a915782121",
+  #                 "cost_code": "S10000",
+  #                 "library_type": "Library Type 1",
+  #                 "data_type": "Data Type 1"
+  #               },
+  #               "sample": {
+  #                 "name": "Sample1",
+  #                 "external_id": "8ad0fd55-8a30-41e0-b37e-7e5010af929b",
+  #                 "species": "human",
+  #                 "public_name": "PublicName",
+  #                 "priority_level": "Medium",
+  #                 "country_of_origin": "United Kingdom",
+  #                 "retention_instruction": "return_to_customer_after_2_years",
+  #                 "number_of_donors": null
+  #               }
+  #             }
+  #           ]
+  #         }
+  #       }
+  #     }'
+  #
+  #   curl -X POST http://localhost:3100/v1/receptions \
+  #     -H "Content-Type: application/vnd.api+json" \
+  #     -H "Accept: application/vnd.api+json" \
+  #     -d '{
+  #       "data": {
+  #         "type": "receptions",
+  #         "attributes": {
+  #           "source": "traction-ui.sequencescape",
+  #           "plates_attributes": [
+  #             {
+  #               "type": "plates",
+  #               "barcode": "NT1",
+  #               "wells_attributes": [
+  #                 {
+  #                   "position": "A1",
+  #                   "request": {
+  #                     "external_study_id": "839e22dc-b3e9-4f88-b77b-7921be082d3f",
+  #                     "cost_code": "S10006",
+  #                     "library_type": "Library Type 6",
+  #                     "data_type": "Data Type 6"
+  #                   },
+  #                   "sample": {
+  #                     "name": "Sample7",
+  #                     "external_id": "e23f8315-8c08-4307-88d0-46141664a2b4",
+  #                     "species": "human",
+  #                     "public_name": "PublicName",
+  #                     "priority_level": "Medium",
+  #                     "country_of_origin": "United Kingdom",
+  #                     "retention_instruction": "return_to_customer_after_2_years",
+  #                     "number_of_donors": null
+  #                   }
+  #                 }
+  #               ]
+  #             }
+  #           ]
+  #         }
+  #       }
+  #     }'
+  #
+  #   curl -X POST http://localhost:3100/v1/receptions \
+  #     -H "Content-Type: application/vnd.api+json" \
+  #     -H "Accept: application/vnd.api+json" \
+  #     -d '{
+  #       "data": {
+  #         "type": "receptions",
+  #         "attributes": {
+  #           "source": "traction-ui.sequencescape",
+  #           "tubes_attributes": [
+  #             {
+  #               "type": "tubes",
+  #               "barcode": "NT1",
+  #               "request": {
+  #                 "external_study_id": "df3a95a0-9fac-4d6c-b151-c2f94f4c5df5",
+  #                 "cost_code": "S10011",
+  #                 "library_type": "Library Type 8",
+  #                 "data_type": "Data Type 8"
+  #               },
+  #               "library": {
+  #                 "volume": 1,
+  #                 "concentration": 2,
+  #                 "insert_size": 3,
+  #                 "kit_barcode": "Tag-Set-1",
+  #                 "tag_sequence": "TGTGAA1CC"
+  #               },
+  #               "sample": {
+  #                 "name": "Sample12",
+  #                 "external_id": "08f35d53-15a1-480f-b033-560a5b1bfb82",
+  #                 "species": "human",
+  #                 "public_name": "PublicName",
+  #                 "priority_level": "Medium",
+  #                 "country_of_origin": "United Kingdom",
+  #                 "retention_instruction": "return_to_customer_after_2_years",
+  #                 "number_of_donors": null
+  #               }
+  #             },
+  #             {
+  #               "type": "tubes",
+  #               "barcode": "NT2",
+  #               "request": {
+  #                 "external_study_id": "437b08d2-1502-45a6-95c7-00e4ef84b5b0",
+  #                 "cost_code": "S10012",
+  #                 "library_type": "Library Type 8",
+  #                 "data_type": "Data Type 8"
+  #               },
+  #               "library": {
+  #                 "volume": 1,
+  #                 "concentration": 2,
+  #                 "insert_size": 3,
+  #                 "kit_barcode": "Tag-Set-1",
+  #                 "tag_sequence": "AGACGCTT2"
+  #               },
+  #               "sample": {
+  #                 "name": "Sample13",
+  #                 "external_id": "ddd937a5-ca29-4ecb-a62b-b76f00fef683",
+  #                 "species": "human",
+  #                 "public_name": "PublicName",
+  #                 "priority_level": "Medium",
+  #                 "country_of_origin": "United Kingdom",
+  #                 "retention_instruction": "return_to_customer_after_2_years",
+  #                 "number_of_donors": null
+  #               }
+  #             },
+  #             {
+  #               "type": "tubes",
+  #               "barcode": "NT3",
+  #               "request": {
+  #                 "external_study_id": "b5e84718-bef0-4fd1-ae3b-13951c1e5c2d",
+  #                 "cost_code": "S10013",
+  #                 "library_type": "Library Type 8",
+  #                 "data_type": "Data Type 8"
+  #               },
+  #               "library": {
+  #                 "volume": 1,
+  #                 "concentration": 2,
+  #                 "insert_size": 3,
+  #                 "kit_barcode": "Tag-Set-1",
+  #                 "tag_sequence": "CTAGAGC3T"
+  #               },
+  #               "sample": {
+  #                 "name": "Sample14",
+  #                 "external_id": "c974d7d1-d618-404e-b1b0-6d5e19f2bd87",
+  #                 "species": "human",
+  #                 "public_name": "PublicName",
+  #                 "priority_level": "Medium",
+  #                 "country_of_origin": "United Kingdom",
+  #                 "retention_instruction": "return_to_customer_after_2_years",
+  #                 "number_of_donors": null
+  #               }
+  #             }
+  #           ],
+  #           "pool_attributes": {
+  #             "volume": 1,
+  #             "concentration": 2,
+  #             "insert_size": 3,
+  #             "kit_barcode": "Tag-Set-1",
+  #             "barcode": "NT123"
+  #           }
+  #         }
+  #       }
+  #     }'
+  #
   class ReceptionResource < JSONAPI::Resource
     # @!attribute [rw] source
     #   @return [String] the source of the reception
-    # @!attribute [rw] labware
+    # @!attribute [w] labware
     #   @return [Array<Hash>] the labware associated with the reception
-    # @!attribute [rw] plates_attributes
+    # @!attribute [w] plates_attributes
     #   @return [Array<Hash>] the attributes of the plates
-    # @!attribute [rw] tubes_attributes
+    # @!attribute [w] tubes_attributes
     #   @return [Array<Hash>] the attributes of the tubes
-    # @!attribute [rw] pool_attributes
+    # @!attribute [w] pool_attributes
     #   @return [Hash] the attributes of the pool
+    # @!attribute [w] compound_sample_tubes_attributes
+    #   @return [Array<Hash>] the attributes of the compound sample tubes
     attributes :source, :labware, :plates_attributes, :tubes_attributes, :pool_attributes,
                :compound_sample_tubes_attributes
 
