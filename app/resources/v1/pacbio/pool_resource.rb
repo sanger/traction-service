@@ -35,9 +35,9 @@ module V1
     # * requests.plate.wells.requests
     #
     # @example
-    #   curl -X GET http://localhost:3000/v1/pacbio/pools/1
-    #   curl -X GET http://localhost:3000/v1/pacbio/pools/
-    #   curl -X GET http://localhost:3000/v1/pacbio/pools/1?include=tube,used_aliquots,primary_aliquot,requests,libraries
+    #   curl -X GET http://localhost:3100/v1/pacbio/pools/1
+    #   curl -X GET http://localhost:3100/v1/pacbio/pools/
+    #   curl -X GET http://localhost:3100/v1/pacbio/pools/1?include=tube,used_aliquots,primary_aliquot,requests,libraries
     #
     #   https://locahost:3000/v1/pacbio/pools?filter[sample_name]=sample_name
     #
@@ -45,7 +45,7 @@ module V1
     #
     #   https://locahost:3000/v1/pacbio/pools?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067
     #
-    #   https://localhost:3000/v1/pacbio/pools?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=used_aliquots.tag.tag_set,requests.tube,tube,libraries.tube,libraries.request,requests.plate.wells.requests
+    #   https://localhost:3100/v1/pacbio/pools?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=used_aliquots.tag.tag_set,requests.tube,tube,libraries.tube,libraries.request,requests.plate.wells.requests
     #
     # curl -X POST "http://localhost:3100/v1/pacbio/pools" \
     #     -H "accept: application/vnd.api+json" \
