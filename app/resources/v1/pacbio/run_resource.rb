@@ -4,9 +4,6 @@ module V1
   module Pacbio
     # Provides a JSON:API representation of {Pacbio::Run}.
     #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
     # This resource represents a Pacbio Run and can return all runs, a single run or multiple
     # runs along with their relationships.
     # It can also create and update runs and their nested relationships
