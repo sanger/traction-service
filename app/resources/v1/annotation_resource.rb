@@ -16,7 +16,7 @@ module V1
   #   curl -X GET http://localhost:3000/v1/annotations/1
   #   curl -X GET http://localhost:3000/v1/annotations/
   #
-  #   curl -X POST "http://yourdomain.com/v1/annotations" \
+  #   curl -X POST "http://localhost:3100/v1/annotations" \
   #     -H "accept: application/vnd.api+json" \
   #     -H "Content-Type: application/vnd.api+json" \
   #     -d '{
