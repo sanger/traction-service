@@ -14,9 +14,9 @@ module V1
   # * tag_set {V1::TagSetResource} - The tag set this tag belongs to.
   #
   # @example
-  #   curl -X GET http://localhost:3000/v1/tags/1
-  #   curl -X GET http://localhost:3000/v1/tags/
-  #   curl -X GET http://localhost:3000/v1/tags/1?include=tag_set
+  #   curl -X GET http://localhost:3100/v1/tags/1
+  #   curl -X GET http://localhost:3100/v1/tags/
+  #   curl -X GET http://localhost:3100/v1/tags/1?include=tag_set
   #
   #   curl -X POST "http://localhost:3100/v1/tags" \
   #     -H "accept: application/vnd.api+json" \
