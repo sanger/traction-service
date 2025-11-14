@@ -14,13 +14,10 @@ module V1
     #
     # @note Access this resource via the `/v1/ont/tag_sets/` endpoint.
     #
-    # @example GET request to list all ONT tag sets
+    # @example
     #   curl -X GET http://localhost:3100/v1/ont/tag_sets
+    #   curl -X GET "http://localhost:3100/v1/ont/tag_sets/1"
     #
-    # @example GET request to retrieve a specific ONT tag set by ID
-    #  curl -X GET "http://localhost:3100/v1/ont/tag_sets/1"
-    #
-    # @example POST request to create a new ONT tag set
     #   curl -X POST http://localhost:3100/v1/ont/tag_sets \
     #     -H "Content-Type: application/vnd.api+json" \
     #     -H "Accept: application/vnd.api+json" \
@@ -33,7 +30,6 @@ module V1
     #          }
     #        }'
     #
-    # @example PATCH request to update an existing ONT tag set with name change
     #   curl -X PATCH http://localhost:3100/v1/ont/tag_sets/16 \
     #     -H "Content-Type: application/vnd.api+json" \
     #     -H "Accept: application/vnd.api+json" \
@@ -46,12 +42,7 @@ module V1
     #         }
     #       }
     #     }'
-    # @example DELETE request to remove an existing ONT tag set
-    #   curl -X DELETE http://localhost:3100/v1/ont/tag_sets/16
     #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
     class TagSetResource < V1::TagSetResource
       filter :pipeline, default: :ont
 
