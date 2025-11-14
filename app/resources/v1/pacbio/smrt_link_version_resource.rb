@@ -16,10 +16,10 @@ module V1
     # @note Access this resource via the `/v1/pacbio/smrt_link_versions/` endpoint.
     #
     # @example
-    #   curl -X GET http://localhost:3000/v1/pacbio/smrt_link_versions/1
-    #   curl -X GET http://localhost:3000/v1/pacbio/smrt_link_versions
+    #   curl -X GET http://localhost:3100/v1/pacbio/smrt_link_versions/1
+    #   curl -X GET http://localhost:3100/v1/pacbio/smrt_link_versions
     #
-    #  https://localhost:3000/v1/pacbio/v1/smrt_link_versions/1?include=smrt_link_option_versions
+    #  https://localhost:3100/v1/pacbio/v1/smrt_link_versions/1?include=smrt_link_option_versions
     #
     class SmrtLinkVersionResource < JSONAPI::Resource
       model_name 'Pacbio::SmrtLinkVersion'
