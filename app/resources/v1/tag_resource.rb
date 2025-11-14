@@ -18,7 +18,7 @@ module V1
   #   curl -X GET http://localhost:3000/v1/tags/
   #   curl -X GET http://localhost:3000/v1/tags/1?include=tag_set
   #
-  #   curl -X POST "http://yourdomain.com/v1/tags" \
+  #   curl -X POST "http://localhost:3100/v1/tags" \
   #     -H "accept: application/vnd.api+json" \
   #     -H "Content-Type: application/vnd.api+json" \
   #     -d '{
@@ -32,7 +32,7 @@ module V1
   #         }
   #       }
   #     }'
-  # curl -X PATCH "http://yourdomain.com/v1/tags/1" \
+  # curl -X PATCH "http://localhost:3100/v1/tags/1" \
   #     -H "accept: application/vnd.api+json" \
   #     -H "Content-Type: application/vnd.api+json" \
   #     -d '{
