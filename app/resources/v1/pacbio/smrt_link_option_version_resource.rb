@@ -14,7 +14,7 @@ module V1
     # @note Access this resource via the `/v1/pacbio/smrt_link_option_versions/` endpoint.
     #
     # @example
-    #   curl -X GET http://localhost:3000/v1/pacbio/smrt_link_versions/1?include=smrt_link_option_versions
+    #   curl -X GET http://localhost:3100/v1/pacbio/smrt_link_versions/1?include=smrt_link_option_versions
     #
     class SmrtLinkOptionVersionResource < JSONAPI::Resource
       model_name 'Pacbio::SmrtLinkOptionVersion'
