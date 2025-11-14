@@ -17,8 +17,8 @@ module V1
     #
     #
     # @example
-    #   curl -X GET http://localhost:3000/v1/pacbio/smrt_link_options/1
-    #   curl -X GET http://localhost:3000/v1/pacbio/smrt_link_options/
+    #   curl -X GET http://localhost:3100/v1/pacbio/smrt_link_options/1
+    #   curl -X GET http://localhost:3100/v1/pacbio/smrt_link_options/
     #
     class SmrtLinkOptionResource < JSONAPI::Resource
       model_name 'Pacbio::SmrtLinkOption'
