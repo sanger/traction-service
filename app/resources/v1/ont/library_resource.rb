@@ -17,7 +17,7 @@ module V1
     #
     # @example
     #   curl -X GET http://localhost:3100/v1/ont/libraries
-    #   curl -X GET http://localhost:3000/v1/pacbio/libraries/1?include=request,tube,pool
+    #   curl -X GET http://localhost:3100/v1/pacbio/libraries/1?include=request,tube,pool
     #
     #   curl -X PATCH "http://localhost:3100/v1/ont/libraries/1"
     #     -H "Content-Type: application/vnd.api+json" \

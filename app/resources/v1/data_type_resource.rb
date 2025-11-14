@@ -15,9 +15,9 @@ module V1
   # * pipeline
   #
   # @example
-  #   curl -X GET http://localhost:3000/v1/data_types/1
-  #   curl -X GET http://localhost:3000/v1/data_types/
-  #   curl -X GET "http://localhost:3000/v1/data_types?filter[pipeline]=ont"
+  #   curl -X GET http://localhost:3100/v1/data_types/1
+  #   curl -X GET http://localhost:3100/v1/data_types/
+  #   curl -X GET "http://localhost:3100/v1/data_types?filter[pipeline]=ont"
   #
   # curl -X POST "http://localhost:3100/v1/data_types" \
   #     -H "accept: application/vnd.api+json" \

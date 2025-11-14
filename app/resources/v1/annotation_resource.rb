@@ -13,8 +13,8 @@ module V1
   #
   # @example
   #
-  #   curl -X GET http://localhost:3000/v1/annotations/1
-  #   curl -X GET http://localhost:3000/v1/annotations/
+  #   curl -X GET http://localhost:3100/v1/annotations/1
+  #   curl -X GET http://localhost:3100/v1/annotations/
   #
   #   curl -X POST "http://localhost:3100/v1/annotations" \
   #     -H "accept: application/vnd.api+json" \

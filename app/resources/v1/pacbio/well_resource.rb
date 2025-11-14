@@ -25,12 +25,12 @@ module V1
     # @note Access this resource via the `/v1/pacbio/wells/` endpoint.
     #
     # @example
-    #   curl -X GET http://localhost:3000/v1/pacbio/wells/1
-    #   curl -X GET http://localhost:3000/v1/pacbio/wells
-    #   curl -X GET http://localhost:3000/v1/pacbio/runs/1/wells
-    #   curl -X GET http://localhost:3000/v1/pacbio/runs/1/wells/1
+    #   curl -X GET http://localhost:3100/v1/pacbio/wells/1
+    #   curl -X GET http://localhost:3100/v1/pacbio/wells
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs/1/wells
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs/1/wells/1
     #
-    #   https://localhost:3000/v1/pacbio/v1/wells/1?include=plate,materials
+    #   https://localhost:3100/v1/pacbio/v1/wells/1?include=plate,materials
     #
     class WellResource < JSONAPI::Resource
       model_name '::Well'

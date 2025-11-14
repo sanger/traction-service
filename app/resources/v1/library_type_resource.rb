@@ -16,10 +16,10 @@ module V1
   # * active
   #
   # @example
-  #   curl -X GET http://localhost:3000/v1/library_types/1
-  #   curl -X GET http://localhost:3000/v1/library_types/
-  #   curl -X GET "http://localhost:3000/v1/library_types?filter[pipeline]=ont"
-  #   curl -X GET "http://localhost:3000/v1/library_types?filter[active]=true"
+  #   curl -X GET http://localhost:3100/v1/library_types/1
+  #   curl -X GET http://localhost:3100/v1/library_types/
+  #   curl -X GET "http://localhost:3100/v1/library_types?filter[pipeline]=ont"
+  #   curl -X GET "http://localhost:3100/v1/library_types?filter[active]=true"
   #
   # curl -X POST "http://localhost:3100/v1/library_types" \
   #     -H "accept: application/vnd.api+json" \

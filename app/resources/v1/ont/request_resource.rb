@@ -17,18 +17,18 @@ module V1
     # @example
     #
     #   # Get a single request
-    #   curl -X GET http://localhost:3000/v1/ont/requests/1
+    #   curl -X GET http://localhost:3100/v1/ont/requests/1
     #
     #   # Get all requests
-    #   curl -X GET http://localhost:3000/v1/ont/requests/
+    #   curl -X GET http://localhost:3100/v1/ont/requests/
     #
     #   # Filter requests by sample name or source identifier
-    #   curl -X GET "http://localhost:3000/v1/ont/requests?filter[sample_name]=sample_name"
-    #   curl -X GET "http://localhost:3000/v1/ont/requests?filter[source_identifier]=mock-plate-2:B12"
-    #   curl -X GET "http://localhost:3000/v1/ont/requests?filter[source_identifier]=mock-plate-2:B12,mock-plate-3:A1"
+    #   curl -X GET "http://localhost:3100/v1/ont/requests?filter[sample_name]=sample_name"
+    #   curl -X GET "http://localhost:3100/v1/ont/requests?filter[source_identifier]=mock-plate-2:B12"
+    #   curl -X GET "http://localhost:3100/v1/ont/requests?filter[source_identifier]=mock-plate-2:B12,mock-plate-3:A1"
     #
     #   # Create a new ONT request
-    #   curl -X POST http://localhost:3000/v1/ont/requests \
+    #   curl -X POST http://localhost:3100/v1/ont/requests \
     #     -H "Content-Type: application/vnd.api+json" \
     #     -d '{
     #           "data": {
@@ -45,7 +45,7 @@ module V1
     #         }'
     #
     #   # Update an existing ONT request
-    #   curl -X PATCH http://localhost:3000/v1/ont/requests/1 \
+    #   curl -X PATCH http://localhost:3100/v1/ont/requests/1 \
     #     -H "Content-Type: application/vnd.api+json" \
     #     -d '{
     #           "data": {

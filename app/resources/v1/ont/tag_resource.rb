@@ -13,6 +13,9 @@ module V1
     #
     # @note Access this resource via the `/v1/ont/tags/` endpoint.
     #
+    # @example
+    #   curl -X GET "http://localhost:3100/v1/ont/tag_sets/12?include=tags"
+    #
     class TagResource < JSONAPI::Resource
       model_name 'Tag'
 

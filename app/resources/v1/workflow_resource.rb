@@ -12,9 +12,9 @@ module V1
   ## Primary Relationships:
   # * workflow_steps { V1::WorkflowStep }
   # @example
-  #   curl -X GET http://localhost:3000/v1/workflows/1
-  #   curl -X GET http://localhost:3000/v1/workflows/
-  #   curl -X GET "http://localhost:3000/v1/workflows?include=workflow_steps"
+  #   curl -X GET http://localhost:3100/v1/workflows/1
+  #   curl -X GET http://localhost:3100/v1/workflows/
+  #   curl -X GET "http://localhost:3100/v1/workflows?include=workflow_steps"
   #
   class WorkflowResource < JSONAPI::Resource
     # @!attribute [rw] name
