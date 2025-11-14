@@ -47,7 +47,7 @@ module V1
     #
     #   https://localhost:3000/v1/pacbio/pools?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=used_aliquots.tag.tag_set,requests.tube,tube,libraries.tube,libraries.request,requests.plate.wells.requests
     #
-    # curl -X POST "http://yourdomain.com/v1/pacbio/pools" \
+    # curl -X POST "http://localhost:3100/v1/pacbio/pools" \
     #     -H "accept: application/vnd.api+json" \
     #     -H "Content-Type: application/vnd.api+json" \
     #     -d '{
@@ -84,7 +84,7 @@ module V1
     #       }
     #    }'
     #
-    # curl -X PATCH "http://yourdomain.com/v1/pacbio/pools/1" \
+    # curl -X PATCH "http://localhost:3100/v1/pacbio/pools/1" \
     #     -H "accept: application/vnd.api+json" \
     #     -H "Content-Type: application/vnd.api+json" \
     #     -d '{
