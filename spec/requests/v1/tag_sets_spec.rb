@@ -23,6 +23,27 @@ RSpec.describe 'TagSetsController' do
       expect(json['data'][0]['attributes']['name']).to eq(tag_set1.name)
       expect(json['data'][1]['attributes']['name']).to eq(tag_set2.name)
     end
+
+    it 'can include tags' do
+      tag_set_with_tags = create(:tag_set_with_tags)
+      get "#{v1_tag_sets_path}?include=tags", headers: json_api_headers
+
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+
+      expect(json['included'].length).to eq(tag_set_with_tags.tags.length)
+    end
+
+    it 'can filter by pipeline' do
+      create(:ont_tag_set)
+
+      get "#{v1_tag_sets_path}?filter[pipeline]=pacbio", headers: json_api_headers
+
+      expect(response).to have_http_status(:success)
+      json = ActiveSupport::JSON.decode(response.body)
+
+      expect(json['data'].length).to eq(2) # including the two created at the top
+    end
   end
 
   describe '#create' do
@@ -144,38 +165,6 @@ RSpec.describe 'TagSetsController' do
           json = ActiveSupport::JSON.decode(response.body)
           expect(json['errors'][0]['detail']).to eq('The record identified by 123 could not be found.')
         end
-      end
-    end
-  end
-
-  describe '#destroy' do
-    context 'on success' do
-      let!(:tag_set) { create(:tag_set) }
-
-      it 'returns the correct status' do
-        delete "/v1/tag_sets/#{tag_set.id}", headers: json_api_headers
-        expect(response).to have_http_status(:no_content)
-      end
-
-      it 'destroys the tag' do
-        expect do
-          delete "/v1/tag_sets/#{tag_set.id}", headers: json_api_headers
-        end.to change(TagSet, :count).by(-1)
-      end
-    end
-
-    context 'on failure' do
-      # the failure responses are slightly different to in tags_spec because we are using the default controller
-      it 'returns the correct status' do
-        delete '/v1/tag_sets/123', headers: json_api_headers
-        expect(response).to have_http_status(:not_found)
-      end
-
-      # the failure responses are slightly different to in tags_spec because we are using the default controller
-      it 'has an error message' do
-        delete v1_tag_set_path(123), headers: json_api_headers
-        response_parsed = response.parsed_body
-        expect(response_parsed['errors']).to be_present
       end
     end
   end

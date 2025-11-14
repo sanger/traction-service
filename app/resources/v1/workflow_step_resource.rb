@@ -3,9 +3,9 @@
 module V1
   # Provides a JSON:API representation of {WorkflowStep}.
   #
-  # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-  # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package for the service
-  # implementation of the JSON:API standard.
+  # @note This resource cannot be accessed via the `/v1/workflow_steps` endpoint.
+  # It is only accessible via the nested route under Workflow using includes.
+  #
   class WorkflowStepResource < JSONAPI::Resource
     # @!attribute [rw] code
     #   @return [String] the code of the workflow step
