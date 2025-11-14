@@ -16,11 +16,11 @@ module V1
   # * active
   #
   # @example
-  #   curl -X GET http://localhost:3000/v1/printers/1
-  #   curl -X GET http://localhost:3000/v1/printers/
-  #   curl -X GET "http://localhost:3000/v1/printers?filter[name]=printer_name"
-  #   curl -X GET "http://localhost:3000/v1/printers?filter[labware_type]=tube_rack_24"
-  #   curl -X GET "http://localhost:3000/v1/printers?filter[active]=true"
+  #   curl -X GET http://localhost:3100/v1/printers/1
+  #   curl -X GET http://localhost:3100/v1/printers/
+  #   curl -X GET "http://localhost:3100/v1/printers?filter[name]=printer_name"
+  #   curl -X GET "http://localhost:3100/v1/printers?filter[labware_type]=tube_rack_24"
+  #   curl -X GET "http://localhost:3100/v1/printers?filter[active]=true"
   #
   class PrinterResource < JSONAPI::Resource
     model_name 'Printer', add_model_hint: false
