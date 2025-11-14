@@ -20,7 +20,7 @@ module V1
   #   curl -X GET http://localhost:3000/v1/pacbio/tag_sets/
   #   curl -X GET "http://localhost:3000/v1/pacbio/tag_sets?filter[pipeline]=pacbio"
   #
-  #  curl -X POST "http://yourdomain.com/v1/pacbio/tag_sets" \
+  #  curl -X POST "http://localhost:3100/v1/pacbio/tag_sets" \
   #      -H "accept: application/vnd.api+json" \
   #      -H "Content-Type: application/vnd.api+json" \
   #      -d '{
@@ -33,7 +33,7 @@ module V1
   #        }
   #      }'
   #
-  # curl -X PATCH "http://yourdomain.com/v1/pacbio/tag_sets/1" \
+  # curl -X PATCH "http://localhost:3100/v1/pacbio/tag_sets/1" \
   #      -H "accept: application/vnd.api+json" \
   #      -H "Content-Type: application/vnd.api+json" \
   #      -d '{
@@ -50,7 +50,7 @@ module V1
   # deactivate tag sets instead.
   # This is a soft delete; the record will be marked as inactive but not removed from the database.
   #
-  # curl -X PATCH "http://yourdomain.com/v1/pacbio/tag_sets/1" \
+  # curl -X PATCH "http://localhost:3100/v1/pacbio/tag_sets/1" \
   #      -H "accept: application/vnd.api+json" \
   #      -H "Content-Type: application/vnd.api+json" \
   #      -d '{
