@@ -4,11 +4,6 @@ module V1
   module Ont
     # Provides a JSON:API representation of {Ont::Request}.
     #
-    # @note Access this resource via the `/v1/ont/requests/` endpoint.
-    #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
     # This resource represents an ONT Request and can return all requests, a single request or
     # multiple requests along with their relationships.
     #
@@ -16,6 +11,8 @@ module V1
     #
     # * sample_name
     # * source_identifier
+    #
+    # @note Access this resource via the `/v1/ont/requests/` endpoint.
     #
     # @example
     #
