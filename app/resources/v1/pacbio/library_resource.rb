@@ -29,16 +29,16 @@ module V1
     # * pool.libraries
     #
     # @example
-    #   curl -X GET http://localhost:3000/v1/pacbio/libraries/1
-    #   curl -X GET http://localhost:3000/v1/pacbio/libraries/
-    #   curl -X GET http://localhost:3000/v1/pacbio/libraries/1?include=request,tube,pool
+    #   curl -X GET http://localhost:3100/v1/pacbio/libraries/1
+    #   curl -X GET http://localhost:3100/v1/pacbio/libraries/
+    #   curl -X GET http://localhost:3100/v1/pacbio/libraries/1?include=request,tube,pool
     #
-    #   https://localhost:3000/v1/pacbio/libraries?filter[sample_name]=sample_name
-    #   https://localhost:3000/v1/pacbio/libraries?filter[barcode]=TRAC-2-12068
+    #   https://localhost:3100/v1/pacbio/libraries?filter[sample_name]=sample_name
+    #   https://localhost:3100/v1/pacbio/libraries?filter[barcode]=TRAC-2-12068
     #
-    #   https://localhost:3000/v1/pacbio/libraries?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067
+    #   https://localhost:3100/v1/pacbio/libraries?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067
     #
-    #   https://localhost:3000/v1/pacbio/libraries?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=request.sample,tube.requests,pool.libraries
+    #   https://localhost:3100/v1/pacbio/libraries?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=request.sample,tube.requests,pool.libraries
     class LibraryResource < JSONAPI::Resource
       include Shared::RunSuitability
       include Shared::SourceIdentifierFilterable
