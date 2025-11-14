@@ -27,12 +27,12 @@ module V1
     # * annotations
     #
     # @example
-    #   curl -X GET http://localhost:3000/v1/pacbio/runs/1
-    #   curl -X GET http://localhost:3000/v1/pacbio/runs/
-    #   curl -X GET http://localhost:3000/v1/pacbio/runs/1?include=plates.wells.used_aliquots,smrt_link_version
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs/1
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs/
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs/1?include=plates.wells.used_aliquots,smrt_link_version
     #
-    #   http://localhost:3000/v1/pacbio/runs?filter[name]=TRACTION-RUN-1
-    #   http://localhost:3000/v1/pacbio/runs?filter[state]=pending
+    #   http://localhost:3100/v1/pacbio/runs?filter[name]=TRACTION-RUN-1
+    #   http://localhost:3100/v1/pacbio/runs?filter[state]=pending
     #
     class RunResource < JSONAPI::Resource
       model_name 'Pacbio::Run'
