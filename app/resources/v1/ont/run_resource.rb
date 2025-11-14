@@ -28,13 +28,15 @@ module V1
     #
     # * flowcells.pool
     #
-    # @example
-    #   curl -X GET "http://yourdomain.com/v1/ont/runs" -H "accept: application/vnd.api+json"
+    # @note Access this resource via the `/v1/ont/runs/` endpoint.
     #
-    #   curl -X GET "http://yourdomain.com/v1/ont/runs/1?include=flowcells.pool" \
+    # @example
+    #   curl -X GET "http://localhost:3100/v1/ont/runs" -H "accept: application/vnd.api+json"
+    #
+    #   curl -X GET "http://localhost:3100/v1/ont/runs/1?include=flowcells.pool" \
     #        -H "accept: application/vnd.api+json"
     #
-    #   curl -X POST "http://yourdomain.com/v1/ont/runs" \
+    #   curl -X POST "http://localhost:3100/v1/ont/runs" \
     #    -H "accept: application/vnd.api+json" \
     #    -H "Content-Type: application/vnd.api+json" \
     #    -d '{
@@ -63,16 +65,11 @@ module V1
     #       }
     #      }'
     #
-    #   curl -X PATCH "http://yourdomain.com/v1/ont/runs/1" \
+    #   curl -X PATCH "http://localhost:3100/v1/ont/runs/1" \
     #    -H "accept: application/vnd.api+json" \
     #    -H "Content-Type: application/vnd.api+json" \
     #    -d '{"data": {"type": "runs", "id": "1", "attributes": {"state": "completed"}}}'
     #
-    # @note Access this resource via the `/v1/ont/runs/` endpoint.
-    #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
     class RunResource < JSONAPI::Resource
       model_name 'Ont::Run'
 
