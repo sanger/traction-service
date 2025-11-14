@@ -21,7 +21,7 @@ module V1
   #   curl -X GET "http://localhost:3000/v1/library_types?filter[pipeline]=ont"
   #   curl -X GET "http://localhost:3000/v1/library_types?filter[active]=true"
   #
-  # curl -X POST "http://yourdomain.com/v1/library_types" \
+  # curl -X POST "http://localhost:3100/v1/library_types" \
   #     -H "accept: application/vnd.api+json" \
   #     -H "Content-Type: application/vnd.api+json" \
   #     -d '{
@@ -36,7 +36,7 @@ module V1
   #       }
   #     }'
   #
-  # curl -X PATCH "http://yourdomain.com/v1/library_types/1" \
+  # curl -X PATCH "http://localhost:3100/v1/library_types/1" \
   #     -H "accept: application/vnd.api+json" \
   #     -H "Content-Type: application/vnd.api+json" \
   #     -d '{
