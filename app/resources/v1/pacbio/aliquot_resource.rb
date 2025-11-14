@@ -2,6 +2,8 @@
 
 module V1
   module Pacbio
+    # Provides a JSON:API representation of {Pacbio::Aliquot}.
+    #
     # @todo This documentation does not yet include a detailed description of what this resource represents.
     # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
     # @todo This documentation does not yet include any example usage of the API via cURL or similar.
