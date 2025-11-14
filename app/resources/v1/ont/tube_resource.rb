@@ -9,7 +9,6 @@ module V1
     # Filters:
     # * barcode - Filter tubes by their barcode.
     #
-    #
     ## Primary relationships:
     # * pools {V1::PoolResource} - The pools associated with the tube.
     # * requests {V1::RequestResource} - The requests associated with the tube.
