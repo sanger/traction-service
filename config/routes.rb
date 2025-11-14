@@ -22,7 +22,7 @@ Rails.application.routes.draw do
 
     namespace :pacbio do
       jsonapi_resources :plates, only: %i[index create]
-      jsonapi_resources :tag_sets
+      jsonapi_resources :tag_sets, except: %i[destroy]
       jsonapi_resources :aliquots
 
       # This seems the best way to do this for now.

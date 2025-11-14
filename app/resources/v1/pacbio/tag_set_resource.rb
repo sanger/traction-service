@@ -2,10 +2,6 @@
 
 module V1
   module Pacbio
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
-    #
     # @note Access this resource via the `/v1/pacbio/tag_sets/` endpoint.
     #
     # Provides a JSON:API representation of {TagSet}.
@@ -13,6 +9,33 @@ module V1
     # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
     # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
     # for the service implementation of the JSON:API standard.
+    #
+    ## Filters:
+    # * name
+    #
+    # @example
+    #   curl -X GET http://localhost:3000/v1/pacbio/tag_sets/1
+    #   curl -X GET http://localhost:3000/v1/pacbio/tag_sets/
+    #   curl -X GET http://localhost:3000/v1/pacbio/tag_sets?filter[name]=tag_set_name
+    #
+    #  curl -X POST http://localhost:3100/v1/pacbio/tag_sets \
+    #   -H "Content-Type: application/vnd.api+json" \
+    #   -H "Accept: application/vnd.api+json" \
+    #       -d '{
+    #             "data": {
+    #               "type": "tag_sets",
+    #               "attributes": {
+    #                 "name": "New Tag Set",
+    #                 "description": "A description of the new tag set"
+    #               }
+    #             }
+    #           }'
+    #
+    # @note Tag sets should not be destroy via the API; use the `active` attribute to
+    # deactivate tag sets instead.
+    # This is a soft delete; the record will be marked as inactive
+    # but not removed from the database.
+    # The current way of creating tag sets is internally this should be disabled.
     class TagSetResource < V1::TagSetResource
       filter :pipeline, default: :pacbio
 
