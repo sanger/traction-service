@@ -12,12 +12,13 @@ module V1
     # * source_plate {V1::Ont::PlateResource}
     # * source_tube {V1::Ont::TubeResource}
     # * source_well {V1::Ont::WellResource}
+    # * primary_aliquot {V1::Ont::AliquotResource}
+    # * used_aliquots {V1::Ont::AliquotResource}
     #
     # @note Access this resource via the `/v1/ont/libraries/` endpoint.
     #
     # @example
     #   curl -X GET http://localhost:3100/v1/ont/libraries
-    #   curl -X GET http://localhost:3100/v1/pacbio/libraries/1?include=request,tube,pool
     #
     #   curl -X PATCH "http://localhost:3100/v1/ont/libraries/1"
     #     -H "Content-Type: application/vnd.api+json" \
