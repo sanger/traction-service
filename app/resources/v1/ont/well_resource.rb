@@ -13,7 +13,7 @@ module V1
     #
     # @note Access this resource via the `/v1/ont/wells/` endpoint.
     #
-    # @aexample
+    # @example
     #  curl -X GET "http://localhost:3100/v1/ont/plates?filter[barcode]=GEN-1762592713-1&include=wells,wells.requests"
     #
     class WellResource < JSONAPI::Resource
