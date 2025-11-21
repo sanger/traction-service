@@ -5,7 +5,7 @@ module V1
     module Runs
       #
       # @note This endpoint can't be directly accessed via the `/v1/pacbio/runs/plates/` endpoint
-      # as it is only accessible via the nested route under Pacbio::Run using includes.
+      # as it is only accessible via the nested route under {V1::Pacbio::Run} using includes.
       #
       class PlateResource < JSONAPI::Resource
         model_name 'Pacbio::Plate'
