@@ -3,9 +3,55 @@
 module V1
   module Pacbio
     module Runs
+      # Provides a JSON:API resource for the Pacbio::Well model.
       #
-      # @note This endpoint can't be directly accessed via the `/v1/pacbio/runs/wells/` endpoint
-      # as it is only accessible via the nested route under {V1::Pacbio::Run} using includes.
+      # == Description
+      #
+      # WellResource exposes the attributes and relationships of a Pacbio Well,
+      # which represents a single well on a Pacbio plate. It allows clients to
+      # retrieve, create, and update wells, including their associated libraries,
+      # pools, used aliquots, and annotations.
+      #
+      # ## Primary relationships:
+      #
+      # * +used_aliquots+   - Has many used aliquots (Aliquot)
+      # * +libraries+       - Has many libraries (Pacbio::Library)
+      # * +pools+           - Has many pools (Pacbio::Pool)
+      # * +annotations+     - Has many annotations (Annotation)
+      #
+      # @Example Usage
+      #
+      #   # Get a single well
+      #   curl -X GET http://localhost:3000/v1/pacbio/runs/wells/1
+      #
+      #   # Get all wells for a plate
+      #   curl -X GET "http://localhost:3000/v1/pacbio/runs/wells?filter[pacbio_plate_id]=1"
+      #
+      #   # Get a well with related libraries and annotations
+      #   curl -X GET "http://localhost:3000/v1/pacbio/runs/wells/1?include=libraries,annotations"
+      #
+      #   # Create a well with nested annotations
+      #   curl -X POST http://localhost:3000/v1/pacbio/runs/wells \
+      #     -H "Content-Type: application/vnd.api+json" \
+      #     -d '{
+      #           "data": {
+      #             "type": "wells",
+      #             "attributes": {
+      #               "row": "A",
+      #               "column": "1",
+      #               "pacbio_plate_id": 1,
+      #               "annotations_attributes": [
+      #                 {
+      #                   "comment": "QC passed",
+      #                   "user": "jsmith",
+      #                   "annotation_type_id": 1
+      #                 }
+      #               ]
+      #             }
+      #           }
+      #         }'
+      #
+      # @note Access this resource via the `/v1/pacbio/runs/wells` endpoint.
       #
       class WellResource < JSONAPI::Resource
         model_name 'Pacbio::Well'
