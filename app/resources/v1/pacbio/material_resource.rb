@@ -2,16 +2,9 @@
 
 module V1
   module Pacbio
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
-    #
-    # @note Access this resource via the `/v1/pacbio/material/` endpoint.
-    #
-    #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
+    # @note There is no access to the material resource via the Pacbio API at this time.
+    # It is used via the tube resource.
+    # @see {V1::Pacbio::TubeResource}
     class MaterialResource < JSONAPI::Resource
     end
   end
