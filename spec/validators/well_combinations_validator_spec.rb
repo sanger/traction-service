@@ -41,6 +41,14 @@ RSpec.describe WellCombinationsValidator do
     end
   end
 
+  it 'is valid when the well combination is reversed but still a valid combination' do
+    valid_combinations.each do |valid_combination|
+      well_list = WellList.new(positions: valid_combination.reverse)
+      validator.validate(well_list)
+      expect(well_list.errors).to be_empty
+    end
+  end
+
   it 'is invalid when it is an invalid well combination' do
     invalid_combinations.each do |invalid_combination|
       well_list = WellList.new(positions: invalid_combination)
@@ -48,12 +56,6 @@ RSpec.describe WellCombinationsValidator do
       invalid_order = invalid_combination.join(',')
       expect(well_list.errors[:wells]).to include("must be in a valid order, currently #{invalid_order}")
     end
-  end
-
-  it 'when the well combination is reversed' do
-    well_list = WellList.new(positions: invalid_combinations.last.reverse)
-    validator.validate(well_list)
-    expect(well_list.errors).not_to be_empty
   end
 
   it 'does not validate wells that are marked for destruction' do
