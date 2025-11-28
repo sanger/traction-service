@@ -2,17 +2,100 @@
 
 module V1
   module Ont
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    # Provides a JSON:API representation of {Ont::Pool}.
+    #
+    # This resource represensts a group of libraries that have been combined
+    # together. It is associated with a tube and linked to a flowcell.
+    #
+    ## Filters:
+    # * barcode - Filter pools by the barcode of the associated tube.
+    # * sample_name - Filter pools by the name of samples in the associated libraries.
+    #
+    ## Primary relationships:
     #
     # @note Access this resource via the `/v1/ont/pools/` endpoint.
     #
-    # Provides a JSON:API representation of {Ont::Pool}.
+    # @example
+    #   curl -X GET http://localhost:3100/v1/ont/pools
+    #   curl -X GET http://localhost:3100/v1/ont/pools/15
+    #   curl -X GET "http://localhost:3100/v1/ont/pools?filter[barcode]=TRAC-2-41"
+    #   curl -X GET "http://localhost:3100/v1/ont/pools?filter[sample_name]=GENSAMPLE-1762592713-10
     #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
+    #   curl -X POST "http://localhost:3100/v1/ont/pools" \
+    #     -H "accept: application/vnd.api+json" \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -d '{
+    #       "data": {
+    #         "type": "pools",
+    #         "attributes": {
+    #           "volume": 10.0,
+    #           "concentration": 5.0,
+    #           "insert_size": 350,
+    #           "kit_barcode": "KIT-12345",
+    #           "library_attributes": [
+    #             {
+    #               "kit_barcode":"kit_barcode",
+    #               "volume":1.111,
+    #               "concentration":10.0,
+    #               "insert_size":10000,
+    #               "ont_request_id":36,
+    #               "tag_id":1197
+    #             },
+    #             {
+    #               "kit_barcode":"kit_barcode",
+    #               "volume":1.111,
+    #               "concentration":10.0,
+    #               "insert_size":10000,
+    #               "ont_request_id":36,
+    #               "tag_id":1198
+    #             }
+    #           ]
+    #         },
+    #         "relationships": {
+    #            "tube": {
+    #              "data": {
+    #                "type": "tubes",
+    #                "id": "41"
+    #             }
+    #           }
+    #         }
+    #       }
+    #     }'
+    #
+    #   curl -X PATCH "http://localhost:3100/v1/ont/pools/19" \
+    #     -H "accept: application/vnd.api+json" \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -d '{
+    #       "data": {
+    #          "id": "19",
+    #         "type": "pools",
+    #         "attributes": {
+    #           "volume": 10.0,
+    #           "concentration": 5.0,
+    #           "insert_size": 350,
+    #           "kit_barcode": "KIT-12345",
+    #           "library_attributes": [
+    #             {
+    #               "kit_barcode":"kit_barcode",
+    #               "volume":2.111,
+    #               "concentration":10.0,
+    #               "insert_size":10000,
+    #               "ont_request_id":36,
+    #               "tag_id":1197
+    #             },
+    #             {
+    #               "kit_barcode":"kit_barcode",
+    #               "volume":1.111,
+    #               "concentration":20.0,
+    #               "insert_size":10000,
+    #               "ont_request_id":36,
+    #               "tag_id":1198
+    #             }
+    #           ]
+    #         }
+    #       }
+    #     }'
+    #
     class PoolResource < JSONAPI::Resource
       model_name 'Ont::Pool'
 
@@ -31,13 +114,13 @@ module V1
       #   @return [Float] the concentration of the pool
       # @!attribute [rw] insert_size
       #   @return [Integer] the insert size of the pool
-      # @!attribute [rw] created_at
+      # @!attribute [r] created_at
       #   @return [String] the creation timestamp of the pool
-      # @!attribute [rw] updated_at
+      # @!attribute [r] updated_at
       #   @return [String] the last update timestamp of the pool
-      # @!attribute [rw] library_attributes
+      # @!attribute [w] library_attributes
       #   @return [Array<Hash>] the attributes of the libraries in the pool
-      # @!attribute [rw] tube_barcode
+      # @!attribute [r] tube_barcode
       #   @return [String] the barcode of the tube
       attributes :volume, :kit_barcode, :concentration, :insert_size, :created_at, :updated_at,
                  :library_attributes, :tube_barcode

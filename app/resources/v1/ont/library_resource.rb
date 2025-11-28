@@ -2,17 +2,39 @@
 
 module V1
   module Ont
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    # Provides a JSON:API representation of {Ont::Library}.
+    #
+    ## Primary relationships:
+    # * request {V1::Ont::RequestResource}
+    # * tube {V1::Ont::TubeResource}
+    # * pool {V1::Ont::PoolResource}
+    # * tag {V1::Ont::TagResource}
+    # * source_plate {V1::Ont::PlateResource}
+    # * source_tube {V1::Ont::TubeResource}
+    # * source_well {V1::Ont::WellResource}
+    # * primary_aliquot {V1::Ont::AliquotResource}
+    # * used_aliquots {V1::Ont::AliquotResource}
     #
     # @note Access this resource via the `/v1/ont/libraries/` endpoint.
     #
-    # Provides a JSON:API representation of {Ont::Library}.
+    # @example
+    #   curl -X GET http://localhost:3100/v1/ont/libraries
     #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
+    #   curl -X PATCH "http://localhost:3100/v1/ont/libraries/1"
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -H "Accept: application/vnd.api+json" \
+    #      -d '{
+    #         "data": {
+    #           "type": "libraries",
+    #           "id": "1",
+    #           "attributes": {
+    #             "volume": 5.0,
+    #           }
+    #         }
+    #       }'
+    #
+    #   curl -X DELETE "http://localhost:3100/v1/ont/libraries/1"
+    #
     class LibraryResource < JSONAPI::Resource
       model_name 'Ont::Library'
 

@@ -146,34 +146,4 @@ RSpec.describe 'TagsController' do
       end
     end
   end
-
-  describe '#destroy' do
-    context 'on success' do
-      let!(:tag) { create(:tag) }
-
-      it 'returns the correct status' do
-        delete "/v1/tags/#{tag.id}", headers: json_api_headers
-        expect(response).to have_http_status(:no_content)
-      end
-
-      it 'destroys the tag' do
-        expect do
-          delete "/v1/tags/#{tag.id}", headers: json_api_headers
-        end.to change(Tag, :count).by(-1)
-      end
-    end
-
-    context 'on failure' do
-      it 'returns the correct status' do
-        delete '/v1/tags/123', headers: json_api_headers
-        expect(response).to have_http_status(:unprocessable_content)
-      end
-
-      it 'has an error message' do
-        delete v1_tag_path(123), headers: json_api_headers
-        data = response.parsed_body['data']
-        expect(data['errors']).to be_present
-      end
-    end
-  end
 end

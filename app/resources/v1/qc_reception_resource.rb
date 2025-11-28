@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
 module V1
-  # @todo This documentation does not yet include a detailed description of what this resource represents.
-  # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-  # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+  # rubocop:disable Layout/LineLength
+  # Provides a JSON:API representation of {QcReception} model.
   #
-  # @note Access this resource via the `/v1/qc_receptions` endpoint.
-  #
-  # Provides a JSON:API representation of {QcReception}.
+  # A QcReception makes an entry in qc_receptions for all the requests
+  # received TOL consumer on the qc_reception endpoint.
+  # Stores the qc data in qc_results table with the associated qc_reception_id
   #
   # Steps:
   #
@@ -15,13 +14,44 @@ module V1
   # 2. Create QcResults
   # 3. Publish qc result messages
   #
+  # @note This resource is write-only: its endpoint will not accept `GET`, `PATCH`, or `DELETE` requests.
+  # @note Access this resource via the `/v1/qc_receptions` endpoint.
+  #
+  # @example POST request to create a new QC reception with QC results
+  #
+  #   curl -X POST "http://localhost:3100/v1/qc_receptions" \
+  #     -H "Content-Type: application/vnd.api+json" \
+  #     -H "Accept: application/vnd.api+json" \
+  #     -d '{
+  #       "data": {
+  #         "type": "qc_receptions",
+  #         "attributes": {
+  #           "source": "tol-lab-share.tol",
+  #           "qc_results_list": [
+  #             {
+  #               "final_nano_drop": "200",
+  #               "final_nano_drop_230": "230",
+  #               "post_spri_concentration": "10",
+  #               "final_nano_drop_280": "280",
+  #               "post_spri_volume": "20",
+  #               "sheared_femto_fragment_size": "5",
+  #               "shearing_qc_comments": "Comments",
+  #               "labware_barcode": "FD20706500",
+  #               "sample_external_id": "supplier_sample_name_DDD"
+  #             }
+  #           ]
+  #         }
+  #       }
+  #     }'
+  #
   # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
   # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package for the service
   # implementation of the JSON:API standard.
+  # rubocop:enable Layout/LineLength
   class QcReceptionResource < JSONAPI::Resource
-    # @!attribute [rw] qc_results_list
+    # @!attribute [w] qc_results_list
     #   @return [Array<Hash>] the list of QC results
-    # @!attribute [rw] source
+    # @!attribute [w] source
     #   @return [String] the source of the QC reception
     # @!method qc_results_list=(request_parameters)
     #   Sets the QC results list from the request parameters.

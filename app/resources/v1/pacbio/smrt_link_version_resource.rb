@@ -3,26 +3,23 @@
 module V1
   module Pacbio
     # The JSON:API representation of a {Pacbio::SmrtLinkVersion}.
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
-    #
-    # @note Access this resource via the `/v1/pacbio/smrt_link_versions/` endpoint.
     #
     # This resource represents a Pacbio SmrtLinkVersion and can return all smrt_link_versions
     # or a single smrt_link_version
     #
     # This resource has no filters.
     #
-    # ## Primary relationships:
+    ## Primary relationships:
     #
     # * smrt_link_option_versions {V1::Pacbio::SmrtLinkOptionVersionResource}
     #
-    # @example
-    #   curl -X GET http://localhost:3000/v1/pacbio/smrt_link_versions/1
-    #   curl -X GET http://localhost:3000/v1/pacbio/smrt_link_versions
+    # @note Access this resource via the `/v1/pacbio/smrt_link_versions/` endpoint.
     #
-    #  https://localhost:3000/v1/pacbio/v1/smrt_link_versions/1?include=smrt_link_option_versions
+    # @example
+    #   curl -X GET http://localhost:3100/v1/pacbio/smrt_link_versions/1
+    #   curl -X GET http://localhost:3100/v1/pacbio/smrt_link_versions
+    #
+    #  https://localhost:3100/v1/pacbio/v1/smrt_link_versions/1?include=smrt_link_option_versions
     #
     class SmrtLinkVersionResource < JSONAPI::Resource
       model_name 'Pacbio::SmrtLinkVersion'
