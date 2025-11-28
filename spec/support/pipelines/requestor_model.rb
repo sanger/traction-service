@@ -36,6 +36,7 @@ shared_examples_for 'requestor model' do
 
     context 'when from a tube' do
       before do
+        module_ = described_class.to_s.deconstantize.constantize
         create(:tube, "#{module_.to_s.downcase}_requests": [request], barcode: 'TUB1')
       end
 
