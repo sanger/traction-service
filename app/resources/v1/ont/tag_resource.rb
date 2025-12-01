@@ -4,17 +4,8 @@ module V1
   module Ont
     # Provides a JSON:API representation of {Ont::Tag}.
     #
-    # A tag is a short unique DNA sequence (oligo) in a tag set (barcode set).
-    # A tag set can have a single group of tags or multiple groups of tags
-    # (indexes). A tag can only belong to one group within a tag set.
-    #
-    ## Primary relationships:
-    # * tagset {V1::Ont::TagSetResource} - The tag set to which the tag belongs.
-    #
-    # @note Access this resource via the `/v1/ont/tags/` endpoint.
-    #
-    # @example
-    #   curl -X GET "http://localhost:3100/v1/ont/tag_sets/12?include=tags"
+    # @note This resource cannot be accessed via the `/v1/ont/tags/` endpoint.
+    # It is only accessible via the nested route under {Ont::TagSet} using includes.
     #
     class TagResource < JSONAPI::Resource
       model_name 'Tag'
