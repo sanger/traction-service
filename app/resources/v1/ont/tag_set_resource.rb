@@ -2,7 +2,7 @@
 
 module V1
   module Ont
-    # Provides a JSON:API representation of {Ont::TagSet} model.
+    # Provides a JSON:API representation of {Ont::TagSet}.
     #
     ## Primary relationships:
     # * tags {V1::Ont::TagResource} - The tags contained in the tag set.
