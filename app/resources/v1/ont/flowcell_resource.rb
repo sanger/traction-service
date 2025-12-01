@@ -4,10 +4,6 @@ module V1
   module Ont
     # Provides a JSON:API representation of {Ont::Flowcell}.
     #
-    # Flowcell is a cartridge containing a chip with nanopores used for DNA or
-    # RNA sequencing by Oxford Nanopore Technologies (ONT). A flowcell is
-    # associated with a sequencing run and a pool of samples to be sequenced.
-    #
     ## Primary relationships:
     # * pool {V1::PoolResource} - The pool loaded onto the flowcell.
     #
