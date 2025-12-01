@@ -4,17 +4,8 @@ module V1
   module Ont
     # Provides a JSON:API representation of {Ont::Well}
     #
-    # This is resource to return the wells for an ONT plate.
-    #
-    ## Primary relationships:
-    # * materials {V1::Ont::ContainerMaterialResource} - The materials contained in the well
-    # * requests {V1::Ont::RequestResource} - The ONT requests associated with the well
-    # * plate {V1::Ont::PlateResource} - The plate to which the well belongs
-    #
-    # @note Access this resource via the `/v1/ont/wells/` endpoint.
-    #
-    # @example
-    #  curl -X GET "http://localhost:3100/v1/ont/plates?filter[barcode]=GEN-1762592713-1&include=wells,wells.requests"
+    # @note This resource cannot be accessed via the `/v1/ont/wells/` endpoint.
+    # It is accessible via the nested route under {Ont::Plate} using includes.
     #
     class WellResource < JSONAPI::Resource
       model_name '::Well'
