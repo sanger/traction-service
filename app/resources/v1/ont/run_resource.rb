@@ -2,8 +2,7 @@
 
 module V1
   module Ont
-    # This resource represents a sequencing run for the Oxford Nanopore Technologies (ONT) platform.
-    # It provides a JSON:API representation of {Ont::Run}.
+    # Provides a JSON:API representation of {Ont::Run}.
     #
     # ## Attributes:
     #
