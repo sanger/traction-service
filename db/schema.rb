@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_01_092759) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_01_132856) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.float "volume"
     t.float "concentration"
@@ -105,6 +105,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_01_092759) do
     t.boolean "active", default: true, null: false
     t.index ["name"], name: "index_library_types_on_name", unique: true
     t.index ["pipeline"], name: "index_library_types_on_pipeline"
+  end
+
+  create_table "multi_pool_positions", charset: "utf8mb3", force: :cascade do |t|
+    t.string "position", null: false
+    t.string "pool_type"
+    t.bigint "pool_id"
+    t.bigint "multi_pool_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["multi_pool_id"], name: "index_multi_pool_positions_on_multi_pool_id"
+    t.index ["pool_type", "pool_id"], name: "index_multi_pool_positions_on_pool"
+  end
+
+  create_table "multi_pools", charset: "utf8mb3", force: :cascade do |t|
+    t.integer "pool_method", null: false
+    t.integer "pipeline", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "ont_flowcells", charset: "utf8mb3", force: :cascade do |t|
