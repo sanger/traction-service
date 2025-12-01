@@ -115,7 +115,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_01_132856) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["multi_pool_id"], name: "index_multi_pool_positions_on_multi_pool_id"
-    t.index ["pool_type", "pool_id"], name: "index_multi_pool_positions_on_pool"
+    t.index ["pool_type", "pool_id"], name: "index_multi_pool_positions_on_pool", unique: true
   end
 
   create_table "multi_pools", charset: "utf8mb3", force: :cascade do |t|
