@@ -12,6 +12,7 @@ module V1
     # @example
     #   curl -X GET http://localhost:3100/v1/ont/tag_sets
     #   curl -X GET "http://localhost:3100/v1/ont/tag_sets/1"
+    #   curl -X GET "http://localhost:3100/v1/ont/tag_sets/12?include=tags"
     #
     #   curl -X POST http://localhost:3100/v1/ont/tag_sets \
     #     -H "Content-Type: application/vnd.api+json" \
@@ -37,6 +38,19 @@ module V1
     #         }
     #       }
     #     }'
+    #
+    #   # curl -X PATCH "http://localhost:3100/v1/ont/tag_sets/16" \
+    #      -H "accept: application/vnd.api+json" \
+    #      -H "Content-Type: application/vnd.api+json" \
+    #      -d '{
+    #        "data": {
+    #          "type": "tag_sets",
+    #          "id": "1",
+    #          "attributes": {
+    #            "active": false
+    #          }
+    #        }
+    #      }'
     #
     class TagSetResource < V1::TagSetResource
       filter :pipeline, default: :ont
