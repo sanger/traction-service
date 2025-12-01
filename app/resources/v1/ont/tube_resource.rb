@@ -2,9 +2,7 @@
 
 module V1
   module Ont
-    # Provides a JSON:API representation of {Ont::Tube}
-    #
-    # This is resource to return the tubes for ONT samples.
+    # Provides a JSON:API representation of {Ont::Tube}.
     #
     # Filters:
     # * barcode - Filter tubes by their barcode.
