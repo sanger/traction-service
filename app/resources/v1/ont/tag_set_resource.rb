@@ -4,11 +4,6 @@ module V1
   module Ont
     # Provides a JSON:API representation of {Ont::TagSet} model.
     #
-    # A tag set is a collection of unique oligo sequences known as tags or
-    # barcodes that are ligated to DNA or RNA samples during libray preparation
-    # to enable multiplexing, allowing multiple samples to be sequenced
-    # simultaneously on a single flowcell.
-    #
     ## Primary relationships:
     # * tags {V1::Ont::TagResource} - The tags contained in the tag set.
     #
