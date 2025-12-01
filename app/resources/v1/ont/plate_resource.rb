@@ -4,8 +4,6 @@ module V1
   module Ont
     # Provides a JSON:API representation of {Plate}.
     #
-    # Plates are plastic labware containing {Well}s to hold samples.
-    #
     ## Filters:
     # * barcode - Filter plates by their barcode.
     #
