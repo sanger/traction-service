@@ -55,6 +55,31 @@ RSpec.describe MultiPool do
     end
   end
 
+  describe '#unique_pool_positions?' do
+    it 'returns true if there are no pools' do
+      multi_pool = build(:multi_pool, multi_pool_positions: [])
+
+      expect(multi_pool.unique_pool_positions?).to be true
+    end
+
+    it 'returns true if all pools are in a unique position' do
+      multi_pool = build(:multi_pool)
+      multi_pool.multi_pool_positions << build(:multi_pool_position, pool: create(:pacbio_pool), position: 'B1')
+      multi_pool.multi_pool_positions << build(:multi_pool_position, pool: create(:pacbio_pool), position: 'B2')
+
+      expect(multi_pool.unique_pool_positions?).to be true
+    end
+
+    it 'returns false and adds an error if some pools are in the same position' do
+      multi_pool = build(:multi_pool)
+      multi_pool.multi_pool_positions << build(:multi_pool_position, pool: create(:pacbio_pool), position: 'B1')
+      multi_pool.multi_pool_positions << build(:multi_pool_position, pool: create(:pacbio_pool), position: 'B1')
+
+      expect(multi_pool.unique_pool_positions?).to be false
+      expect(multi_pool.errors[:multi_pool_positions]).to include('B1 positions are duplicated')
+    end
+  end
+
   describe '#number_of_pools' do
     it 'returns the count of multi_pool_positions' do
       multi_pool = build(:multi_pool)

@@ -26,6 +26,19 @@ class MultiPool < ApplicationRecord
     false
   end
 
+  # Checks that all pools in the multi pool have unique positions.
+  # @return [void]
+  def unique_pool_positions?
+    positions = multi_pool_positions.map(&:position)
+    duplicate_positions = positions.select { |pos| positions.count(pos) > 1 }
+
+    return true unless duplicate_positions.any?
+
+    errors.add(:multi_pool_positions,
+               "#{duplicate_positions.uniq.join(', ')} positions are duplicated")
+    false
+  end
+
   # Returns the number of pools in the multi pool.
   # @return [Integer] number of pools
   def number_of_pools
