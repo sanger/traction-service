@@ -4,9 +4,6 @@ module V1
   module Ont
     # Provides a JSON:API representation of {Ont::Pool}.
     #
-    # This resource represensts a group of libraries that have been combined
-    # together. It is associated with a tube and linked to a flowcell.
-    #
     ## Filters:
     # * barcode - Filter pools by the barcode of the associated tube.
     # * sample_name - Filter pools by the name of samples in the associated libraries.
