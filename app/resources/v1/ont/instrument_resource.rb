@@ -4,11 +4,6 @@ module V1
   module Ont
     # Provides a JSON:API representation of {Ont::Instrument}.
     #
-    # ONT Instruments are devices used for DNA or RNA sequencing by Oxford
-    # Nanopore Technologies (ONT). They use the same nanopore sequencing
-    # technology but differ in scale and throughput. The main difference is
-    # the number of flowcells they can run.
-    #
     # @note Access this resource via the `/v1/ont/instruments/` endpoint.
     #
     # @example
