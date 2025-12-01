@@ -4,9 +4,6 @@ module V1
   module Ont
     # Provides a JSON:API representation of {Ont::Request}.
     #
-    # This resource represents an ONT Request and can return all requests, a single request or
-    # multiple requests along with their relationships.
-    #
     # ## Filters:
     #
     # * sample_name
