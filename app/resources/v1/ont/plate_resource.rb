@@ -14,6 +14,8 @@ module V1
     #
     # @example
     #   curl -X GET http://localhost:3100/v1/ont/plates
+    #   curl -X GET http://localhost:3100/v1/ont/plates?include=wells
+    #   curl -X GET "http://localhost:3100/v1/ont/plates?filter[barcode]=GEN-1762592713-1&include=wells.requests"
     #   curl -X GET "http://localhost:3100/v1/ont/plates?filter[barcode]=GEN-1762592713-1,GEN-1762592713-2"
     #
     class PlateResource < JSONAPI::Resource
