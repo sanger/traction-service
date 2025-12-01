@@ -65,7 +65,7 @@ Rails.application.routes.draw do
       jsonapi_resources :pools,               except: %i[destroy]
       jsonapi_resources :plates,              only: %i[index]
       jsonapi_resources :tubes,               only: %i[index]
-      jsonapi_resources :tag_sets
+      jsonapi_resources :tag_sets,            only: %i[index show update]
     end
   end
 
