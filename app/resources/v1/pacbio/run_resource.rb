@@ -25,6 +25,8 @@ module V1
     #   curl -X GET http://localhost:3100/v1/pacbio/runs/1
     #   curl -X GET http://localhost:3100/v1/pacbio/runs/
     #   curl -X GET http://localhost:3100/v1/pacbio/runs/1?include=plates.wells.used_aliquots,smrt_link_version
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs//v1/pacbio/runs/2177?include=plates.wells.used_aliquots,plates.wells.libraries.request,plates.wells.pools.requests,plates.wells.pools.libraries.request,plates.wells.pools.used_aliquots.tag,plates.wells.libraries.used_aliquots.tag,smrt_link_version,annotations,plates.wells.annotations
+    #
     #
     #   curl -X GET http://localhost:3100/v1/pacbio/runs?filter[name]=TRACTION-RUN-1
     #   curl -X GET http://localhost:3100/v1/pacbio/runs?filter[state]=pending
