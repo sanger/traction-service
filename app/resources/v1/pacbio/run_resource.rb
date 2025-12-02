@@ -4,11 +4,6 @@ module V1
   module Pacbio
     # Provides a JSON:API representation of {Pacbio::Run}.
     #
-    # This resource represents a Pacbio Run and can return all runs, a single run or multiple
-    # runs along with their relationships.
-    # It can also create and update runs and their nested relationships
-    # via the plates_attributes parameter. These actions also publish run messages to the warehouse.
-    #
     ## Filters:
     #
     # * name
@@ -31,8 +26,8 @@ module V1
     #   curl -X GET http://localhost:3100/v1/pacbio/runs/
     #   curl -X GET http://localhost:3100/v1/pacbio/runs/1?include=plates.wells.used_aliquots,smrt_link_version
     #
-    #   http://localhost:3100/v1/pacbio/runs?filter[name]=TRACTION-RUN-1
-    #   http://localhost:3100/v1/pacbio/runs?filter[state]=pending
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs?filter[name]=TRACTION-RUN-1
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs?filter[state]=pending
     #
     class RunResource < JSONAPI::Resource
       model_name 'Pacbio::Run'
