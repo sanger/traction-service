@@ -22,16 +22,16 @@ module V1
       # @Example Usage
       #
       #   # Get a single well
-      #   curl -X GET http://localhost:3000/v1/pacbio/runs/wells/1
+      #   curl -X GET http://localhost:3100/v1/pacbio/runs/wells/1
       #
       #   # Get all wells for a plate
-      #   curl -X GET "http://localhost:3000/v1/pacbio/runs/wells?filter[pacbio_plate_id]=1"
+      #   curl -X GET "http://localhost:3100/v1/pacbio/runs/wells?filter[pacbio_plate_id]=1"
       #
       #   # Get a well with related libraries and annotations
-      #   curl -X GET "http://localhost:3000/v1/pacbio/runs/wells/1?include=libraries,annotations"
+      #   curl -X GET "http://localhost:3100/v1/pacbio/runs/wells/1?include=libraries,annotations"
       #
       #   # Create a well with nested annotations
-      #   curl -X POST http://localhost:3000/v1/pacbio/runs/wells \
+      #   curl -X POST http://localhost:3100/v1/pacbio/runs/wells \
       #     -H "Content-Type: application/vnd.api+json" \
       #     -d '{
       #           "data": {
