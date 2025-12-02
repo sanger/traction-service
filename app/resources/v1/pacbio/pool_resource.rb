@@ -2,16 +2,7 @@
 
 module V1
   module Pacbio
-    #
-    # @note Access this resource via the `/v1/pacbio/pools/` endpoint.
-    #
     # Provides a JSON:API representation of {Pacbio::Pool}.
-    #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
-    # This resource represents a Pacbio Pool and can return all pools, a single pool or multiple
-    # pools along with their relationships.
     #
     ## Filters:
     #
@@ -34,18 +25,17 @@ module V1
     # * libraries.request
     # * requests.plate.wells.requests
     #
+    # @note Access this resource via the `/v1/pacbio/pools/` endpoint.
+    #
     # @example
     #   curl -X GET http://localhost:3100/v1/pacbio/pools/1
     #   curl -X GET http://localhost:3100/v1/pacbio/pools/
     #   curl -X GET http://localhost:3100/v1/pacbio/pools/1?include=tube,used_aliquots,primary_aliquot,requests,libraries
     #
-    #   https://locahost:3000/v1/pacbio/pools?filter[sample_name]=sample_name
-    #
-    #   https://locahost:3000/v1/pacbio/pools?filter[barcode]=TRAC-2-12068
-    #
-    #   https://locahost:3000/v1/pacbio/pools?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067
-    #
-    #   https://localhost:3100/v1/pacbio/pools?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=used_aliquots.tag.tag_set,requests.tube,tube,libraries.tube,libraries.request,requests.plate.wells.requests
+    #   curl -X GET https://locahost:3100/v1/pacbio/pools?filter[sample_name]=sample_name
+    #   curl -X GET https://locahost:3100/v1/pacbio/pools?filter[barcode]=TRAC-2-12068
+    #   curl -X GET https://locahost:3100/v1/pacbio/pools?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067
+    #   curl -X GET https://localhost:3100/v1/pacbio/pools?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=used_aliquots.tag.tag_set,requests.tube,tube,libraries.tube,libraries.request,requests.plate.wells.requests
     #
     # curl -X POST "http://localhost:3100/v1/pacbio/pools" \
     #     -H "accept: application/vnd.api+json" \
