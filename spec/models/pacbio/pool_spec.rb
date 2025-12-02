@@ -40,6 +40,16 @@ RSpec.describe Pacbio::Pool, :pacbio do
     expect(pool.requests.length).to eq(5)
   end
 
+  it 'can have a multi_pool_position' do
+    multi_pool_position = create(:multi_pool_position, pool: pool)
+    expect(pool.reload.multi_pool_position).to eq(multi_pool_position)
+  end
+
+  it 'can have a multi_pool' do
+    multi_pool_position = create(:multi_pool_position, pool: pool)
+    expect(pool.reload.multi_pool).to eq(multi_pool_position.multi_pool)
+  end
+
   it 'can have a template prep kit box barcode' do
     expect(pool.template_prep_kit_box_barcode).to be_present
   end

@@ -11,6 +11,9 @@ module Pacbio
     has_many :wells, through: :derived_aliquots, source: :used_by, source_type: 'Pacbio::Well'
     has_many :requests, through: :used_aliquots, source: :source, source_type: 'Pacbio::Request'
     has_many :libraries, through: :used_aliquots, source: :source, source_type: 'Pacbio::Library'
+    # Limited to one by a unique index on the database
+    has_one :multi_pool_position, as: :pool, dependent: :destroy
+    has_one :multi_pool, through: :multi_pool_position
 
     # This is dependent on the requests and libraries associations, so needs to be included
     # after that is defined
