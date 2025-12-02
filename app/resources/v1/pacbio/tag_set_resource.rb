@@ -14,9 +14,9 @@ module V1
     # * name
     #
     # @example
-    #   curl -X GET http://localhost:3000/v1/pacbio/tag_sets/1
-    #   curl -X GET http://localhost:3000/v1/pacbio/tag_sets/
-    #   curl -X GET http://localhost:3000/v1/pacbio/tag_sets?filter[name]=tag_set_name
+    #   curl -X GET http://localhost:3100/v1/pacbio/tag_sets/1
+    #   curl -X GET http://localhost:3100/v1/pacbio/tag_sets/
+    #   curl -X GET http://localhost:3100/v1/pacbio/tag_sets?filter[name]=tag_set_name
     #
     #  curl -X POST http://localhost:3100/v1/pacbio/tag_sets \
     #   -H "Content-Type: application/vnd.api+json" \
