@@ -6,6 +6,11 @@ class MultiPoolPosition < ApplicationRecord
   belongs_to :pool, polymorphic: true
   belongs_to :multi_pool
 
+  belongs_to :pacbio_pool, class_name: 'Pacbio::Pool', foreign_key: :pool_id, optional: true,
+                           inverse_of: :multi_pool_position
+  belongs_to :ont_pool, class_name: 'Ont::Pool', foreign_key: :pool_id, optional: true,
+                        inverse_of: :multi_pool_position
+
   validates :position, presence: true
 
   # Ensures that each pool can only appear once across multi pools.

@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   namespace :v1 do
     jsonapi_resources :data_types, only: %i[index create update]
     jsonapi_resources :library_types, only: %i[index create update]
+    jsonapi_resources :multi_pools, only: %i[index create update destroy]
     jsonapi_resources :printers, only: %i[index show]
     jsonapi_resources :qc_assay_types, only: %i[index show]
     jsonapi_resources :qc_receptions, only: %i[create]
