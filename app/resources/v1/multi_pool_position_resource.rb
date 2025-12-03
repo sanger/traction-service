@@ -14,6 +14,8 @@ module V1
   # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package for the service
   # implementation of the JSON:API standard.
   class MultiPoolPositionResource < JSONAPI::Resource
+    model_name 'MultiPoolPosition'
+
     # @!attribute [rw] position
     #  @return [String] the position within the multi_pool .e.g. "A1"
     # @!attribute [rw] pool_id
@@ -24,8 +26,29 @@ module V1
     #   @return [String] the creation date of the multi_pool_position in US format
     attributes :position, :pool_id, :pool_type, :created_at
 
+    has_one :multi_pool
+
+    has_one :pool, polymorphic: true,
+                   polymorphic_types: %w[pacbio_pool ont_pool]
+
+    has_one :pacbio_pool, class_name: 'Pacbio::Pool', relation_name: :pacbio_pool
+    has_one :ont_pool, class_name: 'Ont::Pool', relation_name: :ont_pool
+
     def created_at
       @model.created_at.to_fs(:us)
+    end
+
+    def self.resource_klass_for(type)
+      case type
+      when 'pacbio_pool'
+        type = 'Pacbio::Pool'
+      when 'ont_pool'
+        type = 'Ont::Pool'
+      # TODO: This wont work for ONT
+      when 'pools' # rubocop:disable Lint/DuplicateBranch
+        type = 'Pacbio::Pool'
+      end
+      super
     end
   end
 end

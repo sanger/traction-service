@@ -3,7 +3,7 @@
 # MultiPoolPosition
 # An instance of a pool in a MultiPool at a specific position.
 class MultiPoolPosition < ApplicationRecord
-  belongs_to :pool, polymorphic: true
+  belongs_to :pool, polymorphic: true, inverse_of: :multi_pool_position
   belongs_to :multi_pool
 
   belongs_to :pacbio_pool, class_name: 'Pacbio::Pool', foreign_key: :pool_id, optional: true,
