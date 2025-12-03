@@ -3,11 +3,10 @@
 # JSON-API resources wont resolve across namespaces spaces
 # so we need the Aliquot resource in the PacBio namespace
 module V1
+  # Provides a JSON:API representation of {Aliquot}.
   #
   # @note This resource cannot be directly accessed via the `/v1/aliquots/` endpoint
   # as it is only accessible via the nested route under other resources using includes.
-  #
-  # Provides a JSON:API representation of {Aliquot}.
   #
   class AliquotResource < JSONAPI::Resource
     model_name 'Aliquot'
