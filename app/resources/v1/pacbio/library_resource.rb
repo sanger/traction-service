@@ -29,16 +29,26 @@ module V1
     # * pool.libraries
     #
     # @example
-    #   curl -X GET http://localhost:3100/v1/pacbio/libraries/1
     #   curl -X GET http://localhost:3100/v1/pacbio/libraries/
-    #   curl -X GET http://localhost:3100/v1/pacbio/libraries/1?include=request,tube,pool
+    #   curl -X GET http://localhost:3100/v1/pacbio/libraries?&filter[source_identifier]=NT1861619H&include=request,tag
+    #   curl -X GET http://localhost:3100/v1/pacbio/libraries?filter[barcode]=TRAC-2-15598&include=request,tag
+    #   curl -X GET http://localhost:3100/v1/pacbio/libraries&filter[sample_name]=TOL_ASG15663574&include=request,tag
     #
-    #   https://localhost:3100/v1/pacbio/libraries?filter[sample_name]=sample_name
-    #   https://localhost:3100/v1/pacbio/libraries?filter[barcode]=TRAC-2-12068
+    #   curl -X PATCH /v1/pacbio/libraries/5 \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -H "Accept: application/vnd.api+json" \
+    #     -d '{
+    #       "data": {
+    #         "id": "5",
+    #         "type": "libraries",
+    #         "attributes": {
+    #           "tag_id": 182
+    #         }
+    #       }
+    #     }'
     #
-    #   https://localhost:3100/v1/pacbio/libraries?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067
+    # curl -X DELETE "http://localhost:3100/v1/pacbio/libraries/5"
     #
-    #   https://localhost:3100/v1/pacbio/libraries?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=request.sample,tube.requests,pool.libraries
     class LibraryResource < JSONAPI::Resource
       include Shared::RunSuitability
       include Shared::SourceIdentifierFilterable
