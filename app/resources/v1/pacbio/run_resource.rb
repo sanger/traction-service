@@ -22,14 +22,64 @@ module V1
     # * annotations
     #
     # @example
-    #   curl -X GET http://localhost:3100/v1/pacbio/runs/1
     #   curl -X GET http://localhost:3100/v1/pacbio/runs/
-    #   curl -X GET http://localhost:3100/v1/pacbio/runs/1?include=plates.wells.used_aliquots,smrt_link_version
-    #   curl -X GET http://localhost:3100/v1/pacbio/runs//v1/pacbio/runs/2177?include=plates.wells.used_aliquots,plates.wells.libraries.request,plates.wells.pools.requests,plates.wells.pools.libraries.request,plates.wells.pools.used_aliquots.tag,plates.wells.libraries.used_aliquots.tag,smrt_link_version,annotations,plates.wells.annotations
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs/1
     #
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs/1?include=plates.wells.used_aliquots,smrt_link_version
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs/1?include=plates.wells.used_aliquots,plates.wells.libraries.request,plates.wells.pools.requests,plates.wells.pools.libraries.request,plates.wells.pools.used_aliquots.tag,plates.wells.libraries.used_aliquots.tag,smrt_link_version,annotations,plates.wells.annotations
     #
     #   curl -X GET http://localhost:3100/v1/pacbio/runs?filter[name]=TRACTION-RUN-1
     #   curl -X GET http://localhost:3100/v1/pacbio/runs?filter[state]=pending
+    #
+    #   curl -X PATCH "http://localhost:3100/v1/pacbio/runs/1" \
+    #     -H "Content-Type: application/vnd.api+json"
+    #     -H "Accept: application/vnd.api+json"
+    #     -d '{
+    #       "data": {
+    #         "type": "runs",
+    #         "id": "1",
+    #         "attributes": {
+    #           "annotations_attributes": [
+    #             {
+    #               "comment": "annotation comment",
+    #               "annotation_type_id": "1",
+    #               "user": "user1"
+    #             }
+    #           ]
+    #         }
+    #       }
+    #     }'
+    #
+    #   curl -X PATCH "http://localhost:3100/v1/pacbio/runs/1" \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -H "Accept: application/vnd.api+json" \
+    #     -d '{
+    #       "data": {
+    #         "type": "runs",
+    #         "id": "1",
+    #         "attributes": {
+    #           "plates_attributes": [
+    #             {
+    #               "id": 1,
+    #               "type": "plates",
+    #               "wells_attributes": [
+    #                 {
+    #                   "id": 1,
+    #                   "type": "wells",
+    #                   "annotations_attributes": [
+    #                     {
+    #                       "comment": "annotation comment",
+    #                       "annotation_type_id": "1",
+    #                       "user": "user1"
+    #                     }
+    #                   ]
+    #                 }
+    #              ]
+    #           }
+    #         ]
+    #       }
+    #     }
+    #   }'
     #
     class RunResource < JSONAPI::Resource
       model_name 'Pacbio::Run'
