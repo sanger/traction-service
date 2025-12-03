@@ -7,10 +7,8 @@ module V1
     # This resource represents the polymorphic source of a Pacbio aliquot, which
     # can be a request, pool, or library.
     #
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
-    #
-    # @note Access this resource via the `/v1/pacbio/sources/` endpoint.
+    # @note This endpoint can't be directly accessed via the `/v1/pacbio/sources/` endpoint
+    # as it is only accessible via the nested route under {V1::Pacbio::Aliquot} using includes.
     #
     class SourceResource < V1::SourceResource
     end
