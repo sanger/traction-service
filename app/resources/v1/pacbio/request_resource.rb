@@ -30,18 +30,27 @@ module V1
     # * tube.requests
     #
     # @example
-    #   curl -X GET http://localhost:3100/v1/pacbio/requests/1
     #   curl -X GET http://localhost:3100/v1/pacbio/requests/
+    #   curl -X GET http://localhost:3100/v1/pacbio/requests/1
     #   curl -X GET http://localhost:3100/v1/pacbio/requests/1?include=well,plate,tube
     #
-    #   https://localhost:3100/v1/pacbio/requests?filter[sample_name]=sample_name
-    #   https://localhost:3100/v1/pacbio/requests?filter[species]=species
+    #   curl -X GET http://localhost:3100/v1/pacbio/requests?filter[sample_name]=sample_name
+    #   curl -X GET http://localhost:3100/v1/pacbio/requests?filter[species]=species
+    #   curl -X GET http://localhost:3100/v1/pacbio/requests?filter[source_identifier]=TRAC-2-12068
     #
-    #   https://localhost:3100/v1/pacbio/requests?filter[source_identifier]=TRAC-2-12068
+    #   curl -X PATCH http://localhost:3100/v1/pacbio/requests/1 \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -H "Accept: application/vnd.api+json" \
+    #     -d '{
+    #       "data": {
+    #         "type": "requests",
+    #         "id": "1",
+    #         "attributes": {
+    #           "cost_code": "new_cost_code"
+    #         }
+    #       }
+    #     }'
     #
-    #   https://localhost:3100/v1/pacbio/requests?filter[source_identifier]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067:A1
-    #
-    #   https://localhost:3100/v1/pacbio/requests?filter[source_identifier]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=well.plate,plate.wells,tube.requests
     class RequestResource < JSONAPI::Resource
       include Shared::SourceIdentifierFilterable
 
