@@ -14,6 +14,8 @@ class MultiPool < ApplicationRecord
   validates :multi_pool_positions, presence: true
   validate :consistent_pools_type?
 
+  accepts_nested_attributes_for :multi_pool_positions, allow_destroy: true
+
   # Checks that all pools in the multi pool are of the same type.
   # @return [void]
   def consistent_pools_type?

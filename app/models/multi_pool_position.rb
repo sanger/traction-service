@@ -3,7 +3,7 @@
 # MultiPoolPosition
 # An instance of a pool in a MultiPool at a specific position.
 class MultiPoolPosition < ApplicationRecord
-  belongs_to :pool, polymorphic: true, inverse_of: :multi_pool_position
+  belongs_to :pool, polymorphic: true, inverse_of: :multi_pool_position, optional: true
   belongs_to :multi_pool
 
   belongs_to :pacbio_pool, class_name: 'Pacbio::Pool', foreign_key: :pool_id, optional: true,
@@ -12,6 +12,8 @@ class MultiPoolPosition < ApplicationRecord
                         inverse_of: :multi_pool_position
 
   validates :position, presence: true
+
+  accepts_nested_attributes_for :pacbio_pool, allow_destroy: true
 
   # Ensures that each pool can only appear once across multi pools.
   # Disable rubocop rule because it cannot detect the unique index on pool_type and pool_id

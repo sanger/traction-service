@@ -26,6 +26,10 @@ module V1
     #   @return [String] the creation date of the multi_pool_position in US format
     attributes :position, :pool_id, :pool_type, :created_at
 
+    # @!attribute [w] pacbio_pool_attributes
+    # @return [Hash] attributes for creating/updating nested pacbio_pool
+    attribute :pacbio_pool_attributes
+
     has_one :multi_pool
 
     # NOTE: We keep pacbio_pool and ont_pool separate because they
@@ -38,6 +42,10 @@ module V1
 
     def created_at
       @model.created_at.to_fs(:us)
+    end
+
+    def fetchable_fields
+      super - %i[pacbio_pool_attributes]
     end
 
     # JSONAPI::Resources polymorphic support.

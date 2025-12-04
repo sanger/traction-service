@@ -7,10 +7,6 @@ RSpec.describe MultiPoolPosition do
     expect(build(:multi_pool_position)).to be_valid
   end
 
-  it 'is invalid without a pool' do
-    expect(build(:multi_pool_position, pool: nil)).not_to be_valid
-  end
-
   it 'is invalid without a multi_pool' do
     expect(build(:multi_pool_position, multi_pool: nil)).not_to be_valid
   end
