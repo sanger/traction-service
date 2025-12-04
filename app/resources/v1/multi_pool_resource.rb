@@ -33,6 +33,17 @@ module V1
 
     paginator :paged
 
+    filter :pipeline
+    filter :pool_method
+
+    filter :pool_barcode, apply: lambda { |records, value, _options|
+      pacbio_pools = records.joins(multi_pool_positions: { pacbio_pool: :tube })
+                            .where(tubes: { barcode: value })
+      ont_pools = records.joins(multi_pool_positions: { ont_pool: :tube })
+                         .where(tubes: { barcode: value })
+      records.where(id: pacbio_pools.select(:id)).or(records.where(id: ont_pools.select(:id)))
+    }
+
     def self.default_sort
       [{ field: 'created_at', direction: :desc }]
     end

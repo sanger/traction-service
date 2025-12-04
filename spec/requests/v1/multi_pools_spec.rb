@@ -89,6 +89,111 @@ RSpec.describe 'MultiPoolsController' do
         end
       end
     end
+
+    describe 'filters' do
+      describe 'by pipeline' do
+        it 'returns the correct multi pools for the given pipeline', :aggregate_failures do
+          # ont_multi_pools
+          create_list(:multi_pool, 5, pipeline: 'ont')
+          pacbio_multi_pool = create(:multi_pool, pipeline: 'pacbio')
+          pipeline = 'pacbio'
+          get "#{v1_multi_pools_path}?filter[pipeline]=#{pipeline}", headers: json_api_headers
+
+          expect(response).to have_http_status(:success)
+          expect(json['data'].length).to eq(1)
+          multi_pool_attributes = find_resource(type: 'multi_pools', id: pacbio_multi_pool.id)['attributes']
+          expect(multi_pool_attributes).to include(
+            'pipeline' => pacbio_multi_pool.pipeline,
+            'pool_method' => pacbio_multi_pool.pool_method,
+            'number_of_pools' => pacbio_multi_pool.number_of_pools,
+            'created_at' => pacbio_multi_pool.created_at.to_fs(:us)
+          )
+        end
+
+        it 'returns no multi pools if no multi pools from that pipeline exist' do
+          create_list(:multi_pool, 5, pipeline: 'ont')
+          pipeline = 'saphyr'
+          get "#{v1_multi_pools_path}?filter[pipeline]=#{pipeline}", headers: json_api_headers
+
+          expect(response).to have_http_status(:success)
+          expect(json['data'].length).to eq(0)
+        end
+      end
+
+      describe 'by pool_method' do
+        it 'returns the correct multi pools for the given pool_method', :aggregate_failures do
+          create_list(:multi_pool, 5, pool_method: 'Plate')
+          tube_rack_multi_pool = create(:multi_pool, pool_method: 'TubeRack')
+          pool_method = 'TubeRack'
+          get "#{v1_multi_pools_path}?filter[pool_method]=#{pool_method}", headers: json_api_headers
+
+          expect(response).to have_http_status(:success)
+          expect(json['data'].length).to eq(1)
+          multi_pool_attributes = find_resource(type: 'multi_pools', id: tube_rack_multi_pool.id)['attributes']
+          expect(multi_pool_attributes).to include(
+            'pipeline' => tube_rack_multi_pool.pipeline,
+            'pool_method' => tube_rack_multi_pool.pool_method,
+            'number_of_pools' => tube_rack_multi_pool.number_of_pools,
+            'created_at' => tube_rack_multi_pool.created_at.to_fs(:us)
+          )
+        end
+
+        it 'returns no multi pools if no multi pools from that pool_method exist' do
+          create_list(:multi_pool, 5, pool_method: 'Plate')
+          pool_method = 'TubeRack'
+          get "#{v1_multi_pools_path}?filter[pool_method]=#{pool_method}", headers: json_api_headers
+
+          expect(response).to have_http_status(:success)
+          expect(json['data'].length).to eq(0)
+        end
+      end
+
+      describe 'by pool_barcode' do
+        it 'returns the correct multi pools containing pools with the given pacbio pool_barcode', :aggregate_failures do
+          mps = create_list(:multi_pool, 5)
+          expected_multi_pool = mps.first
+          pool_barcode = expected_multi_pool.multi_pool_positions.first.pacbio_pool.tube.barcode
+          get "#{v1_multi_pools_path}?filter[pool_barcode]=#{pool_barcode}", headers: json_api_headers
+
+          expect(response).to have_http_status(:success)
+          expect(json['data'].length).to eq(1)
+          multi_pool_attributes = find_resource(type: 'multi_pools', id: expected_multi_pool.id)['attributes']
+          expect(multi_pool_attributes).to include(
+            'pipeline' => expected_multi_pool.pipeline,
+            'pool_method' => expected_multi_pool.pool_method,
+            'number_of_pools' => expected_multi_pool.number_of_pools,
+            'created_at' => expected_multi_pool.created_at.to_fs(:us)
+          )
+        end
+
+        it 'returns the correct multi pools containing pools with the given ont pool_barcode', :aggregate_failures do
+          mps = create_list(:multi_pool, 5)
+          expected_multi_pool = mps.first
+          expected_multi_pool.multi_pool_positions = build_list(:multi_pool_position, 1, pool: create(:ont_pool, barcode: 'TRAC-2-12345'))
+          pool_barcode = 'TRAC-2-12345'
+          get "#{v1_multi_pools_path}?filter[pool_barcode]=#{pool_barcode}", headers: json_api_headers
+
+          expect(response).to have_http_status(:success)
+          expect(json['data'].length).to eq(1)
+          multi_pool_attributes = find_resource(type: 'multi_pools', id: expected_multi_pool.id)['attributes']
+          expect(multi_pool_attributes).to include(
+            'pipeline' => expected_multi_pool.pipeline,
+            'pool_method' => expected_multi_pool.pool_method,
+            'number_of_pools' => expected_multi_pool.number_of_pools,
+            'created_at' => expected_multi_pool.created_at.to_fs(:us)
+          )
+        end
+
+        it 'returns no multi pools if no multi pools containing pools with the given pool_barcode exist' do
+          create_list(:multi_pool, 5)
+          pool_barcode = 'RandomPoolBarcode'
+          get "#{v1_multi_pools_path}?filter[pool_barcode]=#{pool_barcode}", headers: json_api_headers
+
+          expect(response).to have_http_status(:success)
+          expect(json['data'].length).to eq(0)
+        end
+      end
+    end
   end
 
   describe '#create' do
