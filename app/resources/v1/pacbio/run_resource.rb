@@ -81,6 +81,66 @@ module V1
     #     }
     #   }'
     #
+    #   curl -X PATCH "http://localhost:3100/v1/pacbio/runs/1" \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -H "Accept: application/vnd.api+json" \
+    #     -d '{
+    #       "data": {
+    #         "type": "runs",
+    #         "attributes": {
+    #           "dna_control_complex_box_barcode": "Lxxxxx101717600123191",
+    #           "system_name": "Sequel II",
+    #           "pacbio_smrt_link_version_id": 56,
+    #           "plates_attributes": [
+    #             {
+    #               "sequencing_kit_box_barcode": "DM0001100861800123121",
+    #               "plate_number": 1,
+    #               "wells_attributes": [
+    #                 {
+    #                   "row": "A",
+    #                   "column": "1",
+    #                   "movie_time": 31,
+    #                   "on_plate_loading_concentration": 8.35,
+    #                   "pre_extension_time": "2",
+    #                   "generate_hifi": "In SMRT Link",
+    #                   "ccs_analysis_output": "Yes",
+    #                   "binding_kit_box_barcode": "DM1117100862200111711",
+    #                   "ccs_analysis_output_include_low_quality_reads": "Yes",
+    #                   "include_fivemc_calls_in_cpg_motifs": "Yes",
+    #                   "ccs_analysis_output_include_kinetics_information": "Yes",
+    #                   "demultiplex_barcodes": "In SMRT Link",
+    #                   "used_aliquots_attributes": [
+    #                     {
+    #                       "source_id": 391,
+    #                       "source_type": "Pacbio::Pool",
+    #                       "volume": 10,
+    #                       "concentration": 20,
+    #                       "aliquot_type": "derived",
+    #                       "template_prep_kit_box_barcode": "033000000000000000000"
+    #                     }
+    #                   ],
+    #                   "annotations_attributes": [
+    #                     {
+    #                       "annotation_type_id": 209,
+    #                       "comment": "Another test comment",
+    #                       "user": "daisy"
+    #                     }
+    #                   ]
+    #                 }
+    #               ]
+    #             }
+    #           ],
+    #           "annotations_attributes": [
+    #             {
+    #               "annotation_type_id": 209,
+    #               "comment": "Test comment",
+    #               "user": "dave"
+    #             }
+    #           ]
+    #         }
+    #       }
+    #     }'
+    #
     class RunResource < JSONAPI::Resource
       model_name 'Pacbio::Run'
 
