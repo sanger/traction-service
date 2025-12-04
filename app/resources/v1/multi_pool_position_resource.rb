@@ -28,24 +28,37 @@ module V1
 
     has_one :multi_pool
 
-    has_one :pool, polymorphic: true,
-                   polymorphic_types: %w[pacbio_pool ont_pool]
-
+    # NOTE: We keep pacbio_pool and ont_pool separate because they
+    # will be queried with includes that are specific to their types.
+    # So using a single polymoprhic 'pool' relationship would not work
+    # efficiently.
     has_one :pacbio_pool, class_name: 'Pacbio::Pool', relation_name: :pacbio_pool
-    has_one :ont_pool, class_name: 'Ont::Pool', relation_name: :ont_pool
+    # TODO: Add ONT support
+    # has_one :ont_pool, class_name: 'Ont::Pool', relation_name: :ont_pool
 
     def created_at
       @model.created_at.to_fs(:us)
     end
 
+    # JSONAPI::Resources polymorphic support.
+    # This gets around issues with namespaced lookups
     def self.resource_klass_for(type)
+      # TODO: This wont work when we add ONT
+      #
+      # We need to distinguish between Pacbio::Pool and Ont::Pool types here.
+      # We can either update json_api_resources to use different type names internally, add
+      # more context to this override to identify both cases or retrieve ONT pools differently.
+      #
+      # This is a bug in JSONAPI::Resources when using namespaced polymorphic relationships
+      # as both Ont::Pool and Pacbio::Pool have type 'pools'. This is due to the demodulization
+      # of type and pluralization that happens internally See https://github.com/sanger/jsonapi-resources/blob/master/lib/jsonapi/basic_resource.rb#L454
+      # We can work around it by explicitly checking for 'pools' and mapping it to Pacbio::Pool
+      # for mvp but when we come to add ONT support we will need a better solution.
+      #
+      # If we don't map 'pools' here it will attempt to use V1::PoolResource which isn't backed
+      # by a model and it will fail the join lookup here https://github.com/sanger/jsonapi-resources/blob/master/lib/jsonapi/active_relation/join_manager.rb#L70
       case type
-      when 'pacbio_pool'
-        type = 'Pacbio::Pool'
-      when 'ont_pool'
-        type = 'Ont::Pool'
-      # TODO: This wont work for ONT
-      when 'pools' # rubocop:disable Lint/DuplicateBranch
+      when 'pools'
         type = 'Pacbio::Pool'
       end
       super
