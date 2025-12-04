@@ -2,16 +2,12 @@
 
 module V1
   module Pacbio
-    # @note Access this resource via the `/v1/pacbio/tag_sets/` endpoint.
-    #
     # Provides a JSON:API representation of {TagSet}.
-    #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
     #
     ## Filters:
     # * name
+    #
+    # @note Access this resource via the `/v1/pacbio/tag_sets/` endpoint.
     #
     # @example
     #   curl -X GET http://localhost:3100/v1/pacbio/tag_sets/1
