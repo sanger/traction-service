@@ -14,10 +14,12 @@ RSpec.describe 'MultiPoolsController' do
       expect(json['data'].length).to eq(2)
       expect(json['data'][0]['attributes']['pool_method']).to eq(multi_pool1.pool_method)
       expect(json['data'][0]['attributes']['pipeline']).to eq(multi_pool1.pipeline)
+      expect(json['data'][0]['attributes']['number_of_pools']).to eq(multi_pool1.multi_pool_positions.count)
       expect(json['data'][0]['attributes']['created_at']).to eq(multi_pool1.created_at.to_fs(:us))
 
       expect(json['data'][1]['attributes']['pool_method']).to eq(multi_pool2.pool_method)
       expect(json['data'][1]['attributes']['pipeline']).to eq(multi_pool2.pipeline)
+      expect(json['data'][0]['attributes']['number_of_pools']).to eq(multi_pool1.multi_pool_positions.count)
       expect(json['data'][1]['attributes']['created_at']).to eq(multi_pool2.created_at.to_fs(:us))
     end
   end
