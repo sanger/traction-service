@@ -31,6 +31,12 @@ module V1
 
     has_many :multi_pool_positions, always_include_optional_linkage_data: true
 
+    paginator :paged
+
+    def self.default_sort
+      [{ field: 'created_at', direction: :desc }]
+    end
+
     def created_at
       @model.created_at.to_fs(:us)
     end

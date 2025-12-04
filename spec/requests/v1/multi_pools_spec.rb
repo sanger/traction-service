@@ -58,6 +58,37 @@ RSpec.describe 'MultiPoolsController' do
         end
       end
     end
+
+    context 'pagination' do
+      let!(:expected_multi_pools) { create_list(:multi_pool, 2, created_at: Time.zone.now) }
+
+      before do
+        create_list(:multi_pool, 2, created_at: Time.zone.now + 10)
+        # There should be 4 pools total so we should expect the oldest 2 on page 2
+        get "#{v1_multi_pools_path}?page[number]=2&page[size]=2",
+            headers: json_api_headers
+      end
+
+      it 'has a success status' do
+        expect(response).to have_http_status(:success), response.body
+      end
+
+      it 'returns a list of multi_pools' do
+        expect(json['data'].length).to eq(2)
+      end
+
+      it 'returns the correct attributes', :aggregate_failures do
+        expected_multi_pools.each do |mp|
+          mp_attributes = find_resource(type: 'multi_pools', id: mp.id)['attributes']
+          expect(mp_attributes).to include(
+            'pool_method' => mp.pool_method,
+            'pipeline' => mp.pipeline,
+            'number_of_pools' => mp.number_of_pools,
+            'created_at' => mp.created_at.to_fs(:us)
+          )
+        end
+      end
+    end
   end
 
   describe '#create' do
