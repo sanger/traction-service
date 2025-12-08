@@ -22,8 +22,18 @@ class MultiPool < ApplicationRecord
   def consistent_pools_type?
     return true if multi_pool_positions.empty?
 
-    # pool_type is the polymorphic type of the associated pool e.g. "Ont::Pool" or "Pacbio::Pool"
-    return true unless multi_pool_positions.map(&:class).uniq.size > 1
+    # Check which pool types are present for each position
+    # We can't simply use pool_type because of the polymorphic association
+    # may have nil pool_type if the pool is not set e.g. during nested creation
+    types = multi_pool_positions.map do |pos|
+      if pos.pacbio_pool.present?
+        :pacbio
+      elsif pos.ont_pool.present?
+        :ont
+      end
+    end.compact.uniq
+
+    return true if types.size <= 1
 
     errors.add(:multi_pool_positions, 'all pools must be of the same type')
     false
