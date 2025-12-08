@@ -31,6 +31,8 @@ module Pacbio
     validate :used_aliquots_volume
     before_update :primary_aliquot_volume_sufficient
 
+    before_destroy :check_for_derived_aliquots?, prepend: true
+
     # Update only so that we don't recreate the primary aliquot if the ID is missing.
     accepts_nested_attributes_for :primary_aliquot, update_only: true
 
@@ -74,6 +76,12 @@ module Pacbio
 
     def indexed_used_aliquots
       @indexed_used_aliquots ||= used_aliquots.index_by { |aliquot| aliquot.id.to_s }
+    end
+
+    def check_for_derived_aliquots?
+      raise 'Cannot delete pool because it is in use in a run' if derived_aliquots.exists?
+
+      true
     end
   end
 end

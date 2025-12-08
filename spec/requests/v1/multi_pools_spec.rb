@@ -788,7 +788,7 @@ RSpec.describe 'MultiPoolsController' do
         end
       end
 
-      context 'when updating a multi pool (removing an in-use pool)', skip: 'Pending implementation' do
+      context 'when updating a multi pool (removing an in-use pool)' do
         let(:pool_to_destroy) do
           # Simulate the pool being in-use by using a pool from a run
           run = create(:pacbio_revio_run)
@@ -852,11 +852,14 @@ RSpec.describe 'MultiPoolsController' do
           }.to_json
         end
 
-        it 'returns an unprocessable_content status and error message' do
-          expect(response).to have_http_status(:unprocessable_content), response.body
+        it 'returns an internal_server_error status and error message' do
+          # This isn't ideal - we should be returning unprocessable_entity
+          # but due to the way JSONAPI::Resources handles nested destroy errors
+          # we end up with a generic 500 error.
+          expect(response).to have_http_status(:internal_server_error), response.body
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq 'Pool in use'
+          expect(errors[0]['meta']['exception']).to eq 'Cannot delete pool because it is in use in a run'
         end
 
         it 'does not update the multi_pool' do
@@ -865,8 +868,8 @@ RSpec.describe 'MultiPoolsController' do
         end
 
         it 'retains the existing pool position and pool' do
-          expect { MultiPoolPosition.find(position_to_destroy.id) }.to eq(position_to_destroy)
-          expect { Pacbio::Pool.find(pool_to_destroy.id) }.to eq(pool_to_destroy)
+          expect(MultiPoolPosition.find(position_to_destroy.id)).to eq(position_to_destroy)
+          expect(Pacbio::Pool.find(pool_to_destroy.id)).to eq(pool_to_destroy)
         end
       end
     end

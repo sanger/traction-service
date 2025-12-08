@@ -338,4 +338,18 @@ RSpec.describe Pacbio::Pool, :pacbio do
       pool.save
     end
   end
+
+  context 'destroy' do
+    it 'allows destroy if there are no derived_aliquots' do
+      pool = build(:pacbio_pool)
+      expect(pool.destroy).to be_truthy
+    end
+
+    it 'raises an error if there are derived_aliquots' do
+      pool = build(:pacbio_pool)
+      # Generic derived aliquot
+      create(:aliquot, source: pool, aliquot_type: :derived)
+      expect { pool.destroy }.to raise_error('Cannot delete pool because it is in use in a run')
+    end
+  end
 end
