@@ -13,6 +13,7 @@ class MultiPool < ApplicationRecord
   validates :pipeline, presence: true
   validates :multi_pool_positions, presence: true
   validate :consistent_pools_type?
+  validate :unique_pool_positions?
 
   accepts_nested_attributes_for :multi_pool_positions, allow_destroy: true
 
@@ -22,7 +23,7 @@ class MultiPool < ApplicationRecord
     return true if multi_pool_positions.empty?
 
     # pool_type is the polymorphic type of the associated pool e.g. "Ont::Pool" or "Pacbio::Pool"
-    return true unless multi_pool_positions.map(&:pool_type).uniq.size > 1
+    return true unless multi_pool_positions.map(&:class).uniq.size > 1
 
     errors.add(:multi_pool_positions, 'all pools must be of the same type')
     false

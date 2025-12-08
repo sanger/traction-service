@@ -2,7 +2,17 @@
 
 require 'rails_helper'
 
+# Note (updating/creating multi pools):
+# The validation for pools is handled in the nested pool models and their
+# resources. Here we are primarily testing the MultiPool and MultiPoolResource
+# functionality with a few important validation cases.
 RSpec.describe 'MultiPoolsController' do
+  before do
+    # Create a default smrt link version for pacbio runs.
+    # We use when checking validation behaviour later
+    create(:pacbio_smrt_link_version_default)
+  end
+
   describe '#get' do
     let!(:multi_pool1) { create(:multi_pool) }
     let!(:multi_pool2) { create(:multi_pool) }
@@ -197,8 +207,8 @@ RSpec.describe 'MultiPoolsController' do
   end
 
   describe '#create' do
-    context 'when creating a multi pool with one pool' do
-      context 'on success' do
+    context 'successful' do
+      context 'when creating a multi pool with several valid pools' do
         let!(:request) { create(:pacbio_request) }
         let!(:tag) { create(:tag) }
         let(:body) do
@@ -211,6 +221,32 @@ RSpec.describe 'MultiPoolsController' do
                 multi_pool_positions_attributes: [
                   {
                     position: 'A1',
+                    pacbio_pool_attributes: {
+                      template_prep_kit_box_barcode: 'LK1234567',
+                      volume: 1.11,
+                      concentration: 2.22,
+                      insert_size: 100,
+                      used_aliquots_attributes: [
+                        {
+                          volume: 1.11,
+                          template_prep_kit_box_barcode: 'LK1234567',
+                          concentration: 2.22,
+                          insert_size: 100,
+                          source_id: request.id,
+                          source_type: 'Pacbio::Request',
+                          tag_id: tag.id
+                        }
+                      ],
+                      primary_aliquot_attributes: {
+                        volume: '200',
+                        concentration: '22',
+                        template_prep_kit_box_barcode: '100',
+                        insert_size: '11'
+                      }
+                    }
+                  },
+                  {
+                    position: 'A2',
                     pacbio_pool_attributes: {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
@@ -247,12 +283,590 @@ RSpec.describe 'MultiPoolsController' do
         end
 
         it 'creates a multi pool and associated data' do
-          expect { post v1_multi_pools_path, params: body, headers: json_api_headers }.to change(MultiPool, :count).by(1).and change(MultiPoolPosition, :count).by(1).and change(Pacbio::Pool, :count).by(1)
+          expect { post v1_multi_pools_path, params: body, headers: json_api_headers }.to change(MultiPool, :count).by(1).and change(MultiPoolPosition, :count).by(2).and change(Pacbio::Pool, :count).by(2)
         end
 
         it 'returns the id' do
           post v1_multi_pools_path, params: body, headers: json_api_headers
           expect(json.dig('data', 'id').to_i).to eq(MultiPool.first.id)
+        end
+      end
+    end
+
+    context 'unsuccessful' do
+      context 'when creating a multi pool with bad data' do
+        let(:body) do
+          {
+            data: {
+              type: 'multi_pools',
+              attributes: {
+                pipeline: 'pacbio',
+                pool_method: 'InvalidMethod'
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a bad_request status' do
+          post v1_multi_pools_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:bad_request), response.body
+        end
+
+        it 'does not create a multi pool or associated data' do
+          expect { post v1_multi_pools_path, params: body, headers: json_api_headers }.not_to change(MultiPool, :count)
+        end
+
+        it 'returns the correct error messages' do
+          post v1_multi_pools_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq 'InvalidMethod is not a valid value for pool_method.'
+        end
+      end
+
+      context 'when creating a multi pool with invalid multi pool positions (duplicate positions)' do
+        let!(:request) { create(:pacbio_request) }
+        let!(:tag) { create(:tag) }
+        let(:body) do
+          {
+            data: {
+              type: 'multi_pools',
+              attributes: {
+                pipeline: 'pacbio',
+                pool_method: 'Plate',
+                multi_pool_positions_attributes: [
+                  {
+                    position: 'A1',
+                    pacbio_pool_attributes: {
+                      template_prep_kit_box_barcode: 'LK1234567',
+                      volume: 1.11,
+                      concentration: 2.22,
+                      insert_size: 100,
+                      used_aliquots_attributes: [
+                        {
+                          volume: 1.11,
+                          template_prep_kit_box_barcode: 'LK1234567',
+                          concentration: 2.22,
+                          insert_size: 100,
+                          source_id: request.id,
+                          source_type: 'Pacbio::Request',
+                          tag_id: tag.id
+                        }
+                      ],
+                      primary_aliquot_attributes: {
+                        volume: '200',
+                        concentration: '22',
+                        template_prep_kit_box_barcode: '100',
+                        insert_size: '11'
+                      }
+                    }
+                  },
+                  {
+                    position: 'A1',
+                    pacbio_pool_attributes: {
+                      template_prep_kit_box_barcode: 'LK1234567',
+                      volume: 1.11,
+                      concentration: 2.22,
+                      insert_size: 100,
+                      used_aliquots_attributes: [
+                        {
+                          volume: 1.11,
+                          template_prep_kit_box_barcode: 'LK1234567',
+                          concentration: 2.22,
+                          insert_size: 100,
+                          source_id: request.id,
+                          source_type: 'Pacbio::Request',
+                          tag_id: tag.id
+                        }
+                      ],
+                      primary_aliquot_attributes: {
+                        volume: '200',
+                        concentration: '22',
+                        template_prep_kit_box_barcode: '100',
+                        insert_size: '11'
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a unprocessable_content status' do
+          post v1_multi_pools_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_content), response.body
+        end
+
+        it 'does not create a multi pool or associated data' do
+          expect { post v1_multi_pools_path, params: body, headers: json_api_headers }.not_to change(MultiPool, :count)
+        end
+
+        it 'returns the correct error messages' do
+          post v1_multi_pools_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq 'multi_pool_positions - A1 positions are duplicated'
+        end
+      end
+
+      context 'when creating a multi pool with invalid pool data (duplicate tags)' do
+        let!(:request) { create(:pacbio_request) }
+        let!(:tag) { create(:tag) }
+        let(:body) do
+          {
+            data: {
+              type: 'multi_pools',
+              attributes: {
+                pipeline: 'pacbio',
+                pool_method: 'Plate',
+                multi_pool_positions_attributes: [
+                  {
+                    position: 'A1',
+                    pacbio_pool_attributes: {
+                      template_prep_kit_box_barcode: 'LK1234567',
+                      volume: 1.11,
+                      concentration: 2.22,
+                      insert_size: 100,
+                      used_aliquots_attributes: [
+                        {
+                          volume: 1.11,
+                          template_prep_kit_box_barcode: 'LK1234567',
+                          concentration: 2.22,
+                          insert_size: 100,
+                          source_id: request.id,
+                          source_type: 'Pacbio::Request',
+                          tag_id: tag.id
+                        },
+                        {
+                          volume: 1.11,
+                          template_prep_kit_box_barcode: 'LK1234567',
+                          concentration: 2.22,
+                          insert_size: 100,
+                          source_id: request.id,
+                          source_type: 'Pacbio::Request',
+                          tag_id: tag.id
+                        }
+                      ],
+                      primary_aliquot_attributes: {
+                        volume: '200',
+                        concentration: '22',
+                        template_prep_kit_box_barcode: '100',
+                        insert_size: '11'
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a unprocessable_content status' do
+          post v1_multi_pools_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_content), response.body
+        end
+
+        it 'does not create a multi pool or associated data' do
+          expect { post v1_multi_pools_path, params: body, headers: json_api_headers }.not_to change(MultiPool, :count)
+        end
+
+        it 'returns the correct error messages' do
+          post v1_multi_pools_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq 'multi_pool_positions.pacbio_pool.tags - contain duplicates'
+        end
+      end
+    end
+  end
+
+  describe '#update' do
+    context 'on success' do
+      # We let! this as we want to ensure we have the original state
+      let!(:mp) do
+        mp = create(:multi_pool, pool_method: 'Plate')
+        # Ensure the existing pool has position A1
+        mp.multi_pool_positions.first.position = 'A1'
+        mp
+      end
+      let!(:existing_pool) { mp.multi_pool_positions.first.pacbio_pool }
+
+      before do
+        patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
+      end
+
+      context 'when updating a multi pool (adding a pool and updating pool attributes)' do
+        let(:new_pool_volume) { 101.0 }
+        let(:body) do
+          {
+            data: {
+              id: mp.id.to_s,
+              type: 'multi_pools',
+              attributes: {
+                pipeline: 'pacbio',
+                pool_method: 'TubeRack',
+                multi_pool_positions_attributes: [
+                  {
+                    id: mp.multi_pool_positions.first.id.to_s,
+                    position: mp.multi_pool_positions.first.position,
+                    pacbio_pool_attributes: {
+                      id: existing_pool.id.to_s,
+                      used_aliquots_attributes: [{
+                        id: existing_pool.used_aliquots.first.id.to_s,
+                        volume: existing_pool.used_aliquots.first.volume,
+                        concentration: existing_pool.used_aliquots.first.concentration,
+                        template_prep_kit_box_barcode: existing_pool.used_aliquots.first.template_prep_kit_box_barcode,
+                        insert_size: existing_pool.used_aliquots.first.insert_size,
+                        source_id: existing_pool.used_aliquots.first.source_id,
+                        source_type: existing_pool.used_aliquots.first.source_type
+                      }],
+                      primary_aliquot_attributes: {
+                        id: existing_pool.primary_aliquot.id.to_s,
+                        volume: new_pool_volume,
+                        concentration: existing_pool.primary_aliquot.concentration,
+                        template_prep_kit_box_barcode: existing_pool.primary_aliquot.template_prep_kit_box_barcode,
+                        insert_size: existing_pool.primary_aliquot.insert_size
+                      },
+                      volume: new_pool_volume,
+                      concentration: existing_pool.concentration,
+                      template_prep_kit_box_barcode: existing_pool.template_prep_kit_box_barcode,
+                      insert_size: existing_pool.insert_size,
+                      created_at: '2021-08-04T14:35:47.208Z',
+                      updated_at: '2021-08-04T14:35:47.208Z'
+                    }
+                  },
+                  {
+                    position: 'A2',
+                    pacbio_pool_attributes: {
+                      volume: '150',
+                      concentration: '15',
+                      template_prep_kit_box_barcode: '100',
+                      insert_size: '100',
+                      used_aliquots_attributes: [{
+                        volume: '150',
+                        concentration: '15',
+                        template_prep_kit_box_barcode: '200',
+                        insert_size: '20',
+                        source_id: create(:pacbio_request).id,
+                        source_type: 'Pacbio::Request',
+                        tag_id: create(:tag).id
+                      }],
+                      primary_aliquot_attributes: {
+                        volume: '150',
+                        concentration: '15',
+                        template_prep_kit_box_barcode: '200',
+                        insert_size: '20'
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns created status' do
+          expect(response).to have_http_status(:success), response.body
+        end
+
+        it 'updates the multi_pool' do
+          mp.reload
+          expect(mp.pool_method).to eq('TubeRack')
+          expect(mp.number_of_pools).to eq(2)
+        end
+
+        it 'updates the existing pool' do
+          existing_pool.reload
+          expect(existing_pool.volume).to eq(new_pool_volume)
+          expect(existing_pool.primary_aliquot.volume).to eq(new_pool_volume)
+        end
+
+        it 'creates a new pool' do
+          # Check the existing pool is unchanged
+          expect(existing_pool).to eq(mp.multi_pool_positions.find_by(position: 'A1').pacbio_pool)
+
+          # Check the new pool exists and has some of the correct attributes
+          new_pool = mp.multi_pool_positions.find_by(position: 'A2').pacbio_pool
+          expect(new_pool.volume).to eq(150.0)
+        end
+      end
+
+      context 'when updating a multi pool (removing a pool)' do
+        let(:position_to_destroy) { build(:multi_pool_position, position: 'A2', pool: create(:pacbio_pool)) }
+        let(:pool_to_destroy) { position_to_destroy.pool }
+        let!(:mp) do
+          mp = create(:multi_pool)
+          # Ensure the existing pool has position A1
+          mp.multi_pool_positions.first.position = 'A1'
+          # Create a second existing pool to remove
+          mp.multi_pool_positions << position_to_destroy
+          mp
+        end
+        let!(:existing_pool) { mp.multi_pool_positions.first.pacbio_pool }
+        let(:body) do
+          {
+            data: {
+              id: mp.id.to_s,
+              type: 'multi_pools',
+              attributes: {
+                pipeline: 'pacbio',
+                pool_method: 'Plate',
+                multi_pool_positions_attributes: [
+                  {
+                    id: mp.multi_pool_positions.first.id.to_s,
+                    position: mp.multi_pool_positions.first.position,
+                    pacbio_pool_attributes: {
+                      id: existing_pool.id.to_s,
+                      used_aliquots_attributes: [{
+                        id: existing_pool.used_aliquots.first.id.to_s,
+                        volume: existing_pool.used_aliquots.first.volume,
+                        concentration: existing_pool.used_aliquots.first.concentration,
+                        template_prep_kit_box_barcode: existing_pool.used_aliquots.first.template_prep_kit_box_barcode,
+                        insert_size: existing_pool.used_aliquots.first.insert_size,
+                        source_id: existing_pool.used_aliquots.first.source_id,
+                        source_type: existing_pool.used_aliquots.first.source_type
+                      }],
+                      primary_aliquot_attributes: {
+                        id: existing_pool.primary_aliquot.id.to_s,
+                        volume: existing_pool.primary_aliquot.volume,
+                        concentration: existing_pool.primary_aliquot.concentration,
+                        template_prep_kit_box_barcode: existing_pool.primary_aliquot.template_prep_kit_box_barcode,
+                        insert_size: existing_pool.primary_aliquot.insert_size
+                      },
+                      volume: existing_pool.volume,
+                      concentration: existing_pool.concentration,
+                      template_prep_kit_box_barcode: existing_pool.template_prep_kit_box_barcode,
+                      insert_size: existing_pool.insert_size,
+                      created_at: '2021-08-04T14:35:47.208Z',
+                      updated_at: '2021-08-04T14:35:47.208Z'
+                    }
+                  },
+                  {
+                    id: position_to_destroy.id.to_s,
+                    _destroy: true
+                  }
+                ]
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns created status' do
+          expect(response).to have_http_status(:success), response.body
+        end
+
+        it 'updates the multi_pool' do
+          mp.reload
+          expect(mp.number_of_pools).to eq(1)
+        end
+
+        it 'destroys the existing pool position and pool' do
+          expect { MultiPoolPosition.find(position_to_destroy.id) }.to raise_error(ActiveRecord::RecordNotFound)
+          expect { Pacbio::Pool.find(pool_to_destroy.id) }.to raise_error(ActiveRecord::RecordNotFound)
+        end
+      end
+    end
+
+    context 'on failure' do
+      # We let! this as we want to ensure we have the original state
+      let!(:mp) do
+        mp = create(:multi_pool, pool_method: 'Plate')
+        # Ensure the existing pool has position A1
+        mp.multi_pool_positions.first.position = 'A1'
+        mp
+      end
+      let!(:existing_pool) { mp.multi_pool_positions.first.pacbio_pool }
+
+      before do
+        patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
+      end
+
+      context 'when updating a multi pool (invalid multi_pool data)' do
+        let(:new_pool_volume) { 101.0 }
+        let(:body) do
+          {
+            data: {
+              id: mp.id.to_s,
+              type: 'multi_pools',
+              attributes: {
+                pipeline: 'pacbio',
+                pool_method: 'InvalidMethod'
+
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a bad_request status' do
+          expect(response).to have_http_status(:bad_request), response.body
+        end
+
+        it 'does not update the multi pool or associated data' do
+          mp.reload
+          expect(mp.pool_method).to eq('Plate')
+        end
+
+        it 'returns the correct error messages' do
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq 'InvalidMethod is not a valid value for pool_method.'
+        end
+      end
+
+      context 'when updating a multi pool (with a tag clash)' do
+        let(:new_pool_volume) { 101.0 }
+        let(:body) do
+          {
+            data: {
+              id: mp.id.to_s,
+              type: 'multi_pools',
+              attributes: {
+                pipeline: 'pacbio',
+                pool_method: 'Plate',
+                multi_pool_positions_attributes: [
+                  {
+                    id: mp.multi_pool_positions.first.id.to_s,
+                    position: mp.multi_pool_positions.first.position,
+                    pacbio_pool_attributes: {
+                      id: existing_pool.id.to_s,
+                      used_aliquots_attributes: [
+                        {
+                          id: existing_pool.used_aliquots.first.id.to_s,
+                          volume: existing_pool.used_aliquots.first.volume,
+                          concentration: existing_pool.used_aliquots.first.concentration,
+                          template_prep_kit_box_barcode: existing_pool.used_aliquots.first.template_prep_kit_box_barcode,
+                          insert_size: existing_pool.used_aliquots.first.insert_size,
+                          source_id: existing_pool.used_aliquots.first.source_id,
+                          source_type: existing_pool.used_aliquots.first.source_type,
+                          tag_id: existing_pool.used_aliquots.first.tag_id
+                        },
+                        {
+                          volume: existing_pool.used_aliquots.first.volume,
+                          concentration: existing_pool.used_aliquots.first.concentration,
+                          template_prep_kit_box_barcode: existing_pool.used_aliquots.first.template_prep_kit_box_barcode,
+                          insert_size: existing_pool.used_aliquots.first.insert_size,
+                          source_id: existing_pool.used_aliquots.first.source_id,
+                          source_type: existing_pool.used_aliquots.first.source_type,
+                          tag_id: existing_pool.used_aliquots.first.tag_id
+                        }
+                      ],
+                      primary_aliquot_attributes: {
+                        id: existing_pool.primary_aliquot.id.to_s,
+                        volume: existing_pool.primary_aliquot.volume,
+                        concentration: existing_pool.primary_aliquot.concentration,
+                        template_prep_kit_box_barcode: existing_pool.primary_aliquot.template_prep_kit_box_barcode,
+                        insert_size: existing_pool.primary_aliquot.insert_size
+                      },
+                      volume: existing_pool.volume,
+                      concentration: existing_pool.concentration,
+                      template_prep_kit_box_barcode: existing_pool.template_prep_kit_box_barcode,
+                      insert_size: existing_pool.insert_size,
+                      created_at: '2021-08-04T14:35:47.208Z',
+                      updated_at: '2021-08-04T14:35:47.208Z'
+                    }
+                  }
+                ]
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a unprocessable_content status' do
+          expect(response).to have_http_status(:unprocessable_content), response.body
+        end
+
+        it 'does not update the multi pool or associated data' do
+          mp.reload
+          expect(mp.pool_method).to eq('Plate')
+        end
+
+        it 'returns the correct error messages' do
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq 'multi_pool_positions.pacbio_pool.tags - contain duplicates'
+        end
+      end
+
+      context 'when updating a multi pool (removing an in-use pool)', skip: 'Pending implementation' do
+        let(:pool_to_destroy) do
+          # Simulate the pool being in-use by using a pool from a run
+          run = create(:pacbio_revio_run)
+          run.wells.first.pools.first
+        end
+        let(:position_to_destroy) { build(:multi_pool_position, position: 'A2', pool: pool_to_destroy) }
+        let!(:mp) do
+          mp = create(:multi_pool)
+          # Ensure the existing pool has position A1
+          mp.multi_pool_positions.first.position = 'A1'
+          # Create a second existing pool to remove
+          mp.multi_pool_positions << position_to_destroy
+          mp
+        end
+        let!(:existing_pool) { mp.multi_pool_positions.first.pacbio_pool }
+        let(:body) do
+          {
+            data: {
+              id: mp.id.to_s,
+              type: 'multi_pools',
+              attributes: {
+                pipeline: 'pacbio',
+                pool_method: 'Plate',
+                multi_pool_positions_attributes: [
+                  {
+                    id: mp.multi_pool_positions.first.id.to_s,
+                    position: mp.multi_pool_positions.first.position,
+                    pacbio_pool_attributes: {
+                      id: existing_pool.id.to_s,
+                      used_aliquots_attributes: [{
+                        id: existing_pool.used_aliquots.first.id.to_s,
+                        volume: existing_pool.used_aliquots.first.volume,
+                        concentration: existing_pool.used_aliquots.first.concentration,
+                        template_prep_kit_box_barcode: existing_pool.used_aliquots.first.template_prep_kit_box_barcode,
+                        insert_size: existing_pool.used_aliquots.first.insert_size,
+                        source_id: existing_pool.used_aliquots.first.source_id,
+                        source_type: existing_pool.used_aliquots.first.source_type
+                      }],
+                      primary_aliquot_attributes: {
+                        id: existing_pool.primary_aliquot.id.to_s,
+                        volume: existing_pool.primary_aliquot.volume,
+                        concentration: existing_pool.primary_aliquot.concentration,
+                        template_prep_kit_box_barcode: existing_pool.primary_aliquot.template_prep_kit_box_barcode,
+                        insert_size: existing_pool.primary_aliquot.insert_size
+                      },
+                      volume: existing_pool.volume,
+                      concentration: existing_pool.concentration,
+                      template_prep_kit_box_barcode: existing_pool.template_prep_kit_box_barcode,
+                      insert_size: existing_pool.insert_size,
+                      created_at: '2021-08-04T14:35:47.208Z',
+                      updated_at: '2021-08-04T14:35:47.208Z'
+                    }
+                  },
+                  {
+                    id: position_to_destroy.id.to_s,
+                    _destroy: true
+                  }
+                ]
+              }
+            }
+          }.to_json
+        end
+
+        it 'returns an unprocessable_content status and error message' do
+          expect(response).to have_http_status(:unprocessable_content), response.body
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq 'Pool in use'
+        end
+
+        it 'does not update the multi_pool' do
+          mp.reload
+          expect(mp.number_of_pools).to eq(2)
+        end
+
+        it 'retains the existing pool position and pool' do
+          expect { MultiPoolPosition.find(position_to_destroy.id) }.to eq(position_to_destroy)
+          expect { Pacbio::Pool.find(pool_to_destroy.id) }.to eq(pool_to_destroy)
         end
       end
     end

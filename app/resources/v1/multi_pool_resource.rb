@@ -54,11 +54,11 @@ module V1
 
     MULTI_POOL_POSITIONS_ATTRIBUTES = %w[id position
                                          pacbio_pool_attributes].freeze
-    PACBIO_POOL_ATTRIBUTES = %w[:id :volume :concentration :template_prep_kit_box_barcode
-                                :insert_size :created_at :updated_at
-                                :library_attributes :used_aliquots_attributes
-                                :primary_aliquot_attributes
-                                :used_volume :available_volume].freeze
+    PACBIO_POOL_ATTRIBUTES = %w[id volume concentration template_prep_kit_box_barcode
+                                insert_size created_at updated_at
+                                library_attributes used_aliquots_attributes
+                                primary_aliquot_attributes
+                                used_volume available_volume].freeze
     ALIQUOT_ATTRIBUTES = %w[id volume concentration template_prep_kit_box_barcode insert_size
                             tag_id source_id source_type].freeze
 
@@ -69,6 +69,7 @@ module V1
       @model.multi_pool_positions_attributes = multi_pool_positions_parameters.map do |mpp|
         mpp.permit(
           *MULTI_POOL_POSITIONS_ATTRIBUTES,
+          :_destroy,
           pacbio_pool_attributes: [
             :_destroy,
             *PACBIO_POOL_ATTRIBUTES,

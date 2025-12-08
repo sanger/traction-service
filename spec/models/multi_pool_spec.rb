@@ -15,6 +15,10 @@ RSpec.describe MultiPool do
     expect(build(:multi_pool, pool_method: nil)).not_to be_valid
   end
 
+  it 'is invalid with a bad pool_method' do
+    expect { build(:multi_pool, pool_method: 'InvalidMethod') }.to raise_error(ArgumentError).with_message(/is not a valid pool_method/)
+  end
+
   it 'is invalid without multi_pool_positions' do
     multi_pool = build(:multi_pool)
     multi_pool.multi_pool_positions = []
@@ -29,6 +33,15 @@ RSpec.describe MultiPool do
 
     expect(multi_pool).not_to be_valid
     expect(multi_pool.errors[:multi_pool_positions]).to include('all pools must be of the same type')
+  end
+
+  it 'is invalid with duplicate pool positions' do
+    multi_pool = build(:multi_pool)
+    multi_pool.multi_pool_positions << build(:multi_pool_position, position: 'A1')
+    multi_pool.multi_pool_positions << build(:multi_pool_position, position: 'A1')
+
+    expect(multi_pool).not_to be_valid
+    expect(multi_pool.errors[:multi_pool_positions]).to include('A1 positions are duplicated')
   end
 
   describe '#consistent_pools_type?' do
