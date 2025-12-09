@@ -5,14 +5,13 @@ module V1
   # model.
   # It allows API clients to query, filter, and retrieve multi-pool-position-related information.
   #
-  # @note Access this resource via the `/v1/multi_pool_positions` endpoint.
+  # @note This resource cannot be directly accessed. Reference via {V1::MultiPoolResource} includes
+  # if required
   #
-  # Provides a JSON:API representation of {MultiPoolPosition} and exposes valid request
-  # for use by the UI.
+  # Relationships:
+  # * multi_pool {V1::MultiPoolResource}
+  # * pacbio_pool {V1::Pacbio::PoolResource}
   #
-  # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-  # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package for the service
-  # implementation of the JSON:API standard.
   class MultiPoolPositionResource < JSONAPI::Resource
     model_name 'MultiPoolPosition'
 

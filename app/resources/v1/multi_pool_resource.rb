@@ -9,9 +9,105 @@ module V1
   # Provides a JSON:API representation of {MultiPool} and exposes valid request
   # for use by the UI.
   #
-  # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-  # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package for the service
-  # implementation of the JSON:API standard.
+  # Filters:
+  # * pipeline
+  # * pool_method
+  # * pool_barcode
+  #
+  # Primary relationships:
+  # * multi_pool_positions {V1::MultiPoolPositionResource}
+  #
+  # @example
+  #  curl -X GET http://localhost:3100/v1/multi_pools
+  #  curl -X GET http://localhost:3100/v1/multi_pools/1
+  #  curl -X GET "http://localhost:3100/v1/multi_pools/1?include=multi_pool_positions"
+  #  curl -X GET "http://localhost:3100/v1/multi_pools?filter[pipeline]=pacbio"
+  #  curl -X POST "http://localhost:3100/v1/multi_pools" \
+  #     -H "accept: application/vnd.api+json" \
+  #     -H "Content-Type: application/vnd.api+json" \
+  #     -d '{
+  #       "data": {
+  #         "type": "multi_pools",
+  #         "attributes": {
+  #            "pool_method": "Plate",
+  #            "pipeline": "pacbio",
+  #            "multi_pool_positions_attributes": [
+  #              {
+  #                "position": "A1",
+  #                "pcbio_pool_attributes": {
+  #                  "template_prep_kit_box_barcode": "LK1234567",
+  #                  "volume": 1.11,
+  #                  "concentration": 2.22,
+  #                  "insert_size": 100,
+  #                  "used_aliquots_attributes": [
+  #                    {
+  #                      "volume": 1.11,
+  #                      "template_prep_kit_box_barcode": "LK1234567",
+  #                      "concentration": 2.22,
+  #                      "insert_size": 100,
+  #                      "source_id": 1,
+  #                      "source_type": "Pacbio::Request",
+  #                      "tag_id": 1
+  #                    }
+  #                  ],
+  #                  "primary_aliquot_attributes": {
+  #                    "volume": 200,
+  #                    "concentration": 22,
+  #                    "template_prep_kit_box_barcode": 100,
+  #                    "insert_size": 11
+  #                  }
+  #                }
+  #              }
+  #            ]
+  #          }
+  #        }
+  #       }'
+  #  curl -X PATCH "http://localhost:3100/v1/multi_pools/2" \
+  #      -H "accept: application/vnd.api+json" \
+  #      -H "Content-Type: application/vnd.api+json" \
+  #      -d '{
+  #           "data": {
+  #               "type": "multi_pools",
+  #               "id": "2",
+  #               "attributes": {
+  #                   "pool_method": "Plate",
+  #                   "pipeline": "pacbio",
+  #                   "multi_pool_positions_attributes": [
+  #                       {
+  #                           "id": 2,
+  #                           "position": "A1",
+  #                           "pacbio_pool_attributes": {
+  #                               "id": 15,
+  #                               "template_prep_kit_box_barcode": "LK1234567",
+  #                               "volume": 1.11,
+  #                               "concentration": 2.22,
+  #                               "insert_size": 100,
+  #                               "used_aliquots_attributes": [
+  #                                   {
+  #                                       "id": 363,
+  #                                       "volume": 1.11,
+  #                                       "template_prep_kit_box_barcode": "LK1234567",
+  #                                       "concentration": 2.22,
+  #                                       "insert_size": 100,
+  #                                       "source_id": 1,
+  #                                       "source_type": "Pacbio::Request",
+  #                                       "tag_id": 1
+  #                                   }
+  #                               ],
+  #                               "primary_aliquot_attributes": {
+  #                                   "id": 364,
+  #                                   "volume": 200,
+  #                                   "concentration": 22,
+  #                                   "template_prep_kit_box_barcode": 100,
+  #                                   "insert_size": 11
+  #                               }
+  #                           }
+  #                       }
+  #                   ]
+  #               }
+  #           }
+  #         }'
+  #
   class MultiPoolResource < JSONAPI::Resource
     # @!attribute [rw] pipeline
     #  @return [String] the pipeline associated with the multi_pool .e.g. "Pacbio" or "Ont"
