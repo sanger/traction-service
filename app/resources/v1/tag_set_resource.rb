@@ -2,25 +2,21 @@
 
 module V1
   #
-  # @note Access this resource via the `/v1/pacbio/tag_sets/` endpoint.
+  # @note Access this resource via the `/v1/tag_sets/` endpoint.
   #
   # Provides a JSON:API representation of {TagSet}.
   #
-  # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-  # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-  # for the service implementation of the JSON:API standard.
-  #
-  # filters:
+  ## Filters:
   #
   # - pipeline
   #
   # @example
-  #   curl -X GET http://localhost:3100/v1/pacbio/tag_sets/1
-  #   curl -X GET http://localhost:3100/v1/pacbio/tag_sets?include=tags
-  #   curl -X GET http://localhost:3100/v1/pacbio/tag_sets/
-  #   curl -X GET "http://localhost:3100/v1/pacbio/tag_sets?filter[pipeline]=pacbio"
+  #   curl -X GET http://localhost:3100/v1/tag_sets/1
+  #   curl -X GET http://localhost:3100/v1/tag_sets?include=tags
+  #   curl -X GET http://localhost:3100/v1/tag_sets/
+  #   curl -X GET "http://localhost:3100/v1/tag_sets?filter[pipeline]=pacbio"
   #
-  #  curl -X POST "http://localhost:3100/v1/pacbio/tag_sets" \
+  #  curl -X POST "http://localhost:3100/v1/tag_sets" \
   #      -H "accept: application/vnd.api+json" \
   #      -H "Content-Type: application/vnd.api+json" \
   #      -d '{
@@ -33,7 +29,7 @@ module V1
   #        }
   #      }'
   #
-  # curl -X PATCH "http://localhost:3100/v1/pacbio/tag_sets/1" \
+  # curl -X PATCH "http://localhost:3100/v1/tag_sets/1" \
   #      -H "accept: application/vnd.api+json" \
   #      -H "Content-Type: application/vnd.api+json" \
   #      -d '{
@@ -50,7 +46,7 @@ module V1
   # deactivate tag sets instead.
   # This is a soft delete; the record will be marked as inactive but not removed from the database.
   #
-  # curl -X PATCH "http://localhost:3100/v1/pacbio/tag_sets/1" \
+  # curl -X PATCH "http://localhost:3100/v1/tag_sets/1" \
   #      -H "accept: application/vnd.api+json" \
   #      -H "Content-Type: application/vnd.api+json" \
   #      -d '{
