@@ -31,6 +31,47 @@ module V1
     #   curl -X GET http://localhost:3100/v1/pacbio/runs?filter[name]=TRACTION-RUN-1
     #   curl -X GET http://localhost:3100/v1/pacbio/runs?filter[state]=pending
     #
+    #  curl -X POST http://localhost:3100/v1/pacbio/runs \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -H "Accept: application/vnd.api+json" \
+    #     -d '{
+    #       "data": {
+    #       "type": "runs",
+    #       "attributes": {
+    #         "dna_control_complex_box_barcode": "Lxxxxx101717600123191",
+    #         "system_name": "Sequel II",
+    #         "pacbio_smrt_link_version_id": 130,
+    #         "plates_attributes": [
+    #           {
+    #             "sequencing_kit_box_barcode": "DM0001100861800123121",
+    #             "plate_number": 1,
+    #             "wells_attributes": [
+    #               {
+    #                 "row": "A",
+    #                 "column": "1",
+    #                 "movie_acquisition_time": 30,
+    #                 "library_concentration": 8.35,
+    #                 "pre_extension_time": "2",
+    #                 "include_base_kinetics": "True",
+    #                 "polymerase_kit": "ABC123",
+    #                 "used_aliquots_attributes": [
+    #                   {
+    #                     "source_id": 408,
+    #                     "source_type": "Pacbio::Pool",
+    #                     "volume": 10,
+    #                     "concentration": 20,
+    #                     "aliquot_type": "derived",
+    #                     "template_prep_kit_box_barcode": "033000000000000000000"
+    #                   }
+    #                 ],
+    #                 "annotations_attributes": null
+    #               }
+    #             ]
+    #           }
+    #         ]
+    #       }
+    #     }'
+    #
     #   curl -X PATCH "http://localhost:3100/v1/pacbio/runs/1" \
     #     -H "Content-Type: application/vnd.api+json"
     #     -H "Accept: application/vnd.api+json"
