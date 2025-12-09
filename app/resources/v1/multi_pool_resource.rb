@@ -44,6 +44,10 @@ module V1
       records.where(id: pacbio_pools.select(:id)).or(records.where(id: ont_pools.select(:id)))
     }
 
+    # Handle behaviour for messages after creation and update of multi pools
+    after_create :publish_messages_on_creation
+    after_update :publish_messages_on_update
+
     def self.default_sort
       [{ field: 'created_at', direction: :desc }]
     end
@@ -87,6 +91,29 @@ module V1
 
     def fetchable_fields
       super - %i[multi_pool_positions_attributes]
+    end
+
+    def publish_messages_on_creation
+      # Collect pacbio pools only
+      @model.multi_pool_positions.each do |mpp|
+        next if mpp.pacbio_pool.blank?
+
+        # Publish volume tracking message for each pacbio pool's primary aliquot
+        Emq::Publisher.publish(mpp.pacbio_pool.primary_aliquot, Pipelines.pacbio, 'volume_tracking')
+      end
+    end
+
+    def publish_messages_on_update
+      @model.multi_pool_positions.each do |mpp|
+        next if mpp.pacbio_pool.blank?
+
+        # Publish volume tracking message for each pacbio pool's primary aliquot
+        Emq::Publisher.publish(mpp.pacbio_pool.primary_aliquot, Pipelines.pacbio, 'volume_tracking')
+        # Publish messages for sequencing runs associated with the pool
+        # This may not be the most efficient way as a multi pool may be updated without every pool
+        # being changed, but it ensures all runs are up to date
+        Messages.publish(mpp.pacbio_pool.sequencing_runs, Pipelines.pacbio.message)
+      end
     end
   end
 end

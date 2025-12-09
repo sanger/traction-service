@@ -290,6 +290,11 @@ RSpec.describe 'MultiPoolsController' do
           post v1_multi_pools_path, params: body, headers: json_api_headers
           expect(json.dig('data', 'id').to_i).to eq(MultiPool.first.id)
         end
+
+        it 'publish message with pipeline: pacbio and volume_tracking' do
+          expect(Emq::Publisher).to receive(:publish).twice.with(anything, having_attributes(pipeline: 'pacbio'), 'volume_tracking')
+          post v1_multi_pools_path, params: body, headers: json_api_headers
+        end
       end
     end
 
@@ -483,20 +488,15 @@ RSpec.describe 'MultiPoolsController' do
 
   describe '#update' do
     context 'on success' do
-      # We let! this as we want to ensure we have the original state
-      let!(:mp) do
-        mp = create(:multi_pool, pool_method: 'Plate')
-        # Ensure the existing pool has position A1
-        mp.multi_pool_positions.first.position = 'A1'
-        mp
-      end
-      let!(:existing_pool) { mp.multi_pool_positions.first.pacbio_pool }
-
-      before do
-        patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
-      end
-
       context 'when updating a multi pool (adding a pool and updating pool attributes)' do
+        # We let! this as we want to ensure we have the original state
+        let!(:mp) do
+          mp = create(:multi_pool, pool_method: 'Plate')
+          # Ensure the existing pool has position A1
+          mp.multi_pool_positions.first.position = 'A1'
+          mp
+        end
+        let!(:existing_pool) { mp.multi_pool_positions.first.pacbio_pool }
         let(:new_pool_volume) { 101.0 }
         let(:body) do
           {
@@ -567,28 +567,52 @@ RSpec.describe 'MultiPoolsController' do
         end
 
         it 'returns created status' do
+          patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
+
           expect(response).to have_http_status(:success), response.body
         end
 
         it 'updates the multi_pool' do
+          patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
+
           mp.reload
           expect(mp.pool_method).to eq('TubeRack')
           expect(mp.number_of_pools).to eq(2)
         end
 
         it 'updates the existing pool' do
+          patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
+
           existing_pool.reload
           expect(existing_pool.volume).to eq(new_pool_volume)
           expect(existing_pool.primary_aliquot.volume).to eq(new_pool_volume)
         end
 
         it 'creates a new pool' do
+          patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
+
           # Check the existing pool is unchanged
           expect(existing_pool).to eq(mp.multi_pool_positions.find_by(position: 'A1').pacbio_pool)
 
           # Check the new pool exists and has some of the correct attributes
           new_pool = mp.multi_pool_positions.find_by(position: 'A2').pacbio_pool
           expect(new_pool.volume).to eq(150.0)
+        end
+
+        it 'publishes the correct messages' do
+          # Associate the existing pool with a sequencing run to test that message is sent
+          run = create(:pacbio_revio_run)
+          run.wells.first.used_aliquots << create(:aliquot, source: existing_pool, volume: 10.0, concentration: 10.0, template_prep_kit_box_barcode: 'TEST', insert_size: 100, aliquot_type: :derived)
+          run.save
+
+          # Volume tracking messages for both pools
+          expect(Emq::Publisher).to receive(:publish).twice.with(anything, having_attributes(pipeline: 'pacbio'), 'volume_tracking')
+          # Sequencing runs for first / updated pool
+          expect(Messages).to receive(:publish).with(existing_pool.sequencing_runs, having_attributes(pipeline: 'pacbio'))
+          # Empty sequencing runs for new pool
+          expect(Messages).to receive(:publish).with([], having_attributes(pipeline: 'pacbio'))
+
+          patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
         end
       end
 
@@ -650,6 +674,10 @@ RSpec.describe 'MultiPoolsController' do
               }
             }
           }.to_json
+        end
+
+        before do
+          patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
         end
 
         it 'returns created status' do
