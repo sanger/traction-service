@@ -165,7 +165,7 @@ RSpec.describe InstrumentTypeValidator do
             run = build(:pacbio_revio_run, well_positions_plate_1: combination)
             instrument_type_validator = described_class.new(instrument_types:)
             instrument_type_validator.validate(run)
-            invalid_order = combination.join(',')
+            invalid_order = combination.sort.join(',')
             expect(run.errors.messages[:plates]).to include("plate #{run.plates.first.plate_number} wells must be in a valid order, currently #{invalid_order}")
           end
         end

@@ -23,7 +23,7 @@ class WellCombinationsValidator < ActiveModel::Validator
 
   # @param [ActiveRecord::Base] record
   def validate(record)
-    well_positions = filtered(record.wells).collect(&:position)
+    well_positions = filtered(record.wells).collect(&:position).sort
 
     return if valid_combinations.include?(well_positions)
 
