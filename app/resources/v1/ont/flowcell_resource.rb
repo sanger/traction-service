@@ -16,11 +16,11 @@ module V1
     class FlowcellResource < JSONAPI::Resource
       model_name 'Ont::Flowcell'
 
-      # @!attribute [r] flowcell_id
+      # @!attribute [rw] flowcell_id
       #   @return [Integer] the ID of the flowcell
-      # @!attribute [r] position
+      # @!attribute [rw] position
       #   @return [String] the position of the flowcell
-      # @!attribute [r] ont_pool_id
+      # @!attribute [rw] ont_pool_id
       #   @return [Integer] the ID of the ONT pool
       attributes :flowcell_id, :position, :ont_pool_id
 
