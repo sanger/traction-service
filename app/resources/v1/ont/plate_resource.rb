@@ -20,11 +20,13 @@ module V1
     #
     class PlateResource < JSONAPI::Resource
       model_name '::Plate'
-      # @!attribute [r] barcode
+      # @!attribute [rw] barcode
       #   @return [String] the barcode of the plate
+      attributes :barcode
+
       # @!attribute [r] created_at
       #   @return [String] the creation timestamp of the plate
-      attributes :barcode, :created_at
+      attributes :created_at, readonly: true
 
       has_many :wells
 
