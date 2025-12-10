@@ -13,11 +13,11 @@ module V1
     class InstrumentResource < JSONAPI::Resource
       model_name 'Ont::Instrument'
 
-      # @!attribute [r] name
+      # @!attribute [rw] name
       #   @return [String] the name of the instrument
-      # @!attribute [r] instrument_type
+      # @!attribute [rw] instrument_type
       #   @return [String] the type of the instrument
-      # @!attribute [r] max_number_of_flowcells
+      # @!attribute [rw] max_number_of_flowcells
       #   @return [Integer] the maximum number of flowcells the instrument can handle
       attributes :name, :instrument_type, :max_number_of_flowcells
     end
