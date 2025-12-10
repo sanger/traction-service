@@ -111,16 +111,18 @@ module V1
       #   @return [Float] the concentration of the pool
       # @!attribute [rw] insert_size
       #   @return [Integer] the insert size of the pool
-      # @!attribute [r] created_at
-      #   @return [String] the creation timestamp of the pool
-      # @!attribute [r] updated_at
       #   @return [String] the last update timestamp of the pool
       # @!attribute [w] library_attributes
       #   @return [Array<Hash>] the attributes of the libraries in the pool
       # @!attribute [r] tube_barcode
       #   @return [String] the barcode of the tube
-      attributes :volume, :kit_barcode, :concentration, :insert_size, :created_at, :updated_at,
+      attributes :volume, :kit_barcode, :concentration, :insert_size,
                  :library_attributes, :tube_barcode
+
+      # @!attribute [r] created_at
+      #   @return [String] the creation timestamp of the pool
+      # @!attribute [r] updated_at
+      attributes :created_at, :updated_at, readonly: true
 
       # @!attribute [r] source_identifier
       #   @return [String] the source identifier of the pool
