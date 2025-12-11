@@ -5,7 +5,7 @@ module V1
     # Provides a JSON:API representation of {Tag}.
     #
     ## Primary relationships:
-    # * tag_set {V1::Ont::TagSetResource} - The associated tag set
+    # * tag_set {V1::Pacbio::TagSetResource} - The associated tag set
     # @note Access this resource via the `/v1/pacbio/tags/` endpoint.
     #
     # Returns the available tags for Pacbio
