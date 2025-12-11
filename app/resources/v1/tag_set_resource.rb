@@ -7,8 +7,7 @@ module V1
   # Provides a JSON:API representation of {TagSet}.
   #
   ## Filters:
-  #
-  # - pipeline
+  # * pipeline - pipeline name
   #
   # @example
   #   curl -X GET http://localhost:3100/v1/tag_sets/1

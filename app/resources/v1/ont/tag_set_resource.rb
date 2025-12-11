@@ -4,6 +4,9 @@ module V1
   module Ont
     # Provides a JSON:API representation of {Ont::TagSet}.
     #
+    ## Filters:
+    # * pipeline - pipeline name (default: ont)
+    #
     ## Primary relationships:
     # * tags {V1::Ont::TagResource} - The tags contained in the tag set.
     #
@@ -13,6 +16,8 @@ module V1
     #   curl -X GET http://localhost:3100/v1/ont/tag_sets
     #   curl -X GET "http://localhost:3100/v1/ont/tag_sets/1"
     #   curl -X GET "http://localhost:3100/v1/ont/tag_sets/12?include=tags"
+    #
+    #   curl -X GET "http://localhost:3100/v1/ont/tag_sets?filter[pipeline]=ont&include=tags"
     #
     #   curl -X POST http://localhost:3100/v1/ont/tag_sets \
     #     -H "Content-Type: application/vnd.api+json" \
