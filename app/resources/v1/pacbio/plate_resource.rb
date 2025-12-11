@@ -33,9 +33,11 @@ module V1
 
       # @!attribute [rw] barcode
       #   @return [String] the barcode of the plate
+      attribute :barcode
+
       # @!attribute [r] created_at
       #   @return [String] the creation time of the plate
-      attributes :barcode, :created_at
+      attribute :created_at, readonly: true
 
       has_many :wells
 
