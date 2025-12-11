@@ -13,11 +13,11 @@ module V1
   #   curl -X GET http://localhost:3100/v1/qc_assay_types/1
   #
   class QcAssayTypeResource < JSONAPI::Resource
-    # @!attribute [r] key
+    # @!attribute [rw] key
     #   @return [String] the key of the QC assay type
-    # @!attribute [r] label
+    # @!attribute [rw] label
     #   @return [String] the label of the QC assay type
-    # @!attribute [r] units
+    # @!attribute [rw] units
     #   @return [String] the units of the QC assay type
     attributes :key, :label, :units
   end
