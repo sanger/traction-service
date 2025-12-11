@@ -59,7 +59,7 @@ module V1
     #               "volume": 1.11,
     #               "concentration": 2.22,
     #               "insert_size": 100,
-    #               "source_id": request2.id,
+    #               "source_id": 2,
     #               "source_type": "Pacbio::Request",
     #               "tag_id": 9999
     #             }
