@@ -16,6 +16,5 @@ class MultiPoolPosition < ApplicationRecord
   accepts_nested_attributes_for :pacbio_pool, allow_destroy: true
 
   # Ensures that each pool can only appear once across multi pools.
-  # Disable rubocop rule because it cannot detect the unique index on pool_type and pool_id
   validates :pool_id, uniqueness: { scope: %i[pool_type] }
 end

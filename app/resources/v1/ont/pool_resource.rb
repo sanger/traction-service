@@ -22,9 +22,6 @@ module V1
       # so seems to be linking the wrong tube relationship.
       has_one :tube, relation_name: :tube
       has_many :libraries
-      has_one :multi_pool_position, always_include_optional_linkage_data: true,
-                                    relation_name: :multi_pool_position,
-                                    class_name: 'MultiPoolPosition'
 
       # @!attribute [rw] volume
       #   @return [Float] the volume of the pool

@@ -78,6 +78,8 @@ module Pacbio
       @indexed_used_aliquots ||= used_aliquots.index_by { |aliquot| aliquot.id.to_s }
     end
 
+    # Pools can be deleted via mutli pool updates so we want to ensure they arent deleted
+    # if they have downstream data
     def check_for_derived_aliquots?
       raise 'Cannot delete pool because it is in use in a run' if derived_aliquots.exists?
 

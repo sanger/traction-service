@@ -113,13 +113,13 @@ module V1
     #  @return [String] the pipeline associated with the multi_pool .e.g. "Pacbio" or "Ont"
     # @!attribute [rw] pool_method
     #  @return [Integer] the method used for pooling
-    # @!attribute [rw] created_at
-    #   @return [String] the creation date of the multi_pool in US format
-    attributes :pool_method, :pipeline, :created_at
+    attributes :pool_method, :pipeline
 
     # @!attribute [r] number_of_pools
     #  @return [Integer] a computed number of pools in the multi_pool
-    attribute :number_of_pools, readonly: true
+    # @!attribute [r] created_at
+    #  @return [String] the creation date of the multi_pool in US format via override below
+    attributes :number_of_pools, :created_at, readonly: true
 
     # @!attribute [w] multi_pool_position_attributes
     #  @return [Array<Hash>] attributes for creating/updating nested multi_pool_positions

@@ -62,9 +62,6 @@ module V1
       has_one :tube, relation_name: :tube
       has_many :used_aliquots, class_name: 'Aliquot', relation_name: :used_aliquots
       has_one :primary_aliquot, class_name: 'Aliquot', relation_name: :primary_aliquot
-      has_one :multi_pool_position, always_include_optional_linkage_data: true,
-                                    relation_name: :multi_pool_position,
-                                    class_name: 'MultiPoolPosition'
       has_many :requests
       has_many :libraries
 
