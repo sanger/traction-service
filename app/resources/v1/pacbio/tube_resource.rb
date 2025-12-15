@@ -2,17 +2,25 @@
 
 module V1
   module Pacbio
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    # Provides a JSON:API representation of {Tube}.
+    #
+    ## Filters:
+    # * barcode
+    #
+    ## Primary relationships:
+    # * materials {V1::Pacbio::ContainerMaterialResource}
+    # * pools {V1::Pacbio::PoolResource}
+    # * library {V1::Pacbio::LibraryResource}
+    # * requests {V1::Pacbio::RequestResource}
     #
     # @note Access this resource via the `/v1/pacbio/tubes/` endpoint.
     #
-    # Provides a JSON:API representation of {Tube}.
+    # @example
+    #  curl -X GET http://localhost:3100/v1/pacbio/tubes/
+    #  curl -X GET http://localhost:3100/v1/pacbio/tubes?filter[barcode]=GEN-1762592703-6"
+    #  curl -X GET http://localhost:3100/v1/pacbio/tubes?filter[barcode]=GEN-1762592703-6&include=materials,pools,libraries,requests
+    #  curl -X GET http://localhost:3100/v1/pacbio/tubes?&filter[barcode]=TRAC-2-20172&include=pools.libraries.request,pools.requests,pools.used_aliquots.tag,libraries.used_aliquots.request,libraries.used_aliquots.tag&fields[requests]=sample_name&fields[tags]=group_id
     #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
     class TubeResource < JSONAPI::Resource
       model_name 'Tube'
 

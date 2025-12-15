@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
 module V1
-  # @todo This documentation does not yet include a detailed description of what this resource represents.
-  # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-  # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+  # Provides a JSON:API representation of {QcResultsUpload}.
   #
-  # @note Access this resource via the `/v1/qc_results` endpoint.
+  # QcResultsUploadResource resource handles the uploading of QC results via CSV data.
   #
-  # Steps:<br>
+  # Steps:
   #
   # 1. Validate QcResultsUpload data (via QcResultsUploadFactory validation)
   # 2. Create QcResultsUpload entity
@@ -15,16 +13,30 @@ module V1
   # 4. Build QcResultMessages
   # 5. Publish QcResultMessages
   #
-  # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-  # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package for the service
-  # implementation of the JSON:API standard.
+  # @note Access this resource via the `/v1/qc_results_uploads` endpoint.
+  #
+  # @example
+  #    csv_data=$(jq -Rs . qc_results.csv)
+  #    curl -X POST http://localhost:3100/v1/qc_results_uploads \
+  #      -H "Content-Type: application/vnd.api+json" \
+  #      -H "Accept: application/vnd.api+json" \
+  #      -d '{
+  #        "data": {
+  #          "type": "qc_results_uploads",
+  #          "attributes": {
+  #            "csv_data": '"${csv_data}"',
+  #            "used_by": "extraction"
+  #          }
+  #        }
+  #      }'
+  #
   class QcResultsUploadResource < JSONAPI::Resource
     model_name 'QcResultsUpload', add_model_hint: false
 
-    # @!attribute [rw] csv_data
+    # @!attribute [w] csv_data
     #   @return [String] the CSV data for the QC results upload
-    # @!attribute [rw] used_by
-    #   @return [String] the user who uploaded the QC results
+    # @!attribute [w] used_by
+    #   @return [String] the process or system that uploaded the QC results
     attributes :csv_data, :used_by
 
     # create_entities! needs to be called before publish_messages

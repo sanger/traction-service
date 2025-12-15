@@ -2,6 +2,8 @@
 
 module V1
   module Pacbio
+    # Provides a JSON:API representation of {Pacbio::LibraryBatch}.
+    #
     # This resource is used to create batches of libraries in one go.
     # This resource can only be accessed via a `POST` request to the library_batches endpoint.
     #
@@ -36,16 +38,10 @@ module V1
     #   To return the created libraries tubes add `libraries.tube` to the include.
     #   For example `/v1/pacbio/library_batches?include=libraries.tube`
     #
-    #
-    # Provides a JSON:API representation of {Pacbio::LibraryBatch}.
-    #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
     class LibraryBatchResource < JSONAPI::Resource
       model_name 'Pacbio::LibraryBatch'
 
-      # @!attribute [w] created_at
+      # @!attribute [r] created_at
       #   @return [String] the creation time of the library
       # @!attribute [w] libraries_attributes
       #  @return [Array] the attributes of the libraries

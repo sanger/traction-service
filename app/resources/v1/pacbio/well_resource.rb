@@ -16,21 +16,14 @@ module V1
     #
     # This resource has no filters.
     #
-    # ## Primary relationships:
+    ## Primary relationships:
     #
     # * materials {V1::Pacbio::MaterialResource}
     # * requests {V1::Pacbio::RequestResource}
     # * plate {V1::Pacbio::PlateResource}
     #
-    # @note Access this resource via the `/v1/pacbio/wells/` endpoint.
-    #
-    # @example
-    #   curl -X GET http://localhost:3000/v1/pacbio/wells/1
-    #   curl -X GET http://localhost:3000/v1/pacbio/wells
-    #   curl -X GET http://localhost:3000/v1/pacbio/runs/1/wells
-    #   curl -X GET http://localhost:3000/v1/pacbio/runs/1/wells/1
-    #
-    #   https://localhost:3000/v1/pacbio/v1/wells/1?include=plate,materials
+    # @note This resource cannot be accessed via the `/v1/pacbio/wells/` endpoint.
+    # It is accessible via the nested route under {V1::Pacbio::Plate} using includes.
     #
     class WellResource < JSONAPI::Resource
       model_name '::Well'

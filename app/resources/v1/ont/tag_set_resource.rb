@@ -2,16 +2,61 @@
 
 module V1
   module Ont
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    # Provides a JSON:API representation of {Ont::TagSet}.
+    #
+    ## Filters:
+    # * pipeline - pipeline name (default: ont)
+    #
+    ## Primary relationships:
+    # * tags {V1::Ont::TagResource} - The tags contained in the tag set.
     #
     # @note Access this resource via the `/v1/ont/tag_sets/` endpoint.
     #
+    # @example
+    #   curl -X GET http://localhost:3100/v1/ont/tag_sets
+    #   curl -X GET "http://localhost:3100/v1/ont/tag_sets/1"
+    #   curl -X GET "http://localhost:3100/v1/ont/tag_sets/12?include=tags"
     #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
+    #   curl -X GET "http://localhost:3100/v1/ont/tag_sets?filter[pipeline]=ont&include=tags"
+    #
+    #   curl -X POST http://localhost:3100/v1/ont/tag_sets \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -H "Accept: application/vnd.api+json" \
+    #       -d '{
+    #         "data": {
+    #           "type": "tag_sets",
+    #           "attributes": {
+    #             "name": "New Tag Set"
+    #            }
+    #          }
+    #        }'
+    #
+    #   curl -X PATCH http://localhost:3100/v1/ont/tag_sets/16 \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -H "Accept: application/vnd.api+json" \
+    #     -d '{
+    #       "data": {
+    #         "type": "tag_sets",
+    #         "id": "16",
+    #         "attributes": {
+    #           "name": "Updated Tag Set Name"
+    #         }
+    #       }
+    #     }'
+    #
+    #   # curl -X PATCH "http://localhost:3100/v1/ont/tag_sets/16" \
+    #      -H "accept: application/vnd.api+json" \
+    #      -H "Content-Type: application/vnd.api+json" \
+    #      -d '{
+    #        "data": {
+    #          "type": "tag_sets",
+    #          "id": "1",
+    #          "attributes": {
+    #            "active": false
+    #          }
+    #        }
+    #      }'
+    #
     class TagSetResource < V1::TagSetResource
       filter :pipeline, default: :ont
 

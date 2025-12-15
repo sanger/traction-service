@@ -10,11 +10,9 @@ Rails.application.routes.draw do
     jsonapi_resources :qc_assay_types, only: %i[index show]
     jsonapi_resources :qc_receptions, only: %i[create]
     jsonapi_resources :qc_results_uploads, only: %i[create]
-    jsonapi_resources :qc_results, only: %i[index create show]
     jsonapi_resources :receptions, only: %i[index create show]
-    jsonapi_resources :samples,  only: %i[index create]
-    jsonapi_resources :tag_sets, only: %i[index create update destroy]
-    jsonapi_resources :tags,     only: %i[index create update destroy]
+    jsonapi_resources :tag_sets, only: %i[index create update]
+    jsonapi_resources :tags,     only: %i[index create update]
     jsonapi_resources :annotation_types, only: %i[index show]
 
     jsonapi_resources :workflows, only: [:index] do
@@ -23,7 +21,7 @@ Rails.application.routes.draw do
 
     namespace :pacbio do
       jsonapi_resources :plates, only: %i[index create]
-      jsonapi_resources :tag_sets
+      jsonapi_resources :tag_sets, except: %i[destroy]
       jsonapi_resources :aliquots
 
       # This seems the best way to do this for now.
@@ -43,8 +41,6 @@ Rails.application.routes.draw do
         # Which is an issue with the namespaced resources not looking up the global ones.
         # See comment in app/resources/v1/pacbio/runs/well_resource.rb
         # rubocop:disable Lint/EmptyBlock
-        jsonapi_resources(:plates,        only: %i[index create update destroy]) {}
-        jsonapi_resources(:wells,         only: %i[index create update destroy]) {}
         jsonapi_resources(:annotations, only: %i[index show]) {}
         # rubocop:enable Lint/EmptyBlock
       end
@@ -63,13 +59,13 @@ Rails.application.routes.draw do
       jsonapi_resources(:runs,                only: %i[index show create update]) do
         get 'sample_sheet', to: 'runs#sample_sheet'
       end
-      jsonapi_resources :flowcells,           only: %i[index show create update]
+      jsonapi_resources :flowcells,           only: %i[index show]
       jsonapi_resources :requests,            except: %i[create destroy]
       jsonapi_resources :libraries,           only: %i[index update destroy]
       jsonapi_resources :pools,               except: %i[destroy]
       jsonapi_resources :plates,              only: %i[index]
       jsonapi_resources :tubes,               only: %i[index]
-      jsonapi_resources :tag_sets
+      jsonapi_resources :tag_sets,            only: %i[index show update]
     end
   end
 

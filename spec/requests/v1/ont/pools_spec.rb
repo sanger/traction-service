@@ -294,9 +294,7 @@ RSpec.describe 'PoolsController', :ont do
                 volume: '200',
                 concentration: '22',
                 kit_barcode: '100',
-                insert_size: '11',
-                created_at: '2021-08-04T14:35:47.208Z',
-                updated_at: '2021-08-04T14:35:47.208Z'
+                insert_size: '11'
               }
             }
           }.to_json
@@ -359,9 +357,7 @@ RSpec.describe 'PoolsController', :ont do
                 volume: '200',
                 concentration: '22',
                 kit_barcode: '100',
-                insert_size: '11',
-                created_at: '2021-08-04T14:35:47.208Z',
-                updated_at: '2021-08-04T14:35:47.208Z'
+                insert_size: '11'
               }
             }
           }.to_json

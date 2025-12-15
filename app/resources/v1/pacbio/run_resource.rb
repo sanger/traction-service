@@ -4,20 +4,12 @@ module V1
   module Pacbio
     # Provides a JSON:API representation of {Pacbio::Run}.
     #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
-    # This resource represents a Pacbio Run and can return all runs, a single run or multiple
-    # runs along with their relationships.
-    # It can also create and update runs and their nested relationships
-    # via the plates_attributes parameter. These actions also publish run messages to the warehouse.
-    #
-    # ## Filters:
+    ## Filters:
     #
     # * name
     # * state
     #
-    # ## Primary relationships:
+    ## Primary relationships:
     #
     # * plates {V1::Pacbio::PlateResource}
     # * smrt_link_version {V1::Pacbio::SmrtLinkVersionResource}
@@ -30,12 +22,165 @@ module V1
     # * annotations
     #
     # @example
-    #   curl -X GET http://localhost:3000/v1/pacbio/runs/1
-    #   curl -X GET http://localhost:3000/v1/pacbio/runs/
-    #   curl -X GET http://localhost:3000/v1/pacbio/runs/1?include=plates.wells.used_aliquots,smrt_link_version
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs/
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs/1
     #
-    #   http://localhost:3000/v1/pacbio/runs?filter[name]=TRACTION-RUN-1
-    #   http://localhost:3000/v1/pacbio/runs?filter[state]=pending
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs/1?include=plates.wells.used_aliquots,smrt_link_version
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs/1?include=plates.wells.used_aliquots,plates.wells.libraries.request,plates.wells.pools.requests,plates.wells.pools.libraries.request,plates.wells.pools.used_aliquots.tag,plates.wells.libraries.used_aliquots.tag,smrt_link_version,annotations,plates.wells.annotations
+    #
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs?filter[name]=TRACTION-RUN-1
+    #   curl -X GET http://localhost:3100/v1/pacbio/runs?filter[state]=pending
+    #
+    #  curl -X POST http://localhost:3100/v1/pacbio/runs \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -H "Accept: application/vnd.api+json" \
+    #     -d '{
+    #       "data": {
+    #       "type": "runs",
+    #       "attributes": {
+    #         "dna_control_complex_box_barcode": "Lxxxxx101717600123191",
+    #         "system_name": "Sequel II",
+    #         "pacbio_smrt_link_version_id": 130,
+    #         "plates_attributes": [
+    #           {
+    #             "sequencing_kit_box_barcode": "DM0001100861800123121",
+    #             "plate_number": 1,
+    #             "wells_attributes": [
+    #               {
+    #                 "row": "A",
+    #                 "column": "1",
+    #                 "movie_acquisition_time": 30,
+    #                 "library_concentration": 8.35,
+    #                 "pre_extension_time": "2",
+    #                 "include_base_kinetics": "True",
+    #                 "polymerase_kit": "ABC123",
+    #                 "used_aliquots_attributes": [
+    #                   {
+    #                     "source_id": 408,
+    #                     "source_type": "Pacbio::Pool",
+    #                     "volume": 10,
+    #                     "concentration": 20,
+    #                     "aliquot_type": "derived",
+    #                     "template_prep_kit_box_barcode": "033000000000000000000"
+    #                   }
+    #                 ],
+    #                 "annotations_attributes": null
+    #               }
+    #             ]
+    #           }
+    #         ]
+    #       }
+    #     }'
+    #
+    #   curl -X PATCH "http://localhost:3100/v1/pacbio/runs/1" \
+    #     -H "Content-Type: application/vnd.api+json"
+    #     -H "Accept: application/vnd.api+json"
+    #     -d '{
+    #       "data": {
+    #         "type": "runs",
+    #         "id": "1",
+    #         "attributes": {
+    #           "annotations_attributes": [
+    #             {
+    #               "comment": "annotation comment",
+    #               "annotation_type_id": "1",
+    #               "user": "user1"
+    #             }
+    #           ]
+    #         }
+    #       }
+    #     }'
+    #
+    #   curl -X PATCH "http://localhost:3100/v1/pacbio/runs/1" \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -H "Accept: application/vnd.api+json" \
+    #     -d '{
+    #       "data": {
+    #         "type": "runs",
+    #         "id": "1",
+    #         "attributes": {
+    #           "plates_attributes": [
+    #             {
+    #               "id": 1,
+    #               "type": "plates",
+    #               "wells_attributes": [
+    #                 {
+    #                   "id": 1,
+    #                   "type": "wells",
+    #                   "annotations_attributes": [
+    #                     {
+    #                       "comment": "annotation comment",
+    #                       "annotation_type_id": "1",
+    #                       "user": "user1"
+    #                     }
+    #                   ]
+    #                 }
+    #              ]
+    #           }
+    #         ]
+    #       }
+    #     }
+    #   }'
+    #
+    #   curl -X PATCH "http://localhost:3100/v1/pacbio/runs/1" \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -H "Accept: application/vnd.api+json" \
+    #     -d '{
+    #       "data": {
+    #         "type": "runs",
+    #         "attributes": {
+    #           "dna_control_complex_box_barcode": "Lxxxxx101717600123191",
+    #           "system_name": "Sequel II",
+    #           "pacbio_smrt_link_version_id": 56,
+    #           "plates_attributes": [
+    #             {
+    #               "sequencing_kit_box_barcode": "DM0001100861800123121",
+    #               "plate_number": 1,
+    #               "wells_attributes": [
+    #                 {
+    #                   "row": "A",
+    #                   "column": "1",
+    #                   "movie_time": 31,
+    #                   "on_plate_loading_concentration": 8.35,
+    #                   "pre_extension_time": "2",
+    #                   "generate_hifi": "In SMRT Link",
+    #                   "ccs_analysis_output": "Yes",
+    #                   "binding_kit_box_barcode": "DM1117100862200111711",
+    #                   "ccs_analysis_output_include_low_quality_reads": "Yes",
+    #                   "include_fivemc_calls_in_cpg_motifs": "Yes",
+    #                   "ccs_analysis_output_include_kinetics_information": "Yes",
+    #                   "demultiplex_barcodes": "In SMRT Link",
+    #                   "used_aliquots_attributes": [
+    #                     {
+    #                       "source_id": 391,
+    #                       "source_type": "Pacbio::Pool",
+    #                       "volume": 10,
+    #                       "concentration": 20,
+    #                       "aliquot_type": "derived",
+    #                       "template_prep_kit_box_barcode": "033000000000000000000"
+    #                     }
+    #                   ],
+    #                   "annotations_attributes": [
+    #                     {
+    #                       "annotation_type_id": 209,
+    #                       "comment": "Another test comment",
+    #                       "user": "daisy"
+    #                     }
+    #                   ]
+    #                 }
+    #               ]
+    #             }
+    #           ],
+    #           "annotations_attributes": [
+    #             {
+    #               "annotation_type_id": 209,
+    #               "comment": "Test comment",
+    #               "user": "dave"
+    #             }
+    #           ]
+    #         }
+    #       }
+    #     }'
     #
     class RunResource < JSONAPI::Resource
       model_name 'Pacbio::Run'

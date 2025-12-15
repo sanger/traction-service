@@ -4,34 +4,28 @@ module V1
   module Ont
     # Provides a JSON:API representation of {Ont::Request}.
     #
-    # @note Access this resource via the `/v1/ont/requests/` endpoint.
-    #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
-    # This resource represents an ONT Request and can return all requests, a single request or
-    # multiple requests along with their relationships.
-    #
     # ## Filters:
     #
     # * sample_name
     # * source_identifier
     #
+    # @note Access this resource via the `/v1/ont/requests/` endpoint.
+    #
     # @example
     #
     #   # Get a single request
-    #   curl -X GET http://localhost:3000/v1/ont/requests/1
+    #   curl -X GET http://localhost:3100/v1/ont/requests/1
     #
     #   # Get all requests
-    #   curl -X GET http://localhost:3000/v1/ont/requests/
+    #   curl -X GET http://localhost:3100/v1/ont/requests/
     #
     #   # Filter requests by sample name or source identifier
-    #   curl -X GET "http://localhost:3000/v1/ont/requests?filter[sample_name]=sample_name"
-    #   curl -X GET "http://localhost:3000/v1/ont/requests?filter[source_identifier]=mock-plate-2:B12"
-    #   curl -X GET "http://localhost:3000/v1/ont/requests?filter[source_identifier]=mock-plate-2:B12,mock-plate-3:A1"
+    #   curl -X GET "http://localhost:3100/v1/ont/requests?filter[sample_name]=sample_name"
+    #   curl -X GET "http://localhost:3100/v1/ont/requests?filter[source_identifier]=mock-plate-2:B12"
+    #   curl -X GET "http://localhost:3100/v1/ont/requests?filter[source_identifier]=mock-plate-2:B12,mock-plate-3:A1"
     #
     #   # Create a new ONT request
-    #   curl -X POST http://localhost:3000/v1/ont/requests \
+    #   curl -X POST http://localhost:3100/v1/ont/requests \
     #     -H "Content-Type: application/vnd.api+json" \
     #     -d '{
     #           "data": {
@@ -48,7 +42,7 @@ module V1
     #         }'
     #
     #   # Update an existing ONT request
-    #   curl -X PATCH http://localhost:3000/v1/ont/requests/1 \
+    #   curl -X PATCH http://localhost:3100/v1/ont/requests/1 \
     #     -H "Content-Type: application/vnd.api+json" \
     #     -d '{
     #           "data": {

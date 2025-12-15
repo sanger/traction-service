@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 module V1
-  # @todo This documentation does not yet include a detailed description of what this resource represents.
-  # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-  # @todo This documentation does not yet include any example usage of the API via cURL or similar.
   #
   # @note Access this resource via the `/v1/library_types` endpoint.
   #
@@ -13,6 +10,45 @@ module V1
   # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
   # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package for the service
   # implementation of the JSON:API standard.
+  #
+  ## Filters:
+  # * pipeline
+  # * active
+  #
+  # @example
+  #   curl -X GET http://localhost:3100/v1/library_types/1
+  #   curl -X GET http://localhost:3100/v1/library_types/
+  #   curl -X GET "http://localhost:3100/v1/library_types?filter[pipeline]=ont"
+  #   curl -X GET "http://localhost:3100/v1/library_types?filter[active]=true"
+  #
+  # curl -X POST "http://localhost:3100/v1/library_types" \
+  #     -H "accept: application/vnd.api+json" \
+  #     -H "Content-Type: application/vnd.api+json" \
+  #     -d '{
+  #       "data": {
+  #         "type": "library_types",
+  #         "attributes": {
+  #           "name": "New Library Type",
+  #           "pipeline": "ont",
+  #           "external_identifier": "EXT123",
+  #           "active": true
+  #         }
+  #       }
+  #     }'
+  #
+  # curl -X PATCH "http://localhost:3100/v1/library_types/1" \
+  #     -H "accept: application/vnd.api+json" \
+  #     -H "Content-Type: application/vnd.api+json" \
+  #     -d '{
+  #       "data": {
+  #         "type": "library_types",
+  #         "id": "1",
+  #         "attributes": {
+  #           "name": "Updated Library Type Name"
+  #         }
+  #       }
+  #     }'
+  #
   class LibraryTypeResource < JSONAPI::Resource
     # @!attribute [rw] name
     #   @return [String] the name of the library type
