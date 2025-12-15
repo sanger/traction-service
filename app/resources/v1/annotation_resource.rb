@@ -1,36 +1,10 @@
 # frozen_string_literal: true
 
 module V1
-  # Provides a JSON:API resource of {Annotation} model.
+  # Provides a JSON:API resource of {Annotation}.
   #
-  # AnnotationResource represents a user-supplied comment or note attached to
-  # any annotatable resource.
-  # It allows creation of annotations, but updates and deletions are not permitted via the API.
-  #
-  ## Primary relationships:
-  #
-  # * annotation_type {V1::AnnotationTypeResource} - The type/category of the annotation.
-  #
-  # @example
-  #
-  #   curl -X GET http://localhost:3000/v1/annotations/1
-  #   curl -X GET http://localhost:3000/v1/annotations/
-  #
-  #   curl -X POST "http://yourdomain.com/v1/annotations" \
-  #     -H "accept: application/vnd.api+json" \
-  #     -H "Content-Type: application/vnd.api+json" \
-  #     -d '{
-  #       "data": {
-  #         "type": "annotations",
-  #         "attributes": {
-  #           "comment": "This is a note",
-  #           "user": "jsmith",
-  #           "annotation_type_id": 1,
-  #           "annotatable_type": "Pacbio::Run",
-  #           "annotatable_id": 1
-  #         },
-  #       }
-  #     }'
+  # @note This endpoint can't be directly accessed via the `/v1/annotations/` endpoint
+  # as it is not currently used.
   #
   class AnnotationResource < JSONAPI::Resource
     model_name 'Annotation'

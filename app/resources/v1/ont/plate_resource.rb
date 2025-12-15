@@ -2,24 +2,31 @@
 
 module V1
   module Ont
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    # Provides a JSON:API representation of {Plate}.
+    #
+    ## Filters:
+    # * barcode - Filter plates by their barcode.
+    #
+    ## Primary relationships:
+    # * wells {V1::Ont::WellResource} - The wells contained in the plate.
     #
     # @note Access this resource via the `/v1/ont/plates/` endpoint.
     #
-    # Provides a JSON:API representation of {Plate}.
+    # @example
+    #   curl -X GET http://localhost:3100/v1/ont/plates
+    #   curl -X GET http://localhost:3100/v1/ont/plates?include=wells
+    #   curl -X GET "http://localhost:3100/v1/ont/plates?filter[barcode]=GEN-1762592713-1&include=wells.requests"
+    #   curl -X GET "http://localhost:3100/v1/ont/plates?filter[barcode]=GEN-1762592713-1,GEN-1762592713-2"
     #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
     class PlateResource < JSONAPI::Resource
       model_name '::Plate'
       # @!attribute [rw] barcode
       #   @return [String] the barcode of the plate
-      # @!attribute [rw] created_at
+      attributes :barcode
+
+      # @!attribute [r] created_at
       #   @return [String] the creation timestamp of the plate
-      attributes :barcode, :created_at
+      attributes :created_at, readonly: true
 
       has_many :wells
 

@@ -1,17 +1,11 @@
 # frozen_string_literal: true
 
 module V1
-  # `SampleResource` provides a **JSON:API** representation of the `Sample` model.
   # It allows API clients to query, filter, and retrieve sample-related information.
   #
-  # @note Access this resource via the `/v1/samples` endpoint.
+  # @note Access this resource cannot be accessed via the `/v1/samples` endpoint.
+  # It is only accessible via the nested route under other resources using includes.
   #
-  # Provides a JSON:API representation of {Sample} and exposes valid request
-  # for use by the UI.
-  #
-  # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-  # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package for the service
-  # implementation of the JSON:API standard.
   class SampleResource < JSONAPI::Resource
     # @!attribute [rw] name
     #   @return [String] the name of the sample

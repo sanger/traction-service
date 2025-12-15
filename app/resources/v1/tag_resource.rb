@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 module V1
-  # @todo This documentation does not yet include a detailed description of what this resource represents.
-  # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-  # @todo This documentation does not yet include any example usage of the API via cURL or similar.
   #
   # @note Access this resource via the `/v1/tags` endpoint.
   #
@@ -12,6 +9,44 @@ module V1
   # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
   # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package for the service
   # implementation of the JSON:API standard.
+  #
+  ## Primary relationships:
+  # * tag_set {V1::TagSetResource} - The tag set this tag belongs to.
+  #
+  # @example
+  #   curl -X GET http://localhost:3100/v1/tags/1
+  #   curl -X GET http://localhost:3100/v1/tags/
+  #   curl -X GET http://localhost:3100/v1/tags/1?include=tag_set
+  #
+  #   curl -X POST "http://localhost:3100/v1/tags" \
+  #     -H "accept: application/vnd.api+json" \
+  #     -H "Content-Type: application/vnd.api+json" \
+  #     -d '{
+  #       "data": {
+  #         "type": "tags",
+  #         "attributes": {
+  #           "oligo": "ACGTACGT",
+  #           "oligo_reverse": "TGCATGCA",
+  #           "group_id": 1,
+  #           "tag_set_id": 1
+  #         }
+  #       }
+  #     }'
+  # curl -X PATCH "http://localhost:3100/v1/tags/1" \
+  #     -H "accept: application/vnd.api+json" \
+  #     -H "Content-Type: application/vnd.api+json" \
+  #     -d '{
+  #       "data": {
+  #         "type": "tags",
+  #         "id": "1",
+  #         "attributes": {
+  #           "oligo": "TGCAACGT"
+  #         }
+  #       }
+  #     }'
+  #
+  # @note Tags should not be destroyed via the API; use the `active` attribute on tag sets
+  # to deactivate tags instead.
   class TagResource < JSONAPI::Resource
     # @!attribute [rw] oligo
     #   @return [String] the oligo sequence

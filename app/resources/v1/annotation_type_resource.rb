@@ -10,8 +10,8 @@ module V1
   # implementation of the JSON:API standard.
   #
   # @example
-  #   curl -X GET http://localhost:3000/v1/annotation_types
-  #   curl -X GET http://localhost:3000/v1/annotation_types/1
+  #   curl -X GET http://localhost:3100/v1/annotation_types
+  #   curl -X GET http://localhost:3100/v1/annotation_types/1
   class AnnotationTypeResource < JSONAPI::Resource
     immutable
 

@@ -2,8 +2,7 @@
 
 module V1
   module Ont
-    # This resource represents a sequencing run for the Oxford Nanopore Technologies (ONT) platform.
-    # It provides a JSON:API representation of {Ont::Run}.
+    # Provides a JSON:API representation of {Ont::Run}.
     #
     # ## Attributes:
     #
@@ -14,12 +13,12 @@ module V1
     # * ont_instrument_id: The ID of the associated instrument.
     # * flowcell_attributes: The attributes of the flowcells in the run.
     #
-    # ## Filters:
+    ## Filters:
     #
     # * experiment_name: Filter runs by experiment name.
     # * state: Filter runs by state.
     #
-    # ## Primary relationships:
+    ## Primary relationships:
     #
     # * instrument {V1::Ont::InstrumentResource}
     # * flowcells {V1::Ont::FlowcellResource}
@@ -28,13 +27,15 @@ module V1
     #
     # * flowcells.pool
     #
-    # @example
-    #   curl -X GET "http://yourdomain.com/v1/ont/runs" -H "accept: application/vnd.api+json"
+    # @note Access this resource via the `/v1/ont/runs/` endpoint.
     #
-    #   curl -X GET "http://yourdomain.com/v1/ont/runs/1?include=flowcells.pool" \
+    # @example
+    #   curl -X GET "http://localhost:3100/v1/ont/runs" -H "accept: application/vnd.api+json"
+    #
+    #   curl -X GET "http://localhost:3100/v1/ont/runs/1?include=flowcells.pool" \
     #        -H "accept: application/vnd.api+json"
     #
-    #   curl -X POST "http://yourdomain.com/v1/ont/runs" \
+    #   curl -X POST "http://localhost:3100/v1/ont/runs" \
     #    -H "accept: application/vnd.api+json" \
     #    -H "Content-Type: application/vnd.api+json" \
     #    -d '{
@@ -63,16 +64,11 @@ module V1
     #       }
     #      }'
     #
-    #   curl -X PATCH "http://yourdomain.com/v1/ont/runs/1" \
+    #   curl -X PATCH "http://localhost:3100/v1/ont/runs/1" \
     #    -H "accept: application/vnd.api+json" \
     #    -H "Content-Type: application/vnd.api+json" \
     #    -d '{"data": {"type": "runs", "id": "1", "attributes": {"state": "completed"}}}'
     #
-    # @note Access this resource via the `/v1/ont/runs/` endpoint.
-    #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
     class RunResource < JSONAPI::Resource
       model_name 'Ont::Run'
 

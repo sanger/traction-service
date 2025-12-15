@@ -2,25 +2,14 @@
 
 module V1
   module Pacbio
-    #
-    # @todo Add POST and PATCH examples
-    #
-    # @note Access this resource via the `/v1/pacbio/pools/` endpoint.
-    #
     # Provides a JSON:API representation of {Pacbio::Pool}.
     #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
-    # This resource represents a Pacbio Pool and can return all pools, a single pool or multiple
-    # pools along with their relationships.
-    #
-    # ## Filters:
+    ## Filters:
     #
     # * sample_name
     # * barcode
     #
-    # ## Primary relationships:
+    ## Primary relationships:
     #
     # * tube {V1::Pacbio::TubeResource}
     # * used_aliquots {V1::Pacbio::AliquotResource}
@@ -36,19 +25,99 @@ module V1
     # * libraries.request
     # * requests.plate.wells.requests
     #
+    # @note Access this resource via the `/v1/pacbio/pools/` endpoint.
+    #
     # @example
-    #   curl -X GET http://localhost:3000/v1/pacbio/pools/1
-    #   curl -X GET http://localhost:3000/v1/pacbio/pools/
-    #   curl -X GET http://localhost:3000/v1/pacbio/pools/1?include=tube,used_aliquots,primary_aliquot,requests,libraries
+    #   curl -X GET http://localhost:3100/v1/pacbio/pools/1
+    #   curl -X GET http://localhost:3100/v1/pacbio/pools/
+    #   curl -X GET http://localhost:3100/v1/pacbio/pools/1?include=tube,used_aliquots,primary_aliquot,requests,libraries
     #
-    #   https://locahost:3000/v1/pacbio/pools?filter[sample_name]=sample_name
+    #   curl -X GET https://locahost:3100/v1/pacbio/pools?filter[sample_name]=sample_name
+    #   curl -X GET https://locahost:3100/v1/pacbio/pools?filter[barcode]=TRAC-2-12068
+    #   curl -X GET https://locahost:3100/v1/pacbio/pools?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067
+    #   curl -X GET https://localhost:3100/v1/pacbio/pools?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=used_aliquots.tag.tag_set,requests.tube,tube,libraries.tube,libraries.request,requests.plate.wells.requests
     #
-    #   https://locahost:3000/v1/pacbio/pools?filter[barcode]=TRAC-2-12068
+    # curl -X POST "http://localhost:3100/v1/pacbio/pools" \
+    #     -H "accept: application/vnd.api+json" \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -d '{
+    #       "data": {
+    #         "type": "pools",
+    #         "attributes": {
+    #           "used_aliquots_attributes": [
+    #             {
+    #               "template_prep_kit_box_barcode": "LK1234567",
+    #               "volume": 1.11,
+    #               "concentration": 2.22,
+    #               "insert_size": 100,
+    #               "source_id": 1,
+    #               "source_type": "Pacbio::Request",
+    #               "tag_id": 999
+    #             },
+    #             {
+    #               "template_prep_kit_box_barcode": "LK1234567",
+    #               "volume": 1.11,
+    #               "concentration": 2.22,
+    #               "insert_size": 100,
+    #               "source_id": 2,
+    #               "source_type": "Pacbio::Request",
+    #               "tag_id": 9999
+    #             }
+    #           ],
+    #           "primary_aliquot_attributes": {
+    #             "volume": "200",
+    #             "concentration": "22",
+    #             "template_prep_kit_box_barcode": "100",
+    #             "insert_size": "11"
+    #           }
+    #         }
+    #       }
+    #    }'
     #
-    #   https://locahost:3000/v1/pacbio/pools?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067
-    #
-    #   https://localhost:3000/v1/pacbio/pools?filter[barcode]=TRAC-2-12068,TRAC-2-12066,TRAC-2-12067&include=used_aliquots.tag.tag_set,requests.tube,tube,libraries.tube,libraries.request,requests.plate.wells.requests
-    #
+    # curl -X PATCH "http://localhost:3100/v1/pacbio/pools/1" \
+    #     -H "accept: application/vnd.api+json" \
+    #     -H "Content-Type: application/vnd.api+json" \
+    #     -d '{
+    #       data: {
+    #         type: 'pools',
+    #         id: 1,
+    #         attributes: {
+    #           used_aliquots_attributes: [
+    #             {
+    #               id: 10,
+    #               source_id: 333,
+    #               source_type: 'Pacbio::Library',
+    #               template_prep_kit_box_barcode: 'LK12345',
+    #               tag_id: 9999,
+    #               volume: 1,
+    #               concentration: 1,
+    #               insert_size: 100
+    #             },
+    #             {
+    #               source_id: 444,
+    #               source_type: 'Pacbio::Request',
+    #               template_prep_kit_box_barcode: 'LK12345',
+    #               tag_id: 9998,
+    #               volume: 1,
+    #               concentration: 1,
+    #               insert_size: 100
+    #             }
+    #           ],
+    #           primary_aliquot_attributes: {
+    #             volume: '200',
+    #             concentration: '22',
+    #             template_prep_kit_box_barcode: '100',
+    #             insert_size: '11'
+    #           },
+    #           volume: '200',
+    #           concentration: '22',
+    #           template_prep_kit_box_barcode: '100',
+    #           insert_size: '11',
+    #           created_at: '2021-08-04T14:35:47.208Z',
+    #           updated_at: '2021-08-04T14:35:47.208Z'
+    #         }
+    #       }
+    #    }'
     #
     class PoolResource < JSONAPI::Resource
       include Shared::RunSuitability

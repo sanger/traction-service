@@ -1,17 +1,63 @@
 # frozen_string_literal: true
 
 module V1
-  # @todo This documentation does not yet include a detailed description of what this resource represents.
-  # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-  # @todo This documentation does not yet include any example usage of the API via cURL or similar.
   #
-  # @note Access this resource via the `/v1/tag_sets` endpoint.
+  # @note Access this resource via the `/v1/tag_sets/` endpoint.
   #
   # Provides a JSON:API representation of {TagSet}.
   #
-  # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-  # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package for the service
-  # implementation of the JSON:API standard.
+  ## Filters:
+  # * pipeline - pipeline name
+  #
+  # @example
+  #   curl -X GET http://localhost:3100/v1/tag_sets/1
+  #   curl -X GET http://localhost:3100/v1/tag_sets?include=tags
+  #   curl -X GET http://localhost:3100/v1/tag_sets/
+  #   curl -X GET "http://localhost:3100/v1/tag_sets?filter[pipeline]=pacbio"
+  #
+  #  curl -X POST "http://localhost:3100/v1/tag_sets" \
+  #      -H "accept: application/vnd.api+json" \
+  #      -H "Content-Type: application/vnd.api+json" \
+  #      -d '{
+  #        "data": {
+  #          "type": "tag_sets",
+  #          "attributes": {
+  #            "name": "New Tag Set",
+  #            "pipeline": "pacbio"
+  #          }
+  #        }
+  #      }'
+  #
+  # curl -X PATCH "http://localhost:3100/v1/tag_sets/1" \
+  #      -H "accept: application/vnd.api+json" \
+  #      -H "Content-Type: application/vnd.api+json" \
+  #      -d '{
+  #        "data": {
+  #          "type": "tag_sets",
+  #          "id": "1",
+  #          "attributes": {
+  #            "name": "Updated Tag Set Name"
+  #          }
+  #        }
+  #      }'
+  #
+  # @note Tag sets should not be destroy via the API; use the `active` attribute to
+  # deactivate tag sets instead.
+  # This is a soft delete; the record will be marked as inactive but not removed from the database.
+  #
+  # curl -X PATCH "http://localhost:3100/v1/tag_sets/1" \
+  #      -H "accept: application/vnd.api+json" \
+  #      -H "Content-Type: application/vnd.api+json" \
+  #      -d '{
+  #        "data": {
+  #          "type": "tag_sets",
+  #          "id": "1",
+  #          "attributes": {
+  #            "active": false
+  #          }
+  #        }
+  #      }'
+  #
   class TagSetResource < JSONAPI::Resource
     # @!attribute [rw] name
     #   @return [String] the name of the tag set

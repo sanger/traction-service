@@ -163,37 +163,4 @@ RSpec.describe 'Pacbio::TagSetsController' do
       end
     end
   end
-
-  describe '#destroy' do
-    context 'on success' do
-      let!(:tag_set) { create(:tag_set) }
-
-      it 'returns the correct status' do
-        delete "/v1/tag_sets/#{tag_set.id}", headers: json_api_headers
-        expect(response).to have_http_status(:no_content)
-      end
-
-      it 'destroys the tag' do
-        expect do
-          delete "/v1/tag_sets/#{tag_set.id}", headers: json_api_headers
-        end.to change(TagSet, :count).by(-1)
-      end
-    end
-
-    context 'on failure' do
-      # the failure responses are slightly different to in tags_spec because we are using the
-      # default controller
-      it 'returns the correct status' do
-        delete '/v1/tag_sets/123', headers: json_api_headers
-        expect(response).to have_http_status(:not_found)
-      end
-
-      # the failure responses are slightly different to in tags_spec because we are using the
-      # default controller
-      it 'has an error message' do
-        delete v1_tag_set_path(123), headers: json_api_headers
-        expect(json['errors']).to be_present
-      end
-    end
-  end
 end

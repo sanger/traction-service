@@ -2,18 +2,11 @@
 
 module V1
   module Ont
-    # @todo This documentation does not yet include a detailed description of what this resource represents.
-    # @todo This documentation does not yet include detailed descriptions for relationships, attributes and filters.
-    # @todo This documentation does not yet include any example usage of the API via cURL or similar.
+    # Provides a JSON:API representation of {Ont::Tag}.
     #
-    # @note Access this resource via the `/v1/ont/tags/` endpoint.
+    # @note This resource cannot be accessed via the `/v1/ont/tags/` endpoint.
+    # It is only accessible via the nested route under {Ont::TagSet} using includes.
     #
-    # Provides a JSON:API representation of {Tag}. This is a resource to return all of the ONT
-    #  tags.
-    #
-    # For more information about JSON:API see the [JSON:API Specifications](https://jsonapi.org/format/)
-    # or look at the [JSONAPI::Resources](http://jsonapi-resources.com/) package
-    # for the service implementation of the JSON:API standard.
     class TagResource < JSONAPI::Resource
       model_name 'Tag'
 
