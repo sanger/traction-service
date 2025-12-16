@@ -55,6 +55,16 @@ RSpec.describe Ont::Pool, :ont do
     expect(build(:ont_pool, libraries: libraries + [dodgy_library])).not_to be_valid
   end
 
+  it 'can have a multi_pool_position' do
+    multi_pool_position = create(:multi_pool_position, pool: pool)
+    expect(pool.reload.multi_pool_position).to eq(multi_pool_position)
+  end
+
+  it 'can have a multi_pool' do
+    multi_pool_position = create(:multi_pool_position, pool: pool)
+    expect(pool.reload.multi_pool).to eq(multi_pool_position.multi_pool)
+  end
+
   context 'when volume is nil' do
     let(:params) { { volume: nil } }
 

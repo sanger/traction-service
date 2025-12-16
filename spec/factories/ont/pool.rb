@@ -12,6 +12,7 @@ FactoryBot.define do
     concentration { 10.0 }
     insert_size { 10000 }
     kit_barcode { 'kit_barcode' }
+    multi_pool_position { nil }
 
     trait :tagged do
       transient do

@@ -20,6 +20,9 @@ module Ont
     has_many :libraries, class_name: 'Ont::Library', foreign_key: :ont_pool_id,
                          dependent: :destroy, inverse_of: :pool
     has_many :requests, through: :libraries
+    # Limited to one by a unique index on the database
+    has_one :multi_pool_position, as: :pool, dependent: :destroy
+    has_one :multi_pool, through: :multi_pool_position
     # This is dependent on the requests association, so needs to be included
     # after that is defined
     include DualSourcedPool

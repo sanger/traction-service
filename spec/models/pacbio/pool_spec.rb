@@ -40,6 +40,16 @@ RSpec.describe Pacbio::Pool, :pacbio do
     expect(pool.requests.length).to eq(5)
   end
 
+  it 'can have a multi_pool_position' do
+    multi_pool_position = create(:multi_pool_position, pool: pool)
+    expect(pool.reload.multi_pool_position).to eq(multi_pool_position)
+  end
+
+  it 'can have a multi_pool' do
+    multi_pool_position = create(:multi_pool_position, pool: pool)
+    expect(pool.reload.multi_pool).to eq(multi_pool_position.multi_pool)
+  end
+
   it 'can have a template prep kit box barcode' do
     expect(pool.template_prep_kit_box_barcode).to be_present
   end
@@ -326,6 +336,20 @@ RSpec.describe Pacbio::Pool, :pacbio do
       expect(pool).to receive(:primary_aliquot_volume_sufficient)
       pool.primary_aliquot.update(volume: 100)
       pool.save
+    end
+  end
+
+  context 'destroy' do
+    it 'allows destroy if there are no derived_aliquots' do
+      pool = build(:pacbio_pool)
+      expect(pool.destroy).to be_truthy
+    end
+
+    it 'raises an error if there are derived_aliquots' do
+      pool = build(:pacbio_pool)
+      # Generic derived aliquot
+      create(:aliquot, source: pool, aliquot_type: :derived)
+      expect { pool.destroy }.to raise_error('Cannot delete pool because it is in use in a run')
     end
   end
 end
