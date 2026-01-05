@@ -56,12 +56,12 @@ RSpec.describe Ont::Pool, :ont do
   end
 
   it 'can have a multi_pool_position' do
-    multi_pool_position = create(:multi_pool_position, pool: pool)
+    multi_pool_position = create(:multi_pool_position, ont_pool: pool, pacbio_pool: nil)
     expect(pool.reload.multi_pool_position).to eq(multi_pool_position)
   end
 
   it 'can have a multi_pool' do
-    multi_pool_position = create(:multi_pool_position, pool: pool)
+    multi_pool_position = create(:multi_pool_position, ont_pool: pool, pacbio_pool: nil)
     expect(pool.reload.multi_pool).to eq(multi_pool_position.multi_pool)
   end
 
