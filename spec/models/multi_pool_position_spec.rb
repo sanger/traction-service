@@ -28,4 +28,21 @@ RSpec.describe MultiPoolPosition do
   it 'is invalid without either a pacbio_pool or ont_pool associated' do
     expect(build(:multi_pool_position, pacbio_pool: nil, ont_pool: nil)).not_to be_valid
   end
+
+  describe '#pipeline' do
+    it 'returns :pacbio when associated with a pacbio_pool' do
+      multi_pool_position = create(:multi_pool_position, pacbio_pool: build(:pacbio_pool), ont_pool: nil)
+      expect(multi_pool_position.pipeline).to eq(:pacbio)
+    end
+
+    it 'returns :ont when associated with an ont_pool' do
+      multi_pool_position = create(:multi_pool_position, pacbio_pool: nil, ont_pool: build(:ont_pool))
+      expect(multi_pool_position.pipeline).to eq(:ont)
+    end
+
+    it 'returns nil when not associated with any pool' do
+      multi_pool_position = build(:multi_pool_position, pacbio_pool: nil, ont_pool: nil)
+      expect(multi_pool_position.pipeline).to be_nil
+    end
+  end
 end

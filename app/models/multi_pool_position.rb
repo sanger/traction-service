@@ -27,4 +27,12 @@ class MultiPoolPosition < ApplicationRecord
 
   # Ensures that each pool can only appear once across multi pools.
   validates :pool_id, uniqueness: { scope: %i[pool_type] }
+
+  def pipeline
+    if pacbio_pool.present?
+      :pacbio
+    elsif ont_pool.present?
+      :ont
+    end
+  end
 end
