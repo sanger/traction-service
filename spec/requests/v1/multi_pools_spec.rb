@@ -329,6 +329,39 @@ RSpec.describe 'MultiPoolsController' do
         end
       end
 
+      context 'when creating a multi pool with no pools' do
+        let(:body) do
+          {
+            data: {
+              type: 'multi_pools',
+              attributes: {
+                pipeline: 'pacbio',
+                pool_method: 'Plate',
+                multi_pool_positions_attributes: [{
+                  position: 'A1'
+                }]
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a bad_request status' do
+          post v1_multi_pools_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_content), response.body
+        end
+
+        it 'does not create a multi pool or associated data' do
+          expect { post v1_multi_pools_path, params: body, headers: json_api_headers }.not_to change(MultiPool, :count)
+        end
+
+        it 'returns the correct error messages' do
+          post v1_multi_pools_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq 'multi_pool_positions.pool - must have either a pacbio_pool or ont_pool associated'
+        end
+      end
+
       context 'when creating a multi pool with invalid multi pool positions (duplicate positions)' do
         let!(:request) { create(:pacbio_request) }
         let!(:tag) { create(:tag) }

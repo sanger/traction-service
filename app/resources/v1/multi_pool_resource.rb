@@ -34,7 +34,7 @@ module V1
   #            "multi_pool_positions_attributes": [
   #              {
   #                "position": "A1",
-  #                "pcbio_pool_attributes": {
+  #                "pacbio_pool_attributes": {
   #                  "template_prep_kit_box_barcode": "LK1234567",
   #                  "volume": 1.11,
   #                  "concentration": 2.22,

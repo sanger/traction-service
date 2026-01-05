@@ -50,8 +50,6 @@ module V1
     # JSONAPI::Resources polymorphic support.
     # This gets around issues with namespaced lookups
     def self.resource_klass_for(type)
-      # TODO: This wont work when we add ONT
-      #
       # We need to distinguish between Pacbio::Pool and Ont::Pool types here.
       # We can either update json_api_resources to use different type names internally, add
       # more context to this override to identify both cases or retrieve ONT pools differently.

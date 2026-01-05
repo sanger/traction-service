@@ -12,6 +12,16 @@ class MultiPoolPosition < ApplicationRecord
                         inverse_of: :multi_pool_position, dependent: :destroy
 
   validates :position, presence: true
+  validate :pool_presence
+
+  # Validate that at least one pool is associated
+  # We can't validate pool relationship presence because it's polymorphic
+  # and may be nil during nested creation within multi_pool_positions
+  def pool_presence
+    return unless pacbio_pool.nil? && ont_pool.nil?
+
+    errors.add(:pool, 'must have either a pacbio_pool or ont_pool associated')
+  end
 
   accepts_nested_attributes_for :pacbio_pool, allow_destroy: true
 

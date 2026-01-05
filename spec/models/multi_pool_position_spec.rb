@@ -24,4 +24,8 @@ RSpec.describe MultiPoolPosition do
     expect(duplicate_position).not_to be_valid
     expect(duplicate_position.errors[:pool_id]).to include('has already been taken')
   end
+
+  it 'is invalid without either a pacbio_pool or ont_pool associated' do
+    expect(build(:multi_pool_position, pacbio_pool: nil, ont_pool: nil)).not_to be_valid
+  end
 end
