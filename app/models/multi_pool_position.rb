@@ -6,6 +6,9 @@ class MultiPoolPosition < ApplicationRecord
   belongs_to :pool, polymorphic: true, inverse_of: :multi_pool_position, optional: true
   belongs_to :multi_pool
 
+  # These should be used sparingly, only for validation and json api nested attributes
+  # You may get false positives when fetching if a pool_id matches both tables
+  # You should use `pool` polymorphic relationship instead
   belongs_to :pacbio_pool, class_name: 'Pacbio::Pool', foreign_key: :pool_id, optional: true,
                            inverse_of: :multi_pool_position, dependent: :destroy
   belongs_to :ont_pool, class_name: 'Ont::Pool', foreign_key: :pool_id, optional: true,
