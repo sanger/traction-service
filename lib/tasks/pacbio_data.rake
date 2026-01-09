@@ -13,7 +13,7 @@ namespace :pacbio_data do
   task create: [:environment, 'tags:create:pacbio_sequel', 'tags:create:pacbio_isoseq'] do
     require_relative 'reception_generator'
 
-    print '-> Creating pacbio plates and tubes...'
+    print '-> Creating Pacbio plates and tubes...'
 
     reception_generator = ReceptionGenerator.new(
       number_of_plates: 5,
@@ -25,7 +25,7 @@ namespace :pacbio_data do
 
     print COMPLETED
 
-    print '-> Creating pacbio libraries and pools...'
+    print '-> Creating Pacbio libraries and pools...'
 
     def library(tag_id = nil)
       Pacbio::Library.new(
@@ -76,6 +76,30 @@ namespace :pacbio_data do
 
     print COMPLETED
 
+    print '-> Creating Pacbio MultiPools...'
+
+    3.times do
+      # Ensures we have unique positions by sampling from the full range
+      rows = WellSorterService.rows_range(96).to_a.sample(2)
+      cols = WellSorterService.columns_range(96).to_a.sample(2)
+      MultiPool.create!(
+        pool_method: :Plate,
+        pipeline: :pacbio,
+        multi_pool_positions: [
+          MultiPoolPosition.new(
+            position: "#{rows[0]}#{cols[0]}",
+            pool: untagged_pool
+          ),
+          MultiPoolPosition.new(
+            position: "#{rows[1]}#{cols[1]}",
+            pool: tagged_pool
+          )
+        ]
+      )
+    end
+
+    print COMPLETED
+
     print '-> Finding Pacbio SMRT Link versions...'
     v11 = Pacbio::SmrtLinkVersion.find_by!(name: 'v11')
     v12_revio = Pacbio::SmrtLinkVersion.find_by!(name: 'v12_revio')
@@ -85,7 +109,7 @@ namespace :pacbio_data do
     v13_sequel_iie = Pacbio::SmrtLinkVersion.find_by!(name: 'v13_sequel_iie')
     print COMPLETED
 
-    puts '-> Creating pacbio runs:'
+    puts '-> Creating Pacbio runs:'
 
     # See required structure in 'config/pacbio_smrt_link_versions.yml'
     # Or execute the DB query below:
