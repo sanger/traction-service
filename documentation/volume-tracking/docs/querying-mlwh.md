@@ -8,14 +8,12 @@ Volume tracking information in MultiLIMS Warehouse are stored in the `aliquot` t
     Therefore, `aliquot` is a relational schema, that adheres to relational database architecture. 
     It contains a primary key `id` (auto incremented) and the attributes are typed with MySQL [standard data types](https://dev.mysql.com/doc/refman/8.4/en/data-types.html).
 
-<center>
-
 | **Attribue**      | **Type**        | **Description**                                          | **Values**                    |
 |-------------------|-----------------|----------------------------------------------------------|-------------------------------|
 | `id_lims`         | `varchar(255)`  | The LIMS system that the aliquot was created in          | `Traction`                    |
 | `aliquot_uuid`    | `varchar(255)`  | The UUID of the aliquot in the LIMS system               |                               |
 | `aliquot_type`    | `varchar(255)`  | The type of the aliquot                                  | `primary`, `derived`          |
-| `source_type`     | `varchar(255)`  | The type of the source of the aliquot                    | `library`, `pool`, `request`  |     
+| `source_type`     | `varchar(255)`  | The type of the source of the aliquot                    | `library`, `pool`, `request`  |
 | `source_barcode`  | `varchar(255)`  | The barcode of the source of the aliquot                 |                               |
 | `sample_name`     | `varchar(255)`  | The name of the sample that the aliquot was created from |                               |
 | `used_by_type`    | `varchar(255)`  | The type of the entity that the aliquot is used by       | `none`, `run`, `pool`         |
@@ -27,7 +25,6 @@ Volume tracking information in MultiLIMS Warehouse are stored in the `aliquot` t
 | `recorded_at`     | `datetime(6)`   | The date and time that the aliquot was recorded          |                               |
 | `created_at`      | `datetime(6)`   | The date and time that the aliquot was created           |                               |
 
-</center>
 
 ## Top up Management
 
