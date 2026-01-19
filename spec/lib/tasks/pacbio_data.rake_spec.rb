@@ -33,10 +33,11 @@ RSpec.describe 'RakeTasks' do
             -> Creating Pacbio IsoSeq tag set and tags
             -> Tag Set successfully created
             -> IsoSeq_Primers_12_Barcodes_v1 created
-            -> Creating pacbio plates and tubes...\b\b\b √#{' '}
-            -> Creating pacbio libraries and pools...\b\b\b √#{' '}
+            -> Creating Pacbio plates and tubes...\b\b\b √#{' '}
+            -> Creating Pacbio libraries and pools...\b\b\b √#{' '}
+            -> Creating Pacbio MultiPools...\b\b\b √#{' '}
             -> Finding Pacbio SMRT Link versions...\b\b\b √#{' '}
-            -> Creating pacbio runs:
+            -> Creating Pacbio runs:
                -> Creating runs for v11...\b\b\b √#{' '}
                -> Creating runs for v12_revio...\b\b\b √#{' '}
                -> Creating runs for v12_sequel_iie...\b\b\b √#{' '}

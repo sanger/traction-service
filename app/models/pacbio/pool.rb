@@ -11,6 +11,9 @@ module Pacbio
     has_many :wells, through: :derived_aliquots, source: :used_by, source_type: 'Pacbio::Well'
     has_many :requests, through: :used_aliquots, source: :source, source_type: 'Pacbio::Request'
     has_many :libraries, through: :used_aliquots, source: :source, source_type: 'Pacbio::Library'
+    # Limited to one by a unique index on the database
+    has_one :multi_pool_position, as: :pool, dependent: :destroy
+    has_one :multi_pool, through: :multi_pool_position
 
     # This is dependent on the requests and libraries associations, so needs to be included
     # after that is defined
@@ -27,6 +30,8 @@ module Pacbio
     validates :primary_aliquot, presence: true
     validate :used_aliquots_volume
     before_update :primary_aliquot_volume_sufficient
+
+    before_destroy :check_for_derived_aliquots?, prepend: true
 
     # Update only so that we don't recreate the primary aliquot if the ID is missing.
     accepts_nested_attributes_for :primary_aliquot, update_only: true
@@ -71,6 +76,14 @@ module Pacbio
 
     def indexed_used_aliquots
       @indexed_used_aliquots ||= used_aliquots.index_by { |aliquot| aliquot.id.to_s }
+    end
+
+    # Pools can be deleted via mutli pool updates so we want to ensure they arent deleted
+    # if they have downstream data
+    def check_for_derived_aliquots?
+      raise 'Cannot delete pool because it is in use in a run' if derived_aliquots.exists?
+
+      true
     end
   end
 end
