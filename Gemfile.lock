@@ -1,13 +1,3 @@
-GIT
-  remote: https://github.com/sanger/jsonapi-resources.git
-  revision: bde2c2a085f22523685c9de4bd852a730de7b846
-  branch: rails-8.1-fix
-  specs:
-    sanger-jsonapi-resources (0.2.1)
-      activerecord (>= 5.1)
-      concurrent-ruby
-      railties (>= 5.1)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -324,6 +314,10 @@ GEM
     ruby-graphviz (1.2.5)
       rexml
     ruby-progressbar (1.13.0)
+    sanger-jsonapi-resources (0.2.1)
+      activerecord (>= 5.1)
+      concurrent-ruby
+      railties (>= 5.1)
     sanitize (7.0.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.16.8)
@@ -391,7 +385,7 @@ DEPENDENCIES
   rubocop-factory_bot
   rubocop-rails
   rubocop-rspec
-  sanger-jsonapi-resources!
+  sanger-jsonapi-resources (~> 0.2.1)
   shoulda-matchers
   spring
   spring-watcher-listen
