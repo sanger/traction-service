@@ -553,7 +553,7 @@ namespace :tags do
         { oligo: 'ATGTACTAGTGAGTAT', group_id: 'bc2096' }
       ]
         .each do |tag_attributes|
-        set.tags.find_or_create_by!(tag_attributes)
+          set.tags.find_or_create_by!(tag_attributes)
       end
       puts '-> Pacbio_96_barcode_plate_v3 tags successfully created'
     end
@@ -571,7 +571,7 @@ namespace :tags do
         { oligo: 'CATCGC', group_id: 'bcM0004' }
       ]
         .each do |tag_attributes|
-        set.tags.find_or_create_by!(tag_attributes)
+          set.tags.find_or_create_by!(tag_attributes)
       end
       puts '-> MAS_SMRTbell_barcoded_adapters_(v2) tags successfully created'
     end

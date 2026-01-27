@@ -12,6 +12,7 @@ FactoryBot.define do
     concentration { 10 }
     volume { 10 }
     insert_size { 100 }
+    multi_pool_position { nil }
 
     used_aliquots do
       library_count.times.map do
