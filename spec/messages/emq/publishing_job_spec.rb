@@ -90,12 +90,14 @@ RSpec.describe Emq::PublishingJob do
     bunny_config[:amqp][:schemas][:subjects][:volume_tracking][:version] = 3
     expect(emq_sender_mock).not_to receive(:send_message)
     expect(Rails.logger).to receive(:error).with('Message builder configuration not found for schema key: volume_tracking and version: 3')
+    expect(ExceptionNotifier).to receive(:notify_exception).with(StandardError.new('Message builder config not found for schema key: volume_tracking and version: 3'))
     publishing_job.publish(aliquot, Pipelines.pacbio, 'volume_tracking')
   end
 
   it 'logs error message when the EMQ is down' do
     allow(emq_sender_mock).to receive(:send_message).and_raise(StandardError)
     expect(Rails.logger).to receive(:error).with('Failed to publish message to EMQ: StandardError')
+    expect(ExceptionNotifier).to receive(:notify_exception).with(instance_of(StandardError))
     publishing_job.publish(aliquot, Pipelines.pacbio, 'volume_tracking')
   end
 end
