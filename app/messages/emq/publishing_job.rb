@@ -44,6 +44,13 @@ module Emq
       if message_builder_config_obj.nil?
         Rails.logger.error('Message builder configuration not found for ' \
                            "schema key: #{schema_key} and version: #{version}")
+        # Ensure we also notify via email as this could indicate a systemic issue
+        # and it is important we are made aware of it as it could affect volume tracking data
+        ExceptionNotifier.notify_exception(
+          StandardError.new(
+            "Message builder config not found for schema key: #{schema_key} and version: #{version}"
+          )
+        )
         return
       end
       message_builder_class = message_builder_config_obj.message_class.to_s.constantize
@@ -75,6 +82,9 @@ module Emq
         # This is to prevent the job from failing and to allow the job to continue
         # These logs can be monitored through Kibana
         Rails.logger.error("Failed to publish message to EMQ: #{e.message}")
+        # Ensure we also notify via email as this could indicate a systemic issue
+        # and it is important we are made aware of it as it could affect volume tracking data
+        ExceptionNotifier.notify_exception(e)
       end
     end
 
