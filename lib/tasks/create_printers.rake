@@ -9,6 +9,7 @@ namespace :printers do
       { name: 'aa309bc1', labware_type: 'tube' },
       { name: 'g311bc1', labware_type: 'tube' },
       { name: 'aa309bc3', labware_type: 'tube' },
+      { name: 'aa313tube', labware_type: 'tube' },
       { name: 'aa309bc2', labware_type: 'plate96' },
       { name: 'aa303bc', labware_type: 'plate96' },
       { name: 'r154-bc1', labware_type: 'plate96' },
