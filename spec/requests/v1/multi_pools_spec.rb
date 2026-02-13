@@ -526,7 +526,7 @@ RSpec.describe 'MultiPoolsController' do
         let!(:mp) do
           mp = create(:multi_pool, pool_method: 'Plate')
           # Ensure the existing pool has position 1
-          mp.multi_pool_positions.first.position = '1'
+          mp.multi_pool_positions.first.position = 1
           mp
         end
         let!(:existing_pool) { mp.multi_pool_positions.first.pacbio_pool }
@@ -625,10 +625,10 @@ RSpec.describe 'MultiPoolsController' do
           patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
 
           # Check the existing pool is unchanged
-          expect(existing_pool).to eq(mp.multi_pool_positions.find_by(position: '1').pacbio_pool)
+          expect(existing_pool).to eq(mp.multi_pool_positions.find_by(position: 1).pacbio_pool)
 
           # Check the new pool exists and has some of the correct attributes
-          new_pool = mp.multi_pool_positions.find_by(position: '2').pacbio_pool
+          new_pool = mp.multi_pool_positions.find_by(position: 2).pacbio_pool
           expect(new_pool.volume).to eq(150.0)
         end
 
@@ -655,7 +655,7 @@ RSpec.describe 'MultiPoolsController' do
         let!(:mp) do
           mp = create(:multi_pool)
           # Ensure the existing pool has position 1
-          mp.multi_pool_positions.first.position = '1'
+          mp.multi_pool_positions.first.position = 1
           # Create a second existing pool to remove
           mp.multi_pool_positions << position_to_destroy
           mp
@@ -859,7 +859,7 @@ RSpec.describe 'MultiPoolsController' do
         let!(:mp) do
           mp = create(:multi_pool)
           # Ensure the existing pool has position 1
-          mp.multi_pool_positions.first.position = '1'
+          mp.multi_pool_positions.first.position = 1
           # Create a second existing pool to remove
           mp.multi_pool_positions << position_to_destroy
           mp
