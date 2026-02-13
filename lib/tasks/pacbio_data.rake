@@ -88,11 +88,11 @@ namespace :pacbio_data do
         pipeline: :pacbio,
         multi_pool_positions: [
           MultiPoolPosition.new(
-            position: position_range.sample.to_s,
+            position: position_range.sample,
             pool: untagged_pool
           ),
           MultiPoolPosition.new(
-            position: position_range.sample.to_s,
+            position: position_range.sample,
             pool: tagged_pool
           )
         ]

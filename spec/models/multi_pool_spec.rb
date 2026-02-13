@@ -37,8 +37,8 @@ RSpec.describe MultiPool do
 
   it 'is invalid with duplicate pool positions' do
     multi_pool = build(:multi_pool)
-    multi_pool.multi_pool_positions << build(:multi_pool_position, position: '1')
-    multi_pool.multi_pool_positions << build(:multi_pool_position, position: '1')
+    multi_pool.multi_pool_positions << build(:multi_pool_position, position: 1)
+    multi_pool.multi_pool_positions << build(:multi_pool_position, position: 1)
 
     expect(multi_pool).not_to be_valid
     expect(multi_pool.errors[:multi_pool_positions]).to include('1 positions are duplicated')
@@ -77,16 +77,16 @@ RSpec.describe MultiPool do
 
     it 'returns true if all pools are in a unique position' do
       multi_pool = build(:multi_pool)
-      multi_pool.multi_pool_positions << build(:multi_pool_position, pool: create(:pacbio_pool), position: '1')
-      multi_pool.multi_pool_positions << build(:multi_pool_position, pool: create(:pacbio_pool), position: '2')
+      multi_pool.multi_pool_positions << build(:multi_pool_position, pool: create(:pacbio_pool), position: 1)
+      multi_pool.multi_pool_positions << build(:multi_pool_position, pool: create(:pacbio_pool), position: 2)
 
       expect(multi_pool.unique_pool_positions?).to be true
     end
 
     it 'returns false and adds an error if some pools are in the same position' do
       multi_pool = build(:multi_pool)
-      multi_pool.multi_pool_positions << build(:multi_pool_position, pool: create(:pacbio_pool), position: '1')
-      multi_pool.multi_pool_positions << build(:multi_pool_position, pool: create(:pacbio_pool), position: '1')
+      multi_pool.multi_pool_positions << build(:multi_pool_position, pool: create(:pacbio_pool), position: 1)
+      multi_pool.multi_pool_positions << build(:multi_pool_position, pool: create(:pacbio_pool), position: 1)
 
       expect(multi_pool.unique_pool_positions?).to be false
       expect(multi_pool.errors[:multi_pool_positions]).to include('1 positions are duplicated')

@@ -220,7 +220,7 @@ RSpec.describe 'MultiPoolsController' do
                 pool_method: 'Plate',
                 multi_pool_positions_attributes: [
                   {
-                    position: '1',
+                    position: 1,
                     pacbio_pool_attributes: {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
@@ -246,7 +246,7 @@ RSpec.describe 'MultiPoolsController' do
                     }
                   },
                   {
-                    position: '2',
+                    position: 2,
                     pacbio_pool_attributes: {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
@@ -338,7 +338,7 @@ RSpec.describe 'MultiPoolsController' do
                 pipeline: 'pacbio',
                 pool_method: 'Plate',
                 multi_pool_positions_attributes: [{
-                  position: '1'
+                  position: 1
                 }]
               }
             }
@@ -374,7 +374,7 @@ RSpec.describe 'MultiPoolsController' do
                 pool_method: 'Plate',
                 multi_pool_positions_attributes: [
                   {
-                    position: '1',
+                    position: 1,
                     pacbio_pool_attributes: {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
@@ -400,7 +400,7 @@ RSpec.describe 'MultiPoolsController' do
                     }
                   },
                   {
-                    position: '1',
+                    position: 1,
                     pacbio_pool_attributes: {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
@@ -460,7 +460,7 @@ RSpec.describe 'MultiPoolsController' do
                 pool_method: 'Plate',
                 multi_pool_positions_attributes: [
                   {
-                    position: '1',
+                    position: 1,
                     pacbio_pool_attributes: {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
@@ -570,7 +570,7 @@ RSpec.describe 'MultiPoolsController' do
                     }
                   },
                   {
-                    position: '2',
+                    position: 2,
                     pacbio_pool_attributes: {
                       volume: '150',
                       concentration: '15',
@@ -650,7 +650,7 @@ RSpec.describe 'MultiPoolsController' do
       end
 
       context 'when updating a multi pool (removing a pool)' do
-        let(:position_to_destroy) { build(:multi_pool_position, position: '2', pool: create(:pacbio_pool)) }
+        let(:position_to_destroy) { build(:multi_pool_position, position: 2, pool: create(:pacbio_pool)) }
         let(:pool_to_destroy) { position_to_destroy.pool }
         let!(:mp) do
           mp = create(:multi_pool)
@@ -734,7 +734,7 @@ RSpec.describe 'MultiPoolsController' do
       let!(:mp) do
         mp = create(:multi_pool, pool_method: 'Plate')
         # Ensure the existing pool has position 1
-        mp.multi_pool_positions.first.position = '1'
+        mp.multi_pool_positions.first.position = 1
         mp
       end
       let!(:existing_pool) { mp.multi_pool_positions.first.pacbio_pool }
@@ -855,7 +855,7 @@ RSpec.describe 'MultiPoolsController' do
           run = create(:pacbio_revio_run)
           run.wells.first.pools.first
         end
-        let(:position_to_destroy) { build(:multi_pool_position, position: '2', pool: pool_to_destroy) }
+        let(:position_to_destroy) { build(:multi_pool_position, position: 2, pool: pool_to_destroy) }
         let!(:mp) do
           mp = create(:multi_pool)
           # Ensure the existing pool has position 1
