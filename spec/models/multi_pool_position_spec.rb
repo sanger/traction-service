@@ -18,8 +18,8 @@ RSpec.describe MultiPoolPosition do
   it 'is invalid if a multi_pool_position with the same pool already exists' do
     pool = create(:pacbio_pool)
 
-    create(:multi_pool_position, pool: pool, position: 'A1')
-    duplicate_position = build(:multi_pool_position, pool: pool, position: 'B2')
+    create(:multi_pool_position, pool: pool, position: '1')
+    duplicate_position = build(:multi_pool_position, pool: pool, position: '2')
 
     expect(duplicate_position).not_to be_valid
     expect(duplicate_position.errors[:pool_id]).to include('has already been taken')

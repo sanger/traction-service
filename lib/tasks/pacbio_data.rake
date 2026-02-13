@@ -80,18 +80,19 @@ namespace :pacbio_data do
 
     3.times do
       # Ensures we have unique positions by sampling from the full range
-      rows = WellSorterService.rows_range(96).to_a.sample(2)
-      cols = WellSorterService.columns_range(96).to_a.sample(2)
+      # 96 is the number of possible pools for pooling_method Plate,
+      # which is the only pooling method currently used
+      position_range = (1..96).to_a
       MultiPool.create!(
         pool_method: :Plate,
         pipeline: :pacbio,
         multi_pool_positions: [
           MultiPoolPosition.new(
-            position: "#{rows[0]}#{cols[0]}",
+            position: position_range.sample.to_s,
             pool: untagged_pool
           ),
           MultiPoolPosition.new(
-            position: "#{rows[1]}#{cols[1]}",
+            position: position_range.sample.to_s,
             pool: tagged_pool
           )
         ]

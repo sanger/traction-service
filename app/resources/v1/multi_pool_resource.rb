@@ -33,7 +33,7 @@ module V1
   #            "pipeline": "pacbio",
   #            "multi_pool_positions_attributes": [
   #              {
-  #                "position": "A1",
+  #                "position": "1",
   #                "pacbio_pool_attributes": {
   #                  "template_prep_kit_box_barcode": "LK1234567",
   #                  "volume": 1.11,
@@ -75,7 +75,7 @@ module V1
   #                   "multi_pool_positions_attributes": [
   #                       {
   #                           "id": 2,
-  #                           "position": "A1",
+  #                           "position": "1",
   #                           "pacbio_pool_attributes": {
   #                               "id": 15,
   #                               "template_prep_kit_box_barcode": "LK1234567",

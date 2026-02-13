@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :multi_pool_position do
-    sequence(:position) { |n| "A#{n}" }
+    sequence(:position, &:to_s)
 
     # Associate to Pacbio Pool by default
     pool { association(:pacbio_pool, strategy: :create) }
