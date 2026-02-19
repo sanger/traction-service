@@ -27,7 +27,7 @@ RSpec.describe 'RakeTasks' do
       ).to_stdout
     end
 
-    it 'correctly swaps the libraries samples and rebraoadcasts the correct messages (no runs, no pools)' do
+    it 'correctly swaps the libraries samples and rebroadcasts the correct messages (no runs, no pools)' do
       Rake::Task['support_tasks:pacbio_library_sample_swap'].reenable
 
       library1 = create(:pacbio_library)
@@ -53,7 +53,7 @@ RSpec.describe 'RakeTasks' do
       expect(library2.used_aliquots.first.source_id).to eq(request1.id)
     end
 
-    it 'correctly swaps the libraries samples and rebraoadcasts the correct messages (runs, no pools)' do
+    it 'correctly swaps the libraries samples and rebroadcasts the correct messages (runs, no pools)' do
       Rake::Task['support_tasks:pacbio_library_sample_swap'].reenable
 
       library1 = create(:pacbio_library)
@@ -91,7 +91,7 @@ RSpec.describe 'RakeTasks' do
       expect(library2.used_aliquots.first.source_id).to eq(request1.id)
     end
 
-    it 'correctly swaps the libraries samples and rebraoadcasts the correct messages (runs, pools)' do
+    it 'correctly swaps the libraries samples and rebroadcasts the correct messages (runs, pools)' do
       Rake::Task['support_tasks:pacbio_library_sample_swap'].reenable
 
       # Create pools and libraries
