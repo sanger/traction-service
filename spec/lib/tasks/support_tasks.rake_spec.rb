@@ -30,8 +30,11 @@ RSpec.describe 'RakeTasks' do
     it 'correctly swaps the libraries samples and rebroadcasts the correct messages (no runs, no pools)' do
       Rake::Task['support_tasks:pacbio_library_sample_swap'].reenable
 
+      old_updated_at = 1.day.ago
       library1 = create(:pacbio_library)
       library2 = create(:pacbio_library)
+      library1.primary_aliquot.update!(updated_at: old_updated_at)
+      library2.primary_aliquot.update!(updated_at: old_updated_at)
       request1 = library1.request
       request2 = library2.request
 
@@ -51,11 +54,16 @@ RSpec.describe 'RakeTasks' do
       expect(library1.used_aliquots.first.source_id).to eq(request2.id)
       expect(library2.request).to eq(request1)
       expect(library2.used_aliquots.first.source_id).to eq(request1.id)
+
+      # Check that the primary aliquot updated_at attribute has been updated to ensure the warehouse processes the update
+      expect(library1.primary_aliquot.updated_at).to be > old_updated_at
+      expect(library2.primary_aliquot.updated_at).to be > old_updated_at
     end
 
     it 'correctly swaps the libraries samples and rebroadcasts the correct messages (runs, no pools)' do
       Rake::Task['support_tasks:pacbio_library_sample_swap'].reenable
 
+      old_updated_at = 1.day.ago
       library1 = create(:pacbio_library)
       library2 = create(:pacbio_library)
       request1 = library1.request
@@ -65,6 +73,9 @@ RSpec.describe 'RakeTasks' do
       run2 = create(:pacbio_revio_run)
       create(:pacbio_well, libraries: [library1], plate: run1.plates.first)
       create(:pacbio_well, libraries: [library2], plate: run2.plates.first)
+      [library1, library2].flat_map(&:derived_aliquots).each do |aliquot|
+        aliquot.update!(updated_at: old_updated_at)
+      end
 
       # Published 4 times
       # once for each library
@@ -89,6 +100,11 @@ RSpec.describe 'RakeTasks' do
       expect(library1.used_aliquots.first.source_id).to eq(request2.id)
       expect(library2.request).to eq(request1)
       expect(library2.used_aliquots.first.source_id).to eq(request1.id)
+
+      # Check the derived aliquots are updated
+      [library1, library2].flat_map(&:derived_aliquots).each do |aliquot|
+        expect(aliquot.updated_at).to be > old_updated_at
+      end
     end
 
     it 'correctly swaps the libraries samples and rebroadcasts the correct messages (runs, pools)' do

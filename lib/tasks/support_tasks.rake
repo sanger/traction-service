@@ -29,6 +29,16 @@ namespace :support_tasks do
       library2.request = request1
       library2.used_aliquots.first.update!(source_id: request1.id)
       library2.save!
+
+      # Update the updated_at attribute for all primary and derived aliquots of both libraries
+      # This ensures that any messages published to the warehouse for these aliquots will have the updated timestamp
+      # so are correctly processed.
+      # If we don't do this the warehouse will ignore the updates as the aliquot sample_name attribute change does not occur
+      # directly on the aliquot so the updated_at timestamp does not change and the warehouse assumes there is no change to process.
+      #
+      # .aliquots is all aliquots where the library is the source, so includes both primary and derived aliquots
+      library1.aliquots.each(&:touch)
+      library2.aliquots.each(&:touch)
     end
 
     puts "-> Swapped samples of libraries #{library1_id} and #{library2_id}"
