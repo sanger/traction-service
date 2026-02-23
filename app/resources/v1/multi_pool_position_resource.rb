@@ -16,7 +16,7 @@ module V1
     model_name 'MultiPoolPosition'
 
     # @!attribute [rw] position
-    #  @return [String] the position within the multi_pool .e.g. "A1"
+    #  @return [String] the position within the multi_pool .e.g. "1"
     # @!attribute [rw] pool_id
     #  @return [Integer] the id of the pool associated with this position
     # @!attribute [rw] pool_type

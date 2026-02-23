@@ -220,7 +220,7 @@ RSpec.describe 'MultiPoolsController' do
                 pool_method: 'Plate',
                 multi_pool_positions_attributes: [
                   {
-                    position: 'A1',
+                    position: 1,
                     pacbio_pool_attributes: {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
@@ -246,7 +246,7 @@ RSpec.describe 'MultiPoolsController' do
                     }
                   },
                   {
-                    position: 'A2',
+                    position: 2,
                     pacbio_pool_attributes: {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
@@ -338,7 +338,7 @@ RSpec.describe 'MultiPoolsController' do
                 pipeline: 'pacbio',
                 pool_method: 'Plate',
                 multi_pool_positions_attributes: [{
-                  position: 'A1'
+                  position: 1
                 }]
               }
             }
@@ -374,7 +374,7 @@ RSpec.describe 'MultiPoolsController' do
                 pool_method: 'Plate',
                 multi_pool_positions_attributes: [
                   {
-                    position: 'A1',
+                    position: 1,
                     pacbio_pool_attributes: {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
@@ -400,7 +400,7 @@ RSpec.describe 'MultiPoolsController' do
                     }
                   },
                   {
-                    position: 'A1',
+                    position: 1,
                     pacbio_pool_attributes: {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
@@ -444,7 +444,7 @@ RSpec.describe 'MultiPoolsController' do
           post v1_multi_pools_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq 'multi_pool_positions - A1 positions are duplicated'
+          expect(errors[0]['detail']).to eq 'multi_pool_positions - 1 positions are duplicated'
         end
       end
 
@@ -460,7 +460,7 @@ RSpec.describe 'MultiPoolsController' do
                 pool_method: 'Plate',
                 multi_pool_positions_attributes: [
                   {
-                    position: 'A1',
+                    position: 1,
                     pacbio_pool_attributes: {
                       template_prep_kit_box_barcode: 'LK1234567',
                       volume: 1.11,
@@ -525,8 +525,8 @@ RSpec.describe 'MultiPoolsController' do
         # We let! this as we want to ensure we have the original state
         let!(:mp) do
           mp = create(:multi_pool, pool_method: 'Plate')
-          # Ensure the existing pool has position A1
-          mp.multi_pool_positions.first.position = 'A1'
+          # Ensure the existing pool has position 1
+          mp.multi_pool_positions.first.position = 1
           mp
         end
         let!(:existing_pool) { mp.multi_pool_positions.first.pacbio_pool }
@@ -570,7 +570,7 @@ RSpec.describe 'MultiPoolsController' do
                     }
                   },
                   {
-                    position: 'A2',
+                    position: 2,
                     pacbio_pool_attributes: {
                       volume: '150',
                       concentration: '15',
@@ -625,10 +625,10 @@ RSpec.describe 'MultiPoolsController' do
           patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
 
           # Check the existing pool is unchanged
-          expect(existing_pool).to eq(mp.multi_pool_positions.find_by(position: 'A1').pacbio_pool)
+          expect(existing_pool).to eq(mp.multi_pool_positions.find_by(position: 1).pacbio_pool)
 
           # Check the new pool exists and has some of the correct attributes
-          new_pool = mp.multi_pool_positions.find_by(position: 'A2').pacbio_pool
+          new_pool = mp.multi_pool_positions.find_by(position: 2).pacbio_pool
           expect(new_pool.volume).to eq(150.0)
         end
 
@@ -650,12 +650,12 @@ RSpec.describe 'MultiPoolsController' do
       end
 
       context 'when updating a multi pool (removing a pool)' do
-        let(:position_to_destroy) { build(:multi_pool_position, position: 'A2', pool: create(:pacbio_pool)) }
+        let(:position_to_destroy) { build(:multi_pool_position, position: 2, pool: create(:pacbio_pool)) }
         let(:pool_to_destroy) { position_to_destroy.pool }
         let!(:mp) do
           mp = create(:multi_pool)
-          # Ensure the existing pool has position A1
-          mp.multi_pool_positions.first.position = 'A1'
+          # Ensure the existing pool has position 1
+          mp.multi_pool_positions.first.position = 1
           # Create a second existing pool to remove
           mp.multi_pool_positions << position_to_destroy
           mp
@@ -733,8 +733,8 @@ RSpec.describe 'MultiPoolsController' do
       # We let! this as we want to ensure we have the original state
       let!(:mp) do
         mp = create(:multi_pool, pool_method: 'Plate')
-        # Ensure the existing pool has position A1
-        mp.multi_pool_positions.first.position = 'A1'
+        # Ensure the existing pool has position 1
+        mp.multi_pool_positions.first.position = 1
         mp
       end
       let!(:existing_pool) { mp.multi_pool_positions.first.pacbio_pool }
@@ -855,11 +855,11 @@ RSpec.describe 'MultiPoolsController' do
           run = create(:pacbio_revio_run)
           run.wells.first.pools.first
         end
-        let(:position_to_destroy) { build(:multi_pool_position, position: 'A2', pool: pool_to_destroy) }
+        let(:position_to_destroy) { build(:multi_pool_position, position: 2, pool: pool_to_destroy) }
         let!(:mp) do
           mp = create(:multi_pool)
-          # Ensure the existing pool has position A1
-          mp.multi_pool_positions.first.position = 'A1'
+          # Ensure the existing pool has position 1
+          mp.multi_pool_positions.first.position = 1
           # Create a second existing pool to remove
           mp.multi_pool_positions << position_to_destroy
           mp
