@@ -29,7 +29,7 @@ module DataStructureBuilder
   #                 to it e.g DateTime.now
   # * [array]     - usually an array of fields
   # * [self]     - applies to the method to the current (builder) object
-  def instance_value(object, field, parent = nil) # # rubocop:disable Metrics/MethodLength
+  def instance_value(object, field, parent = nil) # rubocop:disable Metrics/MethodLength
     case field[:type]
     when :string
       field[:value]
