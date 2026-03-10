@@ -17,6 +17,8 @@ class MultiPoolPosition < ApplicationRecord
   validates :position, presence: true
   validate :pool_presence
 
+  delegate :barcode, to: :pool, allow_nil: true, prefix: true
+
   # Validate that at least one pool is associated
   # We can't validate pool relationship presence because it's polymorphic
   # and may be nil during nested creation within multi_pool_positions

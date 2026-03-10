@@ -60,6 +60,7 @@ RSpec.describe 'MultiPoolsController' do
 
           multi_pool_position_resource = find_included_resource(type: 'multi_pool_positions', id: multi_pool_position.id)
           expect(multi_pool_position_resource.dig('attributes', 'position')).to eq(multi_pool_position.position)
+          expect(multi_pool_position_resource.dig('attributes', 'pool_barcode')).to eq(pacbio_pool.barcode)
           expect(multi_pool_position_resource.dig('relationships', 'pacbio_pool', 'data', 'id')).to eq(pacbio_pool.id.to_s)
           expect(multi_pool_position_resource.dig('relationships', 'pacbio_pool', 'data', 'type')).to eq('pools')
 
