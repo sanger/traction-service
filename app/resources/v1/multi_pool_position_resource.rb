@@ -24,6 +24,9 @@ module V1
     # @!attribute [rw] created_at
     #   @return [String] the creation date of the multi_pool_position in US format
     attributes :position, :pool_id, :pool_type, :created_at
+    # @!attribute [r] pool_barcode
+    # @return [String] the barcode of the pool associated with this position
+    attribute :pool_barcode, readonly: true
 
     # @!attribute [w] pacbio_pool_attributes
     # @return [Hash] attributes for creating/updating nested pacbio_pool

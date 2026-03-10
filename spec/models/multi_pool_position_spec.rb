@@ -45,4 +45,18 @@ RSpec.describe MultiPoolPosition do
       expect(multi_pool_position.pipeline).to be_nil
     end
   end
+
+  describe '#pool_barcode' do
+    it 'delegates barcode to the associated pool (pacbio)' do
+      pool = create(:pacbio_pool, tube: build(:tube, barcode: 'TESTBARCODE'))
+      multi_pool_position = create(:multi_pool_position, pool:)
+
+      expect(multi_pool_position.pool_barcode).to eq('TESTBARCODE')
+    end
+
+    it 'returns nil if no pool is associated' do
+      multi_pool_position = build(:multi_pool_position, pool: nil)
+      expect(multi_pool_position.pool_barcode).to be_nil
+    end
+  end
 end
