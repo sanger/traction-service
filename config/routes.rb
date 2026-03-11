@@ -90,4 +90,6 @@ Rails.application.routes.draw do
     builder.use Rack::Session::Cookie, secret: Rails.application.credentials[:secret_key_base]
   end
   mount flipper_ui, at: '/flipper'
+
+  get '/health' => 'rails/health#show', :as => :rails_health_check
 end
