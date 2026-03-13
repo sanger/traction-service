@@ -152,8 +152,6 @@ class Reception
         },
         tube
       )
-      # Publishes the compound sample to the warehouse
-      Messages.publish([compound_sample], Pipelines.reception.compound_sample.message)
     end
 
     def create_tube(tube_attr)
