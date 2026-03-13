@@ -20,14 +20,10 @@ namespace :support_tasks do
       request1 = library1.request
       request2 = library2.request
 
-      # Annoyingly request is linked to the library through request_id and used/derived_aliquots so we need to update both
       library1.request = request2
-      # We make the assumption here that there is only one used aliquot per library
-      library1.used_aliquots.first.update!(source_id: request2.id)
       library1.save!
 
       library2.request = request1
-      library2.used_aliquots.first.update!(source_id: request1.id)
       library2.save!
 
       # Update the updated_at attribute for all primary and derived aliquots of both libraries

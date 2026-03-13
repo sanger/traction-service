@@ -51,9 +51,7 @@ RSpec.describe 'RakeTasks' do
       library2.reload
 
       expect(library1.request).to eq(request2)
-      expect(library1.used_aliquots.first.source_id).to eq(request2.id)
       expect(library2.request).to eq(request1)
-      expect(library2.used_aliquots.first.source_id).to eq(request1.id)
 
       # Check that the primary aliquot updated_at attribute has been updated to ensure the warehouse processes the update
       expect(library1.primary_aliquot.updated_at).to be > old_updated_at
@@ -97,9 +95,7 @@ RSpec.describe 'RakeTasks' do
       library2.reload
 
       expect(library1.request).to eq(request2)
-      expect(library1.used_aliquots.first.source_id).to eq(request2.id)
       expect(library2.request).to eq(request1)
-      expect(library2.used_aliquots.first.source_id).to eq(request1.id)
 
       # Check the derived aliquots are updated
       [library1, library2].flat_map(&:derived_aliquots).each do |aliquot|
@@ -154,9 +150,7 @@ RSpec.describe 'RakeTasks' do
       library2.reload
 
       expect(library1.request).to eq(request2)
-      expect(library1.used_aliquots.first.source_id).to eq(request2.id)
       expect(library2.request).to eq(request1)
-      expect(library2.used_aliquots.first.source_id).to eq(request1.id)
     end
   end
 end
