@@ -80,7 +80,10 @@ module Pacbio
           concentration: primary_aliquot.concentration,
           template_prep_kit_box_barcode: primary_aliquot.template_prep_kit_box_barcode,
           insert_size: primary_aliquot.insert_size,
-          tag: primary_aliquot.tag
+          tag: primary_aliquot.tag,
+          # If we change the request (e.g. sample swap) we also need to update the source of the
+          # used aliquot to ensure the data is consistent
+          source: request
         )
       end
     end
