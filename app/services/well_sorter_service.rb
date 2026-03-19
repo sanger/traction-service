@@ -41,7 +41,7 @@ module WellSorterService
   # @return [Hash] eg. { 'A1' => 'A1', 'B1' => 'B1', ...}
   #
   def self.stamp_hash(size)
-    column_order(size).each_with_object({}) { |well, hash| hash[well] = well }
+    column_order(size).to_h { |well| [well, well] }
   end
 
   # Returns the index of the well by column

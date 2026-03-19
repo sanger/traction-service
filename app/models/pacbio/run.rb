@@ -121,7 +121,7 @@ module Pacbio
     def used_aliquots_lib_source_in_pool(pools)
       pools.flat_map(&:source).flat_map(&:used_aliquots)
            .select do |aliquot|
-             aliquot.source_type == 'Pacbio::Library'
+        aliquot.source_type == 'Pacbio::Library'
       end
     end
 
