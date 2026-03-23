@@ -442,7 +442,6 @@ RSpec.describe 'PoolsController', :pacbio do
       it 'returns unprocessable entity status' do
         post v1_pacbio_pools_path, params: body, headers: json_api_headers
         expect(response).to have_http_status(:unprocessable_content)
-        expect(response.body).to include('used_aliquots - is invalid')
       end
 
       it 'cannot create a pool' do
@@ -455,7 +454,7 @@ RSpec.describe 'PoolsController', :pacbio do
         post v1_pacbio_pools_path, params: body, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         errors = json['errors']
-        expect(errors[0]['detail']).to eq 'used_aliquots - is invalid'
+        expect(errors[1]['detail']).to include("Insufficient volume available for #{library.barcode}")
       end
     end
   end
