@@ -517,6 +517,92 @@ RSpec.describe 'MultiPoolsController' do
           expect(errors[0]['detail']).to eq 'multi_pool_positions.pacbio_pool.tags - contain duplicates'
         end
       end
+
+      context 'when creating a multi pool with invalid pool data (exceeding a libraries available volume across pools)' do
+        let!(:library) { create(:pacbio_library, volume: 10) }
+        let!(:tag) { create(:tag) }
+        let(:body) do
+          {
+            data: {
+              type: 'multi_pools',
+              attributes: {
+                pipeline: 'pacbio',
+                pool_method: 'Plate',
+                multi_pool_positions_attributes: [
+                  {
+                    position: 1,
+                    pacbio_pool_attributes: {
+                      template_prep_kit_box_barcode: 'LK1234567',
+                      volume: 1.11,
+                      concentration: 2.22,
+                      insert_size: 100,
+                      used_aliquots_attributes: [
+                        {
+                          volume: 100.0,
+                          template_prep_kit_box_barcode: 'LK1234567',
+                          concentration: 2.22,
+                          insert_size: 100,
+                          source_id: library.id,
+                          source_type: 'Pacbio::Library',
+                          tag_id: tag.id
+                        }
+                      ],
+                      primary_aliquot_attributes: {
+                        volume: 1.11,
+                        concentration: 2.22,
+                        insert_size: 100,
+                        template_prep_kit_box_barcode: 'LK1234567'
+                      }
+                    }
+                  },
+                  {
+                    position: 2,
+                    pacbio_pool_attributes: {
+                      template_prep_kit_box_barcode: 'LK1234567',
+                      volume: 1.11,
+                      concentration: 2.22,
+                      insert_size: 100,
+                      used_aliquots_attributes: [
+                        {
+                          volume: 100.0,
+                          template_prep_kit_box_barcode: 'LK1234567',
+                          concentration: 2.22,
+                          insert_size: 100,
+                          source_id: library.id,
+                          source_type: 'Pacbio::Library',
+                          tag_id: tag.id
+                        }
+                      ],
+                      primary_aliquot_attributes: {
+                        volume: 1.11,
+                        concentration: 2.22,
+                        insert_size: 100,
+                        template_prep_kit_box_barcode: 'LK1234567'
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }.to_json
+        end
+
+        it 'has a unprocessable_content status' do
+          post v1_multi_pools_path, params: body, headers: json_api_headers
+          expect(response).to have_http_status(:unprocessable_content), response.body
+        end
+
+        it 'does not create a multi pool or associated data' do
+          expect { post v1_multi_pools_path, params: body, headers: json_api_headers }.not_to change(MultiPool, :count)
+        end
+
+        it 'returns the correct error messages' do
+          post v1_multi_pools_path, params: body, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+          errors = json['errors']
+          expect(errors[0]['detail']).to eq 'multi_pool_positions.pacbio_pool.used_aliquots - is invalid'
+        end
+      end
     end
   end
 
