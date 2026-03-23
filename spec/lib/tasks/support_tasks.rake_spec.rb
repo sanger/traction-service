@@ -19,12 +19,14 @@ RSpec.describe 'RakeTasks' do
     it 'outputs a warning and does if one or both library ids are invalid' do
       Rake::Task['support_tasks:pacbio_library_sample_swap'].reenable
 
-      expect { Rake::Task['support_tasks:pacbio_library_sample_swap'].invoke('nonId', 'nonId2') }.to output(
-        <<~HEREDOC
-          Warning: Could not find library with id nonId
-          Warning: Could not find library with id nonId2
-        HEREDOC
-      ).to_stdout
+      expect do
+        expect { Rake::Task['support_tasks:pacbio_library_sample_swap'].invoke('nonId', 'nonId2') }.to output(
+          <<~HEREDOC
+            Warning: Could not find library with id nonId
+            Warning: Could not find library with id nonId2
+          HEREDOC
+        ).to_stdout
+      end.to raise_error(SystemExit)
     end
 
     it 'correctly swaps the libraries samples and rebroadcasts the correct messages (no runs, no pools)' do
@@ -85,9 +87,9 @@ RSpec.describe 'RakeTasks' do
 
       expect { Rake::Task['support_tasks:pacbio_library_sample_swap'].invoke(library1.id, library2.id) }.to output(
         <<~HEREDOC
+          -> Swapped samples of libraries #{library1.id} and #{library2.id}
           -> Republishing run data and volume tracking messages for run #{run1.name}
           -> Republishing run data and volume tracking messages for run #{run2.name}
-          -> Swapped samples of libraries #{library1.id} and #{library2.id}
         HEREDOC
       ).to_stdout
 
@@ -138,11 +140,11 @@ RSpec.describe 'RakeTasks' do
       # Note run order is because it goes library and library pools runs before moving onto the next library
       expect { Rake::Task['support_tasks:pacbio_library_sample_swap'].invoke(library1.id, library2.id) }.to output(
         <<~HEREDOC
+          -> Swapped samples of libraries #{library1.id} and #{library2.id}
           -> Republishing run data and volume tracking messages for run #{run1.name}
           -> Republishing run data and volume tracking messages for run #{run3.name}
           -> Republishing run data and volume tracking messages for run #{run2.name}
           -> Republishing run data and volume tracking messages for run #{run4.name}
-          -> Swapped samples of libraries #{library1.id} and #{library2.id}
         HEREDOC
       ).to_stdout
 
