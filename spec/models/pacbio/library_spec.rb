@@ -123,6 +123,8 @@ RSpec.describe Pacbio::Library, :pacbio do
   it 'can have derived aliquots' do
     library = create(:pacbio_library)
     aliquots = create_list(:aliquot, 5, aliquot_type: :derived, source: library)
+    library.reload
+
     expect(library.derived_aliquots).to eq(aliquots)
   end
 
@@ -309,15 +311,6 @@ RSpec.describe Pacbio::Library, :pacbio do
       library = create(:pacbio_library)
       create_list(:pacbio_well, 5, libraries: [library])
       expect(library.wells.count).to eq(5)
-    end
-  end
-
-  context 'before_update' do
-    it 'calls primary_aliquot_volume_sufficient method' do
-      library = create(:pacbio_library)
-      expect(library).to receive(:primary_aliquot_volume_sufficient)
-      library.primary_aliquot.update(volume: 10)
-      library.save
     end
   end
 

@@ -24,6 +24,8 @@ RSpec.describe Aliquotable do
     it 'returns the derived aliquots' do
       pacbio_pool = create(:pacbio_pool)
       aliquots = create_list(:aliquot, 5, aliquot_type: :derived, source: pacbio_pool)
+      pacbio_pool.reload
+
       expect(pacbio_pool.derived_aliquots).to eq aliquots
     end
 
@@ -54,7 +56,7 @@ RSpec.describe Aliquotable do
       library = create(:pacbio_library)
       create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 3)
       library.primary_aliquot.volume = 50
-      library.save
+      library.reload
       expect(library.used_volume).to eq(15)
     end
 
@@ -70,73 +72,9 @@ RSpec.describe Aliquotable do
       create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 3)
       library.primary_aliquot.volume = 50
       library.save
+      library.reload
+
       expect(library.available_volume).to eq(35)
-    end
-  end
-
-  describe '#available_volume_check' do
-    it 'returns true if there is enough volume' do
-      library = create(:pacbio_library)
-      create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 3)
-      library.primary_aliquot.volume = 50
-      library.save
-      expect(library.available_volume_sufficient?).to be(true)
-    end
-
-    it 'returns false if there is not enough volume' do
-      library = create(:pacbio_library)
-      create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 3)
-      library.primary_aliquot.volume = 10
-      library.save
-      expect(library.available_volume_sufficient?).to be(false)
-    end
-
-    it 'returns the available volume rounded to 2 decimal places' do
-      library = create(:pacbio_library)
-      create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 3)
-      library.primary_aliquot.volume = 50.5555
-      library.save
-      expect(library.available_volume).to eq(35.56) # 50.5555 - 5*3 = 35.5555 rounded to 35.56
-    end
-  end
-
-  describe '#used_volume_check' do
-    context 'when primary aliquot volume has increased' do
-      it 'does not add any error' do
-        library = build(:pacbio_library, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
-        create_list(:aliquot, 4, aliquot_type: :derived, source: library, volume: 2)
-        library.primary_aliquot.volume = 15
-        expect(library.primary_aliquot_volume_sufficient).to be true
-        expect(library.errors[:volume]).to be_empty
-      end
-    end
-
-    context 'when primary aliquot volume for libraries is less than used volume' do
-      it 'adds an error' do
-        library = create(:pacbio_library, volume: 100, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
-        create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 2)
-        library.primary_aliquot.volume = 5
-        expect { library.primary_aliquot_volume_sufficient }.to throw_symbol(:abort)
-        expect(library.errors[:volume]).to include('Volume must be greater than the current used volume')
-      end
-    end
-
-    context 'when primary aliquot volume for pools is less than used volume' do
-      it 'adds an error' do
-        pool = create(:pacbio_pool, volume: 100, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
-        create_list(:aliquot, 5, aliquot_type: :derived, source: pool, volume: 2)
-        pool.primary_aliquot.volume = 5
-        expect { pool.primary_aliquot_volume_sufficient }.to throw_symbol(:abort)
-        expect(pool.errors[:volume]).to include('Volume must be greater than the current used volume')
-      end
-    end
-
-    context 'when primary_aliquot volume has not changed' do
-      it 'returns without checking volume' do
-        library = create(:pacbio_library, volume: 100, primary_aliquot: build(:aliquot, aliquot_type: :primary, volume: 10))
-        library.primary_aliquot.concentration = 5
-        expect(library.primary_aliquot_volume_sufficient).to be_nil
-      end
     end
   end
 end

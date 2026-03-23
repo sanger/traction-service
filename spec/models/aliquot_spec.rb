@@ -294,5 +294,51 @@ RSpec.describe Aliquot do
         end
       end
     end
+
+    describe '#check_available_parent_volume' do
+      it 'returns true if there is enough volume' do
+        library = create(:pacbio_library, volume: 10, primary_aliquot_attributes: { volume: 10 })
+        aliquot = build(:aliquot, aliquot_type: :derived, source: library, volume: 9)
+
+        expect(aliquot.check_available_parent_volume).to be true
+        expect(aliquot.errors).to be_empty
+      end
+
+      it 'returns false if there is not enough volume' do
+        library = create(:pacbio_library, volume: 10, primary_aliquot_attributes: { volume: 10 })
+        aliquot = build(:aliquot, aliquot_type: :derived, source: library, volume: 11)
+
+        expect(aliquot.check_available_parent_volume).to be false
+        expect(aliquot.errors['volume']).to include('Insufficient volume available')
+      end
+    end
+
+    describe '#primary_aliquot_volume_sufficient' do
+      context 'when primary aliquot volume has increased' do
+        it 'does not add any error' do
+          aliquot = build(:aliquot, volume: 11, aliquot_type: :primary)
+          library = create(:pacbio_library, primary_aliquot: aliquot)
+          # Create some used volume
+          library.derived_aliquots << create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 2)
+
+          aliquot.volume = 15
+          expect(aliquot.primary_aliquot_volume_sufficient).to be true
+          expect(aliquot.errors).to be_empty
+        end
+      end
+
+      context 'when primary aliquot volume is less than used volume' do
+        it 'adds an error' do
+          aliquot = build(:aliquot, volume: 10, aliquot_type: :primary)
+          library = create(:pacbio_library, primary_aliquot: aliquot)
+          # Create some used volume
+          library.derived_aliquots << create_list(:aliquot, 5, aliquot_type: :derived, source: library, volume: 2)
+
+          aliquot.volume = 9
+          expect(aliquot.primary_aliquot_volume_sufficient).to be false
+          expect(aliquot.errors['volume']).to include('must be greater than the current used volume')
+        end
+      end
+    end
   end
 end

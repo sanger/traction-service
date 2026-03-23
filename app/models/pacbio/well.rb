@@ -41,8 +41,6 @@ module Pacbio
 
     validates :row, :column, presence: true
 
-    validate :used_aliquots_volume
-
     delegate :run, to: :plate, allow_nil: true
 
     accepts_nested_attributes_for :used_aliquots, allow_destroy: true
