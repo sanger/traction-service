@@ -600,7 +600,7 @@ RSpec.describe 'MultiPoolsController' do
           post v1_multi_pools_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq "#{library.barcode} does not have sufficient available volume"
+          expect(errors[0]['detail']).to include("#{library.barcode} does not have sufficient available volume")
         end
       end
     end

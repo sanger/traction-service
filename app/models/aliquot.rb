@@ -49,7 +49,8 @@ class Aliquot < ApplicationRecord
     return unless aliquot_type == 'derived' && source&.primary_aliquot&.volume
 
     if source.available_volume - volume < 0
-      errors.add(:volume, 'Insufficient volume available')
+      # We add the source barcode to the error message to make it easier for the user to identify
+      errors.add(:volume, "Insufficient volume available for #{source.barcode}")
       return false
     end
     true

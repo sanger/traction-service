@@ -309,7 +309,7 @@ RSpec.describe Aliquot do
         aliquot = build(:aliquot, aliquot_type: :derived, source: library, volume: 11)
 
         expect(aliquot.check_available_parent_volume).to be false
-        expect(aliquot.errors['volume']).to include('Insufficient volume available')
+        expect(aliquot.errors['volume']).to include("Insufficient volume available for #{library.barcode}")
       end
     end
 
