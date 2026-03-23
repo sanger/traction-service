@@ -38,17 +38,20 @@ class Aliquot < ApplicationRecord
             numericality: { greater_than_or_equal_to: 0, allow_nil: true }
 
   validate :check_available_parent_volume
-
   validate :primary_aliquot_volume_sufficient
 
   # Checks the derived aliquot does not exceed the available volume of the source
   # See models/multi_pool.rb sufficient_library_used_volume? for additional edge case checks
   def check_available_parent_volume
-    # Some sources may not have a primary aliquot, e.g. a pacbio::request, so we only want to check
+    # Some sources may not have a primary aliquot, e.g. a Pacbio::Request, so we only want to check
     # the volume if there is a primary aliquot to check against
     return unless aliquot_type == 'derived' && source&.primary_aliquot&.volume
 
-    if source.available_volume - volume < 0
+    # For persisted records, add back the previous volume to avoid double subtraction
+    previous_volume = persisted? ? volume_was : 0
+    adjusted_available_volume = source.available_volume + previous_volume
+
+    if adjusted_available_volume - volume < 0
       # We add the source barcode to the error message to make it easier for the user to identify
       errors.add(:volume, "Insufficient volume available for #{source.barcode}")
       return false
@@ -70,7 +73,6 @@ class Aliquot < ApplicationRecord
   # @return [nil, true, false] Returns nil if the primary aliquot has not changed its volume,
   #  true if the volume of the primary aliquot is greater than or equal to the used volume, and
   # false if the volume of the primary aliquot is less than the used volume.
-
   def primary_aliquot_volume_sufficient
     return unless aliquot_type == 'primary' && source && volume
     return true if volume >= source.used_volume

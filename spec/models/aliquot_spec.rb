@@ -311,6 +311,24 @@ RSpec.describe Aliquot do
         expect(aliquot.check_available_parent_volume).to be false
         expect(aliquot.errors['volume']).to include("Insufficient volume available for #{library.barcode}")
       end
+
+      it 'returns true for valid updates to volume for existing aliquots' do
+        library = create(:pacbio_library, volume: 10, primary_aliquot_attributes: { volume: 10 })
+        aliquot = create(:aliquot, aliquot_type: :derived, source: library, volume: 5)
+        library.reload
+
+        expect(aliquot.update(volume: 5)).to be true
+        expect(aliquot.errors).to be_empty
+      end
+
+      it 'returns false for invalid updates to volume for existing aliquots' do
+        library = create(:pacbio_library, volume: 10, primary_aliquot_attributes: { volume: 10 })
+        aliquot = create(:aliquot, aliquot_type: :derived, source: library, volume: 5)
+        library.reload
+
+        expect(aliquot.update(volume: 11)).to be false
+        expect(aliquot.errors[:volume]).to eq(["Insufficient volume available for #{library.barcode}"])
+      end
     end
 
     describe '#primary_aliquot_volume_sufficient' do
