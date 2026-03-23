@@ -101,4 +101,37 @@ RSpec.describe MultiPool do
       expect(multi_pool.number_of_pools).to eq 3
     end
   end
+
+  describe '#sufficient_library_available_volume?' do
+    it 'returns true if there are no pools' do
+      multi_pool = build(:multi_pool, multi_pool_positions: [])
+
+      expect(multi_pool.sufficient_library_available_volume?).to be true
+    end
+
+    it 'returns true if all sources have sufficient available volume' do
+      library = create(:pacbio_library, volume: 100, tube: create(:tube, barcode: 'TRAC-2-1'))
+      pool1 = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: library, volume: 30)])
+      pool2 = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: library, volume: 20)])
+      pool3 = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: create(:pacbio_request), volume: 10)])
+      multi_pool = build(:multi_pool, multi_pool_positions: [], pipeline: 'pacbio')
+      multi_pool.multi_pool_positions << build(:multi_pool_position, pacbio_pool: pool1, position: 1)
+      multi_pool.multi_pool_positions << build(:multi_pool_position, pacbio_pool: pool2, position: 2)
+      multi_pool.multi_pool_positions << build(:multi_pool_position, pacbio_pool: pool3, position: 3)
+
+      expect(multi_pool.sufficient_library_available_volume?).to be true
+    end
+
+    it 'returns false and adds an error if any source does not have sufficient available volume' do
+      library = build(:pacbio_library, volume: 100, tube: create(:tube, barcode: 'TRAC-2-1'))
+      pool1 = build(:pacbio_pool, used_aliquots: [build(:aliquot, source: library, volume: 60)])
+      pool2 = build(:pacbio_pool, used_aliquots: [build(:aliquot, source: library, volume: 50)])
+      multi_pool = build(:multi_pool, multi_pool_positions: [], pipeline: 'pacbio')
+      multi_pool.multi_pool_positions << build(:multi_pool_position, pacbio_pool: pool1, position: 1)
+      multi_pool.multi_pool_positions << build(:multi_pool_position, pacbio_pool: pool2, position: 2)
+
+      expect(multi_pool.sufficient_library_available_volume?).to be false
+      expect(multi_pool.errors[:base]).to include("#{library.barcode} does not have sufficient available volume")
+    end
+  end
 end

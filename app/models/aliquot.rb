@@ -41,6 +41,8 @@ class Aliquot < ApplicationRecord
 
   validate :primary_aliquot_volume_sufficient
 
+  # Checks the derived aliquot does not exceed the available volume of the source
+  # See models/multi_pool.rb sufficient_library_used_volume? for additional edge case checks
   def check_available_parent_volume
     # Some sources may not have a primary aliquot, e.g. a pacbio::request, so we only want to check
     # the volume if there is a primary aliquot to check against

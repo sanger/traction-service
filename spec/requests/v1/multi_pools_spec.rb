@@ -538,7 +538,7 @@ RSpec.describe 'MultiPoolsController' do
                       insert_size: 100,
                       used_aliquots_attributes: [
                         {
-                          volume: 100.0,
+                          volume: 5.0,
                           template_prep_kit_box_barcode: 'LK1234567',
                           concentration: 2.22,
                           insert_size: 100,
@@ -564,7 +564,7 @@ RSpec.describe 'MultiPoolsController' do
                       insert_size: 100,
                       used_aliquots_attributes: [
                         {
-                          volume: 100.0,
+                          volume: 6.0,
                           template_prep_kit_box_barcode: 'LK1234567',
                           concentration: 2.22,
                           insert_size: 100,
@@ -600,7 +600,7 @@ RSpec.describe 'MultiPoolsController' do
           post v1_multi_pools_path, params: body, headers: json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
-          expect(errors[0]['detail']).to eq 'multi_pool_positions.pacbio_pool.used_aliquots - is invalid'
+          expect(errors[0]['detail']).to eq "#{library.barcode} does not have sufficient available volume"
         end
       end
     end

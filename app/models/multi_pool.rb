@@ -14,6 +14,7 @@ class MultiPool < ApplicationRecord
   validates :multi_pool_positions, presence: true
   validate :consistent_pools_type?
   validate :unique_pool_positions?
+  validate :sufficient_library_available_volume?, if: -> { pipeline == 'pacbio' }
 
   accepts_nested_attributes_for :multi_pool_positions, allow_destroy: true
 
@@ -47,5 +48,33 @@ class MultiPool < ApplicationRecord
   # @return [Integer] number of pools
   def number_of_pools
     multi_pool_positions.length
+  end
+
+  # Extra validation to prevent race conditions where libraries are used across pools in
+  # the same multi pool and the total used library volume exceeds the library available volume.
+  # This is an edge case because the aliquot volume checks should prevent this from happening
+  # but since the pools are created in parallel they are not aware of each others existence
+  # so they are not factored into the volume checks.
+  def sufficient_library_available_volume? # rubocop:disable Metrics/CyclomaticComplexity,Metrics/MethodLength
+    used_volume_map = {}
+    multi_pool_positions.each do |position|
+      next unless position.pacbio_pool
+
+      position.pacbio_pool.used_aliquots.each do |aliquot|
+        next unless aliquot.source_type == 'Pacbio::Library'
+
+        used_volume_map[aliquot.source] ||= 0
+        used_volume_map[aliquot.source] += aliquot.volume
+      end
+    end
+
+    used_volume_map.each do |source, used_volume|
+      if source.available_volume < used_volume
+        errors.add(:base, "#{source.barcode} does not have sufficient available volume")
+        return false
+      end
+    end
+
+    true
   end
 end
