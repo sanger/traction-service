@@ -763,7 +763,7 @@ RSpec.describe 'PoolsController', :pacbio do
   end
 
   context 'when there is an associated run' do
-    let!(:pool) { create(:pacbio_pool) }
+    let!(:pool) { create(:pacbio_pool, library_count: 1) }
     let!(:updated_aliquot) { pool.used_aliquots.first }
     let!(:plate) { build(:pacbio_plate) }
     let(:run) { create(:pacbio_run, plates: [plate]) }
@@ -778,7 +778,7 @@ RSpec.describe 'PoolsController', :pacbio do
               {
                 id: updated_aliquot.id.to_s,
                 source_id: updated_aliquot.source.id.to_s,
-                source_type: 'Pacbio::Request',
+                source_type: 'Pacbio::Library',
                 template_prep_kit_box_barcode: 'LK12345',
                 tag_id: tag.id,
                 volume: 1,
@@ -786,6 +786,12 @@ RSpec.describe 'PoolsController', :pacbio do
                 insert_size: 100
               }
             ],
+            primary_aliquot_attributes: {
+              volume: '200',
+              concentration: '22',
+              template_prep_kit_box_barcode: '100',
+              insert_size: '11'
+            },
             volume: '200',
             concentration: '22',
             template_prep_kit_box_barcode: '100',

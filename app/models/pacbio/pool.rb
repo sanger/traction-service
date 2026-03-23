@@ -4,6 +4,7 @@ module Pacbio
   # Pool
   class Pool < ApplicationRecord
     include Aliquotable
+    extend NestedValidation
 
     belongs_to :tube, default: -> { Tube.new }
     delegate :barcode, to: :tube
@@ -28,6 +29,7 @@ module Pacbio
 
     validates :used_aliquots, presence: true
     validates :primary_aliquot, presence: true
+    validates_nested :used_aliquots
 
     before_destroy :check_for_derived_aliquots?, prepend: true
 

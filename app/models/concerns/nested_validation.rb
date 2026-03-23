@@ -30,7 +30,7 @@ module NestedValidation
 
     def validate_each(record, attribute, value)
       case value
-      when Array
+      when Array, ActiveRecord::Associations::CollectionProxy
         value.each_with_index { |nested, index| validate_one(nested, record, attribute, index) }
       when nil
         nil # Do nothing

@@ -85,8 +85,7 @@ RSpec.describe Pacbio::Pool, :pacbio do
       build(:aliquot, source: libraries[2], volume: 99, aliquot_type: :derived)
     ])
     expect(pool).not_to be_valid
-    # TODO: This should show which libraries are invalid (volume exceeded) this is an issue with nested error message propogation
-    expect(pool.errors[:used_aliquots][0]).to eq('is invalid')
+    expect(pool.errors[:volume]).to include("Insufficient volume available for #{libraries[0].barcode}", "Insufficient volume available for #{libraries[1].barcode}")
   end
 
   it 'is valid when using a valid amount of volume from a library' do
