@@ -55,20 +55,8 @@ class MultiPool < ApplicationRecord
   # This is an edge case because the aliquot volume checks should prevent this from happening
   # but since the pools are created in parallel they are not aware of each others existence
   # so they are not factored into the volume checks.
-  def sufficient_library_available_volume? # rubocop:disable Metrics/CyclomaticComplexity,Metrics/MethodLength
-    used_volume_map = {}
-    multi_pool_positions.each do |position|
-      next unless position.pacbio_pool
-
-      position.pacbio_pool.used_aliquots.each do |aliquot|
-        next unless aliquot.source_type == 'Pacbio::Library'
-
-        used_volume_map[aliquot.source] ||= 0
-        used_volume_map[aliquot.source] += aliquot.volume
-      end
-    end
-
-    used_volume_map.each do |source, used_volume|
+  def sufficient_library_available_volume?
+    library_source_volume_map.each do |source, used_volume|
       if source.available_volume < used_volume
         errors.add(:base, "#{source.barcode} does not have sufficient available volume")
         return false
@@ -76,5 +64,22 @@ class MultiPool < ApplicationRecord
     end
 
     true
+  end
+
+  # Returns a hash map of library sources to the total volume used across
+  # all pools in the multi pool.
+  def library_source_volume_map
+    library_source_volume_map = {}
+    multi_pool_positions.each do |position|
+      next unless position.pacbio_pool
+
+      position.pacbio_pool.used_aliquots.each do |aliquot|
+        next unless aliquot.source_type == 'Pacbio::Library'
+
+        library_source_volume_map[aliquot.source] ||= 0
+        library_source_volume_map[aliquot.source] += aliquot.volume
+      end
+    end
+    library_source_volume_map
   end
 end

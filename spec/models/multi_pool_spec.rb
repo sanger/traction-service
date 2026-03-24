@@ -134,4 +134,26 @@ RSpec.describe MultiPool do
       expect(multi_pool.errors[:base]).to include("#{library.barcode} does not have sufficient available volume")
     end
   end
+
+  describe '#library_source_volume_map' do
+    it 'returns an empty hash if there are no pools' do
+      multi_pool = build(:multi_pool, multi_pool_positions: [])
+
+      expect(multi_pool.library_source_volume_map).to eq({})
+    end
+
+    it 'returns a hash mapping library sources to total used volume across all pools' do
+      library1 = create(:pacbio_library, tube: create(:tube, barcode: 'TRAC-2-1'))
+      library2 = create(:pacbio_library, tube: create(:tube, barcode: 'TRAC-2-2'))
+      # Add a none library source to ensure it is not included in the map
+      request = create(:pacbio_request)
+      pool1 = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: library1, volume: 30), create(:aliquot, source: library2, volume: 20)])
+      pool2 = create(:pacbio_pool, used_aliquots: [create(:aliquot, source: library1, volume: 10), create(:aliquot, source: request, volume: 10)])
+      multi_pool = build(:multi_pool, multi_pool_positions: [], pipeline: 'pacbio')
+      multi_pool.multi_pool_positions << build(:multi_pool_position, pacbio_pool: pool1, position: 1)
+      multi_pool.multi_pool_positions << build(:multi_pool_position, pacbio_pool: pool2, position: 2)
+
+      expect(multi_pool.library_source_volume_map).to eq({ library1 => 40, library2 => 20 })
+    end
+  end
 end
