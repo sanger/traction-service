@@ -9,7 +9,8 @@
 module Authenticator
   extend ActiveSupport::Concern
 
-  API_KEY_HEADER = 'X-Traction-Client-Id' # Using headers instead of env, HTTP_X_TRACTION_CLIENT_ID in Rails.
+  # Using headers instead of env, HTTP_X_TRACTION_CLIENT_ID in Rails.
+  API_KEY_HEADER = 'X-Traction-Client-Id'
 
   included do
     before_action :authenticate_request! # preceed all controller actions
