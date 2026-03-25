@@ -22,9 +22,9 @@ module Authenticator
   def authenticate_request!
     return unless Flipper.enabled?(:y25_662_enable_request_authentication)
 
-    if bearer_token_present? # identity provider check
+    if bearer_token_present? # Identity provider check
       authenticate_bearer!
-    elsif api_key_present? # api key check
+    elsif api_key_present? # API Key check
       authenticate_api_key!
       enforce_api_key_permissions! # story requires API keys to be for GET.
     else
@@ -33,21 +33,26 @@ module Authenticator
     end
   end
 
-  # Identity provider authentication
+  # Checks if the Authorization header contains a Bearer token (OAuth2/JWT style)
+  # @return [Boolean] true if Bearer token is present, false otherwise
   def bearer_token_present?
     request.headers['Authorization']&.start_with?('Bearer ')
   end
 
+  # Authenticates a request using a Bearer token from the Authorization header.
+  # @return [void] Sets @current_auth to :bearer on success.
   def authenticate_bearer!
     token = bearer_token
 
+    # TODO(Y25-660): Identity provider integration
     return render_unauthorized('Invalid Bearer token') unless valid_bearer_token?(token)
 
     @current_auth = :bearer
   end
 
+  # Extracts the token value from the Authorization header in the format "Bearer <token>"
+  # @return [String, nil] Returns the token string if present, or nil otherwise
   def bearer_token
-    # extract token from "Bearer <token>" format
     request.headers['Authorization']&.split&.last
   end
 
