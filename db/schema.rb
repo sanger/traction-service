@@ -52,7 +52,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_25_120000) do
 
   create_table "api_applications", charset: "utf8mb3", force: :cascade do |t|
     t.string "contact_email"
-    t.string "contact_name"
+    t.string "contact_name", null: false
     t.datetime "created_at", null: false
     t.text "description"
     t.string "name", null: false

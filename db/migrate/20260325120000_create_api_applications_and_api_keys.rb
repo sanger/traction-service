@@ -2,7 +2,7 @@ class CreateApiApplicationsAndApiKeys < ActiveRecord::Migration[7.0]
   def change
     create_table :api_applications do |t|
       t.string :name, null: false # application name
-      t.string :contact_name
+      t.string :contact_name, null: false
       t.string :contact_email
       t.text :description
       t.integer :privileges, default: 0, null: false # enum: 0=full, 1=read_only
