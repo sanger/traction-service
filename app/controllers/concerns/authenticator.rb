@@ -20,6 +20,8 @@ module Authenticator
 
   # Main authentication entry point
   def authenticate_request!
+    return unless Flipper.enabled?(:y25_662_enable_request_authentication)
+
     if bearer_token_present? # identity provider check
       authenticate_bearer!
     elsif api_key_present? # api key check
@@ -104,7 +106,7 @@ module Authenticator
   # transitional
   def handle_unauthenticated!
     # Y25-661: allow GET temporarily
-    return if request.get?
+    # return if request.get?
 
     render_unauthorized('Authentication required')
   end
