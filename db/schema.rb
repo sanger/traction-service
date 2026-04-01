@@ -31,6 +31,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_25_120000) do
     t.index ["used_by_type", "used_by_id"], name: "index_aliquots_on_used_by"
   end
 
+  create_table "api_applications", charset: "utf8mb3", force: :cascade do |t|
+    t.string "contact_email"
+    t.string "contact_name", null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "api_keys", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "api_application_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.string "key_digest", null: false
+    t.datetime "last_used_at"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["api_application_id", "status"], name: "index_api_keys_on_api_application_id_and_status"
+    t.index ["api_application_id"], name: "index_api_keys_on_api_application_id"
+    t.index ["key_digest"], name: "index_api_keys_on_key_digest", unique: true
+  end
+
   create_table "annotation_types", charset: "utf8mb3", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -48,28 +70,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_25_120000) do
     t.string "user", limit: 10, null: false
     t.index ["annotatable_type", "annotatable_id"], name: "index_annotations_on_annotatable"
     t.index ["annotation_type_id"], name: "index_annotations_on_annotation_type_id"
-  end
-
-  create_table "api_applications", charset: "utf8mb3", force: :cascade do |t|
-    t.string "contact_email"
-    t.string "contact_name", null: false
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.string "name", null: false
-    t.integer "privileges", default: 0, null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "api_keys", charset: "utf8mb3", force: :cascade do |t|
-    t.bigint "api_application_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "expires_at"
-    t.string "key", null: false
-    t.integer "status", default: 0, null: false
-    t.datetime "updated_at", null: false
-    t.index ["api_application_id", "status"], name: "index_api_keys_on_api_application_id_and_status"
-    t.index ["api_application_id"], name: "index_api_keys_on_api_application_id"
-    t.index ["key"], name: "index_api_keys_on_key", unique: true
   end
 
   create_table "container_materials", charset: "utf8mb3", force: :cascade do |t|
@@ -524,7 +524,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_25_120000) do
   end
 
   add_foreign_key "annotations", "annotation_types"
-  add_foreign_key "api_keys", "api_applications"
   add_foreign_key "ont_flowcells", "ont_pools"
   add_foreign_key "ont_flowcells", "ont_runs"
   add_foreign_key "ont_requests", "data_types"
@@ -544,4 +543,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_25_120000) do
   add_foreign_key "qc_results", "qc_receptions"
   add_foreign_key "requests", "receptions"
   add_foreign_key "workflow_steps", "workflows"
+  add_foreign_key "api_keys", "api_applications"
 end
