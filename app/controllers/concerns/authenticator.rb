@@ -129,7 +129,7 @@ module Authenticator
 
     return if request.get?
 
-    render_forbidden('API keys are read-only')
+    render_forbidden('API keys are for read-only access')
   end
 
   # Handles requests with no valid credentials.
@@ -178,7 +178,6 @@ module Authenticator
     key.expires_at.present? && key.expires_at.past?
   end
 
-  # Response helpers
   # Renders a 401 Unauthorized response.
   #
   # @param message [String] error message to include in response

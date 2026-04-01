@@ -9,12 +9,12 @@ class ApiKey < ApplicationRecord
   validates :key_digest, presence: true, uniqueness: true
   validates :status, presence: true
 
-  # Issues a new active key with a 6-month lifetime.
+  # Issues a new active key.
   # The plaintext key is a 256-bit random token returned once and never stored;
   # only its SHA-256 hex digest is persisted.
   # @param api_application [ApiApplication] the application to associate the new key with
-  # @param expires_at [Time, nil] optional explicit expiry timestamp for the key (
-  def self.issue!(api_application:, expires_at: 6.months.from_now)
+  # @param expires_at [Time, nil] optional explicit expiry timestamp for the key
+  def self.issue!(api_application:, expires_at: nil)
     plaintext_key = SecureRandom.hex(32) # 64-char hex, 256 bits of entropy
 
     api_key = create!(

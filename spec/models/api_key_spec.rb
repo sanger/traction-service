@@ -17,4 +17,12 @@ RSpec.describe ApiKey do
     expect(result[:api_key].key_digest).to eq(Digest::SHA256.hexdigest(plaintext))
     expect(result[:api_key].key_digest).not_to eq(plaintext)
   end
+
+  it 'issues non-expiring keys by default' do
+    api_application = create(:api_application)
+
+    result = described_class.issue!(api_application: api_application)
+
+    expect(result[:api_key].expires_at).to be_nil
+  end
 end

@@ -115,4 +115,14 @@ RSpec.describe 'Authenticator Flipper feature flagging', type: :controller do
 
     expect(response).to have_http_status(:ok)
   end
+
+  it 'permits non-expiring API keys' do
+    allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
+    issued = api_application.rotate_api_key!(expires_at: nil)
+
+    request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
+    get :index
+
+    expect(response).to have_http_status(:ok)
+  end
 end
