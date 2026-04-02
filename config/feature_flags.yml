@@ -2,3 +2,4 @@
 # dpl202_enable_angry_cat_feature: When enabled this will add an angry cat to all pages that will try to catch the mouse pointer
 # The key should be lowercase and snake case, and prefixes with the issue number to allow easy identification
 y25_662_enable_request_authentication: When enabled, this will activate the new authenticator module
+y25_662_reject_unauthenticated_requests: When enabled, this will reject any unauthenticated requests

@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Authenticator Flipper feature flagging', type: :controller do
   let(:feature) { :y25_662_enable_request_authentication }
+  let(:feature_reject_unauthenticated) { :y25_662_reject_unauthenticated_requests }
   let(:api_application) { create(:api_application) }
 
   # Dummy controller for testing
@@ -20,6 +21,8 @@ RSpec.describe 'Authenticator Flipper feature flagging', type: :controller do
   end
 
   before do
+    allow(Flipper).to receive(:enabled?).with(feature_reject_unauthenticated).and_return(true)
+
     routes.draw do
       get 'index' => 'anonymous#index'
       post 'create' => 'anonymous#create'
@@ -124,5 +127,46 @@ RSpec.describe 'Authenticator Flipper feature flagging', type: :controller do
     get :index
 
     expect(response).to have_http_status(:ok)
+  end
+
+  context 'unauthenticated request behavior' do
+    it 'logs unauthenticated requests' do
+      allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
+      allow(Flipper).to receive(:enabled?).with(feature_reject_unauthenticated).and_return(false)
+
+      expect(Rails.logger).to receive(:warn).with(match(/\[AUTH\] Unauthenticated request/))
+      get :index
+    end
+
+    it 'allows unauthenticated requests when reject flag is OFF' do
+      allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
+      allow(Flipper).to receive(:enabled?).with(feature_reject_unauthenticated).and_return(false)
+
+      get :index
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to eq('ok')
+    end
+
+    it 'rejects unauthenticated requests when reject flag is ON' do
+      allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
+      allow(Flipper).to receive(:enabled?).with(feature_reject_unauthenticated).and_return(true)
+
+      get :index
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it 'includes method, path, ip, and request_id in unauthenticated log' do
+      allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
+      allow(Flipper).to receive(:enabled?).with(feature_reject_unauthenticated).and_return(false)
+
+      expect(Rails.logger).to receive(:warn) do |message|
+        expect(message).to include('[AUTH] Unauthenticated request')
+        expect(message).to include('method=GET')
+        expect(message).to include('path=/index')
+        expect(message).to include('ip=')
+        expect(message).to include('request_id=')
+      end
+      get :index
+    end
   end
 end

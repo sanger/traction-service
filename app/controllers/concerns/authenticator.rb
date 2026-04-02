@@ -136,6 +136,15 @@ module Authenticator
   #
   # @return [void]
   def handle_unauthenticated!
+    log_message = '[AUTH] Unauthenticated request ' \
+                  "method=#{request.request_method} " \
+                  "path=#{request.fullpath} " \
+                  "ip=#{request.remote_ip} " \
+                  "request_id=#{request.request_id}"
+    Rails.logger.warn(log_message)
+
+    return unless Flipper.enabled?(:y25_662_reject_unauthenticated_requests)
+
     render_unauthorized('Authentication required')
   end
 
