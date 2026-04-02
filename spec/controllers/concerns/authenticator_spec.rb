@@ -9,6 +9,7 @@ RSpec.describe 'Authenticator Flipper feature flagging', type: :controller do
 
   # Dummy controller for testing
   controller(ApplicationController) do
+    # Define methods on a temporary class named AnonymousController.
     include Authenticator
 
     def index
@@ -24,6 +25,7 @@ RSpec.describe 'Authenticator Flipper feature flagging', type: :controller do
     allow(Flipper).to receive(:enabled?).with(feature_reject_unauthenticated).and_return(true)
 
     routes.draw do
+      # Define routes for the anonymous controller to test requests.
       get 'index' => 'anonymous#index'
       post 'create' => 'anonymous#create'
     end
