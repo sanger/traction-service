@@ -6,7 +6,6 @@
 # 1. Bearer tokens (JWT/OAuth2, for future Identity Provider integration)
 # 2. API keys (via X-Traction-Client-Id header, for programmatic access)
 #
-# Enforces API key permissions: keys are read-only (GET requests only).
 # Key usage is logged, and grace-period keys trigger deprecation warnings.
 #
 # @example Include in a controller
@@ -41,7 +40,6 @@ module Authenticator
       authenticate_bearer!
     elsif api_key_present?
       authenticate_api_key!
-      enforce_api_key_permissions!
     else
       handle_unauthenticated!
     end
@@ -121,17 +119,6 @@ module Authenticator
     @current_api_client = key.api_application
   end
 
-  # Enforces that API key-authenticated requests are GET-only (read-only).
-  #
-  # @return [void]
-  def enforce_api_key_permissions!
-    return unless @current_auth == :api_key
-
-    return if request.get?
-
-    render_forbidden('API keys are for read-only access')
-  end
-
   # Handles requests with no valid credentials.
   #
   # @return [void]
@@ -193,13 +180,5 @@ module Authenticator
   # @return [void]
   def render_unauthorized(message)
     render json: { error: message }, status: :unauthorized
-  end
-
-  # Renders a 403 Forbidden response.
-  #
-  # @param message [String] error message to include in response
-  # @return [void]
-  def render_forbidden(message)
-    render json: { error: message }, status: :forbidden
   end
 end

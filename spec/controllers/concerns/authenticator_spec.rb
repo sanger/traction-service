@@ -65,14 +65,14 @@ RSpec.describe 'Authenticator Flipper feature flagging', type: :controller do
     expect(response).to have_http_status(:unauthorized)
   end
 
-  it 'forbids non-GET requests authenticated by API key' do
+  it 'permits non-GET requests authenticated by API key' do
     allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
     issued = api_application.rotate_api_key!
 
     request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
     post :create
 
-    expect(response).to have_http_status(:forbidden)
+    expect(response).to have_http_status(:ok)
   end
 
   it 'authenticates a grace-period API key and sets a deprecation warning header' do
