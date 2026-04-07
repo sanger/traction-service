@@ -137,20 +137,23 @@ module Authenticator
 
   # Logs API key usage and warns if key is in grace period.
   #
-  # Updates the key's last_used_at timestamp and logs a warning message if the
-  # key is in grace_period status.
+  # Updates the key's last_used_at timestamp and logs, logs an info message
+  # for the active key or a warning message if the key is in grace_period status.
   #
   # @param key [ApiKey] the API key that was used
   # @return [void]
   def log_key_usage(key)
     key.update(last_used_at: Time.current)
 
-    # Log a warning when a grace-period key is used.
-    return unless key.grace_period?
-
-    log_message = '[API KEY] Grace-period key used ' \
-                  "(id=#{key.id}, expires_at=#{key.expires_at})"
-    Rails.logger.warn(log_message)
+    if key.grace_period?
+      log_message = '[API KEY] Grace-period key used ' \
+                    "(id=#{key.id}, status=#{key.status}, expires_at=#{key.expires_at})"
+      Rails.logger.warn(log_message)
+    else
+      log_message = '[API KEY] Key used ' \
+                    "(id=#{key.id}, status=#{key.status}, expires_at=#{key.expires_at})"
+      Rails.logger.info(log_message)
+    end
   end
 
   # Sets a response header warning when a grace-period API key is used.
