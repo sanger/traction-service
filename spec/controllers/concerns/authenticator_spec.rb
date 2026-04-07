@@ -50,6 +50,9 @@ RSpec.describe 'Authenticator Flipper feature flagging', type: :controller do
     issued = api_application.rotate_api_key!
 
     request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
+
+    allow(Rails.logger).to receive(:info)
+    expect(Rails.logger).to receive(:info).with(match(/\[API KEY\] Key used/))
     get :index
 
     expect(response).to have_http_status(:ok)
@@ -82,6 +85,8 @@ RSpec.describe 'Authenticator Flipper feature flagging', type: :controller do
     api_application.rotate_api_key!
 
     request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
+
+    expect(Rails.logger).to receive(:warn).with(match(/\[API KEY\] Grace-period key used/))
     get :index
 
     expect(response).to have_http_status(:ok)
