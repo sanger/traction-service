@@ -76,8 +76,8 @@ class MultiPool < ApplicationRecord
       position.pacbio_pool.used_aliquots.each do |aliquot|
         next unless aliquot.source_type == 'Pacbio::Library'
 
-        library_source_volume_map[aliquot.source] ||= 0
-        library_source_volume_map[aliquot.source] += aliquot.volume
+        # Merges the aliquot volume into the library source total, summing volumes for duplicate sources
+        library_source_volume_map.merge!(aliquot.source => aliquot.volume) { |_, old_vol, new_vol| old_vol + new_vol }
       end
     end
     library_source_volume_map
