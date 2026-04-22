@@ -37,6 +37,50 @@ class Aliquot < ApplicationRecord
   validates :volume, :concentration, :insert_size,
             numericality: { greater_than_or_equal_to: 0, allow_nil: true }
 
+  validate :check_available_parent_volume
+  validate :primary_aliquot_volume_sufficient
+
+  # Checks the derived aliquot does not exceed the available volume of the source
+  # See models/multi_pool.rb sufficient_library_used_volume? for additional edge case checks
+  def check_available_parent_volume
+    # Some sources may not have a primary aliquot, e.g. a Pacbio::Request, so we only want to check
+    # the volume if there is a primary aliquot to check against
+    return unless aliquot_type == 'derived' && source&.primary_aliquot&.volume
+
+    # For persisted records, add back the previous volume to avoid double subtraction
+    previous_volume = persisted? ? volume_was : 0
+    adjusted_available_volume = source.available_volume + previous_volume
+
+    if adjusted_available_volume - volume < 0
+      # We add the source barcode to the error message to make it easier for the user to identify
+      errors.add(:volume, "Insufficient volume available for #{source.barcode}")
+      return false
+    end
+    true
+  end
+
+  # This method is used to validate the volume of the primary aliquot.
+  # It is typically used as a callback before updating a library/pool record.
+  #
+  # The method performs the following checks:
+  # 1. If the primary aliquot has not changed its volume, the method returns immediately
+  # without performing any further checks.
+  # 2. If the volume of the primary aliquot is greater than or equal to the used volume,
+  # the method returns true.
+  # 3. If the volume of the primary aliquot is less than the used volume,
+  # the method adds an error to the library record and aborts the update operation.
+  #
+  # @return [nil, true, false] Returns nil if the primary aliquot has not changed its volume,
+  #  true if the volume of the primary aliquot is greater than or equal to the used volume, and
+  # false if the volume of the primary aliquot is less than the used volume.
+  def primary_aliquot_volume_sufficient
+    return unless aliquot_type == 'primary' && source && volume
+    return true if volume >= source.used_volume
+
+    errors.add(:volume, 'must be greater than the current used volume')
+    false
+  end
+
   delegate :is_a?, to: :used_by, prefix: true
 
   scope :filter_by_publishable, lambda {

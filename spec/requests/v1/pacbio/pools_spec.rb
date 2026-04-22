@@ -234,7 +234,7 @@ RSpec.describe 'PoolsController', :pacbio do
     end
   end
 
-  context 'when creating a singleplex library' do
+  context 'when creating a singleplex pool' do
     context 'on success' do
       let(:body) do
         {
@@ -409,9 +409,57 @@ RSpec.describe 'PoolsController', :pacbio do
         )
       end
     end
+
+    context 'on failure - when you exceed a libraries available volume' do
+      let(:library) { create(:pacbio_library, volume: 10) }
+      let(:body) do
+        {
+          data: {
+            type: 'pools',
+            attributes: {
+              used_aliquots_attributes: [
+                {
+                  template_prep_kit_box_barcode: 'LK1234567',
+                  volume: 11,
+                  concentration: 2.22,
+                  insert_size: 100,
+                  source_id: library.id,
+                  source_type: 'Pacbio::Library',
+                  tag_id: tag.id
+                }
+              ],
+              primary_aliquot_attributes: {
+                concentration: '22',
+                template_prep_kit_box_barcode: '100',
+                insert_size: '11',
+                volume: 1.11
+              }
+            }
+          }
+        }.to_json
+      end
+
+      it 'returns unprocessable entity status' do
+        post v1_pacbio_pools_path, params: body, headers: json_api_headers
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+
+      it 'cannot create a pool' do
+        expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.not_to(
+          change(Pacbio::Pool, :count)
+        )
+      end
+
+      it 'returns the correct error messages' do
+        post v1_pacbio_pools_path, params: body, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+        errors = json['errors']
+        expect(errors[1]['detail']).to include("Insufficient volume available for #{library.barcode}")
+      end
+    end
   end
 
-  context 'when creating a multiplex library' do
+  context 'when creating a multiplexed pool' do
     context 'on success' do
       let(:body) do
         {
@@ -714,7 +762,7 @@ RSpec.describe 'PoolsController', :pacbio do
   end
 
   context 'when there is an associated run' do
-    let!(:pool) { create(:pacbio_pool) }
+    let!(:pool) { create(:pacbio_pool, library_count: 1) }
     let!(:updated_aliquot) { pool.used_aliquots.first }
     let!(:plate) { build(:pacbio_plate) }
     let(:run) { create(:pacbio_run, plates: [plate]) }
@@ -729,7 +777,7 @@ RSpec.describe 'PoolsController', :pacbio do
               {
                 id: updated_aliquot.id.to_s,
                 source_id: updated_aliquot.source.id.to_s,
-                source_type: 'Pacbio::Request',
+                source_type: 'Pacbio::Library',
                 template_prep_kit_box_barcode: 'LK12345',
                 tag_id: tag.id,
                 volume: 1,
@@ -737,6 +785,12 @@ RSpec.describe 'PoolsController', :pacbio do
                 insert_size: 100
               }
             ],
+            primary_aliquot_attributes: {
+              volume: '200',
+              concentration: '22',
+              template_prep_kit_box_barcode: '100',
+              insert_size: '11'
+            },
             volume: '200',
             concentration: '22',
             template_prep_kit_box_barcode: '100',
