@@ -1,0 +1,35 @@
+development:
+  provider: okta
+  issuer: "https://sanger.okta.com"
+  #audience: "api://default"
+  jwks_uri: "https://sanger.okta.com/oauth2/v1/keys"
+  client_id: "0oaurrnc5aBDHc8AI417"
+  # Add other provider-specific config as needed
+
+test:
+  provider: okta
+  issuer: "https://your-okta-domain/oauth2/default"
+  #audience: "api://default"
+  jwks_uri: "https://your-okta-domain/oauth2/default/v1/keys"
+  client_id: "your-client-id"
+
+production:
+  provider: okta
+  issuer: "https://your-okta-domain/oauth2/default"
+  #audience: "api://default"
+  jwks_uri: "https://your-okta-domain/oauth2/default/v1/keys"
+  client_id: "your-client-id"
+
+uat:
+  provider: okta
+  issuer: "https://sanger.okta.com"
+  audience: "api://default"
+  jwks_uri: "https://sanger.okta.com/oauth2/v1/keys"
+  client_id: "0oaurrnc5aBDHc8AI417"
+
+training:
+  provider: okta
+  issuer: "https://your-okta-domain/oauth2/default"
+  #audience: "api://default"
+  jwks_uri: "https://your-okta-domain/oauth2/default/v1/keys"
+  client_id: "your-client-id"
