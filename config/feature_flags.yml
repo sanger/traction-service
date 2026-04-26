@@ -3,3 +3,4 @@
 # The key should be lowercase and snake case, and prefixes with the issue number to allow easy identification
 y25_662_enable_request_authentication: When enabled, this will activate the new authenticator module
 y25_662_reject_unauthenticated_requests: When enabled, this will reject any unauthenticated requests
+y25_661_enable_okta_authentication: When enabled, this will activate Okta authentication for the application
