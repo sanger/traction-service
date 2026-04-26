@@ -57,6 +57,9 @@ module TractionService
 
     config.pacbio_smrt_link_versions = config_for(:pacbio_smrt_link_versions)
 
+    # Auth provider config (Okta, etc.)
+    config.auth = config_for(:auth)
+
     # Pacbio default request cost code
     config.pacbio_request_cost_code = 'S4699'
 
