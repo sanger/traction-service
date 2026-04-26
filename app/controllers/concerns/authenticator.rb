@@ -18,6 +18,7 @@ module Authenticator
 
   # Using headers instead of env, HTTP_X_TRACTION_CLIENT_ID in Rails.
   API_KEY_HEADER = 'X-Traction-Client-Id'
+  BEARER = 'Bearer'
 
   included do
     before_action :authenticate_request!
@@ -49,7 +50,7 @@ module Authenticator
   #
   # @return [Boolean] true if Bearer token is present, false otherwise
   def bearer_token_present?
-    request.headers['Authorization']&.start_with?('Bearer ')
+    request.headers['Authorization']&.start_with?(BEARER)
   end
 
   # Authenticates a request using a Bearer token from the Authorization header.
@@ -58,6 +59,8 @@ module Authenticator
   #
   # @return [void]
   def authenticate_bearer!
+    return unless Flipper.enabled?(:y25_661_enable_okta_authentication)
+
     token = bearer_token
     return render_unauthorized('Invalid Bearer token') unless valid_bearer_token?(token)
 
@@ -68,7 +71,10 @@ module Authenticator
   #
   # @return [String, nil] the token string if present, nil otherwise
   def bearer_token
-    request.headers['Authorization']&.split&.last
+    auth = request.headers['Authorization']
+    return nil unless auth&.start_with?(BEARER)
+    token = auth[BEARER.size..].strip
+    token.presence
   end
 
   # Validates a Bearer token.
