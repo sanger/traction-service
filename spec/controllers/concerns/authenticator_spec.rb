@@ -45,7 +45,6 @@ RSpec.describe 'Authenticator Flipper feature flagging', type: :controller do
     expect(response).to have_http_status(:unauthorized)
   end
 
-
   context 'API key authentication' do
     it 'authenticates a valid API key for GET requests' do
       allow(Flipper).to receive(:enabled?).with(feature).and_return(true)

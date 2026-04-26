@@ -73,6 +73,7 @@ module Authenticator
   def bearer_token
     auth = request.headers['Authorization']
     return nil unless auth&.start_with?(BEARER)
+
     token = auth[BEARER.size..].strip
     token.presence
   end
