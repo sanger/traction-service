@@ -45,98 +45,92 @@ RSpec.describe 'Authenticator Flipper feature flagging', type: :controller do
     expect(response).to have_http_status(:unauthorized)
   end
 
-  it 'authenticates a valid API key for GET requests' do
-    allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
-    issued = api_application.rotate_api_key!
 
-    request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
+  context 'API key authentication' do
+    it 'authenticates a valid API key for GET requests' do
+      allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
+      issued = api_application.rotate_api_key!
 
-    allow(Rails.logger).to receive(:info)
-    expect(Rails.logger).to receive(:info).with(match(/\[API KEY\] Key used/))
-    get :index
+      request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
 
-    expect(response).to have_http_status(:ok)
-    expect(issued[:api_key].reload.last_used_at).not_to be_nil
+      allow(Rails.logger).to receive(:info)
+      expect(Rails.logger).to receive(:info).with(match(/\[API KEY\] Key used/))
+      get :index
+
+      expect(response).to have_http_status(:ok)
+      expect(issued[:api_key].reload.last_used_at).not_to be_nil
+    end
+
+    it 'rejects malformed API keys' do
+      allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
+
+      request.headers['X-Traction-Client-Id'] = 'bad-format-key'
+      get :index
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it 'permits non-GET requests authenticated by API key' do
+      allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
+      issued = api_application.rotate_api_key!
+
+      request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
+      post :create
+
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'authenticates a grace-period API key and sets a deprecation warning header' do
+      allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
+      # Issue a key then rotate so the first key moves to grace_period
+      issued = api_application.rotate_api_key!
+      api_application.rotate_api_key!
+
+      request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
+
+      expect(Rails.logger).to receive(:warn).with(match(/\[API KEY\] Grace-period key used/))
+      get :index
+
+      expect(response).to have_http_status(:ok)
+      expect(response.headers['X-Traction-Client-Id-Warning']).to match(/deprecated/i)
+    end
+
+    it 'rejects an expired API key' do
+      allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
+      # Two rotations push the original key to expired
+      issued = api_application.rotate_api_key!
+      api_application.rotate_api_key!
+      api_application.rotate_api_key!
+
+      request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
+      get :index
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it 'rejects an active API key when expires_at has passed' do
+      allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
+      issued = api_application.rotate_api_key!
+      issued[:api_key].update!(expires_at: 1.minute.ago)
+
+      request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
+      get :index
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it 'permits non-expiring API keys' do
+      allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
+      issued = api_application.rotate_api_key!(expires_at: nil)
+
+      request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
+      get :index
+
+      expect(response).to have_http_status(:ok)
+    end
   end
 
-  it 'rejects malformed API keys' do
-    allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
-
-    request.headers['X-Traction-Client-Id'] = 'bad-format-key'
-    get :index
-
-    expect(response).to have_http_status(:unauthorized)
-  end
-
-  it 'permits non-GET requests authenticated by API key' do
-    allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
-    issued = api_application.rotate_api_key!
-
-    request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
-    post :create
-
-    expect(response).to have_http_status(:ok)
-  end
-
-  it 'authenticates a grace-period API key and sets a deprecation warning header' do
-    allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
-    # Issue a key then rotate so the first key moves to grace_period
-    issued = api_application.rotate_api_key!
-    api_application.rotate_api_key!
-
-    request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
-
-    expect(Rails.logger).to receive(:warn).with(match(/\[API KEY\] Grace-period key used/))
-    get :index
-
-    expect(response).to have_http_status(:ok)
-    expect(response.headers['X-Traction-Client-Id-Warning']).to match(/deprecated/i)
-  end
-
-  it 'rejects an expired API key' do
-    allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
-    # Two rotations push the original key to expired
-    issued = api_application.rotate_api_key!
-    api_application.rotate_api_key!
-    api_application.rotate_api_key!
-
-    request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
-    get :index
-
-    expect(response).to have_http_status(:unauthorized)
-  end
-
-  it 'rejects an active API key when expires_at has passed' do
-    allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
-    issued = api_application.rotate_api_key!
-    issued[:api_key].update!(expires_at: 1.minute.ago)
-
-    request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
-    get :index
-
-    expect(response).to have_http_status(:unauthorized)
-  end
-
-  it 'permits bearer-authenticated non-GET requests' do
-    allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
-
-    request.headers['Authorization'] = 'Bearer valid-token'
-    post :create
-
-    expect(response).to have_http_status(:ok)
-  end
-
-  it 'permits non-expiring API keys' do
-    allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
-    issued = api_application.rotate_api_key!(expires_at: nil)
-
-    request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
-    get :index
-
-    expect(response).to have_http_status(:ok)
-  end
-
-  context 'unauthenticated request behavior' do
+  context 'unauthenticated requests' do
     it 'logs unauthenticated requests' do
       allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
       allow(Flipper).to receive(:enabled?).with(feature_reject_unauthenticated).and_return(false)
@@ -174,6 +168,34 @@ RSpec.describe 'Authenticator Flipper feature flagging', type: :controller do
         expect(message).to include('request_id=')
       end
       get :index
+    end
+  end
+
+  context 'bearer token authentication' do
+    let(:okta_flag) { :y25_661_enable_okta_authentication }
+
+    it 'bypasses bearer authentication when Okta flag is disabled' do
+      allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
+      allow(Flipper).to receive(:enabled?).with(okta_flag).and_return(false)
+      request.headers['Authorization'] = 'Bearer any-token'
+      post :create
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'enforces bearer authentication when Okta flag is enabled and token is invalid' do
+      allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
+      allow(Flipper).to receive(:enabled?).with(okta_flag).and_return(true)
+      request.headers['Authorization'] = 'Bearer '
+      post :create
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it 'permits bearer-authenticated non-GET requests when Okta flag is enabled and token is present' do
+      allow(Flipper).to receive(:enabled?).with(feature).and_return(true)
+      allow(Flipper).to receive(:enabled?).with(okta_flag).and_return(true)
+      request.headers['Authorization'] = 'Bearer valid-token'
+      post :create
+      expect(response).to have_http_status(:ok)
     end
   end
 end
