@@ -16,6 +16,7 @@ gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX poss
 gem 'rack-session' # Use Rack Session for session management. Needed for flipper
 gem 'rails', '~> 8.1.2'
 gem 'sanger-jsonapi-resources', '~> 0.3.0'
+gem 'jwt'
 gem 'syslog' # No longer part of the default gems in Ruby 3.4
 
 group :development do
