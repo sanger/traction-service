@@ -174,7 +174,13 @@ RSpec.describe 'Authenticator', type: :controller do
   end
 
   context 'bearer token authentication' do
-    let(:okta_provider_double) { instance_double(AuthProviders::OktaJwtProvider, valid?: true) }
+    let(:okta_provider_double) do
+      instance_double(AuthProviders::OktaJwtProvider).tap do |double|
+        allow(double).to receive(:valid?) do |token|
+          token.present? && token == 'valid-token'
+        end
+      end
+    end
 
     before do
       # Inject the test double for OktaJwtProvider

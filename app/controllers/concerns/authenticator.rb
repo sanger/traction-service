@@ -13,7 +13,7 @@
 #     include Authenticator
 #   end
 #
-module Authenticator
+module Authenticator # rubocop:disable Metrics/ModuleLength
   extend ActiveSupport::Concern
 
   # Using headers instead of env, HTTP_X_TRACTION_CLIENT_ID in Rails.
