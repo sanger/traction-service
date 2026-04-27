@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Authenticator Flipper feature flagging', type: :controller do
+RSpec.describe 'Authenticator', type: :controller do
   let(:feature_flag) { :y25_662_enable_request_authentication }
   let(:feature_reject_unauthenticated) { :y25_662_reject_unauthenticated_requests }
   let(:feature_okta) { :y25_661_enable_okta_authentication }
@@ -32,18 +32,20 @@ RSpec.describe 'Authenticator Flipper feature flagging', type: :controller do
     end
   end
 
-  it 'skips authentication when Flipper flag is disabled' do
-    allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(false)
-    get :index
-    expect(response.body).to eq('ok')
-    expect(response).to have_http_status(:ok)
-  end
+  context 'Authenticator feature flag' do
+    it 'skips authentication when Flipper flag is disabled' do
+      allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(false)
+      get :index
+      expect(response.body).to eq('ok')
+      expect(response).to have_http_status(:ok)
+    end
 
-  it 'calls authentication when Flipper flag is enabled' do
-    allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(true)
-    # No auth headers, so should be unauthorized
-    get :index
-    expect(response).to have_http_status(:unauthorized)
+    it 'calls authentication when Flipper flag is enabled' do
+      allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(true)
+      # No auth headers, so should be unauthorized
+      get :index
+      expect(response).to have_http_status(:unauthorized)
+    end
   end
 
   context 'API key authentication' do
