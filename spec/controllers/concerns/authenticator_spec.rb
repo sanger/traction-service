@@ -174,6 +174,13 @@ RSpec.describe 'Authenticator', type: :controller do
   end
 
   context 'bearer token authentication' do
+    let(:okta_provider_double) { instance_double(AuthProviders::OktaJwtProvider, valid?: true) }
+
+    before do
+      # Inject the test double for OktaJwtProvider
+      allow(AuthProviders::OktaJwtProvider).to receive(:new).and_return(okta_provider_double)
+    end
+
     it 'bypasses bearer authentication when Okta flag is disabled' do
       allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(true)
       allow(Flipper).to receive(:enabled?).with(feature_okta).and_return(false)
