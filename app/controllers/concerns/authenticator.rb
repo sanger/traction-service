@@ -78,14 +78,34 @@ module Authenticator
     token.presence
   end
 
-  # Validates a Bearer token.
-  #
-  # TODO(Y25-660): Identity provider integration
+  # Validates a Bearer token using the configured provider abstraction.
   #
   # @param token [String] the token to validate
   # @return [Boolean] true if token is valid
   def valid_bearer_token?(token)
-    token.present?
+    bearer_token_provider.valid?(token)
+  end
+
+  # Returns the configured Bearer token provider (Okta, etc.)
+  #
+  # @return [AuthProviders::BaseBearerTokenProvider]
+  def bearer_token_provider
+    @bearer_token_provider ||= build_bearer_token_provider
+  end
+
+  def build_bearer_token_provider
+    config = Rails.application.config.auth.with_indifferent_access
+    case config[:provider]
+    when 'okta'
+      require_dependency 'auth_providers/okta_jwt_provider'
+      AuthProviders::OktaJwtProvider.new(
+        issuer: config[:issuer],
+        audience: config[:audience] || config[:client_id],
+        jwks_uri: config[:jwks_uri]
+      )
+    else
+      raise "Unknown auth provider: #{config[:provider]}"
+    end
   end
 
   # Checks if an API key is present in the X-Traction-Client-Id header.
