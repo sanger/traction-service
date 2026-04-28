@@ -55,8 +55,6 @@ module Authenticator # rubocop:disable Metrics/ModuleLength
 
   # Authenticates a request using a Bearer token from the Authorization header.
   #
-  # TODO(Y25-660): Identity provider integration
-  #
   # @return [void]
   def authenticate_bearer!
     return unless Flipper.enabled?(:y25_661_enable_okta_authentication)
