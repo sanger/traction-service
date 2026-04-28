@@ -3,6 +3,7 @@
 # ApplicationController
 class ApplicationController < ActionController::Base
   include JSONAPI::ActsAsResourceController
+  include Authenticator
 
   skip_before_action :verify_authenticity_token
 

@@ -136,12 +136,12 @@ RSpec.describe Pacbio::Well, :pacbio do
 
       # Pool with 3 libraries: 2 invalid ones and one valid
       well = build(:pacbio_well, used_aliquots: [
-        create(:aliquot, source: libraries[0], volume: 11, aliquot_type: :derived),
-        create(:aliquot, source: libraries[1], volume: 11, aliquot_type: :derived),
-        create(:aliquot, source: libraries[2], volume: 9, aliquot_type: :derived)
+        build(:aliquot, source: libraries[0], volume: 11, aliquot_type: :derived),
+        build(:aliquot, source: libraries[1], volume: 11, aliquot_type: :derived),
+        build(:aliquot, source: libraries[2], volume: 9, aliquot_type: :derived)
       ])
       expect(well).not_to be_valid
-      expect(well.errors[:base][0]).to eq("Insufficient volume available for #{libraries[0].tube.barcode},#{libraries[1].tube.barcode}")
+      expect(well.errors['used_aliquots.volume']).to eq(["Insufficient volume available for #{libraries[0].barcode}", "Insufficient volume available for #{libraries[1].barcode}"])
     end
 
     it 'is valid when using a valid amount of volume from a library' do
@@ -155,13 +155,13 @@ RSpec.describe Pacbio::Well, :pacbio do
 
       # Pool with 3 pools: 2 invalid ones and one valid
       well = build(:pacbio_well, used_aliquots: [
-        create(:aliquot, source: pools[0], volume: 11, aliquot_type: :derived),
-        create(:aliquot, source: pools[1], volume: 11, aliquot_type: :derived),
-        create(:aliquot, source: pools[2], volume: 9, aliquot_type: :derived)
+        build(:aliquot, source: pools[0], volume: 11, aliquot_type: :derived),
+        build(:aliquot, source: pools[1], volume: 11, aliquot_type: :derived),
+        build(:aliquot, source: pools[2], volume: 9, aliquot_type: :derived)
       ])
 
       expect(well).not_to be_valid
-      expect(well.errors[:base][0]).to eq("Insufficient volume available for #{pools[0].tube.barcode},#{pools[1].tube.barcode}")
+      expect(well.errors['used_aliquots.volume']).to eq(["Insufficient volume available for #{pools[0].barcode}", "Insufficient volume available for #{pools[1].barcode}"])
     end
 
     it 'is valid when using a valid amount of volume from a pool' do

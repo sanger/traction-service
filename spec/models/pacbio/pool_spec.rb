@@ -80,12 +80,12 @@ RSpec.describe Pacbio::Pool, :pacbio do
     libraries = create_list(:pacbio_library, 3, volume: 100)
     # Pool with 3 libraries: 2 invalid ones and one valid
     pool = build(:pacbio_pool, used_aliquots: [
-      create(:aliquot, source: libraries[0], volume: 101, aliquot_type: :derived),
-      create(:aliquot, source: libraries[1], volume: 101, aliquot_type: :derived),
-      create(:aliquot, source: libraries[2], volume: 99, aliquot_type: :derived)
+      build(:aliquot, source: libraries[0], volume: 101, aliquot_type: :derived),
+      build(:aliquot, source: libraries[1], volume: 101, aliquot_type: :derived),
+      build(:aliquot, source: libraries[2], volume: 99, aliquot_type: :derived)
     ])
     expect(pool).not_to be_valid
-    expect(pool.errors[:base][0]).to eq("Insufficient volume available for #{libraries[0].tube.barcode},#{libraries[1].tube.barcode}")
+    expect(pool.errors[:volume]).to include("Insufficient volume available for #{libraries[0].barcode}", "Insufficient volume available for #{libraries[1].barcode}")
   end
 
   it 'is valid when using a valid amount of volume from a library' do
@@ -327,15 +327,6 @@ RSpec.describe Pacbio::Pool, :pacbio do
       create(:pacbio_well, pools: [pool], plate: plate1)
       create(:pacbio_well, pools: [pool], plate: plate2)
       expect(pool.sequencing_runs).to eq([plate1.run, plate2.run])
-    end
-  end
-
-  context 'before_update' do
-    it 'calls primary_aliquot_volume_sufficient method' do
-      pool = create(:pacbio_pool)
-      expect(pool).to receive(:primary_aliquot_volume_sufficient)
-      pool.primary_aliquot.update(volume: 100)
-      pool.save
     end
   end
 

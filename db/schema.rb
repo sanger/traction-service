@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_13_150155) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_25_120000) do
   create_table "aliquots", charset: "utf8mb3", force: :cascade do |t|
     t.integer "aliquot_type", default: 0, null: false
     t.float "concentration"
@@ -29,6 +29,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_13_150155) do
     t.index ["source_type", "source_id"], name: "index_aliquots_on_source"
     t.index ["tag_id"], name: "index_aliquots_on_tag_id"
     t.index ["used_by_type", "used_by_id"], name: "index_aliquots_on_used_by"
+  end
+
+  create_table "api_applications", charset: "utf8mb3", force: :cascade do |t|
+    t.string "contact_email"
+    t.string "contact_name", null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "api_keys", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "api_application_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.string "key_digest", null: false
+    t.datetime "last_used_at"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["api_application_id", "status"], name: "index_api_keys_on_api_application_id_and_status"
+    t.index ["api_application_id"], name: "index_api_keys_on_api_application_id"
+    t.index ["key_digest"], name: "index_api_keys_on_key_digest", unique: true
   end
 
   create_table "annotation_types", charset: "utf8mb3", force: :cascade do |t|
@@ -521,4 +543,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_13_150155) do
   add_foreign_key "qc_results", "qc_receptions"
   add_foreign_key "requests", "receptions"
   add_foreign_key "workflow_steps", "workflows"
+  add_foreign_key "api_keys", "api_applications"
 end
