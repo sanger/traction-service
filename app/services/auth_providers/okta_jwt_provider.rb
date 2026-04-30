@@ -5,6 +5,7 @@ require 'net/http'
 require 'uri'
 require 'json'
 # Authentication provider implementations, e.g. Okta JWT validation
+# @see https://github.com/jwt/ruby-jwt
 module AuthProviders
   # Validates JWTs issued by Okta using the JWKS endpoint
   class OktaJwtProvider
