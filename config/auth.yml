@@ -1,30 +1,20 @@
 ---
-# Authentication provider configuration for different environments
+# Authentication provider configuration for different environments.
+# The configurations for uat, training, and production, are done in deployment project.
+# The default configuration uses the Traction UAT Okta settings.
 default: &default
-  provider: okta
-  issuer: "https://sanger.okta.com"
-  audience: "https://sanger.okta.com"
-  jwks_uri: "https://sanger.okta.com/oauth2/v1/keys"
-  client_id: "test-client-id"
-
-development:
-  <<: *default
-
-test:
-  <<: *default
-
-production:
-  <<: *default
-  client_id: "UNKNOWN"
-
-uat:
-  <<: *default
   provider: okta
   issuer: "https://sanger.okta.com"
   audience: "https://sanger.okta.com"
   jwks_uri: "https://sanger.okta.com/oauth2/v1/keys"
   client_id: "0oaurrnc5aBDHc8AI417"
 
-training:
+development:
   <<: *default
-  client_id: "UNKNOWN"
+
+test:
+  <<: *default
+  issuer: "http://localhost:3000"
+  audience: "http://localhost:3000"
+  jwks_uri: "http://localhost:3000/jwks"
+  client_id: "test-client-id"
