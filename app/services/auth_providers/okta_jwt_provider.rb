@@ -30,8 +30,6 @@ module AuthProviders
       payload, _header = decode(token)
       payload.present?
     rescue JWT::DecodeError,
-           JWT::JWK::Set::KidNotFound,
-           JWT::JWK::Set::InvalidJWKError,
            JSON::ParserError,
            URI::InvalidURIError,
            SocketError,
@@ -55,6 +53,7 @@ module AuthProviders
     #
     # @param token [String] The JWT token to decode and verify
     # @return [Array] The decoded payload and header
+    # @raise [JWT::MissingRequiredClaim] if a required claim is missing
     # @raise [JWT::ExpiredSignature] if the token is expired (exp claim)
     # @raise [JWT::ImmatureSignature] if the token is not valid yet (nbf claim)
     # @raise [JWT::InvalidIatError] if the issued at claim (iat) is invalid
@@ -62,6 +61,7 @@ module AuthProviders
     # @raise [JWT::InvalidAudError] if the audience claim (aud) is invalid
     # @raise [JWT::VerificationError] if the signature is invalid
     # @raise [JWT::DecodeError] for all other decode errors (malformed, etc.)
+    # @see #fetch_jwks for additional errors that may be raised when fetching JWKS
     # rubocop:disable Metrics/MethodLength
     def decode(token)
       JWT.decode(
@@ -71,7 +71,7 @@ module AuthProviders
         verify_iss: true, # verify issuer
         verify_aud: true, # verify audience
         verify_expiration: true,  # verify expiration time
-        verify_not_before: true,  # verify not before time
+        verify_not_before: false, # don't verify not before time; not present
         verify_iat: true, # verify issued at time
         verify_jti: false, # don't verify JWT ID; not known beforehand
         verify_sub: false, # don't verify subject; not known beforehand
@@ -79,7 +79,8 @@ module AuthProviders
         algorithms: ['RS256'],
         iss: @issuer,
         aud: @audience,
-        jwks: jwks_loader
+        jwks: jwks_loader,
+        required_claims: %w[aud exp iat iss] # check presence
       )
     end
     # rubocop:enable Metrics/MethodLength
@@ -91,7 +92,7 @@ module AuthProviders
     #
     # @return [Proc] a lambda that fetches and returns the JWKS
     def jwks_loader
-      @jwks_loader ||= lambda do |_options|
+      lambda do |_options|
         Rails.cache.fetch([:okta_jwks, @jwks_uri], expires_in: 5.minutes) do
           fetch_jwks
         end
