@@ -14,12 +14,11 @@ module AuthProviders
     # @param issuer [String] The expected issuer for JWT validation
     # @param audience [String] The expected audience for JWT validation
     # @param jwks_uri [String] The URI to fetch the JWKS (Key Set) from Okta
-    def initialize(issuer:, audience:, jwks_uri:)
+    def initialize(issuer:, audience:, jwks_uri:, client_id:)
       @issuer = issuer
       @audience = audience
       @jwks_uri = jwks_uri
-      @cached_keys = nil
-      @last_fetch = nil
+      @client_id = client_id
     end
 
     # Validates the JWT and returns true if valid, false otherwise.
@@ -28,8 +27,17 @@ module AuthProviders
     # @return [Boolean] true if the token is valid, false otherwise
     # rubocop:disable Metrics/MethodLength
     def valid?(token)
-      payload, _header = decode(token)
-      payload.present?
+      payload, _header = decode(token) # verify signature and claims; raises if invalid
+      return false if payload.blank?
+
+      if payload['cid'] != @client_id
+        Rails.logger.error(
+          "[OKTA JWT] Invalid client_id: expected #{@client_id}, " \
+          "got #{payload['cid']}"
+        )
+        return false
+      end
+      true
     rescue JWT::DecodeError,
            JSON::ParserError,
            URI::InvalidURIError,
