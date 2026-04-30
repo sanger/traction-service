@@ -65,10 +65,15 @@ describe AuthProviders::OktaJwtProvider do
     { 'keys' => [jwk.export] }
   end
 
+  # The client_id (Okta 'cid' claim) identifies the client application the
+  # token was issued for. It varies by environment (e.g., different for UAT,
+  # production, etc.).
+  let(:client_id) { 'test-client-id' }
+
   # The URI for the JWKS (JSON Web Key Set) endpoint. In production, this would
   # point to the Okta JWKS endpointl, https://sanger.okta.com/oauth2/v1/keys
   let(:jwks_uri) { 'http://localhost:3000/jwks' }
-  let(:provider) { described_class.new(issuer: issuer, audience: audience, jwks_uri: jwks_uri) }
+  let(:provider) { described_class.new(issuer:, audience:, jwks_uri:, client_id:) }
 
   # The expiration time for the JWT, set to 1 hour from now. This is used in the
   # payload.
@@ -93,7 +98,7 @@ describe AuthProviders::OktaJwtProvider do
       sub: 'test-user@example.com',
       iat: Time.now.to_i,
       exp: 1.hour.from_now.to_i,
-      cid: 'test-client-id',
+      cid: client_id,
       uid: 'test-user-id',
       scp: %w[openid profile email],
       auth_time: Time.now.to_i
@@ -173,7 +178,12 @@ describe AuthProviders::OktaJwtProvider do
   end
 
   it 'returns false if JWKS URI is invalid' do
-    invalid_provider = described_class.new(issuer: issuer, audience: audience, jwks_uri: 'http://invalid^uri')
+    invalid_provider = described_class.new(
+      issuer: issuer,
+      audience: audience,
+      jwks_uri: 'http://invalid^uri',
+      client_id: client_id
+    )
     token = JWT.encode(jwt_payload, private_key, 'RS256', jwt_header)
     expect(invalid_provider.valid?(token)).to be false
   end
@@ -249,6 +259,12 @@ describe AuthProviders::OktaJwtProvider do
   it 'returns false if JWKS endpoint returns a 500 error' do
     token = JWT.encode(jwt_payload, private_key, 'RS256', jwt_header)
     stub_request(:get, jwks_uri).to_return(status: 500, body: 'Internal Server Error')
+    expect(provider.valid?(token)).to be false
+  end
+
+  it 'rejects a token with an invalid client_id (cid claim)' do
+    payload = jwt_payload.merge(cid: 'wrong-client-id')
+    token = JWT.encode(payload, private_key, 'RS256', jwt_header)
     expect(provider.valid?(token)).to be false
   end
 end
