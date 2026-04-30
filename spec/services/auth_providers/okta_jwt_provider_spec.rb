@@ -26,7 +26,7 @@ require 'jwt'
 describe AuthProviders::OktaJwtProvider do
   # Ensure WebMock disables external network connections (except localhost) for
   # test isolation, and restore original state after tests.
-  around(:all) do |example|
+  around do |example|
     webmock_was_allowing_net_connect = WebMock.net_connect_allowed?
     WebMock.disable_net_connect!(allow_localhost: true) if webmock_was_allowing_net_connect
     example.run
