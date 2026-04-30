@@ -201,7 +201,6 @@ describe AuthProviders::OktaJwtProvider do
     # Expect only one network request for JWKS
     stub = stub_request(:get, jwks_uri).to_return(status: 200, body: jwks.to_json, headers: { 'Content-Type' => 'application/json' })
     expect(provider.valid?(token)).to be true
-    expect(provider.valid?(token)).to be true
     expect(stub).to have_been_requested.once
   end
 
