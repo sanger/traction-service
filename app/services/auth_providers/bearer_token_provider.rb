@@ -2,7 +2,7 @@
 
 module AuthProviders
   # Interface for Bearer token providers
-  class BaseBearerTokenProvider
+  class BearerTokenProvider
     def valid?(_token)
       raise NotImplementedError, 'Subclasses must implement valid?'
     end
