@@ -16,13 +16,14 @@ module AuthProviders
     # @param issuer [String] The expected issuer for JWT validation
     # @param audience [String] The expected audience for JWT validation
     # @param jwks_uri [String] The URI to fetch the JWKS (Key Set) from Okta
+    # rubocop:disable Lint/MissingSuper
     def initialize(issuer:, audience:, jwks_uri:, client_id:)
-      super
       @issuer = issuer
       @audience = audience
       @jwks_uri = jwks_uri
       @client_id = client_id
     end
+    # rubocop:enable Lint/MissingSuper
 
     # Validates the JWT and returns true if valid, false otherwise.
     #
