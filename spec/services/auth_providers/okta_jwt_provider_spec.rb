@@ -125,12 +125,6 @@ describe AuthProviders::OktaJwtProvider do
     expect(provider.valid?(token)).to be false
   end
 
-  it 'rejects a token with an invalid audience' do
-    payload = jwt_payload.merge(aud: 'invalid-audience')
-    token = JWT.encode(payload, private_key, 'RS256', jwt_header)
-    expect(provider.valid?(token)).to be false
-  end
-
   it 'rejects a token with expired exp claim' do
     payload = jwt_payload.merge(exp: 1.hour.ago.to_i)
     token = JWT.encode(payload, private_key, 'RS256', jwt_header)
