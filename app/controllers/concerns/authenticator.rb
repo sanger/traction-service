@@ -13,7 +13,7 @@
 #     include Authenticator
 #   end
 #
-module Authenticator # rubocop:disable Metrics/ModuleLength
+module Authenticator
   extend ActiveSupport::Concern
 
   # Using headers instead of env, HTTP_X_TRACTION_CLIENT_ID in Rails.
@@ -86,24 +86,9 @@ module Authenticator # rubocop:disable Metrics/ModuleLength
 
   # Returns the configured Bearer token provider (Okta, etc.)
   #
-  # @return [AuthProviders::BaseBearerTokenProvider]
+  # @return [AuthProviders::BearerTokenProvider]
   def bearer_token_provider
-    @bearer_token_provider ||= build_bearer_token_provider
-  end
-
-  def build_bearer_token_provider
-    config = Rails.application.config.auth.with_indifferent_access
-    case config[:provider]
-    when 'okta'
-      require_dependency 'auth_providers/okta_jwt_provider'
-      AuthProviders::OktaJwtProvider.new(
-        issuer: config[:issuer],
-        audience: config[:audience] || config[:client_id],
-        jwks_uri: config[:jwks_uri]
-      )
-    else
-      raise "Unknown auth provider: #{config[:provider]}"
-    end
+    @bearer_token_provider ||= AuthProviders.build_bearer_token_provider
   end
 
   # Checks if an API key is present in the X-Traction-Client-Id header.
