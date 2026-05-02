@@ -4,7 +4,6 @@ require 'jwt'
 require 'net/http'
 require 'uri'
 require 'json'
-require_relative 'bearer_token_provider'
 
 # Authentication provider implementations, e.g. Okta JWT validation
 # @see https://github.com/jwt/ruby-jwt
