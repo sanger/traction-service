@@ -101,14 +101,25 @@ module AuthProviders
     # Returns a lambda for loading JWKS (JSON Web Key Set) from Okta.
     # This lambda is used by the JWT gem to look up the correct public key for
     # signature verification. The keys are cached for 5 minutes to avoid
-    # unnecessary network requests and improve performance.
-    #
+    # unnecessary network requests and improve performance. It also supports
+    # cache invalidation when a key ID (kid) is not found, which can happen
+    # when Okta rotates keys.
+    # @see https://github.com/jwt/ruby-jwt#json-web-key-jwk
     # @return [Proc] a lambda that fetches and returns the JWKS
     def jwks_loader
-      lambda do |_options|
-        Rails.cache.fetch([:okta_jwks, @jwks_uri], expires_in: 5.minutes) do
-          fetch_jwks
+      lambda do |options|
+        cache_key = [:okta_jwks, @jwks_uri]
+
+        # When JWT cannot find a key id (kid), it invokes the loader *again*
+        # with invalidate/kid_not_found so we can refresh stale keys.
+        if options&.[](:invalidate) || options&.[](:kid_not_found)
+          jwks = fetch_jwks
+          Rails.cache.write(cache_key, jwks, expires_in: 5.minutes)
+          next jwks
         end
+
+        # Normal case: try to read from cache, fetch if not present
+        Rails.cache.fetch(cache_key, expires_in: 5.minutes) { fetch_jwks }
       end
     end
 

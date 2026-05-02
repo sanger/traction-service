@@ -237,6 +237,34 @@ describe AuthProviders::OktaJwtProvider do
     expect(provider.valid?(token)).to be false
   end
 
+  it 'refetches JWKS on kid miss and validates token after key rotation' do
+    initial_token = JWT.encode(jwt_payload, private_key, 'RS256', jwt_header)
+    initial_stub = stub_request(:get, jwks_uri).to_return(
+      status: 200,
+      body: jwks.to_json,
+      headers: { 'Content-Type' => 'application/json' }
+    )
+
+    expect(provider.valid?(initial_token)).to be true
+    expect(initial_stub).to have_been_requested.once
+
+    rotated_kid = 'rotated-key'
+    rotated_private_key = OpenSSL::PKey::RSA.generate(2048)
+    rotated_jwks = {
+      'keys' => [JWT::JWK.create_from(rotated_private_key.public_key, kid: rotated_kid).export]
+    }
+
+    stub_request(:get, jwks_uri).to_return(
+      status: 200,
+      body: rotated_jwks.to_json,
+      headers: { 'Content-Type' => 'application/json' }
+    )
+
+    rotated_token = JWT.encode(jwt_payload, rotated_private_key, 'RS256', jwt_header.merge(kid: rotated_kid))
+    expect(provider.valid?(rotated_token)).to be true
+    expect(a_request(:get, jwks_uri)).to have_been_made.twice
+  end
+
   it 'fetches JWKS again after cache expiration' do
     token = JWT.encode(jwt_payload, private_key, 'RS256', jwt_header)
     stub = stub_request(:get, jwks_uri).to_return(status: 200, body: jwks.to_json, headers: { 'Content-Type' => 'application/json' })
