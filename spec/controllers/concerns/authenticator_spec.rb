@@ -5,7 +5,6 @@ require 'rails_helper'
 RSpec.describe 'Authenticator', type: :controller do
   let(:feature_flag) { :y25_662_enable_request_authentication }
   let(:feature_reject_unauthenticated) { :y25_662_reject_unauthenticated_requests }
-  let(:feature_okta) { :y25_661_enable_okta_authentication }
   let(:api_application) { create(:api_application) }
 
   # Dummy controller for testing
@@ -187,25 +186,22 @@ RSpec.describe 'Authenticator', type: :controller do
       allow(AuthProviders::OktaJwtProvider).to receive(:new).and_return(okta_provider_double)
     end
 
-    it 'bypasses bearer authentication when Okta flag is disabled' do
+    it 'rejects an invalid bearer token' do
       allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(true)
-      allow(Flipper).to receive(:enabled?).with(feature_okta).and_return(false)
-      request.headers['Authorization'] = 'Bearer any-token'
-      post :create
-      expect(response).to have_http_status(:ok)
-    end
-
-    it 'enforces bearer authentication when Okta flag is enabled and token is invalid' do
-      allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(true)
-      allow(Flipper).to receive(:enabled?).with(feature_okta).and_return(true)
       request.headers['Authorization'] = 'Bearer '
       post :create
       expect(response).to have_http_status(:unauthorized)
     end
 
-    it 'permits bearer-authenticated non-GET requests when Okta flag is enabled and token is present' do
+    it 'rejects a bearer token with invalid credentials' do
       allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(true)
-      allow(Flipper).to receive(:enabled?).with(feature_okta).and_return(true)
+      request.headers['Authorization'] = 'Bearer invalid-token'
+      post :create
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it 'permits bearer-authenticated non-GET requests with a valid token' do
+      allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(true)
       request.headers['Authorization'] = 'Bearer valid-token'
       post :create
       expect(response).to have_http_status(:ok)

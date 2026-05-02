@@ -57,8 +57,6 @@ module Authenticator
   #
   # @return [void]
   def authenticate_bearer!
-    return unless Flipper.enabled?(:y25_661_enable_okta_authentication)
-
     token = bearer_token
     return render_unauthorized('Invalid Bearer token') unless valid_bearer_token?(token)
 
