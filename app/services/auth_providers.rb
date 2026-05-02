@@ -9,13 +9,11 @@ module AuthProviders
   # @return [AuthProviders::BearerTokenProvider] an instance of the configured
   #   Bearer token provider
   # @raise [RuntimeError] if the provider is unknown
-  # rubocop:disable Metrics/MethodLength
   def self.build_bearer_token_provider
     config = Rails.application.config.auth.with_indifferent_access
     case config[:provider]
     when 'okta'
-      require_dependency 'auth_providers/okta_jwt_provider'
-      OktaJwtProvider.new(
+      AuthProviders::OktaJwtProvider.new(
         issuer: config[:issuer],
         audience: config[:audience],
         jwks_uri: config[:jwks_uri],
@@ -25,5 +23,4 @@ module AuthProviders
       raise "Unknown auth provider: #{config[:provider]}"
     end
   end
-  # rubocop:enable Metrics/MethodLength
 end
