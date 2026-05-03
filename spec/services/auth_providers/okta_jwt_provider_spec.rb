@@ -134,7 +134,6 @@ describe AuthProviders::OktaJwtProvider do
   it 'rejects a token missing the exp claim' do
     payload = jwt_payload.dup
     payload.delete(:exp)
-    payload.delete('exp')
     token = JWT.encode(payload, private_key, 'RS256', jwt_header)
     expect(provider.valid?(token)).to be false
   end
