@@ -75,10 +75,6 @@ describe AuthProviders::OktaJwtProvider do
   let(:jwks_uri) { 'http://localhost:3000/jwks' }
   let(:provider) { described_class.new(issuer:, audience:, jwks_uri:, client_id:) }
 
-  # The expiration time for the JWT, set to 1 hour from now. This is used in the
-  # payload.
-  let(:expiration) { 1.hour.from_now.to_i }
-
   # The JWT header to encode the token with. It includes the 'kid' to identify
   # the signing key in the JKWS response.
   let(:jwt_header) do
