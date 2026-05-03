@@ -200,8 +200,10 @@ describe AuthProviders::OktaJwtProvider do
   it 'uses cached JWKS for subsequent validations' do
     token = JWT.encode(jwt_payload, private_key, 'RS256', jwt_header)
     # Expect only one network request for JWKS
-    stub = stub_request(:get, jwks_uri).to_return(status: 200, body: jwks.to_json, headers: { 'Content-Type' => 'application/json' })
-    expect(provider.valid?(token)).to be true
+    stub = stub_request(:get, jwks_uri).to_return(
+      status: 200, body: jwks.to_json, headers: { 'Content-Type' => 'application/json' }
+    )
+    3.times { expect(provider.valid?(token)).to be true }
     expect(stub).to have_been_requested.once
   end
 
