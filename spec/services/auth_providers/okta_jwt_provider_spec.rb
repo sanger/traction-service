@@ -122,12 +122,14 @@ describe AuthProviders::OktaJwtProvider do
   it 'rejects a token with wrong audience' do
     payload = jwt_payload.merge(aud: 'wrong-audience')
     token = JWT.encode(payload, private_key, 'RS256', jwt_header)
+    expect(Rails.logger).to receive(:error).with(include('[OKTA JWT] Validation failure: JWT::InvalidAudError'))
     expect(provider.valid?(token)).to be false
   end
 
   it 'rejects a token with expired exp claim' do
     payload = jwt_payload.merge(exp: 1.hour.ago.to_i)
     token = JWT.encode(payload, private_key, 'RS256', jwt_header)
+    expect(Rails.logger).to receive(:error).with(include('[OKTA JWT] Validation failure: JWT::ExpiredSignature'))
     expect(provider.valid?(token)).to be false
   end
 
@@ -135,6 +137,7 @@ describe AuthProviders::OktaJwtProvider do
     payload = jwt_payload.dup
     payload.delete(:exp)
     token = JWT.encode(payload, private_key, 'RS256', jwt_header)
+    expect(Rails.logger).to receive(:error).with(include('[OKTA JWT] Validation failure: JWT::MissingRequiredClaim'))
     expect(provider.valid?(token)).to be false
   end
 
@@ -142,12 +145,14 @@ describe AuthProviders::OktaJwtProvider do
     # Sign the JWT with a different private key to simulate an invalid signature
     other_key = OpenSSL::PKey::RSA.generate(2048)
     token = JWT.encode(jwt_payload, other_key, 'RS256', jwt_header)
+    expect(Rails.logger).to receive(:error).with(include('[OKTA JWT] Validation failure:'))
     expect(provider.valid?(token)).to be false
   end
 
   it 'rejects a token signed with an invalid algorithm (HS256)' do
     # Okta seems to be using the RS256 algorithm.
     token = JWT.encode(jwt_payload, 'secret', 'HS256', jwt_header.merge(alg: 'HS256'))
+    expect(Rails.logger).to receive(:error).with(include('[OKTA JWT] Validation failure:'))
     expect(provider.valid?(token)).to be false
   end
 
@@ -155,18 +160,21 @@ describe AuthProviders::OktaJwtProvider do
     token = JWT.encode(jwt_payload, private_key, 'RS256', jwt_header)
     # Simulate a network error (SocketError) when fetching JWKS
     stub_request(:get, jwks_uri).to_raise(SocketError)
+    expect(Rails.logger).to receive(:error).with(include('[OKTA JWT] Validation failure: SocketError'))
     expect(provider.valid?(token)).to be false
   end
 
   it 'returns false if JWKS endpoint returns invalid JSON' do
     token = JWT.encode(jwt_payload, private_key, 'RS256', jwt_header)
     stub_request(:get, jwks_uri).to_return(status: 200, body: 'not a json', headers: { 'Content-Type' => 'application/json' })
+    expect(Rails.logger).to receive(:error).with(include('[OKTA JWT] Validation failure: JSON::ParserError'))
     expect(provider.valid?(token)).to be false
   end
 
   it 'returns false if JWKS endpoint returns an empty keys array' do
     token = JWT.encode(jwt_payload, private_key, 'RS256', jwt_header)
     stub_request(:get, jwks_uri).to_return(status: 200, body: { keys: [] }.to_json, headers: { 'Content-Type' => 'application/json' })
+    expect(Rails.logger).to receive(:error).with(include('[OKTA JWT] Validation failure:'))
     expect(provider.valid?(token)).to be false
   end
 
@@ -178,14 +186,8 @@ describe AuthProviders::OktaJwtProvider do
       client_id: client_id
     )
     token = JWT.encode(jwt_payload, private_key, 'RS256', jwt_header)
+    expect(Rails.logger).to receive(:error).with(include('[OKTA JWT] Validation failure: URI::InvalidURIError'))
     expect(invalid_provider.valid?(token)).to be false
-  end
-
-  it 'logs an error when a network error occurs' do
-    token = JWT.encode(jwt_payload, private_key, 'RS256', jwt_header)
-    stub_request(:get, jwks_uri).to_raise(SocketError)
-    expect(Rails.logger).to receive(:error).with(include('[OKTA JWT] Validation failure: SocketError'))
-    provider.valid?(token)
   end
 
   it 'logs error with short token without raising' do
@@ -206,12 +208,14 @@ describe AuthProviders::OktaJwtProvider do
   it 'rejects a token with an invalid issuer' do
     payload = jwt_payload.merge(iss: 'https://invalid-issuer.example.com')
     token = JWT.encode(payload, private_key, 'RS256', jwt_header)
+    expect(Rails.logger).to receive(:error).with(include('[OKTA JWT] Validation failure: JWT::InvalidIssuerError'))
     expect(provider.valid?(token)).to be false
   end
 
   it 'rejects a token with a future iat (issued at) claim' do
     payload = jwt_payload.merge(iat: 1.hour.from_now.to_i)
     token = JWT.encode(payload, private_key, 'RS256', jwt_header)
+    expect(Rails.logger).to receive(:error).with(include('[OKTA JWT] Validation failure: JWT::InvalidIatError'))
     expect(provider.valid?(token)).to be false
   end
 
@@ -224,6 +228,7 @@ describe AuthProviders::OktaJwtProvider do
   it 'rejects a token with exp just outside the leeway' do
     payload = jwt_payload.merge(exp: 4.seconds.ago.to_i)
     token = JWT.encode(payload, private_key, 'RS256', jwt_header)
+    expect(Rails.logger).to receive(:error).with(include('[OKTA JWT] Validation failure: JWT::ExpiredSignature'))
     expect(provider.valid?(token)).to be false
   end
 
@@ -233,6 +238,7 @@ describe AuthProviders::OktaJwtProvider do
     token = JWT.encode(jwt_payload, private_key, 'RS256', header_with_missing_kid)
     # JWKS does not contain the missing_kid
     stub_request(:get, jwks_uri).to_return(status: 200, body: jwks.to_json, headers: { 'Content-Type' => 'application/json' })
+    expect(Rails.logger).to receive(:error).with(include('[OKTA JWT] Validation failure:'))
     expect(provider.valid?(token)).to be false
   end
 
@@ -279,12 +285,14 @@ describe AuthProviders::OktaJwtProvider do
   it 'returns false if JWKS endpoint returns a 500 error' do
     token = JWT.encode(jwt_payload, private_key, 'RS256', jwt_header)
     stub_request(:get, jwks_uri).to_return(status: 500, body: 'Internal Server Error')
+    expect(Rails.logger).to receive(:error).with(include('[OKTA JWT] Validation failure: JSON::ParserError'))
     expect(provider.valid?(token)).to be false
   end
 
   it 'rejects a token with an invalid client_id (cid claim)' do
     payload = jwt_payload.merge(cid: 'wrong-client-id')
     token = JWT.encode(payload, private_key, 'RS256', jwt_header)
+    expect(Rails.logger).to receive(:error).with(include('[OKTA JWT] Invalid client_id: expected'))
     expect(provider.valid?(token)).to be false
   end
 end
