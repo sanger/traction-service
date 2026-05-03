@@ -10,28 +10,6 @@ require 'json'
 module AuthProviders
   # Validates JWTs issued by Okta using the JWKS endpoint
   class OktaJwtProvider < BearerTokenProvider
-    # Network-related failures that can occur while fetching JWKS.
-    #
-    # @return [Array<Class>] exception classes treated as validation failures
-    NETWORK_ERRORS = [
-      SocketError,
-      Errno::ECONNREFUSED,
-      Errno::ETIMEDOUT,
-      Errno::EHOSTUNREACH,
-      Net::OpenTimeout,
-      Net::ReadTimeout
-    ].freeze
-
-    # All failures handled by #valid? as authentication validation failures.
-    #
-    # @return [Array<Class>] exception classes rescued and logged by #valid?
-    VALIDATION_ERRORS = [
-      JWT::DecodeError,
-      JSON::ParserError,
-      URI::InvalidURIError,
-      *NETWORK_ERRORS
-    ].freeze
-
     # Initializes the OktaJwtProvider with issuer, audience, and JWKS URI.
     #
     # @param issuer [String] The expected issuer for JWT validation
@@ -48,10 +26,6 @@ module AuthProviders
 
     # Validates the JWT and returns true if valid, false otherwise.
     #
-    # This method rescues all exceptions listed in VALIDATION_ERRORS, logs the
-    # failure reason, and returns false so authentication failures do not bubble
-    # up, while allowing unexpected errors to raise normally.
-    #
     # @param token [String] The JWT token to validate
     # @return [Boolean] true if the token is valid, false otherwise
     def valid?(token)
@@ -60,7 +34,7 @@ module AuthProviders
       return false unless valid_client_id?(payload)
 
       true
-    rescue *VALIDATION_ERRORS => e
+    rescue StandardError => e
       Rails.logger.error(
         "[OKTA JWT] Validation failure: #{e.class.name}: #{e.message} " \
         "token_prefix=#{token[0, 10]}... token_length=#{token.length}"
