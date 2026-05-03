@@ -32,14 +32,8 @@ module AuthProviders
     def valid?(token)
       payload, _header = decode(token) # verify signature and claims; raises if invalid
       return false if payload.blank?
+      return false unless valid_client_id?(payload)
 
-      if payload['cid'] != @client_id
-        Rails.logger.error(
-          "[OKTA JWT] Invalid client_id: expected #{@client_id}, " \
-          "got #{payload['cid']}"
-        )
-        return false
-      end
       true
     rescue JWT::DecodeError,
            JSON::ParserError,
@@ -59,6 +53,22 @@ module AuthProviders
     # rubocop:enable Metrics/MethodLength
 
     private
+
+    # Validates that the token client_id claim matches the configured client.
+    #
+    # Logs a validation error when the cid claim does not match.
+    #
+    # @param payload [Hash] the decoded JWT payload
+    # @return [Boolean] true if the cid claim matches, false otherwise
+    def valid_client_id?(payload)
+      return true if payload['cid'] == @client_id
+
+      Rails.logger.error(
+        "[OKTA JWT] Invalid client_id: expected #{@client_id}, " \
+        "got #{payload['cid']}"
+      )
+      false
+    end
 
     # Decodes and verifies the JWT using the configured issuer, audience, and
     # JWKS endpoint.
