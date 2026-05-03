@@ -10,6 +10,28 @@ require 'json'
 module AuthProviders
   # Validates JWTs issued by Okta using the JWKS endpoint
   class OktaJwtProvider < BearerTokenProvider
+    # Network-related failures that can occur while fetching JWKS.
+    #
+    # @return [Array<Class>] exception classes treated as validation failures
+    NETWORK_ERRORS = [
+      SocketError,
+      Errno::ECONNREFUSED,
+      Errno::ETIMEDOUT,
+      Errno::EHOSTUNREACH,
+      Net::OpenTimeout,
+      Net::ReadTimeout
+    ].freeze
+
+    # All failures handled by #valid? as authentication validation failures.
+    #
+    # @return [Array<Class>] exception classes rescued and logged by #valid?
+    VALIDATION_ERRORS = [
+      JWT::DecodeError,
+      JSON::ParserError,
+      URI::InvalidURIError,
+      *NETWORK_ERRORS
+    ].freeze
+
     # Initializes the OktaJwtProvider with issuer, audience, and JWKS URI.
     #
     # @param issuer [String] The expected issuer for JWT validation
@@ -26,31 +48,25 @@ module AuthProviders
 
     # Validates the JWT and returns true if valid, false otherwise.
     #
+    # This method rescues all exceptions listed in VALIDATION_ERRORS, logs the
+    # failure reason, and returns false so authentication failures do not bubble
+    # up, while allowing unexpected errors to raise normally.
+    #
     # @param token [String] The JWT token to validate
     # @return [Boolean] true if the token is valid, false otherwise
-    # rubocop:disable Metrics/MethodLength
     def valid?(token)
       payload, _header = decode(token) # verify signature and claims; raises if invalid
       return false if payload.blank?
       return false unless valid_client_id?(payload)
 
       true
-    rescue JWT::DecodeError,
-           JSON::ParserError,
-           URI::InvalidURIError,
-           SocketError,
-           Errno::ECONNREFUSED,
-           Errno::ETIMEDOUT,
-           Errno::EHOSTUNREACH,
-           Net::OpenTimeout,
-           Net::ReadTimeout => e
+    rescue *VALIDATION_ERRORS => e
       Rails.logger.error(
         "[OKTA JWT] Validation failure: #{e.class.name}: #{e.message} " \
         "token_prefix=#{token[0, 10]}... token_length=#{token.length}"
       )
       false
     end
-    # rubocop:enable Metrics/MethodLength
 
     private
 
@@ -75,14 +91,7 @@ module AuthProviders
     #
     # @param token [String] The JWT token to decode and verify
     # @return [Array] The decoded payload and header
-    # @raise [JWT::MissingRequiredClaim] if a required claim is missing
-    # @raise [JWT::ExpiredSignature] if the token is expired (exp claim)
-    # @raise [JWT::ImmatureSignature] if the token is not valid yet (nbf claim)
-    # @raise [JWT::InvalidIatError] if the issued at claim (iat) is invalid
-    # @raise [JWT::InvalidIssuerError] if the issuer claim (iss) is invalid
-    # @raise [JWT::InvalidAudError] if the audience claim (aud) is invalid
-    # @raise [JWT::VerificationError] if the signature is invalid
-    # @raise [JWT::DecodeError] for all other decode errors (malformed, etc.)
+    # @raise [JWT::DecodeError] if token verification or claim validation fails
     # @see #fetch_jwks for additional errors that may be raised when fetching JWKS
     # rubocop:disable Metrics/MethodLength
     def decode(token)
@@ -143,9 +152,7 @@ module AuthProviders
     #   Errno::EHOSTUNREACH, Net::OpenTimeout, Net::ReadTimeout] for network
     #   errors when fetching the JWKS
     # @raise [JSON::ParserError] if the HTTP response is not valid JSON
-    # @raise [JWT::JWK::Set::KidNotFound, JWT::JWK::Set::InvalidJWKError] if
-    #   the JWKS is invalid or missing required fields
-    # @raise [StandardError] for any other unexpected error
+    # @raise [JWT::JWKError] if the JWKS is invalid or missing required fields
     def fetch_jwks
       uri = URI(@jwks_uri)
       response = Net::HTTP.get(uri)
