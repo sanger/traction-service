@@ -103,7 +103,7 @@ module AuthProviders
 
         # When JWT cannot find a key id (kid), it invokes the loader *again*
         # with invalidate/kid_not_found so we can refresh stale keys.
-        if options&.[](:invalidate) || options&.[](:kid_not_found)
+        if options&.fetch(:invalidate, false) || options&.fetch(:kid_not_found, false)
           jwks = fetch_jwks
           Rails.cache.write(cache_key, jwks, expires_in: 5.minutes)
           next jwks
