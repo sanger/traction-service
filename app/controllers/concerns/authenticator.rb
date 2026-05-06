@@ -18,6 +18,7 @@ module Authenticator
 
   # Using headers instead of env, HTTP_X_TRACTION_CLIENT_ID in Rails.
   API_KEY_HEADER = 'X-Traction-Client-Id'
+  BEARER = 'Bearer'
 
   included do
     before_action :authenticate_request!
@@ -49,12 +50,10 @@ module Authenticator
   #
   # @return [Boolean] true if Bearer token is present, false otherwise
   def bearer_token_present?
-    request.headers['Authorization']&.start_with?('Bearer ')
+    request.headers['Authorization']&.start_with?(BEARER)
   end
 
   # Authenticates a request using a Bearer token from the Authorization header.
-  #
-  # TODO(Y25-660): Identity provider integration
   #
   # @return [void]
   def authenticate_bearer!
@@ -68,17 +67,26 @@ module Authenticator
   #
   # @return [String, nil] the token string if present, nil otherwise
   def bearer_token
-    request.headers['Authorization']&.split&.last
+    auth = request.headers['Authorization']
+    return nil unless auth&.start_with?(BEARER)
+
+    token = auth[BEARER.size..].strip
+    token.presence
   end
 
-  # Validates a Bearer token.
-  #
-  # TODO(Y25-660): Identity provider integration
+  # Validates a Bearer token using the configured provider abstraction.
   #
   # @param token [String] the token to validate
   # @return [Boolean] true if token is valid
   def valid_bearer_token?(token)
-    token.present?
+    bearer_token_provider.valid?(token)
+  end
+
+  # Returns the configured Bearer token provider (Okta, etc.)
+  #
+  # @return [AuthProviders::BearerTokenProvider]
+  def bearer_token_provider
+    @bearer_token_provider ||= AuthProviders.build_bearer_token_provider
   end
 
   # Checks if an API key is present in the X-Traction-Client-Id header.
