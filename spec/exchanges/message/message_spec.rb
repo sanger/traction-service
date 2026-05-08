@@ -10,7 +10,7 @@ class ObjectB
   end
 end
 
-class ObjectA # rubocop:disable Style/OneClassPerFile
+class ObjectA
   attr_reader :attr_a, :attr_b, :attr_c
 
   def initialize(attr_a, attr_b, attr_c)
@@ -20,7 +20,7 @@ class ObjectA # rubocop:disable Style/OneClassPerFile
   end
 end
 
-class ObjectC # rubocop:disable Style/OneClassPerFile
+class ObjectC
   attr_reader :libraries
 
   def initialize(libraries = [])
