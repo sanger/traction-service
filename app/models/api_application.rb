@@ -5,7 +5,7 @@ class ApiApplication < ApplicationRecord
   has_many :api_keys, dependent: :destroy
 
   validates :name, presence: true
-  validates :contact_email, presence: true
+  validates :contact_name, presence: true
 
   # Rotates keys following the lifecycle:
   #   grace_period -> expired  (no longer valid)

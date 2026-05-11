@@ -12,3 +12,5 @@ Rake::Task['smrt_link_versions:create'].invoke
 Rake::Task['ont_instruments:create'].invoke
 Rake::Task['min_know_versions:create'].invoke
 Rake::Task['tol_tubes_report_view:create'].invoke
+# We don't want to expose these keys in non-development environments, so we only seed them for development
+Rake::Task['local_api_key:create'].invoke if Rails.env.development?
