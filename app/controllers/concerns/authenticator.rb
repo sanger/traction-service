@@ -33,14 +33,8 @@ module Authenticator
   # 2. API key (if X-Traction-Client-Id header present)
   # 3. Denied (if neither present)
   #
-  # GET requests are allowed without authentication.
-  # This can be changed in the future but it was decided because of known use cases:
-  # - Limber check for tube creation
-  # - Traction-ui sample sheet generation link
-  #
   # @return [void]
   def authenticate_request!
-    return if request.get?
     return unless Flipper.enabled?(:y25_662_enable_request_authentication)
 
     if bearer_token_present?
@@ -135,8 +129,15 @@ module Authenticator
 
   # Handles requests with no valid credentials.
   #
+  # GET requests are blanked allowed.
+  # This can be changed in the future but it was decided because of known use cases:
+  # - Limber check for tube creation
+  # - Traction-ui sample sheet generation link
+  #
   # @return [void]
   def handle_unauthenticated!
+    return if request.get?
+
     log_message = '[AUTH] Unauthenticated request ' \
                   "method=#{request.request_method} " \
                   "path=#{request.fullpath} " \
