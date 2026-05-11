@@ -31,24 +31,34 @@ RSpec.describe 'Authenticator', type: :controller do
     end
   end
 
+  context 'GET requests' do
+    it 'allows unauthenticated GET requests regardless of feature flag' do
+      allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(true)
+
+      get :index
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to eq('ok')
+    end
+  end
+
   context 'Authenticator feature flag' do
     it 'skips authentication when Flipper flag is disabled' do
       allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(false)
-      get :index
-      expect(response.body).to eq('ok')
+      post :create
+      expect(response.body).to eq('created')
       expect(response).to have_http_status(:ok)
     end
 
     it 'calls authentication when Flipper flag is enabled' do
       allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(true)
       # No auth headers, so should be unauthorized
-      get :index
+      post :create
       expect(response).to have_http_status(:unauthorized)
     end
   end
 
   context 'API key authentication' do
-    it 'authenticates a valid API key for GET requests' do
+    it 'authenticates a valid API key for POST requests' do
       allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(true)
       issued = api_application.rotate_api_key!
 
@@ -56,7 +66,7 @@ RSpec.describe 'Authenticator', type: :controller do
 
       allow(Rails.logger).to receive(:info)
       expect(Rails.logger).to receive(:info).with(match(/\[API KEY\] Key used/))
-      get :index
+      post :create
 
       expect(response).to have_http_status(:ok)
       expect(issued[:api_key].reload.last_used_at).not_to be_nil
@@ -66,7 +76,7 @@ RSpec.describe 'Authenticator', type: :controller do
       allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(true)
 
       request.headers['X-Traction-Client-Id'] = 'bad-format-key'
-      get :index
+      post :create
 
       expect(response).to have_http_status(:unauthorized)
     end
@@ -90,7 +100,7 @@ RSpec.describe 'Authenticator', type: :controller do
       request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
 
       expect(Rails.logger).to receive(:warn).with(match(/\[API KEY\] Grace-period key used/))
-      get :index
+      post :create
 
       expect(response).to have_http_status(:ok)
       expect(response.headers['X-Traction-Client-Id-Warning']).to match(/deprecated/i)
@@ -104,7 +114,7 @@ RSpec.describe 'Authenticator', type: :controller do
       api_application.rotate_api_key!
 
       request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
-      get :index
+      post :create
 
       expect(response).to have_http_status(:unauthorized)
     end
@@ -115,7 +125,7 @@ RSpec.describe 'Authenticator', type: :controller do
       issued[:api_key].update!(expires_at: 1.minute.ago)
 
       request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
-      get :index
+      post :create
 
       expect(response).to have_http_status(:unauthorized)
     end
@@ -125,7 +135,7 @@ RSpec.describe 'Authenticator', type: :controller do
       issued = api_application.rotate_api_key!(expires_at: nil)
 
       request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
-      get :index
+      post :create
 
       expect(response).to have_http_status(:ok)
     end
@@ -137,23 +147,23 @@ RSpec.describe 'Authenticator', type: :controller do
       allow(Flipper).to receive(:enabled?).with(feature_reject_unauthenticated).and_return(false)
 
       expect(Rails.logger).to receive(:warn).with(match(/\[AUTH\] Unauthenticated request/))
-      get :index
+      post :create
     end
 
     it 'allows unauthenticated requests when reject flag is OFF' do
       allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(true)
       allow(Flipper).to receive(:enabled?).with(feature_reject_unauthenticated).and_return(false)
 
-      get :index
+      post :create
       expect(response).to have_http_status(:ok)
-      expect(response.body).to eq('ok')
+      expect(response.body).to eq('created')
     end
 
     it 'rejects unauthenticated requests when reject flag is ON' do
       allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(true)
       allow(Flipper).to receive(:enabled?).with(feature_reject_unauthenticated).and_return(true)
 
-      get :index
+      post :create
       expect(response).to have_http_status(:unauthorized)
     end
 
@@ -163,12 +173,12 @@ RSpec.describe 'Authenticator', type: :controller do
 
       expect(Rails.logger).to receive(:warn) do |message|
         expect(message).to include('[AUTH] Unauthenticated request')
-        expect(message).to include('method=GET')
-        expect(message).to include('path=/index')
+        expect(message).to include('method=POST')
+        expect(message).to include('path=/create')
         expect(message).to include('ip=')
         expect(message).to include('request_id=')
       end
-      get :index
+      post :create
     end
   end
 
