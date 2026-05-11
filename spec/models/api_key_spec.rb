@@ -29,7 +29,7 @@ RSpec.describe ApiKey do
 
     it 'allows issuing keys with explicit expiration' do
       api_application = create(:api_application)
-      expires_at = 1.week.from_now
+      expires_at = 1.week.from_now.beginning_of_day
 
       result = described_class.issue!(api_application: api_application, expires_at: expires_at)
 
