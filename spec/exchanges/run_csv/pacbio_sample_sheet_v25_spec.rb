@@ -87,6 +87,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV25, type: :model do
             'Use Adaptive Loading' => well.use_adaptive_loading.downcase == 'true',
             'Consensus Mode' => 'molecule',
             'Full Resolution Base Qual' => well.full_resolution_base_qual == 'true',
+            'Application' => 'Other',
 
             # specific to tagged wells
             'Bio Sample Name' => '',
@@ -255,6 +256,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV25, type: :model do
               'Use Adaptive Loading' => well.use_adaptive_loading.downcase == 'true',
               'Consensus Mode' => 'molecule',
               'Full Resolution Base Qual' => well.full_resolution_base_qual == 'true',
+              'Application' => 'Other',
 
               # specific to untagged wells
               'Bio Sample Name' => well.formatted_bio_sample_name,
