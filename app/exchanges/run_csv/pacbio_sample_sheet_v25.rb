@@ -32,7 +32,8 @@ module RunCsv
         'Use Adaptive Loading'	=> well.use_adaptive_loading,
         'Consensus Mode'	=> 'molecule', # (default to molecule do we need a custom field)
         'Same Barcodes on Both Ends of Sequence'	=> well.same_barcodes_on_both_ends_of_sequence,
-        'Full Resolution Base Qual' => well.full_resolution_base_qual
+        'Full Resolution Base Qual' => well.full_resolution_base_qual,
+        'Application' => well.application_type.presence || 'Other'
       }
     end
   end
