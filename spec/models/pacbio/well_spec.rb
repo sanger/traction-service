@@ -263,7 +263,8 @@ RSpec.describe Pacbio::Well, :pacbio do
         on_plate_loading_concentration
         binding_kit_box_barcode
         pre_extension_time
-        loading_target_p1_plus_p2 movie_time
+        loading_target_p1_plus_p2
+        movie_time
         movie_acquisition_time
         include_base_kinetics
         library_concentration
@@ -271,6 +272,7 @@ RSpec.describe Pacbio::Well, :pacbio do
         library_type
         use_adaptive_loading
         full_resolution_base_qual
+        application_type
       ])
     end
 
