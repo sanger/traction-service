@@ -20,7 +20,7 @@ Rails app which exposes a RESTful API for a Long Read LIMS
 1. Bundler `gem install bundler`
 1. Graphviz (for mac OS `brew install graphviz`)
 1. OpenSSL
-1. MySQL `brew install mysql@8.0`
+1. MySQL `brew install mysql@8.4`
 
 ## Installation
 
@@ -43,10 +43,10 @@ Note:
   ...
   ```
 
-- The fix is to add mysql@8.0 binaries to the PATH [[^1](https://stackoverflow.com/a/69106302)] similar to the following:
+- The fix is to add mysql@8.4 binaries to the PATH [[^1](https://stackoverflow.com/a/69106302)] similar to the following:
 
   ```shell
-  export PATH=$PATH:(brew --prefix)/opt/mysql@8.0/bin
+  export PATH=$PATH:(brew --prefix)/opt/mysql@8.4/bin
   ```
 
 ## Database setup
