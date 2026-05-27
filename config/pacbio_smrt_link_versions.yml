@@ -4,14 +4,26 @@ default: &default
   generate: &generate [In SMRT Link, Do Not Generate, On Instrument]
   true_false: &true_false ["True", "False"]
   library_type: &library_type [Standard, Kinnex, Adeno-associated Virus]
-  application_type: &application_type [Human WGS, Microbial assembly, Other WGS, Kinnex single-cell RNA, Kinnex full-length RNA, "<3kb amplicons", Other]
+  application_type: &application_type
+    [
+      Human WGS,
+      Microbial assembly,
+      Other WGS,
+      Kinnex single-cell RNA,
+      Kinnex full-length RNA,
+      "<3kb amplicons",
+      ">=3kb amplicons",
+      Other
+    ]
 
   select_yes_no: &select_yes_no Yes,No
   select_generate: &select_generate In SMRT Link,Do Not Generate,On Instrument
   select_times: &select_times 10.0,15.0,20.0,24.0,30.0
   select_true_false: &select_true_false True,False
   select_library_type: &select_library_type Standard,Kinnex,Adeno-associated Virus
-  select_application_type: &select_application_type "Human WGS, Microbial assembly, Other WGS, Kinnex single-cell RNA, Kinnex full-length RNA, <3kb amplicons, Other"
+  select_application_type: &select_application_type >
+    "Human WGS, Microbial assembly, Other WGS, Kinnex single-cell RNA,
+    Kinnex full-length RNA, <3kb amplicons, >=3kb amplicons, Other"
 
   versions:
     v10:
