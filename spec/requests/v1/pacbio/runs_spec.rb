@@ -8,6 +8,7 @@ RSpec.describe 'RunsController' do
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
   let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
   let!(:version13) { create(:pacbio_smrt_link_version, name: 'v13_revio', default: true) }
+  let!(:version25) { create(:pacbio_smrt_link_version, name: 'v25_1_revio') }
 
   shared_examples 'publish_messages_on_create' do
     it 'publishes a message' do
@@ -455,6 +456,59 @@ RSpec.describe 'RunsController' do
       end
 
       it_behaves_like 'publish_messages_on_create'
+    end
+
+    context 'smrtlink v25_1_revio on success' do
+      let(:pool1) { create(:pacbio_pool) }
+
+      let(:body) do
+        {
+          data: {
+            type: 'runs',
+            attributes: {
+              dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
+              system_name: 'Revio',
+              pacbio_smrt_link_version_id: version25.id,
+              plates_attributes: [{
+                sequencing_kit_box_barcode: 'DM0001100861800123121',
+                plate_number: 1,
+                wells_attributes: [
+                  {
+                    row: 'A',
+                    column: '1',
+                    movie_acquisition_time: 30,
+                    library_concentration: 8.35,
+                    pre_extension_time: '2',
+                    include_base_kinetics: 'True',
+                    polymerase_kit: 'ABC123',
+                    used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }],
+                    annotations_attributes: nil,
+                    application_type: 'Human WGS'
+                  }
+                ]
+              }]
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a created status' do
+        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        expect(response).to have_http_status(:created)
+      end
+
+      it 'creates a run with the correct attributes' do
+        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+        run = Pacbio::Run.last
+
+        expect(run.id).to eq(json['data']['id'].to_i)
+        expect(run.smrt_link_version).to be_present
+        expect(run.smrt_link_version).to eq(version25)
+        expect(run.pacbio_smrt_link_version_id).to eq(version25.id)
+        # Check that application type is set on the well for v25_1_revio runs.
+        expect(run.plates.first.wells.first.application_type).to eq('Human WGS')
+      end
     end
 
     context 'on failure' do
