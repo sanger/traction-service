@@ -34,7 +34,7 @@ module V1
     end
 
     def tag
-      @tag ||= Tag.find(params[:id])
+      @tag ||= Tag.find(params.expect(:id))
     end
 
     def render_json(status)

@@ -8,7 +8,7 @@ module V1
     class RunsController < ApplicationController
       # endpoint generating a sample sheet for a Pacbio::Run
       def sample_sheet
-        run = ::Pacbio::Run.find(params[:run_id])
+        run = ::Pacbio::Run.find(params.expect(:run_id))
 
         begin
           csv = run.generate_sample_sheet
