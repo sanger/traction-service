@@ -93,10 +93,10 @@ RSpec.describe Pacbio::Well, :pacbio do
     context 'when application_type is not set in smrt_link_options' do
       it 'returns the default value for the version if applicable' do
         config = {
-          'options' => {
-            'application_type' => {
-              'versions' => ['v25_1_revio'],
-              'default_value' => 'Other'
+          options: {
+            application_type: {
+              versions: ['v25_1_revio'],
+              default_value: 'Other'
             }
           }
         }
@@ -107,10 +107,10 @@ RSpec.describe Pacbio::Well, :pacbio do
 
       it 'returns nil if version is not applicable' do
         config = {
-          'options' => {
-            'application_type' => {
-              'versions' => ['v10'],
-              'default_value' => 'Other'
+          options: {
+            application_type: {
+              versions: ['v10'],
+              default_value: 'Other'
             }
           }
         }
@@ -123,10 +123,10 @@ RSpec.describe Pacbio::Well, :pacbio do
     context 'when config option versions is nil' do
       it 'returns nil' do
         config = {
-          'options' => {
-            'application_type' => {
-              'versions' => nil,
-              'default_value' => 'Other'
+          options: {
+            application_type: {
+              versions: nil,
+              default_value: 'Other'
             }
           }
         }
@@ -139,10 +139,10 @@ RSpec.describe Pacbio::Well, :pacbio do
     context 'when config option default_value is nil' do
       it 'returns nil' do
         config = {
-          'options' => {
-            'application_type' => {
-              'versions' => ['v25_1_revio'],
-              'default_value' => nil
+          options: {
+            application_type: {
+              versions: ['v25_1_revio'],
+              default_value: nil
             }
           }
         }
