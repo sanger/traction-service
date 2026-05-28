@@ -251,11 +251,11 @@ module Pacbio
       return if version.blank?
 
       config = Rails.configuration.pacbio_smrt_link_versions
-      option = config.dig('options', 'application_type')
+      option = config.dig(:options, :application_type)
       return if option.blank?
 
-      version_names = option['versions'] || []
-      option['default_value'] if version_names.include?(version.name)
+      version_names = option[:versions] || []
+      option[:default_value] if version_names.include?(version.name)
     end
   end
 end
