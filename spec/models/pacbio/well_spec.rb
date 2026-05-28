@@ -10,6 +10,7 @@ RSpec.describe Pacbio::Well, :pacbio do
   let!(:version10) { create(:pacbio_smrt_link_version, name: 'v10') }
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11', default: true) }
   let!(:version12_revio) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
+  let!(:version25_1_revio) { create(:pacbio_smrt_link_version, name: 'v25_1_revio') }
 
   context 'uuidable' do
     let(:uuidable_model) { :pacbio_well }
@@ -74,6 +75,87 @@ RSpec.describe Pacbio::Well, :pacbio do
 
       it 'returns false' do
         expect(well.tagged?).to be false
+      end
+    end
+  end
+
+  describe '#application_type' do
+    let(:run) { create(:pacbio_revio_run, smrt_link_version: version25_1_revio) }
+    let(:plate) { run.plates.first }
+
+    context 'when application_type is set in smrt_link_options' do
+      it 'returns the stored value' do
+        well = create(:pacbio_well, plate: plate, application_type: 'Human WGS')
+        expect(well.application_type).to eq('Human WGS')
+      end
+    end
+
+    context 'when application_type is not set in smrt_link_options' do
+      it 'returns the default value for the version if applicable' do
+        config = {
+          'options' => {
+            'application_type' => {
+              'versions' => ['v25_1_revio'],
+              'default_value' => 'Other'
+            }
+          }
+        }
+        allow(Rails.configuration).to receive(:pacbio_smrt_link_versions).and_return(config)
+        well = build(:pacbio_well, plate: plate, application_type: nil)
+        expect(well.application_type).to eq('Other')
+      end
+
+      it 'returns nil if version is not applicable' do
+        config = {
+          'options' => {
+            'application_type' => {
+              'versions' => ['v10'],
+              'default_value' => 'Other'
+            }
+          }
+        }
+        allow(Rails.configuration).to receive(:pacbio_smrt_link_versions).and_return(config)
+        well = build(:pacbio_well, plate: plate, application_type: nil)
+        expect(well.application_type).to be_nil
+      end
+    end
+
+    context 'when config option versions is nil' do
+      it 'returns nil' do
+        config = {
+          'options' => {
+            'application_type' => {
+              'versions' => nil,
+              'default_value' => 'Other'
+            }
+          }
+        }
+        allow(Rails.configuration).to receive(:pacbio_smrt_link_versions).and_return(config)
+        well = build(:pacbio_well, plate: plate, application_type: nil)
+        expect(well.application_type).to be_nil
+      end
+    end
+
+    context 'when config option default_value is nil' do
+      it 'returns nil' do
+        config = {
+          'options' => {
+            'application_type' => {
+              'versions' => ['v25_1_revio'],
+              'default_value' => nil
+            }
+          }
+        }
+        allow(Rails.configuration).to receive(:pacbio_smrt_link_versions).and_return(config)
+        well = build(:pacbio_well, plate: plate, application_type: nil)
+        expect(well.application_type).to be_nil
+      end
+    end
+
+    context 'when plate or run or smrt_link_version is missing' do
+      it 'returns nil' do
+        well = build(:pacbio_well, plate: nil, application_type: nil)
+        expect(well.application_type).to be_nil
       end
     end
   end
