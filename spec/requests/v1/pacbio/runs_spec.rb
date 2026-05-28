@@ -212,7 +212,7 @@ RSpec.describe 'RunsController' do
       let!(:run) { create(:pacbio_revio_run, smrt_link_version: version25) }
 
       it 'returns the default application_type on GET with ?include=plates.wells' do
-        # Assert smrt_link_options of any well does not contain application_type key
+        # Assert smrt_link_options does not contain application_type key for any well.
         run.plates.each do |plate|
           plate.wells.each do |well|
             expect(well.smrt_link_options).not_to have_key('application_type')
@@ -222,7 +222,7 @@ RSpec.describe 'RunsController' do
         get v1_pacbio_run_path(run), params: { include: 'plates.wells' }, headers: json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
 
-        # Loop over all included wells and assert application_type is 'Other'
+        # Loop over all included wells and assert application_type is 'Other'.
         json['included'].select { |inc| inc['type'] == 'wells' }.each do |included_well|
           expect(included_well['attributes']['application_type']).to eq('Other')
         end
@@ -234,18 +234,18 @@ RSpec.describe 'RunsController' do
           plate.wells.each do |well|
             well.update!(application_type: 'Human WGS')
 
-            # Assert smrt_link_options contains application_type key for all wells now
+            # Assert smrt_link_options contains application_type key for all wells.
             expect(well.smrt_link_options).to have_key('application_type')
             expect(well.smrt_link_options['application_type']).to eq('Human WGS')
           end
+        end
 
-          get v1_pacbio_run_path(run), params: { include: 'plates.wells' }, headers: json_api_headers
-          json = ActiveSupport::JSON.decode(response.body)
+        get v1_pacbio_run_path(run), params: { include: 'plates.wells' }, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
 
-          # Loop over all included wells and assert application_type is 'Human WGS'
-          json['included'].select { |inc| inc['type'] == 'wells' }.each do |included_well|
-            expect(included_well['attributes']['application_type']).to eq('Human WGS')
-          end
+        # Loop over all included wells and assert application_type is 'Human WGS'.
+        json['included'].select { |inc| inc['type'] == 'wells' }.each do |included_well|
+          expect(included_well['attributes']['application_type']).to eq('Human WGS')
         end
       end
     end
