@@ -207,6 +207,48 @@ RSpec.describe 'RunsController' do
         end
       end
     end
+
+    context 'smrtlink v25_1_revio application_type behaviour' do
+      let!(:run) { create(:pacbio_revio_run, smrt_link_version: version25) }
+
+      it 'returns the default application_type on GET with ?include=plates.wells' do
+        # Assert smrt_link_options of any well does not contain application_type key
+        run.plates.each do |plate|
+          plate.wells.each do |well|
+            expect(well.smrt_link_options).not_to have_key('application_type')
+          end
+        end
+
+        get v1_pacbio_run_path(run), params: { include: 'plates.wells' }, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+
+        # Loop over all included wells and assert application_type is 'Other'
+        json['included'].select { |inc| inc['type'] == 'wells' }.each do |included_well|
+          expect(included_well['attributes']['application_type']).to eq('Other')
+        end
+      end
+
+      it 'returns the set application_type on GET with ?include=plates.wells' do
+        # Update all wells of the run to have application_type 'Human WGS'
+        run.plates.each do |plate|
+          plate.wells.each do |well|
+            well.update!(application_type: 'Human WGS')
+
+            # Assert smrt_link_options contains application_type key for all wells now
+            expect(well.smrt_link_options).to have_key('application_type')
+            expect(well.smrt_link_options['application_type']).to eq('Human WGS')
+          end
+
+          get v1_pacbio_run_path(run), params: { include: 'plates.wells' }, headers: json_api_headers
+          json = ActiveSupport::JSON.decode(response.body)
+
+          # Loop over all included wells and assert application_type is 'Human WGS'
+          json['included'].select { |inc| inc['type'] == 'wells' }.each do |included_well|
+            expect(included_well['attributes']['application_type']).to eq('Human WGS')
+          end
+        end
+      end
+    end
   end
 
   describe '#create' do
