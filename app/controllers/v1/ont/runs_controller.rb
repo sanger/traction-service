@@ -8,7 +8,7 @@ module V1
     class RunsController < ApplicationController
       # endpoint generating a sample sheet for a Ont::Run
       def sample_sheet
-        run = ::Ont::Run.find(params[:run_id])
+        run = ::Ont::Run.find(params.expect(:run_id))
         csv = run.generate_sample_sheet
 
         send_data csv,

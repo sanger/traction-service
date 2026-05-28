@@ -83,16 +83,17 @@ namespace :pacbio_data do
       # 96 is the number of possible pools for pooling_method Plate,
       # which is the only pooling method currently used
       position_range = (1..96).to_a
+      positions = position_range.sample(2)
       MultiPool.create!(
         pool_method: :Plate,
         pipeline: :pacbio,
         multi_pool_positions: [
           MultiPoolPosition.new(
-            position: position_range.sample,
+            position: positions[0],
             pool: untagged_pool
           ),
           MultiPoolPosition.new(
-            position: position_range.sample,
+            position: positions[1],
             pool: tagged_pool
           )
         ]

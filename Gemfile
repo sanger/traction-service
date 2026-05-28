@@ -10,6 +10,7 @@ gem 'bootsnap', '>= 1.1.0', require: false # Reduces boot times through caching
 gem 'bunny'
 gem 'csv'
 gem 'exception_notification'
+gem 'jwt'
 gem 'mysql2'
 gem 'puma' # Use Puma as the app server
 gem 'rack-cors' # Use Rack CORS for handling CORS, making cross-origin AJAX possible

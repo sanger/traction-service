@@ -14,8 +14,9 @@ class ApiKey < ApplicationRecord
   # only its SHA-256 hex digest is persisted.
   # @param api_application [ApiApplication] the application to associate the new key with
   # @param expires_at [Time, nil] optional explicit expiry timestamp for the key
-  def self.issue!(api_application:, expires_at: nil)
-    plaintext_key = SecureRandom.hex(32) # 64-char hex, 256 bits of entropy
+  # @param plaintext_key [String, nil] optional plaintext key (should only be used for testing)
+  def self.issue!(api_application:, expires_at: nil, plaintext_key: nil)
+    plaintext_key ||= SecureRandom.hex(32) # 64-char hex, 256 bits of entropy
 
     api_key = create!(
       api_application: api_application,

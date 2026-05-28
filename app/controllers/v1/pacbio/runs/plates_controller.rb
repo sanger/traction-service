@@ -36,7 +36,7 @@ module V1
         end
 
         def plate
-          @plate ||= ::Pacbio::Plate.find(params[:id])
+          @plate ||= ::Pacbio::Plate.find(params.expect(:id))
         end
 
         def render_json(status)

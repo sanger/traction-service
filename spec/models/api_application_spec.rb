@@ -3,36 +3,52 @@
 require 'rails_helper'
 
 RSpec.describe ApiApplication do
-  it 'issues API keys through rotation when no prior keys exist' do
-    api_application = create(:api_application)
+  describe 'validations' do
+    it 'is valid with factory defaults' do
+      expect(build(:api_application)).to be_valid
+    end
 
-    result = api_application.rotate_api_key!
+    it 'is invalid without a name' do
+      expect(build(:api_application, name: nil)).not_to be_valid
+    end
 
-    expect(result[:api_key]).to be_persisted
-    expect(result[:api_key].api_application).to eq(api_application)
-    expect(result[:plaintext_key]).to be_a(String)
-    expect(result[:plaintext_key].length).to eq(64) # 32-byte hex = 64 chars
+    it 'is invalid without a contact_name' do
+      expect(build(:api_application, contact_name: nil)).not_to be_valid
+    end
   end
 
-  it 'rotates API keys: active key moves to grace_period and a new active key is issued' do
-    api_application = create(:api_application)
-    current = api_application.rotate_api_key![:api_key]
+  describe '.rotate_api_key!' do
+    it 'issues API keys through rotation when no prior keys exist' do
+      api_application = create(:api_application)
 
-    rotated = api_application.rotate_api_key!
+      result = api_application.rotate_api_key!
 
-    expect(current.reload).to be_grace_period
-    expect(rotated[:api_key]).to be_active
-    expect(rotated[:api_key].id).not_to eq(current.id)
-  end
+      expect(result[:api_key]).to be_persisted
+      expect(result[:api_key].api_application).to eq(api_application)
+      expect(result[:plaintext_key]).to be_a(String)
+      expect(result[:plaintext_key].length).to eq(64) # 32-byte hex = 64 chars
+    end
 
-  it 'rotates API keys a second time: previous grace_period key moves to expired' do
-    api_application = create(:api_application)
-    original = api_application.rotate_api_key![:api_key]
+    it 'rotates API keys: active key moves to grace_period and a new active key is issued' do
+      api_application = create(:api_application)
+      current = api_application.rotate_api_key![:api_key]
 
-    first_rotation = api_application.rotate_api_key![:api_key]
-    api_application.rotate_api_key!
+      rotated = api_application.rotate_api_key!
 
-    expect(original.reload).to be_expired
-    expect(first_rotation.reload).to be_grace_period
+      expect(current.reload).to be_grace_period
+      expect(rotated[:api_key]).to be_active
+      expect(rotated[:api_key].id).not_to eq(current.id)
+    end
+
+    it 'rotates API keys a second time: previous grace_period key moves to expired' do
+      api_application = create(:api_application)
+      original = api_application.rotate_api_key![:api_key]
+
+      first_rotation = api_application.rotate_api_key![:api_key]
+      api_application.rotate_api_key!
+
+      expect(original.reload).to be_expired
+      expect(first_rotation.reload).to be_grace_period
+    end
   end
 end
