@@ -9,12 +9,16 @@ on:
 
 jobs:
   test:
-    name: All Ruby Tests
+    name: Ruby Tests (MySQL ${{ matrix.mysql-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        mysql-version: ["8.0", "8.4"]
     services:
       mysql:
         # Use the Mysql docker image https://hub.docker.com/_/mysql
-        image: mysql:8.0
+        image: mysql:${{ matrix.mysql-version }}
         ports:
          - 3306 # Default port mappings
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
