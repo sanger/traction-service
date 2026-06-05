@@ -327,12 +327,10 @@ GEM
       crass (~> 1.0.2)
       nokogiri (>= 1.16.8)
     securerandom (0.4.1)
-    set (1.1.1)
     shoulda-matchers (7.0.1)
       activesupport (>= 7.1)
-    sorted_set (1.0.3)
+    sorted_set (1.1.0)
       rbtree
-      set (~> 1.0)
     spring (4.6.0)
     spring-watcher-listen (2.1.0)
       listen (>= 2.7, < 4.0)
@@ -400,7 +398,7 @@ DEPENDENCIES
   yard
 
 RUBY VERSION
-   ruby 4.0.5
+  ruby 4.0.5
 
 BUNDLED WITH
-   2.6.5
+  4.0.10
