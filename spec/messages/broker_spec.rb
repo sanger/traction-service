@@ -107,11 +107,14 @@ RSpec.describe Messages::Broker do
   describe '#publish' do
     it 'publishes the message' do
       mock_connection
-      allow(exchange).to receive(:publish)
-      broker.publish('message')
-      # needed to add this because rubocop was complaining
-      # not entirely sure if an expectation is needed.
-      expect(true).to be_truthy
+      message = double('message')
+      allow(message).to receive(:payload).and_return('message_payload')
+
+      broker.create_connection
+      expect(broker.exchange).to eq(exchange)
+      expect(exchange).to receive(:publish).with('message_payload', routing_key: bunny_config[:routing_key])
+
+      broker.publish(message)
     end
   end
 end

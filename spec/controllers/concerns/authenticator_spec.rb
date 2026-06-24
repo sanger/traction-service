@@ -65,7 +65,7 @@ RSpec.describe 'Authenticator', type: :controller do
       request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
 
       allow(Rails.logger).to receive(:info)
-      expect(Rails.logger).to receive(:info).with(match(/\[API KEY\] Key used/))
+      expect(Rails.logger).to receive(:info).with(include('[API KEY] Key used'))
       post :create
 
       expect(response).to have_http_status(:ok)
@@ -99,7 +99,7 @@ RSpec.describe 'Authenticator', type: :controller do
 
       request.headers['X-Traction-Client-Id'] = issued[:plaintext_key]
 
-      expect(Rails.logger).to receive(:warn).with(match(/\[API KEY\] Grace-period key used/))
+      expect(Rails.logger).to receive(:warn).with(include('[API KEY] Grace-period key used'))
       post :create
 
       expect(response).to have_http_status(:ok)
@@ -146,7 +146,7 @@ RSpec.describe 'Authenticator', type: :controller do
       allow(Flipper).to receive(:enabled?).with(feature_flag).and_return(true)
       allow(Flipper).to receive(:enabled?).with(feature_reject_unauthenticated).and_return(false)
 
-      expect(Rails.logger).to receive(:warn).with(match(/\[AUTH\] Unauthenticated request/))
+      expect(Rails.logger).to receive(:warn).with(include('[AUTH] Unauthenticated request'))
       post :create
     end
 
