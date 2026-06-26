@@ -197,9 +197,10 @@ GEM
       prettyprint
     prettyprint (0.2.0)
     prism (1.9.0)
-    pry (0.15.2)
+    pry (0.16.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
+      reline (>= 0.6.0)
     pry-rails (0.3.11)
       pry (>= 0.13.0)
     psych (5.3.1)
@@ -328,12 +329,10 @@ GEM
       crass (~> 1.0.2)
       nokogiri (>= 1.16.8)
     securerandom (0.4.1)
-    set (1.1.1)
     shoulda-matchers (7.0.1)
       activesupport (>= 7.1)
-    sorted_set (1.0.3)
+    sorted_set (1.1.0)
       rbtree
-      set (~> 1.0)
     spring (4.6.0)
     spring-watcher-listen (2.1.0)
       listen (>= 2.7, < 4.0)
@@ -401,7 +400,7 @@ DEPENDENCIES
   yard
 
 RUBY VERSION
-   ruby 3.4.9
+  ruby 4.0.5
 
 BUNDLED WITH
-   2.6.5
+  4.0.10
