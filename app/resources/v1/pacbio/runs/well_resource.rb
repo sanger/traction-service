@@ -63,6 +63,8 @@ module V1
         #   @return [Boolean] whether to use adaptive loading
         # @!attribute [rw] full_resolution_base_qual
         #   @return [Boolean] whether to apply full resolution base qual
+        # @!attribute [rw] application_type
+        #   @return [String] the application type, e.g. Human WGS, Other, etc.
         attributes :row, :column, :pacbio_plate_id, :position,
                    :annotations_attributes,
                    *Rails.configuration.pacbio_smrt_link_versions.options.keys

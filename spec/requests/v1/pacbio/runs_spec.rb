@@ -8,6 +8,7 @@ RSpec.describe 'RunsController' do
   let!(:version11) { create(:pacbio_smrt_link_version, name: 'v11') }
   let!(:version12) { create(:pacbio_smrt_link_version, name: 'v12_revio') }
   let!(:version13) { create(:pacbio_smrt_link_version, name: 'v13_revio', default: true) }
+  let!(:version25) { create(:pacbio_smrt_link_version, name: 'v25_1_revio') }
 
   shared_examples 'publish_messages_on_create' do
     it 'publishes a message' do
@@ -203,6 +204,48 @@ RSpec.describe 'RunsController' do
             'adaptive_loading' => run1.adaptive_loading,
             'sequencing_kit_box_barcodes' => run1.sequencing_kit_box_barcodes
           )
+        end
+      end
+    end
+
+    context 'smrtlink v25_1_revio application_type behaviour' do
+      let!(:run) { create(:pacbio_revio_run, smrt_link_version: version25) }
+
+      it 'returns the default application_type on GET with ?include=plates.wells' do
+        # Assert smrt_link_options does not contain application_type key for any well.
+        run.plates.each do |plate|
+          plate.wells.each do |well|
+            expect(well.smrt_link_options).not_to have_key('application_type')
+          end
+        end
+
+        get v1_pacbio_run_path(run), params: { include: 'plates.wells' }, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+
+        # Loop over all included wells and assert application_type is 'Other'.
+        json['included'].select { |inc| inc['type'] == 'wells' }.each do |included_well|
+          expect(included_well['attributes']['application_type']).to eq('Other')
+        end
+      end
+
+      it 'returns the set application_type on GET with ?include=plates.wells' do
+        # Update all wells of the run to have application_type 'Human WGS'
+        run.plates.each do |plate|
+          plate.wells.each do |well|
+            well.update!(application_type: 'Human WGS')
+
+            # Assert smrt_link_options contains application_type key for all wells.
+            expect(well.smrt_link_options).to have_key('application_type')
+            expect(well.smrt_link_options['application_type']).to eq('Human WGS')
+          end
+        end
+
+        get v1_pacbio_run_path(run), params: { include: 'plates.wells' }, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+
+        # Loop over all included wells and assert application_type is 'Human WGS'.
+        json['included'].select { |inc| inc['type'] == 'wells' }.each do |included_well|
+          expect(included_well['attributes']['application_type']).to eq('Human WGS')
         end
       end
     end
@@ -455,6 +498,59 @@ RSpec.describe 'RunsController' do
       end
 
       it_behaves_like 'publish_messages_on_create'
+    end
+
+    context 'smrtlink v25_1_revio on success' do
+      let(:pool1) { create(:pacbio_pool) }
+
+      let(:body) do
+        {
+          data: {
+            type: 'runs',
+            attributes: {
+              dna_control_complex_box_barcode: 'Lxxxxx101717600123191',
+              system_name: 'Revio',
+              pacbio_smrt_link_version_id: version25.id,
+              plates_attributes: [{
+                sequencing_kit_box_barcode: 'DM0001100861800123121',
+                plate_number: 1,
+                wells_attributes: [
+                  {
+                    row: 'A',
+                    column: '1',
+                    movie_acquisition_time: 30,
+                    library_concentration: 8.35,
+                    pre_extension_time: '2',
+                    include_base_kinetics: 'True',
+                    polymerase_kit: 'ABC123',
+                    used_aliquots_attributes: [{ source_id: pool1.id, source_type: 'Pacbio::Pool', volume: 10, concentration: 20, aliquot_type: :derived, template_prep_kit_box_barcode: '033000000000000000000' }],
+                    annotations_attributes: nil,
+                    application_type: 'Human WGS'
+                  }
+                ]
+              }]
+            }
+          }
+        }.to_json
+      end
+
+      it 'has a created status' do
+        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        expect(response).to have_http_status(:created)
+      end
+
+      it 'creates a run with the correct attributes' do
+        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        json = ActiveSupport::JSON.decode(response.body)
+        run = Pacbio::Run.last
+
+        expect(run.id).to eq(json['data']['id'].to_i)
+        expect(run.smrt_link_version).to be_present
+        expect(run.smrt_link_version).to eq(version25)
+        expect(run.pacbio_smrt_link_version_id).to eq(version25.id)
+        # Check that application type is set on the well for v25_1_revio runs.
+        expect(run.plates.first.wells.first.application_type).to eq('Human WGS')
+      end
     end
 
     context 'on failure' do
