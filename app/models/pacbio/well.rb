@@ -229,5 +229,33 @@ module Pacbio
     def formatted_bio_sample_name
       bio_sample_name&.gsub(':', '-')
     end
+
+    # Returns the application_type from smrt_link_options store of the well.
+    #
+    # If the application_type is set in smrt_link_options, returns that value.
+    # Otherwise, returns the default_value from smrt_link_version if applicable.
+    #
+    # @return [String, nil] the application_type or nil if not set or not applicable
+    def application_type
+      super.presence || application_type_default
+    end
+
+    private
+
+    # Returns the default_value of the application_type option for this well's
+    # SMRT Link version (through plate and run), if applicable.
+    #
+    # @return [String, nil] the default application_type or nil if not applicable
+    def application_type_default
+      version = plate&.run&.smrt_link_version
+      return if version.blank?
+
+      config = Rails.configuration.pacbio_smrt_link_versions
+      option = config.dig(:options, :application_type)
+      return if option.blank?
+
+      version_names = option[:versions] || []
+      option[:default_value] if version_names.include?(version.name)
+    end
   end
 end

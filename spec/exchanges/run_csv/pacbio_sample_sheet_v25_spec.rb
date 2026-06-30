@@ -87,6 +87,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV25, type: :model do
             'Use Adaptive Loading' => well.use_adaptive_loading.downcase == 'true',
             'Consensus Mode' => 'molecule',
             'Full Resolution Base Qual' => well.full_resolution_base_qual == 'true',
+            'Application' => 'Other', # default
 
             # specific to tagged wells
             'Bio Sample Name' => '',
@@ -96,6 +97,52 @@ RSpec.describe RunCsv::PacbioSampleSheetV25, type: :model do
           }
 
           expect(smrt_cell_settings[plate_well_name]).to eq(expected_settings)
+        end
+      end
+
+      context 'with application types per well' do
+        it 'sets the correct Application value for each well' do
+          application_types = ['Human WGS', 'Microbial Assembly', 'Other WGS']
+
+          # Assign application_types to wells of the run.
+          run.plates.flat_map(&:wells).each_with_index do |well, idx|
+            # Through store accessor to update well's smrt_link_options.
+            well.update!(application_type: application_types[idx])
+          end
+
+          smrt_cell_settings = parsed_sample_sheet['SMRT Cell Settings']
+          # smrt_cell_settings = {
+          #   "1_A01" => { "Application" => "Human WGS", ... },
+          #   "1_B01" => { "Application" => "Microbial Assembly", ... },
+          #   "2_A01" => { "Application" => "Other WGS", ... }
+          # }
+          plate_wells = run.plates.flat_map(&:wells)
+          plate_well_names = plate_wells.map { |well| "#{well.plate.plate_number}_#{well.position_leading_zero}" }
+          plate_well_names.each_with_index do |plate_well_name, idx|
+            expect(smrt_cell_settings[plate_well_name]['Application']).to eq(application_types[idx])
+          end
+        end
+
+        it 'sets Application to default value when not set' do
+          smrt_cell_settings = parsed_sample_sheet['SMRT Cell Settings']
+          plate_wells = run.plates.flat_map(&:wells)
+          plate_well_names = plate_wells.map { |well| "#{well.plate.plate_number}_#{well.position_leading_zero}" }
+          plate_well_names.each do |plate_well_name|
+            expect(smrt_cell_settings[plate_well_name]['Application']).to eq('Other')
+          end
+        end
+
+        it 'sets Application to default value when set to nil' do
+          run.plates.flat_map(&:wells).each do |well|
+            well.update!(application_type: nil)
+          end
+
+          smrt_cell_settings = parsed_sample_sheet['SMRT Cell Settings']
+          plate_wells = run.plates.flat_map(&:wells)
+          plate_well_names = plate_wells.map { |well| "#{well.plate.plate_number}_#{well.position_leading_zero}" }
+          plate_well_names.each do |plate_well_name|
+            expect(smrt_cell_settings[plate_well_name]['Application']).to eq('Other')
+          end
         end
       end
 
@@ -255,6 +302,7 @@ RSpec.describe RunCsv::PacbioSampleSheetV25, type: :model do
               'Use Adaptive Loading' => well.use_adaptive_loading.downcase == 'true',
               'Consensus Mode' => 'molecule',
               'Full Resolution Base Qual' => well.full_resolution_base_qual == 'true',
+              'Application' => 'Other',
 
               # specific to untagged wells
               'Bio Sample Name' => well.formatted_bio_sample_name,
