@@ -28,6 +28,10 @@ RSpec.describe 'RakeTasks' do
       let!(:smrt_tag_2) { smrtbell_tag_set.tags.find_by(group_id: 'bc2002') }
 
       let!(:library_using_old_smrt_tag) { create(:pacbio_library, tag: smrt_tag_1) }
+      let!(:lbrary_pool_used_aliquot_using_old_smrt_tag) do
+        create(:aliquot, source: library_using_old_smrt_tag,
+                         used_by: create(:pacbio_pool), aliquot_type: :derived, tag: smrt_tag_1)
+      end
       let!(:request_pool_used_aliquot_using_old_smrt_tag) do
         create(
           :aliquot,
@@ -71,6 +75,7 @@ RSpec.describe 'RakeTasks' do
       it 'migrates affected libraries and aliquots' do
         expect(library_using_old_smrt_tag.reload.tag).to eq(p96_tag_1)
         expect(library_using_old_smrt_tag.primary_aliquot.reload.tag).to eq(p96_tag_1)
+        expect(lbrary_pool_used_aliquot_using_old_smrt_tag.reload.tag).to eq(p96_tag_1)
         expect(request_pool_used_aliquot_using_old_smrt_tag.reload.tag).to eq(p96_tag_2)
         expect(unaffected_library.reload.tag).to eq(unaffected_library.tag)
         expect(unaffected_aliquot.reload.tag).to eq(unaffected_aliquot.tag)
@@ -92,13 +97,25 @@ RSpec.describe 'RakeTasks' do
       end
     end
 
-    context 'when matching tag counts differ' do
-      it 'raises an error before attempting the transaction' do
-        smrtbell_tag_set.tags.find_by(group_id: 'bc2001').destroy!
-        expect { task.invoke }.to raise_error(
-          RuntimeError,
-          /The number of tags in Pacbio_96_barcode_plate_v3 does not match/
-        )
+    context 'when the rollback is triggered it should not make any changes' do
+      let!(:p96_tag_1) { p96v3_tag_set.tags.find_by(group_id: 'bc2001') }
+      let!(:p96_tag_2) { p96v3_tag_set.tags.find_by(group_id: 'bc2002') }
+      let!(:smrt_tag_1) { smrtbell_tag_set.tags.find_by(group_id: 'bc2001') }
+      let!(:smrt_tag_2) { smrtbell_tag_set.tags.find_by(group_id: 'bc2002') }
+      let(:task_context) { task.actions.first.binding.receiver }
+
+      before do
+        # Simulate a rollback by raising an error during the migration of libraries
+        allow(task_context).to receive(:migrate_libraries).and_raise(ActiveRecord::Rollback)
+      end
+
+      it 'does not change any tags or tag sets' do
+        expect(task_context).to receive(:migrate_libraries)
+        expect { task.invoke }.not_to raise_error
+        expect(p96_tag_1.reload.tag_set).to eq(p96v3_tag_set)
+        expect(p96_tag_2.reload.tag_set).to eq(p96v3_tag_set)
+        expect(smrt_tag_1.reload.tag_set).to eq(smrtbell_tag_set)
+        expect(smrt_tag_2.reload.tag_set).to eq(smrtbell_tag_set)
       end
     end
   end
