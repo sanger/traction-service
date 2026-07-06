@@ -40,13 +40,14 @@ namespace :single_use do # rubocop:disable Metrics/BlockLength
       raise 'One or both tag sets not found. Please check the tag set names.'
     end
 
+    puts '-> Validated tag sets exist'
     [p96v3_tag_set, smrtbell_tag_set]
   end
 
   # Swap the overlapping tags between the two tag sets.
   # A temporary tag set is created to avoid unique-index collisions while swapping.
   # The temporary tag set is destroyed after the swap is complete.
-  def swap_tags_between_tag_sets(p96v3_tag_set, smrtbell_tag_set)
+  def swap_tags_between_tag_sets(p96v3_tag_set, smrtbell_tag_set) # rubocop:disable Metrics/MethodLength
     # Get the tags to swap
     p96v3_tags = p96v3_tag_set.tags
     p96v3_smrtbell_tags = smrtbell_tag_set.tags.where(group_id: p96v3_tags.pluck(:group_id))
@@ -68,11 +69,12 @@ namespace :single_use do # rubocop:disable Metrics/BlockLength
 
     # Remove the temporary tag set after the swap is complete
     temp_tag_set.destroy!
+    puts '-> Swapped overlapping tags'
   end
 
   # Migrate libraries using the old Pacbio_96_barcode_plate_v3 tags to use the equivalent
   # SMRTbell_Barcoded_Adapter_Plates_ABCD tags.
-  def migrate_libraries(p96v3_tag_set, smrtbell_tag_set)
+  def migrate_libraries(p96v3_tag_set, smrtbell_tag_set) # rubocop:disable Metrics/MethodLength
     Pacbio::Library.joins(:tag).where(
       tags: { tag_set_id: p96v3_tag_set.id }
     ).find_each do |library|
@@ -88,6 +90,7 @@ namespace :single_use do # rubocop:disable Metrics/BlockLength
       library.primary_aliquot.update!(tag: new_tag)
       library.used_aliquots.each { |aliquot| aliquot.update!(tag: new_tag) }
     end
+    puts '-> Migrated libraries'
   end
 
   # Migrate pool used aliquots using the old Pacbio_96_barcode_plate_v3 tags to use the equivalent
@@ -109,6 +112,7 @@ namespace :single_use do # rubocop:disable Metrics/BlockLength
       # Update the aliquot to use the new tag
       aliquot.update!(tag: new_tag)
     end
+    puts '-> Migrated pool used aliquots'
   end
 
   desc 'Merge Pacbio_96_barcode_plate_v3 tag set with SMRTbell_Barcoded_Adapter_Plates_ABCD'
@@ -133,6 +137,7 @@ namespace :single_use do # rubocop:disable Metrics/BlockLength
 
       # Deactivate the old Pacbio_96_barcode_plate_v3 tag set
       p96v3_tag_set.update!(active: false)
+      puts '-> Deactivated Pacbio_96_barcode_plate_v3 tag set'
 
       # Output a message indicating the successful completion of the task
       puts 'Successfully merged Pacbio_96_barcode_plate_v3 tag set with
