@@ -452,7 +452,7 @@ namespace :tags do
     task pacbio_96_barcode_plate_v3: :environment do
       puts '-> Creating Pacbio_96_barcode_plate_v3 tag set and tags'
       set = TagSet.pacbio_pipeline
-                  .find_or_create_by!(name: 'Pacbio_96_barcode_plate_v3', uuid: '7a7f33e6-4912-4505-0d1e-3ceef7c93695')
+                  .find_or_create_by!(name: 'Pacbio_96_barcode_plate_v3', uuid: '7a7f33e6-4912-4505-0d1e-3ceef7c93695', active: false)
       puts '-> Tag Set successfully created'
       [
         { oligo: 'ATCGTGCGACGAGTAT', group_id: 'bc2001' },

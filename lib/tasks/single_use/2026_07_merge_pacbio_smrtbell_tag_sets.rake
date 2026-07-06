@@ -86,6 +86,7 @@ namespace :single_use do # rubocop:disable Metrics/BlockLength
       # Update the library to use the new tag
       library.update!(tag: new_tag)
       library.primary_aliquot.update!(tag: new_tag)
+      library.used_aliquots.each { |aliquot| aliquot.update!(tag: new_tag) }
     end
   end
 

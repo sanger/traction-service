@@ -75,6 +75,7 @@ RSpec.describe 'RakeTasks' do
       it 'migrates affected libraries and aliquots' do
         expect(library_using_old_smrt_tag.reload.tag).to eq(p96_tag_1)
         expect(library_using_old_smrt_tag.primary_aliquot.reload.tag).to eq(p96_tag_1)
+        expect(library_using_old_smrt_tag.used_aliquots.first.reload.tag).to eq(p96_tag_1)
         expect(lbrary_pool_used_aliquot_using_old_smrt_tag.reload.tag).to eq(p96_tag_1)
         expect(request_pool_used_aliquot_using_old_smrt_tag.reload.tag).to eq(p96_tag_2)
         expect(unaffected_library.reload.tag).to eq(unaffected_library.tag)
