@@ -35,8 +35,6 @@ module Authenticator
   #
   # @return [void]
   def authenticate_request!
-    return unless Flipper.enabled?(:y25_662_enable_request_authentication)
-
     if bearer_token_present?
       authenticate_bearer!
     elsif api_key_present?
