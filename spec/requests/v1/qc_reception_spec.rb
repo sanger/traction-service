@@ -46,18 +46,18 @@ RSpec.describe '/qc_receptions' do
       end
 
       it 'returns a created status' do
-        post v1_qc_receptions_url, params: body, headers: json_api_headers
+        post v1_qc_receptions_url, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:created)
       end
 
       it 'creates a new QcReception' do
         expect do
-          post v1_qc_receptions_url, params: body, headers: json_api_headers
+          post v1_qc_receptions_url, params: body, headers: auth_json_api_headers
         end.to change(QcReception, :count).by(1)
       end
 
       it 'creates a new QcReception with the given source' do
-        post v1_qc_receptions_url, params: body, headers: json_api_headers
+        post v1_qc_receptions_url, params: body, headers: auth_json_api_headers
         expect(QcReception.last.source).to eq source
       end
 
@@ -65,14 +65,14 @@ RSpec.describe '/qc_receptions' do
         create(:qc_assay_type, key: 'post_spri_concentration', label: 'Post SPRI Concentration (ng/ul)', used_by: 1, units: 'ng/ul')
         create(:qc_assay_type, key: 'post_spri_volume', label: 'Post SPRI Volume (ul)', used_by: 1, units: 'ul')
         expect do
-          post v1_qc_receptions_url, params: body, headers: json_api_headers
+          post v1_qc_receptions_url, params: body, headers: auth_json_api_headers
         end.to change(QcResult, :count).by(3)
       end
 
       it 'creates the relevant QcResult data' do
         qc_results = qc_results_list[0]
         assay_type_id = QcAssayType.find_by(key: 'sheared_femto_fragment_size').id
-        post v1_qc_receptions_url, params: body, headers: json_api_headers
+        post v1_qc_receptions_url, params: body, headers: auth_json_api_headers
         expect(QcResult.last.labware_barcode).to eq qc_results[:labware_barcode]
         expect(QcResult.last.sample_external_id).to eq qc_results[:sample_external_id]
         expect(QcResult.last.qc_assay_type_id).to eq assay_type_id
@@ -82,11 +82,11 @@ RSpec.describe '/qc_receptions' do
       it 'sends the messages' do
         # 1 as there is 1 QcResult created
         expect(Broker::Handle).to receive(:publish).once
-        post v1_qc_receptions_url, params: body, headers: json_api_headers
+        post v1_qc_receptions_url, params: body, headers: auth_json_api_headers
       end
 
       it 'renders a JSON response with the new qc_receptions' do
-        post v1_qc_receptions_url, params: body, headers: json_api_headers
+        post v1_qc_receptions_url, params: body, headers: auth_json_api_headers
         expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
       end
 
@@ -97,13 +97,13 @@ RSpec.describe '/qc_receptions' do
 
         it 'does not create a new QcReception' do
           expect do
-            post v1_qc_receptions_url, params: body, headers: json_api_headers
+            post v1_qc_receptions_url, params: body, headers: auth_json_api_headers
           end.not_to change(QcReception, :count)
         end
 
         it 'does not create any QcResults' do
           expect do
-            post v1_qc_receptions_url, params: body, headers: json_api_headers
+            post v1_qc_receptions_url, params: body, headers: auth_json_api_headers
           end.not_to change(QcResult, :count)
         end
       end
@@ -125,12 +125,12 @@ RSpec.describe '/qc_receptions' do
 
         it 'does not create a new QcReception' do
           expect do
-            post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
+            post v1_qc_receptions_url, params: invalid_body, headers: auth_json_api_headers
           end.not_to change(QcReception, :count)
         end
 
         it 'renders a JSON response with errors for the new qc_receptions' do
-          post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
+          post v1_qc_receptions_url, params: invalid_body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "qc_results_list - can't be blank"
@@ -152,12 +152,12 @@ RSpec.describe '/qc_receptions' do
 
         it 'does not create a new QcReception' do
           expect do
-            post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
+            post v1_qc_receptions_url, params: invalid_body, headers: auth_json_api_headers
           end.not_to change(QcReception, :count)
         end
 
         it 'renders a JSON response with errors for the new qc_receptions' do
-          post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
+          post v1_qc_receptions_url, params: invalid_body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "qc_results_list - can't be blank"
@@ -179,13 +179,13 @@ RSpec.describe '/qc_receptions' do
 
         it 'does not create a new QcReception' do
           expect do
-            post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
+            post v1_qc_receptions_url, params: invalid_body, headers: auth_json_api_headers
           end.not_to change(QcReception, :count)
         end
 
         it 'renders a JSON response with errors for the qc_results_list' do
           error_message = error_config['attributes']['qc_results_list']['empty_array']
-          post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
+          post v1_qc_receptions_url, params: invalid_body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['title']).to eq error_message
@@ -206,12 +206,12 @@ RSpec.describe '/qc_receptions' do
 
         it 'does not create a new QcReception' do
           expect do
-            post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
+            post v1_qc_receptions_url, params: invalid_body, headers: auth_json_api_headers
           end.not_to change(QcReception, :count)
         end
 
         it 'renders a JSON response with errors for the new qc_receptions' do
-          post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
+          post v1_qc_receptions_url, params: invalid_body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "source - can't be blank"
@@ -233,12 +233,12 @@ RSpec.describe '/qc_receptions' do
 
         it 'does not create a new QcReception' do
           expect do
-            post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
+            post v1_qc_receptions_url, params: invalid_body, headers: auth_json_api_headers
           end.not_to change(QcReception, :count)
         end
 
         it 'renders a JSON response with errors for the new qc_results_list' do
-          post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
+          post v1_qc_receptions_url, params: invalid_body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "source - can't be blank"
@@ -252,12 +252,12 @@ RSpec.describe '/qc_receptions' do
 
         it 'does not create a new QcReception' do
           expect do
-            post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
+            post v1_qc_receptions_url, params: invalid_body, headers: auth_json_api_headers
           end.not_to change(QcReception, :count)
         end
 
         it 'renders a JSON response with errors for the new qc_receptions' do
-          post v1_qc_receptions_url, params: invalid_body, headers: json_api_headers
+          post v1_qc_receptions_url, params: invalid_body, headers: auth_json_api_headers
           expect(response).to have_http_status(:bad_request)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'The required parameter, data, is missing.'

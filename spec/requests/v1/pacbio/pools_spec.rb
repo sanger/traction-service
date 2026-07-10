@@ -268,21 +268,21 @@ RSpec.describe 'PoolsController', :pacbio do
       end
 
       it 'has a created status' do
-        post v1_pacbio_pools_path, params: body, headers: json_api_headers
+        post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:created), response.body
       end
 
       it 'creates a pool' do
-        expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to change(Pacbio::Pool, :count).by(1)
+        expect { post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers }.to change(Pacbio::Pool, :count).by(1)
       end
 
       it 'returns the id' do
-        post v1_pacbio_pools_path, params: body, headers: json_api_headers
+        post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers
         expect(json.dig('data', 'id').to_i).to eq(Pacbio::Pool.first.id)
       end
 
       it 'includes the tube' do
-        post "#{v1_pacbio_pools_path}?include=tube", params: body, headers: json_api_headers
+        post "#{v1_pacbio_pools_path}?include=tube", params: body, headers: auth_json_api_headers
         tube = find_included_resource(id: Pacbio::Pool.first.tube_id, type: 'tubes')
         expect(tube.dig('attributes', 'barcode')).to be_present
       end
@@ -317,12 +317,12 @@ RSpec.describe 'PoolsController', :pacbio do
       end
 
       it 'returns unprocessable entity status' do
-        post v1_pacbio_pools_path, params: body, headers: json_api_headers
+        post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'cannot create a pool' do
-        expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.not_to(
+        expect { post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers }.not_to(
           change(Pacbio::Pool, :count)
         )
       end
@@ -356,13 +356,13 @@ RSpec.describe 'PoolsController', :pacbio do
       end
 
       it 'returns unprocessable entity status' do
-        post v1_pacbio_pools_path, params: body, headers: json_api_headers
+        post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("primary_aliquot.volume - can't be blank")
       end
 
       it 'cannot create a pool' do
-        expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.not_to(
+        expect { post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers }.not_to(
           change(Pacbio::Pool, :count)
         )
       end
@@ -398,13 +398,13 @@ RSpec.describe 'PoolsController', :pacbio do
       end
 
       it 'returns unprocessable entity status' do
-        post v1_pacbio_pools_path, params: body, headers: json_api_headers
+        post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:bad_request)
         expect(response.body).to include('barcode is not allowed')
       end
 
       it 'cannot create a pool' do
-        expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.not_to(
+        expect { post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers }.not_to(
           change(Pacbio::Pool, :count)
         )
       end
@@ -440,18 +440,18 @@ RSpec.describe 'PoolsController', :pacbio do
       end
 
       it 'returns unprocessable entity status' do
-        post v1_pacbio_pools_path, params: body, headers: json_api_headers
+        post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'cannot create a pool' do
-        expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.not_to(
+        expect { post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers }.not_to(
           change(Pacbio::Pool, :count)
         )
       end
 
       it 'returns the correct error messages' do
-        post v1_pacbio_pools_path, params: body, headers: json_api_headers
+        post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         errors = json['errors']
         expect(errors[1]['detail']).to include("Insufficient volume available for #{library.barcode}")
@@ -498,12 +498,12 @@ RSpec.describe 'PoolsController', :pacbio do
       end
 
       it 'returns created status' do
-        post v1_pacbio_pools_path, params: body, headers: json_api_headers
+        post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:created)
       end
 
       it 'creates a pool' do
-        expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.to(
+        expect { post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers }.to(
           change(Pacbio::Pool, :count).by(1).and(
             change(Aliquot, :count).by(3)
           )
@@ -549,12 +549,12 @@ RSpec.describe 'PoolsController', :pacbio do
       end
 
       it 'returns unprocessable entity status' do
-        post v1_pacbio_pools_path, params: body, headers: json_api_headers
+        post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'cannot create a pool' do
-        expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.not_to(
+        expect { post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers }.not_to(
           change(Pacbio::Pool, :count)
         )
       end
@@ -600,13 +600,13 @@ RSpec.describe 'PoolsController', :pacbio do
       end
 
       it 'returns internal_server_error status' do
-        post v1_pacbio_pools_path, params: body, headers: json_api_headers
+        post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:internal_server_error)
         expect(response.body).to include('Aliquot is not part of the pool')
       end
 
       it 'cannot create a pool' do
-        expect { post v1_pacbio_pools_path, params: body, headers: json_api_headers }.not_to(
+        expect { post v1_pacbio_pools_path, params: body, headers: auth_json_api_headers }.not_to(
           change(Pacbio::Pool, :count)
         )
       end
@@ -622,7 +622,7 @@ RSpec.describe 'PoolsController', :pacbio do
     let(:added_request) { create(:pacbio_request) }
 
     before do
-      patch v1_pacbio_pool_path(pool), params: body, headers: json_api_headers
+      patch v1_pacbio_pool_path(pool), params: body, headers: auth_json_api_headers
     end
 
     context 'on success' do
@@ -806,7 +806,7 @@ RSpec.describe 'PoolsController', :pacbio do
 
     it 'publishes a message' do
       expect(Messages).to receive(:publish).with(pool.sequencing_runs, having_attributes(pipeline: 'pacbio'))
-      patch v1_pacbio_pool_path(pool), params: body, headers: json_api_headers
+      patch v1_pacbio_pool_path(pool), params: body, headers: auth_json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
   end
@@ -846,7 +846,7 @@ RSpec.describe 'PoolsController', :pacbio do
       end
 
       it 'creates a pool' do
-        post "#{v1_pacbio_pools_path}?include=tube", params: body, headers: json_api_headers
+        post "#{v1_pacbio_pools_path}?include=tube", params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:success)
         change(Pacbio::Pool, :count).by(1).and(
           change(Aliquot, :count).by(3)
@@ -855,7 +855,7 @@ RSpec.describe 'PoolsController', :pacbio do
 
       it 'publish message with pipeline: pacbio and volume_tracking' do
         expect(Emq::Publisher).to receive(:publish).with(anything, having_attributes(pipeline: 'pacbio'), 'volume_tracking')
-        post "#{v1_pacbio_pools_path}?include=tube", params: body, headers: json_api_headers
+        post "#{v1_pacbio_pools_path}?include=tube", params: body, headers: auth_json_api_headers
       end
     end
   end

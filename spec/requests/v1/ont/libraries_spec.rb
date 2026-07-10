@@ -143,31 +143,31 @@ RSpec.describe 'LibrariesController', :ont do
       let!(:library) { create(:ont_library) }
 
       it 'returns the correct status' do
-        delete "/v1/ont/libraries/#{library.id}", headers: json_api_headers
+        delete "/v1/ont/libraries/#{library.id}", headers: auth_json_api_headers
         expect(response).to have_http_status(:no_content)
       end
 
       it 'destroys the library' do
         expect do
-          delete "/v1/ont/libraries/#{library.id}", headers: json_api_headers
+          delete "/v1/ont/libraries/#{library.id}", headers: auth_json_api_headers
         end.to change(Ont::Library, :count).by(-1)
       end
 
       it 'does not destroy the requests' do
         expect do
-          delete "/v1/ont/libraries/#{library.id}", headers: json_api_headers
+          delete "/v1/ont/libraries/#{library.id}", headers: auth_json_api_headers
         end.not_to change(Ont::Request, :count)
       end
     end
 
     context 'on failure' do
       it 'does not delete the library' do
-        delete '/v1/ont/libraries/dodgyid', headers: json_api_headers
+        delete '/v1/ont/libraries/dodgyid', headers: auth_json_api_headers
         expect(response).to have_http_status(:bad_request)
       end
 
       it 'has an error message' do
-        delete '/v1/ont/libraries/dodgyid', headers: json_api_headers
+        delete '/v1/ont/libraries/dodgyid', headers: auth_json_api_headers
         expect(json['errors']).to be_present
       end
     end

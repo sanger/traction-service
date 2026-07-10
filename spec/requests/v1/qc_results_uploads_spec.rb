@@ -33,42 +33,42 @@ RSpec.describe '/qc_results_uploads' do
       end
 
       it 'returns a created status' do
-        post v1_qc_results_uploads_url, params: body, headers: json_api_headers
+        post v1_qc_results_uploads_url, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:created)
       end
 
       it 'creates a new QcResultsUpload' do
         expect do
-          post v1_qc_results_uploads_url, params: body, headers: json_api_headers
+          post v1_qc_results_uploads_url, params: body, headers: auth_json_api_headers
         end.to change(QcResultsUpload, :count).by(1)
       end
 
       it 'creates a new QcResultsUpload with the given csv_data' do
-        post v1_qc_results_uploads_url, params: body, headers: json_api_headers
+        post v1_qc_results_uploads_url, params: body, headers: auth_json_api_headers
         expect(QcResultsUpload.last.csv_data).to eq csv
       end
 
       it 'creates the relevant QC entities' do
         expect do
-          post v1_qc_results_uploads_url, params: body, headers: json_api_headers
+          post v1_qc_results_uploads_url, params: body, headers: auth_json_api_headers
         end.to change(QcDecision, :count).by(2)
 
         expect do
-          post v1_qc_results_uploads_url, params: body, headers: json_api_headers
+          post v1_qc_results_uploads_url, params: body, headers: auth_json_api_headers
         end.to change(QcResult, :count).by(20)
 
         expect do
-          post v1_qc_results_uploads_url, params: body, headers: json_api_headers
+          post v1_qc_results_uploads_url, params: body, headers: auth_json_api_headers
         end.to change(QcDecisionResult, :count).by(18)
       end
 
       it 'sends the messages' do
         expect(Broker::Handle).to receive(:publish).exactly(18).times
-        post v1_qc_results_uploads_url, params: body, headers: json_api_headers
+        post v1_qc_results_uploads_url, params: body, headers: auth_json_api_headers
       end
 
       it 'renders a JSON response with the new qc_results_upload' do
-        post v1_qc_results_uploads_url, params: body, headers: json_api_headers
+        post v1_qc_results_uploads_url, params: body, headers: auth_json_api_headers
         expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
       end
     end
@@ -88,12 +88,12 @@ RSpec.describe '/qc_results_uploads' do
 
         it 'does not create a new QcResultsUpload' do
           expect do
-            post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+            post v1_qc_results_uploads_url, params: invalid_body, headers: auth_json_api_headers
           end.not_to change(QcResultsUpload, :count)
         end
 
         it 'renders a JSON response with errors for the new qc_results_upload' do
-          post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+          post v1_qc_results_uploads_url, params: invalid_body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "csv_data - can't be blank"
@@ -115,12 +115,12 @@ RSpec.describe '/qc_results_uploads' do
 
         it 'does not create a new QcResultsUpload' do
           expect do
-            post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+            post v1_qc_results_uploads_url, params: invalid_body, headers: auth_json_api_headers
           end.not_to change(QcResultsUpload, :count)
         end
 
         it 'renders a JSON response with errors for the new qc_results_upload' do
-          post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+          post v1_qc_results_uploads_url, params: invalid_body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "csv_data - can't be blank"
@@ -144,12 +144,12 @@ RSpec.describe '/qc_results_uploads' do
 
         it 'does not create a new QcResultsUpload' do
           expect do
-            post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+            post v1_qc_results_uploads_url, params: invalid_body, headers: auth_json_api_headers
           end.not_to change(QcResultsUpload, :count)
         end
 
         it 'renders a JSON response with errors for the new qc_results_upload' do
-          post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+          post v1_qc_results_uploads_url, params: invalid_body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "used_by - can't be blank"
@@ -171,12 +171,12 @@ RSpec.describe '/qc_results_uploads' do
 
         it 'does not create a new QcResultsUpload' do
           expect do
-            post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+            post v1_qc_results_uploads_url, params: invalid_body, headers: auth_json_api_headers
           end.not_to change(QcResultsUpload, :count)
         end
 
         it 'renders a JSON response with errors for the new qc_results_upload' do
-          post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+          post v1_qc_results_uploads_url, params: invalid_body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq "used_by - can't be blank"
@@ -190,12 +190,12 @@ RSpec.describe '/qc_results_uploads' do
 
         it 'does not create a new QcResultsUpload' do
           expect do
-            post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+            post v1_qc_results_uploads_url, params: invalid_body, headers: auth_json_api_headers
           end.not_to change(QcResultsUpload, :count)
         end
 
         it 'renders a JSON response with errors for the new qc_results_upload' do
-          post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+          post v1_qc_results_uploads_url, params: invalid_body, headers: auth_json_api_headers
           expect(response).to have_http_status(:bad_request)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'The required parameter, data, is missing.'
@@ -221,12 +221,12 @@ RSpec.describe '/qc_results_uploads' do
 
         it 'does not create a new QcResultsUpload' do
           expect do
-            post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+            post v1_qc_results_uploads_url, params: invalid_body, headers: auth_json_api_headers
           end.not_to change(QcResultsUpload, :count)
         end
 
         it 'renders a JSON response with errors for the new qc_results_upload' do
-          post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+          post v1_qc_results_uploads_url, params: invalid_body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'csv_data - Missing header row'
@@ -254,13 +254,13 @@ RSpec.describe '/qc_results_uploads' do
 
         it 'does create a new QcResultsUpload' do
           expect do
-            post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+            post v1_qc_results_uploads_url, params: invalid_body, headers: auth_json_api_headers
           end.not_to change(QcResultsUpload, :count)
         end
 
         # There should always be a LR Decision, throw a 500 if not
         it 'renders a JSON response with errors for the new qc_results_upload' do
-          post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+          post v1_qc_results_uploads_url, params: invalid_body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['title']).to eq 'Missing required headers: Tissue Tube ID'
@@ -288,12 +288,12 @@ RSpec.describe '/qc_results_uploads' do
 
         it 'does not create a new QcResultsUpload' do
           expect do
-            post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+            post v1_qc_results_uploads_url, params: invalid_body, headers: auth_json_api_headers
           end.not_to change(QcResultsUpload, :count)
         end
 
         it 'renders a JSON response with errors for the new qc_results_upload' do
-          post v1_qc_results_uploads_url, params: invalid_body, headers: json_api_headers
+          post v1_qc_results_uploads_url, params: invalid_body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
           expect(response.content_type).to match(a_string_including('application/vnd.api+json'))
           expect(JSON.parse(response.parsed_body)['errors'][0]['detail']).to eq 'csv_data - Missing data rows'
@@ -321,25 +321,25 @@ RSpec.describe '/qc_results_uploads' do
 
         it 'does creates a new QcResultsUpload, but ignores the missing row' do
           expect do
-            post v1_qc_results_uploads_url, params: missing_row, headers: json_api_headers
+            post v1_qc_results_uploads_url, params: missing_row, headers: auth_json_api_headers
           end.to change(QcResultsUpload, :count).by(1)
 
           expect do
-            post v1_qc_results_uploads_url, params: missing_row, headers: json_api_headers
+            post v1_qc_results_uploads_url, params: missing_row, headers: auth_json_api_headers
           end.not_to change(QcDecision, :count)
 
           expect do
-            post v1_qc_results_uploads_url, params: missing_row, headers: json_api_headers
+            post v1_qc_results_uploads_url, params: missing_row, headers: auth_json_api_headers
           end.not_to change(QcResult, :count)
 
           expect do
-            post v1_qc_results_uploads_url, params: missing_row, headers: json_api_headers
+            post v1_qc_results_uploads_url, params: missing_row, headers: auth_json_api_headers
           end.not_to change(QcDecisionResult, :count)
         end
 
         # There should always be a LR Decision, throw a 500 if not
         it 'renders a JSON response with errors for the new qc_results_upload' do
-          post v1_qc_results_uploads_url, params: missing_row, headers: json_api_headers
+          post v1_qc_results_uploads_url, params: missing_row, headers: auth_json_api_headers
           expect(response).to have_http_status(:created)
         end
       end

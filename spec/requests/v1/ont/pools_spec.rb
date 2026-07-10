@@ -115,21 +115,21 @@ RSpec.describe 'PoolsController', :ont do
         end
 
         it 'has a created status' do
-          post v1_ont_pools_path, params: body, headers: json_api_headers
+          post v1_ont_pools_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:created), response.body
         end
 
         it 'creates a pool' do
-          expect { post v1_ont_pools_path, params: body, headers: json_api_headers }.to change(Ont::Pool, :count).by(1)
+          expect { post v1_ont_pools_path, params: body, headers: auth_json_api_headers }.to change(Ont::Pool, :count).by(1)
         end
 
         it 'returns the id' do
-          post v1_ont_pools_path, params: body, headers: json_api_headers
+          post v1_ont_pools_path, params: body, headers: auth_json_api_headers
           expect(json.dig('data', 'id').to_i).to eq(Ont::Pool.first.id)
         end
 
         it 'includes the tube' do
-          post "#{v1_ont_pools_path}?include=tube", params: body, headers: json_api_headers
+          post "#{v1_ont_pools_path}?include=tube", params: body, headers: auth_json_api_headers
           tube = find_included_resource(id: Ont::Pool.first.tube_id, type: 'tubes')
           expect(tube.dig('attributes', 'barcode')).to be_present
         end
@@ -157,12 +157,12 @@ RSpec.describe 'PoolsController', :ont do
         end
 
         it 'returns unprocessable entity status' do
-          post v1_ont_pools_path, params: body, headers: json_api_headers
+          post v1_ont_pools_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'cannot create a pool' do
-          expect { post v1_ont_pools_path, params: body, headers: json_api_headers }.not_to(
+          expect { post v1_ont_pools_path, params: body, headers: auth_json_api_headers }.not_to(
             change(Ont::Pool, :count)
           )
         end
@@ -200,12 +200,12 @@ RSpec.describe 'PoolsController', :ont do
         end
 
         it 'returns created status' do
-          post v1_ont_pools_path, params: body, headers: json_api_headers
+          post v1_ont_pools_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:created)
         end
 
         it 'creates a pool' do
-          expect { post v1_ont_pools_path, params: body, headers: json_api_headers }.to(
+          expect { post v1_ont_pools_path, params: body, headers: auth_json_api_headers }.to(
             change(Ont::Pool, :count).by(1)
           )
         end
@@ -241,12 +241,12 @@ RSpec.describe 'PoolsController', :ont do
         end
 
         it 'returns unprocessable entity' do
-          post v1_ont_pools_path, params: body, headers: json_api_headers
+          post v1_ont_pools_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'cannot create a pool' do
-          expect { post v1_ont_pools_path, params: body, headers: json_api_headers }.not_to(
+          expect { post v1_ont_pools_path, params: body, headers: auth_json_api_headers }.not_to(
             change(Ont::Pool, :count)
           )
         end
@@ -262,7 +262,7 @@ RSpec.describe 'PoolsController', :ont do
       let(:added_request) { create(:ont_request) }
 
       before do
-        patch v1_ont_pool_path(pool), params: body, headers: json_api_headers
+        patch v1_ont_pool_path(pool), params: body, headers: auth_json_api_headers
       end
 
       context 'on success' do
