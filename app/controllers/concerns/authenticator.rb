@@ -143,8 +143,6 @@ module Authenticator
                   "request_id=#{request.request_id}"
     Rails.logger.warn(log_message)
 
-    return unless Flipper.enabled?(:y25_662_reject_unauthenticated_requests)
-
     render_unauthorized('Authentication required')
   end
 

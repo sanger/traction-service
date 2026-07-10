@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Authenticator', type: :controller do
-  let(:feature_reject_unauthenticated) { :y25_662_reject_unauthenticated_requests }
   let(:api_application) { create(:api_application) }
 
   # Dummy controller for testing
@@ -21,8 +20,6 @@ RSpec.describe 'Authenticator', type: :controller do
   end
 
   before do
-    allow(Flipper).to receive(:enabled?).with(feature_reject_unauthenticated).and_return(true)
-
     routes.draw do
       # Define routes for the anonymous controller to test requests.
       get 'index' => 'anonymous#index'
@@ -116,30 +113,16 @@ RSpec.describe 'Authenticator', type: :controller do
 
   context 'unauthenticated requests' do
     it 'logs unauthenticated requests' do
-      allow(Flipper).to receive(:enabled?).with(feature_reject_unauthenticated).and_return(false)
-
       expect(Rails.logger).to receive(:warn).with(include('[AUTH] Unauthenticated request'))
       post :create
     end
 
-    it 'allows unauthenticated requests when reject flag is OFF' do
-      allow(Flipper).to receive(:enabled?).with(feature_reject_unauthenticated).and_return(false)
-
-      post :create
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to eq('created')
-    end
-
-    it 'rejects unauthenticated requests when reject flag is ON' do
-      allow(Flipper).to receive(:enabled?).with(feature_reject_unauthenticated).and_return(true)
-
+    it 'rejects unauthenticated requests' do
       post :create
       expect(response).to have_http_status(:unauthorized)
     end
 
     it 'includes method, path, ip, and request_id in unauthenticated log' do
-      allow(Flipper).to receive(:enabled?).with(feature_reject_unauthenticated).and_return(false)
-
       expect(Rails.logger).to receive(:warn) do |message|
         expect(message).to include('[AUTH] Unauthenticated request')
         expect(message).to include('method=POST')
