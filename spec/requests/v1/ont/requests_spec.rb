@@ -192,12 +192,12 @@ RSpec.describe 'Ont::RequestsController', :ont do
     end
 
     it 'returns success status' do
-      patch v1_ont_request_path(request), params: body, headers: json_api_headers
+      patch v1_ont_request_path(request), params: body, headers: auth_json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
 
     it 'updates the request' do
-      patch v1_ont_request_path(request), params: body, headers: json_api_headers
+      patch v1_ont_request_path(request), params: body, headers: auth_json_api_headers
       request.reload
       expect(request.cost_code).to eq('fraud')
     end
@@ -217,13 +217,13 @@ RSpec.describe 'Ont::RequestsController', :ont do
     end
 
     it 'returns unprocessable entity status' do
-      patch v1_ont_request_path(request), params: body, headers: json_api_headers
+      patch v1_ont_request_path(request), params: body, headers: auth_json_api_headers
       expect(response).to have_http_status(:unprocessable_content)
     end
 
     it 'does not publish the message' do
       expect(Messages).not_to receive(:publish)
-      patch v1_ont_request_path(request), params: body, headers: json_api_headers
+      patch v1_ont_request_path(request), params: body, headers: auth_json_api_headers
     end
   end
 end

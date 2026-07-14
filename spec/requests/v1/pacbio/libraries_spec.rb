@@ -344,29 +344,29 @@ RSpec.describe 'LibrariesController', :pacbio do
         end
 
         it 'has a created status' do
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          post v1_pacbio_libraries_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:created), response.body
         end
 
         it 'publishes volume tracking message for the aliquot' do
           expect(Emq::Publisher).to receive(:publish)
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          post v1_pacbio_libraries_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:success), response.body
         end
 
         it 'creates a library and aliquots' do
-          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }
+          expect { post v1_pacbio_libraries_path, params: body, headers: auth_json_api_headers }
             .to change(Pacbio::Library, :count).by(1)
             .and change(Aliquot, :count).by(2) # We create a primary aliquot and a used_by aliquot
         end
 
         it 'returns the id' do
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          post v1_pacbio_libraries_path, params: body, headers: auth_json_api_headers
           expect(json.dig('data', 'id').to_i).to eq(Pacbio::Library.first.id)
         end
 
         it 'includes the tube' do
-          post "#{v1_pacbio_libraries_path}?include=tube", params: body, headers: json_api_headers
+          post "#{v1_pacbio_libraries_path}?include=tube", params: body, headers: auth_json_api_headers
           tube = find_included_resource(id: Pacbio::Library.first.tube_id, type: 'tubes')
           expect(tube.dig('attributes', 'barcode')).to be_present
         end
@@ -398,12 +398,12 @@ RSpec.describe 'LibrariesController', :pacbio do
         end
 
         it 'returns unprocessable entity status' do
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          post v1_pacbio_libraries_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'cannot create a library' do
-          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.not_to(
+          expect { post v1_pacbio_libraries_path, params: body, headers: auth_json_api_headers }.not_to(
             change(Pacbio::Library, :count) &&
             change(Aliquot, :count)
           )
@@ -434,12 +434,12 @@ RSpec.describe 'LibrariesController', :pacbio do
         end
 
         it 'returns unprocessable entity status' do
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          post v1_pacbio_libraries_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'cannot create a library' do
-          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.not_to(
+          expect { post v1_pacbio_libraries_path, params: body, headers: auth_json_api_headers }.not_to(
             change(Pacbio::Library, :count) &&
             change(Aliquot, :count)
           )
@@ -471,13 +471,13 @@ RSpec.describe 'LibrariesController', :pacbio do
         end
 
         it 'returns unprocessable entity status' do
-          post v1_pacbio_libraries_path, params: body, headers: json_api_headers
+          post v1_pacbio_libraries_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:bad_request)
           expect(response.body).to include('barcode is not allowed')
         end
 
         it 'cannot create a library' do
-          expect { post v1_pacbio_libraries_path, params: body, headers: json_api_headers }.not_to(
+          expect { post v1_pacbio_libraries_path, params: body, headers: auth_json_api_headers }.not_to(
             change(Pacbio::Library, :count) &&
             change(Aliquot, :count)
           )
@@ -492,7 +492,7 @@ RSpec.describe 'LibrariesController', :pacbio do
     let!(:primary_aliquot) { library.primary_aliquot }
 
     before do
-      patch v1_pacbio_library_path(library), params: body, headers: json_api_headers
+      patch v1_pacbio_library_path(library), params: body, headers: auth_json_api_headers
     end
 
     context 'on success' do
@@ -667,7 +667,7 @@ RSpec.describe 'LibrariesController', :pacbio do
       it 'publishes a message' do
         expect(Messages).to receive(:publish).with(library.sequencing_runs, having_attributes(pipeline: 'pacbio'))
         expect(Emq::Publisher).to receive(:publish)
-        patch v1_pacbio_library_path(library), params: body, headers: json_api_headers
+        patch v1_pacbio_library_path(library), params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:success), response.body
       end
     end
@@ -678,27 +678,27 @@ RSpec.describe 'LibrariesController', :pacbio do
       let!(:library) { create(:pacbio_library) }
 
       it 'returns the correct status' do
-        delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
+        delete "/v1/pacbio/libraries/#{library.id}", headers: auth_json_api_headers
         expect(response).to have_http_status(:no_content)
       end
 
       it 'destroys the library' do
         expect do
-          delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
+          delete "/v1/pacbio/libraries/#{library.id}", headers: auth_json_api_headers
         end.to change(Pacbio::Library, :count).by(-1)
                                               .and change(Aliquot, :count).by(-2) # We destroy the primary and used_by aliquots
       end
 
       it 'does not destroy the requests' do
         expect do
-          delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
+          delete "/v1/pacbio/libraries/#{library.id}", headers: auth_json_api_headers
         end.not_to change(Pacbio::Request, :count)
       end
 
       it 'does not destroy the library if it has associated wells' do
         create(:pacbio_well, libraries: [library])
         expect do
-          delete "/v1/pacbio/libraries/#{library.id}", headers: json_api_headers
+          delete "/v1/pacbio/libraries/#{library.id}", headers: auth_json_api_headers
         end.not_to change(Pacbio::Library, :count)
         expect(json['errors'][0]['title']).to eq('Cannot delete a library that is used in a pool or run')
       end
@@ -706,12 +706,12 @@ RSpec.describe 'LibrariesController', :pacbio do
 
     context 'on failure' do
       it 'does not delete the library' do
-        delete '/v1/pacbio/libraries/dodgyid', headers: json_api_headers
+        delete '/v1/pacbio/libraries/dodgyid', headers: auth_json_api_headers
         expect(response).to have_http_status(:bad_request)
       end
 
       it 'has an error message' do
-        delete '/v1/pacbio/libraries/dodgyid', headers: json_api_headers
+        delete '/v1/pacbio/libraries/dodgyid', headers: auth_json_api_headers
         expect(json['errors']).to be_present
       end
     end

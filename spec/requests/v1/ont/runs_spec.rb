@@ -102,7 +102,7 @@ RSpec.describe 'RunsController' do
       end
 
       it 'creates a run' do
-        post v1_ont_runs_path, params: body, headers: json_api_headers
+        post v1_ont_runs_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:created)
 
         expect(Ont::Run.count).to eq(1)
@@ -122,7 +122,7 @@ RSpec.describe 'RunsController' do
 
       it 'publishes the message' do
         expect(Messages).to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
-        post v1_ont_runs_path, params: body, headers: json_api_headers
+        post v1_ont_runs_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:success), response.body
       end
     end
@@ -147,7 +147,7 @@ RSpec.describe 'RunsController' do
       end
 
       before do
-        post v1_ont_runs_path, params: body, headers: json_api_headers
+        post v1_ont_runs_path, params: body, headers: auth_json_api_headers
       end
 
       it 'returns an error response' do
@@ -161,7 +161,7 @@ RSpec.describe 'RunsController' do
 
       it 'does not publish the message' do
         expect(Messages).not_to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
-        post v1_ont_runs_path, params: body, headers: json_api_headers
+        post v1_ont_runs_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:unprocessable_content), response.body
       end
     end
@@ -206,7 +206,7 @@ RSpec.describe 'RunsController' do
       end
 
       before do
-        patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: json_api_headers
+        patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: auth_json_api_headers
       end
 
       it 'returns success response' do
@@ -266,7 +266,7 @@ RSpec.describe 'RunsController' do
 
         it 'is published' do
           expect(Messages).to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
-          patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: json_api_headers
+          patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:success), response.body
         end
       end
@@ -294,7 +294,7 @@ RSpec.describe 'RunsController' do
       end
 
       before do
-        patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: json_api_headers
+        patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: auth_json_api_headers
       end
 
       it 'returns an error response' do
@@ -303,7 +303,7 @@ RSpec.describe 'RunsController' do
 
       it 'does not create a run' do
         expect do
-          patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: json_api_headers
+          patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: auth_json_api_headers
         end.not_to change(Ont::Run, :count)
       end
 
@@ -331,7 +331,7 @@ RSpec.describe 'RunsController' do
 
         it 'does not be published' do
           expect(Messages).not_to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
-          patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: json_api_headers
+          patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content), response.body
         end
       end
@@ -361,7 +361,7 @@ RSpec.describe 'RunsController' do
       end
 
       it 'returns errors' do
-        post v1_ont_runs_path, params: body, headers: json_api_headers
+        post v1_ont_runs_path, params: body, headers: auth_json_api_headers
 
         expect(response).to have_http_status(:unprocessable_content), response.body
 
@@ -395,7 +395,7 @@ RSpec.describe 'RunsController' do
       end
 
       it 'returns errors' do
-        patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: json_api_headers
+        patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: auth_json_api_headers
 
         expect(response).to have_http_status(:unprocessable_content), response.body
 

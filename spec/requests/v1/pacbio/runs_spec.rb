@@ -13,13 +13,13 @@ RSpec.describe 'RunsController' do
   shared_examples 'publish_messages_on_create' do
     it 'publishes a message' do
       expect(Messages).to receive(:publish).with(instance_of(Pacbio::Run), having_attributes(pipeline: 'pacbio'))
-      post v1_pacbio_runs_path, params: body, headers: json_api_headers
+      post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
 
     it 'publishes volume tracking message for each used aliquot' do
       expect(Emq::Publisher).to receive(:publish)
-      post v1_pacbio_runs_path, params: body, headers: json_api_headers
+      post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
   end
@@ -27,13 +27,13 @@ RSpec.describe 'RunsController' do
   shared_examples 'publish_messages_on_update' do
     it 'publishes a message' do
       expect(Messages).to receive(:publish).with(run, having_attributes(pipeline: 'pacbio'))
-      patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+      patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
 
     it 'publishes volume tracking message for each used aliquot' do
       expect(Emq::Publisher).to receive(:publish)
-      patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+      patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
       expect(response).to have_http_status(:success), response.parsed_body
     end
   end
@@ -295,24 +295,24 @@ RSpec.describe 'RunsController' do
       end
 
       it 'has a created status' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:created)
       end
 
       it 'creates a run' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Run, :count).by(1)
+        expect { post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers }.to change(Pacbio::Run, :count).by(1)
       end
 
       it 'creates a plate' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Plate, :count).by(1)
+        expect { post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers }.to change(Pacbio::Plate, :count).by(1)
       end
 
       it 'creates a well' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
+        expect { post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers }.to change(Pacbio::Well, :count).by(1)
       end
 
       it 'creates an annotation' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
         run = Pacbio::Run.first
         expect(run.annotations.count).to eq(1)
         expect(run.wells.first.annotations.count).to eq(1)
@@ -321,11 +321,11 @@ RSpec.describe 'RunsController' do
       it 'creates a used_aliquot' do
         # Preloaded so its aliquots are built and don't affect the test below
         pool1.reload
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Aliquot, :count).by(1)
+        expect { post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers }.to change(Aliquot, :count).by(1)
       end
 
       it 'creates a run with the correct attributes' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         run = Pacbio::Run.first
 
@@ -380,20 +380,20 @@ RSpec.describe 'RunsController' do
       end
 
       it 'has a created status' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:created)
       end
 
       it 'creates a run' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Run, :count).by(1)
+        expect { post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers }.to change(Pacbio::Run, :count).by(1)
       end
 
       it 'creates a plate' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Plate, :count).by(1)
+        expect { post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers }.to change(Pacbio::Plate, :count).by(1)
       end
 
       it 'creates a well' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
+        expect { post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers }.to change(Pacbio::Well, :count).by(1)
       end
 
       it 'creates 2 used_aliquots' do
@@ -401,11 +401,11 @@ RSpec.describe 'RunsController' do
         pool1.reload
         library1.reload
         # One aliquot for the library and one for the pool
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Aliquot, :count).by(2)
+        expect { post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers }.to change(Aliquot, :count).by(2)
       end
 
       it 'creates a run with the correct attributes' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         run = Pacbio::Run.first
 
@@ -459,30 +459,30 @@ RSpec.describe 'RunsController' do
       end
 
       it 'has a created status' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:created)
       end
 
       it 'creates a run' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Run, :count).by(1)
+        expect { post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers }.to change(Pacbio::Run, :count).by(1)
       end
 
       it 'creates a plate' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Plate, :count).by(1)
+        expect { post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers }.to change(Pacbio::Plate, :count).by(1)
       end
 
       it 'creates a well' do
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(1)
+        expect { post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers }.to change(Pacbio::Well, :count).by(1)
       end
 
       it 'creates a used_aliquot' do
         # Preloaded so its aliquots are built and don't affect the test below
         pool1.reload
-        expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Aliquot, :count).by(1)
+        expect { post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers }.to change(Aliquot, :count).by(1)
       end
 
       it 'creates a run with the correct attributes' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         run = Pacbio::Run.first
 
@@ -535,12 +535,12 @@ RSpec.describe 'RunsController' do
       end
 
       it 'has a created status' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:created)
       end
 
       it 'creates a run with the correct attributes' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         run = Pacbio::Run.last
 
@@ -566,19 +566,19 @@ RSpec.describe 'RunsController' do
         end
 
         it 'has a unprocessable_content status' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'does not create a run' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Run, :count)
         end
 
         it 'has the correct error messages' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq 'plates - must have at least 1 plate'
@@ -598,19 +598,19 @@ RSpec.describe 'RunsController' do
         end
 
         it 'has a bad_request status' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:bad_request)
         end
 
         it 'does not create a run' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Run, :count)
         end
 
         it 'has the correct error messages' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq 'invalid is not a valid value for system_name.'
@@ -631,19 +631,19 @@ RSpec.describe 'RunsController' do
         end
 
         it 'has a bad_request status' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:bad_request)
         end
 
         it 'does not create a run' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Run, :count)
         end
 
         it 'has the correct error messages' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq 'adaptive_loading is not allowed.'
@@ -666,26 +666,26 @@ RSpec.describe 'RunsController' do
         end
 
         it 'has a unprocessable_content status' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'does not create a run' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Run, :count)
         end
 
         it 'does not create a well' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Well, :count)
         end
 
         it 'has the correct error messages' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors.pluck('detail')).to include 'plates - plate  wells must have at least 1 well'
@@ -720,21 +720,21 @@ RSpec.describe 'RunsController' do
         end
 
         it 'has a unprocessable_content status' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'does not create a run' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Run, :count)
         end
 
         it 'does not create a a well' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Well, :count)
         end
 
@@ -745,12 +745,12 @@ RSpec.describe 'RunsController' do
 
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Aliquot, :count)
         end
 
         it 'has the correct error messages' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq "plates.wells.column - can't be blank"
@@ -793,33 +793,33 @@ RSpec.describe 'RunsController' do
         end
 
         it 'has a unprocessable_content status' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'does not create a run' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Run, :count)
         end
 
         it 'does not create a a well' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Well, :count)
         end
 
         it 'does not create any used_aliquots' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Aliquot, :count)
         end
 
         it 'has the correct error messages' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq("plates.wells.used_aliquots - can't be blank")
@@ -860,33 +860,33 @@ RSpec.describe 'RunsController' do
         end
 
         it 'has a internal_server_error status' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:internal_server_error)
         end
 
         it 'does not create a run' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Run, :count)
         end
 
         it 'does not create a a well' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Well, :count)
         end
 
         it 'does not create any used_aliquots' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Aliquot, :count)
         end
 
         it 'has the correct error messages' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq 'Internal Server Error'
@@ -935,33 +935,33 @@ RSpec.describe 'RunsController' do
         end
 
         it 'has a unprocessable_content status' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'does not create a run' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Run, :count)
         end
 
         it 'does not create a a well' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Well, :count)
         end
 
         it 'does not create any used_aliquots' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Aliquot, :count)
         end
 
         it 'has the correct error messages' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq 'plates.wells.tags - are not unique within the libraries for well A1'
@@ -1010,33 +1010,33 @@ RSpec.describe 'RunsController' do
         end
 
         it 'has a unprocessable_content status' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'does not create a run' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Run, :count)
         end
 
         it 'does not create a a well' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Well, :count)
         end
 
         it 'does not create any used_aliquots' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Aliquot, :count)
         end
 
         it 'has the correct error messages' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq 'plates.wells.tags - are not unique within the libraries for well A1'
@@ -1093,28 +1093,28 @@ RSpec.describe 'RunsController' do
         end
 
         it 'has a created status' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:created)
         end
 
         it 'creates a run' do
-          expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Run, :count).by(1)
+          expect { post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers }.to change(Pacbio::Run, :count).by(1)
         end
 
         it 'creates a plate' do
-          expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Plate, :count).by(1)
+          expect { post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers }.to change(Pacbio::Plate, :count).by(1)
         end
 
         it 'creates a well' do
-          expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Pacbio::Well, :count).by(2)
+          expect { post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers }.to change(Pacbio::Well, :count).by(2)
         end
 
         it 'creates 2 used_aliquots' do
-          expect { post v1_pacbio_runs_path, params: body, headers: json_api_headers }.to change(Aliquot, :count).by(2)
+          expect { post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers }.to change(Aliquot, :count).by(2)
         end
 
         it 'creates a run with the correct attributes' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           run = Pacbio::Run.first
 
@@ -1161,7 +1161,7 @@ RSpec.describe 'RunsController' do
         end
 
         it 'has a unprocessable_content status' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
 
           expect(response).to have_http_status(:unprocessable_content)
         end
@@ -1169,14 +1169,14 @@ RSpec.describe 'RunsController' do
         it 'does not create a run' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Run, :count)
         end
 
         it 'does not create a well' do
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Pacbio::Well, :count)
         end
 
@@ -1187,12 +1187,12 @@ RSpec.describe 'RunsController' do
 
           expect do
             post v1_pacbio_runs_path, params: body,
-                                      headers: json_api_headers
+                                      headers: auth_json_api_headers
           end.not_to change(Aliquot, :count)
         end
 
         it 'has the correct error messages' do
-          post v1_pacbio_runs_path, params: body, headers: json_api_headers
+          post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq 'plates.wells.tags - are missing from the libraries'
@@ -1240,7 +1240,7 @@ RSpec.describe 'RunsController' do
 
     context 'on success' do
       it 'creates a run with the correct attributes' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         run = Pacbio::Run.first
         version = Pacbio::SmrtLinkVersion.find_by(default: true)
@@ -1293,7 +1293,7 @@ RSpec.describe 'RunsController' do
 
     context 'on success' do
       it 'creates a run with the correct attributes' do
-        post v1_pacbio_runs_path, params: body, headers: json_api_headers
+        post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         run = Pacbio::Run.first
         version = Pacbio::SmrtLinkVersion.find_by(name: 'v10')
@@ -1326,18 +1326,18 @@ RSpec.describe 'RunsController' do
         end
 
         it 'has a ok status' do
-          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:ok)
         end
 
         it 'updates a run' do
-          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           run.reload
           expect(run.state).to eq 'started'
         end
 
         it 'returns the correct attributes' do
-          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           expect(json['data']['id']).to eq run.id.to_s
         end
@@ -1345,7 +1345,7 @@ RSpec.describe 'RunsController' do
         it 'retains the existing plate, wells, pools etc' do
           existing_wells = run.plates.first.wells
           existing_pools = existing_wells.map(&:pools)
-          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           run.reload
           expect(run.plates.first.wells).to eq existing_wells
           expect(run.plates.first.wells.map(&:pools)).to eq existing_pools
@@ -1370,18 +1370,18 @@ RSpec.describe 'RunsController' do
         let!(:run) { create(:pacbio_revio_run) }
 
         it 'has a ok status' do
-          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:ok)
         end
 
         it 'does not create a run' do
           expect do
-            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+            patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           end.not_to change(Pacbio::Run, :count)
         end
 
         it 'updates a run' do
-          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           run.reload
           expect(run.dna_control_complex_box_barcode).to eq 'Lxxxxx101717600123191_updated'
           expect(run.system_name).to eq 'Sequel I'
@@ -1425,18 +1425,18 @@ RSpec.describe 'RunsController' do
         end
 
         it 'has a ok status' do
-          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:ok)
         end
 
         it 'does not create a well' do
           expect do
-            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+            patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           end.not_to change(Pacbio::Well, :count)
         end
 
         it 'updates a well' do
-          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           well.reload
           expect(well.row).to eq 'D'
           expect(well.column).to eq '7'
@@ -1496,7 +1496,7 @@ RSpec.describe 'RunsController' do
         end
 
         it 'has a ok status' do
-          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           # byebug
           expect(response).to have_http_status(:ok)
         end
@@ -1504,7 +1504,7 @@ RSpec.describe 'RunsController' do
         # Creates a well and deletes a well = +1-1 = 0
         it 'does not create a well' do
           expect do
-            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+            patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           end.not_to change(Pacbio::Well, :count)
         end
 
@@ -1514,12 +1514,12 @@ RSpec.describe 'RunsController' do
           pool1.reload
           well1.pools[0].reload
           expect do
-            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+            patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           end.to change(Aliquot, :count).from(65).to(61)
         end
 
         it 'updates a well' do
-          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           run.reload
           expect(run.wells.length).to eq 2
           expect(run.wells[0].row).to eq 'D'
@@ -1573,25 +1573,25 @@ RSpec.describe 'RunsController' do
         end
 
         it 'has a ok status' do
-          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:ok)
         end
 
         # Creates a well and deletes a well = +1-1 = 0
         it 'does not create a well' do
           expect do
-            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+            patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           end.not_to change(Pacbio::Well, :count)
         end
 
         it 'creates the correct number of used_aliquots' do
           expect do
-            patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+            patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           end.not_to change(Aliquot, :count)
         end
 
         it 'updates a well' do
-          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           run.reload
           updated_plate = run.plates.find_by(id: plate.id)
           expect(updated_plate.wells.length).to eq 2
@@ -1641,12 +1641,12 @@ RSpec.describe 'RunsController' do
         end
 
         it 'has a ok status' do
-          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:ok)
         end
 
         it 'updates a well with new values' do
-          patch v1_pacbio_run_path(run), params: body, headers: json_api_headers
+          patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
           run.reload
           updated_plate = run.plates.find_by(id: plate.id)
           expect(updated_plate.wells.length).to eq 1
@@ -1679,18 +1679,18 @@ RSpec.describe 'RunsController' do
       end
 
       it 'has a bad_request' do
-        patch v1_pacbio_run_path(run.id), params: body, headers: json_api_headers
+        patch v1_pacbio_run_path(run.id), params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:bad_request)
       end
 
       it 'has an error message' do
-        patch v1_pacbio_run_path(run.id), params: body, headers: json_api_headers
+        patch v1_pacbio_run_path(run.id), params: body, headers: auth_json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['errors'][0]['detail']).to eq 'unknown is not a valid value for state.'
       end
 
       it 'does not update a run' do
-        patch v1_pacbio_run_path(run.id), params: body, headers: json_api_headers
+        patch v1_pacbio_run_path(run.id), params: body, headers: auth_json_api_headers
         run.reload
         expect(run).to be_pending
       end
@@ -1748,27 +1748,27 @@ RSpec.describe 'RunsController' do
 
     context 'on success' do
       it 'returns the correct status' do
-        delete v1_pacbio_run_path(run), headers: json_api_headers
+        delete v1_pacbio_run_path(run), headers: auth_json_api_headers
         expect(response).to have_http_status(:no_content)
       end
 
       it 'deletes the run' do
-        expect { delete v1_pacbio_run_path(run), headers: json_api_headers }.to change(Pacbio::Run, :count).by(-1)
+        expect { delete v1_pacbio_run_path(run), headers: auth_json_api_headers }.to change(Pacbio::Run, :count).by(-1)
       end
 
       it 'deletes the plate' do
-        expect { delete v1_pacbio_run_path(run), headers: json_api_headers }.to change(Pacbio::Plate, :count).by(-1)
+        expect { delete v1_pacbio_run_path(run), headers: auth_json_api_headers }.to change(Pacbio::Plate, :count).by(-1)
       end
     end
 
     context 'on failure' do
       it 'does not delete the run' do
-        delete '/v1/pacbio/runs/123', headers: json_api_headers
+        delete '/v1/pacbio/runs/123', headers: auth_json_api_headers
         expect(response).to have_http_status(:not_found)
       end
 
       it 'has an error message' do
-        delete '/v1/pacbio/runs/123', headers: json_api_headers
+        delete '/v1/pacbio/runs/123', headers: auth_json_api_headers
         body = response.parsed_body
         expect(body['errors']).to be_present
       end

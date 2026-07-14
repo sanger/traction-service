@@ -35,8 +35,6 @@ module Authenticator
   #
   # @return [void]
   def authenticate_request!
-    return unless Flipper.enabled?(:y25_662_enable_request_authentication)
-
     if bearer_token_present?
       authenticate_bearer!
     elsif api_key_present?
@@ -144,8 +142,6 @@ module Authenticator
                   "ip=#{request.remote_ip} " \
                   "request_id=#{request.request_id}"
     Rails.logger.warn(log_message)
-
-    return unless Flipper.enabled?(:y25_662_reject_unauthenticated_requests)
 
     render_unauthorized('Authentication required')
   end
