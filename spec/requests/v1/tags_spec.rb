@@ -39,18 +39,18 @@ RSpec.describe 'TagsController' do
       end
 
       it 'has a created status' do
-        post v1_tags_path, params: body, headers: json_api_headers
+        post v1_tags_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:created)
       end
 
       it 'creates a tag' do
         expect do
-          post v1_tags_path, params: body, headers: json_api_headers
+          post v1_tags_path, params: body, headers: auth_json_api_headers
         end.to change(Tag, :count).by(1)
       end
 
       it 'creates a tag with the correct attributes' do
-        post v1_tags_path, params: body, headers: json_api_headers
+        post v1_tags_path, params: body, headers: auth_json_api_headers
         tag = Tag.first
         expect(tag.oligo).to be_present
       end
@@ -68,18 +68,18 @@ RSpec.describe 'TagsController' do
         end
 
         it 'can returns unprocessable entity status' do
-          post v1_tags_path, params: body, headers: json_api_headers
+          post v1_tags_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'cannot create a tag' do
           expect do
-            post v1_tags_path, params: body, headers: json_api_headers
+            post v1_tags_path, params: body, headers: auth_json_api_headers
           end.not_to change(Tag, :count)
         end
 
         it 'has an error message' do
-          post v1_tags_path, params: body, headers: json_api_headers
+          post v1_tags_path, params: body, headers: auth_json_api_headers
           expect(response.parsed_body['data']).to include('errors' => {
                                                             'group_id' => ["can't be blank"], 'oligo' => ["can't be blank"], 'tag_set' => ['must exist']
                                                           })
@@ -105,18 +105,18 @@ RSpec.describe 'TagsController' do
       end
 
       it 'has a ok status' do
-        patch v1_tag_path(tag), params: body, headers: json_api_headers
+        patch v1_tag_path(tag), params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:ok)
       end
 
       it 'updates a tag' do
-        patch v1_tag_path(tag), params: body, headers: json_api_headers
+        patch v1_tag_path(tag), params: body, headers: auth_json_api_headers
         tag.reload
         expect(tag.oligo).to eq 'ACDC'
       end
 
       it 'returns the correct attributes' do
-        patch v1_tag_path(tag), params: body, headers: json_api_headers
+        patch v1_tag_path(tag), params: body, headers: auth_json_api_headers
         json = ActiveSupport::JSON.decode(response.body)
         expect(json['data']['id']).to eq tag.id.to_s
       end
@@ -136,12 +136,12 @@ RSpec.describe 'TagsController' do
       end
 
       it 'has a ok unprocessable_content' do
-        patch v1_tag_path(123), params: body, headers: json_api_headers
+        patch v1_tag_path(123), params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'has an error message' do
-        patch v1_tag_path(123), params: body, headers: json_api_headers
+        patch v1_tag_path(123), params: body, headers: auth_json_api_headers
         expect(response.parsed_body['data']).to include('errors' => %(Couldn't find Tag with 'id'="123"))
       end
     end

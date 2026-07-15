@@ -52,28 +52,28 @@ RSpec.describe 'LibraryBatchesController', :pacbio do
         end
 
         it 'has a created status' do
-          post v1_pacbio_library_batches_path, params: body, headers: json_api_headers
+          post v1_pacbio_library_batches_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:created), response.body
         end
 
         it 'creates a library and aliquots' do
-          expect { post v1_pacbio_library_batches_path, params: body, headers: json_api_headers }
+          expect { post v1_pacbio_library_batches_path, params: body, headers: auth_json_api_headers }
             .to change(Pacbio::Library, :count).by(2)
             .and change(Aliquot, :count).by(4) # We create a primary aliquot and a used_by aliquot for each library
         end
 
         it 'publish volume tracking messages for all libraries' do
           expect(Emq::Publisher).to receive(:publish).twice
-          post v1_pacbio_library_batches_path, params: body, headers: json_api_headers
+          post v1_pacbio_library_batches_path, params: body, headers: auth_json_api_headers
         end
 
         it 'returns the id' do
-          post v1_pacbio_library_batches_path, params: body, headers: json_api_headers
+          post v1_pacbio_library_batches_path, params: body, headers: auth_json_api_headers
           expect(json.dig('data', 'id').to_i).to eq(Pacbio::LibraryBatch.first.id)
         end
 
         it 'includes the libraries and their tubes' do
-          post "#{v1_pacbio_library_batches_path}?include=libraries.tube", params: body, headers: json_api_headers
+          post "#{v1_pacbio_library_batches_path}?include=libraries.tube", params: body, headers: auth_json_api_headers
           expect(json['included'].length).to eq(4)
           expect(json['included'].filter { |record| record['type'] == 'tubes' }.length).to eq(2)
           expect(json['included'].filter { |record| record['type'] == 'libraries' }.length).to eq(2)
@@ -124,13 +124,13 @@ RSpec.describe 'LibraryBatchesController', :pacbio do
         end
 
         it 'returns unprocessable entity status' do
-          post v1_pacbio_library_batches_path, params: body, headers: json_api_headers
+          post v1_pacbio_library_batches_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
           expect(response.body).to include('libraries.insert_size - is not a number')
         end
 
         it 'cannot create a library' do
-          expect { post v1_pacbio_library_batches_path, params: body, headers: json_api_headers }.not_to(
+          expect { post v1_pacbio_library_batches_path, params: body, headers: auth_json_api_headers }.not_to(
             change(Pacbio::Library, :count) &&
             change(Aliquot, :count)
           )
