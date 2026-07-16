@@ -33,7 +33,9 @@
 namespace :single_use do # rubocop:disable Metrics/BlockLength
   # Check that the required tag sets exist and return them
   def check_tag_sets_exist
-    p96v3_tag_set = TagSet.find_by(name: 'Pacbio_96_barcode_plate_v3')
+    # Ensure we don't run this task if pacbio_96 is already deactivated as
+    # this would indicate that the task has already been run
+    p96v3_tag_set = TagSet.find_by(name: 'Pacbio_96_barcode_plate_v3', active: true)
     smrtbell_tag_set = TagSet.find_by(name: 'SMRTbell_Barcoded_Adapter_Plates_ABCD')
 
     if p96v3_tag_set.nil? || smrtbell_tag_set.nil?
