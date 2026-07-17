@@ -285,25 +285,25 @@ RSpec.describe 'RequestsController', :pacbio do
 
     context 'on success' do
       it 'returns the correct status' do
-        delete "#{v1_pacbio_requests_path}/#{request.id}", headers: json_api_headers
+        delete "#{v1_pacbio_requests_path}/#{request.id}", headers: auth_json_api_headers
         expect(response).to have_http_status(:no_content)
       end
 
       it 'destroys the request' do
         expect do
-          delete "#{v1_pacbio_requests_path}/#{request.id}", headers: json_api_headers
+          delete "#{v1_pacbio_requests_path}/#{request.id}", headers: auth_json_api_headers
         end.to change(Pacbio::Request, :count).by(-1)
       end
     end
 
     context 'on failure' do
       it 'does not delete the request' do
-        delete "#{v1_pacbio_requests_path}/fakerequest", headers: json_api_headers
+        delete "#{v1_pacbio_requests_path}/fakerequest", headers: auth_json_api_headers
         expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'has an error message' do
-        delete "#{v1_pacbio_requests_path}/fakerequest", headers: json_api_headers
+        delete "#{v1_pacbio_requests_path}/fakerequest", headers: auth_json_api_headers
         data = response.parsed_body['data']
         expect(data['errors']).to be_present
       end
@@ -326,12 +326,12 @@ RSpec.describe 'RequestsController', :pacbio do
     end
 
     it 'returns success status' do
-      patch v1_pacbio_request_path(request), params: body, headers: json_api_headers
+      patch v1_pacbio_request_path(request), params: body, headers: auth_json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
 
     it 'updates the request' do
-      patch v1_pacbio_request_path(request), params: body, headers: json_api_headers
+      patch v1_pacbio_request_path(request), params: body, headers: auth_json_api_headers
       request.reload
       expect(request.cost_code).to eq('fraud')
     end
@@ -339,7 +339,7 @@ RSpec.describe 'RequestsController', :pacbio do
     it 'publishes a message' do
       expect(Messages).to receive(:publish).with(request.sequencing_runs,
                                                  having_attributes(pipeline: 'pacbio'))
-      patch v1_pacbio_request_path(request), params: body, headers: json_api_headers
+      patch v1_pacbio_request_path(request), params: body, headers: auth_json_api_headers
     end
   end
 
@@ -358,13 +358,13 @@ RSpec.describe 'RequestsController', :pacbio do
     end
 
     it 'returns unprocessable entity status' do
-      patch v1_pacbio_request_path(request), params: body, headers: json_api_headers
+      patch v1_pacbio_request_path(request), params: body, headers: auth_json_api_headers
       expect(response).to have_http_status(:unprocessable_content)
     end
 
     it 'does not publish the message' do
       expect(Messages).not_to receive(:publish)
-      patch v1_pacbio_request_path(request), params: body, headers: json_api_headers
+      patch v1_pacbio_request_path(request), params: body, headers: auth_json_api_headers
     end
   end
 end

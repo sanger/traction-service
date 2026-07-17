@@ -279,22 +279,22 @@ RSpec.describe 'MultiPoolsController' do
         end
 
         it 'has a created status' do
-          post v1_multi_pools_path, params: body, headers: json_api_headers
+          post v1_multi_pools_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:created), response.body
         end
 
         it 'creates a multi pool and associated data' do
-          expect { post v1_multi_pools_path, params: body, headers: json_api_headers }.to change(MultiPool, :count).by(1).and change(MultiPoolPosition, :count).by(2).and change(Pacbio::Pool, :count).by(2)
+          expect { post v1_multi_pools_path, params: body, headers: auth_json_api_headers }.to change(MultiPool, :count).by(1).and change(MultiPoolPosition, :count).by(2).and change(Pacbio::Pool, :count).by(2)
         end
 
         it 'returns the id' do
-          post v1_multi_pools_path, params: body, headers: json_api_headers
+          post v1_multi_pools_path, params: body, headers: auth_json_api_headers
           expect(json.dig('data', 'id').to_i).to eq(MultiPool.first.id)
         end
 
         it 'publish message with pipeline: pacbio and volume_tracking' do
           expect(Emq::Publisher).to receive(:publish).twice.with(anything, having_attributes(pipeline: 'pacbio'), 'volume_tracking')
-          post v1_multi_pools_path, params: body, headers: json_api_headers
+          post v1_multi_pools_path, params: body, headers: auth_json_api_headers
         end
       end
     end
@@ -314,16 +314,16 @@ RSpec.describe 'MultiPoolsController' do
         end
 
         it 'has a bad_request status' do
-          post v1_multi_pools_path, params: body, headers: json_api_headers
+          post v1_multi_pools_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:bad_request), response.body
         end
 
         it 'does not create a multi pool or associated data' do
-          expect { post v1_multi_pools_path, params: body, headers: json_api_headers }.not_to change(MultiPool, :count)
+          expect { post v1_multi_pools_path, params: body, headers: auth_json_api_headers }.not_to change(MultiPool, :count)
         end
 
         it 'returns the correct error messages' do
-          post v1_multi_pools_path, params: body, headers: json_api_headers
+          post v1_multi_pools_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq 'InvalidMethod is not a valid value for pool_method.'
@@ -347,16 +347,16 @@ RSpec.describe 'MultiPoolsController' do
         end
 
         it 'has a bad_request status' do
-          post v1_multi_pools_path, params: body, headers: json_api_headers
+          post v1_multi_pools_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content), response.body
         end
 
         it 'does not create a multi pool or associated data' do
-          expect { post v1_multi_pools_path, params: body, headers: json_api_headers }.not_to change(MultiPool, :count)
+          expect { post v1_multi_pools_path, params: body, headers: auth_json_api_headers }.not_to change(MultiPool, :count)
         end
 
         it 'returns the correct error messages' do
-          post v1_multi_pools_path, params: body, headers: json_api_headers
+          post v1_multi_pools_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq 'multi_pool_positions.pool - must have either a pacbio_pool or ont_pool associated'
@@ -433,16 +433,16 @@ RSpec.describe 'MultiPoolsController' do
         end
 
         it 'has a unprocessable_content status' do
-          post v1_multi_pools_path, params: body, headers: json_api_headers
+          post v1_multi_pools_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content), response.body
         end
 
         it 'does not create a multi pool or associated data' do
-          expect { post v1_multi_pools_path, params: body, headers: json_api_headers }.not_to change(MultiPool, :count)
+          expect { post v1_multi_pools_path, params: body, headers: auth_json_api_headers }.not_to change(MultiPool, :count)
         end
 
         it 'returns the correct error messages' do
-          post v1_multi_pools_path, params: body, headers: json_api_headers
+          post v1_multi_pools_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq 'multi_pool_positions - 1 positions are duplicated'
@@ -502,16 +502,16 @@ RSpec.describe 'MultiPoolsController' do
         end
 
         it 'has a unprocessable_content status' do
-          post v1_multi_pools_path, params: body, headers: json_api_headers
+          post v1_multi_pools_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content), response.body
         end
 
         it 'does not create a multi pool or associated data' do
-          expect { post v1_multi_pools_path, params: body, headers: json_api_headers }.not_to change(MultiPool, :count)
+          expect { post v1_multi_pools_path, params: body, headers: auth_json_api_headers }.not_to change(MultiPool, :count)
         end
 
         it 'returns the correct error messages' do
-          post v1_multi_pools_path, params: body, headers: json_api_headers
+          post v1_multi_pools_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to eq 'multi_pool_positions.pacbio_pool.tags - contain duplicates'
@@ -588,16 +588,16 @@ RSpec.describe 'MultiPoolsController' do
         end
 
         it 'has a unprocessable_content status' do
-          post v1_multi_pools_path, params: body, headers: json_api_headers
+          post v1_multi_pools_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content), response.body
         end
 
         it 'does not create a multi pool or associated data' do
-          expect { post v1_multi_pools_path, params: body, headers: json_api_headers }.not_to change(MultiPool, :count)
+          expect { post v1_multi_pools_path, params: body, headers: auth_json_api_headers }.not_to change(MultiPool, :count)
         end
 
         it 'returns the correct error messages' do
-          post v1_multi_pools_path, params: body, headers: json_api_headers
+          post v1_multi_pools_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           errors = json['errors']
           expect(errors[0]['detail']).to include("#{library.barcode} does not have sufficient available volume")
@@ -687,13 +687,13 @@ RSpec.describe 'MultiPoolsController' do
         end
 
         it 'returns created status' do
-          patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
+          patch v1_multi_pool_path(mp), params: body, headers: auth_json_api_headers
 
           expect(response).to have_http_status(:success), response.body
         end
 
         it 'updates the multi_pool' do
-          patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
+          patch v1_multi_pool_path(mp), params: body, headers: auth_json_api_headers
 
           mp.reload
           expect(mp.pool_method).to eq('TubeRack')
@@ -701,7 +701,7 @@ RSpec.describe 'MultiPoolsController' do
         end
 
         it 'updates the existing pool' do
-          patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
+          patch v1_multi_pool_path(mp), params: body, headers: auth_json_api_headers
 
           existing_pool.reload
           expect(existing_pool.volume).to eq(new_pool_volume)
@@ -709,7 +709,7 @@ RSpec.describe 'MultiPoolsController' do
         end
 
         it 'creates a new pool' do
-          patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
+          patch v1_multi_pool_path(mp), params: body, headers: auth_json_api_headers
 
           # Check the existing pool is unchanged
           expect(existing_pool).to eq(mp.multi_pool_positions.find_by(position: 1).pacbio_pool)
@@ -732,7 +732,7 @@ RSpec.describe 'MultiPoolsController' do
           # Empty sequencing runs for new pool
           expect(Messages).to receive(:publish).with([], having_attributes(pipeline: 'pacbio'))
 
-          patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
+          patch v1_multi_pool_path(mp), params: body, headers: auth_json_api_headers
         end
       end
 
@@ -797,7 +797,7 @@ RSpec.describe 'MultiPoolsController' do
         end
 
         before do
-          patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
+          patch v1_multi_pool_path(mp), params: body, headers: auth_json_api_headers
         end
 
         it 'returns created status' do
@@ -827,7 +827,7 @@ RSpec.describe 'MultiPoolsController' do
       let!(:existing_pool) { mp.multi_pool_positions.first.pacbio_pool }
 
       before do
-        patch v1_multi_pool_path(mp), params: body, headers: json_api_headers
+        patch v1_multi_pool_path(mp), params: body, headers: auth_json_api_headers
       end
 
       context 'when updating a multi pool (invalid multi_pool data)' do

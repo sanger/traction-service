@@ -58,18 +58,18 @@ RSpec.describe 'TagSetsController' do
       end
 
       it 'has a created status' do
-        post v1_tag_sets_path, params: body, headers: json_api_headers
+        post v1_tag_sets_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:created)
       end
 
       it 'creates a tag set' do
         expect do
-          post v1_tag_sets_path, params: body, headers: json_api_headers
+          post v1_tag_sets_path, params: body, headers: auth_json_api_headers
         end.to change(TagSet, :count).by(1)
       end
 
       it 'creates a tag set with the correct attributes' do
-        post v1_tag_sets_path, params: body, headers: json_api_headers
+        post v1_tag_sets_path, params: body, headers: auth_json_api_headers
         tag_set = TagSet.first
         expect(tag_set.uuid).to be_present
       end
@@ -87,19 +87,19 @@ RSpec.describe 'TagSetsController' do
         end
 
         it 'can returns unprocessable entity status' do
-          post v1_tag_sets_path, params: body, headers: json_api_headers
+          post v1_tag_sets_path, params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content)
         end
 
         it 'cannot create a tag set' do
           expect do
-            post v1_tag_sets_path, params: body, headers: json_api_headers
+            post v1_tag_sets_path, params: body, headers: auth_json_api_headers
           end.not_to change(TagSet, :count)
         end
 
         # the failure responses are slightly different to in tags_spec because we are using the default controller
         it 'has an error message' do
-          post v1_tag_sets_path, params: body, headers: json_api_headers
+          post v1_tag_sets_path, params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           expect(json['errors'][0]).to include('detail' => "name - can't be blank")
         end
@@ -123,18 +123,18 @@ RSpec.describe 'TagSetsController' do
         end
 
         it 'has a ok status' do
-          patch v1_tag_set_path(tag_set), params: body, headers: json_api_headers
+          patch v1_tag_set_path(tag_set), params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:ok)
         end
 
         it 'updates a tag set' do
-          patch v1_tag_set_path(tag_set), params: body, headers: json_api_headers
+          patch v1_tag_set_path(tag_set), params: body, headers: auth_json_api_headers
           tag_set.reload
           expect(tag_set.name).to eq 'Test Tag Set update context'
         end
 
         it 'returns the correct attributes' do
-          patch v1_tag_set_path(tag_set), params: body, headers: json_api_headers
+          patch v1_tag_set_path(tag_set), params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           expect(json['data']['id']).to eq tag_set.id.to_s
         end
@@ -155,13 +155,13 @@ RSpec.describe 'TagSetsController' do
 
         # the failure responses are slightly different to in tags_spec because we are using the default controller
         it 'has a ok unprocessable_content' do
-          patch v1_tag_set_path(123), params: body, headers: json_api_headers
+          patch v1_tag_set_path(123), params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:not_found)
         end
 
         # the failure responses are slightly different to in tags_spec because we are using the default controller
         it 'has an error message' do
-          patch v1_tag_set_path(123), params: body, headers: json_api_headers
+          patch v1_tag_set_path(123), params: body, headers: auth_json_api_headers
           json = ActiveSupport::JSON.decode(response.body)
           expect(json['errors'][0]['detail']).to eq('The record identified by 123 could not be found.')
         end

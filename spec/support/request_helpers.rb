@@ -8,6 +8,17 @@ module RequestHelpers
     }
   end
 
+  def auth_headers(api_application = create(:api_application))
+    issued = api_application.rotate_api_key!
+    {
+      'X-Traction-Client-Id' => issued[:plaintext_key]
+    }
+  end
+
+  def auth_json_api_headers(api_application = create(:api_application))
+    json_api_headers.merge(auth_headers(api_application))
+  end
+
   #
   # Returns a hash representing the decoded json response
   #
