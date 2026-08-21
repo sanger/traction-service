@@ -324,10 +324,11 @@ GEM
     ruby-graphviz (1.2.5)
       rexml
     ruby-progressbar (1.13.0)
-    sanger-jsonapi-resources (0.3.0)
-      activerecord (>= 5.1)
+    sanger-jsonapi-resources (0.4.1)
+      activerecord (>= 7.1, < 9.0)
       concurrent-ruby
-      railties (>= 5.1)
+      rack (~> 3.0)
+      railties (>= 7.1, < 9.0)
     sanitize (7.0.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.16.8)
@@ -393,7 +394,7 @@ DEPENDENCIES
   rubocop-factory_bot
   rubocop-rails
   rubocop-rspec
-  sanger-jsonapi-resources (~> 0.3.0)
+  sanger-jsonapi-resources
   shoulda-matchers
   spring
   spring-watcher-listen
