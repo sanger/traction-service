@@ -79,7 +79,7 @@ GEM
       public_suffix (>= 2.0.2, < 8.0)
     amq-protocol (2.8.0)
     ast (2.4.3)
-    avro (1.12.1)
+    avro (1.12.2)
       multi_json (~> 1.0)
     base64 (0.3.0)
     bigdecimal (4.1.2)
@@ -174,7 +174,7 @@ GEM
       drb (~> 2.0)
       prism (~> 1.5)
     msgpack (1.8.4)
-    multi_json (1.17.0)
+    multi_json (1.21.1)
     mysql2 (0.5.7)
       bigdecimal
     net-imap (0.6.6)
