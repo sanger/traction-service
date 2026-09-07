@@ -66,7 +66,7 @@ module AuthProviders
     # @return [Array] The decoded payload and header
     # @raise [JWT::DecodeError] if token verification or claim validation fails
     # @see #fetch_jwks for additional errors that may be raised when fetching JWKS
-    # rubocop:disable Metrics/MethodLength
+    # rubocop:disable-next Metrics/MethodLength
     def decode(token)
       JWT.decode(
         token,
@@ -87,7 +87,6 @@ module AuthProviders
         required_claims: %w[aud exp iat iss] # check presence
       )
     end
-    # rubocop:enable Metrics/MethodLength
 
     # Returns a lambda for loading JWKS (JSON Web Key Set) from Okta.
     # This lambda is used by the JWT gem to look up the correct public key for

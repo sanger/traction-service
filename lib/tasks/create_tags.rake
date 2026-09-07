@@ -624,7 +624,7 @@ namespace :tags do
                   .find_or_create_by!(name: 'SMRTbell_Barcoded_Adapter_Plates_ABCD', uuid: '6ed141f6-4293-d3ba-933e-0b9b60c8a7ce')
       puts '-> Tag Set successfully created'
       # We need to move these all to external files but that will require a story.
-      # rubocop:disable Metrics/CollectionLiteralLength
+      # rubocop:disable-next Metrics/CollectionLiteralLength
       [
         { oligo: 'ATCGTGCGACGAGTAT', group_id: 'bc2001' },
         { oligo: 'TGCATGTCATGAGTAT', group_id: 'bc2002' },
@@ -1176,7 +1176,6 @@ namespace :tags do
       ].each do |tag_attributes|
         set.tags.find_or_create_by!(tag_attributes)
       end
-      # rubocop:enable Metrics/CollectionLiteralLength
       puts '-> SMRTbell_Barcoded_Adapter_Plates_ABCD Tags successfully created'
     end
 

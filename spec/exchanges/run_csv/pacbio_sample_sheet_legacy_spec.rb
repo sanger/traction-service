@@ -113,8 +113,8 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
       end
 
       context 'when the libraries are untagged' do
-        let(:pool1)   { create_list(:pacbio_pool, 1, :untagged) }
-        let(:pool2)   { create_list(:pacbio_pool, 1, :untagged) }
+        let(:pool1) { create_list(:pacbio_pool, 1, :untagged) }
+        let(:pool2) { create_list(:pacbio_pool, 1, :untagged) }
         let(:well1)   do
           create(:pacbio_well, pre_extension_time: 2, generate_hifi: 'Do Not Generate',
                                ccs_analysis_output: 'Yes', pools: pool1)
@@ -290,8 +290,8 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
       end
 
       context 'when the libraries are untagged' do
-        let(:pool1)   { create_list(:pacbio_pool, 1, :untagged) }
-        let(:pool2)   { create_list(:pacbio_pool, 1, :untagged) }
+        let(:pool1) { create_list(:pacbio_pool, 1, :untagged) }
+        let(:pool2) { create_list(:pacbio_pool, 1, :untagged) }
         let(:well1)   do
           create(:pacbio_well, pre_extension_time: 2, generate_hifi: 'Do Not Generate',
                                ccs_analysis_output: 'Yes', pools: pool1)
@@ -667,8 +667,8 @@ RSpec.describe RunCsv::PacbioSampleSheetLegacy, type: :model do
       end
 
       context 'when the libraries are untagged' do
-        let(:pool1)   { create_list(:pacbio_pool, 1, :untagged) }
-        let(:pool2)   { create_list(:pacbio_pool, 1, :untagged) }
+        let(:pool1) { create_list(:pacbio_pool, 1, :untagged) }
+        let(:pool2) { create_list(:pacbio_pool, 1, :untagged) }
         let(:well1)   do
           create(:pacbio_well, pre_extension_time: 2, generate_hifi: 'Do Not Generate',
                                ccs_analysis_output: 'Yes', pools: pool1)

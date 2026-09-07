@@ -378,8 +378,8 @@ RSpec.describe 'RunsController' do
       let(:fc2) { run.flowcells.find_by(position: 2) }
       let(:fc3) { run.flowcells.find_by(position: 3) }
       let(:attr1) { { id: fc1.id, flowcell_id: existing_flowcell.flowcell_id, position: fc1.position, ont_pool_id: fc1.ont_pool_id } }
-      let(:attr2) { { id: fc2.id, flowcell_id: fc1.flowcell_id, position: fc2.position, ont_pool_id: fc2.ont_pool_id }  }
-      let(:attr3) { { id: fc3.id, flowcell_id: fc1.flowcell_id, position: fc2.position, ont_pool_id: fc2.ont_pool_id }  }
+      let(:attr2) { { id: fc2.id, flowcell_id: fc1.flowcell_id, position: fc2.position, ont_pool_id: fc2.ont_pool_id } }
+      let(:attr3) { { id: fc3.id, flowcell_id: fc1.flowcell_id, position: fc2.position, ont_pool_id: fc2.ont_pool_id } }
       let(:body) do
         {
           data: {
