@@ -14,7 +14,6 @@ class Sample < ApplicationRecord
     long_term_storage: 2
   }
 
-
   validates :external_id, presence: true, uuid: true
   validates :name, uniqueness: { case_sensitive: false }, presence: true
 
