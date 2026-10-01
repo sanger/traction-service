@@ -41,9 +41,8 @@ Rails.application.routes.draw do
         #   (Class V1::Pacbio::Runs::LibraryResource not found)
         # Which is an issue with the namespaced resources not looking up the global ones.
         # See comment in app/resources/v1/pacbio/runs/well_resource.rb
-        # rubocop:disable Lint/EmptyBlock
+        # rubocop:disable-next Lint/EmptyBlock
         jsonapi_resources(:annotations, only: %i[index show]) {}
-        # rubocop:enable Lint/EmptyBlock
       end
 
       jsonapi_resources :libraries,           only: %i[index create update destroy]

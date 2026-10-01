@@ -33,8 +33,8 @@ class ObjectC
 end
 
 RSpec.describe Message::Message, type: :model do
-  let(:object_b)  { ObjectB.new('attr_d') }
-  let(:object_a)  { ObjectA.new('attr_a', 'attr_b', object_b) }
+  let(:object_b) { ObjectB.new('attr_d') }
+  let(:object_a) { ObjectA.new('attr_a', 'attr_b', object_b) }
   let(:params) do
     {
       key: 'a_table',

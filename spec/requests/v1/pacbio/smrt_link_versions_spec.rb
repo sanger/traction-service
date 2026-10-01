@@ -34,8 +34,8 @@ RSpec.describe 'SmrtLinkVersionsController' do
   end
 
   describe '#options' do
-    let!(:smrt_link_version_1)          { create(:pacbio_smrt_link_version_with_options, option_count: 2) }
-    let!(:smrt_link_version_2)          { create(:pacbio_smrt_link_version_with_options, option_count: 3) }
+    let!(:smrt_link_version_1) { create(:pacbio_smrt_link_version_with_options, option_count: 2) }
+    let!(:smrt_link_version_2) { create(:pacbio_smrt_link_version_with_options, option_count: 3) }
 
     before do
       get "#{v1_pacbio_smrt_link_versions_path}?include=smrt_link_option_versions.smrt_link_option", headers: json_api_headers

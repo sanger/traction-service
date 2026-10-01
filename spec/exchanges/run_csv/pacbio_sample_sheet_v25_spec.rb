@@ -177,8 +177,8 @@ RSpec.describe RunCsv::PacbioSampleSheetV25, type: :model do
             column: 1
           )
         end
-        let(:plate1_wells)   { [well1] }
-        let(:plate2_wells)   { [well2, well3] }
+        let(:plate1_wells) { [well1] }
+        let(:plate2_wells) { [well2, well3] }
         let(:plate1)  { build(:pacbio_plate, wells: plate1_wells, plate_number: 1) }
         let(:plate2)  { build(:pacbio_plate, wells: plate2_wells, plate_number: 2) }
         let(:run)     { create(:pacbio_revio_run, plates: [plate1, plate2]) }
@@ -255,8 +255,8 @@ RSpec.describe RunCsv::PacbioSampleSheetV25, type: :model do
             column: 1
           )
         end
-        let(:plate1_wells)   { [well1] }
-        let(:plate2_wells)   { [well2, well3] }
+        let(:plate1_wells) { [well1] }
+        let(:plate2_wells) { [well2, well3] }
         let(:plate1)  { build(:pacbio_plate, wells: plate1_wells, plate_number: 1) }
         let(:plate2)  { build(:pacbio_plate, wells: plate2_wells, plate_number: 2) }
         let(:run)     { create(:pacbio_revio_run, plates: [plate1, plate2]) }

@@ -73,7 +73,7 @@ RSpec.describe QcResultsUploadFactory do
         end.to change(QcResult, :count).by 9
       end
 
-      # rubocop:disable RSpec/MultipleExpectations
+      # rubocop:disable-next RSpec/MultipleExpectations
       it 'creates QC Results with the correct data' do
         row_object = factory.pivot_csv_data_to_obj[0]
         qc_results = factory.create_qc_results(row_object)
@@ -97,7 +97,6 @@ RSpec.describe QcResultsUploadFactory do
         expect(QcResult.find(qc_results[8].id).qc_assay_type.key).to eq 'results_pdf'
         expect(QcResult.find(qc_results[8].id).value).to eq 'Extraction.Femto.9764-9765'
       end
-      # rubocop:enable RSpec/MultipleExpectations
     end
 
     context 'when there is missing QC Assay Types data' do

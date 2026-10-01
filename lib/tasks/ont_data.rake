@@ -77,7 +77,7 @@ namespace :ont_data do
     # pool_enum enumerates available pools, state_enum enumerates run states,
     # position_cycle enumerates flowcell positions for an instrument and
     # flowcell_id_enum enumerates numbers for flowcell_id values.
-    # rubocop:disable Metrics/ParameterLists
+    # rubocop:disable-next Metrics/ParameterLists
     def create_run(instrument, flowcell_count, pool_enum, state_enum, position_cycle, flowcell_id_enum)
       return if flowcell_count < 1
       return if flowcell_count > instrument.max_number_of_flowcells
@@ -94,7 +94,6 @@ namespace :ont_data do
       end
       run.save!
     end
-    # rubocop:enable Metrics/ParameterLists
 
     # Instruments
     Rake::Task['ont_instruments:create'].invoke
