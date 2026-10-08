@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Publishes a message for a PacBio run.
 class PublishPacbioRunMessageJob < ApplicationJob
   queue_as :default
 

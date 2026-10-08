@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Publishes a message for an Oxford Nanopore Technologies (ONT) run.
 class PublishOntRunMessageJob < ApplicationJob
   queue_as :default
 

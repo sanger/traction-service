@@ -262,7 +262,9 @@ module V1
       def publish_messages
         PublishPacbioRunMessageJob.perform_later(@model.id)
       rescue StandardError => e
-        Rails.logger.error("Failed to enqueue PacBio run messages for run #{@model.id}: #{e.class}: #{e.message}")
+        Rails.logger.error(
+          "Failed to enqueue PacBio run messages for run #{@model.id}: #{e.class}: #{e.message}"
+        )
       end
 
       def self.creatable_fields(context)
