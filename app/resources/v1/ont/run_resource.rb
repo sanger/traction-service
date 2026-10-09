@@ -122,7 +122,11 @@ module V1
       end
 
       def publish_messages
-        Messages.publish(@model, Pipelines.ont.message)
+        PublishOntRunMessageJob.perform_later(@model.id)
+      rescue StandardError => e
+        Rails.logger.error(
+          "Could not enqueue ONT run message for run #{@model.id}: #{e.class}: #{e.message}"
+        )
       end
     end
   end
