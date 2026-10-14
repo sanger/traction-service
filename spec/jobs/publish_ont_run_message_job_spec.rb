@@ -16,6 +16,14 @@ RSpec.describe PublishOntRunMessageJob do
       described_class.perform_now(run.id)
     end
 
+    it 'raises the error if publishing the run message fails' do
+      allow(Messages).to receive(:publish).with(run, having_attributes(pipeline: 'ont'))
+                                          .and_raise(StandardError, 'Failed to publish run message')
+
+      expect { described_class.perform_now(run.id) }
+        .to raise_error(StandardError, 'Failed to publish run message')
+    end
+
     it 'does nothing if the run no longer exists' do
       expect(Messages).not_to receive(:publish)
 
