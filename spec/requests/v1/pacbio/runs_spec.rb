@@ -11,28 +11,28 @@ RSpec.describe 'RunsController' do
   let!(:version25) { create(:pacbio_smrt_link_version, name: 'v25_1_revio') }
 
   shared_examples 'publish_messages_on_create' do
-    it 'enqueues message publishing' do
-      expect(PublishPacbioRunMessageJob).to receive(:perform_later).with(kind_of(Integer))
+    it 'publishes a message' do
+      expect(Messages).to receive(:publish).with(instance_of(Pacbio::Run), having_attributes(pipeline: 'pacbio'))
       post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
 
-    it 'enqueues volume tracking publishing as part of the message job' do
-      expect(PublishPacbioRunMessageJob).to receive(:perform_later).with(kind_of(Integer))
+    it 'publishes volume tracking message for each used aliquot' do
+      expect(Emq::Publisher).to receive(:publish)
       post v1_pacbio_runs_path, params: body, headers: auth_json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
   end
 
   shared_examples 'publish_messages_on_update' do
-    it 'enqueues message publishing' do
-      expect(PublishPacbioRunMessageJob).to receive(:perform_later).with(run.id)
+    it 'publishes a message' do
+      expect(Messages).to receive(:publish).with(run, having_attributes(pipeline: 'pacbio'))
       patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
       expect(response).to have_http_status(:success), response.body
     end
 
-    it 'enqueues volume tracking publishing as part of the message job' do
-      expect(PublishPacbioRunMessageJob).to receive(:perform_later).with(run.id)
+    it 'publishes volume tracking message for each used aliquot' do
+      expect(Emq::Publisher).to receive(:publish)
       patch v1_pacbio_run_path(run), params: body, headers: auth_json_api_headers
       expect(response).to have_http_status(:success), response.parsed_body
     end

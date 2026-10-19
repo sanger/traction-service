@@ -260,11 +260,9 @@ module V1
       end
 
       def publish_messages
-        PublishPacbioRunMessageJob.perform_later(@model.id)
-      rescue StandardError => e
-        Rails.logger.error(
-          "Failed to enqueue PacBio run messages for run #{@model.id}: #{e.class}: #{e.message}"
-        )
+        Messages.publish(@model, Pipelines.pacbio.message)
+        Emq::Publisher.publish(@model.aliquots_to_publish_on_run, Pipelines.pacbio,
+                               'volume_tracking')
       end
 
       def self.creatable_fields(context)

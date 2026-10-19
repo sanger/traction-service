@@ -120,8 +120,8 @@ RSpec.describe 'RunsController' do
         expect(fc2.pool.id).to eq(attr2[:ont_pool_id])
       end
 
-      it 'enqueues the message publishing job' do
-        expect(PublishOntRunMessageJob).to receive(:perform_later).with(kind_of(Integer))
+      it 'publishes the message' do
+        expect(Messages).to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
         post v1_ont_runs_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:success), response.body
       end
@@ -159,8 +159,8 @@ RSpec.describe 'RunsController' do
         expect(titles).to include 'number of flowcells must be less than instrument max number'
       end
 
-      it 'does not enqueue the message publishing job' do
-        expect(PublishOntRunMessageJob).not_to receive(:perform_later)
+      it 'does not publish the message' do
+        expect(Messages).not_to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
         post v1_ont_runs_path, params: body, headers: auth_json_api_headers
         expect(response).to have_http_status(:unprocessable_content), response.body
       end
@@ -264,8 +264,8 @@ RSpec.describe 'RunsController' do
           }.to_json
         end
 
-        it 'enqueues the message publishing job' do
-          expect(PublishOntRunMessageJob).to receive(:perform_later).with(run.id)
+        it 'is published' do
+          expect(Messages).to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
           patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:success), response.body
         end
@@ -329,8 +329,8 @@ RSpec.describe 'RunsController' do
           }.to_json
         end
 
-        it 'does not enqueue the message publishing job' do
-          expect(PublishOntRunMessageJob).not_to receive(:perform_later)
+        it 'does not be published' do
+          expect(Messages).not_to receive(:publish).with(instance_of(Ont::Run), having_attributes(pipeline: 'ont'))
           patch "#{v1_ont_runs_path}/#{run.id}", params: body, headers: auth_json_api_headers
           expect(response).to have_http_status(:unprocessable_content), response.body
         end
