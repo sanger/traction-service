@@ -1021,7 +1021,7 @@ RSpec.describe 'RunsController' do
           end.not_to change(Pacbio::Run, :count)
         end
 
-        it 'does not create a a well' do
+        it 'does not create a well' do
           expect do
             post v1_pacbio_runs_path, params: body,
                                       headers: auth_json_api_headers
