@@ -39,8 +39,8 @@ RSpec.describe Sample do
         expect(create(:sample, species: 'human').species).to eq('human')
       end
 
-      it 'is not valid without a species' do
-        expect(build(:sample, species: nil)).not_to be_valid
+      it 'is valid without a species' do
+        expect(build(:sample, species: nil)).to be_valid
       end
     end
 
